@@ -34,12 +34,23 @@ describe("dependencyResolver", () => {
 		mkdirSync(join(testDir, "node_modules"), { recursive: true });
 		mkdirSync(join(testDir, "node_modules", "react"), { recursive: true });
 		mkdirSync(join(testDir, "node_modules", "@types"), { recursive: true });
-		mkdirSync(join(testDir, "node_modules", "@types", "node"), { recursive: true });
+		mkdirSync(join(testDir, "node_modules", "@types", "node"), {
+			recursive: true,
+		});
 
 		// Create some test files
-		writeFileSync(join(testDir, "src", "utils", "helper.ts"), "export const helper = () => {};");
-		writeFileSync(join(testDir, "src", "types", "index.ts"), "export type MyType = string;");
-		writeFileSync(join(testDir, "src", "component.tsx"), "export const Component = () => {};");
+		writeFileSync(
+			join(testDir, "src", "utils", "helper.ts"),
+			"export const helper = () => {};",
+		);
+		writeFileSync(
+			join(testDir, "src", "types", "index.ts"),
+			"export type MyType = string;",
+		);
+		writeFileSync(
+			join(testDir, "src", "component.tsx"),
+			"export const Component = () => {};",
+		);
 	});
 
 	afterEach(() => {
@@ -74,8 +85,12 @@ describe("dependencyResolver", () => {
 		});
 
 		it("should return false for packages that do not exist", () => {
-			expect(checkExternalDependency("nonexistent-package", testDir)).toBe(false);
-			expect(checkExternalDependency("@types/nonexistent", testDir)).toBe(false);
+			expect(checkExternalDependency("nonexistent-package", testDir)).toBe(
+				false,
+			);
+			expect(checkExternalDependency("@types/nonexistent", testDir)).toBe(
+				false,
+			);
 		});
 
 		it("should handle scoped packages correctly", () => {
@@ -88,7 +103,11 @@ describe("dependencyResolver", () => {
 		const currentFile = join(testDir, "src", "component.tsx");
 
 		it("should resolve relative imports with .ts extension", () => {
-			const resolved = resolveInternalModule("./utils/helper", currentFile, testDir);
+			const resolved = resolveInternalModule(
+				"./utils/helper",
+				currentFile,
+				testDir,
+			);
 			expect(resolved).toBe(join(testDir, "src", "utils", "helper.ts"));
 		});
 
@@ -98,18 +117,29 @@ describe("dependencyResolver", () => {
 		});
 
 		it("should return null for non-existent modules", () => {
-			const resolved = resolveInternalModule("./nonexistent", currentFile, testDir);
+			const resolved = resolveInternalModule(
+				"./nonexistent",
+				currentFile,
+				testDir,
+			);
 			expect(resolved).toBe(null);
 		});
 
 		it("should handle imports with explicit extensions", () => {
-			const resolved = resolveInternalModule("./utils/helper.ts", currentFile, testDir);
+			const resolved = resolveInternalModule(
+				"./utils/helper.ts",
+				currentFile,
+				testDir,
+			);
 			expect(resolved).toBe(join(testDir, "src", "utils", "helper.ts"));
 		});
 
 		it("should try multiple extensions", () => {
 			// Create a .tsx file
-			writeFileSync(join(testDir, "src", "another.tsx"), "export const Another = () => {};");
+			writeFileSync(
+				join(testDir, "src", "another.tsx"),
+				"export const Another = () => {};",
+			);
 			const resolved = resolveInternalModule("./another", currentFile, testDir);
 			expect(resolved).toBe(join(testDir, "src", "another.tsx"));
 		});
@@ -139,7 +169,9 @@ describe("dependencyResolver", () => {
 			const resolved = resolveDependencies(deps, currentFile, testDir);
 
 			expect(resolved[0].isResolved).toBe(true);
-			expect(resolved[0].sourceFile).toBe(join(testDir, "src", "utils", "helper.ts"));
+			expect(resolved[0].sourceFile).toBe(
+				join(testDir, "src", "utils", "helper.ts"),
+			);
 			expect(resolved[1].isResolved).toBe(false);
 			expect(resolved[1].sourceFile).toBeUndefined();
 		});
@@ -220,7 +252,11 @@ describe("dependencyResolver", () => {
 		it("should handle dependencies with deep paths", () => {
 			const currentFile = join(testDir, "src", "component.tsx");
 			const deps: Dependency[] = [
-				{ importPath: "react/jsx-runtime", isExternal: true, isResolved: false },
+				{
+					importPath: "react/jsx-runtime",
+					isExternal: true,
+					isResolved: false,
+				},
 			];
 
 			const resolved = resolveDependencies(deps, currentFile, testDir);
@@ -229,7 +265,10 @@ describe("dependencyResolver", () => {
 
 		it("should handle parent directory imports", () => {
 			const currentFile = join(testDir, "src", "utils", "helper.ts");
-			writeFileSync(join(testDir, "src", "config.ts"), "export const config = {};");
+			writeFileSync(
+				join(testDir, "src", "config.ts"),
+				"export const config = {};",
+			);
 
 			const deps: Dependency[] = [
 				{ importPath: "../config", isExternal: false, isResolved: false },

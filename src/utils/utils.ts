@@ -1,16 +1,23 @@
+import type { Config, User } from "./types";
 import { Config } from './types';
 import { User } from './types';
 
-export function helper() { return 42; }
+export function helper() {
+	return 42;
+}
 
 // ============================================================================
 // Integrated from reference file
 // ============================================================================
 
-export function getUser(): User { return { name: 'test' }; }
+export function getUser(): User {
+	return { name: "test" };
+}
 
 // ============================================================================
 // Integrated from reference file
 // ============================================================================
 
-export function useConfig(c: Config) { return c.value; }
+export function useConfig(c: Config) {
+	return c.value;
+}

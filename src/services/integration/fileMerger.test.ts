@@ -5,7 +5,11 @@
 
 import { describe, expect, it } from "vitest";
 import { compareFiles } from "./fileComparator";
-import { canMergeWithoutConflicts, createDefaultMergeStrategy, mergeFiles } from "./fileMerger";
+import {
+	canMergeWithoutConflicts,
+	createDefaultMergeStrategy,
+	mergeFiles,
+} from "./fileMerger";
 import type { MergeStrategy } from "./types";
 
 describe("fileMerger", () => {
@@ -172,7 +176,9 @@ export function newFunction() {
 			expect(result.mergedContent).toContain("existingImport");
 			expect(result.mergedContent).toContain("newImport");
 			// Shared import should appear only once
-			const sharedImportCount = (result.mergedContent.match(/import.*shared/g) || []).length;
+			const sharedImportCount = (
+				result.mergedContent.match(/import.*shared/g) || []
+			).length;
 			expect(sharedImportCount).toBe(1);
 		});
 
@@ -368,8 +374,12 @@ export function newFunction() {
 
 			// Should preserve all existing exports
 			expect(result.preservedExports).toHaveLength(2);
-			expect(result.preservedExports.map((e) => e.name)).toContain("existingFunction");
-			expect(result.preservedExports.map((e) => e.name)).toContain("existingConst");
+			expect(result.preservedExports.map((e) => e.name)).toContain(
+				"existingFunction",
+			);
+			expect(result.preservedExports.map((e) => e.name)).toContain(
+				"existingConst",
+			);
 
 			// Should not add new exports when conflicts exist and user input is requested
 			expect(result.addedExports).toHaveLength(0);

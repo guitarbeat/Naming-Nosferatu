@@ -124,7 +124,11 @@ export interface ToastItem {
 
 export interface ToastContextValue {
 	toasts: ToastItem[];
-	showToast: (message: string, type?: ToastType, options?: ToastOptions) => string;
+	showToast: (
+		message: string,
+		type?: ToastType,
+		options?: ToastOptions,
+	) => string;
 	hideToast: (id: string) => void;
 	clearToasts: () => void;
 	showSuccess: (message: string, options?: ToastOptions) => string;
@@ -140,8 +144,12 @@ export interface ToastContextValue {
 /**
  * Check if `currentRole` meets or exceeds `requiredRole` in the role hierarchy.
  */
-export function hasRole(currentRole: string | null | undefined, requiredRole: UserRole): boolean {
-	const current = ROLE_HIERARCHY[(currentRole?.toLowerCase() ?? "") as UserRole] ?? -1;
+export function hasRole(
+	currentRole: string | null | undefined,
+	requiredRole: UserRole,
+): boolean {
+	const current =
+		ROLE_HIERARCHY[(currentRole?.toLowerCase() ?? "") as UserRole] ?? -1;
 	const required = ROLE_HIERARCHY[requiredRole] ?? Infinity;
 	return current >= required;
 }
@@ -318,19 +326,22 @@ function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
 		};
 	}, []);
 
-	const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
-		try {
-			const success = await adapterRef.current.login(credentials);
-			if (success) {
-				const updated = await adapterRef.current.getCurrentUser();
-				setUser(updated);
+	const login = useCallback(
+		async (credentials: LoginCredentials): Promise<boolean> => {
+			try {
+				const success = await adapterRef.current.login(credentials);
+				if (success) {
+					const updated = await adapterRef.current.getCurrentUser();
+					setUser(updated);
+				}
+				return success;
+			} catch (err) {
+				console.error("[Providers] Login failed:", err);
+				throw err;
 			}
-			return success;
-		} catch (err) {
-			console.error("[Providers] Login failed:", err);
-			throw err;
-		}
-	}, []);
+		},
+		[],
+	);
 
 	const logout = useCallback(async () => {
 		try {
@@ -373,7 +384,10 @@ let toastCounter = 0;
 function useToastProvider(
 	maxToasts: number,
 	defaultDuration: number,
-): ToastContextValue & { toastList: ToastItem[]; dismiss: (id: string) => void } {
+): ToastContextValue & {
+	toastList: ToastItem[];
+	dismiss: (id: string) => void;
+} {
 	const [toasts, setToasts] = useState<ToastItem[]>([]);
 	const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
@@ -397,7 +411,11 @@ function useToastProvider(
 	}, []);
 
 	const showToast = useCallback(
-		(message: string, type: ToastType = "info", options: ToastOptions = {}): string => {
+		(
+			message: string,
+			type: ToastType = "info",
+			options: ToastOptions = {},
+		): string => {
 			const id = `toast-${++toastCounter}`;
 			const duration = options.duration ?? defaultDuration;
 			const autoDismiss = options.autoDismiss ?? true;
@@ -469,7 +487,16 @@ function useToastProvider(
 			toastList: toasts,
 			dismiss: hideToast,
 		}),
-		[toasts, showToast, hideToast, clearToasts, showSuccess, showError, showInfo, showWarning],
+		[
+			toasts,
+			showToast,
+			hideToast,
+			clearToasts,
+			showSuccess,
+			showError,
+			showInfo,
+			showWarning,
+		],
 	);
 
 	return contextValue;
@@ -537,7 +564,11 @@ export function Providers({
 		<AuthContext.Provider value={authValue}>
 			<ToastContext.Provider value={toastValue}>
 				{children}
-				<ToastContainer toasts={toastList} onDismiss={dismiss} position={toastPosition} />
+				<ToastContainer
+					toasts={toastList}
+					onDismiss={dismiss}
+					position={toastPosition}
+				/>
 			</ToastContext.Provider>
 		</AuthContext.Provider>
 	);

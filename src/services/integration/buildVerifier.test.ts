@@ -4,7 +4,11 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { categorizeErrors, diagnoseErrors, parseTscOutput } from "./buildVerifier";
+import {
+	categorizeErrors,
+	diagnoseErrors,
+	parseTscOutput,
+} from "./buildVerifier";
 import type { BuildError } from "./types";
 
 describe("buildVerifier", () => {
@@ -83,7 +87,8 @@ src/other.ts(20,15): error TS2345: Argument of type 'string' is not assignable t
 		});
 
 		it("should handle file paths with spaces", () => {
-			const output = 'src/my file.ts(10,5): error TS2304: Cannot find name "foo".';
+			const output =
+				'src/my file.ts(10,5): error TS2304: Cannot find name "foo".';
 			const { errors, warnings } = parseTscOutput(output);
 
 			expect(errors).toHaveLength(1);
@@ -241,7 +246,8 @@ src/other.ts(20,15): error TS2345: Argument of type 'string' is not assignable t
 					file: "src/test.ts",
 					line: 5,
 					column: 10,
-					message: "Cannot find module './missing' or its corresponding type declarations.",
+					message:
+						"Cannot find module './missing' or its corresponding type declarations.",
 					code: "TS2307",
 				},
 			];
@@ -261,7 +267,8 @@ src/other.ts(20,15): error TS2345: Argument of type 'string' is not assignable t
 					file: "src/test.ts",
 					line: 1,
 					column: 1,
-					message: "Cannot find module 'react-router-dom' or its corresponding type declarations.",
+					message:
+						"Cannot find module 'react-router-dom' or its corresponding type declarations.",
 					code: "TS2307",
 				},
 			];
@@ -318,7 +325,8 @@ src/other.ts(20,15): error TS2345: Argument of type 'string' is not assignable t
 					file: "src/test.ts",
 					line: 1,
 					column: 1,
-					message: 'Module can only be default-imported using the "esModuleInterop" flag.',
+					message:
+						'Module can only be default-imported using the "esModuleInterop" flag.',
 					code: "TS1192",
 				},
 			];
@@ -372,7 +380,8 @@ src/other.ts(20,15): error TS2345: Argument of type 'string' is not assignable t
 					file: "src/test.ts",
 					line: 20,
 					column: 15,
-					message: "Argument of type 'string' is not assignable to parameter of type 'number'.",
+					message:
+						"Argument of type 'string' is not assignable to parameter of type 'number'.",
 					code: "TS2345",
 				},
 			];

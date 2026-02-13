@@ -49,8 +49,8 @@ export default function TournamentFlow() {
 								</div>
 								<p className="text-lg text-slate-300 mb-10">
 									Your personal rankings have been updated. Head over to the{" "}
-									<strong className="text-purple-400">Analyze</strong> section to see the full
-									breakdown and compare results!
+									<strong className="text-purple-400">Analyze</strong> section
+									to see the full breakdown and compare results!
 								</p>
 								<div className="flex gap-4 justify-center">
 									<button

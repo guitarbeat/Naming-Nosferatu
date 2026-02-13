@@ -47,7 +47,11 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should return rollback strategy for build errors", () => {
-			const error = new IntegrationError("Type error", ErrorCode.TYPE_ERROR, "/path/to/file.ts");
+			const error = new IntegrationError(
+				"Type error",
+				ErrorCode.TYPE_ERROR,
+				"/path/to/file.ts",
+			);
 
 			const strategy = getRecoveryStrategy(error);
 
@@ -209,7 +213,10 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should include auto-recovery message", () => {
-			const error = new IntegrationError("Test error", ErrorCode.FILE_NOT_FOUND);
+			const error = new IntegrationError(
+				"Test error",
+				ErrorCode.FILE_NOT_FOUND,
+			);
 			const strategy = getRecoveryStrategy(error);
 
 			const formatted = formatErrorWithSuggestions(error, strategy);
@@ -218,7 +225,10 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should include user input required message", () => {
-			const error = new IntegrationError("Test error", ErrorCode.DUPLICATE_EXPORT);
+			const error = new IntegrationError(
+				"Test error",
+				ErrorCode.DUPLICATE_EXPORT,
+			);
 			const strategy = getRecoveryStrategy(error);
 
 			const formatted = formatErrorWithSuggestions(error, strategy);
@@ -238,7 +248,10 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should include retry message", () => {
-			const error = new IntegrationError("Test error", ErrorCode.FILE_NOT_FOUND);
+			const error = new IntegrationError(
+				"Test error",
+				ErrorCode.FILE_NOT_FOUND,
+			);
 			const strategy = getRecoveryStrategy(error);
 
 			const formatted = formatErrorWithSuggestions(error, strategy);
@@ -249,11 +262,20 @@ describe("Error Recovery Module", () => {
 		it("should include specific suggestions for each error code", () => {
 			const testCases = [
 				{ code: ErrorCode.FILE_NOT_FOUND, suggestion: "Verify the file path" },
-				{ code: ErrorCode.PERMISSION_DENIED, suggestion: "Check file permissions" },
+				{
+					code: ErrorCode.PERMISSION_DENIED,
+					suggestion: "Check file permissions",
+				},
 				{ code: ErrorCode.DISK_FULL, suggestion: "Free up disk space" },
 				{ code: ErrorCode.INVALID_SYNTAX, suggestion: "Fix syntax errors" },
-				{ code: ErrorCode.DUPLICATE_EXPORT, suggestion: "Resolve duplicate exports" },
-				{ code: ErrorCode.CIRCULAR_DEPENDENCY, suggestion: "Refactor code to break circular" },
+				{
+					code: ErrorCode.DUPLICATE_EXPORT,
+					suggestion: "Resolve duplicate exports",
+				},
+				{
+					code: ErrorCode.CIRCULAR_DEPENDENCY,
+					suggestion: "Refactor code to break circular",
+				},
 			];
 
 			for (const { code, suggestion } of testCases) {

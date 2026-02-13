@@ -32,7 +32,11 @@ function cleanupTestDir() {
 	}
 }
 
-function createTestFile(dir: string, filename: string, content: string): string {
+function createTestFile(
+	dir: string,
+	filename: string,
+	content: string,
+): string {
 	const filePath = path.join(dir, filename);
 	fs.writeFileSync(filePath, content, "utf-8");
 	return filePath;
@@ -57,7 +61,11 @@ export function newFunction() {
 export const newConst = 42;
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "newFile.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"newFile.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -102,7 +110,11 @@ export function utilityFunction() {
 }
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "utility.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"utility.ts",
+				referenceContent,
+			);
 
 			// Target a nested directory that doesn't exist
 			const nestedTargetDir = path.join(TARGET_DIR, "utils", "helpers");
@@ -113,7 +125,9 @@ export function utilityFunction() {
 				fileType: FileType.UTILITY,
 				targetLocation: nestedTargetDir,
 				dependencies: [],
-				exports: [{ name: "utilityFunction", type: "function", isDefault: false }],
+				exports: [
+					{ name: "utilityFunction", type: "function", isDefault: false },
+				],
 				hasExistingFile: false,
 			};
 
@@ -151,14 +165,20 @@ export default function MyComponent() {
 }
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "MyComponent.tsx", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"MyComponent.tsx",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
 				fileName: "MyComponent.tsx",
 				fileType: FileType.COMPONENT,
 				targetLocation: TARGET_DIR,
-				dependencies: [{ importPath: "react", isExternal: true, isResolved: true }],
+				dependencies: [
+					{ importPath: "react", isExternal: true, isResolved: true },
+				],
 				exports: [{ name: "MyComponent", type: "function", isDefault: true }],
 				hasExistingFile: false,
 			};
@@ -192,15 +212,23 @@ export function useCustomHook() {
 }
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "useCustomHook.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"useCustomHook.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
 				fileName: "useCustomHook.ts",
 				fileType: FileType.HOOK,
 				targetLocation: TARGET_DIR,
-				dependencies: [{ importPath: "react", isExternal: true, isResolved: true }],
-				exports: [{ name: "useCustomHook", type: "function", isDefault: false }],
+				dependencies: [
+					{ importPath: "react", isExternal: true, isResolved: true },
+				],
+				exports: [
+					{ name: "useCustomHook", type: "function", isDefault: false },
+				],
 				hasExistingFile: false,
 			};
 
@@ -231,7 +259,11 @@ export interface User {
 export type UserRole = 'admin' | 'user' | 'guest';
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "types.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"types.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -277,7 +309,11 @@ export class ApiService {
 export const apiService = new ApiService();
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "apiService.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"apiService.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -311,7 +347,11 @@ export const apiService = new ApiService();
 		it("should handle empty files", () => {
 			const referenceContent = "";
 
-			const sourceFile = createTestFile(SOURCE_DIR, "empty.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"empty.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -360,7 +400,11 @@ export function newFunction() {
 			// Create existing file
 			createTestFile(TARGET_DIR, "merge.ts", existingContent);
 
-			const sourceFile = createTestFile(SOURCE_DIR, "merge.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"merge.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -407,7 +451,11 @@ export function conflictingFunction() {
 			// Create existing file
 			createTestFile(TARGET_DIR, "conflict.ts", existingContent);
 
-			const sourceFile = createTestFile(SOURCE_DIR, "conflict.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"conflict.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -415,7 +463,9 @@ export function conflictingFunction() {
 				fileType: FileType.UTILITY,
 				targetLocation: TARGET_DIR,
 				dependencies: [],
-				exports: [{ name: "conflictingFunction", type: "function", isDefault: false }],
+				exports: [
+					{ name: "conflictingFunction", type: "function", isDefault: false },
+				],
 				hasExistingFile: true,
 			};
 
@@ -448,7 +498,11 @@ export function testFunction() {
 }
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "test.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"test.ts",
+				referenceContent,
+			);
 
 			// Use an invalid filename with characters that are not allowed in filenames
 			// This will cause the write operation to fail
@@ -487,7 +541,11 @@ export function trackedFunction() {
 }
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "tracked.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"tracked.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -495,7 +553,9 @@ export function trackedFunction() {
 				fileType: FileType.UTILITY,
 				targetLocation: TARGET_DIR,
 				dependencies: [],
-				exports: [{ name: "trackedFunction", type: "function", isDefault: false }],
+				exports: [
+					{ name: "trackedFunction", type: "function", isDefault: false },
+				],
 				hasExistingFile: false,
 			};
 
@@ -515,13 +575,25 @@ export function trackedFunction() {
 			expect(result.actionsLog?.length).toBeGreaterThan(0);
 
 			// Verify specific actions are logged
-			expect(result.actionsLog?.some((log) => log.includes("Starting integration"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("No existing file found"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Creating directory structure"))).toBe(
-				true,
-			);
-			expect(result.actionsLog?.some((log) => log.includes("Writing new file"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Successfully created"))).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Starting integration")),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) =>
+					log.includes("No existing file found"),
+				),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) =>
+					log.includes("Creating directory structure"),
+				),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Writing new file")),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Successfully created")),
+			).toBe(true);
 		});
 
 		it("should track actions taken during file merge", () => {
@@ -540,7 +612,11 @@ export function newFunction() {
 			// Create existing file
 			createTestFile(TARGET_DIR, "mergeTracked.ts", existingContent);
 
-			const sourceFile = createTestFile(SOURCE_DIR, "mergeTracked.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"mergeTracked.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -568,13 +644,31 @@ export function newFunction() {
 			expect(result.actionsLog?.length).toBeGreaterThan(0);
 
 			// Verify specific actions are logged
-			expect(result.actionsLog?.some((log) => log.includes("Starting integration"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Existing file found"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Reading existing file"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Comparing reference file"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Merging files"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Writing merged content"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("Merge completed"))).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Starting integration")),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Existing file found")),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Reading existing file")),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) =>
+					log.includes("Comparing reference file"),
+				),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Merging files")),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) =>
+					log.includes("Writing merged content"),
+				),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("Merge completed")),
+			).toBe(true);
 		});
 
 		it("should track conflicts when merge is skipped due to user input requirement", () => {
@@ -593,7 +687,11 @@ export function conflictingFunction() {
 			// Create existing file
 			createTestFile(TARGET_DIR, "conflictTracked.ts", existingContent);
 
-			const sourceFile = createTestFile(SOURCE_DIR, "conflictTracked.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"conflictTracked.ts",
+				referenceContent,
+			);
 
 			const analysis: FileAnalysis = {
 				filePath: sourceFile,
@@ -601,7 +699,9 @@ export function conflictingFunction() {
 				fileType: FileType.UTILITY,
 				targetLocation: TARGET_DIR,
 				dependencies: [],
-				exports: [{ name: "conflictingFunction", type: "function", isDefault: false }],
+				exports: [
+					{ name: "conflictingFunction", type: "function", isDefault: false },
+				],
 				hasExistingFile: true,
 			};
 
@@ -622,8 +722,12 @@ export function conflictingFunction() {
 			expect(result.actionsLog).toBeDefined();
 
 			// Verify conflict is logged
-			expect(result.actionsLog?.some((log) => log.includes("conflict(s) detected"))).toBe(true);
-			expect(result.actionsLog?.some((log) => log.includes("user input required"))).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("conflict(s) detected")),
+			).toBe(true);
+			expect(
+				result.actionsLog?.some((log) => log.includes("user input required")),
+			).toBe(true);
 		});
 
 		it("should track failures in actions log", () => {
@@ -633,7 +737,11 @@ export function failFunction() {
 }
 `;
 
-			const sourceFile = createTestFile(SOURCE_DIR, "fail.ts", referenceContent);
+			const sourceFile = createTestFile(
+				SOURCE_DIR,
+				"fail.ts",
+				referenceContent,
+			);
 
 			// Use an invalid filename to cause failure
 			const invalidFileName = "fail<>:|?.ts";
@@ -665,7 +773,9 @@ export function failFunction() {
 
 			// Verify failure is logged
 			expect(
-				result.actionsLog?.some((log) => log.includes("Failed") || log.includes("failed")),
+				result.actionsLog?.some(
+					(log) => log.includes("Failed") || log.includes("failed"),
+				),
 			).toBe(true);
 		});
 	});

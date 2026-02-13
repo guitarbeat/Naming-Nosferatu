@@ -95,7 +95,9 @@ describe("IntegrationStateManager", () => {
 			const state = manager.getState();
 
 			expect(state.failedFiles.has("file1.ts")).toBe(true);
-			expect(state.failedFiles.get("file1.ts")?.message).toBe("Integration failed");
+			expect(state.failedFiles.get("file1.ts")?.message).toBe(
+				"Integration failed",
+			);
 			expect(state.processedFiles).toBe(1);
 			expect(state.currentFile).toBeNull();
 		});

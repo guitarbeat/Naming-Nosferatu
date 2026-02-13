@@ -179,13 +179,13 @@ export const analyticsAPI = {
 				return [];
 			}
 
-			return (data as unknown as { name_id: string; name: string; count: number }[]).map(
-				(item) => ({
-					name_id: String(item.name_id),
-					name: item.name,
-					times_selected: item.count,
-				}),
-			);
+			return (
+				data as unknown as { name_id: string; name: string; count: number }[]
+			).map((item) => ({
+				name_id: String(item.name_id),
+				name: item.name,
+				times_selected: item.count,
+			}));
 		}, []);
 	},
 
@@ -248,7 +248,9 @@ export const analyticsAPI = {
 
 				const periodCount = Math.max(
 					options.periods ??
-						(options.dateFilter ? (dateFilterPeriods[options.dateFilter] ?? periods) : periods),
+						(options.dateFilter
+							? (dateFilterPeriods[options.dateFilter] ?? periods)
+							: periods),
 					2,
 				);
 
@@ -286,15 +288,24 @@ export const analyticsAPI = {
 				}
 
 				// Group selections by date
-				const dateGroups = new Map<string, Map<string, { name: string; count: number }>>();
+				const dateGroups = new Map<
+					string,
+					Map<string, { name: string; count: number }>
+				>();
 				const nameData = new Map<
 					string,
-					{ id: string; name: string; avgRating: number; totalSelections: number }
+					{
+						id: string;
+						name: string;
+						avgRating: number;
+						totalSelections: number;
+					}
 				>();
 
 				for (const s of selections) {
 					const nameId = String(s.name_id);
-					const date = new Date(s.selected_at).toISOString().split("T")[0] ?? "unknown";
+					const date =
+						new Date(s.selected_at).toISOString().split("T")[0] ?? "unknown";
 
 					if (!dateGroups.has(date)) {
 						dateGroups.set(date, new Map());
@@ -331,7 +342,9 @@ export const analyticsAPI = {
 				for (let i = periodCount - 1; i >= 0; i--) {
 					const d = new Date(today);
 					d.setDate(d.getDate() - i);
-					timeLabels.push(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }));
+					timeLabels.push(
+						d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+					);
 					dateKeys.push(d.toISOString().split("T")[0] ?? "");
 				}
 
@@ -383,7 +396,12 @@ export const leaderboardAPI = {
 			// Aggregate per name
 			const statsMap = new Map<
 				string | number,
-				{ totalRating: number; count: number; totalWins: number; totalLosses: number }
+				{
+					totalRating: number;
+					count: number;
+					totalWins: number;
+					totalLosses: number;
+				}
 			>();
 			for (const r of ratings ?? []) {
 				const existing = statsMap.get(r.name_id);
@@ -471,7 +489,9 @@ export const statsAPI = {
 				.eq("is_active", true)
 				.eq("cat_name_ratings.user_name", userName)) as unknown as {
 				data: Array<
-					Record<string, unknown> & { cat_name_ratings: RatingRow[] | RatingRow | null }
+					Record<string, unknown> & {
+						cat_name_ratings: RatingRow[] | RatingRow | null;
+					}
 				> | null;
 				error: unknown;
 			};
@@ -482,7 +502,9 @@ export const statsAPI = {
 
 			return data.map((item) => {
 				const ratingsList = item.cat_name_ratings;
-				const userRating = Array.isArray(ratingsList) ? ratingsList[0] : ratingsList;
+				const userRating = Array.isArray(ratingsList)
+					? ratingsList[0]
+					: ratingsList;
 				return {
 					...item,
 					user_rating: userRating?.rating ?? null,
@@ -532,7 +554,10 @@ export const statsAPI = {
 						: 0,
 				avgUserRating:
 					ratings.length > 0
-						? Math.round(ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) / ratings.length)
+						? Math.round(
+								ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
+									ratings.length,
+							)
 						: 1500,
 			};
 		}, null);

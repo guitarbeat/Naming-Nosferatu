@@ -4,7 +4,11 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { areFilesIdentical, compareFiles, generateDiffSummary } from "./fileComparator";
+import {
+	areFilesIdentical,
+	compareFiles,
+	generateDiffSummary,
+} from "./fileComparator";
 
 describe("fileComparator", () => {
 	describe("compareFiles", () => {
@@ -61,7 +65,9 @@ export function existingOnlyFunction() {
 			);
 
 			expect(comparison.existingOnlyExports).toHaveLength(1);
-			expect(comparison.existingOnlyExports[0].name).toBe("existingOnlyFunction");
+			expect(comparison.existingOnlyExports[0].name).toBe(
+				"existingOnlyFunction",
+			);
 		});
 
 		it("should identify common exports without conflicts when identical", () => {
@@ -71,7 +77,12 @@ export function sharedFunction() {
 }
 `;
 
-			const comparison = compareFiles("reference.ts", "existing.ts", content, content);
+			const comparison = compareFiles(
+				"reference.ts",
+				"existing.ts",
+				content,
+				content,
+			);
 
 			expect(comparison.commonExports).toHaveLength(1);
 			expect(comparison.commonExports[0].name).toBe("sharedFunction");
@@ -102,7 +113,9 @@ export function conflictingFunction() {
 			expect(comparison.hasConflicts).toBe(true);
 			expect(comparison.conflicts).toHaveLength(1);
 			expect(comparison.conflicts[0].type).toBe("duplicate_export");
-			expect(comparison.conflicts[0].description).toContain("conflictingFunction");
+			expect(comparison.conflicts[0].description).toContain(
+				"conflictingFunction",
+			);
 		});
 
 		it("should detect incompatible type conflicts", () => {
@@ -231,7 +244,12 @@ export default function Component() {
 }
 `;
 
-			const comparison = compareFiles("reference.ts", "existing.ts", content, content);
+			const comparison = compareFiles(
+				"reference.ts",
+				"existing.ts",
+				content,
+				content,
+			);
 
 			expect(comparison.hasConflicts).toBe(false);
 			expect(comparison.conflicts).toHaveLength(0);

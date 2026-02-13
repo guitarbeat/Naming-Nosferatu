@@ -80,7 +80,10 @@ describe("IntegrationOrchestrator", () => {
 
 		it("should ignore non-TypeScript files", async () => {
 			// Create test files
-			writeFileSync(join(testRoot, sourceDir, "test.ts"), "export const x = 1;");
+			writeFileSync(
+				join(testRoot, sourceDir, "test.ts"),
+				"export const x = 1;",
+			);
 			writeFileSync(join(testRoot, sourceDir, "readme.md"), "# README");
 			writeFileSync(join(testRoot, sourceDir, "data.json"), "{}");
 
@@ -96,7 +99,9 @@ describe("IntegrationOrchestrator", () => {
 
 			expect(result.totalFiles).toBe(0);
 			expect(result.success).toBe(true);
-			expect(result.errors).toContain("No reference files found in source directory");
+			expect(result.errors).toContain(
+				"No reference files found in source directory",
+			);
 		});
 	});
 
@@ -115,7 +120,9 @@ describe("IntegrationOrchestrator", () => {
 			const result = await orchestrator.execute();
 
 			expect(result.completedFiles).toBe(1);
-			expect(existsSync(join(testRoot, targetDir, "hooks", "useCounter.ts"))).toBe(true);
+			expect(
+				existsSync(join(testRoot, targetDir, "hooks", "useCounter.ts")),
+			).toBe(true);
 		});
 
 		it("should detect dependencies", async () => {
@@ -163,14 +170,24 @@ describe("IntegrationOrchestrator", () => {
 			expect(result.success).toBe(true);
 
 			// Verify both files were created
-			expect(existsSync(join(testRoot, targetDir, "types", "types.ts"))).toBe(true);
-			expect(existsSync(join(testRoot, targetDir, "utils", "utils.ts"))).toBe(true);
+			expect(existsSync(join(testRoot, targetDir, "types", "types.ts"))).toBe(
+				true,
+			);
+			expect(existsSync(join(testRoot, targetDir, "utils", "utils.ts"))).toBe(
+				true,
+			);
 		});
 
 		it("should handle independent files in alphabetical order", async () => {
 			// Create independent files
-			writeFileSync(join(testRoot, sourceDir, "zebra.ts"), 'export const zebra = "z";');
-			writeFileSync(join(testRoot, sourceDir, "alpha.ts"), 'export const alpha = "a";');
+			writeFileSync(
+				join(testRoot, sourceDir, "zebra.ts"),
+				'export const zebra = "z";',
+			);
+			writeFileSync(
+				join(testRoot, sourceDir, "alpha.ts"),
+				'export const alpha = "a";',
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -197,7 +214,9 @@ describe("IntegrationOrchestrator", () => {
 			const result = await orchestrator.execute();
 
 			expect(result.completedFiles).toBe(1);
-			expect(existsSync(join(testRoot, targetDir, "utils", "newUtil.ts"))).toBe(true);
+			expect(existsSync(join(testRoot, targetDir, "utils", "newUtil.ts"))).toBe(
+				true,
+			);
 
 			const integrationResult = result.integrationResults[0];
 			expect(integrationResult.action).toBe("created");
@@ -244,13 +263,21 @@ describe("IntegrationOrchestrator", () => {
 
 			// Should detect circular dependency
 			expect(result.errors.length).toBeGreaterThan(0);
-			expect(result.errors.some((e) => e.includes("Circular dependency"))).toBe(true);
+			expect(result.errors.some((e) => e.includes("Circular dependency"))).toBe(
+				true,
+			);
 		});
 
 		it("should continue on error when stopOnError is false", async () => {
 			// Create a file that will fail (invalid target location)
-			writeFileSync(join(testRoot, sourceDir, "unknown.txt"), "not a valid typescript file");
-			writeFileSync(join(testRoot, sourceDir, "valid.ts"), "export const valid = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "unknown.txt"),
+				"not a valid typescript file",
+			);
+			writeFileSync(
+				join(testRoot, sourceDir, "valid.ts"),
+				"export const valid = true;",
+			);
 
 			const config = { ...defaultConfig, stopOnError: false };
 			const orchestrator = new IntegrationOrchestrator(config, testRoot);
@@ -277,16 +304,27 @@ describe("IntegrationOrchestrator", () => {
 
 			// Should stop when circular dependency is detected
 			expect(result.success).toBe(false);
-			expect(result.errors.some((e) => e.includes("Circular dependency"))).toBe(true);
+			expect(result.errors.some((e) => e.includes("Circular dependency"))).toBe(
+				true,
+			);
 		});
 	});
 
 	describe("State Management", () => {
 		it("should track progress correctly", async () => {
 			// Create multiple files
-			writeFileSync(join(testRoot, sourceDir, "file1.ts"), "export const a = 1;");
-			writeFileSync(join(testRoot, sourceDir, "file2.ts"), "export const b = 2;");
-			writeFileSync(join(testRoot, sourceDir, "file3.ts"), "export const c = 3;");
+			writeFileSync(
+				join(testRoot, sourceDir, "file1.ts"),
+				"export const a = 1;",
+			);
+			writeFileSync(
+				join(testRoot, sourceDir, "file2.ts"),
+				"export const b = 2;",
+			);
+			writeFileSync(
+				join(testRoot, sourceDir, "file3.ts"),
+				"export const c = 3;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -302,10 +340,16 @@ describe("IntegrationOrchestrator", () => {
 		it("should create backups when configured", async () => {
 			// Create existing file
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
-			writeFileSync(join(testRoot, targetDir, "utils", "test.ts"), "export const original = true;");
+			writeFileSync(
+				join(testRoot, targetDir, "utils", "test.ts"),
+				"export const original = true;",
+			);
 
 			// Create reference file
-			writeFileSync(join(testRoot, sourceDir, "test.ts"), "export const updated = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "test.ts"),
+				"export const updated = true;",
+			);
 
 			const config = { ...defaultConfig, createBackups: true };
 			const orchestrator = new IntegrationOrchestrator(config, testRoot);
@@ -320,7 +364,10 @@ describe("IntegrationOrchestrator", () => {
 
 	describe("Integration Results", () => {
 		it("should return detailed integration results", async () => {
-			writeFileSync(join(testRoot, sourceDir, "test.ts"), "export const test = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "test.ts"),
+				"export const test = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -336,7 +383,10 @@ describe("IntegrationOrchestrator", () => {
 		});
 
 		it("should include action logs in results", async () => {
-			writeFileSync(join(testRoot, sourceDir, "logged.ts"), "export const logged = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "logged.ts"),
+				"export const logged = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -352,7 +402,10 @@ describe("IntegrationOrchestrator", () => {
 
 	describe("Conditional File Deletion", () => {
 		it("should delete reference file after successful integration when configured", async () => {
-			writeFileSync(join(testRoot, sourceDir, "toDelete.ts"), "export const toDelete = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "toDelete.ts"),
+				"export const toDelete = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -366,7 +419,10 @@ describe("IntegrationOrchestrator", () => {
 		});
 
 		it("should NOT delete reference file when deleteAfterSuccess is false", async () => {
-			writeFileSync(join(testRoot, sourceDir, "preserve.ts"), "export const preserve = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "preserve.ts"),
+				"export const preserve = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -380,7 +436,10 @@ describe("IntegrationOrchestrator", () => {
 		});
 
 		it("should delete reference file when integration succeeds without conflicts", async () => {
-			writeFileSync(join(testRoot, sourceDir, "clean.ts"), "export const clean = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "clean.ts"),
+				"export const clean = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -406,8 +465,14 @@ describe("IntegrationOrchestrator", () => {
 	describe("Directory Cleanup", () => {
 		it("should remove source directory when all files are successfully integrated and deleted", async () => {
 			// Create reference files
-			writeFileSync(join(testRoot, sourceDir, "file1.ts"), "export const file1 = true;");
-			writeFileSync(join(testRoot, sourceDir, "file2.ts"), "export const file2 = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "file1.ts"),
+				"export const file1 = true;",
+			);
+			writeFileSync(
+				join(testRoot, sourceDir, "file2.ts"),
+				"export const file2 = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -429,7 +494,10 @@ describe("IntegrationOrchestrator", () => {
 
 		it("should NOT remove source directory when files are not deleted", async () => {
 			// Create reference files
-			writeFileSync(join(testRoot, sourceDir, "file1.ts"), "export const file1 = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "file1.ts"),
+				"export const file1 = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
@@ -450,8 +518,14 @@ describe("IntegrationOrchestrator", () => {
 
 		it("should NOT remove source directory when some files remain", async () => {
 			// Create reference files
-			writeFileSync(join(testRoot, sourceDir, "file1.ts"), "export const file1 = true;");
-			writeFileSync(join(testRoot, sourceDir, "file2.ts"), "export const file2 = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "file1.ts"),
+				"export const file1 = true;",
+			);
+			writeFileSync(
+				join(testRoot, sourceDir, "file2.ts"),
+				"export const file2 = true;",
+			);
 			// Create a non-TypeScript file that won't be processed
 			writeFileSync(join(testRoot, sourceDir, "readme.md"), "# README");
 
@@ -478,7 +552,10 @@ describe("IntegrationOrchestrator", () => {
 
 		it("should handle case where source directory is already removed", async () => {
 			// Create and process a file
-			writeFileSync(join(testRoot, sourceDir, "file1.ts"), "export const file1 = true;");
+			writeFileSync(
+				join(testRoot, sourceDir, "file1.ts"),
+				"export const file1 = true;",
+			);
 
 			// Create target directory
 			mkdirSync(join(testRoot, targetDir, "utils"), { recursive: true });
