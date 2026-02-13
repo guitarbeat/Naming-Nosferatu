@@ -10,7 +10,7 @@ import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
 import { Lightbox } from "@/layout/Lightbox";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/types/appTypes";
 import { getRandomCatImage } from "@/utils/basic";
@@ -86,6 +86,27 @@ export function NameSelector() {
 		fetchNames();
 	}, [retryCount, getCachedData, setCachedData]);
 
+<<<<<<< HEAD
+	const toggleName = useCallback(
+		(nameId: IdType) => {
+			setSelectedNames((prev) => {
+				const next = new Set(prev);
+				if (next.has(nameId)) {
+					next.delete(nameId);
+				} else {
+					next.add(nameId);
+				}
+
+				// Sync with global store
+				const selectedNameItems = names.filter((n) => next.has(n.id));
+				tournamentActions.setSelection(selectedNameItems);
+
+				return next;
+			});
+		},
+		[names, tournamentActions],
+	);
+=======
 	const toggleName = (nameId: IdType) => {
 		setSelectedNames((prev) => {
 			const next = new Set(prev);
@@ -102,15 +123,19 @@ export function NameSelector() {
 			return next;
 		});
 	};
+>>>>>>> 1831ab1 (perf: optimize useTournamentSelectionSaver with requestIdleCallback)
 
 	// Add haptic feedback for better UX
-	const handleToggleName = (nameId: IdType) => {
-		// Add subtle haptic feedback if supported
-		if ("vibrate" in navigator) {
-			navigator.vibrate(50);
-		}
-		toggleName(nameId);
-	};
+	const handleToggleName = useCallback(
+		(nameId: IdType) => {
+			// Add subtle haptic feedback if supported
+			if ("vibrate" in navigator) {
+				navigator.vibrate(50);
+			}
+			toggleName(nameId);
+		},
+		[toggleName],
+	);
 
 	// Trigger haptic feedback if available
 	const triggerHaptic = useCallback(() => {
@@ -123,14 +148,19 @@ export function NameSelector() {
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
 			if (direction === "right") {
 				setSelectedNames((prev) => {
-					const next = new Set([...prev, nameId]);
+					const next = new Set(prev);
+					next.add(nameId);
 					// Sync with global store
 					const selectedNameItems = names.filter((n) => next.has(n.id));
 					tournamentActions.setSelection(selectedNameItems);
 					return next;
 				});
 			}
-			setSwipedIds((prev) => new Set([...prev, nameId]));
+			setSwipedIds((prev) => {
+				const next = new Set(prev);
+				next.add(nameId);
+				return next;
+			});
 			setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
 			triggerHaptic();
 
@@ -203,6 +233,15 @@ export function NameSelector() {
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
 	const cardsToRender = visibleCards.slice(0, 3);
 
+	// Create a mapping from name id to image index for efficient lookup
+	const nameIndexMap = useMemo(() => {
+		const map = new Map<IdType, number>();
+		names.forEach((name, index) => {
+			map.set(name.id, index);
+		});
+		return map;
+	}, [names]);
+
 	// Keyboard navigation for swipe mode
 	useEffect(() => {
 		if (!isSwipeMode) {
@@ -259,7 +298,10 @@ export function NameSelector() {
 		},
 		[names],
 	);
+<<<<<<< HEAD
+=======
 
+>>>>>>> 1831ab1 (perf: optimize useTournamentSelectionSaver with requestIdleCallback)
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
 		if (!userName) {
 			return;
@@ -367,6 +409,7 @@ export function NameSelector() {
 				</div>
 
 				{isSwipeMode ? (
+
 					<div
 						className="relative w-full flex items-center justify-center"
 						style={{ minHeight: "600px" }}
@@ -374,7 +417,11 @@ export function NameSelector() {
 						<AnimatePresence mode="popLayout">
 							{visibleCards.length > 0 ? (
 								cardsToRender.map((nameItem, index) => {
-									const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+									const imageIndex = nameIndexMap.get(nameItem.id);
+									const catImage =
+										imageIndex !== undefined
+											? allCatImages[imageIndex]
+											: getRandomCatImage(nameItem.id, CAT_IMAGES);
 									return (
 										<motion.div
 											key={nameItem.id}
@@ -427,15 +474,13 @@ export function NameSelector() {
 												className="w-full max-w-md h-[550px]"
 											>
 												<Card
-													className={`relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full ${
-														selectedNames.has(nameItem.id)
-															? "shadow-[0_0_30px_rgba(34,197,94,0.3)]"
-															: ""
-													} ${
-														index === 0
+													className={`relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full ${selectedNames.has(nameItem.id)
+														? "shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+														: ""
+														} ${index === 0
 															? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
 															: "pointer-events-none"
-													}`}
+														}`}
 													variant="filled"
 													padding="medium"
 												>
@@ -514,11 +559,10 @@ export function NameSelector() {
 																	handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 																}}
 																disabled={togglingHidden.has(nameItem.id)}
-																className={`mt-2 flex items-center gap-1 text-xs transition-colors mx-auto ${
-																	togglingHidden.has(nameItem.id)
-																		? "text-slate-500 cursor-not-allowed"
-																		: "text-amber-400 hover:text-amber-300"
-																}`}
+																className={`mt-2 flex items-center gap-1 text-xs transition-colors mx-auto ${togglingHidden.has(nameItem.id)
+																	? "text-slate-500 cursor-not-allowed"
+																	: "text-amber-400 hover:text-amber-300"
+																	}`}
 															>
 																{togglingHidden.has(nameItem.id) ? (
 																	<>
@@ -568,17 +612,20 @@ export function NameSelector() {
 					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
 						{names.map((nameItem) => {
 							const isSelected = selectedNames.has(nameItem.id);
-							const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+							const imageIndex = nameIndexMap.get(nameItem.id);
+							const catImage =
+								imageIndex !== undefined
+									? allCatImages[imageIndex]
+									: getRandomCatImage(nameItem.id, CAT_IMAGES);
 							return (
 								<button
 									key={nameItem.id}
 									type="button"
 									onClick={() => handleToggleName(nameItem.id)}
-									className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 ${
-										isSelected
-											? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
-											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
-									}`}
+									className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 ${isSelected
+										? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
+										: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
+										}`}
 								>
 									<div className="aspect-square w-full relative">
 										<CatImage
@@ -626,11 +673,10 @@ export function NameSelector() {
 													handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 												}}
 												disabled={togglingHidden.has(nameItem.id)}
-												className={`mt-1 flex items-center gap-1 text-xs transition-colors ${
-													togglingHidden.has(nameItem.id)
-														? "text-slate-500 cursor-not-allowed"
-														: "text-amber-400 hover:text-amber-300"
-												}`}
+												className={`mt-1 flex items-center gap-1 text-xs transition-colors ${togglingHidden.has(nameItem.id)
+													? "text-slate-500 cursor-not-allowed"
+													: "text-amber-400 hover:text-amber-300"
+													}`}
 											>
 												{togglingHidden.has(nameItem.id) ? (
 													<>

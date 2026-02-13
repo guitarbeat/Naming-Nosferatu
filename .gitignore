@@ -143,3 +143,8 @@ jscpd-report.html
 # Supabase
 supabase/.temp/
 supabase/.branches/
+lint_output.txt
+src/utils/zebra.ts
+src/utils/toDelete.ts
+src/hooks/useTest.ts
+lint_output_2.txt

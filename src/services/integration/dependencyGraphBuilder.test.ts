@@ -25,7 +25,11 @@ describe("dependencyGraphBuilder", () => {
 	// Helper function to create a mock file analysis
 	const createAnalysis = (
 		filePath: string,
-		dependencies: Array<{ importPath: string; isExternal: boolean; sourceFile?: string }>,
+		dependencies: Array<{
+			importPath: string;
+			isExternal: boolean;
+			sourceFile?: string;
+		}>,
 	): FileAnalysis => ({
 		filePath,
 		fileName: filePath.split("/").pop() || "",
@@ -127,7 +131,11 @@ describe("dependencyGraphBuilder", () => {
 		it("should ignore dependencies not in the graph", () => {
 			const analyses = [
 				createAnalysis("file1.ts", [
-					{ importPath: "./external", isExternal: false, sourceFile: "external.ts" },
+					{
+						importPath: "./external",
+						isExternal: false,
+						sourceFile: "external.ts",
+					},
 				]),
 			];
 
@@ -605,7 +613,11 @@ describe("dependencyGraphBuilder", () => {
 			// bravo.ts -> alpha.ts
 			const analyses = [
 				createAnalysis("zebra.ts", [
-					{ importPath: "./yankee", isExternal: false, sourceFile: "yankee.ts" },
+					{
+						importPath: "./yankee",
+						isExternal: false,
+						sourceFile: "yankee.ts",
+					},
 				]),
 				createAnalysis("yankee.ts", []),
 				createAnalysis("bravo.ts", [

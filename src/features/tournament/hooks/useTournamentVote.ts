@@ -129,8 +129,17 @@ export function useTournamentVote({
 				actualHandleVote?.(winnerId, loserIdFinal);
 				onVote?.(winnerId, loserIdFinal);
 				setVoting(false);
+<<<<<<< HEAD
+				if (setIsTransitioning) {
+					setIsTransitioning(false);
+				}
+				if (setSelectedOption) {
+					setSelectedOption(null);
+				}
+=======
 				if (setIsTransitioning) setIsTransitioning(false);
 				if (setSelectedOption) setSelectedOption(null);
+>>>>>>> 1831ab1 (perf: optimize useTournamentSelectionSaver with requestIdleCallback)
 			}, VOTE_COOLDOWN);
 		},
 		[
