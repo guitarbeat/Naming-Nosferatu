@@ -2,7 +2,12 @@ import { devError } from "@/utils/basic";
 
 interface SyncPayload {
 	userName: string;
-	ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>;
+	ratings: Array<{
+		name: string;
+		rating: number;
+		wins?: number;
+		losses?: number;
+	}>;
 }
 
 interface SyncItem {

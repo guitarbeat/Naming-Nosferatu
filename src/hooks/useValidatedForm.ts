@@ -1,0 +1,94 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
+
+interface FormOptions<T extends z.ZodRawShape> {
+	schema: z.ZodObject<T>;
+	initialValues: z.infer<z.ZodObject<T>>;
+	onSubmit: (values: z.infer<z.ZodObject<T>>) => Promise<void> | void;
+}
+
+export function useValidatedForm<T extends z.ZodRawShape>({
+	schema,
+	initialValues,
+	onSubmit,
+}: FormOptions<T>) {
+	type FormValues = z.infer<z.ZodObject<T>>;
+
+	const {
+		handleSubmit: rshHandleSubmit,
+		formState: { errors, touchedFields, isSubmitting, isValid },
+		setValue,
+		trigger,
+		watch,
+		reset,
+	} = useForm<FormValues>({
+		resolver: zodResolver(schema) as any,
+		defaultValues: initialValues as any,
+		mode: "onChange",
+	});
+
+	const values = watch();
+
+	const handleChange = useCallback(
+		(name: keyof T, value: unknown) => {
+			setValue(name as any, value as any, {
+				shouldValidate: true,
+				shouldDirty: true,
+				shouldTouch: true,
+			});
+		},
+		[setValue],
+	);
+
+	const handleBlur = useCallback(
+		(name: keyof T) => {
+			trigger(name as any);
+		},
+		[trigger],
+	);
+
+	// Wrapped onSubmit to match expected signature
+	const handleFormSubmit = rshHandleSubmit(async (data) => {
+		await onSubmit(data as FormValues);
+	});
+
+	const setValues = useCallback(
+		(newValues: Partial<FormValues>) => {
+			Object.entries(newValues).forEach(([key, val]) => {
+				setValue(key as any, val as any);
+			});
+		},
+		[setValue],
+	);
+
+	const formattedErrors = Object.keys(errors).reduce(
+		(acc, key) => {
+			const error = errors[key as keyof typeof errors];
+			if (error && typeof error === "object" && "message" in error) {
+				acc[key as keyof T] = error.message as string;
+			}
+			return acc;
+		},
+		{} as Partial<Record<keyof T, string>>,
+	);
+
+	return {
+		values,
+		errors: formattedErrors,
+		touched: touchedFields as Partial<Record<keyof T, boolean>>,
+		isSubmitting,
+		isValid,
+		handleChange,
+		handleBlur,
+		handleSubmit: (e?: React.FormEvent) => {
+			if (e) {
+				e.preventDefault();
+			}
+			return handleFormSubmit(e);
+		},
+		reset,
+		setValues,
+	};
+}

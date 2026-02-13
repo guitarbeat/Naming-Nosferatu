@@ -5,7 +5,8 @@
  */
 
 import { motion } from "framer-motion";
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type React from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { UserBubbleProfile } from "@/types/appTypes";
 
 /* ==========================================================================
@@ -70,14 +71,14 @@ function LiquidGlass({
 	const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const isInitialMountRef = useRef<boolean>(true);
 
-	const validWidth = useMemo(() => Math.max(1, width), [width]);
-	const validHeight = useMemo(() => Math.max(1, height), [height]);
-	const validRadius = useMemo(() => Math.max(0, radius), [radius]);
+	const validWidth = Math.max(1, width);
+	const validHeight = Math.max(1, height);
+	const validRadius = Math.max(0, radius);
 
-	const redChannelId = useMemo(() => `redchannel-${id}`, [id]);
-	const greenChannelId = useMemo(() => `greenchannel-${id}`, [id]);
-	const blueChannelId = useMemo(() => `bluechannel-${id}`, [id]);
-	const feGaussianBlurId = useMemo(() => `gaussianblur-${id}`, [id]);
+	const redChannelId = `redchannel-${id}`;
+	const greenChannelId = `greenchannel-${id}`;
+	const blueChannelId = `bluechannel-${id}`;
+	const feGaussianBlurId = `gaussianblur-${id}`;
 
 	const supportsBackdropFilterUrl = useMemo(() => {
 		if (typeof window === "undefined" || typeof document === "undefined") {
@@ -613,7 +614,11 @@ export const BongoCat = memo(function BongoCat({
 
 				<motion.g
 					animate={{ y: [0, 20, 0] }}
-					transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
+					transition={{
+						duration: 0.2,
+						repeat: Infinity,
+						repeatType: "reverse",
+					}}
 				>
 					<ellipse cx="230" cy="320" rx="35" ry="25" fill="#fff" stroke="#000" strokeWidth="3" />
 					<use href="#bongo-paw-pads" x="210" y="305" width="40" height="35" />
@@ -621,7 +626,11 @@ export const BongoCat = memo(function BongoCat({
 
 				<motion.g
 					animate={{ y: [20, 0, 20] }}
-					transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
+					transition={{
+						duration: 0.2,
+						repeat: Infinity,
+						repeatType: "reverse",
+					}}
 				>
 					<ellipse cx="350" cy="320" rx="35" ry="25" fill="#fff" stroke="#000" strokeWidth="3" />
 					<use href="#bongo-paw-pads" x="330" y="305" width="40" height="35" />

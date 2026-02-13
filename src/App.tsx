@@ -31,7 +31,7 @@ function App() {
 	const isInitialized = !isLoading;
 	const { user, tournamentActions } = useAppStore();
 
-	const tournamentHandlers = useTournamentHandlers({
+	useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
 	});
@@ -58,9 +58,11 @@ function App() {
 
 	return (
 		<div
-			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
+			className={cn(
+				"min-h-screen w-full bg-transparent text-white font-sans selection:bg-purple-500/30",
+			)}
 		>
-			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete as any}>
+			<AppLayout>
 				<Routes>
 					<Route
 						path="/"
@@ -141,7 +143,7 @@ function TournamentContent() {
 
 function AnalysisContent() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { handleStartNewTournament, handleUpdateRatings } = useTournamentHandlers({
+	const { handleStartNewTournament } = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
 	});
@@ -157,7 +159,6 @@ function AnalysisContent() {
 						personalRatings={tournament.ratings}
 						currentTournamentNames={tournament.names ?? undefined}
 						onStartNew={handleStartNewTournament}
-						onUpdateRatings={handleUpdateRatings as any}
 						userName={user.name ?? ""}
 						isAdmin={user.isAdmin}
 					/>

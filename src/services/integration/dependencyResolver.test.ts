@@ -34,7 +34,9 @@ describe("dependencyResolver", () => {
 		mkdirSync(join(testDir, "node_modules"), { recursive: true });
 		mkdirSync(join(testDir, "node_modules", "react"), { recursive: true });
 		mkdirSync(join(testDir, "node_modules", "@types"), { recursive: true });
-		mkdirSync(join(testDir, "node_modules", "@types", "node"), { recursive: true });
+		mkdirSync(join(testDir, "node_modules", "@types", "node"), {
+			recursive: true,
+		});
 
 		// Create some test files
 		writeFileSync(join(testDir, "src", "utils", "helper.ts"), "export const helper = () => {};");
@@ -220,7 +222,11 @@ describe("dependencyResolver", () => {
 		it("should handle dependencies with deep paths", () => {
 			const currentFile = join(testDir, "src", "component.tsx");
 			const deps: Dependency[] = [
-				{ importPath: "react/jsx-runtime", isExternal: true, isResolved: false },
+				{
+					importPath: "react/jsx-runtime",
+					isExternal: true,
+					isResolved: false,
+				},
 			];
 
 			const resolved = resolveDependencies(deps, currentFile, testDir);

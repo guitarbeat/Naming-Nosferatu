@@ -6,7 +6,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: -1;
+	z-index: 0;
 	overflow: hidden;
 }
 
@@ -36,13 +36,15 @@
 	letter-spacing: -0.02em;
 	text-transform: none;
 	line-height: 1;
-	opacity: 0.8; /* Slightly transparent so it doesn't block too much */
+	opacity: 0.8;
+	/* Slightly transparent so it doesn't block too much */
 }
 
 .liquid-controls-wrapper {
 	position: fixed;
 	z-index: 50;
-	pointer-events: none; /* Let clicks pass through empty areas */
+	pointer-events: none;
+	/* Let clicks pass through empty areas */
 	width: 100%;
 	height: 100%;
 	top: 0;
@@ -50,7 +52,8 @@
 }
 
 .liquid-controls-wrapper * {
-	pointer-events: auto; /* Re-enable clicks on children */
+	pointer-events: auto;
+	/* Re-enable clicks on children */
 }
 
 .liquid-color-controls {

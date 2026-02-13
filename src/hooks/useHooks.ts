@@ -365,6 +365,11 @@ const DEFAULT_BREAKPOINTS: Breakpoints = {
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
  * const browser = useBrowserState({ mobile: 640, tablet: 1280 });
  */
+/**
+ * Hook to track browser state (breakpoints, online status, motion preferences).
+ *
+ * Resize events are debounced (150ms) to prevent performance issues.
+ */
 export function useBrowserState(breakpoints?: Partial<Breakpoints>): BrowserState {
 	const bp = useMemo(
 		() => ({ ...DEFAULT_BREAKPOINTS, ...breakpoints }),

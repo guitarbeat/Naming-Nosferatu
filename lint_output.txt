@@ -1,0 +1,496 @@
+
+> name-nosferatu@1.0.2 lint:full C:\Users\alw4834\OneDrive - The University of Texas at Austin\Documents 1\GitHub\Naming-Nosferatu
+> biome check src
+
+src\features\analytics\analyticsService.ts:226:5 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    224 │ 		return withSupabase(async (client) => {
+    225 │ 			let selectionsQuery = client
+  > 226 │ 				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    227 │ 				.from("cat_tournament_selections" as any)
+    228 │ 				.select("name_id, name, user_name");
+
+
+src\features\analytics\analyticsService.ts:355:6 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    354 │ 				const { data: selections, error: selError } = await client
+  > 355 │ 					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 					^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    356 │ 					.from("cat_tournament_selections" as any)
+    357 │ 					.select("name_id, name, selected_at")
+
+
+src\features\analytics\analyticsService.ts:574:7 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    572 │ 					client.from("cat_name_ratings").select("rating"),
+    573 │ 					client
+  > 574 │ 						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 						^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    575 │ 						.from("cat_tournament_selections" as any)
+    576 │ 						.select("id", { count: "exact", head: true }),
+
+
+src\features\analytics\analyticsService.ts:637:6 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    635 │ 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
+    636 │ 				client
+  > 637 │ 					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 					^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    638 │ 					.from("cat_tournament_selections" as any)
+    639 │ 					.select("*")
+
+
+src\features\tournament\components\NameGrid.tsx:83:25 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  ! This hook specifies more dependencies than necessary: filters.category.
+
+    81 │ 	);
+    82 │
+  > 83 │ 	const processedNames = useMemo(() => {
+       │ 	                       ^^^^^^^
+    84 │ 		const visibility = mapFilterStatusToVisibility(filters.filterStatus || "visible");
+    85 │
+
+  i This dependency can be removed from the list.
+
+     98 │ 		return result;
+   > 99 │ 	}, [names, filters.filterStatus, filters.category, isAdmin, showSelectedOnly, selectedSet]);
+        │ 	                                 ^^^^^^^^^^^^^^^^
+    100 │
+    101 │ 	if (isLoading) {
+
+  i React relies on hook dependencies to determine when to re-compute Effects.
+    Specifying more dependencies than required can lead to unnecessary re-rendering
+    and degraded performance.
+
+  i Unsafe fix: Remove the extra dependencies from the list.
+
+    99 │ → },·[names,·filters.filterStatus,·filters.category,·isAdmin,·showSelectedOnly,·selectedSet]);
+       │                                    ------------------
+
+src\features\tournament\hooks\useTournamentVote.ts:132:5 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    130 │ 				onVote?.(winnerId, loserIdFinal);
+    131 │ 				setVoting(false);
+  > 132 │ 				if (setIsTransitioning) setIsTransitioning(false);
+        │ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    133 │ 				if (setSelectedOption) setSelectedOption(null);
+    134 │ 			}, VOTE_COOLDOWN);
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    132 │ → → → → if·(setIsTransitioning)·{·setIsTransitioning(false);·}
+        │                                 ++                          ++
+
+src\features\tournament\hooks\useTournamentVote.ts:133:5 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    131 │ 				setVoting(false);
+    132 │ 				if (setIsTransitioning) setIsTransitioning(false);
+  > 133 │ 				if (setSelectedOption) setSelectedOption(null);
+        │ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    134 │ 			}, VOTE_COOLDOWN);
+    135 │ 		},
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    133 │ → → → → if·(setSelectedOption)·{·setSelectedOption(null);·}
+        │                                ++                        ++
+
+src\hooks\useMasonryLayout.ts:110:4 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    108 │ 		const resizeObserver = new ResizeObserver(() => {
+    109 │ 			// Throttle resize calculations with rAF instead of setTimeout
+  > 110 │ 			if (resizeRafId) return;
+        │ 			^^^^^^^^^^^^^^^^^^^^^^^^
+    111 │ 			resizeRafId = requestAnimationFrame(() => {
+    112 │ 				resizeRafId = null;
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    110 │ → → → if·(resizeRafId)·{·return;·}
+        │                        ++       ++
+
+src\hooks\useMasonryLayout.ts:125:4 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    123 │ 		return () => {
+    124 │ 			clearTimeout(timeoutId);
+  > 125 │ 			if (resizeRafId) cancelAnimationFrame(resizeRafId);
+        │ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    126 │ 			resizeObserver.disconnect();
+    127 │ 		};
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    125 │ → → → if·(resizeRafId)·{·cancelAnimationFrame(resizeRafId);·}
+        │                        ++                                  ++
+
+src\features\analytics\Dashboard.tsx:6:1 assist/source/organizeImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━
+
+  × The imports and exports are not sorted.
+
+    4 │  */
+    5 │
+  > 6 │ import { Suspense, useEffect, useState } from "react";
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    7 │ import Button from "@/layout/Button";
+    8 │ import { Card } from "@/layout/Card";
+
+  i Safe fix: Organize Imports (Biome)
+
+      5   5 │
+      6   6 │   import { Suspense, useEffect, useState } from "react";
+      7     │ - import·Button·from·"@/layout/Button";
+      8     │ - import·{·Card·}·from·"@/layout/Card";
+      9     │ - import·{·Loading·}·from·"@/layout/FeedbackComponents";
+     10     │ - import·{·leaderboardAPI,·statsAPI·}·from·"@/features/analytics/analyticsService";
+          7 │ + import·{·leaderboardAPI,·statsAPI·}·from·"@/features/analytics/analyticsService";
+          8 │ + import·Button·from·"@/layout/Button";
+          9 │ + import·{·Card·}·from·"@/layout/Card";
+         10 │ + import·{·Loading·}·from·"@/layout/FeedbackComponents";
+     11  11 │   import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+     12  12 │   import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
+
+
+src\features\analytics\Dashboard.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+
+    174 174 │   							>
+    175 175 │   								<div
+    176     │ - → → → → → → → → → className={`flex-shrink-0·w-8·h-8·rounded-full·flex·items-center·justify-center·font-bold·${index·===·0
+        176 │ + → → → → → → → → → className={`flex-shrink-0·w-8·h-8·rounded-full·flex·items-center·justify-center·font-bold·${
+        177 │ + → → → → → → → → → → index·===·0
+    177 178 │   											? "bg-yellow-500 text-black"
+    178 179 │   											: index === 1
+    ······· │
+    181 182 │   													? "bg-amber-600 text-white"
+    182 183 │   													: "bg-white/10 text-white/60"
+    183     │ - → → → → → → → → → → }`}
+        184 │ + → → → → → → → → → }`}
+    184 185 │   								>
+    185 186 │   									{index + 1}
+
+
+src\features\tournament\components\NameSelector.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+
+    156 156 │   									type="button"
+    157 157 │   									onClick={() => toggleName(nameItem.id)}
+    158     │ - → → → → → → → → → className={`relative·rounded-xl·border-2·transition-all·overflow-hidden·group·${isSelected
+        158 │ + → → → → → → → → → className={`relative·rounded-xl·border-2·transition-all·overflow-hidden·group·${
+        159 │ + → → → → → → → → → → isSelected
+    159 160 │   											? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20"
+    160 161 │   											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+    161     │ - → → → → → → → → → → }`}
+        162 │ + → → → → → → → → → }`}
+    162 163 │   								>
+    163 164 │   									<div
+    ······· │
+    262 263 │   											>
+    263 264 │   												<Card
+    264     │ - → → → → → → → → → → → → → className={`relative·flex·flex-col·items-center·justify-between·overflow-hidden·group·transition-all·duration-200·h-full·${selectedNames.has(nameItem.id)
+        265 │ + → → → → → → → → → → → → → className={`relative·flex·flex-col·items-center·justify-between·overflow-hidden·group·transition-all·duration-200·h-full·${
+        266 │ + → → → → → → → → → → → → → → selectedNames.has(nameItem.id)
+    265 267 │   															? "shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+    266 268 │   															: ""
+    267     │ - → → → → → → → → → → → → → → }·${index·===·0
+        269 │ + → → → → → → → → → → → → → }·${
+        270 │ + → → → → → → → → → → → → → → index·===·0
+    268 271 │   															? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
+    269 272 │   															: "pointer-events-none"
+    270     │ - → → → → → → → → → → → → → → }`}
+        273 │ + → → → → → → → → → → → → → }`}
+    271 274 │   													variant="default"
+    272 275 │   													padding="medium"
+
+
+src\layout\Card\Card.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+
+    184 184 │   				cardRefClasses,
+    185 185 │   				interactive &&
+    186     │ - → → → → "cursor-pointer·hover:-translate-y-1·hover:shadow-lg·active:scale-[0.99]·focus-visible:ring-2·focus-visible:ring-purple-500",
+        186 │ + → → → → → "cursor-pointer·hover:-translate-y-1·hover:shadow-lg·active:scale-[0.99]·focus-visible:ring-2·focus-visible:ring-purple-500",
+    187 187 │   				interactive && onClick && "active:translate-y-0",
+    188 188 │   				// Glow effect helper
+    ······· │
+    247 247 │   			const motionProps = enableTilt
+    248 248 │   				? {
+    249     │ - → → → → → style:·{
+    250     │ - → → → → → → rotateX,
+    251     │ - → → → → → → rotateY,
+    252     │ - → → → → → → transformStyle:·"preserve-3d"·as·const,
+    253     │ - → → → → → → ...style,
+    254     │ - → → → → → },
+    255     │ - → → → → }
+        249 │ + → → → → → → style:·{
+        250 │ + → → → → → → → rotateX,
+        251 │ + → → → → → → → rotateY,
+        252 │ + → → → → → → → transformStyle:·"preserve-3d"·as·const,
+        253 │ + → → → → → → → ...style,
+        254 │ + → → → → → → },
+        255 │ + → → → → → }
+    256 256 │   				: { style };
+    257 257 │
+    ······· │
+    273 273 │   							enableTilt
+    274 274 │   								? {
+    275     │ - → → → → → → → → → transform:·"translateZ(20px)",
+    276     │ - → → → → → → → → → transformStyle:·"preserve-3d",
+    277     │ - → → → → → → → → }
+        275 │ + → → → → → → → → → → transform:·"translateZ(20px)",
+        276 │ + → → → → → → → → → → transformStyle:·"preserve-3d",
+        277 │ + → → → → → → → → → }
+    278 278 │   								: undefined
+    279 279 │   						}
+
+
+src\layout\Feedback\PerformanceBadges.tsx:6:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━
+
+  × This import is unused.
+
+    4 │  */
+    5 │
+  > 6 │ import React from "react";
+      │        ^^^^^
+    7 │
+    8 │ const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
+
+  i Unused imports might be the result of an incomplete refactoring.
+
+  i Unsafe fix: Remove the unused imports.
+
+      1     │ - /**
+      2     │ - ·*·@module·PerformanceBadges
+      3     │ - ·*·@description·Performance·badges·and·trend·indicators·for·showing·insights·and·metrics
+      4     │ - ·*/
+      5     │ -
+      6     │ - import·React·from·"react";
+          1 │ + /**
+          2 │ + ·*·@module·PerformanceBadges
+          3 │ + ·*·@description·Performance·badges·and·trend·indicators·for·showing·insights·and·metrics
+          4 │ + ·*/
+          5 │ +
+      7   6 │
+      8   7 │   const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
+
+
+src\layout\LiquidGlass.tsx:8:10 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Several of these imports are unused.
+
+     7 │ import type React from "react";
+   > 8 │ import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+       │          ^^^^
+     9 │
+    10 │ interface LiquidGlassProps {
+
+  i Unused imports might be the result of an incomplete refactoring.
+
+  i Unsafe fix: Remove the unused imports.
+
+    8 │ import·{·memo,·useCallback,·useEffect,·useMemo,·useRef·}·from·"react";
+      │          ------
+
+src\layout\LiquidGradientBackground.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+
+     60  60 │   		for (let i = this.trail.length - 1; i >= 0; i--) {
+     61  61 │   			const point = this.trail[i];
+     62     │ - → → → if·(!point)·{·continue;·}
+         62 │ + → → → if·(!point)·{
+         63 │ + → → → → continue;
+         64 │ + → → → }
+     63  65 │   			const f = point.force * speed * (1 - point.age / this.maxAge);
+     64  66 │   			point.x += point.vx * f;
+    ······· │
+    116 118 │
+    117 119 │   		const radius = this.radius;
+    118     │ - → → const·color·=·`${((point.vx·+·1)·/·2)·*·255},·${((point.vy·+·1)·/·2)·*·255
+    119     │ - → → → },·${intensity·*·255}`;
+        120 │ + → → const·color·=·`${((point.vx·+·1)·/·2)·*·255},·${
+        121 │ + → → → ((point.vy·+·1)·/·2)·*·255
+        122 │ + → → },·${intensity·*·255}`;
+    120 123 │   		const offset = this.size * 5;
+    121 124 │   		this.ctx.shadowOffsetX = offset;
+    ······· │
+    625 628 │   	// Initialize Three.js
+    626 629 │   	useEffect(() => {
+    627     │ - → → if·(!containerRef.current)·{·return;·}
+        630 │ + → → if·(!containerRef.current)·{
+        631 │ + → → → return;
+        632 │ + → → }
+    628 633 │
+    629 634 │   		managerRef.current = new LiquidGradientManager(containerRef.current);
+    ······· │
+    646 651 │   		const handleTouchMove = (e: TouchEvent) => {
+    647 652 │   			const touch = e.touches[0];
+    648     │ - → → → if·(!touch)·{·return;·}
+        653 │ + → → → if·(!touch)·{
+        654 │ + → → → → return;
+        655 │ + → → → }
+    649 656 │   			managerRef.current?.onMouseMove(touch.clientX, touch.clientY);
+    650 657 │   		};
+    ······· │
+    659 666 │   			managerRef.current?.cleanup();
+    660 667 │   		};
+    661     │ -
+    662 668 │   	}, []);
+    663 669 │
+    ······· │
+    801 807 │   	return result
+    802 808 │   		? {
+    803     │ - → → → r:·Number.parseInt(result[1]·as·string,·16)·/·255,
+    804     │ - → → → g:·Number.parseInt(result[2]·as·string,·16)·/·255,
+    805     │ - → → → b:·Number.parseInt(result[3]·as·string,·16)·/·255,
+    806     │ - → → }
+        809 │ + → → → → r:·Number.parseInt(result[1]·as·string,·16)·/·255,
+        810 │ + → → → → g:·Number.parseInt(result[2]·as·string,·16)·/·255,
+        811 │ + → → → → b:·Number.parseInt(result[3]·as·string,·16)·/·255,
+        812 │ + → → → }
+    807 813 │   		: null;
+    808 814 │   }
+
+
+src\services\coreServices.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+
+    193 193 │   					.select("id, name")
+    194 194 │   					.in("name", nameStrings)) as unknown as {
+    195     │ - → → → → → → data:·Array<{·id:·string·|·number;·name:·string·}>·|·null;
+    196     │ - → → → → → → error:·unknown;
+    197     │ - → → → → → };
+        195 │ + → → → → → data:·Array<{·id:·string·|·number;·name:·string·}>·|·null;
+        196 │ + → → → → → error:·unknown;
+        197 │ + → → → → };
+    198 198 │
+    199 199 │   				const nameToId = new Map<string, string | number>();
+    ······· │
+    266 266 │   		public readonly defaultRating = ELO_RATING.DEFAULT_RATING,
+    267 267 │   		public readonly kFactor = ELO_RATING.DEFAULT_K_FACTOR,
+    268     │ - → )·{·}
+        268 │ + → )·{}
+    269 269 │
+    270 270 │   	/** Expected score of player A against player B (0–1). */
+    ······· │
+    342 342 │   	private lastMatch: string | null = null;
+    343 343 │
+    344     │ - → constructor(public·readonly·items:·string[])·{·}
+        344 │ + → constructor(public·readonly·items:·string[])·{}
+    345 345 │
+    346 346 │   	/**
+
+
+src\services\tournament.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+
+     16  16 │   	): Promise<
+     17  17 │   		| {
+     18     │ - → → → success:·true;
+     19     │ - → → → data:·{
+     20     │ - → → → → id:·string;
+     21     │ - → → → → user_name:·string;
+     22     │ - → → → → tournament_name:·string;
+     23     │ - → → → → participant_names:·NameItem[];
+     24     │ - → → → → status:·string;
+     25     │ - → → → → created_at:·string;
+     26     │ - → → → };
+     27     │ - → → → error?:·undefined;
+     28     │ - → → }
+         18 │ + → → → → success:·true;
+         19 │ + → → → → data:·{
+         20 │ + → → → → → id:·string;
+         21 │ + → → → → → user_name:·string;
+         22 │ + → → → → → tournament_name:·string;
+         23 │ + → → → → → participant_names:·NameItem[];
+         24 │ + → → → → → status:·string;
+         25 │ + → → → → → created_at:·string;
+         26 │ + → → → → };
+         27 │ + → → → → error?:·undefined;
+         28 │ + → → ··}
+     29  29 │   		| { success: false; error: string; data?: undefined }
+     30  30 │   	> {
+     31  31 │   		type ResultType =
+     32  32 │   			| {
+     33     │ - → → → → success:·true;
+     34     │ - → → → → data:·{
+     35     │ - → → → → → id:·string;
+     36     │ - → → → → → user_name:·string;
+     37     │ - → → → → → tournament_name:·string;
+     38     │ - → → → → → participant_names:·NameItem[];
+     39     │ - → → → → → status:·string;
+     40     │ - → → → → → created_at:·string;
+     41     │ - → → → → };
+     42     │ - → → → → error?:·undefined;
+     43     │ - → → → }
+         33 │ + → → → → → success:·true;
+         34 │ + → → → → → data:·{
+         35 │ + → → → → → → id:·string;
+         36 │ + → → → → → → user_name:·string;
+         37 │ + → → → → → → tournament_name:·string;
+         38 │ + → → → → → → participant_names:·NameItem[];
+         39 │ + → → → → → → status:·string;
+         40 │ + → → → → → → created_at:·string;
+         41 │ + → → → → → };
+         42 │ + → → → → → error?:·undefined;
+         43 │ + → → → ··}
+     44  44 │   			| { success: false; error: string; data?: undefined };
+     45  45 │   		return withSupabase<ResultType>(
+    ······· │
+    133 133 │   		public defaultRating = ELO_RATING.DEFAULT_RATING,
+    134 134 │   		public kFactor = ELO_RATING.DEFAULT_K_FACTOR,
+    135     │ - → )·{·}
+        135 │ + → )·{}
+    136 136 │   	getExpectedScore(ra: number, rb: number) {
+    137 137 │   		return 1 / (1 + 10 ** ((rb - ra) / ELO_RATING.RATING_DIVISOR));
+    ······· │
+    179 179 │   	// Total possible pairs is N * (N - 1) / 2
+    180 180 │   	// We no longer store the `pairs` array to save memory (O(N^2) -> O(1))
+    181     │ - → constructor(public·items:·string[])·{·}
+        181 │ + → constructor(public·items:·string[])·{}
+    182 182 │
+    183 183 │   	/**
+
+
+src\web-components\LightBoxImage.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+
+    105 105 │
+    106 106 │   	moveImage(fn: () => void) {
+    107     │ -
+    108 107 │   		if ("startViewTransition" in document) {
+    109 108 │   			this.handleViewTransition(fn);
+
+
+Checked 138 files in 270ms. No fixes applied.
+Found 10 errors.
+Found 9 warnings.
+check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+
+
+ ELIFECYCLE  Command failed with exit code 1.
