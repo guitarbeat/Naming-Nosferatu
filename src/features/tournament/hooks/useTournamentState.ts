@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
-import { EloRating, PreferenceSorter } from "@/services/coreServices";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { EloRating, PreferenceSorter } from "@/services/tournament";
 import type { Match, NameItem } from "@/types/appTypes";
 
 export interface UseTournamentStateResult {
@@ -30,6 +30,11 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 		return initial;
 	});
 
+	const ratingsRef = useRef(ratings);
+	useEffect(() => {
+		ratingsRef.current = ratings;
+	}, [ratings]);
+
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
 	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
 	const [elo] = useState(() => new EloRating());
@@ -57,8 +62,8 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
-	const matchNumber = (sorter as any).currentIndex + 1;
-	const round = Math.floor((sorter as any).currentIndex / Math.max(1, names.length)) + 1;
+	const matchNumber = sorter.currentIndex + 1;
+	const round = Math.floor(sorter.currentIndex / Math.max(1, names.length)) + 1;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -66,20 +71,22 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 				return;
 			}
 
+			const ratingsSnapshot = ratingsRef.current;
+
 			// Save to history
 			setHistory((prev) => [
 				...prev,
 				{
 					match: currentMatch,
-					ratings: { ...ratings },
+					ratings: { ...ratingsSnapshot },
 					round,
 					matchNumber,
 				},
 			]);
 
 			// Update ratings using ELO
-			const winnerRating = ratings[winnerId] || 1500;
-			const loserRating = ratings[loserId] || 1500;
+			const winnerRating = ratingsSnapshot[winnerId] || 1500;
+			const loserRating = ratingsSnapshot[loserId] || 1500;
 
 			const result = elo.calculateNewRatings(winnerRating, loserRating, "left");
 
@@ -91,12 +98,11 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 			// Record preference in sorter
 			sorter.addPreference(winnerId, loserId, 1);
-			(sorter as any).currentIndex++;
 
 			// Trigger re-render to get next match
 			setRefreshKey((k) => k + 1);
 		},
-		[currentMatch, ratings, round, matchNumber, sorter, elo],
+		[currentMatch, round, matchNumber, sorter, elo],
 	);
 
 	const handleUndo = useCallback(() => {
