@@ -307,9 +307,7 @@ export function NameSelector() {
 	}, []);
 
 	const updateNameHiddenState = useCallback((nameId: IdType, isHidden: boolean) => {
-		setNames((prev) =>
-			prev.map((name) => (name.id === nameId ? { ...name, isHidden } : name)),
-		);
+		setNames((prev) => prev.map((name) => (name.id === nameId ? { ...name, isHidden } : name)));
 	}, []);
 
 	const handleToggleHidden = useCallback(
@@ -464,13 +462,15 @@ export function NameSelector() {
 												className="w-full max-w-md h-[550px]"
 											>
 												<Card
-													className={`relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full ${selectedNames.has(nameItem.id)
-														? "shadow-[0_0_30px_rgba(34,197,94,0.3)]"
-														: ""
-														} ${index === 0
+													className={`relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full ${
+														selectedNames.has(nameItem.id)
+															? "shadow-[0_0_30px_rgba(34,197,94,0.3)]"
+															: ""
+													} ${
+														index === 0
 															? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
 															: "pointer-events-none"
-														}`}
+													}`}
 													variant="filled"
 													padding="medium"
 												>
@@ -549,10 +549,11 @@ export function NameSelector() {
 																	handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 																}}
 																disabled={togglingHidden.has(nameItem.id)}
-																className={`mt-2 flex items-center gap-1 text-xs transition-colors mx-auto ${togglingHidden.has(nameItem.id)
-																	? "text-slate-500 cursor-not-allowed"
-																	: "text-amber-400 hover:text-amber-300"
-																	}`}
+																className={`mt-2 flex items-center gap-1 text-xs transition-colors mx-auto ${
+																	togglingHidden.has(nameItem.id)
+																		? "text-slate-500 cursor-not-allowed"
+																		: "text-amber-400 hover:text-amber-300"
+																}`}
 															>
 																{togglingHidden.has(nameItem.id) ? (
 																	<>
@@ -616,10 +617,11 @@ export function NameSelector() {
 									}}
 									role="button"
 									tabIndex={0}
-									className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${isSelected
+									className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+										isSelected
 											? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
 											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
-										}`}
+									}`}
 								>
 									<div className="aspect-square w-full relative">
 										<CatImage
@@ -667,10 +669,11 @@ export function NameSelector() {
 													handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 												}}
 												disabled={togglingHidden.has(nameItem.id)}
-												className={`mt-1 flex items-center gap-1 text-xs transition-colors ${togglingHidden.has(nameItem.id)
-													? "text-slate-500 cursor-not-allowed"
-													: "text-amber-400 hover:text-amber-300"
-													}`}
+												className={`mt-1 flex items-center gap-1 text-xs transition-colors ${
+													togglingHidden.has(nameItem.id)
+														? "text-slate-500 cursor-not-allowed"
+														: "text-amber-400 hover:text-amber-300"
+												}`}
 											>
 												{togglingHidden.has(nameItem.id) ? (
 													<>
@@ -700,7 +703,7 @@ export function NameSelector() {
 
 			{lightboxOpen && (
 				<Lightbox
-					images={allCatImages}
+					images={catImages}
 					currentIndex={lightboxIndex}
 					onClose={() => setLightboxOpen(false)}
 					onNavigate={setLightboxIndex}
