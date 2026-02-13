@@ -51,6 +51,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 			},
 		} as Match;
 	}, [sorter, names]); // Added _refreshKey dependency to ensure update
+	}, [sorter, names, _refreshKey]); // Added _refreshKey dependency to ensure update
 
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
