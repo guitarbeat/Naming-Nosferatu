@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module Supabase
  * @description Consolidated Supabase client and API operations

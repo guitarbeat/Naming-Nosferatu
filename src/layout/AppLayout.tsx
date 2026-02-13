@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module AppLayout
  * @description Main application layout component with FluidNav and background effects

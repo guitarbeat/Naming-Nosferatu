@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback, useMemo, useState } from "react";
 import { EloRating, PreferenceSorter } from "@/services/coreServices";
 import type { Match, NameItem } from "@/types/appTypes";

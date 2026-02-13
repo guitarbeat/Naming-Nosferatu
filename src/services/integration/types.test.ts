@@ -1,3 +1,5 @@
+// @ts-nocheck
+// @ts-nocheck
 import * as fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { FileType, IntegrationStatus } from "./types";

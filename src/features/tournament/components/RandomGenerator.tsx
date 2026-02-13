@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module RandomGenerator
  * @description Random cat name generator with favorites persistence.

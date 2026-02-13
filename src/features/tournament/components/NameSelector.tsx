@@ -114,7 +114,9 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 	const allCatImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
 
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
-		if (!userName) return;
+		if (!userName) {
+			return;
+		}
 		try {
 			if (isCurrentlyHidden) {
 				await hiddenNamesAPI.unhideName(userName, nameId);

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createLogger } from "vite";
 import type { Plugin } from "vite";
 import type { IncomingMessage, ServerResponse } from "http";

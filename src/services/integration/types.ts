@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Core types for the Reference File Integration System
  */

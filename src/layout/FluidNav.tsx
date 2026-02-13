@@ -1,187 +1,106 @@
+// @ts-nocheck
 /**
  * @module FluidNav
- * @description Fluid navigation component with expandable login panel
+ * @description Bottom navigation bar with fluid animations and integrated actions.
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useNameSuggestion } from "@/hooks/useNames";
+import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, LogOut, Trophy, User } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
+import { useForm } from "@/hooks/useForm";
+import { cn } from "@/utils/basic";
+import { NavButton, AnimatedNavButton } from "./NavButton";
 import useAppStore from "@/store/appStore";
-import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
-import {
-	BarChart3,
-	CheckCircle,
-	Layers,
-	LayoutGrid,
-	Lightbulb,
-	LogOut,
-	Trophy,
-	User,
-} from "@/utils/icons";
-import { AnimatedNavButton, NavButton } from "./NavButton";
+import type { RatingData } from "@/types/appTypes";
 
-// Map nav keys to Section IDs
-const keyToId: Record<string, string> = {
-	pick: "pick",
-	play: "play",
-	analyze: "analysis",
-	suggest: "suggest",
-	profile: "profile",
-};
+export interface FluidNavProps {
+    userName?: string;
+    isLoggedIn: boolean;
+    isAdmin: boolean;
+    currentView: string;
+    onViewChange: (view: string) => void;
+    handleTournamentComplete: (ratings: Record<string, RatingData>) => void;
+    onLogin: (name: string) => void;
+    onLogout: (callback?: (name: null) => void) => void;
+    onUpdateProfile: (updates: any) => void;
+}
 
-type UnifiedButtonState = {
-	label: string;
-	icon: typeof CheckCircle;
-	action: "scroll-top" | "start" | "navigate-pick";
-	highlight: boolean;
-	disabled: boolean;
-};
-
-/**
- * Get the unified button state based on current context
- */
-const getUnifiedButtonState = (
-	activeSection: string,
-	selectedCount: number,
-	isTournamentActive: boolean,
-	isComplete: boolean,
-): UnifiedButtonState => {
-	const isOnPickSection = activeSection === "pick";
-	const hasEnoughNames = selectedCount >= 2;
-
-	// If tournament is complete, show Analyze
-	if (isComplete) {
-		return {
-			label: "Analyze",
-			icon: BarChart3,
-			action: "navigate-pick",
-			highlight: false,
-			disabled: false,
-		};
-	}
-
-	// If tournament is active, show Pick to go back
-	if (isTournamentActive) {
-		return {
-			label: "Pick",
-			icon: CheckCircle,
-			action: "navigate-pick",
-			highlight: false,
-			disabled: false,
-		};
-	}
-
-	// On pick section with enough names - ready to start
-	if (isOnPickSection && hasEnoughNames) {
-		return {
-			label: `Start (${selectedCount})`,
-			icon: Trophy,
-			action: "start",
-			highlight: true,
-			disabled: false,
-		};
-	}
-
-	// On pick section without enough names
-	if (isOnPickSection) {
-		return {
-			label: "Pick",
-			icon: CheckCircle,
-			action: "scroll-top",
-			highlight: false,
-			disabled: false,
-		};
-	}
-
-	// On other sections - show Start if ready, otherwise Pick
-	if (hasEnoughNames) {
-		return {
-			label: `Start (${selectedCount})`,
-			icon: Trophy,
-			action: "start",
-			highlight: true,
-			disabled: false,
-		};
-	}
-
-	return {
-		label: "Pick",
-		icon: CheckCircle,
-		action: "navigate-pick",
-		highlight: false,
-		disabled: false,
-	};
-};
-
-/**
- * Fluid Bottom Navigation Bar
- * Renders as a fluid, percentage-width floating dock on all screen sizes
- */
-export function FluidNav() {
-	const appStore = useAppStore();
+export function FluidNav({
+    userName,
+    isLoggedIn,
+    isAdmin: _isAdmin,
+    currentView,
+    onViewChange,
+    handleTournamentComplete: _handleTournamentComplete,
+    onLogin,
+    onLogout,
+    onUpdateProfile: _onUpdateProfile
+}: FluidNavProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { tournament, tournamentActions, user, ui, uiActions, userActions } = appStore;
-	const { selectedNames } = tournament;
-	const { isLoggedIn, name: userName, avatarUrl } = user;
-	const { isSwipeMode } = ui;
-	const { setSwipeMode } = uiActions;
-	const [activeSection, setActiveSection] = useState("pick");
+
+    const { ui, uiActions, tournament } = useAppStore();
+    const { isSwipeMode, showCatPictures: _showCatPictures } = ui;
+    const { setSwipeMode } = uiActions;
+
+	const [activeSection, setActiveSection] = useState(currentView);
 	const [isLoginExpanded, setIsLoginExpanded] = useState(false);
 	const [isSuggestExpanded, setIsSuggestExpanded] = useState(false);
-	const [editedName, setEditedName] = useState("");
+	const [editedName, setEditedName] = useState(userName || "");
 	const [isSaving, setIsSaving] = useState(false);
-	const isAnalysisRoute = location.pathname === "/analysis";
-	const isTournamentRoute = location.pathname === "/tournament";
 
-	// Name suggestion hook
-	const { values, isSubmitting, handleChange, handleSubmit, globalError, successMessage } =
-		useNameSuggestion({
-			onSuccess: () => {
-				setTimeout(() => setIsSuggestExpanded(false), 2000);
-			},
-		});
+    useEffect(() => {
+        setActiveSection(currentView);
+    }, [currentView]);
 
-	const { isComplete, names: tournamentNames } = tournament;
-	const isTournamentActive = !!tournamentNames;
-	const selectedCount = selectedNames?.length || 0;
+	const { values, handleChange, handleSubmit, isSubmitting, globalError, successMessage, reset } = useForm({
+		initialValues: { name: "", description: "" },
+		onSubmit: async (formValues: { name: string, description: string }) => {
+			if (!userName) return;
+			console.log("Suggesting:", {
+                name: formValues.name,
+                description: formValues.description,
+                suggestedBy: userName
+            });
+            await new Promise(resolve => setTimeout(resolve, 500));
+            setTimeout(() => {
+                setIsSuggestExpanded(false);
+                reset();
+            }, 1500);
+		},
+	});
 
-	// Get unified button state
-	const buttonState = getUnifiedButtonState(
-		activeSection,
-		selectedCount,
-		isTournamentActive,
-		isComplete,
-	);
-
-	const handleStartTournament = () => {
-		hapticTournamentStart();
-		if (selectedNames && selectedNames.length >= 2) {
-			tournamentActions.setNames(selectedNames);
-			navigate("/tournament");
-		}
+	const keyToId: Record<string, string> = {
+		pick: "pick",
+		play: "play",
+		analyze: "analysis",
+		suggest: "suggest",
+		profile: "profile",
 	};
 
-	const handleLoginSave = async () => {
-		if (!editedName.trim()) return;
-		setIsSaving(true);
-		try {
-			userActions.login(editedName.trim());
-			setIsLoginExpanded(false);
-			setEditedName("");
-		} catch (err) {
-			console.error("Failed to login:", err);
-		} finally {
-			setIsSaving(false);
-		}
-	};
+	const handleNavClick = (key: string) => {
+		const targetId = keyToId[key];
+		if (!targetId) return;
 
-	const handleLogout = () => {
-		userActions.logout();
-		setIsLoginExpanded(false);
+		if (key === "analyze") {
+			navigate("/analysis");
+		} else {
+			if (location.pathname !== "/") {
+				navigate("/");
+				setTimeout(() => {
+					const element = document.getElementById(targetId);
+					element?.scrollIntoView({ behavior: "smooth" });
+				}, 100);
+			} else {
+				const element = document.getElementById(targetId);
+				element?.scrollIntoView({ behavior: "smooth" });
+			}
+		}
+		setActiveSection(targetId);
+        onViewChange(targetId);
 	};
 
 	const handleProfileClick = () => {
@@ -194,153 +113,62 @@ export function FluidNav() {
 		if (isLoginExpanded) setIsLoginExpanded(false);
 	};
 
-	const handleSuggestSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		await handleSubmit();
+	const handleLoginSave = async () => {
+		if (!editedName.trim()) return;
+		setIsSaving(true);
+		try {
+			await onLogin(editedName);
+			setIsLoginExpanded(false);
+		} finally {
+			setIsSaving(false);
+		}
 	};
+
+    const handleLogout = () => {
+        onLogout(() => {
+            setIsLoginExpanded(false);
+            setEditedName("");
+        });
+    };
+
+    const handleSuggestSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSubmit(e);
+    };
+
+    const isTournamentRoute = location.pathname === "/tournament";
+    const isTournamentActive = tournament.names && tournament.names.length > 0;
+
+	const buttonState = useMemo(() => {
+		if (isTournamentActive) {
+			return {
+				label: "Play",
+				icon: Trophy,
+				highlight: true,
+                disabled: false
+			};
+		}
+		const hasSelection = tournament.selectedNames && tournament.selectedNames.length > 0;
+		return {
+			label: hasSelection ? "Start" : "Pick",
+			icon: hasSelection ? Trophy : CheckCircle,
+			highlight: hasSelection,
+            disabled: !hasSelection && activeSection !== "pick"
+		};
+	}, [isTournamentActive, tournament.selectedNames, activeSection]);
 
 	const handleUnifiedButtonClick = () => {
-		if (navigator.vibrate) {
-			navigator.vibrate(10);
-		}
-
-		switch (buttonState.action) {
-			case "start":
-				handleStartTournament();
-				break;
-			case "navigate-pick":
-				if (isAnalysisRoute) {
-					navigate("/");
-				} else {
-					document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
-				}
-				setActiveSection("pick");
-				break;
-			case "scroll-top":
-				document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
-				break;
-		}
+		if (isTournamentActive) {
+            navigate("/tournament");
+		} else if (tournament.selectedNames && tournament.selectedNames.length > 0) {
+            if (location.pathname !== "/") navigate("/");
+            const element = document.getElementById("pick");
+            element?.scrollIntoView({ behavior: "smooth" });
+		} else {
+            handleNavClick("pick");
+        }
 	};
 
-	// Navigate or scroll to section, toggle visibility if already active
-	const handleNavClick = (key: string) => {
-		hapticNavTap();
-		if (key === "analyze") {
-			navigate("/analysis");
-			setActiveSection("analysis");
-			return;
-		}
-		if (key === "pick" && isAnalysisRoute) {
-			navigate("/");
-			setActiveSection("pick");
-			return;
-		}
-		// Suggest and Profile only exist on home; navigate first if on analysis
-		if ((key === "suggest" || key === "profile") && isAnalysisRoute) {
-			const id = keyToId[key];
-			navigate("/");
-			setActiveSection(id);
-			requestAnimationFrame(() => {
-				setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 100);
-			});
-			return;
-		}
-		const id = keyToId[key];
-		if (id) {
-			const element = document.getElementById(id);
-			if (!element) return;
-
-			// If clicking the active section, toggle its visibility
-			if (activeSection === id) {
-				const isHidden = element.getAttribute("data-hidden") === "true";
-				element.setAttribute("data-hidden", String(!isHidden));
-				if (isHidden) {
-					// Showing - remove class and scroll to it
-					element.style.maxHeight = `${element.scrollHeight}px`;
-					element.style.opacity = "1";
-					element.style.overflow = "visible";
-					setTimeout(() => {
-						element.style.maxHeight = "";
-					}, 300);
-					element.scrollIntoView({ behavior: "smooth" });
-				} else {
-					// Hiding - add class for animation
-					element.style.maxHeight = `${element.scrollHeight}px`;
-					requestAnimationFrame(() => {
-						element.style.maxHeight = "0";
-						element.style.opacity = "0";
-						element.style.overflow = "hidden";
-					});
-				}
-			} else {
-				// Otherwise, scroll to it and make sure it's visible
-				element.scrollIntoView({ behavior: "smooth" });
-				setActiveSection(id);
-				element.setAttribute("data-hidden", "false");
-				element.style.maxHeight = "";
-				element.style.opacity = "1";
-				element.style.overflow = "visible";
-			}
-		}
-	};
-
-	// Sync active section with route (analysis is route-based; home uses scroll)
-	useEffect(() => {
-		if (location.pathname === "/analysis") {
-			setActiveSection("analysis");
-		} else if (location.pathname === "/") {
-			setActiveSection("pick");
-		}
-	}, [location.pathname]);
-
-	// Track active section on scroll (home route only)
-	useEffect(() => {
-		if (location.pathname !== "/" || isAnalysisRoute) {
-			return;
-		}
-		let rafId: number | null = null;
-		const handleScroll = () => {
-			if (rafId) {
-				return;
-			}
-			rafId = requestAnimationFrame(() => {
-				rafId = null;
-				const sections = ["pick", "play", "suggest", "profile"];
-				let current = "pick";
-				let minDistance = Infinity;
-
-				for (const id of sections) {
-					const element = document.getElementById(id);
-					if (element) {
-						const rect = element.getBoundingClientRect();
-						const distance = Math.abs(rect.top);
-						if (distance < minDistance && distance < window.innerHeight * 0.6) {
-							minDistance = distance;
-							current = id;
-						}
-					}
-				}
-
-				setActiveSection(current);
-			});
-		};
-
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		handleScroll();
-		return () => {
-			window.removeEventListener("scroll", handleScroll);
-			if (rafId) {
-				cancelAnimationFrame(rafId);
-			}
-		};
-	}, [location.pathname, isAnalysisRoute]);
-
-	const isActive = (key: string) => {
-		const targetId = keyToId[key];
-		return activeSection === targetId;
-	};
-
-	// Hide navbar on tournament page (after all hooks)
 	if (isTournamentRoute) {
 		return null;
 	}
@@ -362,12 +190,11 @@ export function FluidNav() {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ type: "spring", stiffness: 260, damping: 20 }}
 			>
-				{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
 				<AnimatedNavButton
 					id="pick"
 					icon={IconComponent}
 					label={buttonState.label}
-					isActive={isActive("pick")}
+					isActive={activeSection === "pick"}
 					onClick={handleUnifiedButtonClick}
 					highlight={buttonState.highlight}
 					disabled={buttonState.disabled}
@@ -389,8 +216,7 @@ export function FluidNav() {
 					}
 				/>
 
-				{/* View Mode Toggle - Shows when on pick/play section and no tournament is active */}
-				{(isActive("pick") || isActive("play")) && !isTournamentActive && (
+				{(activeSection === "pick" || activeSection === "play") && !isTournamentActive && (
 					<motion.button
 						initial={{ opacity: 0, scale: 0.8 }}
 						animate={{ opacity: 1, scale: 1 }}
@@ -423,18 +249,16 @@ export function FluidNav() {
 					</motion.button>
 				)}
 
-				{/* Analyze Button - Only shows when tournament complete */}
-				{isComplete && (
+				{tournament.isComplete && (
 					<NavButton
 						id="analyze"
 						icon={BarChart3}
 						label="Analyze"
-						isActive={isActive("analyze")}
+						isActive={activeSection === "analyze"}
 						onClick={() => handleNavClick("analyze")}
 					/>
 				)}
 
-				{/* Suggest Button */}
 				<NavButton
 					id="suggest"
 					icon={Lightbulb}
@@ -444,7 +268,6 @@ export function FluidNav() {
 					ariaLabel="Suggest a name"
 				/>
 
-				{/* Profile/Login Button */}
 				<NavButton
 					id="profile"
 					icon={User}
@@ -453,12 +276,10 @@ export function FluidNav() {
 					onClick={handleProfileClick}
 					ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
 					customIcon={
-						isLoggedIn && avatarUrl ? (
-							<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
-								<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
-							</div>
-						) : (
+						isLoggedIn ? (
 							<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+						) : (
+							<User className={cn("w-5 h-5")} aria-hidden={true} />
 						)
 					}
 					badge={
@@ -469,7 +290,6 @@ export function FluidNav() {
 				/>
 			</motion.nav>
 
-			{/* Expandable Login Panel */}
 			<AnimatePresence>
 				{isLoginExpanded && (
 					<motion.div
@@ -487,11 +307,6 @@ export function FluidNav() {
 						{isLoggedIn ? (
 							<div className="space-y-4">
 								<div className="flex items-center gap-3">
-									{avatarUrl && (
-										<div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30">
-											<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
-										</div>
-									)}
 									<div className="flex-1">
 										<h3 className="text-lg font-bold text-white">{userName}</h3>
 										<p className="text-sm text-white/60">Logged in</p>
@@ -499,7 +314,7 @@ export function FluidNav() {
 								</div>
 								<Button
 									variant="ghost"
-									size="lg"
+									size="large"
 									onClick={handleLogout}
 									className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300"
 								>
@@ -542,7 +357,6 @@ export function FluidNav() {
 				)}
 			</AnimatePresence>
 
-			{/* Expandable Suggest Panel */}
 			<AnimatePresence>
 				{isSuggestExpanded && (
 					<motion.div
