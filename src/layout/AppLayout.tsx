@@ -16,9 +16,6 @@ import CatBackground from "@/layout/LayoutEffects";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
-	handleTournamentComplete: (
-		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
-	) => Promise<void>;
 	children: React.ReactNode;
 }
 

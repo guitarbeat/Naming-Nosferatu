@@ -40,13 +40,7 @@ function App() {
 	}, []);
 
 	useAppStoreInitialization();
-	const { user, tournamentActions } = useAppStore();
 	useOfflineSync();
-
-	const tournamentHandlers = useTournamentHandlers({
-		userName: user.name,
-		tournamentActions,
-	});
 
 	if (!isInitialized) {
 		return (
@@ -60,7 +54,7 @@ function App() {
 		<div
 			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
 		>
-			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete}>
+			<AppLayout>
 				<Routes>
 					<Route
 						path="/"
@@ -137,7 +131,7 @@ function TournamentContent() {
 
 function AnalysisContent() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { handleStartNewTournament, handleUpdateRatings } = useTournamentHandlers({
+	const { handleStartNewTournament } = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
 	});
@@ -153,7 +147,6 @@ function AnalysisContent() {
 						personalRatings={tournament.ratings}
 						currentTournamentNames={tournament.names ?? undefined}
 						onStartNew={handleStartNewTournament}
-						onUpdateRatings={handleUpdateRatings as any}
 						userName={user.name ?? ""}
 						isAdmin={user.isAdmin}
 					/>
