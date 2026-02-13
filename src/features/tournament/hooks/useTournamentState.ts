@@ -34,7 +34,9 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
 	const [_refreshKey, setRefreshKey] = useState(0);
 
+	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
 	const currentMatch = useMemo(() => {
+		void _refreshKey; // Force re-run when sorter mutates (addPreference/undo)
 		const nextMatch = sorter.getNextMatch();
 		if (!nextMatch) {
 			return null;
