@@ -864,11 +864,11 @@ export function useMasonryLayout<T extends HTMLElement = HTMLDivElement>(
 				clearTimeout(batchTimer.current);
 			}
 			batchTimer.current = setTimeout(() => {
-				calculateLayout();
+				calculateLayoutRef.current();
 				batchTimer.current = null;
 			}, 10);
 		},
-		[calculateLayout],
+		[],
 	);
 
 	// Clean up trailing batch timer on unmount

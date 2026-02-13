@@ -244,7 +244,9 @@ export function FluidNav() {
 		// Suggest and Profile only exist on home; navigate first if on analysis
 		if ((key === "suggest" || key === "profile") && isAnalysisRoute) {
 			const id = keyToId[key];
-			if (!id) return;
+			if (!id) {
+				return;
+			}
 			navigate("/");
 			setActiveSection(id);
 			requestAnimationFrame(() => {
@@ -480,7 +482,10 @@ export function FluidNav() {
 											<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
 										</div>
 									) : (
-										<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+										<User
+											className={cn("w-5 h-5", isLoggedIn && "text-purple-400")}
+											aria-hidden={true}
+										/>
 									)
 								}
 								badge={
@@ -594,7 +599,10 @@ export function FluidNav() {
 										<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
 									</div>
 								) : (
-									<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+									<User
+										className={cn("w-5 h-5", isLoggedIn && "text-purple-400")}
+										aria-hidden={true}
+									/>
 								)
 							}
 							badge={
@@ -673,7 +681,7 @@ export function FluidNav() {
 										loading={isSaving}
 										className="w-full h-14 text-lg font-semibold"
 									>
-										{isSaving ? 'Connecting...' : "Let's Go!"}
+										{isSaving ? "Connecting..." : "Let's Go!"}
 									</Button>
 								</div>
 							</div>
