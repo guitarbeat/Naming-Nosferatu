@@ -370,7 +370,6 @@ export function FluidNav() {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ type: "spring", stiffness: 260, damping: 20 }}
 			>
-		>
 				{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
 				<AnimatedNavButton
 					id="pick"
