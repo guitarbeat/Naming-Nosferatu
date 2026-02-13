@@ -408,7 +408,7 @@ export function NameSelector() {
 												}}
 												animate={{
 													scale: index === 0 ? 1 : 0.95,
-													opacity: index === 0 ? 1 : 0.7,
+													opacity: 1,
 													rotate: index === 0 ? dragOffset / 25 : 0,
 													x: index === 0 ? dragOffset * 0.1 : 0,
 												}}
@@ -434,7 +434,7 @@ export function NameSelector() {
 															? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
 															: "pointer-events-none"
 													}`}
-													variant="default"
+													variant="filled"
 													padding="medium"
 												>
 													{index === 0 && (
