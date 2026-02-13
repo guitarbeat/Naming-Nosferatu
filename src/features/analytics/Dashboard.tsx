@@ -8,6 +8,11 @@ import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
 import { analyticsAPI, leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
+import Button, { ButtonSize } from "@/layout/Button";
+import Button from "@/layout/Button";
+import { Card } from "@/layout/Card";
+import { Loading } from "@/layout/FeedbackComponents";
+import { leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
 import type { NameItem } from "@/types/appTypes";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
@@ -47,7 +52,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 		winRate: number;
 	} | null>(null);
 	const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
-	const [isLoadingStats, setIsLoadingStats] = useState(true);
+	const [_isLoadingStats, setIsLoadingStats] = useState(true);
 	const [hiddenNames, setHiddenNames] = useState<Array<{ id: string | number; name: string }>>([]);
 	const [showHiddenNames, setShowHiddenNames] = useState(false);
 
@@ -103,7 +108,9 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 	}, [isAdmin, showHiddenNames]);
 
 	const handleUnhideName = async (nameId: string | number) => {
-		if (!userName) return;
+		if (!userName) {
+			return;
+		}
 		try {
 			await hiddenNamesAPI.unhideName(userName, nameId);
 			setHiddenNames((prev) => prev.filter((n) => n.id !== nameId));
@@ -157,7 +164,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 						<h3 className="text-xl font-semibold text-white">Top Names</h3>
 					</div>
 					{onStartNew && (
-						<Button variant="ghost" size="sm" onClick={onStartNew}>
+						<Button variant="ghost" size="small" onClick={onStartNew}>
 							Start New Tournament
 						</Button>
 					)}
@@ -246,6 +253,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 							<h3 className="text-xl font-semibold text-amber-400">Admin: Hidden Names</h3>
 						</div>
 						<Button variant="ghost" size="sm" onClick={() => setShowHiddenNames(!showHiddenNames)}>
+						<Button variant="ghost" size="small" onClick={() => setShowHiddenNames(!showHiddenNames)}>
 							{showHiddenNames ? "Hide List" : "Show List"}
 						</Button>
 					</div>
@@ -261,7 +269,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 										<span className="text-white font-medium">{name.name}</span>
 										<Button
 											variant="ghost"
-											size="sm"
+											size="small"
 											onClick={() => handleUnhideName(name.id)}
 											className="text-green-400 hover:text-green-300"
 										>
