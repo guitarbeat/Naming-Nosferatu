@@ -12,7 +12,8 @@ import {
 	OfflineIndicator,
 } from "@/layout/FeedbackComponents";
 import { FluidNav } from "@/layout/FluidNav";
-import CatBackground from "@/layout/LayoutEffects";
+// import CatBackground from "@/layout/LayoutEffects"; // Replaced with LiquidGradientBackground
+import LiquidGradientBackground from "@/layout/LiquidGradientBackground";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
@@ -46,7 +47,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 					Skip to main content
 				</a>
 
-				<CatBackground />
+				{/* <CatBackground /> */}
+				<LiquidGradientBackground />
 
 				<FluidNav />
 

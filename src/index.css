@@ -162,8 +162,8 @@ section[id] {
 }
 
 section[id][data-hidden="true"] {
-	max-height: 0 !important;
-	opacity: 0 !important;
-	overflow: hidden !important;
+	max-height: 0;
+	opacity: 0;
+	overflow: hidden;
 	pointer-events: none;
 }
