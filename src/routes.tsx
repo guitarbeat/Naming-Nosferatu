@@ -20,7 +20,7 @@ const DashboardLazy = lazy(() =>
 /** Wrapper that reads store and handlers and renders Dashboard (for /analysis route). */
 function AnalysisPage() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { handleStartNewTournament } = useTournamentHandlers({
+	const { handleStartNewTournament, handleUpdateRatings } = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
 	});
@@ -29,6 +29,7 @@ function AnalysisPage() {
 			personalRatings={tournament.ratings}
 			currentTournamentNames={tournament.names ?? undefined}
 			onStartNew={handleStartNewTournament}
+			onUpdateRatings={handleUpdateRatings}
 			userName={user.name ?? ""}
 		/>
 	);

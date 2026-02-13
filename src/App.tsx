@@ -58,7 +58,9 @@ function App() {
 
 	return (
 		<div
-			className={cn("min-h-screen w-full bg-transparent text-white font-sans selection:bg-purple-500/30")}
+			className={cn(
+				"min-h-screen w-full bg-transparent text-white font-sans selection:bg-purple-500/30",
+			)}
 		>
 			<AppLayout>
 				<Routes>

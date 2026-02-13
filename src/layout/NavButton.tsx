@@ -112,9 +112,7 @@ export function AnimatedNavButton({
 				)}
 				{props.badge}
 			</div>
-			<span className="text-xs font-medium tracking-wide truncate max-w-[80px]">
-				{props.label}
-			</span>
+			<span className="text-xs font-medium tracking-wide truncate max-w-[80px]">{props.label}</span>
 		</motion.button>
 	);
 }

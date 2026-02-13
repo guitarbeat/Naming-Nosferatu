@@ -3,16 +3,18 @@ import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResult
 import { Download, Plus } from "@/icons";
 import { Card } from "@/layout";
 import { useToast } from "@/providers/Providers";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem, RatingData } from "@/types/appTypes";
 import { exportTournamentResultsToCSV } from "@/utils/basic";
 import { RankingAdjustment } from "./RankingAdjustment";
 
 interface PersonalResultsProps {
-	personalRatings: Record<string, unknown> | undefined;
+	personalRatings: Record<string, RatingData> | undefined;
 	currentTournamentNames?: NameItem[];
 	onStartNew: () => void;
 	onUpdateRatings: (
-		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
+		ratings:
+			| Record<string, RatingData>
+			| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
 	) => void;
 	userName?: string;
 }
@@ -63,7 +65,14 @@ export const PersonalResults = ({
 				rankings={rankings}
 				onSave={async (r: NameItem[]) => {
 					const ratingsMap = Object.fromEntries(
-						r.map((n) => [n.name, { rating: n.rating as number, wins: n.wins, losses: n.losses }]),
+						r.map((n) => [
+							n.name,
+							{
+								rating: n.rating as number,
+								wins: n.wins ?? 0,
+								losses: n.losses ?? 0,
+							},
+						]),
 					);
 					await onUpdateRatings(ratingsMap);
 					showToast("Updated!", "success");

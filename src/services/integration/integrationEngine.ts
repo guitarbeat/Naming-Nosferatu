@@ -29,20 +29,22 @@ export function integrateFile(
 	analysis: FileAnalysis,
 	referenceContent: string,
 	strategy: MergeStrategy,
-	projectRoot: string,
+	projectRoot: string = "",
 ): IntegrationResult {
 	const fileNameFromPath =
 		typeof analysis.filePath === "string" && analysis.filePath.length > 0
 			? path.basename(analysis.filePath)
 			: "";
-	const safeTargetLocation = typeof analysis.targetLocation === "string" ? analysis.targetLocation : "";
+	const safeTargetLocation =
+		typeof analysis.targetLocation === "string" ? analysis.targetLocation : "";
 	const safeFileName = typeof analysis.fileName === "string" ? analysis.fileName : fileNameFromPath;
-	const targetPath = path.join(projectRoot, safeTargetLocation, safeFileName);
+	const finalFileName = safeFileName || "unknown-file";
+	const targetPath = path.join(projectRoot, safeTargetLocation, finalFileName);
 	const actionsLog: string[] = [];
 
 	try {
-		actionsLog.push(`Starting integration of ${safeFileName}`);
-		if (!safeTargetLocation || !safeFileName) {
+		actionsLog.push(`Starting integration of ${finalFileName}`);
+		if (!safeTargetLocation) {
 			actionsLog.push("Integration failed: Missing targetLocation or fileName");
 			return {
 				success: false,

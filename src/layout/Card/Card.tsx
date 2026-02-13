@@ -462,9 +462,10 @@ const CardNameBase = memo(function CardName({
 	});
 
 	// Further reduce image height on hover to show more text
-	const hoverImageHeight = isHovered && dynamicImageHeight > 60 
-		? Math.max(dynamicImageHeight * 0.7, 60) 
-		: dynamicImageHeight;
+	const hoverImageHeight =
+		isHovered && dynamicImageHeight > 60
+			? Math.max(dynamicImageHeight * 0.7, 60)
+			: dynamicImageHeight;
 
 	// Check if description is long enough to need expansion
 	const shouldShowExpandButton = description && description.length > 80;
@@ -472,13 +473,14 @@ const CardNameBase = memo(function CardName({
 	// Text overflow detection for auto-adjustment (check full text, not truncated)
 	const { textRef, needsMoreSpace } = useTextOverflowDetection({
 		text: description,
-		enabled: !!description
+		enabled: !!description,
 	});
 
 	// Auto-adjust image height if text is overflowing - be more aggressive
-	const autoAdjustedImageHeight = needsMoreSpace && dynamicImageHeight > 60
-		? Math.max(dynamicImageHeight * 0.6, 50)  // Reduce to 60% or minimum 50px
-		: hoverImageHeight;
+	const autoAdjustedImageHeight =
+		needsMoreSpace && dynamicImageHeight > 60
+			? Math.max(dynamicImageHeight * 0.6, 50) // Reduce to 60% or minimum 50px
+			: hoverImageHeight;
 
 	useEffect(() => {
 		if (isRippling) {
@@ -618,7 +620,10 @@ const CardNameBase = memo(function CardName({
 						)}
 						{/* Overflow indicator */}
 						{needsMoreSpace && (
-							<div className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full animate-pulse" title="Text auto-adjusted" />
+							<div
+								className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full animate-pulse"
+								title="Text auto-adjusted"
+							/>
 						)}
 						{/* Hover indicator for text reveal */}
 						<div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
@@ -651,10 +656,10 @@ const CardNameBase = memo(function CardName({
 								!isExpanded && "line-clamp-2",
 							)}
 							style={{
-								display: '-webkit-box',
-								WebkitLineClamp: isExpanded ? 'unset' : 2,
-								WebkitBoxOrient: 'vertical',
-								overflow: isExpanded ? 'visible' : 'hidden'
+								display: "-webkit-box",
+								WebkitLineClamp: isExpanded ? "unset" : 2,
+								WebkitBoxOrient: "vertical",
+								overflow: isExpanded ? "visible" : "hidden",
 							}}
 						>
 							{description}
@@ -668,7 +673,7 @@ const CardNameBase = memo(function CardName({
 								className="text-xs text-purple-400 hover:text-purple-300 font-medium mt-1 self-start transition-colors"
 								aria-label={isExpanded ? "Show less" : "Read more"}
 							>
-								{isExpanded ? 'Show less' : 'Read more'}
+								{isExpanded ? "Show less" : "Read more"}
 							</button>
 						)}
 					</div>

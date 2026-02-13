@@ -2,7 +2,6 @@
 
 /* Custom animations */
 @keyframes float {
-
 	0%,
 	100% {
 		transform: translateY(0) rotate(0deg);
@@ -84,7 +83,6 @@
 
 /* Animated blob background for tournament */
 @keyframes blob {
-
 	0%,
 	100% {
 		transform: translate(0, 0) scale(1);

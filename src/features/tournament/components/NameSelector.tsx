@@ -21,6 +21,22 @@ import CatImage from "./CatImage";
 const SWIPE_OFFSET_THRESHOLD = 100;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 
+// Optimized spring physics for smoother interactions
+const SMOOTH_SPRING_CONFIG = {
+	type: "spring" as const,
+	stiffness: 260,
+	damping: 20,
+	mass: 0.8,
+	velocity: 2,
+};
+
+const EXIT_SPRING_CONFIG = {
+	type: "spring" as const,
+	stiffness: 400,
+	damping: 25,
+	velocity: 50,
+};
+
 export function NameSelector() {
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
@@ -147,6 +163,19 @@ export function NameSelector() {
 		[triggerHaptic, toggleName],
 	);
 
+	// Optimized drag state update with batching
+	const updateDragState = useCallback(
+		(offset: number, direction: "left" | "right" | null = null) => {
+			requestAnimationFrame(() => {
+				setDragOffset(offset);
+				if (direction) {
+					setDragDirection(direction);
+				}
+			});
+		},
+		[],
+	);
+
 	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
 		setSwipedIds((prev) => {
 			const next = new Set(prev);
@@ -169,12 +198,20 @@ export function NameSelector() {
 			markSwiped(nameId, direction);
 			triggerHaptic();
 
-			// Reset drag state with velocity-based timing
-			const resetDelay = Math.max(200, Math.min(400, 400 - Math.abs(velocity) * 0.1));
-			setTimeout(() => {
-				setDragDirection(null);
-				setDragOffset(0);
-			}, resetDelay);
+			// Dynamic reset delay based on velocity for smoother feel
+			const baseDelay = 200;
+			const velocityFactor = Math.min(Math.abs(velocity) * 0.05, 150);
+			const resetDelay = Math.max(baseDelay, 350 - velocityFactor);
+
+			// Batch state updates for better performance
+			requestAnimationFrame(() => {
+				setTimeout(() => {
+					requestAnimationFrame(() => {
+						setDragDirection(null);
+						setDragOffset(0);
+					});
+				}, resetDelay);
+			});
 		},
 		[markSwiped, syncSelectionToStore, triggerHaptic],
 	);
@@ -188,8 +225,8 @@ export function NameSelector() {
 				Math.abs(offset) < SWIPE_OFFSET_THRESHOLD &&
 				Math.abs(velocity) < SWIPE_VELOCITY_THRESHOLD
 			) {
-				// Snap back to center with spring animation
-				setDragOffset(0);
+				// Smooth snap back animation
+				updateDragState(0);
 				return;
 			}
 
@@ -197,10 +234,10 @@ export function NameSelector() {
 			const isRightSwipe = offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
 			const direction = isRightSwipe ? "right" : "left";
 
-			setDragDirection(direction);
+			updateDragState(0, direction);
 			handleSwipe(nameId, direction, Math.abs(velocity));
 		},
-		[handleSwipe],
+		[handleSwipe, updateDragState],
 	);
 
 	// Undo last swipe functionality
@@ -422,20 +459,15 @@ export function NameSelector() {
 												x: dragDirection === "right" ? 400 : -400,
 												rotate: dragDirection === "right" ? 25 : -25,
 												scale: 0.8,
-												transition: {
-													type: "spring",
-													stiffness: 400,
-													damping: 25,
-													velocity: 50,
-												},
+												transition: EXIT_SPRING_CONFIG,
 											}}
 										>
 											<motion.div
 												drag={index === 0 ? "x" : false}
-												dragConstraints={{ left: -200, right: 200 }}
+												dragConstraints={{ left: -250, right: 250 }}
 												onDrag={(_, info) => {
 													if (index === 0) {
-														setDragOffset(info.offset.x);
+														updateDragState(info.offset.x);
 													}
 												}}
 												onDragEnd={(_, info) => {
@@ -446,18 +478,14 @@ export function NameSelector() {
 												animate={{
 													scale: index === 0 ? 1 : 0.95,
 													opacity: 1,
-													rotate: index === 0 ? dragOffset / 25 : 0,
-													x: index === 0 ? dragOffset * 0.1 : 0,
+													rotate: index === 0 ? dragOffset / 30 : 0,
+													x: index === 0 ? dragOffset * 0.15 : 0,
+													y: index * 8,
 												}}
-												transition={{
-													type: "spring",
-													stiffness: 200,
-													damping: 20,
-													mass: 0.8,
-												}}
+												transition={SMOOTH_SPRING_CONFIG}
 												whileDrag={{
-													scale: 1.05,
-													transition: { duration: 0.2 },
+													scale: 1.02,
+													transition: { duration: 0.15 },
 												}}
 												className="w-full max-w-md h-[550px]"
 											>

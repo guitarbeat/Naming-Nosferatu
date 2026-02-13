@@ -3,16 +3,16 @@
  * @description Hook to detect text overflow and automatically adjust card layout
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface UseTextOverflowDetectionProps {
 	text?: string;
 	enabled?: boolean;
 }
 
-export const useTextOverflowDetection = ({ 
-	text, 
-	enabled = true 
+export const useTextOverflowDetection = ({
+	text,
+	enabled = true,
 }: UseTextOverflowDetectionProps) => {
 	const textRef = useRef<HTMLParagraphElement>(null);
 	const [isOverflowing, setIsOverflowing] = useState(false);
@@ -24,12 +24,12 @@ export const useTextOverflowDetection = ({
 		}
 
 		const element = textRef.current;
-		
+
 		// Check if text is overflowing
 		const checkOverflow = () => {
 			if (element) {
-				const isOverflow = element.scrollHeight > element.clientHeight || 
-								  element.scrollWidth > element.clientWidth;
+				const isOverflow =
+					element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
 				setIsOverflowing(isOverflow);
 				setMeasuredHeight(element.scrollHeight);
 			}
@@ -43,7 +43,7 @@ export const useTextOverflowDetection = ({
 
 		// Set up ResizeObserver to detect changes
 		let resizeObserver: ResizeObserver | null = null;
-		if (typeof ResizeObserver !== 'undefined') {
+		if (typeof ResizeObserver !== "undefined") {
 			resizeObserver = new ResizeObserver(checkOverflow);
 			resizeObserver.observe(element);
 		}
@@ -60,6 +60,6 @@ export const useTextOverflowDetection = ({
 		textRef,
 		isOverflowing,
 		measuredHeight,
-		needsMoreSpace: isOverflowing && measuredHeight > 0
+		needsMoreSpace: isOverflowing && measuredHeight > 0,
 	};
 };

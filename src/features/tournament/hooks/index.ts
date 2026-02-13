@@ -13,7 +13,5 @@ export {
 
 // Re-export from original files
 export { useNameManagementView } from "./useNameManagementView";
-export { useTournament } from "./useTournament";
 export { useTournamentHandlers } from "./useTournamentHandlers";
 export { useTournamentState } from "./useTournamentState";
-export { useTournamentVote } from "./useTournamentVote";

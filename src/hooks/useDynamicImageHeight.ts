@@ -3,7 +3,7 @@
  * @description Hook to dynamically calculate image height based on description length
  */
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 interface UseDynamicImageHeightProps {
 	description?: string;
@@ -32,19 +32,19 @@ export const useDynamicImageHeight = ({
 		// Calculate description complexity
 		const charCount = description.length;
 		const lineCount = Math.ceil(charCount / 30); // Approximate lines based on character width
-		
+
 		// Calculate how much space the description needs
 		const descriptionHeight = lineCount * 16; // 16px per line approximate
-		
+
 		// More aggressive reduction for longer descriptions
 		const heightReduction = Math.min(descriptionHeight * 1.2, baseHeight - minHeight);
 		const dynamicHeight = Math.max(baseHeight - heightReduction, minHeight);
-		
+
 		// Extra reduction for very long descriptions
 		if (charCount > 100) {
 			return Math.max(dynamicHeight * 0.7, minHeight);
 		}
-		
+
 		return Math.min(dynamicHeight, maxHeight);
 	}, [description, hasImage, baseHeight, minHeight, maxHeight]);
 };

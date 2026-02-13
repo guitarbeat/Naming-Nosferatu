@@ -11,10 +11,11 @@ import { useTournamentState } from "./hooks/useTournamentState";
 import { useTournamentVote } from "./hooks/useTournamentVote";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
+	const { user } = useAppStore();
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 
-	const tournament = useTournamentState(visibleNames);
+	const tournament = useTournamentState(visibleNames, user.name);
 	const {
 		currentMatch,
 		ratings,
@@ -23,6 +24,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		matchNumber: currentMatchNumber,
 		totalMatches,
 		handleUndo,
+		handleQuit,
+		progress,
+		etaMinutes = 0,
 	} = tournament;
 
 	// Adapter to convert VoteData to winnerId/loserId for the hook
@@ -122,20 +126,31 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							Round {roundNumber}
 						</span>
 					</div>
-					<div className="flex items-center gap-2">
-						<span className="material-symbols-outlined text-stardust">workspace_premium</span>
-						<span className="text-xs font-bold">
-							{currentMatchNumber} / {totalMatches}
-						</span>
+					<div className="flex items-center gap-4">
+						<div className="flex items-center gap-2">
+							<span className="material-symbols-outlined text-stardust">workspace_premium</span>
+							<span className="text-xs font-bold">
+								{currentMatchNumber} / {totalMatches}
+							</span>
+						</div>
+						{etaMinutes > 0 && (
+							<div className="flex items-center gap-1 text-xs text-white/60">
+								<span className="material-symbols-outlined text-sm">schedule</span>
+								<span>~{etaMinutes}m</span>
+							</div>
+						)}
 					</div>
 				</div>
 				<div className="flex flex-col gap-2">
 					<div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
 						<div
 							className="h-full bg-primary rounded-full shadow-[0_0_10px_#a65eed]"
-							style={{ width: `${(currentMatchNumber / totalMatches) * 100}%` }}
+							style={{ width: `${progress || (currentMatchNumber / totalMatches) * 100}%` }}
 						/>
 					</div>
+					{progress !== undefined && (
+						<div className="text-center text-xs text-white/60">{progress}% Complete</div>
+					)}
 				</div>
 			</header>
 
@@ -158,6 +173,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								{audioManager.isMuted ? "volume_off" : "volume_up"}
 							</span>
 						</button>
+						{handleQuit && (
+							<button
+								type="button"
+								onClick={handleQuit}
+								className="w-10 h-10 flex items-center justify-center rounded-lg bg-red-500/20 text-red-400 hover:text-red-300 transition-colors"
+								aria-label="Quit tournament"
+								title="Quit tournament"
+							>
+								<span className="material-symbols-outlined">close</span>
+							</button>
+						)}
 					</div>
 					<button
 						type="button"

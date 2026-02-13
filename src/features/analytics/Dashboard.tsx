@@ -9,20 +9,34 @@ import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import type { NameItem, RatingData } from "@/types/appTypes";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
+import { PersonalResults } from "./PersonalResults";
 
 interface DashboardProps {
-	personalRatings?: Record<string, unknown>;
-	currentTournamentNames?: unknown[]; // Changed to unknown[] to match usage if type isn't critical or needs import
+	personalRatings?: Record<string, RatingData>;
+	currentTournamentNames?: NameItem[];
 	onStartNew?: () => void;
+	onUpdateRatings?: (
+		ratings:
+			| Record<string, RatingData>
+			| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
+	) => void;
 	userName?: string;
 	isAdmin?: boolean;
 	canHideNames?: boolean;
 	onNameHidden?: (nameId: string) => void;
 }
 
-export function Dashboard({ userName = "", isAdmin = false, onStartNew }: DashboardProps) {
+export function Dashboard({
+	userName = "",
+	isAdmin = false,
+	onStartNew,
+	onUpdateRatings,
+	personalRatings,
+	currentTournamentNames,
+}: DashboardProps) {
 	const [leaderboard, setLeaderboard] = useState<
 		Array<{
 			name: string;
@@ -114,6 +128,17 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 
 	return (
 		<div className="dashboard-container space-y-8">
+			{/* Personal Results with Ranking Adjustment */}
+			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
+				<PersonalResults
+					personalRatings={personalRatings}
+					currentTournamentNames={currentTournamentNames}
+					onStartNew={onStartNew || (() => {})}
+					onUpdateRatings={onUpdateRatings}
+					userName={userName}
+				/>
+			)}
+
 			{/* Random Name Generator */}
 			<Card className="p-6">
 				<Suspense fallback={<div className="p-4">Loading...</div>}>
@@ -245,7 +270,11 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 							<EyeOff className="text-amber-400" size={24} />
 							<h3 className="text-xl font-semibold text-amber-400">Admin: Hidden Names</h3>
 						</div>
-						<Button variant="ghost" size="small" onClick={() => setShowHiddenNames(!showHiddenNames)}>
+						<Button
+							variant="ghost"
+							size="small"
+							onClick={() => setShowHiddenNames(!showHiddenNames)}
+						>
 							{showHiddenNames ? "Hide List" : "Show List"}
 						</Button>
 					</div>

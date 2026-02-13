@@ -1,0 +1,19 @@
+{
+  "totalFiles": 1,
+  "processedFiles": 1,
+  "completedFiles": [
+    "C:\\Users\\alw4834\\OneDrive - The University of Texas at Austin\\Documents 1\\GitHub\\Naming-Nosferatu\\test-integration-workspace\\test-source\\test.ts"
+  ],
+  "failedFiles": [],
+  "skippedFiles": [],
+  "currentFile": null,
+  "backups": [
+    {
+      "originalPath": "C:\\Users\\alw4834\\OneDrive - The University of Texas at Austin\\Documents 1\\GitHub\\Naming-Nosferatu\\test-integration-workspace\\src\\utils\\test.ts",
+      "backupPath": "C:\\Users\\alw4834\\OneDrive - The University of Texas at Austin\\Documents 1\\GitHub\\Naming-Nosferatu\\test-integration-workspace\\src\\utils\\.backup_test_1771021508300.ts",
+      "timestamp": 1771021508300
+    }
+  ],
+  "startTime": 1771021508298,
+  "endTime": 1771021508304
+}

@@ -25,7 +25,6 @@
 		"email": "aaron@example.com"
 	},
 	"license": "MIT",
-	"packageManager": "pnpm@10.27.0",
 	"engines": {
 		"node": ">=20.19.0",
 		"pnpm": ">=10.26.0"

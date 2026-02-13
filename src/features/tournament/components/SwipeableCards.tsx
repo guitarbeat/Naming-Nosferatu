@@ -6,6 +6,22 @@ import { Card } from "@/layout/Card";
 import type { NameItem } from "@/types/appTypes";
 import { getRandomCatImage, playSound } from "@/utils/basic";
 
+// Optimized spring physics for smoother interactions
+const SMOOTH_SPRING_CONFIG = {
+	type: "spring" as const,
+	stiffness: 260,
+	damping: 20,
+	mass: 0.8,
+	velocity: 2,
+};
+
+const EXIT_SPRING_CONFIG = {
+	type: "spring" as const,
+	stiffness: 400,
+	damping: 25,
+	velocity: 50,
+};
+
 export const SwipeableCards = memo(
 	({
 		names,
@@ -26,6 +42,19 @@ export const SwipeableCards = memo(
 		const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
 		const [dragOffset, setDragOffset] = useState(0);
 
+		// Optimized drag state update with batching
+		const updateDragState = useCallback(
+			(offset: number, direction: "left" | "right" | null = null) => {
+				requestAnimationFrame(() => {
+					setDragOffset(offset);
+					if (direction) {
+						setDragDirection(direction);
+					}
+				});
+			},
+			[],
+		);
+
 		const visibleCards = useMemo(
 			() => names.filter((n: NameItem) => !swipedIds.has(String(n.id))),
 			[names, swipedIds],
@@ -45,30 +74,37 @@ export const SwipeableCards = memo(
 				const velocityThreshold = 500;
 
 				if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
-					setDragOffset(0);
+					updateDragState(0);
 					return;
 				}
 
-				if (offset > threshold || velocity > velocityThreshold) {
-					setDragDirection("right");
-					playSound("gameboy-pluck");
-					if (!isSelected(card)) {
-						onToggleName(card);
-					}
-				} else {
-					setDragDirection("left");
-					playSound("wow");
-					if (isSelected(card)) {
-						onToggleName(card);
-					}
+				const isRightSwipe = offset > threshold || velocity > velocityThreshold;
+				const direction = isRightSwipe ? "right" : "left";
+
+				updateDragState(0, direction);
+				playSound(isRightSwipe ? "gameboy-pluck" : "wow");
+
+				if (isRightSwipe && !isSelected(card)) {
+					onToggleName(card);
+				} else if (!isRightSwipe && isSelected(card)) {
+					onToggleName(card);
 				}
+
 				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+
+				// Dynamic reset delay based on velocity
+				const baseDelay = 200;
+				const velocityFactor = Math.min(Math.abs(velocity) * 0.05, 150);
+				const resetDelay = Math.max(baseDelay, 350 - velocityFactor);
+
 				setTimeout(() => {
-					setDragDirection(null);
-					setDragOffset(0);
-				}, 300);
+					requestAnimationFrame(() => {
+						setDragDirection(null);
+						setDragOffset(0);
+					});
+				}, resetDelay);
 			},
-			[isSelected, onToggleName],
+			[isSelected, onToggleName, updateDragState],
 		);
 
 		const progressValue = (swipedIds.size / names.length) * 100;
@@ -111,15 +147,15 @@ export const SwipeableCards = memo(
 										opacity: 0,
 										x: dragDirection === "right" ? 400 : -400,
 										rotate: dragDirection === "right" ? 20 : -20,
-										transition: { duration: 0.3 },
+										transition: EXIT_SPRING_CONFIG,
 									}}
 								>
 									<motion.div
 										drag={index === 0 ? "x" : false}
-										dragConstraints={{ left: -200, right: 200 }}
+										dragConstraints={{ left: -250, right: 250 }}
 										onDrag={(_, info) => {
 											if (index === 0) {
-												setDragOffset(info.offset.x);
+												updateDragState(info.offset.x);
 											}
 										}}
 										onDragEnd={(_, info) => {
@@ -128,12 +164,17 @@ export const SwipeableCards = memo(
 											}
 										}}
 										animate={{
-											y: index * 12,
-											scale: 1 - index * 0.04,
-											opacity: 1 - index * 0.2,
-											rotate: index === 0 ? dragOffset / 20 : 0,
+											y: index * 10,
+											scale: 1 - index * 0.03,
+											opacity: 1 - index * 0.15,
+											rotate: index === 0 ? dragOffset / 30 : 0,
+											x: index === 0 ? dragOffset * 0.1 : 0,
 										}}
-										transition={{ type: "spring", stiffness: 300, damping: 30 }}
+										transition={SMOOTH_SPRING_CONFIG}
+										whileDrag={{
+											scale: 1.02,
+											transition: { duration: 0.15 },
+										}}
 										className="w-full max-w-md"
 									>
 										<Card
@@ -263,10 +304,15 @@ export const SwipeableCards = memo(
 							aria-label={currentCard ? `Discard ${currentCard.name}` : "Discard"}
 							onClick={() => {
 								if (currentCard) {
-									setDragDirection("left");
+									updateDragState(0, "left");
 									playSound("wow");
 									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
+									setTimeout(() => {
+										requestAnimationFrame(() => {
+											setDragDirection(null);
+											setDragOffset(0);
+										});
+									}, 250);
 								}
 							}}
 						>
@@ -292,13 +338,18 @@ export const SwipeableCards = memo(
 							aria-label={currentCard ? `Keep ${currentCard.name}` : "Keep"}
 							onClick={() => {
 								if (currentCard) {
-									setDragDirection("right");
+									updateDragState(0, "right");
 									playSound("gameboy-pluck");
 									if (!isSelected(currentCard)) {
 										onToggleName(currentCard);
 									}
 									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
+									setTimeout(() => {
+										requestAnimationFrame(() => {
+											setDragDirection(null);
+											setDragOffset(0);
+										});
+									}, 250);
 								}
 							}}
 						>

@@ -16,8 +16,23 @@ import { NOTIFICATION } from "@/utils/constants";
    ========================================================================= */
 
 export function useAudioManager() {
-	const [isMuted, setIsMuted] = useState(true);
+	const [isMuted, setIsMuted] = useState(false);
 	const [volume, setVolume] = useState(0.2);
+
+	const playVoteSound = () => {
+		if (!isMuted) {
+			// TODO: Implement sound playback
+			console.log("Playing vote sound");
+		}
+	};
+
+	const playUndoSound = () => {
+		if (!isMuted) {
+			// TODO: Implement sound playback
+			console.log("Playing undo sound");
+		}
+	};
+
 	return {
 		playAudioTrack: () => {
 			/* No-op: handled by external audio services if available */
@@ -39,6 +54,8 @@ export function useAudioManager() {
 		},
 		volume,
 		handleVolumeChange: (_unused: unknown, v: number) => setVolume(Math.min(1, Math.max(0, v))),
+		playVoteSound,
+		playUndoSound,
 	};
 }
 
