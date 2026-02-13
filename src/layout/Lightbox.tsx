@@ -167,7 +167,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		const handleKeyDown = (e: KeyboardEvent) => {
 			// Prevent event propagation to avoid conflicts with other keyboard handlers
 			e.stopPropagation();
-			
+
 			switch (e.key) {
 				case "Escape":
 					e.preventDefault();
@@ -352,7 +352,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 						transition: "transform 0.3s ease",
 					}}
 					role="img"
-					aria-label={`Image ${currentIndex + 1} of ${images.length} - ${isZoomed ? 'Zoomed in' : 'Click to zoom'}`}
+					aria-label={`Image ${currentIndex + 1} of ${images.length} - ${isZoomed ? "Zoomed in" : "Click to zoom"}`}
 				>
 					<LightboxImage
 						src={images[currentIndex] || ""}
@@ -392,7 +392,9 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 				{/* Keyboard shortcuts help */}
 				<div className="absolute bottom-4 right-4 text-white/60 text-xs bg-black/30 px-2 py-1 rounded">
-					<span className="hidden sm:inline">← → Navigate • Space Close • +/- Zoom • 1-9 Jump • R Reset • F Fullscreen</span>
+					<span className="hidden sm:inline">
+						← → Navigate • Space Close • +/- Zoom • 1-9 Jump • R Reset • F Fullscreen
+					</span>
 					<span className="sm:hidden">Swipe to navigate • Tap to zoom</span>
 				</div>
 			</motion.div>

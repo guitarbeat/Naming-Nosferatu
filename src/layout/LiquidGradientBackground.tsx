@@ -57,7 +57,8 @@ class TouchTexture {
 		const speed = this.speed;
 		// Use reverse iteration to safely remove items
 		for (let i = this.trail.length - 1; i >= 0; i--) {
-			const point = this.trail[i]; if (!point) continue;
+			const point = this.trail[i];
+			if (!point) continue;
 			const f = point.force * speed * (1 - point.age / this.maxAge);
 			point.x += point.vx * f;
 			point.y += point.vy * f;
@@ -642,7 +643,8 @@ const LiquidGradientBackground: React.FC = () => {
 			};
 
 			const handleTouchMove = (e: TouchEvent) => {
-				const touch = e.touches[0]; if (!touch) return;
+				const touch = e.touches[0];
+				if (!touch) return;
 				managerRef.current?.onMouseMove(touch.clientX, touch.clientY);
 			};
 
