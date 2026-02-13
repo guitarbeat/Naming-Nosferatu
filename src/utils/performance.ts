@@ -104,7 +104,7 @@ export function initializePerformanceMonitoring(): void {
 
 	// Largest Contentful Paint
 	observeWebVital("largest-contentful-paint", (entries) => {
-		const last = entries.at(-1) as
+		const last = entries[entries.length - 1] as
 			| (PerformanceEntry & { renderTime?: number; loadTime?: number })
 			| undefined;
 		if (last) {

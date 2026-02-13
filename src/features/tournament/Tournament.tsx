@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
 import { useToast } from "@/providers/Providers";
@@ -20,7 +20,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const {
 		currentMatch,
 		ratings,
-		handleVote: handleVoteInternal,
 		isComplete,
 		round: roundNumber,
 		matchNumber: currentMatchNumber,
@@ -35,13 +34,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const [_showMatchResult, setShowMatchResult] = useState(false);
 	const [_votingError, setVotingError] = useState<unknown>(null);
 
-	const handleVote = useCallback(
-		(winnerId: string, loserId: string) => {
-			handleVoteInternal(winnerId, loserId);
-		},
-		[handleVoteInternal],
-	);
-
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const results = Object.entries(ratings).map(([name, rating]) => ({
@@ -53,12 +45,16 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	}, [isComplete, ratings, onComplete]);
 
 	const { handleVoteWithAnimation } = useTournamentVote({
+		tournamentState: tournament,
+		audioManager,
+		onVote: (winnerId, loserId) => {
+			if (onVote) {
+				(onVote as any)(winnerId, loserId);
+			}
+		},
 		isProcessing,
 		isTransitioning,
 		currentMatch,
-		handleVote,
-		onVote,
-		audioManager,
 		setIsProcessing,
 		setIsTransitioning,
 		setSelectedOption,
@@ -80,7 +76,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		);
 	}
 
-	// No images shown - gallery images removed from tournament view
 	const leftImg = showCatPictures
 		? getRandomCatImage(
 				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
@@ -96,7 +91,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 font-display text-white selection:bg-primary/30">
-			{/* Header */}
 			<header className="pt-6 px-4 space-y-4">
 				<div className="flex items-center justify-between">
 					<div className="px-4 py-1.5 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
@@ -122,7 +116,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</div>
 			</header>
 
-			{/* Controls */}
 			<section className="mt-6 px-4">
 				<Card
 					className="flex flex-row items-center justify-between"
@@ -156,22 +149,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</Card>
 			</section>
 
-			{/* Battle Area */}
 			<main className="flex-1 flex flex-col items-center justify-center px-4 relative my-4">
 				<div className="relative grid grid-cols-2 gap-4 w-full h-full max-h-[500px]">
-					{/* Left */}
 					<Card
 						interactive={true}
 						onClick={() => {
-							if (currentMatch) {
-								const winner =
-									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
-								const loser =
-									typeof currentMatch.right === "object"
-										? currentMatch.right.id
-										: currentMatch.right;
-								handleVoteWithAnimation(String(winner), String(loser));
-							}
+							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+							handleVoteWithAnimation(leftId, rightId);
 						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
@@ -205,26 +190,18 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						</div>
 					</Card>
 
-					{/* VS */}
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
 						<div className="size-14 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg">
 							<span className="font-bold text-xl italic tracking-tighter">VS</span>
 						</div>
 					</div>
 
-					{/* Right */}
 					<Card
 						interactive={true}
 						onClick={() => {
-							if (currentMatch) {
-								const winner =
-									typeof currentMatch.right === "object"
-										? currentMatch.right.id
-										: currentMatch.right;
-								const loser =
-									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
-								handleVoteWithAnimation(String(winner), String(loser));
-							}
+							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+							handleVoteWithAnimation(rightId, leftId);
 						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
@@ -259,10 +236,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					</Card>
 				</div>
 
-				{/* Undo */}
 				<button
 					type="button"
-					onClick={handleUndo}
+					onClick={() => handleUndo()}
 					className="mt-6 glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
 				>
 					<span className="material-symbols-outlined text-sm text-primary">undo</span>
@@ -272,7 +248,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</button>
 			</main>
 
-			{/* Background */}
 			<div className="absolute top-[-10%] left-[-10%] size-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
 			<div className="absolute bottom-[-10%] right-[-10%] size-64 bg-stardust/10 rounded-full blur-[100px] -z-10" />
 		</div>

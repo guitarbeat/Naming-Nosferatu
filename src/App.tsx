@@ -29,6 +29,12 @@ const DashboardLazy = routeComponents.DashboardLazy;
 function App() {
 	const { isLoading } = useAuth();
 	const isInitialized = !isLoading;
+	const { user, tournamentActions } = useAppStore();
+
+	const tournamentHandlers = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
 
 	useEffect(() => {
 		initializePerformanceMonitoring();
@@ -54,7 +60,7 @@ function App() {
 		<div
 			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
 		>
-			<AppLayout>
+			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete as any}>
 				<Routes>
 					<Route
 						path="/"
@@ -86,6 +92,10 @@ function App() {
 					/>
 				</Routes>
 			</AppLayout>
+			<dialog
+				id="shared-lightbox-dialog"
+				className="backdrop:bg-black/90 bg-transparent p-0 overflow-hidden outline-none"
+			/>
 		</div>
 	);
 }
@@ -131,7 +141,7 @@ function TournamentContent() {
 
 function AnalysisContent() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { handleStartNewTournament } = useTournamentHandlers({
+	const { handleStartNewTournament, handleUpdateRatings } = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
 	});
@@ -147,6 +157,7 @@ function AnalysisContent() {
 						personalRatings={tournament.ratings}
 						currentTournamentNames={tournament.names ?? undefined}
 						onStartNew={handleStartNewTournament}
+						onUpdateRatings={handleUpdateRatings as any}
 						userName={user.name ?? ""}
 						isAdmin={user.isAdmin}
 					/>

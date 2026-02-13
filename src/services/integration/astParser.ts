@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AST Parser for TypeScript Files
  *

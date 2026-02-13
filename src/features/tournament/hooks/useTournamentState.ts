@@ -41,16 +41,16 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 		}
 
 		return {
-			left: names.find((n) => n.id === nextMatch.left) || {
+			left: names.find((n) => String(n.id) === nextMatch.left) || {
 				id: nextMatch.left,
 				name: nextMatch.left,
 			},
-			right: names.find((n) => n.id === nextMatch.right) || {
+			right: names.find((n) => String(n.id) === nextMatch.right) || {
 				id: nextMatch.right,
 				name: nextMatch.right,
 			},
 		} as Match;
-	}, [sorter, names]);
+	}, [sorter, names, _refreshKey]);
 
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
@@ -108,11 +108,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 		}
 		setRatings(lastEntry.ratings);
 		setHistory((prev) => prev.slice(0, -1));
-
-		// Undo in sorter
 		sorter.undoLastPreference();
-
-		// Trigger re-render
 		setRefreshKey((k) => k + 1);
 	}, [history, sorter]);
 
