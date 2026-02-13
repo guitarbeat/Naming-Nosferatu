@@ -34,7 +34,9 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
 	const [_refreshKey, setRefreshKey] = useState(0);
 
+	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
 	const currentMatch = useMemo(() => {
+		void _refreshKey; // Force re-run when sorter mutates (addPreference/undo)
 		const nextMatch = sorter.getNextMatch();
 		if (!nextMatch) {
 			return null;
@@ -50,8 +52,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 				name: nextMatch.right,
 			},
 		} as Match;
-	}, [sorter, names]); // Added _refreshKey dependency to ensure update
-	}, [sorter, names, _refreshKey]); // Added _refreshKey dependency to ensure update
+	}, [sorter, names, _refreshKey]);
 
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;

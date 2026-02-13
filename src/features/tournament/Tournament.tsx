@@ -4,7 +4,7 @@ import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
 import { useToast } from "@/providers/Providers";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
-import type { TournamentProps } from "@/types/appTypes";
+import type { RatingData, TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
 import CatImage from "./components/CatImage";
 import { useAudioManager } from "./hooks/useAudioManager";
@@ -36,13 +36,15 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	useEffect(() => {
 		if (isComplete && onComplete) {
-			const results = Object.entries(ratings).map(([name, rating]) => ({
-				name,
-				rating,
-			}));
-			onComplete(results as any);
+			const idToName = new Map(visibleNames.map((n) => [String(n.id), n.name]));
+			const results: Record<string, RatingData> = {};
+			for (const [id, rating] of Object.entries(ratings)) {
+				const name = idToName.get(id) ?? id;
+				results[name] = { rating, wins: 0, losses: 0 };
+			}
+			onComplete(results);
 		}
-	}, [isComplete, ratings, onComplete]);
+	}, [isComplete, ratings, onComplete, visibleNames]);
 
 	const { handleVoteWithAnimation } = useTournamentVote({
 		tournamentState: tournament,
