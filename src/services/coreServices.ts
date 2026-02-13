@@ -1,4 +1,4 @@
-import { withSupabase } from "@/services/supabase-client/client";
+import { withSupabase } from "@/services/supabase/client";
 import type { NameItem } from "@/types/appTypes";
 import { devLog } from "@/utils/basic";
 import { ELO_RATING } from "@/utils/constants";
@@ -11,7 +11,12 @@ const HAS_NAVIGATOR = typeof navigator !== "undefined";
 
 interface SyncPayload {
 	userName: string;
-	ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>;
+	ratings: Array<{
+		name: string;
+		rating: number;
+		wins?: number;
+		losses?: number;
+	}>;
 }
 
 export interface SyncItem {
@@ -160,7 +165,12 @@ export const tournamentsAPI = {
 	 */
 	async saveTournamentRatings(
 		userName: string,
-		ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>,
+		ratings: Array<{
+			name: string;
+			rating: number;
+			wins?: number;
+			losses?: number;
+		}>,
 		skipQueue = false,
 	): Promise<RatingSaveResult> {
 		// Offline: queue for later

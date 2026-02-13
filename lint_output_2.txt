@@ -1,0 +1,199 @@
+
+> name-nosferatu@1.0.2 lint:full C:\Users\alw4834\OneDrive - The University of Texas at Austin\Documents 1\GitHub\Naming-Nosferatu
+> biome check src
+
+src\features\analytics\analyticsService.ts:226:5 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    224 │ 		return withSupabase(async (client) => {
+    225 │ 			let selectionsQuery = client
+  > 226 │ 				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    227 │ 				.from("cat_tournament_selections" as any)
+    228 │ 				.select("name_id, name, user_name");
+
+
+src\features\analytics\analyticsService.ts:355:6 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    354 │ 				const { data: selections, error: selError } = await client
+  > 355 │ 					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 					^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    356 │ 					.from("cat_tournament_selections" as any)
+    357 │ 					.select("name_id, name, selected_at")
+
+
+src\features\analytics\analyticsService.ts:574:7 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    572 │ 					client.from("cat_name_ratings").select("rating"),
+    573 │ 					client
+  > 574 │ 						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 						^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    575 │ 						.from("cat_tournament_selections" as any)
+    576 │ 						.select("id", { count: "exact", head: true }),
+
+
+src\features\analytics\analyticsService.ts:637:6 suppressions/unused ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Suppression comment has no effect. Remove the suppression or make sure you are suppressing the correct rule.
+
+    635 │ 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
+    636 │ 				client
+  > 637 │ 					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+        │ 					^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    638 │ 					.from("cat_tournament_selections" as any)
+    639 │ 					.select("*")
+
+
+src\features\tournament\components\NameGrid.tsx:83:25 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  ! This hook specifies more dependencies than necessary: filters.category.
+
+    81 │ 	);
+    82 │
+  > 83 │ 	const processedNames = useMemo(() => {
+       │ 	                       ^^^^^^^
+    84 │ 		const visibility = mapFilterStatusToVisibility(filters.filterStatus || "visible");
+    85 │
+
+  i This dependency can be removed from the list.
+
+     98 │ 		return result;
+   > 99 │ 	}, [names, filters.filterStatus, filters.category, isAdmin, showSelectedOnly, selectedSet]);
+        │ 	                                 ^^^^^^^^^^^^^^^^
+    100 │
+    101 │ 	if (isLoading) {
+
+  i React relies on hook dependencies to determine when to re-compute Effects.
+    Specifying more dependencies than required can lead to unnecessary re-rendering
+    and degraded performance.
+
+  i Unsafe fix: Remove the extra dependencies from the list.
+
+    99 │ → },·[names,·filters.filterStatus,·filters.category,·isAdmin,·showSelectedOnly,·selectedSet]);
+       │                                    ------------------
+
+src\features\tournament\hooks\useTournamentVote.ts:132:5 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    130 │ 				onVote?.(winnerId, loserIdFinal);
+    131 │ 				setVoting(false);
+  > 132 │ 				if (setIsTransitioning) setIsTransitioning(false);
+        │ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    133 │ 				if (setSelectedOption) setSelectedOption(null);
+    134 │ 			}, VOTE_COOLDOWN);
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    132 │ → → → → if·(setIsTransitioning)·{·setIsTransitioning(false);·}
+        │                                 ++                          ++
+
+src\features\tournament\hooks\useTournamentVote.ts:133:5 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    131 │ 				setVoting(false);
+    132 │ 				if (setIsTransitioning) setIsTransitioning(false);
+  > 133 │ 				if (setSelectedOption) setSelectedOption(null);
+        │ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    134 │ 			}, VOTE_COOLDOWN);
+    135 │ 		},
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    133 │ → → → → if·(setSelectedOption)·{·setSelectedOption(null);·}
+        │                                ++                        ++
+
+src\hooks\useMasonryLayout.ts:110:4 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    108 │ 		const resizeObserver = new ResizeObserver(() => {
+    109 │ 			// Throttle resize calculations with rAF instead of setTimeout
+  > 110 │ 			if (resizeRafId) return;
+        │ 			^^^^^^^^^^^^^^^^^^^^^^^^
+    111 │ 			resizeRafId = requestAnimationFrame(() => {
+    112 │ 				resizeRafId = null;
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    110 │ → → → if·(resizeRafId)·{·return;·}
+        │                        ++       ++
+
+src\hooks\useMasonryLayout.ts:125:4 lint/style/useBlockStatements  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Block statements are preferred in this position.
+
+    123 │ 		return () => {
+    124 │ 			clearTimeout(timeoutId);
+  > 125 │ 			if (resizeRafId) cancelAnimationFrame(resizeRafId);
+        │ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    126 │ 			resizeObserver.disconnect();
+    127 │ 		};
+
+  i Unsafe fix: Wrap the statement with a `JsBlockStatement`
+
+    125 │ → → → if·(resizeRafId)·{·cancelAnimationFrame(resizeRafId);·}
+        │                        ++                                  ++
+
+src\layout\Feedback\PerformanceBadges.tsx:6:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━
+
+  × This import is unused.
+
+    4 │  */
+    5 │
+  > 6 │ import React from "react";
+      │        ^^^^^
+    7 │
+    8 │ const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
+
+  i Unused imports might be the result of an incomplete refactoring.
+
+  i Unsafe fix: Remove the unused imports.
+
+      1     │ - /**
+      2     │ - ·*·@module·PerformanceBadges
+      3     │ - ·*·@description·Performance·badges·and·trend·indicators·for·showing·insights·and·metrics
+      4     │ - ·*/
+      5     │ -
+      6     │ - import·React·from·"react";
+          1 │ + /**
+          2 │ + ·*·@module·PerformanceBadges
+          3 │ + ·*·@description·Performance·badges·and·trend·indicators·for·showing·insights·and·metrics
+          4 │ + ·*/
+          5 │ +
+      7   6 │
+      8   7 │   const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
+
+
+src\layout\LiquidGlass.tsx:8:10 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Several of these imports are unused.
+
+     7 │ import type React from "react";
+   > 8 │ import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+       │          ^^^^
+     9 │
+    10 │ interface LiquidGlassProps {
+
+  i Unused imports might be the result of an incomplete refactoring.
+
+  i Unsafe fix: Remove the unused imports.
+
+    8 │ import·{·memo,·useCallback,·useEffect,·useMemo,·useRef·}·from·"react";
+      │          ------
+
+Checked 138 files in 308ms. No fixes applied.
+Found 2 errors.
+Found 9 warnings.
+check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+
+
+ ELIFECYCLE  Command failed with exit code 1.

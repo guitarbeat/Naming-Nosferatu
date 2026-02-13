@@ -373,7 +373,10 @@ let toastCounter = 0;
 function useToastProvider(
 	maxToasts: number,
 	defaultDuration: number,
-): ToastContextValue & { toastList: ToastItem[]; dismiss: (id: string) => void } {
+): ToastContextValue & {
+	toastList: ToastItem[];
+	dismiss: (id: string) => void;
+} {
 	const [toasts, setToasts] = useState<ToastItem[]>([]);
 	const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 

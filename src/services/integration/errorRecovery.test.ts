@@ -249,11 +249,20 @@ describe("Error Recovery Module", () => {
 		it("should include specific suggestions for each error code", () => {
 			const testCases = [
 				{ code: ErrorCode.FILE_NOT_FOUND, suggestion: "Verify the file path" },
-				{ code: ErrorCode.PERMISSION_DENIED, suggestion: "Check file permissions" },
+				{
+					code: ErrorCode.PERMISSION_DENIED,
+					suggestion: "Check file permissions",
+				},
 				{ code: ErrorCode.DISK_FULL, suggestion: "Free up disk space" },
 				{ code: ErrorCode.INVALID_SYNTAX, suggestion: "Fix syntax errors" },
-				{ code: ErrorCode.DUPLICATE_EXPORT, suggestion: "Resolve duplicate exports" },
-				{ code: ErrorCode.CIRCULAR_DEPENDENCY, suggestion: "Refactor code to break circular" },
+				{
+					code: ErrorCode.DUPLICATE_EXPORT,
+					suggestion: "Resolve duplicate exports",
+				},
+				{
+					code: ErrorCode.CIRCULAR_DEPENDENCY,
+					suggestion: "Refactor code to break circular",
+				},
 			];
 
 			for (const { code, suggestion } of testCases) {
