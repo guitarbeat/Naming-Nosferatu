@@ -71,32 +71,36 @@ const getPopularityScoresOld = async (
 	const ratings = ratingsResult.data ?? [];
 	const names = namesResult.data ?? [];
 
+    console.log(`Debug: Selections count: ${selections.length}, Ratings count: ${ratings.length}, Names count: ${names.length}`);
+
 	// Aggregate selections
-	const selStats = new Map<string | number, { count: number; users: Set<string> }>();
+	const selStats = new Map<string, { count: number; users: Set<string> }>();
 	for (const s of selections) {
-		const existing = selStats.get(s.name_id);
+		const id = String(s.name_id);
+		const existing = selStats.get(id);
 		if (existing) {
 			existing.count += 1;
 			existing.users.add(s.user_name);
 		} else {
-			selStats.set(s.name_id, { count: 1, users: new Set([s.user_name]) });
+			selStats.set(id, { count: 1, users: new Set([s.user_name]) });
 		}
 	}
 
 	// Aggregate ratings
 	const ratStats = new Map<
-		string | number,
+		string,
 		{ totalRating: number; count: number; wins: number; losses: number }
 	>();
 	for (const r of ratings) {
-		const existing = ratStats.get(r.name_id);
+		const id = String(r.name_id);
+		const existing = ratStats.get(id);
 		if (existing) {
 			existing.totalRating += Number(r.rating) || 1500;
 			existing.count += 1;
 			existing.wins += r.wins || 0;
 			existing.losses += r.losses || 0;
 		} else {
-			ratStats.set(r.name_id, {
+			ratStats.set(id, {
 				totalRating: Number(r.rating) || 1500,
 				count: 1,
 				wins: r.wins || 0,
@@ -105,9 +109,18 @@ const getPopularityScoresOld = async (
 		}
 	}
 
+    // Debug keys
+    if (selStats.size > 0) {
+        console.log("Debug: Sample selStat key:", selStats.keys().next().value);
+    }
+    if (names.length > 0) {
+        console.log("Debug: Sample name id:", names[0].id, "Stringified:", String(names[0].id));
+    }
+
 	const analytics = names.map((name) => {
-		const sel = selStats.get(name.id) ?? { count: 0 };
-		const rat = ratStats.get(name.id) ?? { totalRating: 0, count: 0, wins: 0, losses: 0 };
+		const id = String(name.id);
+		const sel = selStats.get(id) ?? { count: 0 };
+		const rat = ratStats.get(id) ?? { totalRating: 0, count: 0, wins: 0, losses: 0 };
 
 		const avgRating = rat.count > 0 ? Math.round(rat.totalRating / rat.count) : 1500;
 		const popularityScore = Math.round(
@@ -143,8 +156,6 @@ const getPopularityScoresNew = async (
 	});
 
 	if (error) {
-		// Log error but throw/return empty based on context.
-        // For benchmark we want to see the error if it fails.
 		console.error("RPC Error:", error);
 		throw error;
 	}
@@ -155,7 +166,6 @@ const getPopularityScoresNew = async (
 async function main() {
 	console.log("Starting benchmark...");
 
-    // Test parameters
     const LIMIT = 50;
     const USER_FILTER = "all";
 
@@ -165,9 +175,6 @@ async function main() {
     const durationOld = endOld - startOld;
 	console.log(`Old Implementation: ${durationOld.toFixed(2)}ms`);
     console.log(`Rows returned (Old): ${resOld.length}`);
-    if (resOld.length > 0) {
-        // console.log("Sample Old:", JSON.stringify(resOld[0], null, 2));
-    }
 
 	try {
 		const startNew = performance.now();
@@ -176,16 +183,12 @@ async function main() {
         const durationNew = endNew - startNew;
 		console.log(`New Implementation: ${durationNew.toFixed(2)}ms`);
         console.log(`Rows returned (New): ${resNew?.length}`);
-        if (resNew && resNew.length > 0) {
-            // console.log("Sample New:", JSON.stringify(resNew[0], null, 2));
-        }
 
         if (resOld.length > 0 && resNew && resNew.length > 0) {
             console.log("Checking data consistency...");
             const oldFirst = resOld[0];
             const newFirst = resNew[0];
 
-            // Check essential fields
             let mismatch = false;
             if (oldFirst.name !== newFirst.name) {
                 console.log("Name mismatch:", oldFirst.name, newFirst.name);
@@ -203,13 +206,12 @@ async function main() {
                 console.log("Top result matches!");
             }
 
-             // Calculate speedup correctly for logging
              console.log(`Speedup: ${(durationOld / durationNew).toFixed(2)}x`);
         }
 
 
 	} catch (e: any) {
-		console.log("New Implementation failed (expected if migration not applied yet):", e.message);
+		console.log("New Implementation failed:", e.message);
 	}
 }
 
