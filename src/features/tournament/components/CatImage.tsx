@@ -4,8 +4,105 @@
  */
 
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CAT_IMAGES } from "@/utils/constants";
+
+function analyseImage(imgEl: HTMLImageElement): {
+	focal?: number;
+	accent?: string;
+	orientation?: "landscape" | "portrait" | "square";
+} {
+	try {
+		const naturalW = imgEl.naturalWidth || imgEl.width;
+		const naturalH = imgEl.naturalHeight || imgEl.height;
+		if (!naturalW || !naturalH) {
+			return {};
+		}
+
+		const targetW = 144;
+		const scale = targetW / naturalW;
+		const w = Math.max(16, Math.min(targetW, naturalW));
+		const h = Math.max(16, Math.floor(naturalH * scale));
+
+		const canvas = document.createElement("canvas");
+		canvas.width = w;
+		canvas.height = h;
+		const ctx = canvas.getContext("2d", { willReadFrequently: true });
+		if (!ctx) {
+			return {};
+		}
+
+		ctx.drawImage(imgEl, 0, 0, w, h);
+		const { data } = ctx.getImageData(0, 0, w, h);
+
+		const rowEnergy = Array(Number(h)).fill(0);
+		const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
+		const idx = (x: number, y: number) => (y * w + x) * 4;
+
+		let totalR = 0,
+			totalG = 0,
+			totalB = 0;
+
+		for (let y = 0; y < h; y += 1) {
+			let sum = 0;
+			for (let x = 0; x < w; x += 1) {
+				const base = idx(x, y);
+				const r = data[base] ?? 0,
+					g = data[base + 1] ?? 0,
+					b = data[base + 2] ?? 0;
+				totalR += r;
+				totalG += g;
+				totalB += b;
+
+				if (y > 0 && y < h - 1) {
+					const i1 = idx(x, y - 1),
+						i2 = idx(x, y + 1);
+					const g1 = toGray(data[i1] ?? 0, data[i1 + 1] ?? 0, data[i1 + 2] ?? 0);
+					const g2 = toGray(data[i2] ?? 0, data[i2 + 1] ?? 0, data[i2 + 2] ?? 0);
+					sum += Math.abs(g2 - g1);
+				}
+			}
+			if (y > 0 && y < h - 1) {
+				rowEnergy[y] = sum / w;
+			}
+		}
+
+		const start = Math.floor(h * 0.08),
+			end = Math.floor(h * 0.7);
+		let bestY = start,
+			bestVal = -Infinity;
+
+		for (let y = start; y < end; y += 1) {
+			const e = (rowEnergy[y - 1] || 0) + rowEnergy[y] + (rowEnergy[y + 1] || 0);
+			if (e > bestVal) {
+				bestVal = e;
+				bestY = y;
+			}
+		}
+
+		const pct = Math.min(60, Math.max(10, Math.round((bestY / h) * 100)));
+		const pixelCount = w * h;
+		const accent = pixelCount
+			? `${Math.round(totalR / pixelCount)} ${Math.round(totalG / pixelCount)} ${Math.round(totalB / pixelCount)}`
+			: undefined;
+
+		const orientation = (() => {
+			const ratio = naturalW / naturalH;
+			if (ratio >= 1.45) {
+				return "landscape" as const;
+			}
+			if (ratio <= 0.75) {
+				return "portrait" as const;
+			}
+			return "square" as const;
+		})();
+
+		return { focal: pct, accent, orientation };
+	} catch (error) {
+		console.error("Failed to analyse cat image metadata", error);
+		return {};
+	}
+}
 
 interface CatImageProps {
 	src?: string;
@@ -43,102 +140,6 @@ function CatImage({
 		setHasError(false);
 	}, [src]);
 
-	const analyseImage = useMemo(
-		() => (imgEl: HTMLImageElement) => {
-			try {
-				const naturalW = imgEl.naturalWidth || imgEl.width;
-				const naturalH = imgEl.naturalHeight || imgEl.height;
-				if (!naturalW || !naturalH) {
-					return {};
-				}
-
-				const targetW = 144;
-				const scale = targetW / naturalW;
-				const w = Math.max(16, Math.min(targetW, naturalW));
-				const h = Math.max(16, Math.floor(naturalH * scale));
-
-				const canvas = document.createElement("canvas");
-				canvas.width = w;
-				canvas.height = h;
-				const ctx = canvas.getContext("2d", { willReadFrequently: true });
-				if (!ctx) {
-					return {};
-				}
-
-				ctx.drawImage(imgEl, 0, 0, w, h);
-				const { data } = ctx.getImageData(0, 0, w, h);
-
-				const rowEnergy = Array(Number(h)).fill(0);
-				const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
-				const idx = (x: number, y: number) => (y * w + x) * 4;
-
-				let totalR = 0,
-					totalG = 0,
-					totalB = 0;
-
-				for (let y = 0; y < h; y += 1) {
-					let sum = 0;
-					for (let x = 0; x < w; x += 1) {
-						const base = idx(x, y);
-						const r = data[base] ?? 0,
-							g = data[base + 1] ?? 0,
-							b = data[base + 2] ?? 0;
-						totalR += r;
-						totalG += g;
-						totalB += b;
-
-						if (y > 0 && y < h - 1) {
-							const i1 = idx(x, y - 1),
-								i2 = idx(x, y + 1);
-							const g1 = toGray(data[i1] ?? 0, data[i1 + 1] ?? 0, data[i1 + 2] ?? 0);
-							const g2 = toGray(data[i2] ?? 0, data[i2 + 1] ?? 0, data[i2 + 2] ?? 0);
-							sum += Math.abs(g2 - g1);
-						}
-					}
-					if (y > 0 && y < h - 1) {
-						rowEnergy[y] = sum / w;
-					}
-				}
-
-				const start = Math.floor(h * 0.08),
-					end = Math.floor(h * 0.7);
-				let bestY = start,
-					bestVal = -Infinity;
-
-				for (let y = start; y < end; y += 1) {
-					const e = (rowEnergy[y - 1] || 0) + rowEnergy[y] + (rowEnergy[y + 1] || 0);
-					if (e > bestVal) {
-						bestVal = e;
-						bestY = y;
-					}
-				}
-
-				const pct = Math.min(60, Math.max(10, Math.round((bestY / h) * 100)));
-				const pixelCount = w * h;
-				const accent = pixelCount
-					? `${Math.round(totalR / pixelCount)} ${Math.round(totalG / pixelCount)} ${Math.round(totalB / pixelCount)}`
-					: undefined;
-
-				const orientation = (() => {
-					const ratio = naturalW / naturalH;
-					if (ratio >= 1.45) {
-						return "landscape";
-					}
-					if (ratio <= 0.75) {
-						return "portrait";
-					}
-					return "square";
-				})();
-
-				return { focal: pct, accent, orientation };
-			} catch (error) {
-				console.error("Failed to analyse cat image metadata", error);
-				return {};
-			}
-		},
-		[],
-	);
-
 	const applyImageEnhancements = useCallback(
 		(imgEl: HTMLImageElement | null) => {
 			if (!imgEl) {
@@ -168,7 +169,7 @@ function CatImage({
 			}
 			container.dataset.loaded = "true";
 		},
-		[analyseImage],
+		[],
 	);
 
 	const handleLoad = useCallback(

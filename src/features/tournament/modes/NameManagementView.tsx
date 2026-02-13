@@ -6,7 +6,7 @@
 
 import React, { useEffect, useState } from "react";
 import { NameManagementProvider } from "@/features/tournament/context/NameManagementContext";
-import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
+import { useNameManagementView } from "@/features/tournament/hooks";
 import { ErrorComponent } from "@/layout";
 import { useToast } from "@/providers/Providers";
 import type {
@@ -31,6 +31,7 @@ export function NameManagementView({
 	userName,
 	analysisMode: propsAnalysisMode,
 	setAnalysisMode: propsSetAnalysisMode,
+	onStartTournament,
 
 	extensions = {},
 	tournamentProps = {},
@@ -53,11 +54,15 @@ export function NameManagementView({
 		setInternalAnalysisMode(params.get("analysis") === "true");
 	}, [propsAnalysisMode]);
 
+	const tournamentPropsFinal = onStartTournament
+		? { ...tournamentProps, onStartTournament }
+		: tournamentProps;
+
 	const state = useNameManagementView({
 		mode,
 		userName,
 		profileProps,
-		tournamentProps,
+		tournamentProps: tournamentPropsFinal,
 		analysisMode,
 		setAnalysisMode,
 		extensions,

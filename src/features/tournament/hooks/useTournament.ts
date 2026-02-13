@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useLocalStorage from "@/hooks/useBrowserState";
+import { useLocalStorage } from "@/hooks/useHooks";
 import { calculateBracketRound, EloRating, PreferenceSorter } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type {
 	Match,
 	MatchRecord,
 	NameItem,
-	PersistentState,
+	PersistentTournamentState,
 	TournamentUIState,
 } from "@/types/appTypes";
 
@@ -64,7 +64,7 @@ function getNextMatch(
 	return null;
 }
 
-const createDefaultPersistentState = (userName: string): PersistentState => ({
+const createDefaultPersistentState = (userName: string): PersistentTournamentState => ({
 	matchHistory: [],
 	currentRound: 1,
 	currentMatch: 1,
@@ -102,7 +102,7 @@ export function useTournament({
 
 	const defaultPersistentState = useMemo(() => createDefaultPersistentState(userName), [userName]);
 
-	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentState>(
+	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
 		tournamentId,
 		defaultPersistentState,
 	);
@@ -126,8 +126,12 @@ export function useTournament({
 	}, [persistentStateRaw, userName]);
 
 	const updatePersistentState = useCallback(
-		(updates: Partial<PersistentState> | ((prev: PersistentState) => Partial<PersistentState>)) => {
-			setPersistentState((prev: PersistentState) => {
+		(
+			updates:
+				| Partial<PersistentTournamentState>
+				| ((prev: PersistentTournamentState) => Partial<PersistentTournamentState>),
+		) => {
+			setPersistentState((prev: PersistentTournamentState) => {
 				const delta = typeof updates === "function" ? updates(prev) || {} : updates || {};
 				return {
 					...prev,

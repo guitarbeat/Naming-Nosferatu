@@ -1,127 +1,11 @@
-import { withSupabase } from "@/services/supabase/client";
-import type { NameItem } from "@/types/appTypes";
 import { ELO_RATING } from "@/utils/constants";
+import { tournamentsAPI } from "@/services/coreServices";
 
 /* =========================================================================
    SERVICE
    ========================================================================= */
 
-const nameToIdCache = new Map<string, string>();
-
-export const tournamentsAPI = {
-	async createTournament(
-		userName: string,
-		tournamentName: string,
-		participantNames: NameItem[],
-	): Promise<
-		| {
-				success: true;
-				data: {
-					id: string;
-					user_name: string;
-					tournament_name: string;
-					participant_names: NameItem[];
-					status: string;
-					created_at: string;
-				};
-				error?: undefined;
-		  }
-		| { success: false; error: string; data?: undefined }
-	> {
-		type ResultType =
-			| {
-					success: true;
-					data: {
-						id: string;
-						user_name: string;
-						tournament_name: string;
-						participant_names: NameItem[];
-						status: string;
-						created_at: string;
-					};
-					error?: undefined;
-			  }
-			| { success: false; error: string; data?: undefined };
-		return withSupabase<ResultType>(
-			async (client) => {
-				// Call RPC function - type assertion needed for dynamic RPC calls
-				const rpcClient = client as unknown as {
-					rpc: (name: string, params: Record<string, unknown>) => Promise<unknown>;
-				};
-				await rpcClient.rpc("create_user_account", {
-					p_user_name: userName,
-				});
-				return {
-					success: true as const,
-					data: {
-						id: crypto.randomUUID(),
-						user_name: userName,
-						tournament_name: tournamentName,
-						participant_names: participantNames,
-						status: "in_progress",
-						created_at: new Date().toISOString(),
-					},
-				};
-			},
-			{ success: false as const, error: "Supabase not configured" },
-		);
-	},
-	async saveTournamentRatings(
-		userName: string,
-		ratings: { name: string; rating: number; wins?: number; losses?: number }[],
-		skipQueue = false,
-	) {
-		// * Offline Handling
-		if (!skipQueue && typeof navigator !== "undefined" && !navigator.onLine) {
-			const { syncQueue } = await import("@/services/SyncQueue");
-			syncQueue.enqueue("SAVE_RATINGS", { userName, ratings });
-			const { devLog } = await import("@/utils/basic");
-			devLog("[TournamentLogic] Offline: Queued ratings save");
-			return { success: true, savedCount: ratings.length, offline: true };
-		}
-
-		return withSupabase(
-			async (client) => {
-				if (!userName || !ratings?.length) {
-					return { success: false, error: "Missing data" };
-				}
-				const uniqueNames = [...new Set(ratings.map((r) => r.name))];
-				const missingNames = uniqueNames.filter((name) => !nameToIdCache.has(name));
-
-				if (missingNames.length > 0) {
-					const { data: nameData } = await client
-						.from("cat_name_options")
-						.select("id, name")
-						.in("name", missingNames);
-
-					if (nameData) {
-						for (const n of nameData) {
-							nameToIdCache.set(n.name, String(n.id));
-						}
-					}
-				}
-				const ratingRecords = ratings
-					.filter((r) => nameToIdCache.has(r.name))
-					.map((r) => ({
-						user_name: userName,
-						name_id: String(nameToIdCache.get(r.name)),
-						rating: Math.min(2400, Math.max(800, Math.round(r.rating))),
-						wins: r.wins || 0,
-						losses: r.losses || 0,
-						updated_at: new Date().toISOString(),
-					}));
-				if (!ratingRecords.length) {
-					return { success: false, error: "No valid ratings" };
-				}
-				const { error } = await client
-					.from("cat_name_ratings")
-					.upsert(ratingRecords as any, { onConflict: "user_name,name_id" });
-				return { success: !error, savedCount: ratingRecords.length };
-			},
-			{ success: false, error: "Supabase offline" },
-		);
-	},
-};
+export { tournamentsAPI };
 
 /* =========================================================================
    ELO RATING
@@ -173,7 +57,7 @@ export class EloRating {
 export class PreferenceSorter {
 	preferences = new Map<string, number>();
 	currentIndex = 0;
-	lastMatch: string | null = null;
+	private matchHistory: string[] = [];
 
 	// Total possible pairs is N * (N - 1) / 2
 	// We no longer store the `pairs` array to save memory (O(N^2) -> O(1))
@@ -197,16 +81,19 @@ export class PreferenceSorter {
 	}
 
 	addPreference(a: string, b: string, val: number) {
-		this.preferences.set(`${a}-${b}`, val);
-		this.lastMatch = `${a}-${b}`;
+		const key = `${a}-${b}`;
+		this.preferences.set(key, val);
+		this.matchHistory.push(key);
+		this.currentIndex++;
 	}
 
 	undoLastPreference() {
-		if (this.lastMatch && this.preferences.has(this.lastMatch)) {
-			this.preferences.delete(this.lastMatch);
-			this.lastMatch = null;
-			this.currentIndex = Math.max(0, this.currentIndex - 1);
+		const lastMatch = this.matchHistory.pop();
+		if (!lastMatch) {
+			return;
 		}
+		this.preferences.delete(lastMatch);
+		this.currentIndex = Math.max(0, this.currentIndex - 1);
 	}
 
 	getNextMatch() {

@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNameData, useNameSelection } from "@/hooks/useNames";
 import useAppStore from "@/store/appStore";
@@ -45,22 +45,7 @@ export function useNameManagementView({
 		userName: userName ?? null,
 	});
 
-	const { errors, ui, errorActions, tournamentActions, tournament } = useAppStore();
-
-	// * Sync selection with global store for Navbar access
-	useEffect(() => {
-		if (mode === "tournament" && tournamentActions?.setSelection) {
-			// Prevent infinite loop: Only update if selection actually changed
-			const currentStoreSelection = tournament.selectedNames || [];
-			const hasChanged =
-				selectedNames.length !== currentStoreSelection.length ||
-				selectedNames.some((n: NameItem, i: number) => n.id !== currentStoreSelection[i]?.id);
-
-			if (hasChanged) {
-				tournamentActions.setSelection(selectedNames);
-			}
-		}
-	}, [selectedNames, tournamentActions, mode, tournament.selectedNames]);
+	const { errors, ui, errorActions } = useAppStore();
 
 	const isError = mode === "tournament" && (!!errors.current || !!dataError);
 	const clearErrors =
@@ -73,7 +58,9 @@ export function useNameManagementView({
 
 	const { isSwipeMode, showCatPictures } = ui;
 
-	const [filterStatus, setFilterStatus] = useState(FILTER_OPTIONS.VISIBILITY.VISIBLE);
+	const [filterStatus, setFilterStatus] = useState<"all" | "visible" | "hidden">(
+		FILTER_OPTIONS.VISIBILITY.VISIBLE as "visible",
+	);
 	const [localUserFilter, setLocalUserFilter] = useState("all");
 	const userFilter = (profileProps.userFilter as "all" | "user" | "other") ?? localUserFilter;
 	const setUserFilter =
@@ -162,9 +149,9 @@ export function useNameManagementView({
 		// Apply additional filters
 		if (selectionFilter !== "all") {
 			if (selectionFilter === "selected") {
-				result = result.filter((n) => isSelected(n));
+				result = result.filter((n) => isSelected(n.id));
 			} else {
-				result = result.filter((n) => !isSelected(n));
+				result = result.filter((n) => !isSelected(n.id));
 			}
 		}
 
@@ -208,7 +195,7 @@ export function useNameManagementView({
 			if (mode === "tournament" && analysisMode) {
 				switch (name) {
 					case "filterStatus":
-						setFilterStatus(String(value));
+						setFilterStatus(String(value) as "all" | "visible" | "hidden");
 						break;
 					case "userFilter":
 						setUserFilter(String(value) as "all" | "user" | "other");
@@ -228,7 +215,7 @@ export function useNameManagementView({
 			} else {
 				switch (name) {
 					case "filterStatus":
-						setFilterStatus(String(value));
+						setFilterStatus(String(value) as "all" | "visible" | "hidden");
 						break;
 					case "userFilter":
 						setUserFilter(String(value) as "all" | "user" | "other");
@@ -260,14 +247,14 @@ export function useNameManagementView({
 		names,
 		isLoading,
 		isError,
-		error: isError ? (dataError as Error) : null,
-		dataError: dataError as Error | null,
+		error: isError && dataError ? new Error(String(dataError)) : null,
+		dataError: dataError ? new Error(String(dataError)) : null,
 		refetch,
 		clearErrors,
 		setNames,
 		setHiddenIds: (ids: Set<string | number>) => {
-			setNames((prev: NameItem[]) =>
-				prev.map((n: NameItem) => ({
+			setNames(
+				names.map((n: NameItem) => ({
 					...n,
 					is_hidden: ids.has(n.id),
 					isHidden: ids.has(n.id),

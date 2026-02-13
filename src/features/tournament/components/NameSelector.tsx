@@ -18,6 +18,9 @@ import { CAT_IMAGES } from "@/utils/constants";
 import { Check, Eye, EyeOff, Heart, X, ZoomIn } from "@/utils/icons";
 import CatImage from "./CatImage";
 
+const SWIPE_OFFSET_THRESHOLD = 100;
+const SWIPE_VELOCITY_THRESHOLD = 500;
+
 export function NameSelector() {
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
@@ -39,14 +42,23 @@ export function NameSelector() {
 		Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
 	>([]);
 
-	// Memoize cat images to avoid unnecessary recalculations
-	const allCatImages = useMemo(
-		() => names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES)),
-		[names],
-	);
+	// Memoize cat images and build an id->image lookup map
+	const { catImages, catImageById } = useMemo(() => {
+		const images = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
+		const byId = new Map<IdType, string>();
+		names.forEach((nameItem, index) => {
+			const img = images[index];
+			if (img) {
+				byId.set(nameItem.id, img);
+			}
+		});
+		return { catImages: images, catImageById: byId };
+	}, [names]);
 
 	// Fetch names from Supabase on mount with retry mechanism and caching
 	useEffect(() => {
+		let retryTimeout: number | undefined;
+
 		const fetchNames = async () => {
 			try {
 				setIsLoading(true);
@@ -70,8 +82,8 @@ export function NameSelector() {
 				setError(errorMessage);
 
 				// Auto-retry for network errors (max 3 retries)
-				if (retryCount < 2 && errorMessage.includes("network")) {
-					setTimeout(
+				if (retryCount < 2 && errorMessage.toLowerCase().includes("network")) {
+					retryTimeout = window.setTimeout(
 						() => {
 							setRetryCount((prev) => prev + 1);
 						},
@@ -84,7 +96,21 @@ export function NameSelector() {
 		};
 
 		fetchNames();
+
+		return () => {
+			if (retryTimeout != null) {
+				window.clearTimeout(retryTimeout);
+			}
+		};
 	}, [retryCount, getCachedData, setCachedData]);
+
+	const syncSelectionToStore = useCallback(
+		(nextSelectedIds: Set<IdType>) => {
+			const selectedNameItems = names.filter((n) => nextSelectedIds.has(n.id));
+			tournamentActions.setSelection(selectedNameItems);
+		},
+		[names, tournamentActions],
+	);
 
 	const toggleName = useCallback(
 		(nameId: IdType) => {
@@ -96,26 +122,12 @@ export function NameSelector() {
 					next.add(nameId);
 				}
 
-				// Sync with global store
-				const selectedNameItems = names.filter((n) => next.has(n.id));
-				tournamentActions.setSelection(selectedNameItems);
+				syncSelectionToStore(next);
 
 				return next;
 			});
 		},
-		[names, tournamentActions],
-	);
-
-	// Add haptic feedback for better UX
-	const handleToggleName = useCallback(
-		(nameId: IdType) => {
-			// Add subtle haptic feedback if supported
-			if ("vibrate" in navigator) {
-				navigator.vibrate(50);
-			}
-			toggleName(nameId);
-		},
-		[toggleName],
+		[syncSelectionToStore],
 	);
 
 	// Trigger haptic feedback if available
@@ -125,24 +137,36 @@ export function NameSelector() {
 		}
 	}, []);
 
+	// Add haptic feedback for better UX
+	const handleToggleName = useCallback(
+		(nameId: IdType) => {
+			// Add subtle haptic feedback if supported
+			triggerHaptic();
+			toggleName(nameId);
+		},
+		[triggerHaptic, toggleName],
+	);
+
+	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
+		setSwipedIds((prev) => {
+			const next = new Set(prev);
+			next.add(nameId);
+			return next;
+		});
+		setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
+	}, []);
+
 	const handleSwipe = useCallback(
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
 			if (direction === "right") {
 				setSelectedNames((prev) => {
 					const next = new Set(prev);
 					next.add(nameId);
-					// Sync with global store
-					const selectedNameItems = names.filter((n) => next.has(n.id));
-					tournamentActions.setSelection(selectedNameItems);
+					syncSelectionToStore(next);
 					return next;
 				});
 			}
-			setSwipedIds((prev) => {
-				const next = new Set(prev);
-				next.add(nameId);
-				return next;
-			});
-			setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
+			markSwiped(nameId, direction);
 			triggerHaptic();
 
 			// Reset drag state with velocity-based timing
@@ -152,24 +176,25 @@ export function NameSelector() {
 				setDragOffset(0);
 			}, resetDelay);
 		},
-		[triggerHaptic, names, tournamentActions],
+		[markSwiped, syncSelectionToStore, triggerHaptic],
 	);
 
 	const handleDragEnd = useCallback(
 		(nameId: IdType, info: PanInfo) => {
 			const offset = info.offset.x;
 			const velocity = info.velocity.x;
-			const threshold = 100;
-			const velocityThreshold = 500;
 
-			if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
+			if (
+				Math.abs(offset) < SWIPE_OFFSET_THRESHOLD &&
+				Math.abs(velocity) < SWIPE_VELOCITY_THRESHOLD
+			) {
 				// Snap back to center with spring animation
 				setDragOffset(0);
 				return;
 			}
 
 			// Determine direction based on offset and velocity
-			const isRightSwipe = offset > threshold || velocity > velocityThreshold;
+			const isRightSwipe = offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
 			const direction = isRightSwipe ? "right" : "left";
 
 			setDragDirection(direction);
@@ -201,27 +226,16 @@ export function NameSelector() {
 			setSelectedNames((prev) => {
 				const next = new Set(prev);
 				next.delete(lastSwipe.id);
-				// Sync with global store
-				const selectedNameItems = names.filter((n) => next.has(n.id));
-				tournamentActions.setSelection(selectedNameItems);
+				syncSelectionToStore(next);
 				return next;
 			});
 		}
 
 		triggerHaptic();
-	}, [swipeHistory, triggerHaptic, names, tournamentActions]);
+	}, [swipeHistory, syncSelectionToStore, triggerHaptic]);
 
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
 	const cardsToRender = visibleCards.slice(0, 3);
-
-	// Create a mapping from name id to image index for efficient lookup
-	const nameIndexMap = useMemo(() => {
-		const map = new Map<IdType, number>();
-		names.forEach((name, index) => {
-			map.set(name.id, index);
-		});
-		return map;
-	}, [names]);
 
 	// Keyboard navigation for swipe mode
 	useEffect(() => {
@@ -279,56 +293,59 @@ export function NameSelector() {
 		},
 		[names],
 	);
-	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
-		if (!userName) {
-			return;
-		}
 
-		// Add confirmation for destructive actions
-		const action = isCurrentlyHidden ? "unhide" : "hide";
-		if (!confirm(`Are you sure you want to ${action} this name?`)) {
-			return;
-		}
-
-		// Set loading state for this specific name
-		setTogglingHidden((prev: Set<IdType>) => new Set([...prev, nameId]));
-
-		try {
-			// Optimistic update
-			setNames((prev) =>
-				prev.map((name) => (name.id === nameId ? { ...name, isHidden: !isCurrentlyHidden } : name)),
-			);
-
-			if (isCurrentlyHidden) {
-				await hiddenNamesAPI.unhideName(userName, nameId);
+	const setHiddenToggleLoading = useCallback((nameId: IdType, isLoading: boolean) => {
+		setTogglingHidden((prev) => {
+			const next = new Set(prev);
+			if (isLoading) {
+				next.add(nameId);
 			} else {
-				await hiddenNamesAPI.hideName(userName, nameId);
+				next.delete(nameId);
+			}
+			return next;
+		});
+	}, []);
+
+	const updateNameHiddenState = useCallback((nameId: IdType, isHidden: boolean) => {
+		setNames((prev) =>
+			prev.map((name) => (name.id === nameId ? { ...name, isHidden } : name)),
+		);
+	}, []);
+
+	const handleToggleHidden = useCallback(
+		async (nameId: IdType, isCurrentlyHidden: boolean) => {
+			if (!userName) {
+				return;
 			}
 
-			// Invalidate cache to ensure fresh data
-			invalidateCache();
+			const action = isCurrentlyHidden ? "unhide" : "hide";
+			if (!confirm(`Are you sure you want to ${action} this name?`)) {
+				return;
+			}
 
-			// Optimistic refresh - only if needed
-			const fetchedNames = await coreAPI.getTrendingNames(true);
-			setNames(fetchedNames);
-		} catch (error) {
-			// Revert optimistic update on error
-			setNames((prev) =>
-				prev.map((name) => (name.id === nameId ? { ...name, isHidden: isCurrentlyHidden } : name)),
-			);
+			setHiddenToggleLoading(nameId, true);
+			updateNameHiddenState(nameId, !isCurrentlyHidden);
 
-			console.error("Failed to toggle hidden status:", error);
-			// Show user-friendly error message
-			alert(`Failed to ${action} name. Please try again.`);
-		} finally {
-			// Clear loading state
-			setTogglingHidden((prev: Set<IdType>) => {
-				const newSet = new Set(prev);
-				newSet.delete(nameId);
-				return newSet;
-			});
-		}
-	};
+			try {
+				if (isCurrentlyHidden) {
+					await hiddenNamesAPI.unhideName(userName, nameId);
+				} else {
+					await hiddenNamesAPI.hideName(userName, nameId);
+				}
+
+				invalidateCache();
+				const fetchedNames = await coreAPI.getTrendingNames(true);
+				setNames(fetchedNames);
+			} catch (error) {
+				updateNameHiddenState(nameId, isCurrentlyHidden);
+				console.error("Failed to toggle hidden status:", error);
+				alert(`Failed to ${action} name. Please try again.`);
+			} finally {
+				setHiddenToggleLoading(nameId, false);
+			}
+		},
+		[invalidateCache, setHiddenToggleLoading, updateNameHiddenState, userName],
+	);
 
 	if (isLoading) {
 		return (
@@ -386,7 +403,6 @@ export function NameSelector() {
 				</div>
 
 				{isSwipeMode ? (
-
 					<div
 						className="relative w-full flex items-center justify-center"
 						style={{ minHeight: "600px" }}
@@ -394,11 +410,8 @@ export function NameSelector() {
 						<AnimatePresence mode="popLayout">
 							{visibleCards.length > 0 ? (
 								cardsToRender.map((nameItem, index) => {
-									const imageIndex = nameIndexMap.get(nameItem.id);
 									const catImage =
-										imageIndex !== undefined
-											? allCatImages[imageIndex]
-											: getRandomCatImage(nameItem.id, CAT_IMAGES);
+										catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
 									return (
 										<motion.div
 											key={nameItem.id}
@@ -589,11 +602,8 @@ export function NameSelector() {
 					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
 						{names.map((nameItem) => {
 							const isSelected = selectedNames.has(nameItem.id);
-							const imageIndex = nameIndexMap.get(nameItem.id);
 							const catImage =
-								imageIndex !== undefined
-									? allCatImages[imageIndex]
-									: getRandomCatImage(nameItem.id, CAT_IMAGES);
+								catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
 							return (
 								<div
 									key={nameItem.id}

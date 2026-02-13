@@ -18,7 +18,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const {
 		currentMatch,
 		ratings,
-		handleVote: _handleVoteInternal,
 		isComplete,
 		round: roundNumber,
 		matchNumber: currentMatchNumber,
@@ -30,27 +29,33 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const handleVoteAdapter = useCallback(
 		(winnerId: string, _loserId: string) => {
 			if (onVote && currentMatch) {
+				const leftId = String(
+					typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+				);
+				const rightId = String(
+					typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+				);
+				const leftName =
+					typeof currentMatch.left === "object" ? currentMatch.left.name : currentMatch.left;
+				const rightName =
+					typeof currentMatch.right === "object" ? currentMatch.right.name : currentMatch.right;
+
 				const voteData = {
 					match: {
 						left: {
-							name:
-								typeof currentMatch.left === "object" ? currentMatch.left.name : currentMatch.left,
-							id: typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+							name: leftName,
+							id: leftId,
 							description: "",
-							outcome: winnerId === currentMatch.left ? "winner" : "loser",
+							outcome: winnerId === leftId ? "winner" : "loser",
 						},
 						right: {
-							name:
-								typeof currentMatch.right === "object"
-									? currentMatch.right.name
-									: currentMatch.right,
-							id:
-								typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+							name: rightName,
+							id: rightId,
 							description: "",
-							outcome: winnerId === currentMatch.right ? "winner" : "loser",
+							outcome: winnerId === rightId ? "winner" : "loser",
 						},
 					},
-					result: winnerId === currentMatch.left ? 1 : 0,
+					result: winnerId === leftId ? 1 : 0,
 					ratings,
 					timestamp: new Date().toISOString(),
 				};

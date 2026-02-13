@@ -1,5 +1,4 @@
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { type FC, useEffect, useRef } from "react";
 import * as THREE from "three";
 import "./LiquidGradient.css";
 
@@ -117,8 +116,9 @@ class TouchTexture {
 		intensity *= point.force;
 
 		const radius = this.radius;
-		const color = `${((point.vx + 1) / 2) * 255}, ${((point.vy + 1) / 2) * 255
-			}, ${intensity * 255}`;
+		const color = `${((point.vx + 1) / 2) * 255}, ${
+			((point.vy + 1) / 2) * 255
+		}, ${intensity * 255}`;
 		const offset = this.size * 5;
 		this.ctx.shadowOffsetX = offset;
 		this.ctx.shadowOffsetY = offset;
@@ -134,11 +134,30 @@ class TouchTexture {
 
 // --- GradientBackground Class ---
 class GradientBackground {
-	sceneManager: any;
+	sceneManager: LiquidGradientManager;
 	mesh: THREE.Mesh | null;
-	uniforms: any;
+	uniforms: {
+		uTime: { value: number };
+		uResolution: { value: THREE.Vector2 };
+		uColor1: { value: THREE.Vector3 };
+		uColor2: { value: THREE.Vector3 };
+		uColor3: { value: THREE.Vector3 };
+		uColor4: { value: THREE.Vector3 };
+		uColor5: { value: THREE.Vector3 };
+		uColor6: { value: THREE.Vector3 };
+		uSpeed: { value: number };
+		uIntensity: { value: number };
+		uTouchTexture: { value: THREE.Texture | null };
+		uGrainIntensity: { value: number };
+		uZoom: { value: number };
+		uDarkNavy: { value: THREE.Vector3 };
+		uGradientSize: { value: number };
+		uGradientCount: { value: number };
+		uColor1Weight: { value: number };
+		uColor2Weight: { value: number };
+	};
 
-	constructor(sceneManager: any) {
+	constructor(sceneManager: LiquidGradientManager) {
 		this.sceneManager = sceneManager;
 		this.mesh = null;
 		this.uniforms = {
@@ -409,11 +428,17 @@ class LiquidGradientManager {
 	clock: THREE.Clock;
 	touchTexture: TouchTexture;
 	gradientBackground: GradientBackground;
-	colorSchemes: Record<number, any>;
+	colorSchemes: Record<
+		number,
+		{
+			color1: THREE.Vector3;
+			color2: THREE.Vector3;
+			color3?: THREE.Vector3;
+			bgColor: number;
+		}
+	>;
 	currentScheme: number;
-	mouse: { x: number; y: number };
 	animationFrameId: number | null = null;
-	lastTime = 0;
 
 	constructor(container: HTMLElement) {
 		this.container = container;
@@ -446,8 +471,6 @@ class LiquidGradientManager {
 		this.touchTexture = new TouchTexture();
 		this.gradientBackground = new GradientBackground(this);
 		this.gradientBackground.uniforms.uTouchTexture.value = this.touchTexture.texture;
-
-		this.mouse = { x: 0, y: 0 };
 
 		this.colorSchemes = {
 			1: {
@@ -531,12 +554,12 @@ class LiquidGradientManager {
 			uniforms.uGradientSize.value = 1.2;
 			uniforms.uSpeed.value = 1.5;
 		} else if (scheme >= 3) {
-			uniforms.uColor1.value.copy(colors.color1 || colors.color1);
-			uniforms.uColor2.value.copy(colors.color2 || colors.color2);
-			uniforms.uColor3.value.copy(colors.color3 || colors.color1);
-			uniforms.uColor4.value.copy(colors.color1 || colors.color1);
-			uniforms.uColor5.value.copy(colors.color2 || colors.color2);
-			uniforms.uColor6.value.copy(colors.color3 || colors.color1);
+			uniforms.uColor1.value.copy(colors.color1);
+			uniforms.uColor2.value.copy(colors.color2);
+			uniforms.uColor3.value.copy(colors.color3 ?? colors.color1);
+			uniforms.uColor4.value.copy(colors.color1);
+			uniforms.uColor5.value.copy(colors.color2);
+			uniforms.uColor6.value.copy(colors.color3 ?? colors.color1);
 			uniforms.uGradientSize.value = 1.0;
 			uniforms.uSpeed.value = 1.0;
 		}
@@ -580,15 +603,11 @@ class LiquidGradientManager {
 }
 
 // --- React Component ---
-const LiquidGradientBackground: React.FC = () => {
+const LiquidGradientBackground: FC = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const managerRef = useRef<LiquidGradientManager | null>(null);
 	const cursorRef = useRef<HTMLDivElement>(null);
-
-	const [activeScheme] = useState(2);
-
-
-
+	const activeScheme = 2;
 	// Initialize Three.js
 	useEffect(() => {
 		if (!containerRef.current) {
@@ -596,60 +615,35 @@ const LiquidGradientBackground: React.FC = () => {
 		}
 
 		managerRef.current = new LiquidGradientManager(containerRef.current);
+		managerRef.current.setColorScheme(activeScheme);
 		managerRef.current.render();
 
 		const handleResize = () => managerRef.current?.onResize();
 		window.addEventListener("resize", handleResize);
 
-		// Mouse/Touch listeners for fluid effect
-		const handleMouseMove = (e: MouseEvent) => {
+		const handlePointerMove = (e: PointerEvent) => {
 			managerRef.current?.onMouseMove(e.clientX, e.clientY);
-
-			// Custom cursor logic
 			if (cursorRef.current) {
 				cursorRef.current.style.left = `${e.clientX}px`;
 				cursorRef.current.style.top = `${e.clientY}px`;
 			}
 		};
 
-		const handleTouchMove = (e: TouchEvent) => {
-			const touch = e.touches[0];
-			if (!touch) {
-				return;
-			}
-			managerRef.current?.onMouseMove(touch.clientX, touch.clientY);
-		};
-
-		window.addEventListener("mousemove", handleMouseMove);
-		window.addEventListener("touchmove", handleTouchMove);
+		window.addEventListener("pointermove", handlePointerMove);
 
 		return () => {
 			window.removeEventListener("resize", handleResize);
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("touchmove", handleTouchMove);
+			window.removeEventListener("pointermove", handlePointerMove);
 			managerRef.current?.cleanup();
 		};
 	}, []);
-
-	// Update scheme if it ever changes
-	useEffect(() => {
-		if (managerRef.current) {
-			managerRef.current.setColorScheme(activeScheme);
-		}
-	}, [activeScheme]);
-
-
 
 	return (
 		<>
 			<div ref={containerRef} className="liquid-gradient-container" />
 			<div ref={cursorRef} className="liquid-custom-cursor" />
-
-
 		</>
 	);
 };
-
-
 
 export default LiquidGradientBackground;
