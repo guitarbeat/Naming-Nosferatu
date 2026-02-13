@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import "./LiquidGradient.css";
 
@@ -326,45 +326,43 @@ class GradientBackground {
 
               // Blend all colors with dynamic intensities - increased for more contrast
               vec3 color = vec3(0.0);
-              color += uColor1 * influence1 * (0.55 + 0.45 * sin(time * uSpeed)) * uColor1Weight;
-              color += uColor2 * influence2 * (0.55 + 0.45 * cos(time * uSpeed * 1.2)) * uColor2Weight;
-              color += uColor3 * influence3 * (0.55 + 0.45 * sin(time * uSpeed * 0.8)) * uColor1Weight;
-              color += uColor4 * influence4 * (0.55 + 0.45 * cos(time * uSpeed * 1.3)) * uColor2Weight;
-              color += uColor5 * influence5 * (0.55 + 0.45 * sin(time * uSpeed * 1.1)) * uColor1Weight;
-              color += uColor6 * influence6 * (0.55 + 0.45 * cos(time * uSpeed * 0.9)) * uColor2Weight;
+              color += uColor1 * influence1 * (0.6 + 0.4 * sin(time * uSpeed)) * uColor1Weight;
+              color += uColor2 * influence2 * (0.6 + 0.4 * cos(time * uSpeed * 1.2)) * uColor2Weight;
+              color += uColor3 * influence3 * (0.6 + 0.4 * sin(time * uSpeed * 0.8)) * uColor1Weight;
+              color += uColor4 * influence4 * (0.6 + 0.4 * cos(time * uSpeed * 1.3)) * uColor2Weight;
+              color += uColor5 * influence5 * (0.6 + 0.4 * sin(time * uSpeed * 1.1)) * uColor1Weight;
+              color += uColor6 * influence6 * (0.6 + 0.4 * cos(time * uSpeed * 0.9)) * uColor2Weight;
 
               // Add extra centers if uGradientCount > 6
               if (uGradientCount > 6.0) {
-                color += uColor1 * influence7 * (0.55 + 0.45 * sin(time * uSpeed * 1.4)) * uColor1Weight;
-                color += uColor2 * influence8 * (0.55 + 0.45 * cos(time * uSpeed * 1.5)) * uColor2Weight;
-                color += uColor3 * influence9 * (0.55 + 0.45 * sin(time * uSpeed * 1.6)) * uColor1Weight;
-                color += uColor4 * influence10 * (0.55 + 0.45 * cos(time * uSpeed * 1.7)) * uColor2Weight;
+                color += uColor1 * influence7 * (0.6 + 0.4 * sin(time * uSpeed * 1.4)) * uColor1Weight;
+                color += uColor2 * influence8 * (0.6 + 0.4 * cos(time * uSpeed * 1.5)) * uColor2Weight;
+                color += uColor3 * influence9 * (0.6 + 0.4 * sin(time * uSpeed * 1.6)) * uColor1Weight;
+                color += uColor4 * influence10 * (0.6 + 0.4 * cos(time * uSpeed * 1.7)) * uColor2Weight;
               }
               if (uGradientCount > 10.0) {
-                color += uColor5 * influence11 * (0.55 + 0.45 * sin(time * uSpeed * 1.8)) * uColor1Weight;
-                color += uColor6 * influence12 * (0.55 + 0.45 * cos(time * uSpeed * 1.9)) * uColor2Weight;
+                color += uColor5 * influence11 * (0.6 + 0.4 * sin(time * uSpeed * 1.8)) * uColor1Weight;
+                color += uColor6 * influence12 * (0.6 + 0.4 * cos(time * uSpeed * 1.9)) * uColor2Weight;
               }
 
-              // Add radial overlays - increased for more contrast, with color weighting
-              color += mix(uColor1, uColor3, radialInfluence1) * 0.45 * uColor1Weight;
-              color += mix(uColor2, uColor4, radialInfluence2) * 0.4 * uColor2Weight;
+              // Add radial overlays with more contrast
+              color += mix(uColor1, uColor3, radialInfluence1) * 0.5 * uColor1Weight;
+              color += mix(uColor2, uColor4, radialInfluence2) * 0.5 * uColor2Weight;
 
               // Clamp and apply intensity
               color = clamp(color, vec3(0.0), vec3(1.0)) * uIntensity;
 
-              // Enhanced color saturation for more vibrant look
+              // High saturation and contrast
               float luminance = dot(color, vec3(0.299, 0.587, 0.114));
-              color = mix(vec3(luminance), color, 1.35);
+              color = mix(vec3(luminance), color, 1.5); // More saturation
+              color = pow(color, vec3(0.85)); // Contrast boost
 
-              color = pow(color, vec3(0.92)); // Slight gamma adjustment for better contrast
-
-              // Ensure minimum brightness (navy blue base instead of grey/black)
-              // Use higher threshold to ensure navy blue shows through in low-intensity areas
+              // Base background mix - less aggressive so colors show more
               float brightness1 = length(color);
-              float mixFactor1 = max(brightness1 * 1.2, 0.15); // Higher threshold for navy blue base
-              color = mix(uDarkNavy, color, mixFactor1);
+              float mixFactor1 = smoothstep(0.05, 0.4, brightness1); 
+              color = mix(uDarkNavy * 0.5, color, mixFactor1);
 
-              // Cap maximum brightness - increased for more contrast
+              // Cap maximum brightness
               float maxBrightness = 1.0;
               float brightness = length(color);
               if (brightness > maxBrightness) {
@@ -453,41 +451,43 @@ class LiquidGradientManager {
 
 		this.colorSchemes = {
 			1: {
-				// Orange + Navy Blue
-				color1: new THREE.Vector3(0.945, 0.353, 0.133),
-				color2: new THREE.Vector3(0.039, 0.055, 0.153),
+				// Sunset Inferno
+				color1: new THREE.Vector3(0.96, 0.35, 0.13), // Orange
+				color2: new THREE.Vector3(0.48, 0.12, 1.0), // Deep Purple
+				bgColor: 0x05051a,
 			},
 			2: {
-				// Turquoise + Coral Red-Orange
-				color1: new THREE.Vector3(1.0, 0.424, 0.314),
-				color2: new THREE.Vector3(0.251, 0.878, 0.816),
+				// Neon Cyber
+				color1: new THREE.Vector3(0.0, 1.0, 0.8), // Cyan
+				color2: new THREE.Vector3(1.0, 0.0, 0.8), // Magenta
+				bgColor: 0x0a0514,
 			},
 			3: {
-				// Orange + Navy + Turquoise
-				color1: new THREE.Vector3(0.945, 0.353, 0.133),
-				color2: new THREE.Vector3(0.039, 0.055, 0.153),
-				color3: new THREE.Vector3(0.251, 0.878, 0.816),
+				// Deep Ocean
+				color1: new THREE.Vector3(0.1, 0.4, 1.0), // Blue
+				color2: new THREE.Vector3(0.0, 1.0, 0.5), // Mint
+				color3: new THREE.Vector3(0.5, 0.0, 1.0), // Violet
+				bgColor: 0x020a1a,
 			},
 			4: {
-				// Based on Scheme 3: F26633 + 2D6B6D + D1AF9C
-				color1: new THREE.Vector3(0.949, 0.4, 0.2),
-				color2: new THREE.Vector3(0.176, 0.42, 0.427),
-				color3: new THREE.Vector3(0.82, 0.686, 0.612),
+				// Golden Hour
+				color1: new THREE.Vector3(1.0, 0.8, 0.2), // Gold
+				color2: new THREE.Vector3(1.0, 0.4, 0.0), // Hot Orange
+				color3: new THREE.Vector3(0.4, 0.1, 0.0), // Dark Sienna
+				bgColor: 0x1a0d02,
 			},
 			5: {
-				// F15A22 + 004238 + F15A22 + 000000 + F15A22 + 000000
-				color1: new THREE.Vector3(0.945, 0.353, 0.133),
-				color2: new THREE.Vector3(0.0, 0.259, 0.22),
-				color3: new THREE.Vector3(0.945, 0.353, 0.133),
-				color4: new THREE.Vector3(0.0, 0.0, 0.0),
-				color5: new THREE.Vector3(0.945, 0.353, 0.133),
-				color6: new THREE.Vector3(0.0, 0.0, 0.0),
+				// Forest Spirit
+				color1: new THREE.Vector3(0.1, 0.9, 0.3), // Emerald
+				color2: new THREE.Vector3(0.0, 0.3, 0.1), // Moss
+				color3: new THREE.Vector3(1.0, 1.0, 1.0), // Mist
+				bgColor: 0x041a05,
 			},
 		};
-		this.currentScheme = 1;
+		this.currentScheme = 2;
 
 		this.gradientBackground.init();
-		this.setColorScheme(1);
+		this.setColorScheme(2);
 	}
 
 	getViewSize() {
@@ -504,60 +504,41 @@ class LiquidGradientManager {
 		const colors = this.colorSchemes[scheme];
 		const uniforms = this.gradientBackground.uniforms;
 
-		if (scheme === 3) {
-			uniforms.uColor1.value.copy(colors.color1);
-			uniforms.uColor2.value.copy(colors.color2);
-			uniforms.uColor3.value.copy(colors.color3);
-			uniforms.uColor4.value.copy(colors.color1);
-			uniforms.uColor5.value.copy(colors.color2);
-			uniforms.uColor6.value.copy(colors.color3);
-		} else if (scheme === 4) {
-			uniforms.uColor1.value.copy(colors.color1);
-			uniforms.uColor2.value.copy(colors.color2);
-			uniforms.uColor3.value.copy(colors.color3);
-			uniforms.uColor4.value.copy(colors.color1);
-			uniforms.uColor5.value.copy(colors.color2);
-			uniforms.uColor6.value.copy(colors.color3);
-		} else if (scheme === 5) {
-			uniforms.uColor1.value.copy(colors.color1);
-			uniforms.uColor2.value.copy(colors.color2);
-			uniforms.uColor3.value.copy(colors.color3);
-			uniforms.uColor4.value.copy(colors.color4);
-			uniforms.uColor5.value.copy(colors.color5);
-			uniforms.uColor6.value.copy(colors.color6);
-		} else {
+		this.scene.background = new THREE.Color(colors.bgColor);
+		const bgVec = new THREE.Vector3(
+			this.scene.background.r,
+			this.scene.background.g,
+			this.scene.background.b,
+		);
+		uniforms.uDarkNavy.value.copy(bgVec);
+
+		if (scheme === 1) {
 			uniforms.uColor1.value.copy(colors.color1);
 			uniforms.uColor2.value.copy(colors.color2);
 			uniforms.uColor3.value.copy(colors.color1);
 			uniforms.uColor4.value.copy(colors.color2);
 			uniforms.uColor5.value.copy(colors.color1);
 			uniforms.uColor6.value.copy(colors.color2);
-		}
-
-		if (scheme === 1) {
-			this.scene.background = new THREE.Color(0x0a0e27);
-			uniforms.uDarkNavy.value.set(0.039, 0.055, 0.153);
-			uniforms.uGradientSize.value = 0.45;
-			uniforms.uGradientCount.value = 12.0;
-			uniforms.uSpeed.value = 1.5;
-			uniforms.uColor1Weight.value = 0.5;
-			uniforms.uColor2Weight.value = 1.8;
+			uniforms.uGradientSize.value = 0.85;
+			uniforms.uSpeed.value = 1.0;
 		} else if (scheme === 2) {
-			this.scene.background = new THREE.Color(0x0a0e27);
-			uniforms.uDarkNavy.value.set(0.039, 0.055, 0.153);
+			uniforms.uColor1.value.copy(colors.color1);
+			uniforms.uColor2.value.copy(colors.color2);
+			uniforms.uColor3.value.copy(colors.color1);
+			uniforms.uColor4.value.copy(colors.color2);
+			uniforms.uColor5.value.copy(colors.color1);
+			uniforms.uColor6.value.copy(colors.color2);
+			uniforms.uGradientSize.value = 1.2;
+			uniforms.uSpeed.value = 1.5;
+		} else if (scheme >= 3) {
+			uniforms.uColor1.value.copy(colors.color1 || colors.color1);
+			uniforms.uColor2.value.copy(colors.color2 || colors.color2);
+			uniforms.uColor3.value.copy(colors.color3 || colors.color1);
+			uniforms.uColor4.value.copy(colors.color1 || colors.color1);
+			uniforms.uColor5.value.copy(colors.color2 || colors.color2);
+			uniforms.uColor6.value.copy(colors.color3 || colors.color1);
 			uniforms.uGradientSize.value = 1.0;
-			uniforms.uGradientCount.value = 6.0;
-			uniforms.uSpeed.value = 1.2;
-			uniforms.uColor1Weight.value = 1.0;
-			uniforms.uColor2Weight.value = 1.0;
-		} else {
-			this.scene.background = new THREE.Color(0x0a0e27);
-			uniforms.uDarkNavy.value.set(0.039, 0.055, 0.153);
-			uniforms.uGradientSize.value = 1.0;
-			uniforms.uGradientCount.value = 6.0;
-			uniforms.uSpeed.value = 1.2;
-			uniforms.uColor1Weight.value = 1.0;
-			uniforms.uColor2Weight.value = 1.0;
+			uniforms.uSpeed.value = 1.0;
 		}
 	}
 
@@ -604,36 +585,9 @@ const LiquidGradientBackground: React.FC = () => {
 	const managerRef = useRef<LiquidGradientManager | null>(null);
 	const cursorRef = useRef<HTMLDivElement>(null);
 
-	const [activeScheme, setActiveScheme] = useState(1);
-	const [adjusterOpen, setAdjusterOpen] = useState(false);
+	const [activeScheme] = useState(2);
 
-	// Define updateColorPickers before useEffect to resolve dependency issues
-	const updateColorPickers = useCallback(() => {
-		if (!managerRef.current) {
-			return;
-		}
-		const uniforms = managerRef.current.gradientBackground.uniforms;
-		const colors = [
-			uniforms.uColor1.value,
-			uniforms.uColor2.value,
-			uniforms.uColor3.value,
-			uniforms.uColor4.value,
-			uniforms.uColor5.value,
-			uniforms.uColor6.value,
-		];
 
-		colors.forEach((color, index) => {
-			const hex = rgbToHex(color.x, color.y, color.z);
-			const picker = document.getElementById(`liquidColorPicker${index + 1}`) as HTMLInputElement;
-			const display = document.getElementById(`liquidColorValue${index + 1}`) as HTMLInputElement;
-			if (picker) {
-				picker.value = hex;
-			}
-			if (display) {
-				display.value = hex.toUpperCase();
-			}
-		});
-	}, []);
 
 	// Initialize Three.js
 	useEffect(() => {
@@ -677,150 +631,25 @@ const LiquidGradientBackground: React.FC = () => {
 		};
 	}, []);
 
-	// Update Color Pickers when scheme changes
+	// Update scheme if it ever changes
 	useEffect(() => {
 		if (managerRef.current) {
 			managerRef.current.setColorScheme(activeScheme);
-			updateColorPickers();
 		}
-	}, [activeScheme, updateColorPickers]);
+	}, [activeScheme]);
 
-	const handleColorChange = (index: number, hex: string) => {
-		const rgb = hexToRgb(hex);
-		if (rgb && managerRef.current) {
-			const uniforms = managerRef.current.gradientBackground.uniforms;
-			const colorUniform = uniforms[`uColor${index}`];
-			if (colorUniform) {
-				colorUniform.value.set(rgb.r, rgb.g, rgb.b);
-				const display = document.getElementById(`liquidColorValue${index}`) as HTMLInputElement;
-				if (display) {
-					display.value = hex.toUpperCase();
-				}
-			}
-		}
-	};
 
-	const copyColor = (index: number) => {
-		const display = document.getElementById(`liquidColorValue${index}`) as HTMLInputElement;
-		if (display) {
-			navigator.clipboard.writeText(display.value);
-			// Optional: Add visual feedback logic here
-		}
-	};
-
-	const exportColors = () => {
-		const colors = [];
-		for (let i = 1; i <= 6; i++) {
-			const display = document.getElementById(`liquidColorValue${i}`) as HTMLInputElement;
-			if (display) {
-				colors.push(display.value);
-			}
-		}
-		const exportText = `Color Scheme:\n${colors
-			.map((c, i) => `Color ${i + 1}: ${c}`)
-			.join("\n")}\n\nHex Array: [${colors.map((c) => `"${c}"`).join(", ")}]`;
-		navigator.clipboard.writeText(exportText);
-	};
 
 	return (
 		<>
 			<div ref={containerRef} className="liquid-gradient-container" />
 			<div ref={cursorRef} className="liquid-custom-cursor" />
 
-			{/* UI Overlay */}
-			<div className="liquid-controls-wrapper">
-				<div className="liquid-color-controls">
-					{[1, 2, 3, 4, 5].map((scheme) => (
-						<button
-							type="button"
-							key={scheme}
-							className={`liquid-color-btn ${activeScheme === scheme ? "active" : ""}`}
-							onClick={() => setActiveScheme(scheme)}
-						>
-							Scheme {scheme}
-						</button>
-					))}
-				</div>
 
-				{!adjusterOpen && (
-					<button
-						type="button"
-						className="liquid-toggle-adjuster-btn"
-						onClick={() => {
-							setAdjusterOpen(true);
-							setTimeout(updateColorPickers, 0);
-						}}
-					>
-						Adjust Colors
-					</button>
-				)}
-
-				<div className={`liquid-adjuster-panel ${adjusterOpen ? "open" : ""}`}>
-					<div className="liquid-adjuster-header">
-						<h3 className="liquid-adjuster-title">Color Adjuster</h3>
-						<button
-							type="button"
-							className="liquid-adjuster-close"
-							onClick={() => setAdjusterOpen(false)}
-						>
-							×
-						</button>
-					</div>
-
-					{[1, 2, 3, 4, 5, 6].map((i) => (
-						<div key={i} className="liquid-picker-group">
-							<div className="liquid-picker-label">
-								<span>Color {i}</span>
-							</div>
-							<div className="liquid-picker-wrapper">
-								<input
-									type="color"
-									className="liquid-picker-input"
-									id={`liquidColorPicker${i}`}
-									onChange={(e) => handleColorChange(i, e.target.value)}
-								/>
-								<input
-									type="text"
-									className="liquid-value-display"
-									id={`liquidColorValue${i}`}
-									readOnly={true}
-								/>
-								<button type="button" className="liquid-copy-btn" onClick={() => copyColor(i)}>
-									Copy
-								</button>
-							</div>
-						</div>
-					))}
-
-					<div className="liquid-adjuster-actions">
-						<button type="button" className="liquid-export-btn" onClick={exportColors}>
-							Export All Colors
-						</button>
-					</div>
-				</div>
-			</div>
 		</>
 	);
 };
 
-// Helpers
-function rgbToHex(r: number, g: number, b: number) {
-	const toHex = (n: number) => {
-		const hex = Math.round(n * 255).toString(16);
-		return hex.length === 1 ? `0${hex}` : hex;
-	};
-	return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
 
-function hexToRgb(hex: string) {
-	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	return result
-		? {
-			r: Number.parseInt(result[1] as string, 16) / 255,
-			g: Number.parseInt(result[2] as string, 16) / 255,
-			b: Number.parseInt(result[3] as string, 16) / 255,
-		}
-		: null;
-}
 
 export default LiquidGradientBackground;

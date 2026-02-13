@@ -469,9 +469,9 @@ a:focus-visible {
 	--error-color: var(--color-error);
 	--warning-color: var(--color-mimosa);
 
-	/* * Enforced body background with gradient mesh */
-	background-color: var(--background-color);
-	background-image:
+	/* * Enforced body background with dynamic effects revealed */
+	/* background-color: var(--background-color); */
+	/* background-image:
 		radial-gradient(
 			circle at 15% -20%,
 			color-mix(in srgb, var(--color-hot-pink) 24%, transparent),
@@ -486,13 +486,13 @@ a:focus-visible {
 			circle at -10% 70%,
 			color-mix(in srgb, var(--color-fire-red) 12%, transparent),
 			transparent 60%
-		);
+		); */
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 }
 
 body {
-	background-color: var(--background-color);
+	background-color: transparent;
 	color: var(--text-primary);
 }
 /* ==========================================================================
