@@ -65,7 +65,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[visibleNames],
 	);
 
-	// idToName dependency captures visibleNames changes through memoization
+	// idToName memoizes based on visibleNames, so tracking idToName implicitly tracks visibleNames
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const results: Record<string, { rating: number; wins: number; losses: number }> = {};
