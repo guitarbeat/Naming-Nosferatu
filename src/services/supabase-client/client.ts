@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
 import { QueryClient } from "@tanstack/react-query";
+import { invalidateIdCache, invalidateNameCache, updateNameCache } from "@/services/coreServices";
 import type { NameItem } from "@/types/appTypes";
 import type { Database } from "./types";
 
@@ -237,6 +238,9 @@ async function deleteById(nameId: string | number) {
 					error: error.message || "Failed to delete name",
 				};
 			}
+			try {
+				invalidateIdCache(nameId);
+			} catch { /* ignore */ }
 			return { success: true };
 		},
 		{ success: false, error: "Supabase not configured" },
@@ -331,6 +335,11 @@ export const coreAPI = {
 						error: error.message || "Failed to add name",
 					};
 				}
+				if (data && (data as any).id) {
+					try {
+						updateNameCache(name, (data as any).id);
+					} catch { /* ignore */ }
+				}
 				return { success: true, data };
 			},
 			{ success: false, error: "Supabase not configured or request failed" },
@@ -350,6 +359,9 @@ export const coreAPI = {
 						error: error.message || "Failed to remove name",
 					};
 				}
+				try {
+					invalidateNameCache(name);
+				} catch { /* ignore */ }
 				return { success: true };
 			},
 			{ success: false, error: "Supabase not configured" },

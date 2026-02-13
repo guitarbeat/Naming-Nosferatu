@@ -96,6 +96,8 @@ export const syncQueue = new SyncQueueService();
 // Tournament API
 // ═══════════════════════════════════════════════════════════════════════════════
 
+const nameToIdCache = new Map<string, string | number>();
+
 interface TournamentCreateResult {
 	success: boolean;
 	data?: {
@@ -177,26 +179,31 @@ export const tournamentsAPI = {
 				}
 
 				// Resolve name → ID mapping
-				const nameStrings = ratings.map((r) => r.name);
-				const { data: nameData } = (await client
-					.from("cat_name_options")
-					.select("id, name")
-					.in("name", nameStrings)) as unknown as {
-					data: Array<{ id: string | number; name: string }> | null;
-					error: unknown;
-				};
+				const uniqueNames = [...new Set(ratings.map((r) => r.name))];
+				const missingNames = uniqueNames.filter((name) => !nameToIdCache.has(name));
 
-				const nameToId = new Map<string, string | number>();
-				for (const n of nameData ?? []) {
-					nameToId.set(n.name, n.id);
+				if (missingNames.length > 0) {
+					const { data: nameData } = (await client
+						.from("cat_name_options")
+						.select("id, name")
+						.in("name", missingNames)) as unknown as {
+						data: Array<{ id: string | number; name: string }> | null;
+						error: unknown;
+					};
+
+					if (nameData) {
+						for (const n of nameData) {
+							nameToIdCache.set(n.name, n.id);
+						}
+					}
 				}
 
 				// Build upsert records (only for names we found in the DB)
 				const records = ratings
-					.filter((r) => nameToId.has(r.name))
+					.filter((r) => nameToIdCache.has(r.name))
 					.map((r) => ({
 						user_name: userName,
-						name_id: String(nameToId.get(r.name)),
+						name_id: String(nameToIdCache.get(r.name)),
 						rating: Math.min(2400, Math.max(800, Math.round(r.rating))),
 						wins: r.wins ?? 0,
 						losses: r.losses ?? 0,
@@ -415,4 +422,21 @@ export function calculateBracketRound(totalNames: number, currentMatch: number):
 	}
 	const matchesPerRound = Math.ceil(totalNames / 2);
 	return Math.ceil(currentMatch / matchesPerRound);
+}
+
+export function invalidateNameCache(name: string) {
+	nameToIdCache.delete(name);
+}
+
+export function updateNameCache(name: string, id: string | number) {
+	nameToIdCache.set(name, id);
+}
+
+export function invalidateIdCache(id: string | number) {
+	for (const [name, cachedId] of nameToIdCache.entries()) {
+		if (String(cachedId) === String(id)) {
+			nameToIdCache.delete(name);
+			break;
+		}
+	}
 }
