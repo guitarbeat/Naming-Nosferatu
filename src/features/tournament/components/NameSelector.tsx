@@ -595,13 +595,20 @@ export function NameSelector() {
 									? allCatImages[imageIndex]
 									: getRandomCatImage(nameItem.id, CAT_IMAGES);
 							return (
-								<button
+								<div
 									key={nameItem.id}
-									type="button"
 									onClick={() => handleToggleName(nameItem.id)}
-									className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 ${isSelected
-										? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
-										: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											e.preventDefault();
+											handleToggleName(nameItem.id);
+										}
+									}}
+									role="button"
+									tabIndex={0}
+									className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${isSelected
+											? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
+											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
 										}`}
 								>
 									<div className="aspect-square w-full relative">
@@ -674,7 +681,7 @@ export function NameSelector() {
 											</button>
 										)}
 									</div>
-								</button>
+								</div>
 							);
 						})}
 					</div>

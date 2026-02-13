@@ -117,9 +117,8 @@ class TouchTexture {
 		intensity *= point.force;
 
 		const radius = this.radius;
-		const color = `${((point.vx + 1) / 2) * 255}, ${
-			((point.vy + 1) / 2) * 255
-		}, ${intensity * 255}`;
+		const color = `${((point.vx + 1) / 2) * 255}, ${((point.vy + 1) / 2) * 255
+			}, ${intensity * 255}`;
 		const offset = this.size * 5;
 		this.ctx.shadowOffsetX = offset;
 		this.ctx.shadowOffsetY = offset;
@@ -211,7 +210,15 @@ class GradientBackground {
               return grainValue * 2.0 - 1.0;
             }
 
-            vec3 getGradientColor(vec2 uv, float time) {
+            void main() {
+              // Apply zoom
+              vec2 uv = (vUv - 0.5) * uZoom + 0.5;
+              float time = uTime;
+
+              // Sample touch texture for displacement
+              vec4 touch = texture2D(uTouchTexture, vUv);
+              uv -= touch.xy * 0.15;
+              
               // Dynamic gradient size based on uniform
               float gradientRadius = uGradientSize;
 
@@ -364,6 +371,9 @@ class GradientBackground {
                 color = color * (maxBrightness / brightness);
               }
 
+              // Apply grain
+              color += grain(vUv, time) * uGrainIntensity;
+              
               gl_FragColor = vec4(color, 1.0);
             }
           `,
@@ -806,10 +816,10 @@ function hexToRgb(hex: string) {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result
 		? {
-				r: Number.parseInt(result[1] as string, 16) / 255,
-				g: Number.parseInt(result[2] as string, 16) / 255,
-				b: Number.parseInt(result[3] as string, 16) / 255,
-			}
+			r: Number.parseInt(result[1] as string, 16) / 255,
+			g: Number.parseInt(result[2] as string, 16) / 255,
+			b: Number.parseInt(result[3] as string, 16) / 255,
+		}
 		: null;
 }
 
