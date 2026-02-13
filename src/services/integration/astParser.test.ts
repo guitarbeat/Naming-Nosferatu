@@ -63,14 +63,10 @@ export const myConst = 42;
 
 			expect(result.imports).toContain("react");
 			expect(result.exports).toHaveLength(2);
-			expect(
-				result.exports.some(
-					(e) => e.name === "MyComponent" && e.type === "function",
-				),
-			).toBe(true);
-			expect(
-				result.exports.some((e) => e.name === "myConst" && e.type === "const"),
-			).toBe(true);
+			expect(result.exports.some((e) => e.name === "MyComponent" && e.type === "function")).toBe(
+				true,
+			);
+			expect(result.exports.some((e) => e.name === "myConst" && e.type === "const")).toBe(true);
 			expect(result.hasJSX).toBe(true);
 
 			cleanupTestDir();
@@ -132,22 +128,17 @@ export default function defaultFunction() {
 
 			expect(
 				result.exports.some(
-					(e) =>
-						e.name === "namedFunction" && e.type === "function" && !e.isDefault,
+					(e) => e.name === "namedFunction" && e.type === "function" && !e.isDefault,
 				),
 			).toBe(true);
 			expect(
 				result.exports.some(
-					(e) =>
-						e.name === "arrowFunction" && e.type === "const" && !e.isDefault,
+					(e) => e.name === "arrowFunction" && e.type === "const" && !e.isDefault,
 				),
 			).toBe(true);
 			expect(
 				result.exports.some(
-					(e) =>
-						e.name === "defaultFunction" &&
-						e.type === "function" &&
-						e.isDefault,
+					(e) => e.name === "defaultFunction" && e.type === "function" && e.isDefault,
 				),
 			).toBe(true);
 
@@ -169,14 +160,10 @@ export default class DefaultClass {
 			const result = parseFile(filePath);
 
 			expect(
-				result.exports.some(
-					(e) => e.name === "MyClass" && e.type === "class" && !e.isDefault,
-				),
+				result.exports.some((e) => e.name === "MyClass" && e.type === "class" && !e.isDefault),
 			).toBe(true);
 			expect(
-				result.exports.some(
-					(e) => e.name === "DefaultClass" && e.type === "class" && e.isDefault,
-				),
+				result.exports.some((e) => e.name === "DefaultClass" && e.type === "class" && e.isDefault),
 			).toBe(true);
 
 			cleanupTestDir();
@@ -197,14 +184,10 @@ export interface MyInterface {
 
 			const result = parseFile(filePath);
 
-			expect(
-				result.exports.some((e) => e.name === "MyType" && e.type === "type"),
-			).toBe(true);
-			expect(
-				result.exports.some(
-					(e) => e.name === "MyInterface" && e.type === "interface",
-				),
-			).toBe(true);
+			expect(result.exports.some((e) => e.name === "MyType" && e.type === "type")).toBe(true);
+			expect(result.exports.some((e) => e.name === "MyInterface" && e.type === "interface")).toBe(
+				true,
+			);
 
 			cleanupTestDir();
 		});
@@ -365,20 +348,12 @@ export function helper() {
 
 			// External packages
 			expect(deps.find((d) => d.importPath === "react")?.isExternal).toBe(true);
-			expect(
-				deps.find((d) => d.importPath === "@tanstack/react-query")?.isExternal,
-			).toBe(true);
+			expect(deps.find((d) => d.importPath === "@tanstack/react-query")?.isExternal).toBe(true);
 
 			// Internal modules
-			expect(
-				deps.find((d) => d.importPath === "./utils/helper")?.isExternal,
-			).toBe(false);
-			expect(deps.find((d) => d.importPath === "../types")?.isExternal).toBe(
-				false,
-			);
-			expect(
-				deps.find((d) => d.importPath === "../../config")?.isExternal,
-			).toBe(false);
+			expect(deps.find((d) => d.importPath === "./utils/helper")?.isExternal).toBe(false);
+			expect(deps.find((d) => d.importPath === "../types")?.isExternal).toBe(false);
+			expect(deps.find((d) => d.importPath === "../../config")?.isExternal).toBe(false);
 
 			// All should start as unresolved
 			deps.forEach((dep) => {

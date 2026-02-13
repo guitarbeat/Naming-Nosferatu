@@ -11,11 +11,7 @@ import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { useTournamentVote } from "./hooks/useTournamentVote";
 
-function TournamentContent({
-	onComplete,
-	names = [],
-	onVote,
-}: TournamentProps) {
+function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
 	const { showSuccess, showError } = useToast();
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
@@ -31,9 +27,7 @@ function TournamentContent({
 		handleUndo,
 	} = tournament;
 
-	const [_selectedOption, setSelectedOption] = useState<
-		"left" | "right" | null
-	>(null);
+	const [_selectedOption, setSelectedOption] = useState<"left" | "right" | null>(null);
 	const [isTransitioning, setIsTransitioning] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [_lastMatchResult, setLastMatchResult] = useState<string | null>(null);
@@ -86,17 +80,13 @@ function TournamentContent({
 
 	const leftImg = showCatPictures
 		? getRandomCatImage(
-				typeof currentMatch.left === "object"
-					? currentMatch.left.id
-					: currentMatch.left,
+				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
 				CAT_IMAGES,
 			)
 		: null;
 	const rightImg = showCatPictures
 		? getRandomCatImage(
-				typeof currentMatch.right === "object"
-					? currentMatch.right.id
-					: currentMatch.right,
+				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
 				CAT_IMAGES,
 			)
 		: null;
@@ -106,17 +96,13 @@ function TournamentContent({
 			<header className="pt-6 px-4 space-y-4">
 				<div className="flex items-center justify-between">
 					<div className="px-4 py-1.5 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
-						<span className="material-symbols-outlined text-primary text-sm">
-							stars
-						</span>
+						<span className="material-symbols-outlined text-primary text-sm">stars</span>
 						<span className="text-xs font-bold tracking-widest uppercase text-white/90">
 							Round {roundNumber}
 						</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<span className="material-symbols-outlined text-stardust">
-							workspace_premium
-						</span>
+						<span className="material-symbols-outlined text-stardust">workspace_premium</span>
 						<span className="text-xs font-bold">
 							{currentMatchNumber} / {totalMatches}
 						</span>
@@ -171,13 +157,9 @@ function TournamentContent({
 						interactive={true}
 						onClick={() => {
 							const leftId =
-								typeof currentMatch.left === "object"
-									? currentMatch.left.id
-									: currentMatch.left;
+								typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
 							const rightId =
-								typeof currentMatch.right === "object"
-									? currentMatch.right.id
-									: currentMatch.right;
+								typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
 							handleVoteWithAnimation(leftId, rightId);
 						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
@@ -197,8 +179,7 @@ function TournamentContent({
 								/>
 							) : (
 								<span className="text-white/20 text-6xl font-bold select-none">
-									{typeof currentMatch.left === "object" &&
-									currentMatch.left?.name
+									{typeof currentMatch.left === "object" && currentMatch.left?.name
 										? currentMatch.left.name[0]?.toUpperCase() || "?"
 										: "?"}
 								</span>
@@ -215,9 +196,7 @@ function TournamentContent({
 
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
 						<div className="size-14 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg">
-							<span className="font-bold text-xl italic tracking-tighter">
-								VS
-							</span>
+							<span className="font-bold text-xl italic tracking-tighter">VS</span>
 						</div>
 					</div>
 
@@ -225,13 +204,9 @@ function TournamentContent({
 						interactive={true}
 						onClick={() => {
 							const leftId =
-								typeof currentMatch.left === "object"
-									? currentMatch.left.id
-									: currentMatch.left;
+								typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
 							const rightId =
-								typeof currentMatch.right === "object"
-									? currentMatch.right.id
-									: currentMatch.right;
+								typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
 							handleVoteWithAnimation(rightId, leftId);
 						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
@@ -251,8 +226,7 @@ function TournamentContent({
 								/>
 							) : (
 								<span className="text-white/20 text-6xl font-bold select-none">
-									{typeof currentMatch.right === "object" &&
-									currentMatch.right?.name
+									{typeof currentMatch.right === "object" && currentMatch.right?.name
 										? currentMatch.right.name[0]?.toUpperCase() || "?"
 										: "?"}
 								</span>
@@ -273,9 +247,7 @@ function TournamentContent({
 					onClick={() => handleUndo()}
 					className="mt-6 glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
 				>
-					<span className="material-symbols-outlined text-sm text-primary">
-						undo
-					</span>
+					<span className="material-symbols-outlined text-sm text-primary">undo</span>
 					<span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">
 						Undo
 					</span>

@@ -54,9 +54,7 @@ export enum ErrorCode {
  *
  * Requirements: 10.1, 10.2, 10.3, 10.4
  */
-export function getRecoveryStrategy(
-	error: IntegrationError,
-): ErrorRecoveryStrategy {
+export function getRecoveryStrategy(error: IntegrationError): ErrorRecoveryStrategy {
 	const errorCode = error.code;
 
 	// File System Errors - Retry with exponential backoff
@@ -134,11 +132,9 @@ function isFileSystemError(code: string): boolean {
  * Checks if an error code represents a parse error
  */
 function isParseError(code: string): boolean {
-	return [
-		ErrorCode.INVALID_SYNTAX,
-		ErrorCode.MALFORMED_IMPORTS,
-		ErrorCode.PARSE_ERROR,
-	].includes(code as ErrorCode);
+	return [ErrorCode.INVALID_SYNTAX, ErrorCode.MALFORMED_IMPORTS, ErrorCode.PARSE_ERROR].includes(
+		code as ErrorCode,
+	);
 }
 
 /**
@@ -194,12 +190,7 @@ export function createIntegrationError(
 	const message = error instanceof Error ? error.message : String(error);
 	const code = classifyError(message);
 
-	return new IntegrationError(
-		message,
-		code,
-		filePath,
-		error instanceof Error ? error : undefined,
-	);
+	return new IntegrationError(message, code, filePath, error instanceof Error ? error : undefined);
 }
 
 /**
@@ -215,10 +206,7 @@ function classifyError(message: string): string {
 	if (lowerMessage.includes("enoent") || lowerMessage.includes("not found")) {
 		return ErrorCode.FILE_NOT_FOUND;
 	}
-	if (
-		lowerMessage.includes("eacces") ||
-		lowerMessage.includes("permission denied")
-	) {
+	if (lowerMessage.includes("eacces") || lowerMessage.includes("permission denied")) {
 		return ErrorCode.PERMISSION_DENIED;
 	}
 	if (lowerMessage.includes("enospc") || lowerMessage.includes("disk full")) {
@@ -226,10 +214,7 @@ function classifyError(message: string): string {
 	}
 
 	// Parse Errors
-	if (
-		lowerMessage.includes("syntax error") ||
-		lowerMessage.includes("unexpected token")
-	) {
+	if (lowerMessage.includes("syntax error") || lowerMessage.includes("unexpected token")) {
 		return ErrorCode.INVALID_SYNTAX;
 	}
 	if (lowerMessage.includes("malformed import")) {
@@ -237,16 +222,10 @@ function classifyError(message: string): string {
 	}
 
 	// Build Errors
-	if (
-		lowerMessage.includes("type error") ||
-		lowerMessage.includes("cannot find name")
-	) {
+	if (lowerMessage.includes("type error") || lowerMessage.includes("cannot find name")) {
 		return ErrorCode.TYPE_ERROR;
 	}
-	if (
-		lowerMessage.includes("cannot find module") ||
-		lowerMessage.includes("module not found")
-	) {
+	if (lowerMessage.includes("cannot find module") || lowerMessage.includes("module not found")) {
 		return ErrorCode.MISSING_DEPENDENCY;
 	}
 	if (lowerMessage.includes("import") && lowerMessage.includes("resolution")) {
@@ -306,8 +285,7 @@ export function formatErrorWithSuggestions(
 	}
 
 	if (strategy.requiresUserInput) {
-		message +=
-			"\n\nAction Required: This error requires user input to resolve.";
+		message += "\n\nAction Required: This error requires user input to resolve.";
 		message += getSuggestionsForErrorCode(error.code);
 	}
 

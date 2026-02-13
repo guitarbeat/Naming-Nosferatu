@@ -25,19 +25,12 @@ export interface FileComparison {
  * Parse file content to extract exports using TypeScript Compiler API
  */
 function parseFileContent(filePath: string, content: string): Export[] {
-	const sourceFile = ts.createSourceFile(
-		filePath,
-		content,
-		ts.ScriptTarget.Latest,
-		true,
-	);
+	const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
 
 	const exports: Export[] = [];
 
 	function visit(node: ts.Node) {
-		const modifiers = ts.canHaveModifiers(node)
-			? ts.getModifiers(node)
-			: undefined;
+		const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined;
 		const hasDefaultModifier = modifiers?.some(
 			(m: ts.Modifier) => m.kind === ts.SyntaxKind.DefaultKeyword,
 		);
@@ -67,11 +60,7 @@ function parseFileContent(filePath: string, content: string): Export[] {
 /**
  * Extract export information from a node
  */
-function extractExport(
-	node: ts.Node,
-	exports: Export[],
-	isDefault: boolean,
-): void {
+function extractExport(node: ts.Node, exports: Export[], isDefault: boolean): void {
 	if (ts.isFunctionDeclaration(node) && node.name) {
 		exports.push({
 			name: isDefault ? "default" : node.name.text,
@@ -140,10 +129,7 @@ export function compareFiles(
 	existingContent: string,
 ): FileComparison {
 	// Parse both files to extract exports
-	const referenceExports = parseFileContent(
-		referenceFilePath,
-		referenceContent,
-	);
+	const referenceExports = parseFileContent(referenceFilePath, referenceContent);
 	const existingExports = parseFileContent(existingFilePath, existingContent);
 
 	// Create maps for quick lookup
@@ -291,11 +277,7 @@ function escapeRegex(str: string): string {
  * @param exp - Export information
  * @returns Extracted declaration code
  */
-function extractDeclaration(
-	lines: string[],
-	startLine: number,
-	exp: Export,
-): string {
+function extractDeclaration(lines: string[], startLine: number, exp: Export): string {
 	const result: string[] = [];
 	let braceCount = 0;
 	let parenCount = 0;
@@ -341,21 +323,13 @@ function extractDeclaration(
 				break;
 			}
 			// For type/interface declarations without braces
-			if (
-				(exp.type === "type" || exp.type === "interface") &&
-				line.trim().endsWith(";")
-			) {
+			if ((exp.type === "type" || exp.type === "interface") && line.trim().endsWith(";")) {
 				break;
 			}
 		}
 
 		// For declarations with braces, stop when braces are balanced
-		if (
-			inDeclaration &&
-			braceCount === 0 &&
-			parenCount === 0 &&
-			i > startLine
-		) {
+		if (inDeclaration && braceCount === 0 && parenCount === 0 && i > startLine) {
 			// Check if we've closed all braces
 			if (line.includes("}")) {
 				break;

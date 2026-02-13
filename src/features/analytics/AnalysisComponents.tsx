@@ -14,17 +14,8 @@ import {
 import type React from "react";
 import { useCallback, useMemo } from "react";
 import { Card, CollapsibleHeader, PerformanceBadges } from "@/layout";
-import {
-	devError,
-	formatDate,
-	getMetricLabel,
-	getRankDisplay,
-} from "@/utils/basic";
-import type {
-	ConsolidatedName,
-	NameWithInsight,
-	SummaryStats,
-} from "./analyticsService";
+import { devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils/basic";
+import type { ConsolidatedName, NameWithInsight, SummaryStats } from "./analyticsService";
 
 // --- AnalysisPanel ---
 
@@ -47,16 +38,8 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
 }) => {
 	return (
 		<div className={cn("analysis-panel flex flex-col gap-4", className)}>
-			{showHeader && (
-				<CollapsibleHeader
-					title={title || ""}
-					actions={actions}
-					variant="compact"
-				/>
-			)}
-			{toolbar && (
-				<div className="analysis-panel-toolbar flex gap-2">{toolbar}</div>
-			)}
+			{showHeader && <CollapsibleHeader title={title || ""} actions={actions} variant="compact" />}
+			{toolbar && <div className="analysis-panel-toolbar flex gap-2">{toolbar}</div>}
 			{children}
 		</div>
 	);
@@ -135,10 +118,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 					: 0;
 			const selectedPercent =
 				summaryStats && (summaryStats.maxSelected ?? 0) > 0
-					? Math.min(
-							(item.selected / (summaryStats.maxSelected ?? 1)) * 100,
-							100,
-						)
+					? Math.min((item.selected / (summaryStats.maxSelected ?? 1)) * 100, 100)
 					: 0;
 
 			switch (columnKey) {
@@ -149,9 +129,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 							variant="flat"
 							className={cn(
 								"border-none",
-								rank <= 3
-									? "bg-yellow-500/20 text-yellow-300"
-									: "bg-white/10 text-white/60",
+								rank <= 3 ? "bg-yellow-500/20 text-yellow-300" : "bg-white/10 text-white/60",
 							)}
 						>
 							{isAdmin ? getRankDisplay(rank) : rank}
@@ -164,19 +142,10 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						<div className="flex flex-col gap-1 min-w-[100px]">
 							<div className="flex justify-between text-xs">
 								<span>{Math.round(item.rating)}</span>
-								{isAdmin && (
-									<span className="text-white/40">
-										{item.ratingPercentile}%ile
-									</span>
-								)}
+								{isAdmin && <span className="text-white/40">{item.ratingPercentile}%ile</span>}
 							</div>
 							{!isAdmin && (
-								<Progress
-									value={ratingPercent}
-									color="warning"
-									size="sm"
-									aria-label="Rating"
-								/>
+								<Progress value={ratingPercent} color="warning" size="sm" aria-label="Rating" />
 							)}
 						</div>
 					);
@@ -185,12 +154,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						<div className="flex flex-col gap-1 min-w-[80px]">
 							<span className="text-xs">{item.wins}</span>
 							{!isAdmin && (
-								<Progress
-									value={winsPercent}
-									color="success"
-									size="sm"
-									aria-label="Wins"
-								/>
+								<Progress value={winsPercent} color="success" size="sm" aria-label="Wins" />
 							)}
 						</div>
 					);
@@ -198,11 +162,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 					return (
 						<div className="flex flex-col gap-1 min-w-[80px]">
 							<span className="text-xs">{item.selected}</span>
-							{isAdmin && (
-								<span className="text-white/40">
-									{item.selectedPercentile}%ile
-								</span>
-							)}
+							{isAdmin && <span className="text-white/40">{item.selectedPercentile}%ile</span>}
 							{!isAdmin && (
 								<Progress
 									value={selectedPercent}
@@ -216,9 +176,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 				case "insights":
 					return isAdmin ? (
 						<PerformanceBadges
-							types={
-								Array.isArray(item.insights) ? (item.insights as string[]) : []
-							}
+							types={Array.isArray(item.insights) ? (item.insights as string[]) : []}
 						/>
 					) : null;
 				case "dateSubmitted":
@@ -283,9 +241,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 				<TableBody items={names}>
 					{(item) => (
 						<TableRow key={item.id}>
-							{(columnKey) => (
-								<TableCell>{renderCell(item, columnKey)}</TableCell>
-							)}
+							{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
 						</TableRow>
 					)}
 				</TableBody>
@@ -324,29 +280,21 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 					<Card variant="default">
 						<CardBody className="gap-1">
 							<div className="text-white/60 text-sm">Total Names</div>
-							<div className="text-2xl font-bold text-white">
-								{summaryStats.totalNames || 0}
-							</div>
-							<div className="text-xs text-white/40">
-								{summaryStats.activeNames || 0} active
-							</div>
+							<div className="text-2xl font-bold text-white">{summaryStats.totalNames || 0}</div>
+							<div className="text-xs text-white/40">{summaryStats.activeNames || 0} active</div>
 						</CardBody>
 					</Card>
 					<Card variant="default">
 						<CardBody className="gap-1">
 							<div className="text-white/60 text-sm">Avg Rating</div>
-							<div className="text-2xl font-bold text-white">
-								{summaryStats.avgRating}
-							</div>
+							<div className="text-2xl font-bold text-white">{summaryStats.avgRating}</div>
 							<div className="text-xs text-white/40">Global Average</div>
 						</CardBody>
 					</Card>
 					<Card variant="default">
 						<CardBody className="gap-1">
 							<div className="text-white/60 text-sm">Total Votes</div>
-							<div className="text-2xl font-bold text-white">
-								{summaryStats.totalRatings || 0}
-							</div>
+							<div className="text-2xl font-bold text-white">{summaryStats.totalRatings || 0}</div>
 							<div className="text-xs text-white/40">
 								{summaryStats.totalSelections || 0} selections
 							</div>
@@ -361,31 +309,21 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 				<Card variant="warning">
 					<CardBody className="gap-1">
 						<div className="text-yellow-500/80 text-sm">Top Rating</div>
-						<div className="text-2xl font-bold text-yellow-500">
-							{summaryStats.maxRating ?? 0}
-						</div>
-						<div className="text-xs text-yellow-500/60 truncate">
-							{summaryStats.topName?.name}
-						</div>
+						<div className="text-2xl font-bold text-yellow-500">{summaryStats.maxRating ?? 0}</div>
+						<div className="text-xs text-yellow-500/60 truncate">{summaryStats.topName?.name}</div>
 					</CardBody>
 				</Card>
 				<Card variant="default">
 					<CardBody className="gap-1">
 						<div className="text-white/60 text-sm">Avg Rating</div>
-						<div className="text-2xl font-bold text-white">
-							{summaryStats.avgRating}
-						</div>
-						<div className="text-xs text-white/40">
-							Across {namesWithInsights.length} names
-						</div>
+						<div className="text-2xl font-bold text-white">{summaryStats.avgRating}</div>
+						<div className="text-xs text-white/40">Across {namesWithInsights.length} names</div>
 					</CardBody>
 				</Card>
 				<Card variant="default">
 					<CardBody className="gap-1">
 						<div className="text-white/60 text-sm">Total Selected</div>
-						<div className="text-2xl font-bold text-white">
-							{summaryStats.totalSelected ?? 0}
-						</div>
+						<div className="text-2xl font-bold text-white">{summaryStats.totalSelected ?? 0}</div>
 						<div className="text-xs text-white/40">
 							{(summaryStats.maxSelected ?? 0) > 0
 								? `Most: ${summaryStats.maxSelected}x`
@@ -404,10 +342,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 		return (
 			<div className="flex flex-col gap-3 mb-6">
 				{generalInsights.map((insight, idx) => (
-					<Card
-						key={idx}
-						variant={insight.type === "warning" ? "warning" : "info"}
-					>
+					<Card key={idx} variant={insight.type === "warning" ? "warning" : "info"}>
 						<CardBody className="flex flex-row items-center gap-3 p-3">
 							<span className="text-lg">{insight.icon}</span>
 							<span className="text-white/80 text-sm">{insight.message}</span>
@@ -419,12 +354,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 	};
 
 	const renderActionableInsights = () => {
-		const highPriorityTags = [
-			"worst_rated",
-			"never_selected",
-			"inactive",
-			"poor_performer",
-		];
+		const highPriorityTags = ["worst_rated", "never_selected", "inactive", "poor_performer"];
 		const lowPerformers = namesWithInsights.filter((n) =>
 			n.insights.some((i: string) => highPriorityTags.includes(i)),
 		);
@@ -435,9 +365,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 
 		return (
 			<div className="mb-6">
-				<h3 className="text-lg font-bold text-white mb-3">
-					⚠️ Names to Consider Hiding
-				</h3>
+				<h3 className="text-lg font-bold text-white mb-3">⚠️ Names to Consider Hiding</h3>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
 					{lowPerformers
 						.sort((a, b) => {
@@ -465,9 +393,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 							<Card key={n.id} variant="danger">
 								<CardBody className="p-3 gap-2">
 									<div className="flex justify-between items-start">
-										<div className="font-bold text-white truncate pr-2">
-											{n.name}
-										</div>
+										<div className="font-bold text-white truncate pr-2">{n.name}</div>
 										{canHideNames && (
 											<HeroButton
 												size="sm"
@@ -478,10 +404,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 													try {
 														await onHideName(n.id, n.name);
 													} catch (error) {
-														devError(
-															"[AnalysisDashboard] Failed to hide name:",
-															error,
-														);
+														devError("[AnalysisDashboard] Failed to hide name:", error);
 													}
 												}}
 											>
@@ -518,12 +441,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 	};
 
 	const renderPositiveInsights = () => {
-		const positiveTags = [
-			"top_rated",
-			"most_selected",
-			"underrated",
-			"undefeated",
-		];
+		const positiveTags = ["top_rated", "most_selected", "underrated", "undefeated"];
 		const topPerformers = namesWithInsights.filter((n) =>
 			n.insights.some((i: string) => positiveTags.includes(i)),
 		);
@@ -534,9 +452,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 
 		return (
 			<div className="mb-6">
-				<h3 className="text-lg font-bold text-white mb-3">
-					✨ Top Performers (Keep)
-				</h3>
+				<h3 className="text-lg font-bold text-white mb-3">✨ Top Performers (Keep)</h3>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
 					{topPerformers.slice(0, 6).map((n) => (
 						<Card key={n.id} variant="primary">

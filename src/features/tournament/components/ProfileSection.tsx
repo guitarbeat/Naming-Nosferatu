@@ -20,9 +20,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 	const [editedName, setEditedName] = useState(user.name || "");
 	const [isSaving, setIsSaving] = useState(false);
 	const [isEditing, setIsEditing] = useState(!user.isLoggedIn);
-	const [avatarSrc, setAvatarSrc] = useState(
-		user.avatarUrl || "https://placekitten.com/200/200",
-	);
+	const [avatarSrc, setAvatarSrc] = useState(user.avatarUrl || "https://placekitten.com/200/200");
 
 	// Sync local state when user changes
 	useEffect(() => {
@@ -54,13 +52,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 	};
 
 	return (
-		<Section
-			id="profile"
-			variant="minimal"
-			padding="comfortable"
-			maxWidth="2xl"
-			separator={true}
-		>
+		<Section id="profile" variant="minimal" padding="comfortable" maxWidth="2xl" separator={true}>
 			<LiquidGlass
 				className="w-full flex flex-col items-center justify-center backdrop-blur-md rounded-3xl"
 				style={{ width: "100%", height: "auto", minHeight: "200px" }}
@@ -73,9 +65,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 							<h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
 								Join the Council
 							</h2>
-							<p className="text-sm text-white/70">
-								Enter your name to track your rankings
-							</p>
+							<p className="text-sm text-white/70">Enter your name to track your rankings</p>
 						</div>
 					)}
 
@@ -98,9 +88,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 							{isEditing ? (
 								<div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
 									<div className="space-y-2">
-										<label className="text-sm font-medium text-white/80 block">
-											Your Name
-										</label>
+										<label className="text-sm font-medium text-white/80 block">Your Name</label>
 										<div className="relative">
 											<User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400/50" />
 											<Input
@@ -141,9 +129,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 							) : (
 								<div className="space-y-4 animate-in fade-in slide-in-from-left-4 duration-300">
 									<div className="flex items-center gap-3">
-										<h3 className="text-2xl md:text-3xl font-bold text-white">
-											{user.name}
-										</h3>
+										<h3 className="text-2xl md:text-3xl font-bold text-white">{user.name}</h3>
 										<button
 											type="button"
 											onClick={() => setIsEditing(true)}

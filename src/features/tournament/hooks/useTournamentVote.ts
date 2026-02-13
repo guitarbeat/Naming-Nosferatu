@@ -129,8 +129,12 @@ export function useTournamentVote({
 				actualHandleVote?.(winnerId, loserIdFinal);
 				onVote?.(winnerId, loserIdFinal);
 				setVoting(false);
-				if (setIsTransitioning) setIsTransitioning(false);
-				if (setSelectedOption) setSelectedOption(null);
+				if (setIsTransitioning) {
+					setIsTransitioning(false);
+				}
+				if (setSelectedOption) {
+					setSelectedOption(null);
+				}
 			}, VOTE_COOLDOWN);
 		},
 		[

@@ -15,54 +15,44 @@ import { Card } from "@/layout";
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/appTypes";
 
-function haveRankingsChanged(
-	newItems: NameItem[],
-	oldRankings: NameItem[],
-): boolean {
+function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
 	if (newItems.length !== oldRankings.length) {
 		return true;
 	}
 	return newItems.some(
 		(item, index) =>
-			item.name !== oldRankings[index]?.name ||
-			item.rating !== oldRankings[index]?.rating,
+			item.name !== oldRankings[index]?.name || item.rating !== oldRankings[index]?.rating,
 	);
 }
 
-const RankingItemContent = memo(
-	({ item, index }: { item: NameItem; index: number }) => (
-		<div className="flex items-center gap-4 w-full">
-			{/* Drag Handle */}
-			<div className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors cursor-grab active:cursor-grabbing">
-				<GripVertical size={20} />
-			</div>
+const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => (
+	<div className="flex items-center gap-4 w-full">
+		{/* Drag Handle */}
+		<div className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors cursor-grab active:cursor-grabbing">
+			<GripVertical size={20} />
+		</div>
 
-			{/* Rank Badge */}
-			<Chip
-				className="flex-shrink-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-white font-bold min-w-[3rem]"
-				size="lg"
-				variant="flat"
-			>
-				#{index + 1}
-			</Chip>
+		{/* Rank Badge */}
+		<Chip
+			className="flex-shrink-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-white font-bold min-w-[3rem]"
+			size="lg"
+			variant="flat"
+		>
+			#{index + 1}
+		</Chip>
 
-			{/* Name and Stats */}
-			<div className="flex-1 min-w-0">
-				<h3 className="text-lg font-semibold text-white truncate mb-1">
-					{item.name}
-				</h3>
-				<div className="flex items-center gap-3 text-sm">
-					<span className="text-white/60">
-						Rating:{" "}
-						<span className="text-white/90 font-medium">
-							{Math.round(item.rating as number)}
-						</span>
-					</span>
-				</div>
+		{/* Name and Stats */}
+		<div className="flex-1 min-w-0">
+			<h3 className="text-lg font-semibold text-white truncate mb-1">{item.name}</h3>
+			<div className="flex items-center gap-3 text-sm">
+				<span className="text-white/60">
+					Rating:{" "}
+					<span className="text-white/90 font-medium">{Math.round(item.rating as number)}</span>
+				</span>
 			</div>
 		</div>
-	),
-);
+	</div>
+));
 RankingItemContent.displayName = "RankingItemContent";
 
 export const RankingAdjustment = memo(
@@ -86,9 +76,7 @@ export const RankingAdjustment = memo(
 			if (hasUnsavedChanges) {
 				return;
 			}
-			const sorted = [...rankings].sort(
-				(a, b) => (b.rating as number) - (a.rating as number),
-			);
+			const sorted = [...rankings].sort((a, b) => (b.rating as number) - (a.rating as number));
 			if (haveRankingsChanged(sorted, items)) {
 				setItems(sorted);
 			}
@@ -143,9 +131,7 @@ export const RankingAdjustment = memo(
 			}
 			const adjusted = newItems.map((item: NameItem, index: number) => ({
 				...item,
-				rating: Math.round(
-					1000 + (1000 * (newItems.length - index)) / newItems.length,
-				),
+				rating: Math.round(1000 + (1000 * (newItems.length - index)) / newItems.length),
 			}));
 			setHasUnsavedChanges(true);
 			setItems(adjusted);
@@ -153,10 +139,7 @@ export const RankingAdjustment = memo(
 
 		return (
 			<Card
-				className={cn(
-					"w-full max-w-4xl mx-auto",
-					isDragging && "ring-2 ring-purple-500/50",
-				)}
+				className={cn("w-full max-w-4xl mx-auto", isDragging && "ring-2 ring-purple-500/50")}
 				variant="primary"
 			>
 				<CardHeader className="flex flex-col gap-3 pb-4">
@@ -170,10 +153,8 @@ export const RankingAdjustment = memo(
 									"transition-all duration-300",
 									saveStatus === "saving" &&
 										"bg-blue-500/20 border-blue-500/30 text-blue-300 animate-pulse",
-									saveStatus === "success" &&
-										"bg-green-500/20 border-green-500/30 text-green-300",
-									saveStatus === "error" &&
-										"bg-red-500/20 border-red-500/30 text-red-300",
+									saveStatus === "success" && "bg-green-500/20 border-green-500/30 text-green-300",
+									saveStatus === "error" && "bg-red-500/20 border-red-500/30 text-red-300",
 								)}
 								variant="flat"
 								startContent={
@@ -192,18 +173,13 @@ export const RankingAdjustment = memo(
 							</Chip>
 						)}
 					</div>
-					<p className="text-white/60 text-sm">
-						Drag and drop to reorder your favorite cat names
-					</p>
+					<p className="text-white/60 text-sm">Drag and drop to reorder your favorite cat names</p>
 				</CardHeader>
 
 				<Divider className="bg-white/10" />
 
 				<CardBody className="gap-3 p-6">
-					<DragDropContext
-						onDragStart={() => setIsDragging(true)}
-						onDragEnd={handleDragEnd}
-					>
+					<DragDropContext onDragStart={() => setIsDragging(true)} onDragEnd={handleDragEnd}>
 						<Droppable droppableId="rankings">
 							{(provided: DroppableProvided) => (
 								<div
@@ -217,10 +193,7 @@ export const RankingAdjustment = memo(
 											draggableId={String(item.id || item.name)}
 											index={index}
 										>
-											{(
-												provided: DraggableProvided,
-												snapshot: DraggableStateSnapshot,
-											) => (
+											{(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
 												<div
 													ref={provided.innerRef}
 													{...provided.draggableProps}

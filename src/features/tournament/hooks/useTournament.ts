@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useLocalStorage from "@/hooks/useBrowserState";
-import {
-	calculateBracketRound,
-	EloRating,
-	PreferenceSorter,
-} from "@/services/tournament";
+import { calculateBracketRound, EloRating, PreferenceSorter } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type {
 	Match,
@@ -23,10 +19,7 @@ export interface TournamentResult {
 
 export interface UseTournamentProps {
 	names?: NameItem[];
-	existingRatings?: Record<
-		string,
-		{ rating: number; wins?: number; losses?: number }
-	>;
+	existingRatings?: Record<string, { rating: number; wins?: number; losses?: number }>;
 	onComplete?: (results: TournamentResult[]) => void;
 }
 
@@ -36,10 +29,7 @@ function getNextMatch(
 	sorter: unknown,
 	_matchNumber: number,
 	_options: {
-		currentRatings?: Record<
-			string,
-			{ rating: number; wins?: number; losses?: number }
-		>;
+		currentRatings?: Record<string, { rating: number; wins?: number; losses?: number }>;
 		history?: MatchRecord[];
 	} = {},
 ): Match | null {
@@ -110,13 +100,12 @@ export function useTournament({
 		return `tournament-${prefix}-${sortedNames}`;
 	}, [names, userName]);
 
-	const defaultPersistentState = useMemo(
-		() => createDefaultPersistentState(userName),
-		[userName],
-	);
+	const defaultPersistentState = useMemo(() => createDefaultPersistentState(userName), [userName]);
 
-	const [persistentStateRaw, setPersistentState] =
-		useLocalStorage<PersistentState>(tournamentId, defaultPersistentState);
+	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentState>(
+		tournamentId,
+		defaultPersistentState,
+	);
 
 	// Safety wrapper for persistentState
 	const persistentState = useMemo(() => {
@@ -137,14 +126,9 @@ export function useTournament({
 	}, [persistentStateRaw, userName]);
 
 	const updatePersistentState = useCallback(
-		(
-			updates:
-				| Partial<PersistentState>
-				| ((prev: PersistentState) => Partial<PersistentState>),
-		) => {
+		(updates: Partial<PersistentState> | ((prev: PersistentState) => Partial<PersistentState>)) => {
 			setPersistentState((prev: PersistentState) => {
-				const delta =
-					typeof updates === "function" ? updates(prev) || {} : updates || {};
+				const delta = typeof updates === "function" ? updates(prev) || {} : updates || {};
 				return {
 					...prev,
 					...delta,
@@ -157,10 +141,7 @@ export function useTournament({
 	);
 
 	useEffect(() => {
-		if (
-			persistentState &&
-			persistentState.userName !== (userName || "anonymous")
-		) {
+		if (persistentState && persistentState.userName !== (userName || "anonymous")) {
 			updatePersistentState({
 				matchHistory: [],
 				currentRound: 1,
@@ -282,10 +263,7 @@ export function useTournament({
 	const handleVote = useCallback(
 		async (
 			option: "left" | "right" | "both" | "neither",
-		): Promise<
-			| Record<string, { rating: number; wins?: number; losses?: number }>
-			| undefined
-		> => {
+		): Promise<Record<string, { rating: number; wins?: number; losses?: number }> | undefined> => {
 			if (tState.isTransitioning || tState.isError || !tState.currentMatch) {
 				return undefined;
 			}
@@ -293,11 +271,9 @@ export function useTournament({
 			updateTournamentState({ isTransitioning: true });
 
 			const leftName =
-				(tState.currentMatch.left as NameItem)?.name ||
-				(tState.currentMatch.left as string);
+				(tState.currentMatch.left as NameItem)?.name || (tState.currentMatch.left as string);
 			const rightName =
-				(tState.currentMatch.right as NameItem)?.name ||
-				(tState.currentMatch.right as string);
+				(tState.currentMatch.right as NameItem)?.name || (tState.currentMatch.right as string);
 
 			let winnerName: string | null = null;
 			let loserName: string | null = null;
@@ -412,10 +388,7 @@ export function useTournament({
 				history: [...(persistentState.matchHistory || []), matchRecord],
 			});
 
-			const newRoundNumber = calculateBracketRound(
-				names.length,
-				nextMatchNumber,
-			);
+			const newRoundNumber = calculateBracketRound(names.length, nextMatchNumber);
 			setTimeout(() => {
 				updateTournamentState({
 					currentMatch: nextMatch || null,
@@ -445,11 +418,7 @@ export function useTournament({
 
 	// --- Progress Logic ---
 	const handleUndo = useCallback(() => {
-		if (
-			tState.isTransitioning ||
-			!tState.canUndo ||
-			persistentState.matchHistory.length === 0
-		) {
+		if (tState.isTransitioning || !tState.canUndo || persistentState.matchHistory.length === 0) {
 			return;
 		}
 
@@ -474,12 +443,8 @@ export function useTournament({
 			if (typeof s.undoLastPreference === "function") {
 				s.undoLastPreference();
 			} else if (s.preferences instanceof Map) {
-				const ln =
-					(lastVote.match.left as NameItem)?.name ||
-					(lastVote.match.left as string);
-				const rn =
-					(lastVote.match.right as NameItem)?.name ||
-					(lastVote.match.right as string);
+				const ln = (lastVote.match.left as NameItem)?.name || (lastVote.match.left as string);
+				const rn = (lastVote.match.right as NameItem)?.name || (lastVote.match.right as string);
 				if (ln && rn) {
 					s.preferences.delete(`${ln}-${rn}`);
 					s.preferences.delete(`${rn}-${ln}`);
@@ -492,8 +457,7 @@ export function useTournament({
 
 		if (names.length >= 2 && newHistory.length > 0) {
 			const prevMatchNumber =
-				newHistory[newHistory.length - 1]?.matchNumber ||
-				tState.currentMatchNumber;
+				newHistory[newHistory.length - 1]?.matchNumber || tState.currentMatchNumber;
 			const calcRound = calculateBracketRound(names.length, prevMatchNumber);
 			if (calcRound !== tState.roundNumber) {
 				updateTournamentState({ roundNumber: calcRound });

@@ -27,10 +27,7 @@ import { FileType } from "./types";
  * @param fileType - The classified file type
  * @returns Target directory path or null if cannot be determined
  */
-export function resolveTargetLocation(
-	filePath: string,
-	fileType: FileType,
-): string | null {
+export function resolveTargetLocation(filePath: string, fileType: FileType): string | null {
 	const fileName = basename(filePath);
 
 	switch (fileType) {
@@ -93,9 +90,7 @@ function resolveComponentLocation(filePath: string, fileName: string): string {
 		"frame",
 	];
 
-	const isLayoutComponent = layoutPatterns.some((pattern) =>
-		lowerName.includes(pattern),
-	);
+	const isLayoutComponent = layoutPatterns.some((pattern) => lowerName.includes(pattern));
 
 	if (isLayoutComponent) {
 		return "src/layout/";
@@ -131,10 +126,7 @@ function resolveComponentLocation(filePath: string, fileName: string): string {
  * @param fileType - The classified file type
  * @returns Full target path or null if cannot be determined
  */
-export function getFullTargetPath(
-	filePath: string,
-	fileType: FileType,
-): string | null {
+export function getFullTargetPath(filePath: string, fileType: FileType): string | null {
 	const targetDir = resolveTargetLocation(filePath, fileType);
 
 	if (!targetDir) {

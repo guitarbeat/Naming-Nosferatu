@@ -24,9 +24,7 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 		watch,
 		reset,
 	} = useForm<FormValues>({
-		// biome-ignore lint/suspicious/noExplicitAny: zodResolver type mismatch with react-hook-form generics
 		resolver: zodResolver(schema) as any,
-		// biome-ignore lint/suspicious/noExplicitAny: defaultValues type mismatch with react-hook-form generics
 		defaultValues: initialValues as any,
 		mode: "onChange",
 	});
@@ -35,7 +33,6 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 
 	const handleChange = useCallback(
 		(name: keyof T, value: unknown) => {
-			// biome-ignore lint/suspicious/noExplicitAny: setValue requires complex path types from react-hook-form
 			setValue(name as any, value as any, {
 				shouldValidate: true,
 				shouldDirty: true,
@@ -47,7 +44,6 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 
 	const handleBlur = useCallback(
 		(name: keyof T) => {
-			// biome-ignore lint/suspicious/noExplicitAny: trigger requires complex path types from react-hook-form
 			trigger(name as any);
 		},
 		[trigger],
@@ -61,7 +57,6 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	const setValues = useCallback(
 		(newValues: Partial<FormValues>) => {
 			Object.entries(newValues).forEach(([key, val]) => {
-				// biome-ignore lint/suspicious/noExplicitAny: setValue requires complex path types from react-hook-form
 				setValue(key as any, val as any);
 			});
 		},

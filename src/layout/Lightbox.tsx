@@ -8,12 +8,7 @@ interface LightboxProps {
 	onNavigate: (index: number) => void;
 }
 
-export function Lightbox({
-	images,
-	currentIndex,
-	onClose,
-	onNavigate,
-}: LightboxProps) {
+export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
 	const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -81,11 +76,7 @@ export function Lightbox({
 				<button
 					type="button"
 					className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
-					onClick={() =>
-						onNavigate(
-							currentIndex === 0 ? images.length - 1 : currentIndex - 1,
-						)
-					}
+					onClick={() => onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1)}
 					aria-label="View previous image"
 				>
 					<ChevronLeft size={32} />
@@ -102,11 +93,7 @@ export function Lightbox({
 				<button
 					type="button"
 					className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
-					onClick={() =>
-						onNavigate(
-							currentIndex === images.length - 1 ? 0 : currentIndex + 1,
-						)
-					}
+					onClick={() => onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1)}
 					aria-label="View next image"
 				>
 					<ChevronRight size={32} />

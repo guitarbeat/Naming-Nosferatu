@@ -34,7 +34,7 @@ export function useNameData(_props: UseNameDataProps): UseNameDataResult {
 	const refetch = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const { coreAPI } = await import("@/services/supabase-client/client");
+			const { coreAPI } = await import("@/services/supabase/client");
 			const fetchedNames = await coreAPI.getTrendingNames(false);
 			if (tournamentActions?.setNames) {
 				tournamentActions.setNames(fetchedNames);
@@ -86,9 +86,7 @@ interface UseNameSelectionResult {
 	isSelected: (id: IdType) => boolean;
 }
 
-export function useNameSelection({
-	names,
-}: UseNameSelectionProps): UseNameSelectionResult {
+export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelectionResult {
 	const { tournament, tournamentActions } = useAppStore();
 
 	// Use store selection for tournament mode, local state for management mode
@@ -148,10 +146,7 @@ export function useNameSelection({
 		}
 	}, [tournamentActions]);
 
-	const isSelected = useCallback(
-		(id: IdType) => selectedIds.has(id),
-		[selectedIds],
-	);
+	const isSelected = useCallback((id: IdType) => selectedIds.has(id), [selectedIds]);
 
 	return {
 		selectedNames,
@@ -198,13 +193,9 @@ interface UseNameSuggestionResult {
 	setGlobalError: (error: string) => void;
 }
 
-export function useNameSuggestion(
-	props: UseNameSuggestionProps = {},
-): UseNameSuggestionResult {
+export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
-	const [errors, setErrors] = useState<{ name?: string; description?: string }>(
-		{},
-	);
+	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
 	const [touched, setTouched] = useState<{
 		name?: boolean;
 		description?: boolean;
@@ -213,14 +204,11 @@ export function useNameSuggestion(
 	const [globalError, setGlobalError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 
-	const handleChange = useCallback(
-		(field: "name" | "description", value: string) => {
-			setValues((prev) => ({ ...prev, [field]: value }));
-			setErrors((prev) => ({ ...prev, [field]: undefined }));
-			setGlobalError("");
-		},
-		[],
-	);
+	const handleChange = useCallback((field: "name" | "description", value: string) => {
+		setValues((prev) => ({ ...prev, [field]: value }));
+		setErrors((prev) => ({ ...prev, [field]: undefined }));
+		setGlobalError("");
+	}, []);
 
 	const handleBlur = useCallback((field: "name" | "description") => {
 		setTouched((prev) => ({ ...prev, [field]: true }));
@@ -255,9 +243,7 @@ export function useNameSuggestion(
 			setTouched({});
 			props.onSuccess?.();
 		} catch (err) {
-			setGlobalError(
-				err instanceof Error ? err.message : "Failed to submit suggestion",
-			);
+			setGlobalError(err instanceof Error ? err.message : "Failed to submit suggestion");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -271,8 +257,7 @@ export function useNameSuggestion(
 		setSuccessMessage("");
 	}, []);
 
-	const isValid =
-		!errors.name && !errors.description && values.name.trim() !== "";
+	const isValid = !errors.name && !errors.description && values.name.trim() !== "";
 
 	return {
 		values,

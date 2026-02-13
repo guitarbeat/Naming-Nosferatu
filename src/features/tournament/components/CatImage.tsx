@@ -35,9 +35,7 @@ function CatImage({
 	const [hasError, setHasError] = useState(false);
 
 	const fallbackUrl =
-		CAT_IMAGES && CAT_IMAGES.length > 0
-			? (CAT_IMAGES[0] as string)
-			: "/assets/images/bby-cat.GIF";
+		CAT_IMAGES && CAT_IMAGES.length > 0 ? (CAT_IMAGES[0] as string) : "/assets/images/bby-cat.GIF";
 
 	// Reset error state when src changes
 	// biome-ignore lint/correctness/useExhaustiveDependencies: src changes should reset local error state
@@ -71,8 +69,7 @@ function CatImage({
 				const { data } = ctx.getImageData(0, 0, w, h);
 
 				const rowEnergy = Array(Number(h)).fill(0);
-				const toGray = (r: number, g: number, b: number) =>
-					r * 0.299 + g * 0.587 + b * 0.114;
+				const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
 				const idx = (x: number, y: number) => (y * w + x) * 4;
 
 				let totalR = 0,
@@ -93,16 +90,8 @@ function CatImage({
 						if (y > 0 && y < h - 1) {
 							const i1 = idx(x, y - 1),
 								i2 = idx(x, y + 1);
-							const g1 = toGray(
-								data[i1] ?? 0,
-								data[i1 + 1] ?? 0,
-								data[i1 + 2] ?? 0,
-							);
-							const g2 = toGray(
-								data[i2] ?? 0,
-								data[i2 + 1] ?? 0,
-								data[i2 + 2] ?? 0,
-							);
+							const g1 = toGray(data[i1] ?? 0, data[i1 + 1] ?? 0, data[i1 + 2] ?? 0);
+							const g2 = toGray(data[i2] ?? 0, data[i2 + 1] ?? 0, data[i2 + 2] ?? 0);
 							sum += Math.abs(g2 - g1);
 						}
 					}
@@ -117,8 +106,7 @@ function CatImage({
 					bestVal = -Infinity;
 
 				for (let y = start; y < end; y += 1) {
-					const e =
-						(rowEnergy[y - 1] || 0) + rowEnergy[y] + (rowEnergy[y + 1] || 0);
+					const e = (rowEnergy[y - 1] || 0) + rowEnergy[y] + (rowEnergy[y + 1] || 0);
 					if (e > bestVal) {
 						bestVal = e;
 						bestY = y;
@@ -172,11 +160,7 @@ function CatImage({
 				container.dataset.orientation = orientation;
 			}
 
-			if (
-				imgEl.naturalWidth &&
-				imgEl.naturalHeight &&
-				imgEl.naturalHeight > 0
-			) {
+			if (imgEl.naturalWidth && imgEl.naturalHeight && imgEl.naturalHeight > 0) {
 				const ratio = imgEl.naturalWidth / imgEl.naturalHeight;
 				const steps = ratio <= 0.85 || ratio >= 1.9 ? "contain" : "cover";
 				container.style.setProperty("--cat-image-fit", steps);
@@ -241,8 +225,7 @@ function CatImage({
 	const renderImage = () => {
 		const imageStyle: React.CSSProperties = {
 			objectPosition: "center var(--image-pos-y, 50%)",
-			objectFit:
-				"var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"],
+			objectFit: "var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"],
 		};
 
 		const commonProps = {
@@ -258,18 +241,9 @@ function CatImage({
 			crossOrigin: "anonymous" as const,
 		};
 
-		if (
-			currentSrc &&
-			typeof currentSrc === "string" &&
-			currentSrc.startsWith("/assets/images/")
-		) {
+		if (currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/assets/images/")) {
 			const extension = currentSrc.split(".").pop()?.toLowerCase();
-			if (
-				!extension ||
-				extension === "gif" ||
-				extension === "avif" ||
-				extension === "webp"
-			) {
+			if (!extension || extension === "gif" || extension === "avif" || extension === "webp") {
 				return <img {...commonProps} />;
 			}
 			const base = currentSrc.replace(/\.[^.]+$/, "");

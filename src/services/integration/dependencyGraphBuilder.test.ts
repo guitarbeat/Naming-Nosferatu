@@ -19,12 +19,7 @@ import {
 	topologicalSort,
 	updateNodeStatus,
 } from "./dependencyGraphBuilder";
-import {
-	type DependencyGraph,
-	type FileAnalysis,
-	FileType,
-	IntegrationStatus,
-} from "./types";
+import { type DependencyGraph, type FileAnalysis, FileType, IntegrationStatus } from "./types";
 
 describe("dependencyGraphBuilder", () => {
 	// Helper function to create a mock file analysis
@@ -65,10 +60,7 @@ describe("dependencyGraphBuilder", () => {
 		});
 
 		it("should initialize all nodes with PENDING status", () => {
-			const analyses = [
-				createAnalysis("file1.ts", []),
-				createAnalysis("file2.ts", []),
-			];
+			const analyses = [createAnalysis("file1.ts", []), createAnalysis("file2.ts", [])];
 
 			const graph = buildDependencyGraph(analyses);
 
@@ -92,9 +84,7 @@ describe("dependencyGraphBuilder", () => {
 		});
 
 		it("should ignore external dependencies when building edges", () => {
-			const analyses = [
-				createAnalysis("file1.ts", [{ importPath: "react", isExternal: true }]),
-			];
+			const analyses = [createAnalysis("file1.ts", [{ importPath: "react", isExternal: true }])];
 
 			const graph = buildDependencyGraph(analyses);
 
@@ -174,9 +164,7 @@ describe("dependencyGraphBuilder", () => {
 			addNode(graph, analysis);
 
 			expect(graph.nodes.has("file1.ts")).toBe(true);
-			expect(graph.nodes.get("file1.ts")?.status).toBe(
-				IntegrationStatus.PENDING,
-			);
+			expect(graph.nodes.get("file1.ts")?.status).toBe(IntegrationStatus.PENDING);
 		});
 
 		it("should initialize edges for the node", () => {
@@ -311,9 +299,7 @@ describe("dependencyGraphBuilder", () => {
 
 			updateNodeStatus(graph, "file1.ts", IntegrationStatus.COMPLETED);
 
-			expect(graph.nodes.get("file1.ts")?.status).toBe(
-				IntegrationStatus.COMPLETED,
-			);
+			expect(graph.nodes.get("file1.ts")?.status).toBe(IntegrationStatus.COMPLETED);
 		});
 
 		it("should do nothing for non-existent node", () => {
@@ -447,10 +433,7 @@ describe("dependencyGraphBuilder", () => {
 		});
 
 		it("should not return files that are already completed", () => {
-			const analyses = [
-				createAnalysis("file1.ts", []),
-				createAnalysis("file2.ts", []),
-			];
+			const analyses = [createAnalysis("file1.ts", []), createAnalysis("file2.ts", [])];
 
 			const graph = buildDependencyGraph(analyses);
 			updateNodeStatus(graph, "file1.ts", IntegrationStatus.COMPLETED);
@@ -524,9 +507,7 @@ describe("dependencyGraphBuilder", () => {
 					{ importPath: "react", isExternal: true },
 					{ importPath: "./file2", isExternal: false, sourceFile: "file2.ts" },
 				]),
-				createAnalysis("file2.ts", [
-					{ importPath: "lodash", isExternal: true },
-				]),
+				createAnalysis("file2.ts", [{ importPath: "lodash", isExternal: true }]),
 			];
 
 			const graph = buildDependencyGraph(analyses);
@@ -678,9 +659,7 @@ describe("dependencyGraphBuilder", () => {
 
 			const graph = buildDependencyGraph(analyses);
 
-			expect(() => topologicalSort(graph)).toThrow(
-				"Circular dependency detected",
-			);
+			expect(() => topologicalSort(graph)).toThrow("Circular dependency detected");
 		});
 
 		it("should throw error on complex circular dependencies", () => {
@@ -699,9 +678,7 @@ describe("dependencyGraphBuilder", () => {
 
 			const graph = buildDependencyGraph(analyses);
 
-			expect(() => topologicalSort(graph)).toThrow(
-				"Circular dependency detected",
-			);
+			expect(() => topologicalSort(graph)).toThrow("Circular dependency detected");
 		});
 
 		it("should handle empty graph", () => {

@@ -59,13 +59,11 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 		// Calculate number of columns based on container width and min column width
 		const calculatedColumnCount =
-			columnCount ||
-			Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
+			columnCount || Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
 
 		// Calculate actual column width to fill the container perfectly
 		const totalGapSpace = (calculatedColumnCount - 1) * gap;
-		const actualColumnWidth =
-			(containerWidth - totalGapSpace) / calculatedColumnCount;
+		const actualColumnWidth = (containerWidth - totalGapSpace) / calculatedColumnCount;
 		setColumnWidth(actualColumnWidth);
 
 		// Initialize column heights
@@ -109,7 +107,9 @@ export function useMasonryLayout<T extends HTMLElement>(
 		let resizeRafId: number | null = null;
 		const resizeObserver = new ResizeObserver(() => {
 			// Throttle resize calculations with rAF instead of setTimeout
-			if (resizeRafId) return;
+			if (resizeRafId) {
+				return;
+			}
 			resizeRafId = requestAnimationFrame(() => {
 				resizeRafId = null;
 				calculateLayout();
@@ -124,7 +124,9 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 		return () => {
 			clearTimeout(timeoutId);
-			if (resizeRafId) cancelAnimationFrame(resizeRafId);
+			if (resizeRafId) {
+				cancelAnimationFrame(resizeRafId);
+			}
 			resizeObserver.disconnect();
 		};
 	}, [calculateLayout]);

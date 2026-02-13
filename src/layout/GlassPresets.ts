@@ -88,9 +88,6 @@ export type GlassPresetKey = keyof typeof GLASS_PRESETS;
 /**
  * Get a glass preset by key with optional overrides
  */
-export function getGlassPreset(
-	key: GlassPresetKey,
-	overrides?: Partial<GlassPreset>,
-): GlassPreset {
+export function getGlassPreset(key: GlassPresetKey, overrides?: Partial<GlassPreset>): GlassPreset {
 	return { ...GLASS_PRESETS[key], ...overrides };
 }

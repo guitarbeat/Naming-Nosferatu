@@ -1,9 +1,7 @@
 import { createContext, useContext } from "react";
 import type { UseNameManagementViewResult } from "@/types/appTypes";
 
-const NameManagementContext = createContext<UseNameManagementViewResult | null>(
-	null,
-);
+const NameManagementContext = createContext<UseNameManagementViewResult | null>(null);
 
 export function NameManagementProvider({
 	children,
@@ -12,11 +10,7 @@ export function NameManagementProvider({
 	children: React.ReactNode;
 	value: UseNameManagementViewResult;
 }) {
-	return (
-		<NameManagementContext.Provider value={value}>
-			{children}
-		</NameManagementContext.Provider>
-	);
+	return <NameManagementContext.Provider value={value}>{children}</NameManagementContext.Provider>;
 }
 
 export function useNameManagementContextOptional(): UseNameManagementViewResult | null {

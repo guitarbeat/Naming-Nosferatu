@@ -142,9 +142,7 @@ function LiquidGlass({
 				const encoded = encodeURIComponent(serialized);
 				const dataUri = `data:image/svg+xml,${encoded}`;
 
-				const feImage = filterRef.current.querySelector(
-					"feImage",
-				) as SVGFEImageElement | null;
+				const feImage = filterRef.current.querySelector("feImage") as SVGFEImageElement | null;
 				if (feImage) {
 					feImage.setAttribute("href", dataUri);
 				}
@@ -199,10 +197,7 @@ function LiquidGlass({
 			const backdropFilterValue = supportsBackdropFilterUrl
 				? `url(#${id}) saturate(${saturation})`
 				: `blur(8px) saturate(${saturation})`;
-			containerRef.current.style.setProperty(
-				"--backdrop-filter",
-				backdropFilterValue,
-			);
+			containerRef.current.style.setProperty("--backdrop-filter", backdropFilterValue);
 			containerRef.current.style.backdropFilter = backdropFilterValue;
 		}
 
@@ -285,9 +280,7 @@ function LiquidGlass({
 			return;
 		}
 
-		const filterElement = svgRef.current.querySelector(
-			`#${id}`,
-		) as SVGFilterElement | null;
+		const filterElement = svgRef.current.querySelector(`#${id}`) as SVGFilterElement | null;
 		if (!filterElement) {
 			return;
 		}
@@ -328,22 +321,15 @@ function LiquidGlass({
 			className={`liquid-glass ${className}`}
 			style={
 				{
-					width:
-						(style as { width?: string | number })?.width || `${validWidth}px`,
-					height:
-						(style as { height?: string | number })?.height ||
-						`${validHeight}px`,
+					width: (style as { width?: string | number })?.width || `${validWidth}px`,
+					height: (style as { height?: string | number })?.height || `${validHeight}px`,
 					...(style as React.CSSProperties),
 				} as React.CSSProperties
 			}
 			{...props}
 		>
 			{children}
-			<svg
-				ref={svgRef}
-				className="liquid-glass-filter"
-				xmlns="http://www.w3.org/2000/svg"
-			>
+			<svg ref={svgRef} className="liquid-glass-filter" xmlns="http://www.w3.org/2000/svg">
 				<defs>
 					<filter id={id} colorInterpolationFilters="sRGB">
 						<feImage x="0" y="0" width="100%" height="100%" result="map" />
@@ -405,18 +391,11 @@ function LiquidGlass({
 						<feBlend in="red" in2="green" mode="screen" result="rg" />
 						<feBlend in="rg" in2="blue" mode="screen" result="output" />
 
-						<feGaussianBlur
-							id={feGaussianBlurId}
-							in="output"
-							stdDeviation={outputBlur}
-						/>
+						<feGaussianBlur id={feGaussianBlurId} in="output" stdDeviation={outputBlur} />
 					</filter>
 				</defs>
 			</svg>
-			<div
-				ref={displacementImageRef}
-				className="displacement-image-container"
-			/>
+			<div ref={displacementImageRef} className="displacement-image-container" />
 			{showCrosshair && (
 				<div
 					className="liquid-glass-crosshair"
@@ -510,14 +489,7 @@ export const BongoCat = memo(function BongoCat({
 			>
 				<defs>
 					<symbol id="bongo-eye" viewBox="0 0 19.2 18.7">
-						<circle
-							cx="9.4"
-							cy="9.1"
-							r="8"
-							fill="none"
-							stroke="#000"
-							strokeWidth="2"
-						/>
+						<circle cx="9.4" cy="9.1" r="8" fill="none" stroke="#000" strokeWidth="2" />
 						<circle cx="9.4" cy="9.1" r="3" fill="#000" />
 					</symbol>
 					<symbol id="bongo-paw-pads" viewBox="0 0 31.4 33.9">
@@ -578,54 +550,12 @@ export const BongoCat = memo(function BongoCat({
 							strokeLinecap="round"
 						/>
 						<g>
-							<line
-								x1="300"
-								y1="230"
-								x2="350"
-								y2="240"
-								stroke="#000"
-								strokeWidth="2"
-							/>
-							<line
-								x1="295"
-								y1="250"
-								x2="348"
-								y2="255"
-								stroke="#000"
-								strokeWidth="2"
-							/>
-							<line
-								x1="300"
-								y1="270"
-								x2="350"
-								y2="265"
-								stroke="#000"
-								strokeWidth="2"
-							/>
-							<line
-								x1="490"
-								y1="220"
-								x2="540"
-								y2="210"
-								stroke="#000"
-								strokeWidth="2"
-							/>
-							<line
-								x1="492"
-								y1="240"
-								x2="545"
-								y2="235"
-								stroke="#000"
-								strokeWidth="2"
-							/>
-							<line
-								x1="490"
-								y1="260"
-								x2="540"
-								y2="255"
-								stroke="#000"
-								strokeWidth="2"
-							/>
+							<line x1="300" y1="230" x2="350" y2="240" stroke="#000" strokeWidth="2" />
+							<line x1="295" y1="250" x2="348" y2="255" stroke="#000" strokeWidth="2" />
+							<line x1="300" y1="270" x2="350" y2="265" stroke="#000" strokeWidth="2" />
+							<line x1="490" y1="220" x2="540" y2="210" stroke="#000" strokeWidth="2" />
+							<line x1="492" y1="240" x2="545" y2="235" stroke="#000" strokeWidth="2" />
+							<line x1="490" y1="260" x2="540" y2="255" stroke="#000" strokeWidth="2" />
 						</g>
 					</g>
 				</g>
@@ -690,15 +620,7 @@ export const BongoCat = memo(function BongoCat({
 						repeatType: "reverse",
 					}}
 				>
-					<ellipse
-						cx="230"
-						cy="320"
-						rx="35"
-						ry="25"
-						fill="#fff"
-						stroke="#000"
-						strokeWidth="3"
-					/>
+					<ellipse cx="230" cy="320" rx="35" ry="25" fill="#fff" stroke="#000" strokeWidth="3" />
 					<use href="#bongo-paw-pads" x="210" y="305" width="40" height="35" />
 				</motion.g>
 
@@ -710,15 +632,7 @@ export const BongoCat = memo(function BongoCat({
 						repeatType: "reverse",
 					}}
 				>
-					<ellipse
-						cx="350"
-						cy="320"
-						rx="35"
-						ry="25"
-						fill="#fff"
-						stroke="#000"
-						strokeWidth="3"
-					/>
+					<ellipse cx="350" cy="320" rx="35" ry="25" fill="#fff" stroke="#000" strokeWidth="3" />
 					<use href="#bongo-paw-pads" x="330" y="305" width="40" height="35" />
 				</motion.g>
 			</svg>
@@ -749,27 +663,21 @@ const TWINKLE_ALPHA_MAX = 0.95;
 const TWINKLE_BLUR_MIN = 0;
 const TWINKLE_BLUR_MAX = 1.2;
 
-const randomBetween = (min: number, max: number) =>
-	Math.random() * (max - min) + min;
+const randomBetween = (min: number, max: number) => Math.random() * (max - min) + min;
 
 function CatBackground() {
 	const skyRef = useRef<HTMLDivElement>(null);
 	const idleCallbackRef = useRef<number | null>(null);
 
 	const generateStars = useCallback((skyElement: HTMLElement) => {
-		const prefersReducedMotion = window.matchMedia(
-			"(prefers-reduced-motion: reduce)",
-		).matches;
+		const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 		if (prefersReducedMotion) {
 			skyElement.innerHTML = "";
 			return;
 		}
 
-		let starCount = Number.parseInt(
-			skyElement.dataset.stars ?? `${DEFAULT_STAR_COUNT}`,
-			10,
-		);
+		let starCount = Number.parseInt(skyElement.dataset.stars ?? `${DEFAULT_STAR_COUNT}`, 10);
 
 		if (Number.isNaN(starCount)) {
 			starCount = DEFAULT_STAR_COUNT;
@@ -844,12 +752,7 @@ function CatBackground() {
 	return (
 		<div className="cat-background" aria-hidden="true">
 			<div className="cat-background__gradient" />
-			<div
-				id="sky"
-				ref={skyRef}
-				data-stars={DEFAULT_STAR_COUNT}
-				className="cat-background__sky"
-			/>
+			<div id="sky" ref={skyRef} data-stars={DEFAULT_STAR_COUNT} className="cat-background__sky" />
 		</div>
 	);
 }
@@ -902,13 +805,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
 		}, 150);
 	};
 
-	const scale = isPoppingOut
-		? 1.3
-		: bubble.isHovered
-			? 1.15
-			: isHighlighted
-				? 1.1
-				: 1;
+	const scale = isPoppingOut ? 1.3 : bubble.isHovered ? 1.15 : isHighlighted ? 1.1 : 1;
 	const opacity = isPoppingOut ? 0 : bubble.isHovered ? 1 : 0.92;
 	const displayName = profile.display_name || profile.username;
 
@@ -962,8 +859,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
 							: "bg-gradient-to-br from-coral/40 via-rose-pink/30 to-lavender/40"
 					}`}
 					style={{
-						transform:
-							bubble.isHovered || isHighlighted ? "scale(1.25)" : "scale(1)",
+						transform: bubble.isHovered || isHighlighted ? "scale(1.25)" : "scale(1)",
 						transition: "transform 0.3s ease",
 					}}
 				/>
@@ -983,8 +879,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
 								}`}
 								style={{ opacity: imageLoaded ? 0 : 1 }}
 							>
-								{profile.display_name?.[0]?.toUpperCase() ||
-									profile.username[0]?.toUpperCase()}
+								{profile.display_name?.[0]?.toUpperCase() || profile.username[0]?.toUpperCase()}
 							</div>
 							<img
 								src={profile.avatar_url}
@@ -1005,8 +900,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
 									: "bg-gradient-to-br from-coral/20 via-rose-pink/20 to-lavender/20 text-coral"
 							}`}
 						>
-							{profile.display_name?.[0]?.toUpperCase() ||
-								profile.username[0]?.toUpperCase()}
+							{profile.display_name?.[0]?.toUpperCase() || profile.username[0]?.toUpperCase()}
 						</div>
 					)}
 				</div>
@@ -1031,13 +925,13 @@ interface FloatingBubblesContainerProps {
 	height?: number;
 }
 
-export const FloatingBubblesContainer: React.FC<
-	FloatingBubblesContainerProps
-> = ({ data, width = 800, height = 400 }) => {
+export const FloatingBubblesContainer: React.FC<FloatingBubblesContainerProps> = ({
+	data,
+	width = 800,
+	height = 400,
+}) => {
 	const [bubbles, setBubbles] = useState<BubbleState[]>([]);
-	const [profiles, setProfiles] = useState<Record<string, UserBubbleProfile>>(
-		{},
-	);
+	const [profiles, setProfiles] = useState<Record<string, UserBubbleProfile>>({});
 	const requestRef = useRef<number | null>(null);
 
 	useEffect(() => {

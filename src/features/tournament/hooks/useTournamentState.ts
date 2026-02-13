@@ -21,9 +21,7 @@ interface HistoryEntry {
 	matchNumber: number;
 }
 
-export function useTournamentState(
-	names: NameItem[],
-): UseTournamentStateResult {
+export function useTournamentState(names: NameItem[]): UseTournamentStateResult {
 	const [ratings, setRatings] = useState<Record<string, number>>(() => {
 		const initial: Record<string, number> = {};
 		names.forEach((name) => {
@@ -33,9 +31,7 @@ export function useTournamentState(
 	});
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const [sorter] = useState(
-		() => new PreferenceSorter(names.map((n) => String(n.id))),
-	);
+	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
 	const [_refreshKey, setRefreshKey] = useState(0);
 
 	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
@@ -61,8 +57,7 @@ export function useTournamentState(
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
 	const matchNumber = (sorter as any).currentIndex + 1;
-	const round =
-		Math.floor((sorter as any).currentIndex / Math.max(1, names.length)) + 1;
+	const round = Math.floor((sorter as any).currentIndex / Math.max(1, names.length)) + 1;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {

@@ -3,12 +3,7 @@
  * @description Performance badges and trend indicators for showing insights and metrics
  */
 
-import React from "react";
-
-const INSIGHT_CATEGORIES: Record<
-	string,
-	{ label: string; icon: string; description: string }
-> = {
+const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
 	top_rated: {
 		label: "Top Rated",
 		icon: "⭐",
@@ -47,12 +42,7 @@ interface PerformanceBadgeProps {
 	className?: string;
 }
 
-function PerformanceBadge({
-	type,
-	label,
-	variant = "md",
-	className = "",
-}: PerformanceBadgeProps) {
+function PerformanceBadge({ type, label, variant = "md", className = "" }: PerformanceBadgeProps) {
 	const category = getInsightCategory(type);
 
 	if (!category && !label) {
@@ -66,11 +56,7 @@ function PerformanceBadge({
 		`performance-badge performance-badge-${type} performance-badge-${variant} ${className}`.trim();
 
 	return (
-		<span
-			className={badgeClass}
-			aria-label={`${badgeLabel}: ${badgeDescription}`}
-			role="status"
-		>
+		<span className={badgeClass} aria-label={`${badgeLabel}: ${badgeDescription}`} role="status">
 			<span className="badge-icon" aria-hidden="true">
 				{badgeIcon}
 			</span>
@@ -86,10 +72,7 @@ interface PerformanceBadgesProps {
 	className?: string;
 }
 
-export function PerformanceBadges({
-	types = [],
-	className = "",
-}: PerformanceBadgesProps) {
+export function PerformanceBadges({ types = [], className = "" }: PerformanceBadgesProps) {
 	if (!types || types.length === 0) {
 		return null;
 	}

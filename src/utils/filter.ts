@@ -20,9 +20,7 @@ export function isNameHidden(name: NameItem | null | undefined): boolean {
 /**
  * Get all names that are not hidden
  */
-export function getVisibleNames(
-	names: NameItem[] | null | undefined,
-): NameItem[] {
+export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -32,9 +30,7 @@ export function getVisibleNames(
 /**
  * Map filterStatus to visibility string
  */
-export function mapFilterStatusToVisibility(
-	filterStatus: string,
-): "hidden" | "all" | "visible" {
+export function mapFilterStatusToVisibility(filterStatus: string): "hidden" | "all" | "visible" {
 	if (filterStatus === "hidden") {
 		return "hidden";
 	}

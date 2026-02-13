@@ -47,11 +47,7 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should return rollback strategy for build errors", () => {
-			const error = new IntegrationError(
-				"Type error",
-				ErrorCode.TYPE_ERROR,
-				"/path/to/file.ts",
-			);
+			const error = new IntegrationError("Type error", ErrorCode.TYPE_ERROR, "/path/to/file.ts");
 
 			const strategy = getRecoveryStrategy(error);
 
@@ -213,10 +209,7 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should include auto-recovery message", () => {
-			const error = new IntegrationError(
-				"Test error",
-				ErrorCode.FILE_NOT_FOUND,
-			);
+			const error = new IntegrationError("Test error", ErrorCode.FILE_NOT_FOUND);
 			const strategy = getRecoveryStrategy(error);
 
 			const formatted = formatErrorWithSuggestions(error, strategy);
@@ -225,10 +218,7 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should include user input required message", () => {
-			const error = new IntegrationError(
-				"Test error",
-				ErrorCode.DUPLICATE_EXPORT,
-			);
+			const error = new IntegrationError("Test error", ErrorCode.DUPLICATE_EXPORT);
 			const strategy = getRecoveryStrategy(error);
 
 			const formatted = formatErrorWithSuggestions(error, strategy);
@@ -248,10 +238,7 @@ describe("Error Recovery Module", () => {
 		});
 
 		it("should include retry message", () => {
-			const error = new IntegrationError(
-				"Test error",
-				ErrorCode.FILE_NOT_FOUND,
-			);
+			const error = new IntegrationError("Test error", ErrorCode.FILE_NOT_FOUND);
 			const strategy = getRecoveryStrategy(error);
 
 			const formatted = formatErrorWithSuggestions(error, strategy);

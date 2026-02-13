@@ -168,8 +168,7 @@
 	background-position: 0% 50%;
 	background-repeat: no-repeat;
 	transition:
-		background-position calc(var(--anim--hover-time) * 1.25)
-		var(--anim--hover-ease),
+		background-position calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease),
 		--angle-2 calc(var(--anim--hover-time) * 1.25) var(--anim--hover-ease);
 }
 

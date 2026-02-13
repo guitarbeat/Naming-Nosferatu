@@ -122,9 +122,7 @@ describe("File Manager - Backup System", () => {
 				timestamp: Date.now(),
 			};
 
-			expect(() => restoreBackup(fakeBackup)).toThrow(
-				/Cannot restore: backup does not exist/,
-			);
+			expect(() => restoreBackup(fakeBackup)).toThrow(/Cannot restore: backup does not exist/);
 		});
 
 		it("should handle restoration when original file was deleted", () => {
@@ -192,9 +190,7 @@ describe("File Manager - Backup System", () => {
 
 			const backups = listBackups(testDir);
 
-			expect(
-				backups.every((b) => path.basename(b).startsWith(".backup_")),
-			).toBe(true);
+			expect(backups.every((b) => path.basename(b).startsWith(".backup_"))).toBe(true);
 			expect(backups.some((b) => b === regularFile)).toBe(false);
 		});
 
@@ -267,9 +263,7 @@ describe("File Manager - File Operations", () => {
 		it("should throw error if file does not exist", () => {
 			const nonExistentFile = path.join(testDir, "does-not-exist.ts");
 
-			expect(() => readFile(nonExistentFile)).toThrow(
-				/Cannot read file: file does not exist/,
-			);
+			expect(() => readFile(nonExistentFile)).toThrow(/Cannot read file: file does not exist/);
 		});
 
 		it("should handle UTF-8 content correctly", () => {
@@ -329,9 +323,7 @@ describe("File Manager - File Operations", () => {
 		it("should throw error if file does not exist", () => {
 			const nonExistentFile = path.join(testDir, "does-not-exist.ts");
 
-			expect(() => deleteFile(nonExistentFile)).toThrow(
-				/Cannot delete file: file does not exist/,
-			);
+			expect(() => deleteFile(nonExistentFile)).toThrow(/Cannot delete file: file does not exist/);
 		});
 	});
 
@@ -436,9 +428,7 @@ describe("File Manager - File Operations", () => {
 			// We're testing that errors are properly wrapped
 			const invalidPath = "\0invalid";
 
-			expect(() => writeFile(invalidPath, "content")).toThrow(
-				/Failed to write file/,
-			);
+			expect(() => writeFile(invalidPath, "content")).toThrow(/Failed to write file/);
 		});
 
 		it("should preserve error messages in wrapped errors", () => {
@@ -656,14 +646,8 @@ import { util } from '../once-integrated-delete/util';
 			// Need to use absolute paths in referenceMap
 			const cwd = process.cwd().replace(/\\/g, "/");
 			const referenceMap = new Map([
-				[
-					`${cwd}/src/once-integrated-delete/helper.ts`,
-					`${cwd}/src/utils/helper.ts`,
-				],
-				[
-					`${cwd}/src/once-integrated-delete/util.ts`,
-					`${cwd}/src/utils/util.ts`,
-				],
+				[`${cwd}/src/once-integrated-delete/helper.ts`, `${cwd}/src/utils/helper.ts`],
+				[`${cwd}/src/once-integrated-delete/util.ts`, `${cwd}/src/utils/util.ts`],
 			]);
 
 			const result = updateImportPaths(content, oldPath, newPath, referenceMap);
@@ -843,9 +827,7 @@ import { helper } from '../temp/helper';
 
 			// Need to use absolute paths in referenceMap
 			const cwd = process.cwd().replace(/\\/g, "/");
-			const referenceMap = new Map([
-				[`${cwd}/src/temp/helper.ts`, `${cwd}/src/utils/helper.ts`],
-			]);
+			const referenceMap = new Map([[`${cwd}/src/temp/helper.ts`, `${cwd}/src/utils/helper.ts`]]);
 
 			const result = updateImportPaths(content, oldPath, newPath, referenceMap);
 
@@ -864,9 +846,7 @@ import { helper } from '../temp/helper';
 
 			// Need to use absolute paths in referenceMap
 			const cwd = process.cwd().replace(/\\/g, "/");
-			const referenceMap = new Map([
-				[`${cwd}/src/temp/helper`, `${cwd}/src/utils/helper`],
-			]);
+			const referenceMap = new Map([[`${cwd}/src/temp/helper`, `${cwd}/src/utils/helper`]]);
 
 			const result = updateImportPaths(content, oldPath, newPath, referenceMap);
 
@@ -953,12 +933,8 @@ describe("File Manager - Rollback Mechanism", () => {
 			expect(result.restoredReferenceFiles).toContain(referenceFile2);
 			expect(fs.existsSync(referenceFile1)).toBe(true);
 			expect(fs.existsSync(referenceFile2)).toBe(true);
-			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe(
-				"reference content 1",
-			);
-			expect(fs.readFileSync(referenceFile2, "utf-8")).toBe(
-				"reference content 2",
-			);
+			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe("reference content 1");
+			expect(fs.readFileSync(referenceFile2, "utf-8")).toBe("reference content 2");
 			expect(result.errors).toHaveLength(0);
 		});
 
@@ -982,9 +958,7 @@ describe("File Manager - Rollback Mechanism", () => {
 			expect(result.restoredReferenceFiles).toHaveLength(1);
 			expect(result.restoredReferenceFiles).toContain(referenceFile1);
 			expect(fs.readFileSync(testFile1, "utf-8")).toBe("original content 1");
-			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe(
-				"reference content 1",
-			);
+			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe("reference content 1");
 			expect(result.errors).toHaveLength(0);
 		});
 
@@ -1029,9 +1003,7 @@ describe("File Manager - Rollback Mechanism", () => {
 			// Verify valid file was restored
 			expect(result.restoredReferenceFiles).toHaveLength(1);
 			expect(result.restoredReferenceFiles).toContain(referenceFile1);
-			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe(
-				"reference content 1",
-			);
+			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe("reference content 1");
 
 			// Verify error was recorded
 			expect(result.errors).toHaveLength(1);
@@ -1080,10 +1052,7 @@ describe("File Manager - Rollback Mechanism", () => {
 
 			// Verify result contains all restored files
 			expect(result.restoredFiles).toEqual([testFile1, testFile2]);
-			expect(result.restoredReferenceFiles).toEqual([
-				referenceFile1,
-				referenceFile2,
-			]);
+			expect(result.restoredReferenceFiles).toEqual([referenceFile1, referenceFile2]);
 			expect(result.errors).toHaveLength(0);
 		});
 	});
@@ -1114,9 +1083,9 @@ describe("File Manager - Rollback Mechanism", () => {
 		it("should throw error if any file cannot be read", () => {
 			const nonExistentFile = path.join(referenceDir, "nonexistent.ts");
 
-			expect(() =>
-				snapshotReferenceFiles([referenceFile1, nonExistentFile]),
-			).toThrow(/Failed to snapshot reference file/);
+			expect(() => snapshotReferenceFiles([referenceFile1, nonExistentFile])).toThrow(
+				/Failed to snapshot reference file/,
+			);
 		});
 
 		it("should preserve exact file content in snapshot", () => {
@@ -1186,12 +1155,8 @@ export const test = "test with 'quotes' and \\"escapes\\"";
 			// Verify original state restored
 			expect(fs.readFileSync(testFile1, "utf-8")).toBe("original content 1");
 			expect(fs.readFileSync(testFile2, "utf-8")).toBe("original content 2");
-			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe(
-				"reference content 1",
-			);
-			expect(fs.readFileSync(referenceFile2, "utf-8")).toBe(
-				"reference content 2",
-			);
+			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe("reference content 1");
+			expect(fs.readFileSync(referenceFile2, "utf-8")).toBe("reference content 2");
 		});
 
 		it("should handle partial rollback when some operations fail", () => {
@@ -1216,9 +1181,7 @@ export const test = "test with 'quotes' and \\"escapes\\"";
 
 			// Verify valid files were restored
 			expect(fs.readFileSync(testFile1, "utf-8")).toBe("original content 1");
-			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe(
-				"reference content 1",
-			);
+			expect(fs.readFileSync(referenceFile1, "utf-8")).toBe("reference content 1");
 		});
 
 		it("should handle rollback when original files were deleted", () => {

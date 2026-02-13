@@ -24,16 +24,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
 
-	const appClassName = useMemo(
-		() => (isLoggedIn ? "app" : "app app--login"),
-		[isLoggedIn],
-	);
+	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
 
 	const mainWrapperClassName = useMemo(
 		() =>
-			["app-main-wrapper", isLoggedIn ? "" : "app-main-wrapper--login"]
-				.filter(Boolean)
-				.join(" "),
+			["app-main-wrapper", isLoggedIn ? "" : "app-main-wrapper--login"].filter(Boolean).join(" "),
 		[isLoggedIn],
 	);
 

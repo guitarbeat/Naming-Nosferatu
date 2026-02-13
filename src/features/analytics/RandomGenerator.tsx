@@ -9,15 +9,10 @@ interface RandomGeneratorProps {
 	userName: string;
 }
 
-export const RandomGenerator: React.FC<RandomGeneratorProps> = ({
-	userName: _userName,
-}) => {
+export const RandomGenerator: React.FC<RandomGeneratorProps> = ({ userName: _userName }) => {
 	const [generatedName, setGeneratedName] = useState<string | null>(null);
 	const [isGenerating, setIsGenerating] = useState(false);
-	const [storedFavorites, setStoredFavorites] = useLocalStorage<string[]>(
-		"cat_name_favorites",
-		[],
-	);
+	const [storedFavorites, setStoredFavorites] = useLocalStorage<string[]>("cat_name_favorites", []);
 	const favorites = useMemo(() => new Set(storedFavorites), [storedFavorites]);
 
 	const generateName = async () => {
@@ -60,12 +55,8 @@ export const RandomGenerator: React.FC<RandomGeneratorProps> = ({
 
 	return (
 		<div className="flex flex-col max-w-2xl mx-auto w-full">
-			<h2 className="text-2xl font-bold text-white text-center mb-2">
-				Random Name Generator
-			</h2>
-			<p className="text-white/60 text-center mb-8">
-				Can't decide? Let fate decide for you.
-			</p>
+			<h2 className="text-2xl font-bold text-white text-center mb-2">Random Name Generator</h2>
+			<p className="text-white/60 text-center mb-8">Can't decide? Let fate decide for you.</p>
 
 			<Card className="w-full min-h-[240px]">
 				<CardBody className="flex flex-col items-center justify-center gap-8 py-12">
@@ -88,11 +79,7 @@ export const RandomGenerator: React.FC<RandomGeneratorProps> = ({
 									>
 										<Heart
 											size={20}
-											className={
-												favorites.has(generatedName)
-													? "fill-pink-500 text-pink-500"
-													: ""
-											}
+											className={favorites.has(generatedName) ? "fill-pink-500 text-pink-500" : ""}
 										/>
 									</HeroButton>
 									<HeroButton

@@ -176,7 +176,6 @@ export const analyticsAPI = {
 	getTopSelectedNames: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client
-				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 				.from("cat_tournament_selections" as any)
 				.select("name_id, name");
 			if (error) {
@@ -201,9 +200,7 @@ export const analyticsAPI = {
 				}
 			});
 
-			let results = Array.from(selectionCounts.values()).sort(
-				(a, b) => b.count - a.count,
-			);
+			let results = Array.from(selectionCounts.values()).sort((a, b) => b.count - a.count);
 			if (limit) {
 				results = results.slice(0, limit);
 			}
@@ -226,7 +223,6 @@ export const analyticsAPI = {
 	) => {
 		return withSupabase(async (client) => {
 			let selectionsQuery = client
-				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 				.from("cat_tournament_selections" as any)
 				.select("name_id, name, user_name");
 			let ratingsQuery = client
@@ -234,8 +230,7 @@ export const analyticsAPI = {
 				.select("name_id, rating, wins, losses, user_name");
 
 			if (userFilter && userFilter !== "all") {
-				const targetUser =
-					userFilter === "current" ? currentUserName : userFilter;
+				const targetUser = userFilter === "current" ? currentUserName : userFilter;
 				if (targetUser) {
 					selectionsQuery = selectionsQuery.eq("user_name", targetUser);
 					ratingsQuery = ratingsQuery.eq("user_name", targetUser);
@@ -252,15 +247,11 @@ export const analyticsAPI = {
 					.eq("is_hidden", false),
 			]);
 
-			const selections =
-				(selectionsResult.data as unknown as SelectionRow[]) || [];
+			const selections = (selectionsResult.data as unknown as SelectionRow[]) || [];
 			const ratings = ratingsResult.data || [];
 			const names = namesResult.data || [];
 
-			const selectionStats = new Map<
-				string | number,
-				AnalyticsSelectionStats
-			>();
+			const selectionStats = new Map<string | number, AnalyticsSelectionStats>();
 			selections.forEach((item) => {
 				const s = item as SelectionRow;
 				if (!selectionStats.has(s.name_id)) {
@@ -310,9 +301,7 @@ export const analyticsAPI = {
 				};
 
 				const avgRating =
-					ratStat.count > 0
-						? Math.round(ratStat.totalRating / ratStat.count)
-						: 1500;
+					ratStat.count > 0 ? Math.round(ratStat.totalRating / ratStat.count) : 1500;
 				const popularityScore = Math.round(
 					selStat.count * 2 + ratStat.wins * 1.5 + (avgRating - 1500) * 0.5,
 				);
@@ -329,9 +318,7 @@ export const analyticsAPI = {
 				};
 			});
 
-			const sorted = analytics.sort(
-				(a, b) => b.popularity_score - a.popularity_score,
-			);
+			const sorted = analytics.sort((a, b) => b.popularity_score - a.popularity_score);
 			return limit ? sorted.slice(0, limit) : sorted;
 		}, []);
 	},
@@ -353,8 +340,7 @@ export const analyticsAPI = {
 					year: 365,
 					all: periods,
 				};
-				const dateFilterKey =
-					options?.dateFilter as keyof typeof dateFilterPeriods;
+				const dateFilterKey = options?.dateFilter as keyof typeof dateFilterPeriods;
 				const requestedPeriods =
 					options?.periods ??
 					(dateFilterKey ? dateFilterPeriods[dateFilterKey] : undefined) ??
@@ -395,10 +381,7 @@ export const analyticsAPI = {
 					}
 				});
 
-				const dateGroups = new Map<
-					string,
-					Map<string, { name: string; count: number }>
-				>();
+				const dateGroups = new Map<string, Map<string, { name: string; count: number }>>();
 				const nameData = new Map<
 					string,
 					{
@@ -453,9 +436,7 @@ export const analyticsAPI = {
 				for (let i = periodCount - 1; i >= 0; i--) {
 					const d = new Date(today);
 					d.setDate(d.getDate() - i);
-					timeLabels.push(
-						d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-					);
+					timeLabels.push(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }));
 				}
 
 				const dateKeys: string[] = [];
@@ -479,9 +460,7 @@ export const analyticsAPI = {
 						const dayEntries = Array.from(dayData.entries()).sort(
 							(a, b) => b[1].count - a[1].count,
 						);
-						const rankIndex = dayEntries.findIndex(
-							([id]) => id === nameInfo.id,
-						);
+						const rankIndex = dayEntries.findIndex(([id]) => id === nameInfo.id);
 						return rankIndex >= 0 ? rankIndex + 1 : null;
 					});
 
@@ -578,39 +557,29 @@ export const statsAPI = {
 	 */
 	getSiteStats: async () => {
 		return withSupabase(async (client) => {
-			const [
-				namesResult,
-				hiddenResult,
-				usersResult,
-				ratingsResult,
-				selectionsResult,
-			] = await Promise.all([
-				client
-					.from("cat_name_options")
-					.select("id", { count: "exact", head: true })
-					.eq("is_active", true),
-				client
-					.from("cat_name_options")
-					.select("id", { count: "exact", head: true })
-					.eq("is_hidden", true),
-				client
-					.from("cat_app_users")
-					.select("user_name", { count: "exact", head: true }),
-				client.from("cat_name_ratings").select("rating"),
-				client
-					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
-					.from("cat_tournament_selections" as any)
-					.select("id", { count: "exact", head: true }),
-			]);
+			const [namesResult, hiddenResult, usersResult, ratingsResult, selectionsResult] =
+				await Promise.all([
+					client
+						.from("cat_name_options")
+						.select("id", { count: "exact", head: true })
+						.eq("is_active", true),
+					client
+						.from("cat_name_options")
+						.select("id", { count: "exact", head: true })
+						.eq("is_hidden", true),
+					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
+					client.from("cat_name_ratings").select("rating"),
+					client
+						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+						.from("cat_tournament_selections" as any)
+						.select("id", { count: "exact", head: true }),
+				]);
 
 			const totalNames = namesResult.count || 0;
 			const ratings = ratingsResult.data || [];
 			const avgRating =
 				ratings.length > 0
-					? Math.round(
-							ratings.reduce((s, r) => s + Number(r.rating), 0) /
-								ratings.length,
-						)
+					? Math.round(ratings.reduce((s, r) => s + Number(r.rating), 0) / ratings.length)
 					: 1500;
 
 			return {
@@ -664,7 +633,6 @@ export const statsAPI = {
 			const [ratingsResult, selectionsResult] = await Promise.all([
 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
 				client
-					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 					.from("cat_tournament_selections" as any)
 					.select("*")
 					.eq("user_name", userName),
@@ -687,10 +655,7 @@ export const statsAPI = {
 						: 0,
 				avgUserRating:
 					ratings.length > 0
-						? Math.round(
-								ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
-									ratings.length,
-							)
+						? Math.round(ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) / ratings.length)
 						: 1500,
 			};
 		}, null);

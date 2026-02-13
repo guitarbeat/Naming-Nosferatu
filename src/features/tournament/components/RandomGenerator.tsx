@@ -71,13 +71,7 @@ function IconButton({
 	);
 }
 
-function FavoriteChip({
-	name,
-	onRemove,
-}: {
-	name: string;
-	onRemove: () => void;
-}) {
+function FavoriteChip({ name, onRemove }: { name: string; onRemove: () => void }) {
 	return (
 		<div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 py-1 pl-3 pr-1">
 			<span className="text-sm text-white/80">{name}</span>
@@ -103,10 +97,7 @@ export function RandomGenerator({
 }: RandomGeneratorProps) {
 	const [generatedName, setGeneratedName] = useState<string | null>(null);
 	const [isGenerating, setIsGenerating] = useState(false);
-	const [storedFavorites, setStoredFavorites] = useLocalStorage<string[]>(
-		storageKey,
-		[],
-	);
+	const [storedFavorites, setStoredFavorites] = useLocalStorage<string[]>(storageKey, []);
 
 	const favorites = useMemo(() => new Set(storedFavorites), [storedFavorites]);
 
@@ -159,12 +150,8 @@ export function RandomGenerator({
 	return (
 		<div className="mx-auto flex w-full max-w-2xl flex-col">
 			{/* Header */}
-			<h2 className="mb-2 text-center text-2xl font-bold text-white">
-				Random Name Generator
-			</h2>
-			<p className="mb-8 text-center text-white/60">
-				Can&apos;t decide? Let fate decide for you.
-			</p>
+			<h2 className="mb-2 text-center text-2xl font-bold text-white">Random Name Generator</h2>
+			<p className="mb-8 text-center text-white/60">Can&apos;t decide? Let fate decide for you.</p>
 
 			{/* Generator Card */}
 			<div className="flex min-h-[240px] w-full flex-col items-center justify-center gap-8 rounded-2xl border border-white/10 bg-white/5 px-6 py-12 backdrop-blur-sm">
@@ -181,18 +168,12 @@ export function RandomGenerator({
 								<IconButton
 									onClick={() => toggleFavorite(generatedName)}
 									label={
-										favorites.has(generatedName)
-											? "Remove from favorites"
-											: "Add to favorites"
+										favorites.has(generatedName) ? "Remove from favorites" : "Add to favorites"
 									}
 								>
 									<Heart
 										size={20}
-										className={
-											favorites.has(generatedName)
-												? "fill-pink-500 text-pink-500"
-												: ""
-										}
+										className={favorites.has(generatedName) ? "fill-pink-500 text-pink-500" : ""}
 									/>
 								</IconButton>
 								<IconButton
@@ -231,11 +212,7 @@ export function RandomGenerator({
 					</h3>
 					<div className="flex flex-wrap gap-2">
 						{Array.from(favorites).map((name) => (
-							<FavoriteChip
-								key={name}
-								name={name}
-								onRemove={() => toggleFavorite(name)}
-							/>
+							<FavoriteChip key={name} name={name} onRemove={() => toggleFavorite(name)} />
 						))}
 					</div>
 				</div>

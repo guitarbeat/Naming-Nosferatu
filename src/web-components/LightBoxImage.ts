@@ -77,43 +77,26 @@ export class LightBoxImage extends HTMLElement {
 
 	handleEvent(e: Event) {
 		if (e.type === "click") {
-			this.onclick(e as MouseEvent);
+			this._handleClick(e as MouseEvent);
 		} else if (e.type === "cancel") {
-			this.oncancel(e);
+			this._handleCancel(e);
 		}
 	}
 
-	onclick(e: MouseEvent) {
+	_handleClick(e: MouseEvent) {
 		if (e.currentTarget === this.toggle) {
 			e.stopPropagation();
 			this.moveImage(() => this.moveImageToTarget());
 		}
 		if (e.currentTarget === this.dialog) {
 			if (this.dialog.contains(this.image)) {
-				// Click on dialog backdrop or content
-				// Usually backdrop click closes dialog if implemented.
-				// Here we assume click on dialog means close.
-				// But we need to distinguish click on image vs backdrop?
-				// The provided code: if (this.dialog.contains(this.image)) ...
-				// And e.currentTarget is the dialog.
-				// If user clicks the image inside dialog, e.target is image, e.currentTarget is dialog (bubbling).
-				// We probably want to close only if clicking backdrop?
-				// But provided code closes on any click on dialog.
-				// Let's stick to provided logic: "dialogCallback" called on click.
-				// It checks contains(image).
-				// If so, it calls moveImageBack.
-				// But we should probably allow clicking the image without closing?
-				// Provided code: "this.dialog.addEventListener('click', this)"
-				// If I click the image, it bubbles to dialog.
-				// So clicking image closes it.
-				// This acts like "click anywhere to close".
 				e.preventDefault(); // Prevent default dialog behavior if any
 				this.moveImage(() => this.moveImageBack());
 			}
 		}
 	}
 
-	oncancel(e: Event) {
+	_handleCancel(e: Event) {
 		if (this.dialog.contains(this.image)) {
 			e.preventDefault(); // Prevent default close, we handle it with animation
 			this.moveImage(() => this.moveImageBack());
@@ -121,8 +104,7 @@ export class LightBoxImage extends HTMLElement {
 	}
 
 	moveImage(fn: () => void) {
-		// @ts-expect-error
-		if (document.startViewTransition) {
+		if ("startViewTransition" in document) {
 			this.handleViewTransition(fn);
 		} else {
 			fn();
@@ -132,7 +114,7 @@ export class LightBoxImage extends HTMLElement {
 	async handleViewTransition(fn: () => void) {
 		if (this.image) {
 			this.image.style.viewTransitionName = "active-lightbox-image";
-			// @ts-expect-error
+
 			const transition = document.startViewTransition(() => fn());
 			try {
 				await transition.finished;

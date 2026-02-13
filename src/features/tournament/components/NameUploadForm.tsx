@@ -14,10 +14,7 @@ interface NameUploadFormProps {
 	isAdmin?: boolean;
 }
 
-export function NameUploadForm({
-	onImagesUploaded,
-	isAdmin = false,
-}: NameUploadFormProps) {
+export function NameUploadForm({ onImagesUploaded, isAdmin = false }: NameUploadFormProps) {
 	const handleFileUpload = useCallback(
 		async (e: React.ChangeEvent<HTMLInputElement>) => {
 			const files = Array.from(e.target.files || []);

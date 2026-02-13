@@ -24,12 +24,7 @@ export const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
 	toolbar,
 }) => {
 	return (
-		<div
-			className={cn(
-				"flex items-center justify-between",
-				variant === "default" && "mb-4",
-			)}
-		>
+		<div className={cn("flex items-center justify-between", variant === "default" && "mb-4")}>
 			{onToggle ? (
 				<button
 					type="button"
@@ -39,11 +34,7 @@ export const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
 					aria-controls={contentId}
 				>
 					<div className="text-white/60 hover:text-white transition-colors">
-						{isCollapsed ? (
-							<ChevronRight size={20} />
-						) : (
-							<ChevronDown size={20} />
-						)}
+						{isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
 					</div>
 					<div className="text-lg font-semibold text-white flex items-center gap-2">
 						{icon && <span>{icon}</span>}
@@ -75,10 +66,7 @@ export const CollapsibleContent: React.FC<{
 		return null;
 	}
 	return (
-		<div
-			id={id}
-			className="animate-in slide-in-from-top-2 duration-200 fade-in zoom-in-95"
-		>
+		<div id={id} className="animate-in slide-in-from-top-2 duration-200 fade-in zoom-in-95">
 			{children}
 		</div>
 	);

@@ -124,8 +124,7 @@ export function FluidNav() {
 	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { tournament, tournamentActions, user, ui, uiActions, userActions } =
-		appStore;
+	const { tournament, tournamentActions, user, ui, uiActions, userActions } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl } = user;
 	const { isSwipeMode } = ui;
@@ -139,18 +138,12 @@ export function FluidNav() {
 	const isTournamentRoute = location.pathname === "/tournament";
 
 	// Name suggestion hook
-	const {
-		values,
-		isSubmitting,
-		handleChange,
-		handleSubmit,
-		globalError,
-		successMessage,
-	} = useNameSuggestion({
-		onSuccess: () => {
-			setTimeout(() => setIsSuggestExpanded(false), 2000);
-		},
-	});
+	const { values, isSubmitting, handleChange, handleSubmit, globalError, successMessage } =
+		useNameSuggestion({
+			onSuccess: () => {
+				setTimeout(() => setIsSuggestExpanded(false), 2000);
+			},
+		});
 
 	const { isComplete, names: tournamentNames } = tournament;
 	const isTournamentActive = !!tournamentNames;
@@ -225,9 +218,7 @@ export function FluidNav() {
 				if (isAnalysisRoute) {
 					navigate("/");
 				} else {
-					document
-						.getElementById("pick")
-						?.scrollIntoView({ behavior: "smooth" });
+					document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
 				}
 				setActiveSection("pick");
 				break;
@@ -256,11 +247,7 @@ export function FluidNav() {
 			navigate("/");
 			setActiveSection(id);
 			requestAnimationFrame(() => {
-				setTimeout(
-					() =>
-						document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }),
-					100,
-				);
+				setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 100);
 			});
 			return;
 		}
@@ -402,10 +389,7 @@ export function FluidNav() {
 								exit={{ scale: 0.8, opacity: 0 }}
 							>
 								<IconComponent
-									className={cn(
-										"w-5 h-5",
-										buttonState.highlight && "text-cyan-400",
-									)}
+									className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
 									aria-hidden={true}
 								/>
 							</motion.div>
@@ -426,9 +410,7 @@ export function FluidNav() {
 							"text-white/70 hover:text-white hover:bg-white/10",
 							isSwipeMode && "bg-purple-500/20 text-purple-400",
 						)}
-						aria-label={
-							isSwipeMode ? "Switch to grid view" : "Switch to swipe view"
-						}
+						aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
 					>
 						<AnimatePresence mode="wait">
 							<motion.div
@@ -445,9 +427,7 @@ export function FluidNav() {
 								)}
 							</motion.div>
 						</AnimatePresence>
-						<span className="text-[10px] font-medium">
-							{isSwipeMode ? "Swipe" : "Grid"}
-						</span>
+						<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
 					</motion.button>
 				)}
 
@@ -483,17 +463,10 @@ export function FluidNav() {
 					customIcon={
 						isLoggedIn && avatarUrl ? (
 							<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
-								<img
-									src={avatarUrl}
-									alt={userName}
-									className="w-full h-full object-cover"
-								/>
+								<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
 							</div>
 						) : (
-							<User
-								className={cn("w-5 h-5", isLoggedIn && "text-purple-400")}
-								aria-hidden={true}
-							/>
+							<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
 						)
 					}
 					badge={
@@ -524,11 +497,7 @@ export function FluidNav() {
 								<div className="flex items-center gap-3">
 									{avatarUrl && (
 										<div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30">
-											<img
-												src={avatarUrl}
-												alt={userName}
-												className="w-full h-full object-cover"
-											/>
+											<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
 										</div>
 									)}
 									<div className="flex-1">
@@ -552,9 +521,7 @@ export function FluidNav() {
 									<h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
 										Who are you?
 									</h3>
-									<p className="text-sm text-white/60">
-										Enter your name to track rankings
-									</p>
+									<p className="text-sm text-white/60">Enter your name to track rankings</p>
 								</div>
 								<div className="space-y-3">
 									<Input
@@ -603,9 +570,7 @@ export function FluidNav() {
 								<h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
 									Got a name?
 								</h3>
-								<p className="text-sm text-white/60">
-									Share your brilliant idea
-								</p>
+								<p className="text-sm text-white/60">Share your brilliant idea</p>
 							</div>
 							<div className="space-y-3">
 								<Input
@@ -637,11 +602,7 @@ export function FluidNav() {
 									type="submit"
 									variant="gradient"
 									size="xl"
-									disabled={
-										!values.name.trim() ||
-										!values.description.trim() ||
-										isSubmitting
-									}
+									disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 									loading={isSubmitting}
 									className="w-full"
 								>

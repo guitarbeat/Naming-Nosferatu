@@ -81,9 +81,7 @@ export const NameGridItem = memo(function NameGridItem({
 				className={cn(isHidden && "opacity-50 grayscale")}
 				isAdmin={isAdmin}
 				isHidden={isHidden}
-				_onToggleVisibility={
-					isAdmin ? () => onToggleVisibility?.(nameId) : undefined
-				}
+				_onToggleVisibility={isAdmin ? () => onToggleVisibility?.(nameId) : undefined}
 				_onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
 				onSelectionChange={undefined}
 				size="medium"

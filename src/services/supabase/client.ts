@@ -49,63 +49,57 @@ const getSupabaseCredentials = (): { url: string; key: string } => {
 
 let supabaseInstance: SupabaseClient<Database> | null =
 	typeof window !== "undefined" ? (window.__supabaseClient ?? null) : null;
-let initializationPromise: Promise<SupabaseClient<Database> | null> | null =
-	null;
+let initializationPromise: Promise<SupabaseClient<Database> | null> | null = null;
 
-const createSupabaseClient =
-	async (): Promise<SupabaseClient<Database> | null> => {
-		// Validate and get credentials (throws if missing)
-		const { url: SupabaseUrl, key: SupabaseAnonKey } = getSupabaseCredentials();
+const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> => {
+	// Validate and get credentials (throws if missing)
+	const { url: SupabaseUrl, key: SupabaseAnonKey } = getSupabaseCredentials();
 
-		try {
-			const { createClient } = await import("@supabase/supabase-js");
-			const authOptions = {
-				persistSession: true,
-				autoRefreshToken: true,
-				storage: (() => {
-					try {
-						return typeof window !== "undefined"
-							? window.localStorage
-							: undefined;
-					} catch {
-						return undefined;
-					}
-				})(),
-			} as const;
-
-			let currentUserName: string | null = null;
-			try {
-				if (typeof window !== "undefined" && window.localStorage) {
-					currentUserName = window.localStorage.getItem(STORAGE_KEYS.USER);
+	try {
+		const { createClient } = await import("@supabase/supabase-js");
+		const authOptions = {
+			persistSession: true,
+			autoRefreshToken: true,
+			storage: (() => {
+				try {
+					return typeof window !== "undefined" ? window.localStorage : undefined;
+				} catch {
+					return undefined;
 				}
-			} catch {
-				/* ignore */
-			}
+			})(),
+		} as const;
 
-			const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
-				auth: authOptions,
-				global: {
-					headers: {
-						"X-Client-Info": "cat-name-tournament",
-						...(currentUserName ? { "x-user-name": currentUserName } : {}),
-					},
-				},
-				db: { schema: "public" },
-			});
-
-			if (typeof window !== "undefined") {
-				window.__supabaseClient = client;
+		let currentUserName: string | null = null;
+		try {
+			if (typeof window !== "undefined" && window.localStorage) {
+				currentUserName = window.localStorage.getItem(STORAGE_KEYS.USER);
 			}
-			return client;
-		} catch (error) {
-			console.error("❌ Failed to create Supabase client:", error);
-			return null;
+		} catch {
+			/* ignore */
 		}
-	};
 
-const getSupabaseClient = async (
-	retryCount = 0,
-): Promise<SupabaseClient<Database> | null> => {
+		const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
+			auth: authOptions,
+			global: {
+				headers: {
+					"X-Client-Info": "cat-name-tournament",
+					...(currentUserName ? { "x-user-name": currentUserName } : {}),
+				},
+			},
+			db: { schema: "public" },
+		});
+
+		if (typeof window !== "undefined") {
+			window.__supabaseClient = client;
+		}
+		return client;
+	} catch (error) {
+		console.error("❌ Failed to create Supabase client:", error);
+		return null;
+	}
+};
+
+const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Database> | null> => {
 	if (supabaseInstance) {
 		return supabaseInstance;
 	}
@@ -127,8 +121,7 @@ const getSupabaseClient = async (
 	return initializationPromise;
 };
 
-export const resolveSupabaseClient = async () =>
-	supabaseInstance ?? (await getSupabaseClient());
+export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
 
 export const updateSupabaseUserContext = (userName: string | null): void => {
 	if (!supabaseInstance) {
@@ -146,8 +139,7 @@ export const updateSupabaseUserContext = (userName: string | null): void => {
 	}
 };
 
-const isDev =
-	typeof process !== "undefined" && process.env?.NODE_ENV === "development";
+const isDev = typeof process !== "undefined" && process.env?.NODE_ENV === "development";
 
 export const isSupabaseAvailable = async () => {
 	const client = await resolveSupabaseClient();

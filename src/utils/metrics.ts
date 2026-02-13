@@ -75,22 +75,16 @@ export function ratingsToArray(
 
 	return Object.entries(ratings).map(([name, data]) => ({
 		name,
-		rating:
-			typeof data === "number"
-				? data
-				: (data as RatingDataInput)?.rating || 1500,
+		rating: typeof data === "number" ? data : (data as RatingDataInput)?.rating || 1500,
 		wins: typeof data === "object" ? (data as RatingDataInput)?.wins || 0 : 0,
-		losses:
-			typeof data === "object" ? (data as RatingDataInput)?.losses || 0 : 0,
+		losses: typeof data === "object" ? (data as RatingDataInput)?.losses || 0 : 0,
 	}));
 }
 
 /**
  * Convert ratings array to object format
  */
-export function ratingsToObject(
-	ratingsArray: RatingItem[],
-): Record<string, RatingData> {
+export function ratingsToObject(ratingsArray: RatingItem[]): Record<string, RatingData> {
 	if (!Array.isArray(ratingsArray)) {
 		return {};
 	}

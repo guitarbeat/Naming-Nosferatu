@@ -46,9 +46,7 @@ export const PersonalResults = ({
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">⭐</span>
 						<h3 className="text-sm font-medium text-white/60">Highest Rated</h3>
-						<p className="text-xl font-bold text-white">
-							{String(rankings[0]?.rating || 1500)}
-						</p>
+						<p className="text-xl font-bold text-white">{String(rankings[0]?.rating || 1500)}</p>
 					</CardBody>
 				</Card>
 
@@ -65,10 +63,7 @@ export const PersonalResults = ({
 				rankings={rankings}
 				onSave={async (r: NameItem[]) => {
 					const ratingsMap = Object.fromEntries(
-						r.map((n) => [
-							n.name,
-							{ rating: n.rating as number, wins: n.wins, losses: n.losses },
-						]),
+						r.map((n) => [n.name, { rating: n.rating as number, wins: n.wins, losses: n.losses }]),
 					);
 					await onUpdateRatings(ratingsMap);
 					showToast("Updated!", "success");

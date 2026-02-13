@@ -117,10 +117,7 @@ Timestamp: ${new Date().toISOString()}
 	);
 };
 
-export class ErrorBoundary extends Component<
-	ErrorBoundaryProps,
-	ErrorBoundaryState
-> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -230,7 +227,6 @@ const ErrorList: React.FC<ErrorListProps> = ({
 						className="relative flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-sm animate-in fade-in slide-in-from-top-1 shadow-sm backdrop-blur-sm"
 					>
 						<div className="flex-1 break-words font-medium">
-							{/* biome-ignore lint/suspicious/noExplicitAny: Simple display */}
 							{(err as any).message || String(err)}
 						</div>
 						{onDismiss && (
@@ -263,8 +259,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	if (!error) {
 		return null;
 	}
-	const msg =
-		typeof error === "string" ? error : (error as AppError).message || "Error";
+	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
 		<div
 			className={cn(

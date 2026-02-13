@@ -16,12 +16,9 @@ const buttonVariants = cva(
 	{
 		variants: {
 			variant: {
-				primary:
-					"bg-primary text-primary-foreground shadow hover:bg-primary/90",
-				secondary:
-					"bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-				danger:
-					"bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+				primary: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+				secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+				danger: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				outline:
 					"border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
@@ -57,8 +54,7 @@ export type ButtonVariant =
 	| "secondaryGradient";
 export type ButtonSize = "small" | "medium" | "large" | "xl" | "icon";
 
-interface ButtonProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
 	variant?: ButtonVariant;
 	size?: ButtonSize;
@@ -136,10 +132,7 @@ const ScrollToTopButton = ({
 		let scrollTimeout: number | null = null;
 
 		const checkScroll = () => {
-			const threshold =
-				window.innerHeight <= 768
-					? window.innerHeight * 1.5
-					: window.innerHeight;
+			const threshold = window.innerHeight <= 768 ? window.innerHeight * 1.5 : window.innerHeight;
 			setShowScrollTop(window.scrollY > threshold);
 		};
 

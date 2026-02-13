@@ -28,12 +28,8 @@ export interface MergeResult {
  *
  * Requirements: 3.2, 3.3, 3.4
  */
-export function mergeFiles(
-	comparison: FileComparison,
-	strategy: MergeStrategy,
-): MergeResult {
-	const { existingContent, referenceContent, newExports, conflicts } =
-		comparison;
+export function mergeFiles(comparison: FileComparison, strategy: MergeStrategy): MergeResult {
+	const { existingContent, referenceContent, newExports, conflicts } = comparison;
 
 	// If there are conflicts and strategy requires user input, return early
 	if (conflicts.length > 0 && strategy.requestUserInput) {
@@ -41,9 +37,7 @@ export function mergeFiles(
 			mergedContent: existingContent,
 			conflicts,
 			addedExports: [],
-			preservedExports: comparison.existingOnlyExports.concat(
-				comparison.commonExports,
-			),
+			preservedExports: comparison.existingOnlyExports.concat(comparison.commonExports),
 		};
 	}
 
@@ -86,21 +80,13 @@ export function mergeFiles(
 	const addedExports: Export[] = [];
 	if (strategy.addNewExports && newExports.length > 0) {
 		parts.push(""); // Empty line before new exports
-		parts.push(
-			"// ============================================================================",
-		);
+		parts.push("// ============================================================================");
 		parts.push("// Integrated from reference file");
-		parts.push(
-			"// ============================================================================",
-		);
+		parts.push("// ============================================================================");
 		parts.push("");
 
 		for (const exp of newExports) {
-			const exportCode = extractExportFromFile(
-				referenceSourceFile,
-				referenceContent,
-				exp,
-			);
+			const exportCode = extractExportFromFile(referenceSourceFile, referenceContent, exp);
 			if (exportCode) {
 				parts.push(exportCode);
 				parts.push(""); // Empty line between exports
@@ -115,9 +101,7 @@ export function mergeFiles(
 		mergedContent,
 		conflicts: strategy.requestUserInput ? conflicts : [],
 		addedExports,
-		preservedExports: comparison.existingOnlyExports.concat(
-			comparison.commonExports,
-		),
+		preservedExports: comparison.existingOnlyExports.concat(comparison.commonExports),
 	};
 }
 
@@ -163,24 +147,15 @@ function mergeImports(existing: string[], reference: string[]): string[] {
  * Removes import statements from file content
  */
 function removeImports(content: string): string {
-	const sourceFile = ts.createSourceFile(
-		"temp.ts",
-		content,
-		ts.ScriptTarget.Latest,
-		true,
-	);
+	const sourceFile = ts.createSourceFile("temp.ts", content, ts.ScriptTarget.Latest, true);
 
 	const lines = content.split("\n");
 	const linesToRemove = new Set<number>();
 
 	function visit(node: ts.Node) {
 		if (ts.isImportDeclaration(node)) {
-			const { line: startLine } = sourceFile.getLineAndCharacterOfPosition(
-				node.getStart(),
-			);
-			const { line: endLine } = sourceFile.getLineAndCharacterOfPosition(
-				node.getEnd(),
-			);
+			const { line: startLine } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+			const { line: endLine } = sourceFile.getLineAndCharacterOfPosition(node.getEnd());
 
 			for (let i = startLine; i <= endLine; i++) {
 				linesToRemove.add(i);
@@ -218,9 +193,7 @@ function extractExportFromFile(
 			return; // Already found
 		}
 
-		const modifiers = ts.canHaveModifiers(node)
-			? ts.getModifiers(node)
-			: undefined;
+		const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined;
 		const hasExportModifier = modifiers?.some(
 			(m: ts.Modifier) => m.kind === ts.SyntaxKind.ExportKeyword,
 		);
