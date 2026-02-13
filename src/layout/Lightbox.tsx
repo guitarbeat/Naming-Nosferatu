@@ -51,7 +51,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		return () => {
 			setPreloadedImages(new Set());
 		};
-	}, [images]);
+	}, []);
 
 	const resetZoom = useCallback(() => {
 		setScale(1);
@@ -62,7 +62,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 	// Handle zoom reset when navigating
 	useEffect(() => {
 		resetZoom();
-	}, [currentIndex, resetZoom]);
+	}, [resetZoom]);
 
 	const handleZoomIn = useCallback(() => {
 		setScale((prev) => Math.min(prev + 0.5, 3));
@@ -125,7 +125,9 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 	// Trap focus within lightbox when open with improved accessibility
 	useEffect(() => {
-		if (!lightboxRef.current) return;
+		if (!lightboxRef.current) {
+			return;
+		}
 
 		const focusableElements = lightboxRef.current.querySelectorAll(
 			'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -135,7 +137,9 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		const lastElement = focusableElements[focusableElements.length - 1];
 
 		const handleTabKey = (e: KeyboardEvent) => {
-			if (e.key !== "Tab") return;
+			if (e.key !== "Tab") {
+				return;
+			}
 
 			if (e.shiftKey) {
 				if (document.activeElement === firstElement) {
@@ -167,7 +171,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		const handleKeyDown = (e: KeyboardEvent) => {
 			// Prevent event propagation to avoid conflicts with other keyboard handlers
 			e.stopPropagation();
-			
+
 			switch (e.key) {
 				case "Escape":
 					e.preventDefault();
@@ -177,13 +181,17 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				case "a":
 				case "A":
 					e.preventDefault();
-					if (!isZoomed) handlePrevious();
+					if (!isZoomed) {
+						handlePrevious();
+					}
 					break;
 				case "ArrowRight":
 				case "d":
 				case "D":
 					e.preventDefault();
-					if (!isZoomed) handleNext();
+					if (!isZoomed) {
+						handleNext();
+					}
 					break;
 				case " ":
 				case "Enter":
@@ -225,13 +233,14 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				case "6":
 				case "7":
 				case "8":
-				case "9":
+				case "9": {
 					e.preventDefault();
-					const targetIndex = parseInt(e.key) - 1;
+					const targetIndex = parseInt(e.key, 10) - 1;
 					if (targetIndex < images.length) {
 						onNavigate(targetIndex);
 					}
 					break;
+				}
 				// Additional shortcuts
 				case "r":
 				case "R":
@@ -352,7 +361,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 						transition: "transform 0.3s ease",
 					}}
 					role="img"
-					aria-label={`Image ${currentIndex + 1} of ${images.length} - ${isZoomed ? 'Zoomed in' : 'Click to zoom'}`}
+					aria-label={`Image ${currentIndex + 1} of ${images.length} - ${isZoomed ? "Zoomed in" : "Click to zoom"}`}
 				>
 					<LightboxImage
 						src={images[currentIndex] || ""}
@@ -392,7 +401,9 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 				{/* Keyboard shortcuts help */}
 				<div className="absolute bottom-4 right-4 text-white/60 text-xs bg-black/30 px-2 py-1 rounded">
-					<span className="hidden sm:inline">← → Navigate • Space Close • +/- Zoom • 1-9 Jump • R Reset • F Fullscreen</span>
+					<span className="hidden sm:inline">
+						← → Navigate • Space Close • +/- Zoom • 1-9 Jump • R Reset • F Fullscreen
+					</span>
 					<span className="sm:hidden">Swipe to navigate • Tap to zoom</span>
 				</div>
 			</motion.div>

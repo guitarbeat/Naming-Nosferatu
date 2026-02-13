@@ -36,23 +36,26 @@ export function useTournamentVote({
 	setIsProcessing,
 	setIsTransitioning,
 	setSelectedOption,
-    handleVote,
+	handleVote,
 }: UseTournamentVoteProps): UseTournamentVoteResult {
 	const [isVotingLocal, setIsVotingLocal] = useState(false);
 	const isVoting = isVotingLocal;
 
-	const setVoting = useCallback((val: boolean) => {
-		setIsVotingLocal(val);
-		setIsProcessing?.(val);
-	}, [setIsProcessing]);
+	const setVoting = useCallback(
+		(val: boolean) => {
+			setIsVotingLocal(val);
+			setIsProcessing?.(val);
+		},
+		[setIsProcessing],
+	);
 
 	const toast = useToast();
 
-    // Fallback if tournamentState is not provided (legacy usage?)
-    const actualHandleVote = tournamentState?.handleVote || (handleVote as any);
-    const actualCanUndo = tournamentState?.canUndo ?? false;
-    const actualHandleUndo = tournamentState?.handleUndo;
-    const actualCurrentMatch = tournamentState?.currentMatch;
+	// Fallback if tournamentState is not provided (legacy usage?)
+	const actualHandleVote = tournamentState?.handleVote || (handleVote as any);
+	const actualCanUndo = tournamentState?.canUndo ?? false;
+	const actualHandleUndo = tournamentState?.handleUndo;
+	const actualCurrentMatch = tournamentState?.currentMatch;
 
 	const handleVoteWithAnimation = useCallback(
 		(winnerIdOrSide: string, loserId?: string) => {
@@ -70,16 +73,32 @@ export function useTournamentVote({
 				if (!actualCurrentMatch) {
 					return;
 				}
-				
+
 				side = winnerIdOrSide as "left" | "right";
 				if (side === "left") {
-					winnerId = String(typeof actualCurrentMatch.left === 'object' ? actualCurrentMatch.left.id : actualCurrentMatch.left);
-					loserIdFinal = String(typeof actualCurrentMatch.right === 'object' ? actualCurrentMatch.right.id : actualCurrentMatch.right);
+					winnerId = String(
+						typeof actualCurrentMatch.left === "object"
+							? actualCurrentMatch.left.id
+							: actualCurrentMatch.left,
+					);
+					loserIdFinal = String(
+						typeof actualCurrentMatch.right === "object"
+							? actualCurrentMatch.right.id
+							: actualCurrentMatch.right,
+					);
 				} else {
-					winnerId = String(typeof actualCurrentMatch.right === 'object' ? actualCurrentMatch.right.id : actualCurrentMatch.right);
-					loserIdFinal = String(typeof actualCurrentMatch.left === 'object' ? actualCurrentMatch.left.id : actualCurrentMatch.left);
+					winnerId = String(
+						typeof actualCurrentMatch.right === "object"
+							? actualCurrentMatch.right.id
+							: actualCurrentMatch.right,
+					);
+					loserIdFinal = String(
+						typeof actualCurrentMatch.left === "object"
+							? actualCurrentMatch.left.id
+							: actualCurrentMatch.left,
+					);
 				}
-				
+
 				if (setSelectedOption) {
 					setSelectedOption(side);
 				}
@@ -87,19 +106,21 @@ export function useTournamentVote({
 				// Two parameter mode: direct IDs
 				winnerId = winnerIdOrSide;
 				loserIdFinal = loserId;
-				
-				const isLeft = actualCurrentMatch && (
-					(typeof actualCurrentMatch.left === 'object' ? actualCurrentMatch.left.id : actualCurrentMatch.left) === winnerId
-				);
-				
+
+				const isLeft =
+					actualCurrentMatch &&
+					(typeof actualCurrentMatch.left === "object"
+						? actualCurrentMatch.left.id
+						: actualCurrentMatch.left) === winnerId;
+
 				if (setSelectedOption && actualCurrentMatch) {
 					setSelectedOption(isLeft ? "left" : "right");
 				}
 			}
 
-            if (setIsTransitioning) {
-                setIsTransitioning(true);
-            }
+			if (setIsTransitioning) {
+				setIsTransitioning(true);
+			}
 
 			setVoting(true);
 			audioManager.playVoteSound();
@@ -108,11 +129,24 @@ export function useTournamentVote({
 				actualHandleVote?.(winnerId, loserIdFinal);
 				onVote?.(winnerId, loserIdFinal);
 				setVoting(false);
-                if (setIsTransitioning) setIsTransitioning(false);
-                if (setSelectedOption) setSelectedOption(null);
+				if (setIsTransitioning) {
+					setIsTransitioning(false);
+				}
+				if (setSelectedOption) {
+					setSelectedOption(null);
+				}
 			}, VOTE_COOLDOWN);
 		},
-		[isVoting, audioManager, actualHandleVote, onVote, setVoting, setIsTransitioning, setSelectedOption, actualCurrentMatch],
+		[
+			isVoting,
+			audioManager,
+			actualHandleVote,
+			onVote,
+			setVoting,
+			setIsTransitioning,
+			setSelectedOption,
+			actualCurrentMatch,
+		],
 	);
 
 	const handleUndoWithAnimation = useCallback(() => {

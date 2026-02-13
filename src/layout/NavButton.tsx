@@ -70,7 +70,7 @@ export function NavButton({
 				{badge}
 			</div>
 			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">{label}</span>
-					</button>
+		</button>
 	);
 }
 
@@ -109,6 +109,6 @@ export function AnimatedNavButton({
 			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">
 				{props.label}
 			</span>
-					</motion.button>
+		</motion.button>
 	);
 }

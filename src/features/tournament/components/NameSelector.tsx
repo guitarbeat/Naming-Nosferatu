@@ -94,11 +94,11 @@ export function NameSelector() {
 			} else {
 				next.add(nameId);
 			}
-			
+
 			// Sync with global store
 			const selectedNameItems = names.filter((n) => next.has(n.id));
 			tournamentActions.setSelection(selectedNameItems);
-			
+
 			return next;
 		});
 	};
@@ -112,7 +112,6 @@ export function NameSelector() {
 		toggleName(nameId);
 	};
 
-	
 	// Trigger haptic feedback if available
 	const triggerHaptic = useCallback(() => {
 		if ("vibrate" in navigator) {
@@ -250,13 +249,16 @@ export function NameSelector() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isSwipeMode, visibleCards, handleSwipe, handleUndo, lightboxOpen]);
 
-	const handleOpenLightbox = useCallback((nameId: IdType) => {
-		const index = names.findIndex((n) => n.id === nameId);
-		if (index !== -1) {
-			setLightboxIndex(index);
-			setLightboxOpen(true);
-		}
-	}, [names]);
+	const handleOpenLightbox = useCallback(
+		(nameId: IdType) => {
+			const index = names.findIndex((n) => n.id === nameId);
+			if (index !== -1) {
+				setLightboxIndex(index);
+				setLightboxOpen(true);
+			}
+		},
+		[names],
+	);
 
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
 		if (!userName) {
@@ -654,7 +656,6 @@ export function NameSelector() {
 						})}
 					</div>
 				)}
-
 			</div>
 
 			{lightboxOpen && (
