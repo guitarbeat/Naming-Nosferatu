@@ -86,33 +86,38 @@ export function NameSelector() {
 		fetchNames();
 	}, [retryCount, getCachedData, setCachedData]);
 
-	const toggleName = (nameId: IdType) => {
-		setSelectedNames((prev) => {
-			const next = new Set(prev);
-			if (next.has(nameId)) {
-				next.delete(nameId);
-			} else {
-				next.add(nameId);
-			}
-			
-			// Sync with global store
-			const selectedNameItems = names.filter((n) => next.has(n.id));
-			tournamentActions.setSelection(selectedNameItems);
-			
-			return next;
-		});
-	};
+	const toggleName = useCallback(
+		(nameId: IdType) => {
+			setSelectedNames((prev) => {
+				const next = new Set(prev);
+				if (next.has(nameId)) {
+					next.delete(nameId);
+				} else {
+					next.add(nameId);
+				}
+
+				// Sync with global store
+				const selectedNameItems = names.filter((n) => next.has(n.id));
+				tournamentActions.setSelection(selectedNameItems);
+
+				return next;
+			});
+		},
+		[names, tournamentActions],
+	);
 
 	// Add haptic feedback for better UX
-	const handleToggleName = (nameId: IdType) => {
-		// Add subtle haptic feedback if supported
-		if ("vibrate" in navigator) {
-			navigator.vibrate(50);
-		}
-		toggleName(nameId);
-	};
+	const handleToggleName = useCallback(
+		(nameId: IdType) => {
+			// Add subtle haptic feedback if supported
+			if ("vibrate" in navigator) {
+				navigator.vibrate(50);
+			}
+			toggleName(nameId);
+		},
+		[toggleName],
+	);
 
-	
 	// Trigger haptic feedback if available
 	const triggerHaptic = useCallback(() => {
 		if ("vibrate" in navigator) {
@@ -124,14 +129,19 @@ export function NameSelector() {
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
 			if (direction === "right") {
 				setSelectedNames((prev) => {
-					const next = new Set([...prev, nameId]);
+					const next = new Set(prev);
+					next.add(nameId);
 					// Sync with global store
 					const selectedNameItems = names.filter((n) => next.has(n.id));
 					tournamentActions.setSelection(selectedNameItems);
 					return next;
 				});
 			}
-			setSwipedIds((prev) => new Set([...prev, nameId]));
+			setSwipedIds((prev) => {
+				const next = new Set(prev);
+				next.add(nameId);
+				return next;
+			});
 			setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
 			triggerHaptic();
 
@@ -204,6 +214,15 @@ export function NameSelector() {
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
 	const cardsToRender = visibleCards.slice(0, 3);
 
+	// Create a mapping from name id to image index for efficient lookup
+	const nameIndexMap = useMemo(() => {
+		const map = new Map<IdType, number>();
+		names.forEach((name, index) => {
+			map.set(name.id, index);
+		});
+		return map;
+	}, [names]);
+
 	// Keyboard navigation for swipe mode
 	useEffect(() => {
 		if (!isSwipeMode) {
@@ -250,13 +269,16 @@ export function NameSelector() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isSwipeMode, visibleCards, handleSwipe, handleUndo, lightboxOpen]);
 
-	const handleOpenLightbox = useCallback((nameId: IdType) => {
-		const index = names.findIndex((n) => n.id === nameId);
-		if (index !== -1) {
-			setLightboxIndex(index);
-			setLightboxOpen(true);
-		}
-	}, [names]);
+	const handleOpenLightbox = useCallback(
+		(nameId: IdType) => {
+			const index = names.findIndex((n) => n.id === nameId);
+			if (index !== -1) {
+				setLightboxIndex(index);
+				setLightboxOpen(true);
+			}
+		},
+		[names],
+	);
 
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
 		if (!userName) {
@@ -372,7 +394,11 @@ export function NameSelector() {
 						<AnimatePresence mode="popLayout">
 							{visibleCards.length > 0 ? (
 								cardsToRender.map((nameItem, index) => {
-									const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+									const imageIndex = nameIndexMap.get(nameItem.id);
+									const catImage =
+										imageIndex !== undefined
+											? allCatImages[imageIndex]
+											: getRandomCatImage(nameItem.id, CAT_IMAGES);
 									return (
 										<motion.div
 											key={nameItem.id}
@@ -566,7 +592,11 @@ export function NameSelector() {
 					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
 						{names.map((nameItem) => {
 							const isSelected = selectedNames.has(nameItem.id);
-							const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+							const imageIndex = nameIndexMap.get(nameItem.id);
+							const catImage =
+								imageIndex !== undefined
+									? allCatImages[imageIndex]
+									: getRandomCatImage(nameItem.id, CAT_IMAGES);
 							return (
 								<button
 									key={nameItem.id}
@@ -654,7 +684,6 @@ export function NameSelector() {
 						})}
 					</div>
 				)}
-
 			</div>
 
 			{lightboxOpen && (
