@@ -3,8 +3,6 @@ import { withSupabase } from "@/services/supabase/client";
 import type { NameItem } from "@/types/appTypes";
 import { devLog } from "@/utils/basic";
 
-const HAS_NAVIGATOR = typeof navigator !== "undefined";
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Offline Sync Queue
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -88,7 +86,7 @@ export const tournamentsAPI = {
 		skipQueue = false,
 	): Promise<RatingSaveResult> {
 		// Offline: queue for later
-		if (!skipQueue && HAS_NAVIGATOR && !navigator.onLine) {
+		if (!skipQueue && typeof navigator !== "undefined" && !navigator.onLine) {
 			syncQueue.enqueue("SAVE_RATINGS", { userName, ratings });
 			devLog("[TournamentAPI] Offline: queued ratings save");
 			return { success: true, savedCount: ratings.length, offline: true };
