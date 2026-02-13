@@ -123,15 +123,21 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	const [elo] = useState(() => new EloRating());
 	const [_refreshKey, setRefreshKey] = useState(0);
 
+	// Memoize names key to prevent unnecessary re-initializations
+	const namesKey = useMemo(
+		() =>
+			names
+				.map((n) => n?.id || n?.name || "")
+				.filter(Boolean)
+				.sort()
+				.join(","),
+		[names],
+	);
+
 	// Initialize tournament when names change
 	useEffect(() => {
 		if (!Array.isArray(names) || names.length < 2) return;
 
-		const namesKey = names
-			.map((n) => n?.id || n?.name || "")
-			.filter(Boolean)
-			.sort()
-			.join(",");
 		if (persistentState.namesKey === namesKey) return;
 
 		const estimatedMatches = (names.length * (names.length - 1)) / 2;
@@ -146,7 +152,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 		// Force re-render to reset sorter state
 		setRefreshKey((k) => k + 1);
-	}, [names, persistentState.namesKey, updatePersistentState]);
+	}, [namesKey, persistentState.namesKey, updatePersistentState]);
 
 	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
 	const currentMatch = useMemo(() => {
@@ -244,7 +250,15 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			// Trigger re-render to get next match
 			setRefreshKey((k) => k + 1);
 		},
-		[currentMatch, round, matchNumber, sorter, elo],
+		[
+			currentMatch,
+			round,
+			matchNumber,
+			sorter,
+			elo,
+			updatePersistentState,
+			persistentState.matchHistory,
+		],
 	);
 
 	const handleUndo = useCallback(() => {
@@ -273,7 +287,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			currentRound: 1,
 			currentMatch: 1,
 			totalMatches: 0,
-			namesKey: "",
 		});
 		// Navigate back to name selection
 		window.history.back();

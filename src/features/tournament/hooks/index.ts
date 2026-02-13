@@ -6,10 +6,10 @@
 
 // Consolidated helper hooks
 export {
+	type UseAudioManagerResult,
 	useAudioManager,
 	useProfileNotifications,
 	useTournamentSelectionSaver,
-	type UseAudioManagerResult,
 } from "./useHelpers";
 
 // Re-export from original files

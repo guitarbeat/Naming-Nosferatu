@@ -8,7 +8,7 @@ interface SoundConfig {
 	preload?: boolean;
 }
 
-export { type SoundConfig };
+export type { SoundConfig };
 
 class SoundManager {
 	private audioCache: Map<string, HTMLAudioElement> = new Map();
@@ -33,7 +33,7 @@ class SoundManager {
 		try {
 			// Try to get from cache first
 			let audio = this.audioCache.get(soundName);
-			
+
 			// If not in cache, try to create it on-demand
 			if (!audio) {
 				try {

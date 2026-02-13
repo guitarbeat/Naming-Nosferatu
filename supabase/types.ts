@@ -68,6 +68,7 @@ export type Database = {
 					id: string;
 					is_active: boolean | null;
 					is_hidden: boolean;
+					locked_in: boolean;
 					name: string;
 				};
 				Insert: {
@@ -78,6 +79,7 @@ export type Database = {
 					id?: string;
 					is_active?: boolean | null;
 					is_hidden?: boolean;
+					locked_in?: boolean;
 					name: string;
 				};
 				Update: {
@@ -88,6 +90,7 @@ export type Database = {
 					id?: string;
 					is_active?: boolean | null;
 					is_hidden?: boolean;
+					locked_in?: boolean;
 					name?: string;
 				};
 				Relationships: [];

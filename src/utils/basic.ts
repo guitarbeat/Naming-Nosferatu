@@ -11,35 +11,12 @@
 
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { NameItem, RatingData, RatingItem } from "../types/appTypes";
 import { CAT_IMAGES, STORAGE_KEYS } from "./constants";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types
 // ═══════════════════════════════════════════════════════════════════════════════
-
-/** A name entry in the tournament system. */
-export interface NameItem {
-	id: string | number;
-	name: string;
-	rating?: number;
-	wins?: number;
-	losses?: number;
-	is_hidden?: boolean;
-	isHidden?: boolean;
-	owner?: string;
-	description?: string;
-	[key: string]: unknown;
-}
-
-export interface RatingData {
-	rating: number;
-	wins: number;
-	losses: number;
-}
-
-export interface RatingItem extends RatingData {
-	name: string;
-}
 
 export interface FilterOptions {
 	visibility?: "visible" | "hidden" | "all";
