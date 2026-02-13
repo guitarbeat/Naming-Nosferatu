@@ -21,13 +21,15 @@ export function useNameManagementView({
 	setAnalysisMode,
 	extensions = {},
 }: UseNameManagementViewProps): UseNameManagementViewResult {
+	const nameHooksMode = mode === "profile" ? "management" : "tournament";
+
 	const {
 		names,
 		isLoading,
 		error: dataError,
 		refetch,
 		setNames,
-	} = useNameData({ userName: userName ?? null, mode });
+	} = useNameData({ userName: userName ?? null, mode: nameHooksMode });
 
 	const {
 		selectedNames,
@@ -41,7 +43,7 @@ export function useNameManagementView({
 		isSelected,
 	} = useNameSelection({
 		names,
-		mode,
+		mode: nameHooksMode,
 		userName: userName ?? null,
 	});
 
