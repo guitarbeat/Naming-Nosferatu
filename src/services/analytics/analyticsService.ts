@@ -161,40 +161,21 @@ export const analyticsAPI = {
 	/** Get top selected names based on selection history. */
 	getTopSelectedNames: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
-			const { data, error } = await (client
-				.from("cat_tournament_selections")
-				.select("name_id, name") as unknown as Promise<{
-				data: SelectionRow[] | null;
-				error: unknown;
-			}>);
+			const { data, error } = await client.rpc("get_top_selections", {
+				limit_count: limit || 20,
+			});
 
 			if (error || !data) {
 				return [];
 			}
 
-			const counts = new Map<
-				string | number,
-				{ name_id: string | number; name: string; count: number }
-			>();
-			for (const row of data) {
-				const existing = counts.get(row.name_id);
-				if (existing) {
-					existing.count += 1;
-				} else {
-					counts.set(row.name_id, { name_id: row.name_id, name: row.name, count: 0 + 1 });
-				}
-			}
-
-			let results = Array.from(counts.values()).sort((a, b) => b.count - a.count);
-			if (limit) {
-				results = results.slice(0, limit);
-			}
-
-			return results.map((item) => ({
-				name_id: String(item.name_id),
-				name: item.name,
-				times_selected: item.count,
-			}));
+			return (data as unknown as { name_id: string; name: string; count: number }[]).map(
+				(item) => ({
+					name_id: String(item.name_id),
+					name: item.name,
+					times_selected: item.count,
+				}),
+			);
 		}, []);
 	},
 

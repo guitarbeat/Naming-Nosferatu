@@ -1,6 +1,6 @@
 import { createLogger } from "vite";
 import type { Plugin } from "vite";
-import type { IncomingMessage, ServerResponse } from "http";
+import type { IncomingMessage } from "http";
 
 interface LogEntry {
   level: string;
@@ -54,6 +54,7 @@ export function consoleForwardPlugin(
       if (id === virtualModuleId) {
         return resolvedVirtualModuleId;
       }
+      return null;
     },
 
     transformIndexHtml: {
@@ -194,6 +195,7 @@ setInterval(flushLogs, 10000);
 export default { flushLogs };
         `;
       }
+      return null;
     },
     configureServer(server) {
       // Add API endpoint to handle forwarded console logs
@@ -204,7 +206,7 @@ export default { flushLogs };
         }
 
         let body = "";
-        request.setEncoding!("utf8");
+        request.setEncoding("utf8");
 
         request.on("data", (chunk: string) => {
           body += chunk;
