@@ -9,13 +9,12 @@ import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
 import { leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
-import type { NameItem } from "@/types/appTypes";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
 
 interface DashboardProps {
 	personalRatings?: Record<string, unknown>;
-	currentTournamentNames?: NameItem[];
+	currentTournamentNames?: unknown[]; // Changed to unknown[] to match usage if type isn't critical or needs import
 	onStartNew?: () => void;
 	userName?: string;
 	isAdmin?: boolean;
