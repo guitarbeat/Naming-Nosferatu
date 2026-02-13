@@ -6,6 +6,8 @@ import { CAT_IMAGES, ELO_RATING } from "@/utils/constants";
    SERVICE
    ========================================================================= */
 
+const nameToIdCache = new Map<string, string>();
+
 export const tournamentsAPI = {
 	async createTournament(
 		userName: string,
@@ -83,17 +85,27 @@ export const tournamentsAPI = {
 				if (!userName || !ratings?.length) {
 					return { success: false, error: "Missing data" };
 				}
-				const nameStrings = ratings.map((r) => r.name);
-				const { data: nameData } = await client
-					.from("cat_name_options")
-					.select("id, name")
-					.in("name", nameStrings);
-				const nameToId = new Map(nameData?.map((n) => [n.name, n.id]) || []);
+				const uniqueNames = [...new Set(ratings.map((r) => r.name))];
+				const missingNames = uniqueNames.filter((name) => !nameToIdCache.has(name));
+
+				if (missingNames.length > 0) {
+					const { data: nameData } = await client
+						.from("cat_name_options")
+						.select("id, name")
+						.in("name", missingNames);
+
+					if (nameData) {
+						for (const n of nameData) {
+							nameToIdCache.set(n.name, String(n.id));
+						}
+					}
+				}
+
 				const ratingRecords = ratings
-					.filter((r) => nameToId.has(r.name))
+					.filter((r) => nameToIdCache.has(r.name))
 					.map((r) => ({
 						user_name: userName,
-						name_id: String(nameToId.get(r.name)),
+						name_id: String(nameToIdCache.get(r.name)),
 						rating: Math.min(2400, Math.max(800, Math.round(r.rating))),
 						wins: r.wins || 0,
 						losses: r.losses || 0,
