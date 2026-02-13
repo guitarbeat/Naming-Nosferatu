@@ -162,8 +162,11 @@ section[id] {
 }
 
 section[id][data-hidden="true"] {
+	/* biome-ignore lint/complexity/noImportantStyles: Intentional override for visibility toggle */
 	max-height: 0 !important;
+	/* biome-ignore lint/complexity/noImportantStyles: Intentional override for visibility toggle */
 	opacity: 0 !important;
+	/* biome-ignore lint/complexity/noImportantStyles: Intentional override for visibility toggle */
 	overflow: hidden !important;
 	pointer-events: none;
 }

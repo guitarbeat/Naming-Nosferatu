@@ -7,7 +7,7 @@ import { Suspense, useEffect, useState } from "react";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
-import { analyticsAPI, leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
+import { leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
 import type { NameItem } from "@/types/appTypes";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
@@ -47,7 +47,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 		winRate: number;
 	} | null>(null);
 	const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
-	const [isLoadingStats, setIsLoadingStats] = useState(true);
+	const [_isLoadingStats, setIsLoadingStats] = useState(true);
 	const [hiddenNames, setHiddenNames] = useState<Array<{ id: string | number; name: string }>>([]);
 	const [showHiddenNames, setShowHiddenNames] = useState(false);
 
@@ -103,7 +103,9 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 	}, [isAdmin, showHiddenNames]);
 
 	const handleUnhideName = async (nameId: string | number) => {
-		if (!userName) return;
+		if (!userName) {
+			return;
+		}
 		try {
 			await hiddenNamesAPI.unhideName(userName, nameId);
 			setHiddenNames((prev) => prev.filter((n) => n.id !== nameId));
