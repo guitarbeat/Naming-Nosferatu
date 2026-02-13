@@ -13,6 +13,7 @@
 import { readFileSync } from "node:fs";
 import * as ts from "typescript";
 import type { Dependency, Export } from "./types";
+import { extractExport, getExportType } from "./astUtils";
 
 /**
  * Parsed file information extracted from AST
@@ -109,59 +110,7 @@ export function parseFile(filePath: string): ParsedFile {
 	};
 }
 
-/**
- * Extract export information from a node
- */
-function extractExport(node: ts.Node, exports: Export[], isDefault: boolean): void {
-	if (ts.isFunctionDeclaration(node) && node.name) {
-		exports.push({
-			name: node.name.text,
-			type: "function",
-			isDefault,
-		});
-	} else if (ts.isClassDeclaration(node) && node.name) {
-		exports.push({
-			name: node.name.text,
-			type: "class",
-			isDefault,
-		});
-	} else if (ts.isVariableStatement(node)) {
-		node.declarationList.declarations.forEach((decl) => {
-			if (ts.isIdentifier(decl.name)) {
-				exports.push({
-					name: decl.name.text,
-					type: "const",
-					isDefault,
-				});
-			}
-		});
-	} else if (ts.isTypeAliasDeclaration(node)) {
-		exports.push({
-			name: node.name.text,
-			type: "type",
-			isDefault,
-		});
-	} else if (ts.isInterfaceDeclaration(node)) {
-		exports.push({
-			name: node.name.text,
-			type: "interface",
-			isDefault,
-		});
-	}
-}
 
-/**
- * Determine the type of an export expression
- */
-function getExportType(expression: ts.Expression): Export["type"] {
-	if (ts.isFunctionExpression(expression) || ts.isArrowFunction(expression)) {
-		return "function";
-	}
-	if (ts.isClassExpression(expression)) {
-		return "class";
-	}
-	return "const";
-}
 
 /**
  * Extract all import paths from a file
