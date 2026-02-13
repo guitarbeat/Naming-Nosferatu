@@ -47,7 +47,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 		profileProps = {},
 		setNames,
 		extensions = {} as NameManagementViewExtensions,
-	}: ManagementModeProps): React.ReactElement => {
+	}: ManagementModeProps) => {
 		const isTournament = mode === "tournament";
 
 		// Get swipe mode state from global store
@@ -169,7 +169,9 @@ export const ManagementMode = memo<ManagementModeProps>(
 										<span className="tournament-toolbar-filter-label">Visibility</span>
 										<select
 											value={filterStatus}
-											onChange={(event) => setFilterStatus(event.target.value)}
+											onChange={(event) =>
+												setFilterStatus(event.target.value as "all" | "visible" | "hidden")
+											}
 											className="tournament-toolbar-filter-select"
 											disabled={!analysisMode}
 										>
@@ -343,7 +345,16 @@ export const ManagementMode = memo<ManagementModeProps>(
 									isAdmin={Boolean(profileProps.isAdmin)}
 									showCatPictures={showCatPictures}
 									imageList={tournamentProps.imageList as string[]}
-									onNamesUpdate={setNames}
+									onNamesUpdate={(updater) => {
+										if (!setNames) {
+											return;
+										}
+										if (typeof updater === "function") {
+											setNames(updater(names));
+											return;
+										}
+										setNames(updater);
+									}}
 								/>
 							</motion.div>
 						)}
@@ -351,13 +362,11 @@ export const ManagementMode = memo<ManagementModeProps>(
 				</div>
 
 				{/* Custom Extensions (e.g., Bulk Actions, Navigation) */}
-				{extensions.bulkActions && (
+				{Boolean((extensions as Record<string, unknown>).bulkActions) && (
 					<div className="mt-8 pt-8 border-t border-white/10 animate-in fade-in duration-700">
-						{React.isValidElement(extensions.bulkActions)
-							? extensions.bulkActions
-							: typeof extensions.bulkActions === "function"
-								? React.createElement(extensions.bulkActions)
-								: null}
+						{React.isValidElement((extensions as Record<string, unknown>).bulkActions)
+							? ((extensions as Record<string, unknown>).bulkActions as React.ReactNode)
+							: null}
 					</div>
 				)}
 			</main>

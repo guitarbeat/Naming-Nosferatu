@@ -370,8 +370,9 @@ export function FluidNav() {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ type: "spring", stiffness: 260, damping: 20 }}
 			>
-				{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
-				<AnimatedNavButton
+				<div className="flex items-center justify-center gap-2">
+					{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
+					<AnimatedNavButton
 					id="pick"
 					icon={IconComponent}
 					label={buttonState.label}
@@ -407,7 +408,7 @@ export function FluidNav() {
 						type="button"
 						onClick={() => setSwipeMode(!isSwipeMode)}
 						className={cn(
-							"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all flex-1",
+							"flex flex-row items-center justify-center gap-2 p-2 rounded-xl transition-all flex-1",
 							"text-white/70 hover:text-white hover:bg-white/10",
 							isSwipeMode && "bg-purple-500/20 text-purple-400",
 						)}
@@ -428,7 +429,7 @@ export function FluidNav() {
 								)}
 							</motion.div>
 						</AnimatePresence>
-						<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+						<span className="text-xs font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
 					</motion.button>
 				)}
 
@@ -479,6 +480,7 @@ export function FluidNav() {
 						) : undefined
 					}
 				/>
+				</div>
 			</motion.nav>
 
 			{/* Expandable Login Panel */}

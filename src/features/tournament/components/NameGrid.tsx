@@ -5,7 +5,6 @@
  */
 
 import { useCallback, useMemo, useState } from "react";
-import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import { EmptyState, Lightbox, Loading } from "@/layout";
 import type { NameItem } from "@/types/appTypes";
 import {
@@ -68,12 +67,6 @@ export function NameGrid({
 		},
 		[finalImageList],
 	);
-
-	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
-		useMasonryLayout<HTMLDivElement>(names.length, {
-			minColumnWidth: 280,
-			gap: 16,
-		});
 
 	const selectedSet = useMemo(
 		() => selectedNamesToSet(selectedNames as NameItem[] | Set<string | number>),
@@ -140,41 +133,26 @@ export function NameGrid({
 	return (
 		<div className={cn("relative w-full mx-auto p-4 md:p-6", className)}>
 			<div
-				className="relative w-full max-w-[95%] mx-auto transition-height duration-300"
+				className="relative w-full max-w-[95%] mx-auto grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 auto-rows-min"
 				role="list"
-				ref={containerRef}
-				style={{ height: totalHeight || "auto", position: "relative" }}
 			>
 				{processedNames.map((name, index) => {
 					const isSelected = selectedSet.has(name.id as string | number);
-					const position = positions[index];
 
 					return (
-						<div
+						<NameGridItem
 							key={name.id}
-							className="absolute top-0 left-0"
-							ref={setItemRef(index)}
-							style={{
-								position: "absolute",
-								top: position?.top || 0,
-								left: position?.left || 0,
-								width: columnWidth || 280,
-								transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-							}}
-						>
-							<NameGridItem
-								nameObj={name}
-								isSelected={isSelected}
-								onToggleName={onToggleName}
-								isAdmin={isAdmin}
-								showCatPictures={showCatPictures}
-								imageList={finalImageList}
-								onToggleVisibility={onToggleVisibility}
-								onDelete={onDelete}
-								onImageClick={handleImageClick}
-								index={index}
-							/>
-						</div>
+							nameObj={name}
+							isSelected={isSelected}
+							onToggleName={onToggleName}
+							isAdmin={isAdmin}
+							showCatPictures={showCatPictures}
+							imageList={finalImageList}
+							onToggleVisibility={onToggleVisibility}
+							onDelete={onDelete}
+							onImageClick={handleImageClick}
+							index={index}
+						/>
 					);
 				})}
 			</div>

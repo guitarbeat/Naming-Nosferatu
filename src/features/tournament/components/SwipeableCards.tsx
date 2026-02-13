@@ -3,9 +3,8 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/icons";
 import { Card } from "@/layout/Card";
-import { getRandomCatImage } from "@/services/tournament";
 import type { NameItem } from "@/types/appTypes";
-import { playSound } from "@/utils/basic";
+import { getRandomCatImage, playSound } from "@/utils/basic";
 
 export const SwipeableCards = memo(
 	({

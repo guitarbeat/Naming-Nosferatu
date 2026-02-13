@@ -50,10 +50,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 				<FluidNav />
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
-					{errors.current && (
+					{Boolean(errors.current) && (
 						<div className="p-4">
 							<ErrorComponent
-								error={errors.current}
+								error={String(errors.current)}
 								onRetry={() => errorActions.clearError()}
 								onDismiss={() => errorActions.clearError()}
 							/>

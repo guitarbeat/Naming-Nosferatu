@@ -31,11 +31,28 @@ export function integrateFile(
 	strategy: MergeStrategy,
 	projectRoot: string,
 ): IntegrationResult {
-	const targetPath = path.join(projectRoot, analysis.targetLocation, analysis.fileName);
+	const fileNameFromPath =
+		typeof analysis.filePath === "string" && analysis.filePath.length > 0
+			? path.basename(analysis.filePath)
+			: "";
+	const safeTargetLocation = typeof analysis.targetLocation === "string" ? analysis.targetLocation : "";
+	const safeFileName = typeof analysis.fileName === "string" ? analysis.fileName : fileNameFromPath;
+	const targetPath = path.join(projectRoot, safeTargetLocation, safeFileName);
 	const actionsLog: string[] = [];
 
 	try {
-		actionsLog.push(`Starting integration of ${analysis.fileName}`);
+		actionsLog.push(`Starting integration of ${safeFileName}`);
+		if (!safeTargetLocation || !safeFileName) {
+			actionsLog.push("Integration failed: Missing targetLocation or fileName");
+			return {
+				success: false,
+				filePath: analysis.filePath,
+				targetPath,
+				action: "skipped",
+				error: new Error("Missing fileName"),
+				actionsLog,
+			};
+		}
 
 		// Check if target file already exists
 		if (fileExists(targetPath)) {

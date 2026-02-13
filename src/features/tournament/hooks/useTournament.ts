@@ -7,6 +7,7 @@ import type {
 	MatchRecord,
 	NameItem,
 	PersistentTournamentState,
+	RatingData,
 	TournamentUIState,
 } from "@/types/appTypes";
 
@@ -74,6 +75,20 @@ const createDefaultPersistentState = (userName: string): PersistentTournamentSta
 	namesKey: "",
 });
 
+function normalizeRatings(
+	ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
+): Record<string, RatingData> {
+	const result: Record<string, RatingData> = {};
+	for (const [key, value] of Object.entries(ratings)) {
+		result[key] = {
+			rating: value.rating,
+			wins: value.wins ?? 0,
+			losses: value.losses ?? 0,
+		};
+	}
+	return result;
+}
+
 /**
  * Custom hook for managing tournament state and logic
  * Consolidates persistence, progress, and voting logic.
@@ -85,6 +100,10 @@ export function useTournament({
 }: UseTournamentProps = {}) {
 	// --- Setup ---
 	const elo = useMemo(() => new EloRating(), []);
+	const existingRatingsNormalized = useMemo(
+		() => normalizeRatings(existingRatings),
+		[existingRatings],
+	);
 	const userName = useAppStore((state) => state.user.name);
 	const tournament = useAppStore((state) => state.tournament);
 	const { ratings: currentRatings } = tournament;
@@ -165,7 +184,7 @@ export function useTournament({
 		currentMatchNumber: persistentState.currentMatch || 1,
 		totalMatches: persistentState.totalMatches || 0,
 		canUndo: persistentState.matchHistory.length > 1,
-		currentRatings: existingRatings,
+		currentRatings: existingRatingsNormalized,
 		sorter: null,
 		isError: !Array.isArray(names) || (names.length > 0 && names.length < 2),
 	});
@@ -212,7 +231,7 @@ export function useTournament({
 			currentMatchNumber: 1,
 			roundNumber: 1,
 			canUndo: false,
-			currentRatings: existingRatings,
+			currentRatings: existingRatingsNormalized,
 		});
 
 		updatePersistentState({
@@ -238,7 +257,13 @@ export function useTournament({
 				});
 			}
 		}
-	}, [names, existingRatings, updateTournamentState, updatePersistentState]);
+	}, [
+		names,
+		existingRatingsNormalized,
+		existingRatings,
+		updateTournamentState,
+		updatePersistentState,
+	]);
 
 	// --- Voting Logic ---
 	const getCurrentRatings = useCallback(() => {

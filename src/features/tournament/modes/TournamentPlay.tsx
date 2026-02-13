@@ -1,11 +1,10 @@
-import { memo } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import { Card, ErrorComponent, Loading } from "@/layout";
-import { useToast } from "@/providers/Providers";
-import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";
-import { getVisibleNames } from "@/utils/basic";
-import { useAudioManager } from "../hooks/useHelpers";
+import { getRandomCatImage, getVisibleNames } from "@/utils/basic";
+import { CAT_IMAGES } from "@/utils/constants";
+import { useAudioManager } from "../hooks/useAudioManager";
 import { useTournamentState } from "../hooks/useTournamentState";
 import { useTournamentVote } from "../hooks/useTournamentVote";
 
@@ -15,41 +14,72 @@ function TournamentPlayContent({
 	names = [],
 	onVote,
 }: TournamentProps) {
-	const { showSuccess, showError } = useToast();
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 
-	const {
-		setSelectedOption,
-		isTransitioning,
-		setIsTransitioning,
-		isProcessing,
-		setIsProcessing,
-		setLastMatchResult,
-		setShowMatchResult,
-		setVotingError,
-		handleVote,
-		tournament,
-	} = useTournamentState(visibleNames, existingRatings, onComplete, onVote);
+	void existingRatings;
 
-	const { currentMatch, progress, roundNumber, currentMatchNumber, totalMatches, handleUndo } =
-		tournament;
+	const tournament = useTournamentState(visibleNames);
+	const {
+		currentMatch,
+		ratings,
+		isComplete,
+		round: roundNumber,
+		matchNumber: currentMatchNumber,
+		totalMatches,
+		handleUndo,
+	} = tournament;
+
+	const idToName = useMemo(
+		() => new Map(visibleNames.map((n) => [String(n.id), n.name])),
+		[visibleNames],
+	);
+
+	useEffect(() => {
+		if (isComplete && onComplete) {
+			const results: Record<string, { rating: number; wins: number; losses: number }> = {};
+			for (const [id, rating] of Object.entries(ratings)) {
+				const name = idToName.get(id) ?? id;
+				results[name] = { rating, wins: 0, losses: 0 };
+			}
+			onComplete(results);
+		}
+	}, [isComplete, ratings, onComplete, idToName]);
+
+	const handleVoteAdapter = useCallback(
+		(winnerId: string, _loserId: string) => {
+			if (onVote && currentMatch) {
+				const voteData = {
+					match: {
+						left: {
+							name:
+								typeof currentMatch.left === "object" ? currentMatch.left.name : currentMatch.left,
+							id: typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+							description: "",
+							outcome: winnerId === currentMatch.left ? "winner" : "loser",
+						},
+						right: {
+							name:
+								typeof currentMatch.right === "object" ? currentMatch.right.name : currentMatch.right,
+							id: typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+							description: "",
+							outcome: winnerId === currentMatch.right ? "winner" : "loser",
+						},
+					},
+					result: winnerId === currentMatch.left ? 1 : 0,
+					ratings,
+					timestamp: new Date().toISOString(),
+				};
+				onVote(voteData);
+			}
+		},
+		[onVote, currentMatch, ratings],
+	);
 
 	const { handleVoteWithAnimation } = useTournamentVote({
-		isProcessing,
-		isTransitioning,
-		currentMatch,
-		handleVote,
-		onVote,
+		tournamentState: tournament,
 		audioManager,
-		setIsProcessing,
-		setIsTransitioning,
-		setSelectedOption,
-		setVotingError,
-		setLastMatchResult,
-		setShowMatchResult,
-		showSuccess,
-		showError,
+		onVote: handleVoteAdapter,
 	});
 
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
@@ -89,7 +119,9 @@ function TournamentPlayContent({
 					</div>
 					<div className="flex items-center gap-2">
 						<span className="material-symbols-outlined text-stardust">workspace_premium</span>
-						<span className="text-xs font-bold">{progress}</span>
+						<span className="text-xs font-bold">
+							{currentMatchNumber} / {totalMatches}
+						</span>
 					</div>
 				</div>
 				<div className="flex flex-col gap-2">

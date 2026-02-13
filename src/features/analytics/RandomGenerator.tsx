@@ -1,7 +1,7 @@
 import { CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import React, { useMemo, useState } from "react";
-import useLocalStorage from "@/hooks/useBrowserState";
+import { useLocalStorage } from "@/hooks/useHooks";
 import { Copy, Heart, Shuffle } from "@/icons";
 import { Card } from "@/layout";
 

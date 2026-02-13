@@ -50,7 +50,7 @@ export function NavButton({
 	return (
 		<button
 			className={cn(
-				"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
+				"relative flex flex-row items-center justify-center flex-1 gap-2 p-2 rounded-xl transition-all",
 				isActive && !highlight
 					? "text-white bg-white/10"
 					: "text-white/50 hover:text-white hover:bg-white/5",
@@ -69,11 +69,11 @@ export function NavButton({
 				)}
 				{badge}
 			</div>
-			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">{label}</span>
+			<span className="text-xs font-medium tracking-wide truncate max-w-[80px]">{label}</span>
 			{isActive && !highlight && (
 				<motion.div
 					layoutId="dockIndicator"
-					className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
+					className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-t-full"
 				/>
 			)}
 		</button>
@@ -92,7 +92,7 @@ export function AnimatedNavButton({
 	return (
 		<motion.button
 			className={cn(
-				"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
+				"relative flex flex-row items-center justify-center flex-1 gap-2 p-2 rounded-xl transition-all",
 				props.isActive && !highlight
 					? "text-white bg-white/10"
 					: "text-white/50 hover:text-white hover:bg-white/5",
@@ -112,7 +112,7 @@ export function AnimatedNavButton({
 				)}
 				{props.badge}
 			</div>
-			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">
+			<span className="text-xs font-medium tracking-wide truncate max-w-[80px]">
 				{props.label}
 			</span>
 		</motion.button>

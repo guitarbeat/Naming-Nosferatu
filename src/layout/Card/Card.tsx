@@ -8,6 +8,8 @@ import { cva } from "class-variance-authority";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/features/tournament/components/CatImage";
+import { useDynamicImageHeight } from "@/hooks/useDynamicImageHeight";
+import { useTextOverflowDetection } from "@/hooks/useTextOverflowDetection";
 import { cn } from "@/utils/basic";
 import { TIMING } from "@/utils/constants";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
@@ -446,7 +448,37 @@ const CardNameBase = memo(function CardName({
 }: CardNameProps) {
 	const [rippleStyle, setRippleStyle] = useState<React.CSSProperties>({});
 	const [isRippling, setIsRippling] = useState(false);
+	const [isExpanded, setIsExpanded] = useState(false);
+	const [isHovered, setIsHovered] = useState(false);
 	const cardRef = React.useRef<HTMLDivElement>(null);
+
+	// Calculate dynamic image height based on description length
+	const dynamicImageHeight = useDynamicImageHeight({
+		description,
+		hasImage: !!image,
+		baseHeight: size === "small" ? 80 : 120,
+		minHeight: size === "small" ? 60 : 80,
+		maxHeight: size === "small" ? 100 : 160,
+	});
+
+	// Further reduce image height on hover to show more text
+	const hoverImageHeight = isHovered && dynamicImageHeight > 60 
+		? Math.max(dynamicImageHeight * 0.7, 60) 
+		: dynamicImageHeight;
+
+	// Check if description is long enough to need expansion
+	const shouldShowExpandButton = description && description.length > 80;
+
+	// Text overflow detection for auto-adjustment (check full text, not truncated)
+	const { textRef, needsMoreSpace } = useTextOverflowDetection({
+		text: description,
+		enabled: !!description
+	});
+
+	// Auto-adjust image height if text is overflowing - be more aggressive
+	const autoAdjustedImageHeight = needsMoreSpace && dynamicImageHeight > 60
+		? Math.max(dynamicImageHeight * 0.6, 50)  // Reduce to 60% or minimum 50px
+		: hoverImageHeight;
 
 	useEffect(() => {
 		if (isRippling) {
@@ -518,14 +550,14 @@ const CardNameBase = memo(function CardName({
 	const Component = isInteractive ? "button" : "div";
 
 	const cardContent = (
-		<div className="relative w-full h-full">
+		<div className="relative w-full">
 			<Card
 				as={Component}
 				ref={cardRef as React.Ref<HTMLDivElement>}
 				className={cn(
-					"w-full h-full relative flex flex-col items-center gap-1 text-center font-inherit cursor-pointer overflow-visible transition-all duration-300",
+					"w-full relative flex flex-col items-center gap-1 text-center font-inherit cursor-pointer overflow-visible transition-all duration-300",
 					"backdrop-blur-md rounded-xl border",
-					size === "small" ? "p-2 min-h-24" : "p-4 min-h-32",
+					size === "small" ? "p-2" : "p-4",
 					isSelected
 						? "border-purple-500 bg-gradient-to-br from-purple-900/40 to-purple-800/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]"
 						: "border-white/10 bg-gradient-to-br from-white/10 to-white/5 shadow-lg hover:border-white/20 hover:bg-white/10",
@@ -561,18 +593,21 @@ const CardNameBase = memo(function CardName({
 
 				{image && (
 					<div
-						className="relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner group/image"
+						className="relative w-full rounded-lg overflow-hidden border border-white/10 shadow-inner group/image mb-2 transition-all duration-300 ease-in-out"
+						style={{ height: `${autoAdjustedImageHeight}px` }}
 						onClick={(e) => {
 							if (onImageClick) {
 								e.stopPropagation();
 								onImageClick(e);
 							}
 						}}
+						onMouseEnter={() => setIsHovered(true)}
+						onMouseLeave={() => setIsHovered(false)}
 					>
 						<CatImage
 							src={image}
 							containerClassName="w-full h-full"
-							imageClassName="w-full h-full object-cover scale-125 transition-transform duration-500 hover:scale-110"
+							imageClassName="w-full h-full object-cover scale-125 transition-all duration-500 hover:scale-110"
 						/>
 						{onImageClick && (
 							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
@@ -581,6 +616,15 @@ const CardNameBase = memo(function CardName({
 								</span>
 							</div>
 						)}
+						{/* Overflow indicator */}
+						{needsMoreSpace && (
+							<div className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full animate-pulse" title="Text auto-adjusted" />
+						)}
+						{/* Hover indicator for text reveal */}
+						<div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+							<span className="material-symbols-outlined text-xs">expand_more</span>
+							Hover to read more
+						</div>
 					</div>
 				)}
 
@@ -596,16 +640,38 @@ const CardNameBase = memo(function CardName({
 				</h3>
 
 				{description && (
-					<p
-						id={`${getSafeId(name)}-description`}
-						className={cn(
-							"flex-1 m-0 text-white/70 font-normal leading-tight z-10",
-							size === "small" ? "text-[10px] min-h-[2.5em]" : "text-xs",
-							isHidden && "text-amber-500/60",
+					<div className="flex flex-col">
+						<p
+							ref={textRef}
+							id={`${getSafeId(name)}-description`}
+							className={cn(
+								"m-0 text-white/70 font-normal leading-tight z-10",
+								size === "small" ? "text-[10px]" : "text-xs",
+								isHidden && "text-amber-500/60",
+								!isExpanded && "line-clamp-2",
+							)}
+							style={{
+								display: '-webkit-box',
+								WebkitLineClamp: isExpanded ? 'unset' : 2,
+								WebkitBoxOrient: 'vertical',
+								overflow: isExpanded ? 'visible' : 'hidden'
+							}}
+						>
+							{description}
+						</p>
+						{shouldShowExpandButton && (
+							<button
+								onClick={(e) => {
+									e.stopPropagation();
+									setIsExpanded(!isExpanded);
+								}}
+								className="text-xs text-purple-400 hover:text-purple-300 font-medium mt-1 self-start transition-colors"
+								aria-label={isExpanded ? "Show less" : "Read more"}
+							>
+								{isExpanded ? 'Show less' : 'Read more'}
+							</button>
 						)}
-					>
-						{description}
-					</p>
+					</div>
 				)}
 
 				{metadata && (

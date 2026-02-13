@@ -131,7 +131,7 @@ export function useProfileNotifications() {
 		showSuccess: showSuccessToast,
 		showError: showErrorToast,
 		showToast: showToastMessage,
-		removeToast,
+		hideToast: removeToast,
 	} = useToast();
 
 	const showSuccess = useCallback(
