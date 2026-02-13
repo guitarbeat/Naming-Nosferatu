@@ -62,7 +62,9 @@ export function createBackup(filePath: string): BackupInfo {
 export function restoreBackup(backup: BackupInfo): void {
 	// Verify backup exists
 	if (!fs.existsSync(backup.backupPath)) {
-		throw new Error(`Cannot restore: backup does not exist at ${backup.backupPath}`);
+		throw new Error(
+			`Cannot restore: backup does not exist at ${backup.backupPath}`,
+		);
 	}
 
 	try {
@@ -226,7 +228,9 @@ export function createDirectory(dirPath: string): void {
  */
 export function deleteDirectory(dirPath: string): void {
 	if (!fs.existsSync(dirPath)) {
-		throw new Error(`Cannot delete directory: directory does not exist at ${dirPath}`);
+		throw new Error(
+			`Cannot delete directory: directory does not exist at ${dirPath}`,
+		);
 	}
 
 	try {
@@ -258,7 +262,8 @@ export function updateImportPaths(
 	referenceMap?: Map<string, string>,
 ): string {
 	// Parse the content to find import statements
-	const importRegex = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"]([^'"]+)['"]/g;
+	const importRegex =
+		/import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"]([^'"]+)['"]/g;
 	const exportFromRegex = /export\s+(?:\*|{[^}]*})\s+from\s+['"]([^'"]+)['"]/g;
 
 	let updatedContent = content;
@@ -272,7 +277,12 @@ export function updateImportPaths(
 
 		// Only process relative imports (starting with . or ..)
 		if (importPath.startsWith(".")) {
-			const updatedPath = transformImportPath(importPath, oldPath, newPath, referenceMap);
+			const updatedPath = transformImportPath(
+				importPath,
+				oldPath,
+				newPath,
+				referenceMap,
+			);
 			if (updatedPath !== importPath) {
 				replacements.push({
 					original: fullMatch,
@@ -292,7 +302,12 @@ export function updateImportPaths(
 
 		// Only process relative imports
 		if (importPath.startsWith(".")) {
-			const updatedPath = transformImportPath(importPath, oldPath, newPath, referenceMap);
+			const updatedPath = transformImportPath(
+				importPath,
+				oldPath,
+				newPath,
+				referenceMap,
+			);
 			if (updatedPath !== importPath) {
 				replacements.push({
 					original: fullMatch,
@@ -448,7 +463,9 @@ export function rollback(
  *
  * Requirements: 10.3
  */
-export function snapshotReferenceFiles(filePaths: string[]): Map<string, string> {
+export function snapshotReferenceFiles(
+	filePaths: string[],
+): Map<string, string> {
 	const snapshot = new Map<string, string>();
 
 	for (const filePath of filePaths) {

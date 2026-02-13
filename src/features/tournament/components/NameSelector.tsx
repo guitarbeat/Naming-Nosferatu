@@ -25,7 +25,9 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
-	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
+	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(
+		null,
+	);
 	const [dragOffset, setDragOffset] = useState(0);
 	const [names, setNames] = useState<NameItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +85,10 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 		const threshold = 100;
 		const velocityThreshold = 500;
 
-		if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
+		if (
+			Math.abs(offset) < threshold &&
+			Math.abs(velocity) < velocityThreshold
+		) {
 			setDragOffset(0);
 			return;
 		}
@@ -100,7 +105,10 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
 	const cardsToRender = visibleCards.slice(0, 3);
 
-	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
+	const handleToggleHidden = async (
+		nameId: IdType,
+		isCurrentlyHidden: boolean,
+	) => {
 		if (!userName) {
 			return;
 		}
@@ -176,7 +184,9 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 									</div>
 									<div className="p-3 flex flex-col gap-1">
 										<div className="flex items-center justify-between gap-2">
-											<span className="font-medium text-white text-sm">{nameItem.name}</span>
+											<span className="font-medium text-white text-sm">
+												{nameItem.name}
+											</span>
 											{isSelected && (
 												<div className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
 													<Check size={14} className="text-white" />
@@ -184,14 +194,19 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 											)}
 										</div>
 										{nameItem.description && (
-											<p className="text-xs text-white/60 text-left">{nameItem.description}</p>
+											<p className="text-xs text-white/60 text-left">
+												{nameItem.description}
+											</p>
 										)}
 										{isAdmin && (
 											<button
 												type="button"
 												onClick={(e) => {
 													e.stopPropagation();
-													handleToggleHidden(nameItem.id, nameItem.isHidden || false);
+													handleToggleHidden(
+														nameItem.id,
+														nameItem.isHidden || false,
+													);
 												}}
 												className="mt-1 flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
 											>
@@ -254,7 +269,11 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 													opacity: index === 0 ? 1 : 0,
 													rotate: index === 0 ? dragOffset / 20 : 0,
 												}}
-												transition={{ type: "spring", stiffness: 300, damping: 30 }}
+												transition={{
+													type: "spring",
+													stiffness: 300,
+													damping: 30,
+												}}
 												className="w-full max-w-md h-[550px]"
 											>
 												<Card
@@ -297,7 +316,10 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 																}}
 															>
 																<div className="flex items-center gap-2 px-6 py-3 bg-green-500/90 backdrop-blur-md rounded-full border-2 border-green-500 shadow-lg rotate-[20deg]">
-																	<Heart size={24} className="text-white fill-white" />
+																	<Heart
+																		size={24}
+																		className="text-white fill-white"
+																	/>
 																	<span className="text-white font-black text-lg uppercase">
 																		Like
 																	</span>
@@ -354,7 +376,9 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 								<div className="absolute inset-0 flex items-center justify-center">
 									<div className="text-center space-y-4">
 										<p className="text-2xl font-bold text-white">All done!</p>
-										<p className="text-slate-400">You've reviewed all names. Ready to start?</p>
+										<p className="text-slate-400">
+											You've reviewed all names. Ready to start?
+										</p>
 									</div>
 								</div>
 							)}

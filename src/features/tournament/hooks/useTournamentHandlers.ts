@@ -14,7 +14,9 @@ interface UseTournamentHandlersProps {
 	tournamentActions: TournamentActions;
 }
 
-export function useTournamentHandlers({ tournamentActions }: UseTournamentHandlersProps) {
+export function useTournamentHandlers({
+	tournamentActions,
+}: UseTournamentHandlersProps) {
 	const handleTournamentComplete = useCallback(
 		async (ratings: Record<string, RatingData>) => {
 			tournamentActions.setRatings(ratings);

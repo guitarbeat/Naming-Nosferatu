@@ -65,11 +65,16 @@ export function NavButton({
 		>
 			<div className="relative">
 				{customIcon || (
-					<Icon className={cn("w-5 h-5", highlight && "text-cyan-400")} aria-hidden={true} />
+					<Icon
+						className={cn("w-5 h-5", highlight && "text-cyan-400")}
+						aria-hidden={true}
+					/>
 				)}
 				{badge}
 			</div>
-			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">{label}</span>
+			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">
+				{label}
+			</span>
 			{isActive && !highlight && (
 				<motion.div
 					layoutId="dockIndicator"
@@ -104,11 +109,16 @@ export function AnimatedNavButton({
 			type="button"
 			disabled={props.disabled}
 			animate={animateScale && highlight ? { scale: [1, 1.05, 1] } : {}}
-			transition={animateScale && highlight ? { duration: 2, repeat: Infinity } : {}}
+			transition={
+				animateScale && highlight ? { duration: 2, repeat: Infinity } : {}
+			}
 		>
 			<div className="relative">
 				{customIcon || (
-					<Icon className={cn("w-5 h-5", highlight && "text-cyan-400")} aria-hidden={true} />
+					<Icon
+						className={cn("w-5 h-5", highlight && "text-cyan-400")}
+						aria-hidden={true}
+					/>
 				)}
 				{props.badge}
 			</div>

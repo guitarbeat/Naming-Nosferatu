@@ -46,7 +46,15 @@ import type {
 } from "@/types/appTypes";
 import { STORAGE_KEYS } from "@/utils/constants";
 import type { LucideIcon } from "@/utils/icons";
-import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/utils/icons";
+import {
+	BarChart3,
+	CheckCircle,
+	Layers,
+	LayoutGrid,
+	Lightbulb,
+	Trophy,
+	User,
+} from "@/utils/icons";
 
 // Re-export domain types so consumers can import from either location
 export type {
@@ -110,7 +118,11 @@ export interface SiteSettingsActions {
 export interface ErrorActions {
 	setError: (error: unknown | null) => void;
 	clearError: () => void;
-	logError: (error: unknown, context: string, metadata?: Record<string, unknown>) => void;
+	logError: (
+		error: unknown,
+		context: string,
+		metadata?: Record<string, unknown>,
+	) => void;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -141,7 +153,11 @@ export interface AppState {
 type SetFn = Parameters<StateCreator<AppState>>[0];
 
 /** Merge partial updates into a nested slice. */
-function patch<K extends keyof AppState>(set: SetFn, key: K, updates: Partial<AppState[K]>): void {
+function patch<K extends keyof AppState>(
+	set: SetFn,
+	key: K,
+	updates: Partial<AppState[K]>,
+): void {
 	set((state) => ({
 		...state,
 		[key]: { ...state[key], ...updates },
@@ -258,7 +274,8 @@ const createTournamentSlice: StateCreator<
 
 		setRatings: (ratingsOrFn) => {
 			const current = get().tournament.ratings;
-			const next = typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
+			const next =
+				typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
 			patch(set, "tournament", { ratings: { ...current, ...next } });
 		},
 
@@ -278,7 +295,8 @@ const createTournamentSlice: StateCreator<
 				isLoading: false,
 			}),
 
-		setSelection: (selectedNames) => patch(set, "tournament", { selectedNames }),
+		setSelection: (selectedNames) =>
+			patch(set, "tournament", { selectedNames }),
 	},
 });
 
@@ -299,7 +317,12 @@ const createUserAndSettingsSlice: StateCreator<
 	[],
 	Pick<
 		AppState,
-		"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
+		| "user"
+		| "userActions"
+		| "ui"
+		| "uiActions"
+		| "siteSettings"
+		| "siteSettingsActions"
 	>
 > = (set, get) => ({
 	// ── User ────────────────────────────────────────────────────────────────
@@ -418,7 +441,8 @@ const createUserAndSettingsSlice: StateCreator<
 		},
 
 		setMatrixMode: (enabled) => patch(set, "ui", { matrixMode: enabled }),
-		setGlobalAnalytics: (show) => patch(set, "ui", { showGlobalAnalytics: show }),
+		setGlobalAnalytics: (show) =>
+			patch(set, "ui", { showGlobalAnalytics: show }),
 
 		setSwipeMode: (enabled) => {
 			patch(set, "ui", { isSwipeMode: enabled });
@@ -427,7 +451,8 @@ const createUserAndSettingsSlice: StateCreator<
 
 		setCatPictures: (show) => patch(set, "ui", { showCatPictures: show }),
 		setUserComparison: (show) => patch(set, "ui", { showUserComparison: show }),
-		setEditingProfile: (editing) => patch(set, "ui", { isEditingProfile: editing }),
+		setEditingProfile: (editing) =>
+			patch(set, "ui", { isEditingProfile: editing }),
 	},
 
 	// ── Site Settings ────────────────────────────────────────────────────────
@@ -438,7 +463,8 @@ const createUserAndSettingsSlice: StateCreator<
 	},
 
 	siteSettingsActions: {
-		setCatChosenName: (data) => patch(set, "siteSettings", { catChosenName: data }),
+		setCatChosenName: (data) =>
+			patch(set, "siteSettings", { catChosenName: data }),
 		markSettingsLoaded: () => patch(set, "siteSettings", { isLoaded: true }),
 	},
 });
@@ -533,7 +559,8 @@ export const selectShowCatPictures = (s: AppState) => s.ui.showCatPictures;
 export const selectMatrixMode = (s: AppState) => s.ui.matrixMode;
 export const selectIsEditingProfile = (s: AppState) => s.ui.isEditingProfile;
 
-export const selectCatChosenName = (s: AppState) => s.siteSettings.catChosenName;
+export const selectCatChosenName = (s: AppState) =>
+	s.siteSettings.catChosenName;
 export const selectSettingsLoaded = (s: AppState) => s.siteSettings.isLoaded;
 
 export const selectCurrentError = (s: AppState) => s.errors.current;
@@ -555,7 +582,9 @@ export const selectErrorHistory = (s: AppState) => s.errors.history;
  *   return <Router />;
  * }
  */
-export function useAppStoreInitialization(onUserContext?: (name: string) => void): void {
+export function useAppStoreInitialization(
+	onUserContext?: (name: string) => void,
+): void {
 	const initUser = useAppStore((s) => s.userActions.initializeFromStorage);
 	const initTheme = useAppStore((s) => s.uiActions.initializeTheme);
 

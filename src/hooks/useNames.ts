@@ -86,7 +86,9 @@ interface UseNameSelectionResult {
 	isSelected: (id: IdType) => boolean;
 }
 
-export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelectionResult {
+export function useNameSelection({
+	names,
+}: UseNameSelectionProps): UseNameSelectionResult {
 	const { tournament, tournamentActions } = useAppStore();
 
 	// Use store selection for tournament mode, local state for management mode
@@ -146,7 +148,10 @@ export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelec
 		}
 	}, [tournamentActions]);
 
-	const isSelected = useCallback((id: IdType) => selectedIds.has(id), [selectedIds]);
+	const isSelected = useCallback(
+		(id: IdType) => selectedIds.has(id),
+		[selectedIds],
+	);
 
 	return {
 		selectedNames,
@@ -193,19 +198,29 @@ interface UseNameSuggestionResult {
 	setGlobalError: (error: string) => void;
 }
 
-export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
+export function useNameSuggestion(
+	props: UseNameSuggestionProps = {},
+): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
-	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
-	const [touched, setTouched] = useState<{ name?: boolean; description?: boolean }>({});
+	const [errors, setErrors] = useState<{ name?: string; description?: string }>(
+		{},
+	);
+	const [touched, setTouched] = useState<{
+		name?: boolean;
+		description?: boolean;
+	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [globalError, setGlobalError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 
-	const handleChange = useCallback((field: "name" | "description", value: string) => {
-		setValues((prev) => ({ ...prev, [field]: value }));
-		setErrors((prev) => ({ ...prev, [field]: undefined }));
-		setGlobalError("");
-	}, []);
+	const handleChange = useCallback(
+		(field: "name" | "description", value: string) => {
+			setValues((prev) => ({ ...prev, [field]: value }));
+			setErrors((prev) => ({ ...prev, [field]: undefined }));
+			setGlobalError("");
+		},
+		[],
+	);
 
 	const handleBlur = useCallback((field: "name" | "description") => {
 		setTouched((prev) => ({ ...prev, [field]: true }));
@@ -240,7 +255,9 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 			setTouched({});
 			props.onSuccess?.();
 		} catch (err) {
-			setGlobalError(err instanceof Error ? err.message : "Failed to submit suggestion");
+			setGlobalError(
+				err instanceof Error ? err.message : "Failed to submit suggestion",
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -254,7 +271,8 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 		setSuccessMessage("");
 	}, []);
 
-	const isValid = !errors.name && !errors.description && values.name.trim() !== "";
+	const isValid =
+		!errors.name && !errors.description && values.name.trim() !== "";
 
 	return {
 		values,

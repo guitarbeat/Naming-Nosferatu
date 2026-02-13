@@ -30,10 +30,10 @@
 		"types": ["vite/client", "node"],
 		"baseUrl": ".",
 		"paths": {
-			"@supabase/client": ["src/services/supabase-client/client.ts"],
-			"@supabase/types": ["src/services/supabase-client/types.ts"],
-			"@db": ["src/services/supabase-client"],
-			"@db/*": ["src/services/supabase-client/*"],
+			"@supabase/client": ["src/services/supabase/client.ts"],
+			"@supabase/types": ["supabase/types.ts"],
+			"@db": ["supabase"],
+			"@db/*": ["supabase/*"],
 			"@/*": ["./src/*"]
 		}
 	},

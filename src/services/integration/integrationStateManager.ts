@@ -15,7 +15,10 @@ export class IntegrationStateManager {
 	private state: IntegrationState;
 	private stateFilePath: string;
 
-	constructor(totalFiles: number, stateFilePath: string = ".integration-state.json") {
+	constructor(
+		totalFiles: number,
+		stateFilePath: string = ".integration-state.json",
+	) {
 		this.stateFilePath = stateFilePath;
 		this.state = this.loadState() || this.createInitialState(totalFiles);
 	}
@@ -68,14 +71,20 @@ export class IntegrationStateManager {
 			// Convert Map objects to arrays for JSON serialization
 			const serializable = {
 				...this.state,
-				failedFiles: Array.from(this.state.failedFiles.entries()).map(([key, error]) => [
-					key,
-					{ message: error.message, stack: error.stack },
-				]),
+				failedFiles: Array.from(this.state.failedFiles.entries()).map(
+					([key, error]) => [
+						key,
+						{ message: error.message, stack: error.stack },
+					],
+				),
 				skippedFiles: Array.from(this.state.skippedFiles.entries()),
 			};
 
-			fs.writeFileSync(this.stateFilePath, JSON.stringify(serializable, null, 2), "utf-8");
+			fs.writeFileSync(
+				this.stateFilePath,
+				JSON.stringify(serializable, null, 2),
+				"utf-8",
+			);
 		} catch (error) {
 			console.error("Failed to save integration state:", error);
 		}
@@ -187,7 +196,9 @@ export class IntegrationStateManager {
 		if (this.state.totalFiles === 0) {
 			return 100;
 		}
-		return Math.round((this.state.processedFiles / this.state.totalFiles) * 100);
+		return Math.round(
+			(this.state.processedFiles / this.state.totalFiles) * 100,
+		);
 	}
 
 	/**
@@ -195,7 +206,13 @@ export class IntegrationStateManager {
 	 * Requirement 9.1: Report total number of files and progress
 	 */
 	getSummary(): string {
-		const { totalFiles, processedFiles, completedFiles, failedFiles, skippedFiles } = this.state;
+		const {
+			totalFiles,
+			processedFiles,
+			completedFiles,
+			failedFiles,
+			skippedFiles,
+		} = this.state;
 		const progress = this.getProgress();
 
 		return [

@@ -21,7 +21,9 @@ import {
  * @param analyses - Array of file analyses
  * @returns Dependency graph with nodes and edges
  */
-export function buildDependencyGraph(analyses: FileAnalysis[]): DependencyGraph {
+export function buildDependencyGraph(
+	analyses: FileAnalysis[],
+): DependencyGraph {
 	const nodes = new Map<string, FileNode>();
 	const edges = new Map<string, string[]>();
 
@@ -82,7 +84,11 @@ export function addNode(graph: DependencyGraph, analysis: FileAnalysis): void {
  * @param from - Source file path
  * @param to - Dependency file path
  */
-export function addEdge(graph: DependencyGraph, from: string, to: string): void {
+export function addEdge(
+	graph: DependencyGraph,
+	from: string,
+	to: string,
+): void {
 	const dependencies = graph.edges.get(from) || [];
 	if (!dependencies.includes(to)) {
 		dependencies.push(to);
@@ -97,7 +103,10 @@ export function addEdge(graph: DependencyGraph, from: string, to: string): void 
  * @param filePath - Path to the file
  * @returns Array of dependency file paths
  */
-export function getDependencies(graph: DependencyGraph, filePath: string): string[] {
+export function getDependencies(
+	graph: DependencyGraph,
+	filePath: string,
+): string[] {
 	return graph.edges.get(filePath) || [];
 }
 
@@ -108,7 +117,10 @@ export function getDependencies(graph: DependencyGraph, filePath: string): strin
  * @param filePath - Path to the file
  * @returns Array of dependent file paths
  */
-export function getDependents(graph: DependencyGraph, filePath: string): string[] {
+export function getDependents(
+	graph: DependencyGraph,
+	filePath: string,
+): string[] {
 	const dependents: string[] = [];
 
 	for (const [source, deps] of graph.edges.entries()) {
@@ -145,7 +157,10 @@ export function updateNodeStatus(
  * @param status - Status to filter by
  * @returns Array of file paths with the given status
  */
-export function getNodesByStatus(graph: DependencyGraph, status: IntegrationStatus): string[] {
+export function getNodesByStatus(
+	graph: DependencyGraph,
+	status: IntegrationStatus,
+): string[] {
 	const result: string[] = [];
 
 	for (const [filePath, node] of graph.nodes.entries()) {
@@ -164,7 +179,10 @@ export function getNodesByStatus(graph: DependencyGraph, status: IntegrationStat
  * @param filePath - Path to the file
  * @returns True if all dependencies are completed
  */
-export function hasUnresolvedDependencies(graph: DependencyGraph, filePath: string): boolean {
+export function hasUnresolvedDependencies(
+	graph: DependencyGraph,
+	filePath: string,
+): boolean {
 	const dependencies = getDependencies(graph, filePath);
 
 	for (const dep of dependencies) {
@@ -282,7 +300,9 @@ export function getIntegrationOrder(graph: DependencyGraph): string[] {
  *
  * Validates: Requirements 8.3
  */
-export function detectCircularDependencies(graph: DependencyGraph): CircularDependency[] {
+export function detectCircularDependencies(
+	graph: DependencyGraph,
+): CircularDependency[] {
 	const cycles: CircularDependency[] = [];
 	const visited = new Set<string>();
 	const recursionStack = new Set<string>();
@@ -328,7 +348,9 @@ export function detectCircularDependencies(graph: DependencyGraph): CircularDepe
 
 				// Add to cycles if not already detected
 				const cycleKey = [...cycle].sort().join("|");
-				const isDuplicate = cycles.some((c) => [...c.cycle].sort().join("|") === cycleKey);
+				const isDuplicate = cycles.some(
+					(c) => [...c.cycle].sort().join("|") === cycleKey,
+				);
 
 				if (!isDuplicate) {
 					cycles.push({
