@@ -443,10 +443,14 @@ export function updateNameCache(name: string, id: string | number) {
 }
 
 export function invalidateIdCache(id: string | number) {
+	let found = false;
 	for (const [name, cachedId] of nameToIdCache.entries()) {
-		if (String(cachedId) === String(id)) {
+		if (cachedId === id) {
 			nameToIdCache.delete(name);
-			break;
+			found = true;
 		}
+	}
+	if (!found) {
+		devLog?.(`invalidateIdCache: no cache entry found for id: ${String(id)}`);
 	}
 }
