@@ -101,7 +101,7 @@ export const syncQueue = new SyncQueueService();
 // Tournament API
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const nameToIdCache = new Map<string, string | number>();
+const nameToIdCache = new Map<string, string>();
 
 interface TournamentCreateResult {
 	success: boolean;
