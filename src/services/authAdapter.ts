@@ -17,10 +17,14 @@ export const authAdapter: AuthAdapter = {
 	 * Get current user from localStorage or return null
 	 */
 	async getCurrentUser(): Promise<AuthUser | null> {
-		if (typeof window === "undefined") return null;
+		if (typeof window === "undefined") {
+			return null;
+		}
 
 		const userName = localStorage.getItem("userName");
-		if (!userName) return null;
+		if (!userName) {
+			return null;
+		}
 
 		const isAdmin = ADMIN_USERNAMES.some((admin) => admin.toLowerCase() === userName.toLowerCase());
 		console.log(`[AuthAdapter] User: ${userName}, IsAdmin: ${isAdmin}`);

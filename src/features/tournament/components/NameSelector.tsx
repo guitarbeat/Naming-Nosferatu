@@ -148,7 +148,9 @@ export function NameSelector() {
 			if (lockedInIds.size > 0) {
 				setSelectedNames((prev) => {
 					const newSelection = new Set(prev);
-					lockedInIds.forEach((id) => newSelection.add(id));
+					for (const id of lockedInIds) {
+						newSelection.add(id);
+					}
 					return newSelection;
 				});
 			}
@@ -506,13 +508,16 @@ export function NameSelector() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isSwipeMode, visibleCards, handleSwipe, handleUndo, lightboxOpen]);
 
-	const handleOpenLightbox = useCallback((nameId: IdType) => {
-		const index = names.findIndex((n) => n.id === nameId);
-		if (index !== -1) {
-			setLightboxIndex(index);
-			setLightboxOpen(true);
-		}
-	}, []);
+	const handleOpenLightbox = useCallback(
+		(nameId: IdType) => {
+			const index = names.findIndex((n) => n.id === nameId);
+			if (index !== -1) {
+				setLightboxIndex(index);
+				setLightboxOpen(true);
+			}
+		},
+		[names.findIndex],
+	);
 
 	const clearHiddenExpandTimer = useCallback(() => {
 		if (hiddenExpandTimer) {

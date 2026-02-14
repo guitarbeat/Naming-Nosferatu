@@ -633,11 +633,7 @@ const LiquidGradientBackground: FC = () => {
 		};
 	}, []);
 
-	return (
-		<>
-			<div ref={containerRef} className="liquid-gradient-container" />
-		</>
-	);
+	return <div ref={containerRef} className="liquid-gradient-container" />;
 };
 
 export default LiquidGradientBackground;

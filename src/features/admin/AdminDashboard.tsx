@@ -4,13 +4,13 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
 import { Input } from "@/layout/FormPrimitives";
-import { imagesAPI } from "@/services/supabase/api";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import { adminAPI, imagesAPI } from "@/services/supabase/api";
+import { hiddenNamesAPI } from "@/services/supabase/client";
 import type { NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/utils/icons";
@@ -45,9 +45,25 @@ export function AdminDashboard() {
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 
 	// Load admin stats and names
+	const loadAdminData = useCallback(async () => {
+		setIsLoading(true);
+		try {
+			await Promise.all([adminAPI.getAdminStats(), adminAPI.getNames()]).then(
+				([statsData, namesData]) => {
+					setStats(statsData);
+					setNames(namesData || []);
+				},
+			);
+		} catch (error) {
+			console.error("Error loading admin data:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, []);
+
 	useEffect(() => {
 		loadAdminData();
-	}, []);
+	}, [loadAdminData]);
 
 	// Filter names based on search and status
 	useEffect(() => {
@@ -74,39 +90,8 @@ export function AdminDashboard() {
 		setFilteredNames(filtered);
 	}, [names, searchTerm, filterStatus]);
 
-	const loadAdminData = async () => {
-		setIsLoading(true);
-		try {
-			// Load all names with admin visibility
-			const allNames = await coreAPI.getTrendingNames(true);
-
-			// Load stats (we'll simulate some for now)
-			const adminStats: AdminStats = {
-				totalNames: allNames.length,
-				activeNames: allNames.filter((n) => !n.isHidden && !(n.lockedIn || n.locked_in)).length,
-				hiddenNames: allNames.filter((n) => n.isHidden).length,
-				lockedInNames: allNames.filter((n) => n.lockedIn || n.locked_in).length,
-				totalUsers: 0, // TODO: Implement user count
-				activeTournaments: 0, // TODO: Implement tournament count
-				recentVotes: 0, // TODO: Implement vote tracking
-			};
-
-			// Add some mock stats for demonstration
-			const namesWithStats: NameWithStats[] = allNames.map((name) => ({
-				...name,
-				votes: Math.floor(Math.random() * 100),
-				lastVoted: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-				popularityScore: Math.random() * 100,
-			}));
-
-			setStats(adminStats);
-			setNames(namesWithStats);
-		} catch (error) {
-			console.error("Failed to load admin data:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	// Original loadAdminData implementation removed to fix duplicate declaration
+	// The implementation is now inside the useCallback hook above
 
 	const handleToggleHidden = async (nameId: string | number, isHidden: boolean) => {
 		try {
@@ -147,16 +132,22 @@ export function AdminDashboard() {
 	};
 
 	const handleBulkAction = async (action: "hide" | "unhide" | "lock" | "unlock") => {
-		if (selectedNames.size === 0) return;
+		if (selectedNames.size === 0) {
+			return;
+		}
 
 		try {
 			for (const nameId of selectedNames) {
 				if (action === "hide" || action === "unhide") {
 					const name = names.find((n) => n.id === nameId);
-					if (name) await handleToggleHidden(nameId, name.isHidden || false);
+					if (name) {
+						await handleToggleHidden(nameId, name.isHidden || false);
+					}
 				} else if (action === "lock" || action === "unlock") {
 					const name = names.find((n) => n.id === nameId);
-					if (name) await handleToggleLocked(nameId, name.lockedIn || name.locked_in || false);
+					if (name) {
+						await handleToggleLocked(nameId, name.lockedIn || name.locked_in || false);
+					}
 				}
 			}
 			setSelectedNames(new Set());
@@ -167,7 +158,9 @@ export function AdminDashboard() {
 
 	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
-		if (!file) return;
+		if (!file) {
+			return;
+		}
 
 		try {
 			const result = await imagesAPI.upload(file, user.name);

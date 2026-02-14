@@ -48,7 +48,7 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 		setIsLoading(true);
 		setHasError(false);
 		setRetryCount(0);
-	}, [src]);
+	}, []);
 
 	if (hasError) {
 		return (

@@ -21,7 +21,9 @@ export function useNamesCache() {
 		const key = `${CACHE_KEY}_${includeHidden}`;
 		const entry = cacheRef.current.get(key);
 
-		if (!entry) return null;
+		if (!entry) {
+			return null;
+		}
 
 		const now = Date.now();
 		if (now - entry.timestamp > CACHE_TTL) {
@@ -68,7 +70,7 @@ export function useNamesCache() {
 	useEffect(() => {
 		const cacheObject = Object.fromEntries(cacheRef.current);
 		localStorage.setItem("names_cache_map", JSON.stringify(cacheObject));
-	}, [cacheRef.current.size]);
+	}, []);
 
 	return {
 		getCachedData,

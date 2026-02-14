@@ -256,7 +256,9 @@ export function FluidNav() {
 		// Suggest and Profile only exist on home; navigate first if on analysis
 		if ((key === "suggest" || key === "profile") && isAnalysisRoute) {
 			const id = keyToId[key];
-			if (!id) return;
+			if (!id) {
+				return;
+			}
 			navigate("/");
 			setActiveSection(id);
 			requestAnimationFrame(() => {
