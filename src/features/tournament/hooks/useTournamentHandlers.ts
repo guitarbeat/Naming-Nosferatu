@@ -6,8 +6,8 @@
  */
 
 import { useCallback } from "react";
-import type { TournamentActions } from "@/store/appStore";
 import type { RatingData } from "@/shared/types";
+import type { TournamentActions } from "@/store/appStore";
 
 interface UseTournamentHandlersProps {
 	userName: string;

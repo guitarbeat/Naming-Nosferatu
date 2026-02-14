@@ -441,7 +441,9 @@ export function FluidNav() {
 									)}
 								</motion.div>
 							</AnimatePresence>
-							<span className="text-xs font-medium">{isSwipeMode ? "Swipe View" : "Grid View"}</span>
+							<span className="text-xs font-medium">
+								{isSwipeMode ? "Swipe View" : "Grid View"}
+							</span>
 						</motion.button>
 					)}
 
@@ -473,9 +475,7 @@ export function FluidNav() {
 						id="profile"
 						icon={User}
 						label={
-							isLoggedIn 
-								? `${userName?.split(" ")[0] || "You"}${isAdmin ? " 👑" : ""}`
-								: "Login"
+							isLoggedIn ? `${userName?.split(" ")[0] || "You"}${isAdmin ? " 👑" : ""}` : "Login"
 						}
 						isActive={isLoginExpanded}
 						onClick={handleProfileClick}

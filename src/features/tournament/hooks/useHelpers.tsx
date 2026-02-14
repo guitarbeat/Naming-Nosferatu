@@ -10,17 +10,17 @@ import { useToast } from "@/providers/Providers";
 import type { NameItem } from "@/shared/types";
 import { devError, devLog } from "@/utils/basic";
 import { NOTIFICATION } from "@/utils/constants";
-import { 
-	playSound, 
-	playBackgroundMusic, 
-	stopBackgroundMusic, 
-	setBackgroundMusicVolume,
+import {
+	getCurrentTrack,
+	playBackgroundMusic,
+	playLevelUpSound,
 	playNextTrack,
 	playPreviousTrack,
-	getCurrentTrack,
-	playLevelUpSound,
+	playSound,
+	playSurpriseSound,
 	playWowSound,
-	playSurpriseSound
+	setBackgroundMusicVolume,
+	stopBackgroundMusic,
 } from "@/utils/sound";
 
 /* =========================================================================

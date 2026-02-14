@@ -12,10 +12,10 @@ import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/appConfig";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 import Tournament from "@/features/tournament/Tournament";
-import { useOfflineSync } from "@/shared/hooks";
-import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { useAuth } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
+import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
+import { useOfflineSync } from "@/shared/hooks";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import { cn } from "@/utils/basic";
 import { cleanupPerformanceMonitoring, initializePerformanceMonitoring } from "@/utils/performance";
@@ -33,7 +33,7 @@ function App() {
 	useEffect(() => {
 		if (authUser) {
 			userActions.setAdminStatus(authUser.isAdmin);
-			}
+		}
 	}, [authUser, userActions]);
 
 	useTournamentHandlers({

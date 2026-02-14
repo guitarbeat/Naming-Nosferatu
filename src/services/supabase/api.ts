@@ -39,11 +39,11 @@ export const imagesAPI = {
 		return withSupabase(
 			async (client) => {
 				// Check if user is admin
-				const { data: adminCheck } = await client.rpc('check_user_role_by_name', { 
-					required_role: 'admin',
-					user_name_param: userName 
+				const { data: adminCheck } = await client.rpc("check_user_role_by_name", {
+					required_role: "admin",
+					user_name_param: userName,
 				});
-				
+
 				if (!adminCheck) {
 					return { path: null, error: "Admin access required for image uploads" };
 				}
@@ -90,10 +90,10 @@ async function updateHiddenStatus(userName: string, nameId: string | number, isH
 				/* ignore */
 			}
 
-			const { error, data } = await client.rpc('toggle_name_hidden' as any, {
+			const { error, data } = await client.rpc("toggle_name_hidden" as any, {
 				p_name_id: String(nameId),
 				p_hidden: isHidden,
-				p_user_name: userName.trim()
+				p_user_name: userName.trim(),
 			});
 
 			if (error) {
