@@ -136,9 +136,13 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 	// Initialize tournament when names change
 	useEffect(() => {
-		if (!Array.isArray(names) || names.length < 2) return;
+		if (!Array.isArray(names) || names.length < 2) {
+			return;
+		}
 
-		if (persistentState.namesKey === namesKey) return;
+		if (persistentState.namesKey === namesKey) {
+			return;
+		}
 
 		const estimatedMatches = (names.length * (names.length - 1)) / 2;
 
@@ -152,7 +156,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 		// Force re-render to reset sorter state
 		setRefreshKey((k) => k + 1);
-	}, [namesKey, persistentState.namesKey, updatePersistentState]);
+	}, [namesKey, persistentState.namesKey, updatePersistentState, names]);
 
 	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
 	const currentMatch = useMemo(() => {
@@ -181,12 +185,16 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 	// Progress and ETA
 	const progress = useMemo(() => {
-		if (!totalPairs) return 0;
+		if (!totalPairs) {
+			return 0;
+		}
 		return Math.round((matchNumber / totalPairs) * 100);
 	}, [matchNumber, totalPairs]);
 
 	const etaMinutes = useMemo(() => {
-		if (!totalPairs || matchNumber >= totalPairs) return 0;
+		if (!totalPairs || matchNumber >= totalPairs) {
+			return 0;
+		}
 		const remaining = totalPairs - matchNumber;
 		// Assume 5 seconds per match as baseline
 		return Math.ceil((remaining * 5) / 60);
@@ -262,10 +270,14 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	);
 
 	const handleUndo = useCallback(() => {
-		if (history.length === 0) return;
+		if (history.length === 0) {
+			return;
+		}
 
 		const lastEntry = history[history.length - 1];
-		if (!lastEntry) return;
+		if (!lastEntry) {
+			return;
+		}
 
 		setRatings(lastEntry.ratings);
 		setHistory((prev) => prev.slice(0, -1));

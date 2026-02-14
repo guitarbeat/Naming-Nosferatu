@@ -508,13 +508,16 @@ export function NameSelector() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isSwipeMode, visibleCards, handleSwipe, handleUndo, lightboxOpen]);
 
-	const handleOpenLightbox = useCallback((nameId: IdType) => {
-		const index = names.findIndex((n) => n.id === nameId);
-		if (index !== -1) {
-			setLightboxIndex(index);
-			setLightboxOpen(true);
-		}
-	}, []);
+	const handleOpenLightbox = useCallback(
+		(nameId: IdType) => {
+			const index = names.findIndex((n) => n.id === nameId);
+			if (index !== -1) {
+				setLightboxIndex(index);
+				setLightboxOpen(true);
+			}
+		},
+		[names],
+	);
 
 	const clearHiddenExpandTimer = useCallback(() => {
 		if (hiddenExpandTimer) {

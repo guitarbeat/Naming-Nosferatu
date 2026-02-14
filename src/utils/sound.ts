@@ -87,7 +87,9 @@ class SoundManager {
 		this.backgroundMusic.volume = this.backgroundMusicVolume;
 		this.backgroundMusic.preload = "auto";
 		if (wasPlaying) {
-			this.backgroundMusic.play().catch(() => {});
+			this.backgroundMusic.play().catch(() => {
+				/* ignore */
+			});
 		}
 	}
 

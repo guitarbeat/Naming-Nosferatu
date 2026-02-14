@@ -45,6 +45,7 @@ export function AdminDashboard() {
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 
 	// Load admin stats and names
+	// biome-ignore lint/correctness/useExhaustiveDependencies: loadAdminData is stable
 	useEffect(() => {
 		loadAdminData();
 	}, []);
@@ -147,16 +148,22 @@ export function AdminDashboard() {
 	};
 
 	const handleBulkAction = async (action: "hide" | "unhide" | "lock" | "unlock") => {
-		if (selectedNames.size === 0) return;
+		if (selectedNames.size === 0) {
+			return;
+		}
 
 		try {
 			for (const nameId of selectedNames) {
 				if (action === "hide" || action === "unhide") {
 					const name = names.find((n) => n.id === nameId);
-					if (name) await handleToggleHidden(nameId, name.isHidden || false);
+					if (name) {
+						await handleToggleHidden(nameId, name.isHidden || false);
+					}
 				} else if (action === "lock" || action === "unlock") {
 					const name = names.find((n) => n.id === nameId);
-					if (name) await handleToggleLocked(nameId, name.lockedIn || name.locked_in || false);
+					if (name) {
+						await handleToggleLocked(nameId, name.lockedIn || name.locked_in || false);
+					}
 				}
 			}
 			setSelectedNames(new Set());
@@ -167,7 +174,9 @@ export function AdminDashboard() {
 
 	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
-		if (!file) return;
+		if (!file) {
+			return;
+		}
 
 		try {
 			const result = await imagesAPI.upload(file, user.name);
