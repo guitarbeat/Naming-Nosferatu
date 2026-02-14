@@ -4,7 +4,7 @@
  * Consolidates: imageService, nameService, siteSettingsService into a single API layer.
  */
 
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 import { withSupabase } from "./client";
 
 /* ==========================================================================

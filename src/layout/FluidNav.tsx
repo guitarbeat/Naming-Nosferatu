@@ -89,7 +89,7 @@ const getUnifiedButtonState = (
 	// On pick section without enough names
 	if (isOnPickSection) {
 		return {
-			label: "Pick",
+			label: "Pick Names",
 			icon: CheckCircle,
 			action: "scroll-top",
 			highlight: false,
@@ -441,7 +441,7 @@ export function FluidNav() {
 									)}
 								</motion.div>
 							</AnimatePresence>
-							<span className="text-xs font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+							<span className="text-xs font-medium">{isSwipeMode ? "Swipe View" : "Grid View"}</span>
 						</motion.button>
 					)}
 
@@ -461,7 +461,7 @@ export function FluidNav() {
 					<NavButton
 						id="suggest"
 						icon={Lightbulb}
-						label="Idea?"
+						label="Add More!"
 						isActive={isSuggestExpanded}
 						onClick={handleSuggestClick}
 						ariaLabel="Suggest a name"
@@ -475,7 +475,7 @@ export function FluidNav() {
 						label={
 							isLoggedIn 
 								? `${userName?.split(" ")[0] || "You"}${isAdmin ? " 👑" : ""}`
-								: "Name?"
+								: "Login"
 						}
 						isActive={isLoginExpanded}
 						onClick={handleProfileClick}

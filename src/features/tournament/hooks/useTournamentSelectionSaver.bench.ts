@@ -1,5 +1,5 @@
 import { bench, describe } from "vitest";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 
 function generateNames(count: number): NameItem[] {
 	return Array.from({ length: count }, (_, i) => ({

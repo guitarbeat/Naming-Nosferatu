@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 
 export function usePersonalResults({
 	personalRatings,

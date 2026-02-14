@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocalStorage } from "@/hooks/useHooks";
+import { useLocalStorage } from "@/shared/hooks";
 import { EloRating, PreferenceSorter } from "@/services/tournament";
-import type { Match, MatchRecord, NameItem } from "@/types/appTypes";
+import type { Match, MatchRecord, NameItem } from "@/shared/types";
 
 export interface UseTournamentStateResult {
 	currentMatch: Match | null;

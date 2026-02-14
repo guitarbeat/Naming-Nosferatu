@@ -2,13 +2,11 @@ import { memo, useCallback, useEffect, useMemo } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/FeedbackComponents";
 import useAppStore from "@/store/appStore";
-import type { TournamentProps, NameItem } from "@/types/appTypes";
+import type { TournamentProps, NameItem } from "@/shared/types";
 import { getRandomCatImage, getVisibleNames, exportTournamentResultsToCSV } from "@/utils/basic";
 import { CAT_IMAGES } from "@/utils/constants";
 import CatImage from "./components/CatImage";
-import { useAudioManager } from "./hooks/useHelpers";
-import { useTournamentState } from "./hooks/useTournamentState";
-import { useTournamentVote } from "./hooks/useTournamentVote";
+import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
 	const { user } = useAppStore();

@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useEffect, useRef } from "react";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 
 interface CacheEntry {
 	data: NameItem[];
@@ -12,7 +12,7 @@ interface CacheEntry {
 }
 
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-const CACHE_KEY = "names_cache";
+const CACHE_KEY = "names_cache_v2";
 
 export function useNamesCache() {
 	const cacheRef = useRef<Map<string, CacheEntry>>(new Map());

@@ -43,7 +43,7 @@ import type {
 	UIState,
 	UserState,
 	VoteRecord,
-} from "@/types/appTypes";
+} from "@/shared/types";
 import { STORAGE_KEYS } from "@/utils/constants";
 import type { LucideIcon } from "@/utils/icons";
 import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/utils/icons";

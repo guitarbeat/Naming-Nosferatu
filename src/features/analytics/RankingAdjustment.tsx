@@ -13,7 +13,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { GripVertical, Loader2, Save } from "@/icons";
 import { Card } from "@/layout";
 import { ErrorManager } from "@/services/errorManager";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
 	if (newItems.length !== oldRankings.length) {

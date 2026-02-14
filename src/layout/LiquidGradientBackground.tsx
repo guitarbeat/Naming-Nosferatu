@@ -606,7 +606,6 @@ class LiquidGradientManager {
 const LiquidGradientBackground: FC = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const managerRef = useRef<LiquidGradientManager | null>(null);
-	const cursorRef = useRef<HTMLDivElement>(null);
 	const activeScheme = 2;
 	// Initialize Three.js
 	useEffect(() => {
@@ -623,10 +622,6 @@ const LiquidGradientBackground: FC = () => {
 
 		const handlePointerMove = (e: PointerEvent) => {
 			managerRef.current?.onMouseMove(e.clientX, e.clientY);
-			if (cursorRef.current) {
-				cursorRef.current.style.left = `${e.clientX}px`;
-				cursorRef.current.style.top = `${e.clientY}px`;
-			}
 		};
 
 		window.addEventListener("pointermove", handlePointerMove);
@@ -641,7 +636,6 @@ const LiquidGradientBackground: FC = () => {
 	return (
 		<>
 			<div ref={containerRef} className="liquid-gradient-container" />
-			<div ref={cursorRef} className="liquid-custom-cursor" />
 		</>
 	);
 };

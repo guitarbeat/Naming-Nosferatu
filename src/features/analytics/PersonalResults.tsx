@@ -3,7 +3,7 @@ import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResult
 import { Download, Plus } from "@/icons";
 import { Card } from "@/layout";
 import { useToast } from "@/providers/Providers";
-import type { NameItem, RatingData } from "@/types/appTypes";
+import type { NameItem, RatingData } from "@/shared/types";
 import { exportTournamentResultsToCSV } from "@/utils/basic";
 import { RankingAdjustment } from "./RankingAdjustment";
 

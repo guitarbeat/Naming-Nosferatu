@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import useAppStore from "@/store/appStore";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
 import { imagesAPI } from "@/services/supabase/api";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";

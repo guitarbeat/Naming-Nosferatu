@@ -7,7 +7,7 @@
 import { motion } from "framer-motion";
 import type React from "react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { UserBubbleProfile } from "@/types/appTypes";
+import type { UserBubbleProfile } from "@/shared/types";
 
 /* ==========================================================================
    LIQUID GLASS COMPONENT

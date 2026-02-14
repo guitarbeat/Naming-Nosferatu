@@ -8,7 +8,7 @@ import type {
 	TournamentFilters,
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
-} from "@/types/appTypes";
+} from "@/shared/types";
 import { applyNameFilters, mapFilterStatusToVisibility } from "@/utils/basic";
 import { FILTER_OPTIONS } from "@/utils/constants";
 

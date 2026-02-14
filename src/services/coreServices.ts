@@ -1,6 +1,6 @@
 import { syncQueue } from "@/services/SyncQueue";
 import { withSupabase } from "@/services/supabase/client";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 import { devLog } from "@/utils/basic";
 
 // ═══════════════════════════════════════════════════════════════════════════════

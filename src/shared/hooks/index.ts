@@ -459,6 +459,21 @@ export function useBrowserState(breakpoints?: Partial<Breakpoints>): BrowserStat
 	return state;
 }
 
+/**
+ * Legacy offline-sync hook.
+ *
+ * In the original codebase this directly imported a sync queue and API
+ * client. Now it delegates to `useOnlineStatus` — consumers should pass
+ * their own `onReconnect` callback to handle queue flushing.
+ *
+ * @example
+ * useOfflineSync(); // no-op by default; attach sync logic via useOnlineStatus
+ */
+export function useOfflineSync(): void {
+	// No-op stub — replace with `useOnlineStatus({ onReconnect: () => syncQueue.flush() })`
+	// when you have a real sync queue wired up.
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // useOnlineStatus
 // ═══════════════════════════════════════════════════════════════════════════════

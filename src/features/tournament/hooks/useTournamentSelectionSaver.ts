@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 
 export function useTournamentSelectionSaver(selectedNames: NameItem[]) {
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);

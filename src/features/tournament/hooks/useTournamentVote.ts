@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useToast } from "@/providers/Providers";
-import type { UseAudioManagerResult } from "./index";
+import type { UseAudioManagerResult } from "./useHelpers";
 import type { UseTournamentStateResult } from "./useTournamentState";
 
 const VOTE_COOLDOWN = 300;

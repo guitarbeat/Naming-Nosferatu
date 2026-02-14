@@ -5,7 +5,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import useAppStore from "@/store/appStore";
-import type { IdType, NameItem } from "@/types/appTypes";
+import type { IdType, NameItem } from "@/shared/types";
 
 /* =========================================================================
    useNameData - Fetch and manage name data

@@ -12,7 +12,14 @@ export {
 	useTournamentSelectionSaver,
 } from "./useHelpers";
 
+// Consolidated tournament hooks
+export {
+	type UseTournamentStateResult,
+	type UseTournamentVoteResult,
+	useTournamentState,
+	useTournamentVote,
+} from "./useTournament";
+
 // Re-export from original files
 export { useNameManagementView } from "./useNameManagementView";
 export { useTournamentHandlers } from "./useTournamentHandlers";
-export { useTournamentState } from "./useTournamentState";

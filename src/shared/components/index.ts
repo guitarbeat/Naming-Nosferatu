@@ -1,15 +1,15 @@
 // Layout primitive components - single source of truth for component imports
 
-export { AppLayout } from "./AppLayout";
-export { default as Button, ScrollToTopButton } from "./Button";
+export { AppLayout } from "@/layout/AppLayout";
+export { default as Button, ScrollToTopButton } from "@/layout/Button";
 export {
 	Card,
 	CardName,
 	CardStats,
-} from "./Card/index";
-export { BumpChart } from "./Charts";
-export { CollapsibleContent, CollapsibleHeader } from "./CollapsibleHeader";
-export { EmptyState } from "./EmptyState";
+} from "@/layout/Card/index";
+export { BumpChart } from "@/layout/Charts";
+export { CollapsibleContent, CollapsibleHeader } from "@/layout/CollapsibleHeader";
+export { EmptyState } from "@/layout/EmptyState";
 export {
 	ErrorBoundary,
 	ErrorComponent,
@@ -19,19 +19,19 @@ export {
 	Toast,
 	ToastContainer,
 	TrendIndicator,
-} from "./Feedback";
-export { FluidNav } from "./FluidNav";
-export { Input, Textarea } from "./FormPrimitives";
+} from "@/layout/Feedback";
+export { FluidNav } from "@/layout/FluidNav";
+export { Input, Textarea } from "@/layout/FormPrimitives";
 export {
 	BongoCat,
 	default as CatBackground,
 	FloatingBubblesContainer,
-} from "./LayoutEffects";
-export { Lightbox } from "./Lightbox";
+} from "@/layout/LayoutEffects";
+export { Lightbox } from "@/layout/Lightbox";
 export {
 	DEFAULT_GLASS_CONFIG,
 	default as LiquidGlass,
 	resolveGlassConfig,
-} from "./LiquidGlass";
-export { AnimatedNavButton, NavButton } from "./NavButton";
-export { Section } from "./Section";
+} from "@/layout/LiquidGlass";
+export { AnimatedNavButton, NavButton } from "@/layout/NavButton";
+export { Section } from "@/layout/Section";
