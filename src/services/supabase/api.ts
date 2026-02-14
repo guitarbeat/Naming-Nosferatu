@@ -295,10 +295,24 @@ export const coreAPI = {
 						error: error.message || "Failed to add name",
 					};
 				}
-				if (data && (data as any).id) {
-					try {
-						updateNameCache(name, (data as any).id);
-					} catch { /* ignore */ }
+				if (data && typeof data === "object") {
+					const maybeId = (data as { id?: unknown }).id;
+					if (typeof maybeId === "string" || typeof maybeId === "number") {
+						try {
+							updateNameCache(name, maybeId);
+						} catch (cacheError) {
+							console.warn("Failed to update name cache for added name", {
+								name,
+								id: maybeId,
+								error: cacheError,
+							});
+						}
+					} else {
+						console.warn("Unable to update name cache: missing or invalid id on inserted name record", {
+							name,
+							data,
+						});
+					}
 				}
 				return { success: true, data };
 			},
