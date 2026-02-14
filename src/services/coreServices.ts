@@ -11,12 +11,7 @@ const HAS_NAVIGATOR = typeof navigator !== "undefined";
 
 interface SyncPayload {
 	userName: string;
-	ratings: Array<{
-		name: string;
-		rating: number;
-		wins?: number;
-		losses?: number;
-	}>;
+	ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>;
 }
 
 export interface SyncItem {
@@ -101,7 +96,7 @@ export const syncQueue = new SyncQueueService();
 // Tournament API
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const nameToIdCache = new Map<string, string>();
+const nameToIdCache = new Map<string, string | number>();
 
 interface TournamentCreateResult {
 	success: boolean;
@@ -167,12 +162,7 @@ export const tournamentsAPI = {
 	 */
 	async saveTournamentRatings(
 		userName: string,
-		ratings: Array<{
-			name: string;
-			rating: number;
-			wins?: number;
-			losses?: number;
-		}>,
+		ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>,
 		skipQueue = false,
 	): Promise<RatingSaveResult> {
 		// Offline: queue for later
@@ -443,14 +433,10 @@ export function updateNameCache(name: string, id: string | number) {
 }
 
 export function invalidateIdCache(id: string | number) {
-	let found = false;
 	for (const [name, cachedId] of nameToIdCache.entries()) {
-		if (cachedId === id) {
+		if (String(cachedId) === String(id)) {
 			nameToIdCache.delete(name);
-			found = true;
+			break;
 		}
-	}
-	if (!found) {
-		devLog?.(`invalidateIdCache: no cache entry found for id: ${String(id)}`);
 	}
 }

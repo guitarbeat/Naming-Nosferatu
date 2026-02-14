@@ -9,13 +9,19 @@ import { useNamesCache } from "@/hooks/useNamesCache";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
+
 <<<<<<< HEAD
+
 import { Lightbox } from "@/layout/Lightbox";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
+
 =======
+
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
+
 >>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
+
 import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/types/appTypes";
 import { getRandomCatImage } from "@/utils/basic";
@@ -91,7 +97,6 @@ export function NameSelector() {
 		fetchNames();
 	}, [retryCount, getCachedData, setCachedData]);
 
-<<<<<<< Updated upstream
 	const toggleName = useCallback(
 		(nameId: IdType) => {
 			setSelectedNames((prev) => {
@@ -111,24 +116,6 @@ export function NameSelector() {
 		},
 		[names, tournamentActions],
 	);
-=======
-	const toggleName = (nameId: IdType) => {
-		setSelectedNames((prev) => {
-			const next = new Set(prev);
-			if (next.has(nameId)) {
-				next.delete(nameId);
-			} else {
-				next.add(nameId);
-			}
-
-			// Sync with global store
-			const selectedNameItems = names.filter((n) => next.has(n.id));
-			tournamentActions.setSelection(selectedNameItems);
-
-			return next;
-		});
-	};
->>>>>>> Stashed changes
 
 	// Add haptic feedback for better UX
 	const handleToggleName = useCallback(

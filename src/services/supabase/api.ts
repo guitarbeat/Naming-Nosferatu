@@ -1,57 +1,10 @@
-<<<<<<< Updated upstream:src/services/supabase/api.ts
-=======
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@supabase/supabase-js";
-import { QueryClient } from "@tanstack/react-query";
-import { invalidateIdCache, invalidateNameCache, updateNameCache } from "@/services/coreServices";
-import type { NameItem } from "@/types/appTypes";
-import type { Database } from "./types";
-
-export const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			staleTime: 1000 * 60 * 5, // 5 minutes
-			retry: 1,
-			refetchOnWindowFocus: false,
-		},
-	},
-});
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
-
-let supabaseInstance: SupabaseClient<Database> | null = null;
-
-const resolveSupabaseClient = async () => {
-	if (supabaseInstance) {
-		return supabaseInstance;
-	}
-
-	if (!supabaseUrl || !supabaseAnonKey) {
-		return null;
-	}
-
-	try {
-		supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-			auth: {
-				persistSession: true,
-				autoRefreshToken: true,
-			},
-		});
-		return supabaseInstance;
-	} catch (error) {
-		console.error("Failed to initialize Supabase client:", error);
-		return null;
-	}
-};
-
->>>>>>> Stashed changes:src/services/supabase-client/client.ts
 /**
  * @module supabaseAPI
  * @description Consolidated Supabase API combining image, name management, and site settings operations.
  * Consolidates: imageService, nameService, siteSettingsService into a single API layer.
  */
 
+import { invalidateIdCache, invalidateNameCache, updateNameCache } from "@/services/coreServices";
 import type { NameItem } from "@/types/appTypes";
 import { withSupabase } from "./client";
 
@@ -204,14 +157,8 @@ async function deleteById(nameId: string | number) {
 			}
 			try {
 				invalidateIdCache(nameId);
-			} catch (cacheError: unknown) {
-				return {
-					success: false,
-					error:
-						cacheError instanceof Error
-							? cacheError.message
-							: "Failed to invalidate cache after deleting name",
-				};
+			} catch {
+				/* ignore */
 			}
 			return { success: true };
 		},
@@ -303,23 +250,11 @@ export const coreAPI = {
 						error: error.message || "Failed to add name",
 					};
 				}
-				if (data && typeof data === "object") {
-					const maybeId = (data as { id?: unknown }).id;
-					if (typeof maybeId === "string" || typeof maybeId === "number") {
-						try {
-							updateNameCache(name, maybeId);
-						} catch (cacheError) {
-							console.warn("Failed to update name cache for added name", {
-								name,
-								id: maybeId,
-								error: cacheError,
-							});
-						}
-					} else {
-						console.warn("Unable to update name cache: missing or invalid id on inserted name record", {
-							name,
-							data,
-						});
+				if (data && (data as any).id) {
+					try {
+						updateNameCache(name, (data as any).id);
+					} catch {
+						/* ignore */
 					}
 				}
 				return { success: true, data };
@@ -343,7 +278,9 @@ export const coreAPI = {
 				}
 				try {
 					invalidateNameCache(name);
-				} catch { /* ignore */ }
+				} catch {
+					/* ignore */
+				}
 				return { success: true };
 			},
 			{ success: false, error: "Supabase not configured" },

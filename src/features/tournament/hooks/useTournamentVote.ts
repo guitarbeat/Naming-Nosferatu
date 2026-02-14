@@ -129,17 +129,12 @@ export function useTournamentVote({
 				actualHandleVote?.(winnerId, loserIdFinal);
 				onVote?.(winnerId, loserIdFinal);
 				setVoting(false);
-<<<<<<< Updated upstream
 				if (setIsTransitioning) {
 					setIsTransitioning(false);
 				}
 				if (setSelectedOption) {
 					setSelectedOption(null);
 				}
-=======
-				if (setIsTransitioning) setIsTransitioning(false);
-				if (setSelectedOption) setSelectedOption(null);
->>>>>>> Stashed changes
 			}, VOTE_COOLDOWN);
 		},
 		[

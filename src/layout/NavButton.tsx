@@ -70,7 +70,6 @@ export function NavButton({
 				{badge}
 			</div>
 			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">{label}</span>
-<<<<<<< Updated upstream
 <<<<<<< HEAD
 					</button>
 =======
@@ -82,9 +81,6 @@ export function NavButton({
 			)}
 		</button>
 >>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
-=======
-		</button>
->>>>>>> Stashed changes
 	);
 }
 
@@ -123,6 +119,6 @@ export function AnimatedNavButton({
 			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">
 				{props.label}
 			</span>
-		</motion.button>
+					</motion.button>
 	);
 }
