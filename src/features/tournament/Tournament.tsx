@@ -2,9 +2,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/FeedbackComponents";
+import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import type { TournamentProps, NameItem } from "@/shared/types";
-import { getRandomCatImage, getVisibleNames, exportTournamentResultsToCSV } from "@/utils/basic";
+import { exportTournamentResultsToCSV, getRandomCatImage, getVisibleNames } from "@/utils/basic";
 import { CAT_IMAGES } from "@/utils/constants";
 import CatImage from "./components/CatImage";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
@@ -147,7 +147,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		}
 
 		return {
-			leftId: String(typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left),
+			leftId: String(
+				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+			),
 			rightId: String(
 				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
 			),
@@ -171,8 +173,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				: null;
 
 	useEffect(() => {
+		if (!currentMatch) {
+			setSelectedSide(null);
+			return;
+		}
 		setSelectedSide(null);
-	}, [currentMatchNumber]);
+	}, [currentMatch]);
 
 	useEffect(() => {
 		if (isComplete) {
@@ -190,13 +196,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			);
 		}
 		previousRoundRef.current = roundNumber;
-	}, [
-		roundNumber,
-		isComplete,
-		audioManager,
-		clearRoundAnnouncementTimeout,
-		prefersReducedMotion,
-	]);
+	}, [roundNumber, isComplete, audioManager, clearRoundAnnouncementTimeout, prefersReducedMotion]);
 
 	const triggerVoteFeedback = useCallback(
 		(winnerName: string, side: "left" | "right") => {
@@ -252,7 +252,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				<div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
 					<Card className="max-w-2xl w-full text-center p-8" variant="default">
 						<div className="mb-6">
-							<span className="material-symbols-outlined text-6xl text-green-400">emoji_events</span>
+							<span className="material-symbols-outlined text-6xl text-green-400">
+								emoji_events
+							</span>
 						</div>
 						<h1 className="font-whimsical text-4xl text-white tracking-wide mb-4">
 							Tournament Complete!
@@ -260,7 +262,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<p className="text-white/80 mb-6">
 							Congratulations! Your tournament results have been downloaded as a CSV file.
 						</p>
-						
+
 						<div className="space-y-4">
 							<div className="grid grid-cols-2 gap-4 text-left">
 								<div className="bg-white/5 rounded-lg p-4">
@@ -272,7 +274,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									<div className="text-xl font-bold text-white">{visibleNames.length}</div>
 								</div>
 							</div>
-							
+
 							<div className="flex flex-col gap-3 pt-4">
 								<button
 									onClick={() => window.location.reload()}
@@ -281,7 +283,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									<span className="material-symbols-outlined text-primary">refresh</span>
 									<span className="font-bold text-white">Start New Tournament</span>
 								</button>
-								
+
 								{onComplete && (
 									<button
 										onClick={() => onComplete({})}
@@ -322,10 +324,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						</div>
 						{isComplete && (
 							<div className="px-3 py-1 rounded-full flex items-center gap-2 bg-green-500/20 border border-green-500/30">
-								<span className="material-symbols-outlined text-green-400 text-sm">celebration</span>
-								<span className="text-xs font-bold text-green-400">
-									Results Downloaded
+								<span className="material-symbols-outlined text-green-400 text-sm">
+									celebration
 								</span>
+								<span className="text-xs font-bold text-green-400">Results Downloaded</span>
 							</div>
 						)}
 					</div>
@@ -406,11 +408,15 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							type="button"
 							onClick={audioManager.toggleBackgroundMusic}
 							className={`w-10 h-10 flex items-center justify-center rounded-lg transition-colors ${
-								audioManager.backgroundMusicEnabled 
-									? "bg-primary/20 text-primary" 
+								audioManager.backgroundMusicEnabled
+									? "bg-primary/20 text-primary"
 									: "bg-white/5 text-white/60 hover:text-white"
 							}`}
-							aria-label={audioManager.backgroundMusicEnabled ? "Stop background music" : "Play background music"}
+							aria-label={
+								audioManager.backgroundMusicEnabled
+									? "Stop background music"
+									: "Play background music"
+							}
 							aria-pressed={audioManager.backgroundMusicEnabled}
 							title={`${audioManager.backgroundMusicEnabled ? "Stop" : "Play"} background music: ${audioManager.currentTrack}`}
 						>
@@ -481,7 +487,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									<span className="material-symbols-outlined text-base text-emerald-300">
 										emoji_events
 									</span>
-									<span className="text-sm font-bold tracking-wide">{voteAnnouncement} advances</span>
+									<span className="text-sm font-bold tracking-wide">
+										{voteAnnouncement} advances
+									</span>
 								</div>
 							</div>
 						</motion.div>
