@@ -64,6 +64,52 @@ export const imagesAPI = {
 	},
 };
 
+/**
+ * Admin API wrapper for specific admin functions.
+ * In a real app, these would be protected by more robust backend checks.
+ */
+export const adminAPI = {
+	/**
+	 * Get admin statistics
+	 */
+	getAdminStats: async () => {
+		return withSupabase(
+			async (client) => {
+				const { data, error } = await client.rpc("get_site_stats" as any);
+				if (error) {
+					console.error("Error fetching admin stats:", error);
+					throw error;
+				}
+				return {
+					totalNames: data.total_names,
+					activeNames: data.active_names,
+					hiddenNames: data.hidden_names,
+					lockedInNames: 0, // Not currently returned by RPC
+					totalUsers: data.total_users,
+					activeTournaments: 0, // Not currently returned by RPC
+					recentVotes: data.total_ratings,
+				};
+			},
+			{
+				totalNames: 0,
+				activeNames: 0,
+				hiddenNames: 0,
+				lockedInNames: 0,
+				totalUsers: 0,
+				activeTournaments: 0,
+				recentVotes: 0,
+			},
+		);
+	},
+
+	/**
+	 * Get all names including hidden ones for admin view
+	 */
+	getNames: async () => {
+		return coreAPI.getTrendingNames(true);
+	},
+};
+
 /* ==========================================================================
    NAMES API
    ========================================================================== */
