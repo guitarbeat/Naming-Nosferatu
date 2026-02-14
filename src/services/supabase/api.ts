@@ -204,7 +204,15 @@ async function deleteById(nameId: string | number) {
 			}
 			try {
 				invalidateIdCache(nameId);
-			} catch { /* ignore */ }
+			} catch (cacheError: unknown) {
+				return {
+					success: false,
+					error:
+						cacheError instanceof Error
+							? cacheError.message
+							: "Failed to invalidate cache after deleting name",
+				};
+			}
 			return { success: true };
 		},
 		{ success: false, error: "Supabase not configured" },
