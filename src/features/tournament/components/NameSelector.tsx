@@ -340,8 +340,9 @@ export function NameSelector() {
 					await hiddenNamesAPI.hideName(userName, nameId);
 				}
 
-				invalidateCache();
-				updateNameHiddenState(nameId, !isCurrentlyHidden);
+				// Refresh names after toggling hidden status
+				const fetchedNames = await coreAPI.getTrendingNames(true);
+				setNames(fetchedNames);
 			} catch (apiError) {
 				console.error("Failed to toggle hidden status:", apiError);
 				alert(`Failed to ${action} name. Please try again.`);
@@ -356,7 +357,7 @@ export function NameSelector() {
 				return next;
 			});
 		}
-	}, [invalidateCache, userName, isAdmin]);
+	}, [userName, isAdmin]);
 
 	const handleToggleLocked = useCallback(async (nameId: IdType, isCurrentlyLocked: boolean) => {
 		if (!isAdmin) {
@@ -395,7 +396,8 @@ export function NameSelector() {
 				// Toggle lock
 				const result = await client.rpc('toggle_name_locked_in' as any, { 
 					p_name_id: String(nameId), 
-					p_locked_in: !isCurrentlyLocked 
+					p_locked_in: !isCurrentlyLocked,
+					p_user_name: userName.trim()
 				});
 
 				if (result.error) {
@@ -414,7 +416,7 @@ export function NameSelector() {
 			}
 		} catch (error) {
 			console.error("Failed to toggle locked status:", error);
-			alert(`Failed to ${action} name. Please try again.`);
+			alert(`Failed to ${isCurrentlyLocked ? 'unlock' : 'lock'} name. Please try again.`);
 		} finally {
 			setTogglingLocked(prev => {
 				const newSet = new Set(prev);
@@ -424,12 +426,7 @@ export function NameSelector() {
 		}
 	}, [userName, isAdmin]);
 
-	const updateNameHiddenState = useCallback((nameId: IdType, isHidden: boolean) => {
-		setNames(prev => prev.map(name => 
-			name.id === nameId ? { ...name, isHidden } : name
-		));
-	}, []);
-
+	
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id) && !(name.lockedIn || name.locked_in));
 	const cardsToRender = visibleCards.slice(0, 3);
 
@@ -805,7 +802,7 @@ export function NameSelector() {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage = catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
 											return (
-												<div
+												<motion.div
 													key={nameItem.id}
 													onClick={() => handleToggleName(nameItem.id)}
 													onKeyDown={(e) => {
@@ -816,11 +813,14 @@ export function NameSelector() {
 													}}
 													role="button"
 													tabIndex={0}
-													className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+													whileHover={{ scale: 1.02 }}
+													whileTap={{ scale: 0.98 }}
+													transition={{ type: "spring", stiffness: 400, damping: 25 }}
+													className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
 														isSelected
 															? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
 															: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
-													}`}
+													} ${(nameItem.lockedIn || nameItem.locked_in) ? 'opacity-75' : ''}`}
 												>
 													<div className="aspect-[4/3] w-full relative">
 														<CatImage
@@ -860,20 +860,28 @@ export function NameSelector() {
 														)}
 													</div>
 													{isAdmin && !isSwipeMode && (
-														<div className="px-3 pb-3 flex gap-2">
+														<motion.div 
+															initial={{ opacity: 0, y: 10 }}
+															animate={{ opacity: 1, y: 0 }}
+															transition={{ delay: 0.1 }}
+															className="px-3 pb-3 flex gap-2"
+														>
 															{/* Hide/Unhide Button */}
-															<button
+															<motion.button
 																type="button"
 																onClick={(e) => {
 																	e.stopPropagation();
 																	handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 																}}
 																disabled={togglingHidden.has(nameItem.id)}
-																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+																whileHover={{ scale: 1.05 }}
+																whileTap={{ scale: 0.95 }}
+																transition={{ type: "spring", stiffness: 400, damping: 25 }}
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
 																	nameItem.isHidden
-																		? "bg-green-600 hover:bg-green-700 text-white"
-																		: "bg-red-600 hover:bg-red-700 text-white"
-																} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""}`}
+																		? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
+																		: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
+																} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
 															>
 																{togglingHidden.has(nameItem.id) ? (
 																	<div className="flex items-center justify-center gap-1">
@@ -891,21 +899,24 @@ export function NameSelector() {
 																		Hide
 																	</>
 																)}
-															</button>
+															</motion.button>
 
 															{/* Lock/Unlock Button */}
-															<button
+															<motion.button
 																type="button"
 																onClick={(e) => {
 																	e.stopPropagation();
 																	handleToggleLocked(nameItem.id, nameItem.lockedIn || nameItem.locked_in || false);
 																}}
 																disabled={togglingLocked.has(nameItem.id)}
-																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+																whileHover={{ scale: 1.05 }}
+																whileTap={{ scale: 0.95 }}
+																transition={{ type: "spring", stiffness: 400, damping: 25 }}
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
 																	nameItem.lockedIn || nameItem.locked_in
-																		? "bg-gray-600 hover:bg-gray-700 text-white"
-																		: "bg-amber-600 hover:bg-amber-700 text-white"
-																} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""}`}
+																		? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
+																		: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
+																} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
 															>
 																{togglingLocked.has(nameItem.id) ? (
 																	<div className="flex items-center justify-center gap-1">
@@ -923,10 +934,10 @@ export function NameSelector() {
 																		Lock
 																	</>
 																)}
-															</button>
-														</div>
+															</motion.button>
+														</motion.div>
 													)}
-												</div>
+												</motion.div>
 											);
 										})}
 									</div>

@@ -90,13 +90,17 @@ async function updateHiddenStatus(userName: string, nameId: string | number, isH
 				/* ignore */
 			}
 
-			const { error } = await client
-				.from("cat_name_options")
-				.update({ is_hidden: isHidden })
-				.eq("id", String(nameId));
+			const { error, data } = await client.rpc('toggle_name_hidden' as any, {
+				p_name_id: String(nameId),
+				p_hidden: isHidden,
+				p_user_name: userName.trim()
+			});
 
 			if (error) {
 				throw error;
+			}
+			if (data !== true) {
+				throw new Error("Failed to toggle hidden status");
 			}
 			return { nameId, success: true } as {
 				nameId: string | number;
