@@ -11,7 +11,8 @@ export {
 	useProfileNotifications,
 	useTournamentSelectionSaver,
 } from "./useHelpers";
-
+// Re-export from original files
+export { useNameManagementView } from "./useNameManagementView";
 // Consolidated tournament hooks
 export {
 	type UseTournamentStateResult,
@@ -19,7 +20,4 @@ export {
 	useTournamentState,
 	useTournamentVote,
 } from "./useTournament";
-
-// Re-export from original files
-export { useNameManagementView } from "./useNameManagementView";
 export { useTournamentHandlers } from "./useTournamentHandlers";

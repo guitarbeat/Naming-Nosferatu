@@ -13,6 +13,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { NameItem, RatingData, RatingItem } from "../types/appTypes";
 import { CAT_IMAGES, STORAGE_KEYS } from "./constants";
+import { generateCSV } from "./csvHelpers";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types
@@ -405,21 +406,11 @@ function downloadBlob(blob: Blob, filename: string): void {
  * exportTournamentResultsToCSV(rankings, "finals-2024.csv");
  */
 export function exportTournamentResultsToCSV(rankings: NameItem[], filename?: string): void {
-	if (rankings.length === 0) {
+	const csv = generateCSV(rankings);
+	if (!csv) {
 		return;
 	}
 
-	const headers = ["Name", "Rating", "Wins", "Losses"];
-	const rows = rankings.map((r) =>
-		[
-			`"${(r.name ?? "").replace(/"/g, '""')}"`, // escape embedded quotes
-			Math.round(Number(r.rating ?? 1500)),
-			r.wins ?? 0,
-			r.losses ?? 0,
-		].join(","),
-	);
-
-	const csv = [headers.join(","), ...rows].join("\n");
 	const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
 	const name = filename ?? `cat_names_${new Date().toISOString().slice(0, 10)}.csv`;
 	downloadBlob(blob, name);

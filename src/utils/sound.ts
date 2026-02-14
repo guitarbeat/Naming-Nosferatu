@@ -16,24 +16,18 @@ class SoundManager {
 	private defaultVolume = 0.3;
 	private backgroundMusicVolume = 0.1;
 	private currentTrackIndex = 0;
-	
+
 	// Songs (large files, >1MB) - for background music
 	private backgroundTracks = [
 		"Main Menu 1 (Ruins)",
-		"AdhesiveWombat - Night Shade", 
+		"AdhesiveWombat - Night Shade",
 		"Lemon Demon - The Ultimate Showdown (8-Bit Remix)",
 		"what-is-love",
-		"MiseryBusiness"
+		"MiseryBusiness",
 	];
-	
+
 	// Sound effects (small files, <200KB) - for actions/events
-	private soundEffects = [
-		"vote",
-		"undo", 
-		"level-up",
-		"wow",
-		"surprise"
-	];
+	private soundEffects = ["vote", "undo", "level-up", "wow", "surprise"];
 
 	constructor() {
 		this.preloadSounds();
@@ -73,7 +67,8 @@ class SoundManager {
 	}
 
 	playPreviousTrack() {
-		this.currentTrackIndex = (this.currentTrackIndex - 1 + this.backgroundTracks.length) % this.backgroundTracks.length;
+		this.currentTrackIndex =
+			(this.currentTrackIndex - 1 + this.backgroundTracks.length) % this.backgroundTracks.length;
 		const prevTrack = this.backgroundTracks[this.currentTrackIndex];
 		if (prevTrack) {
 			this.loadBackgroundTrack(prevTrack);
@@ -215,7 +210,8 @@ export const playSound = (soundName: string, config?: SoundConfig) => {
  */
 export const playBackgroundMusic = () => soundManager.playBackgroundMusic();
 export const stopBackgroundMusic = () => soundManager.stopBackgroundMusic();
-export const setBackgroundMusicVolume = (volume: number) => soundManager.setBackgroundMusicVolume(volume);
+export const setBackgroundMusicVolume = (volume: number) =>
+	soundManager.setBackgroundMusicVolume(volume);
 export const playNextTrack = () => soundManager.playNextTrack();
 export const playPreviousTrack = () => soundManager.playPreviousTrack();
 export const getCurrentTrack = () => soundManager.getCurrentTrack();

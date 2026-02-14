@@ -12,12 +12,22 @@ import { CollapsibleContent } from "@/layout/CollapsibleHeader";
 import { Loading } from "@/layout/FeedbackComponents";
 import { Lightbox } from "@/layout/Lightbox";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
-import useAppStore from "@/store/appStore";
 import { useCollapsible } from "@/shared/hooks";
 import type { IdType, NameItem } from "@/shared/types";
+import useAppStore from "@/store/appStore";
 import { getRandomCatImage } from "@/utils/basic";
 import { CAT_IMAGES } from "@/utils/constants";
-import { Check, CheckCircle, ChevronDown, ChevronRight, Eye, EyeOff, Heart, X, ZoomIn } from "@/utils/icons";
+import {
+	Check,
+	CheckCircle,
+	ChevronDown,
+	ChevronRight,
+	Eye,
+	EyeOff,
+	Heart,
+	X,
+	ZoomIn,
+} from "@/utils/icons";
 import CatImage from "./CatImage";
 
 const SWIPE_OFFSET_THRESHOLD = 100;
@@ -132,15 +142,13 @@ export function NameSelector() {
 	useEffect(() => {
 		if (names.length > 0) {
 			const lockedInIds = new Set(
-				names
-					.filter(name => name.lockedIn || name.locked_in)
-					.map(name => name.id)
+				names.filter((name) => name.lockedIn || name.locked_in).map((name) => name.id),
 			);
-			
+
 			if (lockedInIds.size > 0) {
-				setSelectedNames(prev => {
+				setSelectedNames((prev) => {
 					const newSelection = new Set(prev);
-					lockedInIds.forEach(id => newSelection.add(id));
+					lockedInIds.forEach((id) => newSelection.add(id));
 					return newSelection;
 				});
 			}
@@ -299,135 +307,142 @@ export function NameSelector() {
 	}, [swipeHistory, syncSelectionToStore, triggerHaptic]);
 
 	// Admin handlers for toggling hidden/locked status
-	const handleToggleHidden = useCallback(async (nameId: IdType, isCurrentlyHidden: boolean) => {
-		if (!isAdmin) {
-			console.warn("Only admins can toggle hidden status");
-			return;
-		}
-		if (!userName?.trim()) {
-			console.warn("User name not available for admin action");
-			alert("Admin actions require a valid user name. Please refresh or log in.");
-			return;
-		}
-
-		setTogglingHidden(prev => new Set(prev).add(nameId));
-
-		try {
-			const action = isCurrentlyHidden ? "unhide" : "hide";
-			if (!confirm(`Are you sure you want to ${action} this name?`)) {
-				setTogglingHidden(prev => {
-					const next = new Set(prev);
-					next.delete(nameId);
-					return next;
-				});
+	const handleToggleHidden = useCallback(
+		async (nameId: IdType, isCurrentlyHidden: boolean) => {
+			if (!isAdmin) {
+				console.warn("Only admins can toggle hidden status");
+				return;
+			}
+			if (!userName?.trim()) {
+				console.warn("User name not available for admin action");
+				alert("Admin actions require a valid user name. Please refresh or log in.");
 				return;
 			}
 
-			// Ensure user context is set
-			const { withSupabase } = await import("@/services/supabase/client");
-			await withSupabase(async (client) => {
-				try {
-					await client.rpc("set_user_context", { user_name_param: userName.trim() });
-				} catch {
-					/* ignore */
-				}
-			}, null);
+			setTogglingHidden((prev) => new Set(prev).add(nameId));
 
 			try {
-				if (isCurrentlyHidden) {
-					await hiddenNamesAPI.unhideName(userName, nameId);
-				} else {
-					await hiddenNamesAPI.hideName(userName, nameId);
+				const action = isCurrentlyHidden ? "unhide" : "hide";
+				if (!confirm(`Are you sure you want to ${action} this name?`)) {
+					setTogglingHidden((prev) => {
+						const next = new Set(prev);
+						next.delete(nameId);
+						return next;
+					});
+					return;
 				}
 
-				// Refresh names after toggling hidden status
-				const fetchedNames = await coreAPI.getTrendingNames(true);
-				setNames(fetchedNames);
-			} catch (apiError) {
-				console.error("Failed to toggle hidden status:", apiError);
-				alert(`Failed to ${action} name. Please try again.`);
-			}
-		} catch (error) {
-			console.error("Unexpected error in toggle hidden:", error);
-			alert("An unexpected error occurred. Please try again.");
-		} finally {
-			setTogglingHidden(prev => {
-				const next = new Set(prev);
-				next.delete(nameId);
-				return next;
-			});
-		}
-	}, [userName, isAdmin]);
+				// Ensure user context is set
+				const { withSupabase } = await import("@/services/supabase/client");
+				await withSupabase(async (client) => {
+					try {
+						await client.rpc("set_user_context", { user_name_param: userName.trim() });
+					} catch {
+						/* ignore */
+					}
+				}, null);
 
-	const handleToggleLocked = useCallback(async (nameId: IdType, isCurrentlyLocked: boolean) => {
-		if (!isAdmin) {
-			console.warn("Only admins can toggle locked status");
-			return;
-		}
-		if (!userName?.trim()) {
-			console.warn("User name not available for admin action");
-			alert("Admin actions require a valid user name. Please refresh or log in.");
-			return;
-		}
+				try {
+					if (isCurrentlyHidden) {
+						await hiddenNamesAPI.unhideName(userName, nameId);
+					} else {
+						await hiddenNamesAPI.hideName(userName, nameId);
+					}
 
-		setTogglingLocked(prev => new Set(prev).add(nameId));
-
-		try {
-			const action = isCurrentlyLocked ? "unlock" : "lock";
-			if (!confirm(`Are you sure you want to ${action} this name?`)) {
-				setTogglingLocked(prev => {
+					// Refresh names after toggling hidden status
+					const fetchedNames = await coreAPI.getTrendingNames(true);
+					setNames(fetchedNames);
+				} catch (apiError) {
+					console.error("Failed to toggle hidden status:", apiError);
+					alert(`Failed to ${action} name. Please try again.`);
+				}
+			} catch (error) {
+				console.error("Unexpected error in toggle hidden:", error);
+				alert("An unexpected error occurred. Please try again.");
+			} finally {
+				setTogglingHidden((prev) => {
 					const next = new Set(prev);
 					next.delete(nameId);
 					return next;
 				});
+			}
+		},
+		[userName, isAdmin],
+	);
+
+	const handleToggleLocked = useCallback(
+		async (nameId: IdType, isCurrentlyLocked: boolean) => {
+			if (!isAdmin) {
+				console.warn("Only admins can toggle locked status");
+				return;
+			}
+			if (!userName?.trim()) {
+				console.warn("User name not available for admin action");
+				alert("Admin actions require a valid user name. Please refresh or log in.");
 				return;
 			}
 
-			// Ensure user context is set
-			const { withSupabase } = await import("@/services/supabase/client");
-			const result = await withSupabase(async (client) => {
-				try {
-					// Ensure user context is set
-					await client.rpc("set_user_context", { user_name_param: userName.trim() });
-				} catch {
-					/* ignore */
+			setTogglingLocked((prev) => new Set(prev).add(nameId));
+
+			try {
+				const action = isCurrentlyLocked ? "unlock" : "lock";
+				if (!confirm(`Are you sure you want to ${action} this name?`)) {
+					setTogglingLocked((prev) => {
+						const next = new Set(prev);
+						next.delete(nameId);
+						return next;
+					});
+					return;
 				}
 
-				// Toggle lock
-				const result = await client.rpc('toggle_name_locked_in' as any, { 
-					p_name_id: String(nameId), 
-					p_locked_in: !isCurrentlyLocked,
-					p_user_name: userName.trim()
+				// Ensure user context is set
+				const { withSupabase } = await import("@/services/supabase/client");
+				const result = await withSupabase(async (client) => {
+					try {
+						// Ensure user context is set
+						await client.rpc("set_user_context", { user_name_param: userName.trim() });
+					} catch {
+						/* ignore */
+					}
+
+					// Toggle lock
+					const result = await client.rpc("toggle_name_locked_in" as any, {
+						p_name_id: String(nameId),
+						p_locked_in: !isCurrentlyLocked,
+						p_user_name: userName.trim(),
+					});
+
+					if (result.error) {
+						throw new Error(result.error.message || "Failed to toggle locked status");
+					}
+					if (result.data !== true) {
+						throw new Error("Failed to toggle locked status");
+					}
+					return result.data;
+				}, null);
+
+				if (result) {
+					// Refresh names to get updated state
+					const fetchedNames = await coreAPI.getTrendingNames(true);
+					setNames(fetchedNames);
+				}
+			} catch (error) {
+				console.error("Failed to toggle locked status:", error);
+				alert(`Failed to ${isCurrentlyLocked ? "unlock" : "lock"} name. Please try again.`);
+			} finally {
+				setTogglingLocked((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(nameId);
+					return newSet;
 				});
-
-				if (result.error) {
-					throw new Error(result.error.message || "Failed to toggle locked status");
-				}
-				if (result.data !== true) {
-					throw new Error("Failed to toggle locked status");
-				}
-				return result.data;
-			}, null);
-
-			if (result) {
-				// Refresh names to get updated state
-				const fetchedNames = await coreAPI.getTrendingNames(true);
-				setNames(fetchedNames);
 			}
-		} catch (error) {
-			console.error("Failed to toggle locked status:", error);
-			alert(`Failed to ${isCurrentlyLocked ? 'unlock' : 'lock'} name. Please try again.`);
-		} finally {
-			setTogglingLocked(prev => {
-				const newSet = new Set(prev);
-				newSet.delete(nameId);
-				return newSet;
-			});
-		}
-	}, [userName, isAdmin]);
+		},
+		[userName, isAdmin],
+	);
 
-	
-	const visibleCards = names.filter((name) => !swipedIds.has(name.id) && !(name.lockedIn || name.locked_in));
+	const visibleCards = names.filter(
+		(name) => !swipedIds.has(name.id) && !(name.lockedIn || name.locked_in),
+	);
 	const cardsToRender = visibleCards.slice(0, 3);
 
 	const availableNames = useMemo(
@@ -491,16 +506,13 @@ export function NameSelector() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isSwipeMode, visibleCards, handleSwipe, handleUndo, lightboxOpen]);
 
-	const handleOpenLightbox = useCallback(
-		(nameId: IdType) => {
-			const index = names.findIndex((n) => n.id === nameId);
-			if (index !== -1) {
-				setLightboxIndex(index);
-				setLightboxOpen(true);
-			}
-		},
-		[]
-	);
+	const handleOpenLightbox = useCallback((nameId: IdType) => {
+		const index = names.findIndex((n) => n.id === nameId);
+		if (index !== -1) {
+			setLightboxIndex(index);
+			setLightboxOpen(true);
+		}
+	}, []);
 
 	const clearHiddenExpandTimer = useCallback(() => {
 		if (hiddenExpandTimer) {
@@ -794,154 +806,169 @@ export function NameSelector() {
 					<div className="space-y-8">
 						{/* Active Names Container */}
 						{(() => {
-							const activeNames = names.filter(name => !(name.lockedIn || name.locked_in) && !name.isHidden);
-							return activeNames.length > 0 && (
-								<div>
-									<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-										{activeNames.map((nameItem) => {
-											const isSelected = selectedNames.has(nameItem.id);
-											const catImage = catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
-											return (
-												<motion.div
-													key={nameItem.id}
-													onClick={() => handleToggleName(nameItem.id)}
-													onKeyDown={(e) => {
-														if (e.key === "Enter" || e.key === " ") {
-															e.preventDefault();
-															handleToggleName(nameItem.id);
-														}
-													}}
-													role="button"
-													tabIndex={0}
-													whileHover={{ scale: 1.02 }}
-													whileTap={{ scale: 0.98 }}
-													transition={{ type: "spring", stiffness: 400, damping: 25 }}
-													className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
-														isSelected
-															? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
-															: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
-													} ${(nameItem.lockedIn || nameItem.locked_in) ? 'opacity-75' : ''}`}
-												>
-													<div className="aspect-[4/3] w-full relative">
-														<CatImage
-															src={catImage}
-															alt={nameItem.name}
-															containerClassName="w-full h-full"
-															imageClassName="w-full h-full object-cover"
-														/>
-														<button
-															type="button"
-															onClick={(e) => {
-																e.stopPropagation();
-																handleOpenLightbox(nameItem.id);
-															}}
-															className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-															aria-label="View full size"
-														>
-															<ZoomIn size={16} />
-														</button>
-													</div>
-													<div className="p-3 flex flex-col gap-1">
-														<div className="flex items-center justify-between gap-2">
-															<span className="font-medium text-white text-sm">{nameItem.name}</span>
-															{isSelected && (
-																<motion.div
-																	initial={{ scale: 0, opacity: 0 }}
-																	animate={{ scale: 1, opacity: 1 }}
-																	className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center gap-1"
-																>
-																	<Check size={10} className="text-purple-500" />
-																	<span className="text-purple-500 font-bold text-xs">Selected</span>
-																</motion.div>
+							const activeNames = names.filter(
+								(name) => !(name.lockedIn || name.locked_in) && !name.isHidden,
+							);
+							return (
+								activeNames.length > 0 && (
+									<div>
+										<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+											{activeNames.map((nameItem) => {
+												const isSelected = selectedNames.has(nameItem.id);
+												const catImage =
+													catImageById.get(nameItem.id) ??
+													getRandomCatImage(nameItem.id, CAT_IMAGES);
+												return (
+													<motion.div
+														key={nameItem.id}
+														onClick={() => handleToggleName(nameItem.id)}
+														onKeyDown={(e) => {
+															if (e.key === "Enter" || e.key === " ") {
+																e.preventDefault();
+																handleToggleName(nameItem.id);
+															}
+														}}
+														role="button"
+														tabIndex={0}
+														whileHover={{ scale: 1.02 }}
+														whileTap={{ scale: 0.98 }}
+														transition={{ type: "spring", stiffness: 400, damping: 25 }}
+														className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
+															isSelected
+																? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
+																: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
+														} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
+													>
+														<div className="aspect-[4/3] w-full relative">
+															<CatImage
+																src={catImage}
+																alt={nameItem.name}
+																containerClassName="w-full h-full"
+																imageClassName="w-full h-full object-cover"
+															/>
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	handleOpenLightbox(nameItem.id);
+																}}
+																className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+																aria-label="View full size"
+															>
+																<ZoomIn size={16} />
+															</button>
+														</div>
+														<div className="p-3 flex flex-col gap-1">
+															<div className="flex items-center justify-between gap-2">
+																<span className="font-medium text-white text-sm">
+																	{nameItem.name}
+																</span>
+																{isSelected && (
+																	<motion.div
+																		initial={{ scale: 0, opacity: 0 }}
+																		animate={{ scale: 1, opacity: 1 }}
+																		className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center gap-1"
+																	>
+																		<Check size={10} className="text-purple-500" />
+																		<span className="text-purple-500 font-bold text-xs">
+																			Selected
+																		</span>
+																	</motion.div>
+																)}
+															</div>
+															{nameItem.description && (
+																<p className="text-white/60 text-xs leading-relaxed">
+																	{nameItem.description}
+																</p>
 															)}
 														</div>
-														{nameItem.description && (
-															<p className="text-white/60 text-xs leading-relaxed">{nameItem.description}</p>
-														)}
-													</div>
-													{isAdmin && !isSwipeMode && (
-														<motion.div 
-															initial={{ opacity: 0, y: 10 }}
-															animate={{ opacity: 1, y: 0 }}
-															transition={{ delay: 0.1 }}
-															className="px-3 pb-3 flex gap-2"
-														>
-															{/* Hide/Unhide Button */}
-															<motion.button
-																type="button"
-																onClick={(e) => {
-																	e.stopPropagation();
-																	handleToggleHidden(nameItem.id, nameItem.isHidden || false);
-																}}
-																disabled={togglingHidden.has(nameItem.id)}
-																whileHover={{ scale: 1.05 }}
-																whileTap={{ scale: 0.95 }}
-																transition={{ type: "spring", stiffness: 400, damping: 25 }}
-																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-																	nameItem.isHidden
-																		? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
-																		: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
-																} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
+														{isAdmin && !isSwipeMode && (
+															<motion.div
+																initial={{ opacity: 0, y: 10 }}
+																animate={{ opacity: 1, y: 0 }}
+																transition={{ delay: 0.1 }}
+																className="px-3 pb-3 flex gap-2"
 															>
-																{togglingHidden.has(nameItem.id) ? (
-																	<div className="flex items-center justify-center gap-1">
-																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-																		<span>Processing...</span>
-																	</div>
-																) : nameItem.isHidden ? (
-																	<>
-																		<Eye size={12} className="mr-1" />
-																		Unhide
-																	</>
-																) : (
-																	<>
-																		<EyeOff size={12} className="mr-1" />
-																		Hide
-																	</>
-																)}
-															</motion.button>
+																{/* Hide/Unhide Button */}
+																<motion.button
+																	type="button"
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		handleToggleHidden(nameItem.id, nameItem.isHidden || false);
+																	}}
+																	disabled={togglingHidden.has(nameItem.id)}
+																	whileHover={{ scale: 1.05 }}
+																	whileTap={{ scale: 0.95 }}
+																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
+																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+																		nameItem.isHidden
+																			? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
+																			: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
+																	} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
+																>
+																	{togglingHidden.has(nameItem.id) ? (
+																		<div className="flex items-center justify-center gap-1">
+																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																			<span>Processing...</span>
+																		</div>
+																	) : nameItem.isHidden ? (
+																		<>
+																			<Eye size={12} className="mr-1" />
+																			Unhide
+																		</>
+																	) : (
+																		<>
+																			<EyeOff size={12} className="mr-1" />
+																			Hide
+																		</>
+																	)}
+																</motion.button>
 
-															{/* Lock/Unlock Button */}
-															<motion.button
-																type="button"
-																onClick={(e) => {
-																	e.stopPropagation();
-																	handleToggleLocked(nameItem.id, nameItem.lockedIn || nameItem.locked_in || false);
-																}}
-																disabled={togglingLocked.has(nameItem.id)}
-																whileHover={{ scale: 1.05 }}
-																whileTap={{ scale: 0.95 }}
-																transition={{ type: "spring", stiffness: 400, damping: 25 }}
-																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-																	nameItem.lockedIn || nameItem.locked_in
-																		? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
-																		: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
-																} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
-															>
-																{togglingLocked.has(nameItem.id) ? (
-																	<div className="flex items-center justify-center gap-1">
-																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-																		<span>Processing...</span>
-																	</div>
-																) : (nameItem.lockedIn || nameItem.locked_in) ? (
-																	<>
-																		<CheckCircle size={12} className="mr-1" />
-																		Unlock
-																	</>
-																) : (
-																	<>
-																		<CheckCircle size={12} className="mr-1" />
-																		Lock
-																	</>
-																)}
-															</motion.button>
-														</motion.div>
-													)}
-												</motion.div>
-											);
-										})}
+																{/* Lock/Unlock Button */}
+																<motion.button
+																	type="button"
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		handleToggleLocked(
+																			nameItem.id,
+																			nameItem.lockedIn || nameItem.locked_in || false,
+																		);
+																	}}
+																	disabled={togglingLocked.has(nameItem.id)}
+																	whileHover={{ scale: 1.05 }}
+																	whileTap={{ scale: 0.95 }}
+																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
+																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+																		nameItem.lockedIn || nameItem.locked_in
+																			? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
+																			: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
+																	} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
+																>
+																	{togglingLocked.has(nameItem.id) ? (
+																		<div className="flex items-center justify-center gap-1">
+																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																			<span>Processing...</span>
+																		</div>
+																	) : nameItem.lockedIn || nameItem.locked_in ? (
+																		<>
+																			<CheckCircle size={12} className="mr-1" />
+																			Unlock
+																		</>
+																	) : (
+																		<>
+																			<CheckCircle size={12} className="mr-1" />
+																			Lock
+																		</>
+																	)}
+																</motion.button>
+															</motion.div>
+														)}
+													</motion.div>
+												);
+											})}
+										</div>
 									</div>
-								</div>
+								)
 							);
 						})()}
 
@@ -992,19 +1019,23 @@ export function NameSelector() {
 											type="button"
 											onClick={() => {
 												if (!hiddenPanel.isCollapsed) {
-												hiddenPanel.collapse();
-												return;
-											}
-											hiddenPanel.expand();
-											setHiddenRenderCount(24);
-										}}
+													hiddenPanel.collapse();
+													return;
+												}
+												hiddenPanel.expand();
+												setHiddenRenderCount(24);
+											}}
 											aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
 											aria-controls="hidden-names-panel"
 											className="w-full flex items-center justify-between gap-3"
 										>
 											<div className="flex items-center gap-2">
 												<span className="text-white/60">
-													{hiddenPanel.isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
+													{hiddenPanel.isCollapsed ? (
+														<ChevronRight size={20} />
+													) : (
+														<ChevronDown size={20} />
+													)}
 												</span>
 												<span className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
 													Hidden Names ({hiddenNamesAll.length})
@@ -1071,7 +1102,9 @@ export function NameSelector() {
 											<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
 												{renderItems.map((nameItem) => {
 													const isSelected = selectedNames.has(nameItem.id);
-													const catImage = catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
+													const catImage =
+														catImageById.get(nameItem.id) ??
+														getRandomCatImage(nameItem.id, CAT_IMAGES);
 													return (
 														<div
 															key={nameItem.id}
@@ -1111,7 +1144,9 @@ export function NameSelector() {
 															</div>
 															<div className="p-3 flex flex-col gap-1">
 																<div className="flex items-center justify-between gap-2">
-																	<span className="font-medium text-white text-sm">{nameItem.name}</span>
+																	<span className="font-medium text-white text-sm">
+																		{nameItem.name}
+																	</span>
 																	{isSelected && (
 																		<motion.div
 																			initial={{ scale: 0, opacity: 0 }}
@@ -1119,12 +1154,16 @@ export function NameSelector() {
 																			className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center gap-1"
 																		>
 																			<Check size={10} className="text-purple-500" />
-																			<span className="text-purple-500 font-bold text-xs">Selected</span>
+																			<span className="text-purple-500 font-bold text-xs">
+																				Selected
+																			</span>
 																		</motion.div>
 																	)}
 																</div>
 																{nameItem.description && (
-																	<p className="text-white/60 text-xs leading-relaxed">{nameItem.description}</p>
+																	<p className="text-white/60 text-xs leading-relaxed">
+																		{nameItem.description}
+																	</p>
 																)}
 															</div>
 															{isAdmin && (
@@ -1137,7 +1176,9 @@ export function NameSelector() {
 																		}}
 																		disabled={togglingHidden.has(nameItem.id)}
 																		className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-green-600 hover:bg-green-700 text-white ${
-																			togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""
+																			togglingHidden.has(nameItem.id)
+																				? "opacity-50 cursor-not-allowed"
+																				: ""
 																		}`}
 																	>
 																		{togglingHidden.has(nameItem.id) ? (
