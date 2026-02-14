@@ -1,4 +1,5 @@
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/FeedbackComponents";
 import useAppStore from "@/store/appStore";
@@ -12,6 +13,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const { user } = useAppStore();
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
+	const prefersReducedMotion = useReducedMotion();
 
 	const tournament = useTournamentState(visibleNames, user.name);
 	const {
@@ -26,6 +28,33 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		progress,
 		etaMinutes = 0,
 	} = tournament;
+	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(null);
+	const [voteAnnouncement, setVoteAnnouncement] = useState<string | null>(null);
+	const [roundAnnouncement, setRoundAnnouncement] = useState<number | null>(null);
+	const previousRoundRef = useRef(roundNumber);
+	const voteAnnouncementTimeoutRef = useRef<number | null>(null);
+	const roundAnnouncementTimeoutRef = useRef<number | null>(null);
+
+	const clearVoteAnnouncementTimeout = useCallback(() => {
+		if (voteAnnouncementTimeoutRef.current !== null) {
+			window.clearTimeout(voteAnnouncementTimeoutRef.current);
+			voteAnnouncementTimeoutRef.current = null;
+		}
+	}, []);
+
+	const clearRoundAnnouncementTimeout = useCallback(() => {
+		if (roundAnnouncementTimeoutRef.current !== null) {
+			window.clearTimeout(roundAnnouncementTimeoutRef.current);
+			roundAnnouncementTimeoutRef.current = null;
+		}
+	}, []);
+
+	useEffect(() => {
+		return () => {
+			clearVoteAnnouncementTimeout();
+			clearRoundAnnouncementTimeout();
+		};
+	}, [clearVoteAnnouncementTimeout, clearRoundAnnouncementTimeout]);
 
 	// Adapter to convert VoteData to winnerId/loserId for the hook
 	const handleVoteAdapter = useCallback(
@@ -78,10 +107,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			// Play celebration sounds!
 			audioManager.playLevelUpSound();
 			setTimeout(() => audioManager.playWowSound(), 500);
-			
+
 			const results: Record<string, { rating: number; wins: number; losses: number }> = {};
 			const nameItems: NameItem[] = [];
-			
+
 			for (const [id, rating] of Object.entries(ratings)) {
 				const name = idToName.get(id) ?? id;
 				results[name] = { rating, wins: 0, losses: 0 };
@@ -90,18 +119,21 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					name,
 					rating,
 					wins: 0,
-					losses: 0
+					losses: 0,
 				} as NameItem);
 			}
-			
+
 			// Auto-export results to CSV
-			exportTournamentResultsToCSV(nameItems, `tournament_results_${new Date().toISOString().slice(0, 10)}.csv`);
-			
+			exportTournamentResultsToCSV(
+				nameItems,
+				`tournament_results_${new Date().toISOString().slice(0, 10)}.csv`,
+			);
+
 			onComplete(results);
 		}
 	}, [isComplete, ratings, onComplete, idToName, audioManager]);
 
-	const { handleVoteWithAnimation } = useTournamentVote({
+	const { handleVoteWithAnimation, isVoting } = useTournamentVote({
 		tournamentState: tournament,
 		audioManager,
 		onVote: handleVoteAdapter,
@@ -109,6 +141,102 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
 	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
+	const matchData = useMemo(() => {
+		if (!currentMatch) {
+			return null;
+		}
+
+		return {
+			leftId: String(typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left),
+			rightId: String(
+				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+			),
+			leftName: String(
+				typeof currentMatch.left === "object" ? currentMatch.left.name : currentMatch.left,
+			),
+			rightName: String(
+				typeof currentMatch.right === "object" ? currentMatch.right.name : currentMatch.right,
+			),
+			leftDescription:
+				typeof currentMatch.left === "object" ? currentMatch.left.description : undefined,
+			rightDescription:
+				typeof currentMatch.right === "object" ? currentMatch.right.description : undefined,
+		};
+	}, [currentMatch]);
+	const selectedName =
+		selectedSide === "left"
+			? (matchData?.leftName ?? null)
+			: selectedSide === "right"
+				? (matchData?.rightName ?? null)
+				: null;
+
+	useEffect(() => {
+		setSelectedSide(null);
+	}, [currentMatchNumber]);
+
+	useEffect(() => {
+		if (isComplete) {
+			previousRoundRef.current = roundNumber;
+			return;
+		}
+
+		if (roundNumber > previousRoundRef.current) {
+			setRoundAnnouncement(roundNumber);
+			audioManager.playSurpriseSound();
+			clearRoundAnnouncementTimeout();
+			roundAnnouncementTimeoutRef.current = window.setTimeout(
+				() => setRoundAnnouncement(null),
+				prefersReducedMotion ? 350 : 1200,
+			);
+		}
+		previousRoundRef.current = roundNumber;
+	}, [
+		roundNumber,
+		isComplete,
+		audioManager,
+		clearRoundAnnouncementTimeout,
+		prefersReducedMotion,
+	]);
+
+	const triggerVoteFeedback = useCallback(
+		(winnerName: string, side: "left" | "right") => {
+			setSelectedSide(side);
+			setVoteAnnouncement(winnerName);
+			clearVoteAnnouncementTimeout();
+			voteAnnouncementTimeoutRef.current = window.setTimeout(
+				() => setVoteAnnouncement(null),
+				prefersReducedMotion ? 250 : 900,
+			);
+		},
+		[clearVoteAnnouncementTimeout, prefersReducedMotion],
+	);
+
+	const handleVoteForSide = useCallback(
+		(side: "left" | "right") => {
+			if (isVoting || !matchData) {
+				return;
+			}
+
+			const winnerId = side === "left" ? matchData.leftId : matchData.rightId;
+			const loserId = side === "left" ? matchData.rightId : matchData.leftId;
+			const winnerName = side === "left" ? matchData.leftName : matchData.rightName;
+
+			triggerVoteFeedback(winnerName, side);
+			handleVoteWithAnimation(winnerId, loserId);
+		},
+		[isVoting, matchData, triggerVoteFeedback, handleVoteWithAnimation],
+	);
+
+	const leftImg =
+		showCatPictures && matchData ? getRandomCatImage(matchData.leftId, CAT_IMAGES) : null;
+	const rightImg =
+		showCatPictures && matchData ? getRandomCatImage(matchData.rightId, CAT_IMAGES) : null;
+	const hasSelectionFeedback = selectedSide !== null;
+	const leftSelected = selectedSide === "left";
+	const rightSelected = selectedSide === "right";
+	const currentMatchKey = matchData
+		? `${roundNumber}-${currentMatchNumber}-${matchData.leftId}-${matchData.rightId}`
+		: `${roundNumber}-${currentMatchNumber}`;
 
 	if (isComplete) {
 		return (
@@ -171,7 +299,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		);
 	}
 
-	if (!currentMatch) {
+	if (!matchData) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
 				<div className="text-white/60">Loading tournament...</div>
@@ -179,18 +307,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		);
 	}
 
-	const leftImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-				CAT_IMAGES,
-			)
-		: null;
-	const rightImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
-				CAT_IMAGES,
-			)
-		: null;
+	const { leftName, rightName, leftDescription, rightDescription } = matchData;
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden font-display text-white selection:bg-primary/30">
@@ -344,148 +461,202 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					<div className="absolute bottom-0 right-1/3 w-36 h-36 bg-stardust/15 rounded-full animate-blob animation-delay-2000" />
 				</div>
 
-				<div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-7xl mx-auto z-10 items-center">
-					{/* Left Card */}
-					<Card
-						interactive={true}
-						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float"
-						variant="default"
-						onClick={() =>
-							currentMatch &&
-							handleVoteWithAnimation(
-								String(
-									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-								),
-								String(
-									typeof currentMatch.right === "object"
-										? currentMatch.right.id
-										: currentMatch.right,
-								),
-							)
-						}
-					>
-						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative max-w-sm">
-							{leftImg ? (
-								<CatImage
-									src={leftImg}
-									alt={
-										typeof currentMatch.left === "object"
-											? currentMatch.left?.name
-											: currentMatch.left
-									}
-									containerClassName="w-full h-full"
-									imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-								/>
-							) : (
-								<span className="text-white/20 text-6xl font-bold select-none">
-									{typeof currentMatch.left === "object" && currentMatch.left?.name
-										? currentMatch.left.name[0]?.toUpperCase() || "?"
-										: "?"}
-								</span>
-							)}
-						</div>
-						<div className="text-center pb-4 z-10 w-full px-4">
-							<h3 className="font-whimsical text-2xl text-white tracking-wide break-words w-full mb-2">
-								{typeof currentMatch.left === "object"
-									? currentMatch.left?.name
-									: currentMatch.left}
-							</h3>
-							{typeof currentMatch.left === "object" && currentMatch.left?.description && (
-								<p className="text-sm text-white/60 italic line-clamp-2">
-									{currentMatch.left.description}
-								</p>
-							)}
-						</div>
-					</Card>
+				<div className="sr-only" aria-live="polite">
+					{roundAnnouncement !== null && `Round ${roundAnnouncement} begins.`}
+					{voteAnnouncement && `${voteAnnouncement} advances.`}
+				</div>
 
-					{/* VS Indicator */}
-					<div className="flex flex-col items-center justify-center">
-						<div className="size-20 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg mb-4">
-							<span className="font-bold text-2xl italic tracking-tighter">VS</span>
-						</div>
-						<div className="text-center space-y-3">
-							<div className="text-xs text-white/60 uppercase tracking-wider">Choose Your Fighter</div>
-							<div className="flex flex-col gap-2">
-								<button
-									type="button"
-									onClick={() => handleUndo()}
-									className="glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
-								>
-									<span className="material-symbols-outlined text-sm text-primary">undo</span>
-									<span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">
-										Undo
+				<AnimatePresence>
+					{voteAnnouncement && (
+						<motion.div
+							key={`${voteAnnouncement}-${currentMatchKey}`}
+							initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.95 }}
+							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
+							transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
+							className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-30"
+						>
+							<div className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-4 py-2 backdrop-blur-md shadow-[0_0_40px_rgba(16,185,129,0.35)]">
+								<div className="flex items-center gap-2 text-emerald-100">
+									<span className="material-symbols-outlined text-base text-emerald-300">
+										emoji_events
 									</span>
-								</button>
-								{handleQuit && (
-									<button
-										type="button"
-										onClick={handleQuit}
-										className="glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors"
-									>
-										<span className="material-symbols-outlined text-sm text-red-400">exit_to_app</span>
-										<span className="text-[10px] font-bold text-red-400 tracking-widest uppercase">
-											Quit Tournament
-										</span>
-									</button>
+									<span className="text-sm font-bold tracking-wide">{voteAnnouncement} advances</span>
+								</div>
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<AnimatePresence>
+					{roundAnnouncement !== null && (
+						<motion.div
+							key={`round-announcement-${roundAnnouncement}`}
+							initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
+							transition={{ duration: prefersReducedMotion ? 0.01 : 0.35 }}
+							className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
+						>
+							<motion.div
+								initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }}
+								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+								exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
+								transition={{ duration: prefersReducedMotion ? 0.01 : 0.3 }}
+								className="relative overflow-hidden rounded-2xl border border-purple-300/40 bg-slate-900/80 px-8 py-6 text-center shadow-[0_0_80px_rgba(168,85,247,0.35)] backdrop-blur-xl"
+							>
+								<div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-fuchsia-500/10 to-blue-500/20" />
+								<div className="relative">
+									<p className="text-xs uppercase tracking-[0.3em] text-purple-200/70 mb-2">
+										Next Stage
+									</p>
+									<p className="text-3xl md:text-4xl font-black text-white tracking-tight">
+										Round {roundAnnouncement}
+									</p>
+									<p className="text-sm text-purple-100/80 mt-1">New head-to-head matchups ready</p>
+								</div>
+							</motion.div>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<AnimatePresence mode="wait" initial={false}>
+					<motion.div
+						key={currentMatchKey}
+						initial={
+							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: "blur(6px)" }
+						}
+						animate={
+							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }
+						}
+						exit={
+							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
+						}
+						transition={{ duration: prefersReducedMotion ? 0.01 : 0.32 }}
+						className="relative grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-7xl mx-auto z-10 items-center"
+					>
+						{/* Left Card */}
+						<Card
+							interactive={true}
+							className={`flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
+								isVoting ? "pointer-events-none" : ""
+							} ${
+								leftSelected
+									? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
+									: hasSelectionFeedback
+										? "opacity-55 scale-[0.98]"
+										: ""
+							}`}
+							variant="default"
+							onClick={() => handleVoteForSide("left")}
+						>
+							<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative max-w-sm">
+								{leftImg ? (
+									<CatImage
+										src={leftImg}
+										alt={leftName}
+										containerClassName="w-full h-full"
+										imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+									/>
+								) : (
+									<span className="text-white/20 text-6xl font-bold select-none">
+										{leftName[0]?.toUpperCase() || "?"}
+									</span>
 								)}
 							</div>
-						</div>
-					</div>
+							<div className="text-center pb-4 z-10 w-full px-4">
+								<h3 className="font-whimsical text-2xl text-white tracking-wide break-words w-full mb-2">
+									{leftName}
+								</h3>
+								{leftDescription && (
+									<p className="text-sm text-white/60 italic line-clamp-2">{leftDescription}</p>
+								)}
+							</div>
+						</Card>
 
-					{/* Right Card */}
-					<Card
-						interactive={true}
-						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float"
-						style={{ animationDelay: '2s' }}
-						variant="default"
-						onClick={() =>
-							currentMatch &&
-							handleVoteWithAnimation(
-								String(
-									typeof currentMatch.right === "object"
-										? currentMatch.right.id
-										: currentMatch.right,
-								),
-								String(
-									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-								),
-							)
-						}
-					>
-						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative max-w-sm">
-							{rightImg ? (
-								<CatImage
-									src={rightImg}
-									alt={
-										typeof currentMatch.right === "object"
-											? currentMatch.right?.name
-											: currentMatch.right
-									}
-									containerClassName="w-full h-full"
-									imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-								/>
-							) : (
-								<span className="text-white/20 text-6xl font-bold select-none">
-									{typeof currentMatch.right === "object" && currentMatch.right?.name
-										? currentMatch.right.name[0]?.toUpperCase() || "?"
-										: "?"}
-								</span>
-							)}
+						{/* VS Indicator */}
+						<div className="flex flex-col items-center justify-center">
+							<div className="size-20 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg mb-4">
+								<span className="font-bold text-2xl italic tracking-tighter">VS</span>
+							</div>
+							<div className="text-center space-y-3">
+								<div
+									className={`text-xs uppercase tracking-wider transition-colors ${
+										isVoting && selectedName ? "text-emerald-300" : "text-white/60"
+									}`}
+								>
+									{isVoting && selectedName ? `${selectedName} selected` : "Choose Your Fighter"}
+								</div>
+								<div className="flex flex-col gap-2">
+									<button
+										type="button"
+										onClick={() => handleUndo()}
+										className="glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
+									>
+										<span className="material-symbols-outlined text-sm text-primary">undo</span>
+										<span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">
+											Undo
+										</span>
+									</button>
+									{handleQuit && (
+										<button
+											type="button"
+											onClick={handleQuit}
+											className="glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors"
+										>
+											<span className="material-symbols-outlined text-sm text-red-400">
+												exit_to_app
+											</span>
+											<span className="text-[10px] font-bold text-red-400 tracking-widest uppercase">
+												Quit Tournament
+											</span>
+										</button>
+									)}
+								</div>
+							</div>
 						</div>
-						<div className="text-center pb-4 z-10 w-full px-4">
-							<h3 className="font-whimsical text-2xl text-white tracking-wide break-words w-full mb-2">
-								{typeof currentMatch.right === "object"
-									? currentMatch.right?.name
-									: currentMatch.right}
-							</h3>
-							{typeof currentMatch.right === "object" && currentMatch.right?.description && (
-								<p className="text-sm text-white/60 italic line-clamp-2">
-									{currentMatch.right.description}
-								</p>
-							)}
-						</div>
-					</Card>
-				</div>
+
+						{/* Right Card */}
+						<Card
+							interactive={true}
+							className={`flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
+								isVoting ? "pointer-events-none" : ""
+							} ${
+								rightSelected
+									? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
+									: hasSelectionFeedback
+										? "opacity-55 scale-[0.98]"
+										: ""
+							}`}
+							style={{ animationDelay: "2s" }}
+							variant="default"
+							onClick={() => handleVoteForSide("right")}
+						>
+							<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative max-w-sm">
+								{rightImg ? (
+									<CatImage
+										src={rightImg}
+										alt={rightName}
+										containerClassName="w-full h-full"
+										imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+									/>
+								) : (
+									<span className="text-white/20 text-6xl font-bold select-none">
+										{rightName[0]?.toUpperCase() || "?"}
+									</span>
+								)}
+							</div>
+							<div className="text-center pb-4 z-10 w-full px-4">
+								<h3 className="font-whimsical text-2xl text-white tracking-wide break-words w-full mb-2">
+									{rightName}
+								</h3>
+								{rightDescription && (
+									<p className="text-sm text-white/60 italic line-clamp-2">{rightDescription}</p>
+								)}
+							</div>
+						</Card>
+					</motion.div>
+				</AnimatePresence>
 			</main>
 
 			<div className="absolute top-[-10%] left-[-10%] size-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
