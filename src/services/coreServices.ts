@@ -4,6 +4,32 @@ import type { NameItem } from "@/shared/types";
 import { devLog } from "@/utils/basic";
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Name ID Cache
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const nameToIdCache = new Map<string, string | number>();
+
+export function updateNameCache(name: string, id: string | number) {
+	nameToIdCache.set(name, id);
+}
+
+export function invalidateNameCache(name?: string) {
+	if (name) {
+		nameToIdCache.delete(name);
+	} else {
+		nameToIdCache.clear();
+	}
+}
+
+export function invalidateIdCache(id: string | number) {
+	for (const [key, value] of nameToIdCache.entries()) {
+		if (String(value) === String(id)) {
+			nameToIdCache.delete(key);
+		}
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Offline Sync Queue
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -99,21 +125,43 @@ export const tournamentsAPI = {
 				}
 
 				// Resolve name → ID mapping
-				const nameStrings = ratings.map((r) => r.name);
-				const { data: nameData } = (await client
-					.from("cat_name_options")
-					.select("id, name")
-					.in("name", nameStrings)) as unknown as {
-					data: Array<{ id: string | number; name: string }> | null;
-					error: unknown;
-				};
-
 				const nameToId = new Map<string, string | number>();
-				for (const n of nameData ?? []) {
-					nameToId.set(n.name, n.id);
+				const missingNames = new Set<string>();
+
+				for (const r of ratings) {
+					const cachedId = nameToIdCache.get(r.name);
+					if (cachedId !== undefined) {
+						nameToId.set(r.name, cachedId);
+					} else {
+						missingNames.add(r.name);
+					}
 				}
 
-				// Build upsert records (only for names we found in the DB)
+				if (missingNames.size > 0) {
+					const namesToFetch = Array.from(missingNames);
+					const { data: nameData } = (await client
+						.from("cat_name_options")
+						.select("id, name")
+						.in("name", namesToFetch)) as unknown as {
+						data: Array<{ id: string | number; name: string }> | null;
+						error: unknown;
+					};
+
+					for (const n of nameData ?? []) {
+						nameToIdCache.set(n.name, n.id);
+						nameToId.set(n.name, n.id);
+					}
+
+					devLog(
+						`[TournamentAPI] Resolved ${nameData?.length ?? 0} names from DB, ${
+							ratings.length - missingNames.size
+						} from cache.`,
+					);
+				} else {
+					devLog(`[TournamentAPI] Resolved all ${ratings.length} names from cache.`);
+				}
+
+				// Build upsert records (only for names we found in the DB or Cache)
 				const records = ratings
 					.filter((r) => nameToId.has(r.name))
 					.map((r) => ({

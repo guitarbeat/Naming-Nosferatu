@@ -4,6 +4,7 @@
  * Consolidates: imageService, nameService, siteSettingsService into a single API layer.
  */
 
+import { invalidateIdCache, invalidateNameCache, updateNameCache } from "@/services/coreServices";
 import type { NameItem } from "@/shared/types";
 import { withSupabase } from "./client";
 
@@ -168,6 +169,7 @@ async function deleteById(nameId: string | number) {
 					error: error.message || "Failed to delete name",
 				};
 			}
+			invalidateIdCache(nameId);
 			return { success: true };
 		},
 		{ success: false, error: "Supabase not configured" },
@@ -258,6 +260,7 @@ export const coreAPI = {
 						error: error.message || "Failed to add name",
 					};
 				}
+				updateNameCache(data.name, data.id);
 				return { success: true, data };
 			},
 			{ success: false, error: "Supabase not configured or request failed" },
@@ -277,6 +280,7 @@ export const coreAPI = {
 						error: error.message || "Failed to remove name",
 					};
 				}
+				invalidateNameCache(name);
 				return { success: true };
 			},
 			{ success: false, error: "Supabase not configured" },
