@@ -159,6 +159,7 @@ To maintain long-term maintainability, follow these principles:
 - Lazy load heavy features (e.g., charts, drag-and-drop) using `React.lazy`.
 - Leverage efficient data structures (Maps/Sets) for frequent lookups.
 - Avoid unnecessary effect dependencies to prevent re-render loops.
+- For window resize events, use the `debounce(150ms) + requestAnimationFrame` pattern (see `useBrowserState` in `src/hooks/useHooks.ts`).
 
 ---
 

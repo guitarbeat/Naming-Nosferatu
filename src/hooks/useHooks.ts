@@ -359,7 +359,23 @@ const DEFAULT_BREAKPOINTS: Breakpoints = {
 
 /**
  * All-in-one hook for responsive design, network status, and accessibility prefs.
- * Internally coalesces updates via `requestAnimationFrame`.
+ * Internally coalesces updates via `requestAnimationFrame` and a 150ms debounce.
+ *
+ * **Performance Strategy**
+ *
+ * This hook implements a hybrid `debounce` + `requestAnimationFrame` strategy for handling
+ * window resize events. This prevents excessive re-renders and layout thrashing during
+ * rapid window resizing operations.
+ *
+ * - **Debounce (150ms):** Delays the execution of the update logic until the user pauses resizing.
+ *   This dramatically reduces the number of state updates.
+ * - **requestAnimationFrame:** Ensures that the final state update happens in sync with the
+ *   browser's paint cycle, preventing jank.
+ *
+ * **Configuration**
+ *
+ * While the debounce delay is currently hardcoded to `150ms`, this value was chosen to balance
+ * responsiveness (feeling "live") with performance (avoiding main thread blocking).
  *
  * @example
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
