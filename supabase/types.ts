@@ -612,6 +612,20 @@ export type Database = {
 					username: string;
 				}[];
 			};
+			get_leaderboard_stats: {
+				Args: { p_limit?: number };
+				Returns: {
+					name_id: string;
+					name: string;
+					description: string;
+					category: string;
+					avg_rating: number;
+					total_ratings: number;
+					wins: number;
+					losses: number;
+					created_at: string;
+				}[];
+			};
 			get_current_user_name: { Args: never; Returns: string };
 			get_current_user_role: {
 				Args: never;
