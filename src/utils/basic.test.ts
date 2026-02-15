@@ -25,6 +25,6 @@ describe("getVisibleNames", () => {
 
 		const result = getVisibleNames(names);
 		expect(result.length).toBe(1);
-    expect(result[0]?.name).toBe("Visible");
+		expect(result[0]?.name).toBe("Visible");
 	});
 });

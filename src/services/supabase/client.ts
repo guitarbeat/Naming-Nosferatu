@@ -12,9 +12,12 @@ export const queryClient = new QueryClient({
 
 export const isSupabaseAvailable = async () => true;
 
-export async function withSupabase<T>(operation: () => Promise<T>, fallback: T): Promise<T> {
+export async function withSupabase<T>(
+	operation: (client: any) => Promise<T>,
+	fallback: T,
+): Promise<T> {
 	try {
-		return await operation();
+		return await operation(null);
 	} catch (error) {
 		console.error("API operation failed:", error);
 		return fallback;
