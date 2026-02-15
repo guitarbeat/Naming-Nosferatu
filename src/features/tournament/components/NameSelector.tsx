@@ -336,9 +336,15 @@ export function NameSelector() {
 
 				// Ensure user context is set
 				const { withSupabase } = await import("@/services/supabase/client");
-				await withSupabase(async (client) => {
+				await withSupabase(async () => {
 					try {
-						await client.rpc("set_user_context", { user_name_param: userName.trim() });
+						const client = await (
+							await import("@/services/supabase/client")
+						).resolveSupabaseClient();
+						if (client) {
+							const supabase = client as any;
+							await supabase.rpc("set_user_context", { user_name_param: userName.trim() });
+						}
 					} catch {
 						/* ignore */
 					}
@@ -399,16 +405,24 @@ export function NameSelector() {
 
 				// Ensure user context is set
 				const { withSupabase } = await import("@/services/supabase/client");
-				const result = await withSupabase(async (client) => {
+				const result = await withSupabase(async () => {
+					const client = await (await import("@/services/supabase/client")).resolveSupabaseClient();
+					if (!client) {
+						return null;
+					}
+
+					// Cast client to any to avoid type errors
+					const supabase = client as any;
+
 					try {
 						// Ensure user context is set
-						await client.rpc("set_user_context", { user_name_param: userName.trim() });
+						await supabase.rpc("set_user_context", { user_name_param: userName.trim() });
 					} catch {
 						/* ignore */
 					}
 
 					// Toggle lock
-					const result = await client.rpc("toggle_name_locked_in" as any, {
+					const result = await supabase.rpc("toggle_name_locked_in", {
 						p_name_id: String(nameId),
 						p_locked_in: !isCurrentlyLocked,
 						p_user_name: userName.trim(),

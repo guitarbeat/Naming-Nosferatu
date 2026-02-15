@@ -96,9 +96,9 @@ export interface AnalysisDashboardProps {
 export const analyticsAPI = {
 	getTopSelectedNames: async (limit: number | null = 20) => {
 		try {
-			return await api.get<
-				{ name_id: string; name: string; times_selected: number }[]
-			>(`/analytics/top-selections?limit=${limit || 20}`);
+			return await api.get<{ name_id: string; name: string; times_selected: number }[]>(
+				`/analytics/top-selections?limit=${limit || 20}`,
+			);
 		} catch {
 			return [];
 		}
@@ -111,9 +111,15 @@ export const analyticsAPI = {
 	) => {
 		try {
 			const params = new URLSearchParams();
-			if (limit) params.set("limit", String(limit));
-			if (userFilter) params.set("userFilter", userFilter);
-			if (currentUserName) params.set("currentUserName", currentUserName);
+			if (limit) {
+				params.set("limit", String(limit));
+			}
+			if (userFilter) {
+				params.set("userFilter", userFilter);
+			}
+			if (currentUserName) {
+				params.set("currentUserName", currentUserName);
+			}
 			return await api.get<any[]>(`/analytics/popularity?${params}`);
 		} catch {
 			return [];
@@ -129,7 +135,9 @@ export const analyticsAPI = {
 			const params = new URLSearchParams();
 			params.set("topN", String(topN));
 			params.set("periods", String(options?.periods ?? periods));
-			if (options?.dateFilter) params.set("dateFilter", options.dateFilter);
+			if (options?.dateFilter) {
+				params.set("dateFilter", options.dateFilter);
+			}
 			return await api.get<{ data: any[]; timeLabels: string[] }>(
 				`/analytics/ranking-history?${params}`,
 			);
@@ -142,9 +150,7 @@ export const analyticsAPI = {
 export const leaderboardAPI = {
 	getLeaderboard: async (limit: number | null = 50) => {
 		try {
-			return await api.get<any[]>(
-				`/analytics/leaderboard?limit=${limit || 50}`,
-			);
+			return await api.get<any[]>(`/analytics/leaderboard?limit=${limit || 50}`);
 		} catch {
 			return [];
 		}
@@ -190,9 +196,7 @@ export const statsAPI = {
 
 	getUserStats: async (userName: string) => {
 		try {
-			return await api.get<any>(
-				`/analytics/user-stats?userName=${encodeURIComponent(userName)}`,
-			);
+			return await api.get<any>(`/analytics/user-stats?userName=${encodeURIComponent(userName)}`);
 		} catch {
 			return null;
 		}

@@ -128,9 +128,17 @@ export function AdminDashboard() {
 			const idStr = String(nameId);
 			// Call the admin function to toggle locked_in status
 			const { withSupabase } = await import("@/services/supabase/client");
-			await withSupabase(async (client) => {
-				await client.rpc("set_user_context", { user_name_param: user.name });
-				const result = await client.rpc("toggle_name_locked_in" as any, {
+			await withSupabase(async () => {
+				const client = await (await import("@/services/supabase/client")).resolveSupabaseClient();
+				if (!client) {
+					return;
+				}
+
+				// Cast client to any to avoid type errors since exact Supabase types are tricky here
+				const supabase = client as any;
+
+				await supabase.rpc("set_user_context", { user_name_param: user.name });
+				const result = await supabase.rpc("toggle_name_locked_in", {
 					p_name_id: idStr,
 					p_locked_in: !isLocked,
 				});
