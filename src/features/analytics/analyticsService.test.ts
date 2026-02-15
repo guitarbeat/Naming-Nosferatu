@@ -76,9 +76,9 @@ describe("leaderboardAPI", () => {
 			return callback(mockClient);
 		});
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {
-      /* ignore */
-    });
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {
+			/* ignore */
+		});
 
 		const result = await leaderboardAPI.getLeaderboard(50);
 
