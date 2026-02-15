@@ -4,8 +4,8 @@
  */
 
 import { useCallback, useMemo, useState } from "react";
-import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/shared/types";
+import useAppStore from "@/store/appStore";
 
 /* =========================================================================
    useNameData - Fetch and manage name data
@@ -90,16 +90,19 @@ export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelec
 	const { tournament, tournamentActions } = useAppStore();
 
 	// Get locked-in names and automatically include them
-	const lockedInNames = useMemo(() => names.filter(name => name.lockedIn || name.locked_in), [names]);
-	const lockedInIds = useMemo(() => new Set(lockedInNames.map(n => n.id)), [lockedInNames]);
+	const lockedInNames = useMemo(
+		() => names.filter((name) => name.lockedIn || name.locked_in),
+		[names],
+	);
+	const lockedInIds = useMemo(() => new Set(lockedInNames.map((n) => n.id)), [lockedInNames]);
 
 	// Use store selection for tournament mode, local state for management mode
 	const selectedNames = tournament.selectedNames || [];
 
 	// Ensure all locked-in names are always selected
 	const finalSelectedNames = useMemo(() => {
-		const selectedIds = new Set(selectedNames.map(n => n.id));
-		const missingLockedIn = lockedInNames.filter(name => !selectedIds.has(name.id));
+		const selectedIds = new Set(selectedNames.map((n) => n.id));
+		const missingLockedIn = lockedInNames.filter((name) => !selectedIds.has(name.id));
 		return [...selectedNames, ...missingLockedIn];
 	}, [selectedNames, lockedInNames]);
 
@@ -113,7 +116,7 @@ export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelec
 				if (lockedInIds.has(name.id)) {
 					return;
 				}
-				
+
 				const isCurrentlySelected = selectedIds.has(name.id);
 				const newSelection = isCurrentlySelected
 					? selectedNames.filter((n) => n.id !== name.id)

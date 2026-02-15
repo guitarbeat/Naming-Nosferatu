@@ -3,23 +3,17 @@
  * @description Comprehensive admin dashboard for managing names and viewing analytics
  */
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import useAppStore from "@/store/appStore";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
-import { imagesAPI } from "@/services/supabase/api";
-import type { NameItem } from "@/shared/types";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
-import { 
-	BarChart3, 
-	Eye, 
-	EyeOff, 
-	Lock, 
-	Loader2
-} from "@/utils/icons";
 import { Input } from "@/layout/FormPrimitives";
+import { imagesAPI } from "@/services/supabase/api";
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import type { NameItem } from "@/shared/types";
+import useAppStore from "@/store/appStore";
+import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/utils/icons";
 
 interface AdminStats {
 	totalNames: number;
@@ -39,7 +33,9 @@ interface NameWithStats extends NameItem {
 
 export function AdminDashboard() {
 	const { user } = useAppStore();
-	const [activeTab, setActiveTab] = useState<"overview" | "names" | "users" | "analytics">("overview");
+	const [activeTab, setActiveTab] = useState<"overview" | "names" | "users" | "analytics">(
+		"overview",
+	);
 	const [stats, setStats] = useState<AdminStats | null>(null);
 	const [names, setNames] = useState<NameWithStats[]>([]);
 	const [filteredNames, setFilteredNames] = useState<NameWithStats[]>([]);
@@ -49,6 +45,7 @@ export function AdminDashboard() {
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 
 	// Load admin stats and names
+	// biome-ignore lint/correctness/useExhaustiveDependencies: loadAdminData is stable
 	useEffect(() => {
 		loadAdminData();
 	}, []);
@@ -59,18 +56,19 @@ export function AdminDashboard() {
 
 		// Status filter
 		if (filterStatus === "active") {
-			filtered = filtered.filter(n => !n.isHidden && !(n.lockedIn || n.locked_in));
+			filtered = filtered.filter((n) => !n.isHidden && !(n.lockedIn || n.locked_in));
 		} else if (filterStatus === "hidden") {
-			filtered = filtered.filter(n => n.isHidden);
+			filtered = filtered.filter((n) => n.isHidden);
 		} else if (filterStatus === "locked") {
-			filtered = filtered.filter(n => n.lockedIn || n.locked_in);
+			filtered = filtered.filter((n) => n.lockedIn || n.locked_in);
 		}
 
 		// Search filter
 		if (searchTerm) {
-			filtered = filtered.filter(n => 
-				n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				n.description?.toLowerCase().includes(searchTerm.toLowerCase())
+			filtered = filtered.filter(
+				(n) =>
+					n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					n.description?.toLowerCase().includes(searchTerm.toLowerCase()),
 			);
 		}
 
@@ -82,24 +80,24 @@ export function AdminDashboard() {
 		try {
 			// Load all names with admin visibility
 			const allNames = await coreAPI.getTrendingNames(true);
-			
+
 			// Load stats (we'll simulate some for now)
 			const adminStats: AdminStats = {
 				totalNames: allNames.length,
-				activeNames: allNames.filter(n => !n.isHidden && !(n.lockedIn || n.locked_in)).length,
-				hiddenNames: allNames.filter(n => n.isHidden).length,
-				lockedInNames: allNames.filter(n => n.lockedIn || n.locked_in).length,
+				activeNames: allNames.filter((n) => !n.isHidden && !(n.lockedIn || n.locked_in)).length,
+				hiddenNames: allNames.filter((n) => n.isHidden).length,
+				lockedInNames: allNames.filter((n) => n.lockedIn || n.locked_in).length,
 				totalUsers: 0, // TODO: Implement user count
 				activeTournaments: 0, // TODO: Implement tournament count
 				recentVotes: 0, // TODO: Implement vote tracking
 			};
 
 			// Add some mock stats for demonstration
-			const namesWithStats: NameWithStats[] = allNames.map(name => ({
+			const namesWithStats: NameWithStats[] = allNames.map((name) => ({
 				...name,
 				votes: Math.floor(Math.random() * 100),
 				lastVoted: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-				popularityScore: Math.random() * 100
+				popularityScore: Math.random() * 100,
 			}));
 
 			setStats(adminStats);
@@ -132,11 +130,11 @@ export function AdminDashboard() {
 			const { withSupabase } = await import("@/services/supabase/client");
 			await withSupabase(async (client) => {
 				await client.rpc("set_user_context", { user_name_param: user.name });
-				const result = await client.rpc('toggle_name_locked_in' as any, { 
-					p_name_id: idStr, 
-					p_locked_in: !isLocked 
+				const result = await client.rpc("toggle_name_locked_in" as any, {
+					p_name_id: idStr,
+					p_locked_in: !isLocked,
 				});
-				
+
 				if (result.error) {
 					throw new Error(result.error.message || "Failed to toggle locked status");
 				}
@@ -150,16 +148,22 @@ export function AdminDashboard() {
 	};
 
 	const handleBulkAction = async (action: "hide" | "unhide" | "lock" | "unlock") => {
-		if (selectedNames.size === 0) return;
+		if (selectedNames.size === 0) {
+			return;
+		}
 
 		try {
 			for (const nameId of selectedNames) {
 				if (action === "hide" || action === "unhide") {
-					const name = names.find(n => n.id === nameId);
-					if (name) await handleToggleHidden(nameId, name.isHidden || false);
+					const name = names.find((n) => n.id === nameId);
+					if (name) {
+						await handleToggleHidden(nameId, name.isHidden || false);
+					}
 				} else if (action === "lock" || action === "unlock") {
-					const name = names.find(n => n.id === nameId);
-					if (name) await handleToggleLocked(nameId, name.lockedIn || name.locked_in || false);
+					const name = names.find((n) => n.id === nameId);
+					if (name) {
+						await handleToggleLocked(nameId, name.lockedIn || name.locked_in || false);
+					}
 				}
 			}
 			setSelectedNames(new Set());
@@ -170,7 +174,9 @@ export function AdminDashboard() {
 
 	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
-		if (!file) return;
+		if (!file) {
+			return;
+		}
 
 		try {
 			const result = await imagesAPI.upload(file, user.name);
@@ -276,7 +282,7 @@ export function AdminDashboard() {
 									className="w-full"
 								/>
 							</div>
-							
+
 							<div className="flex gap-2">
 								<select
 									value={filterStatus}
@@ -289,11 +295,7 @@ export function AdminDashboard() {
 									<option value="locked">Locked In</option>
 								</select>
 
-								<Button
-									onClick={loadAdminData}
-									variant="ghost"
-									size="small"
-								>
+								<Button onClick={loadAdminData} variant="ghost" size="small">
 									<Loader2 size={16} />
 								</Button>
 							</div>
@@ -302,9 +304,7 @@ export function AdminDashboard() {
 						{/* Bulk Actions */}
 						{selectedNames.size > 0 && (
 							<div className="mb-4 p-4 bg-purple-900/20 border border-purple-500/30 rounded-lg">
-								<p className="text-sm text-purple-400 mb-2">
-									{selectedNames.size} names selected
-								</p>
+								<p className="text-sm text-purple-400 mb-2">{selectedNames.size} names selected</p>
 								<div className="flex gap-2">
 									<Button onClick={() => handleBulkAction("hide")} size="small">
 										<EyeOff size={14} /> Hide
@@ -318,11 +318,7 @@ export function AdminDashboard() {
 									<Button onClick={() => handleBulkAction("unlock")} size="small">
 										<Lock size={14} /> Unlock
 									</Button>
-									<Button 
-										onClick={() => setSelectedNames(new Set())} 
-										variant="ghost" 
-										size="small"
-									>
+									<Button onClick={() => setSelectedNames(new Set())} variant="ghost" size="small">
 										Clear
 									</Button>
 								</div>
@@ -350,7 +346,7 @@ export function AdminDashboard() {
 												}}
 												className="w-4 h-4"
 											/>
-											
+
 											<div>
 												<h3 className="font-semibold text-white">{name.name}</h3>
 												{name.description && (
@@ -389,11 +385,17 @@ export function AdminDashboard() {
 													{name.isHidden ? <Eye size={14} /> : <EyeOff size={14} />}
 												</Button>
 												<Button
-													onClick={() => handleToggleLocked(name.id, name.lockedIn || name.locked_in || false)}
+													onClick={() =>
+														handleToggleLocked(name.id, name.lockedIn || name.locked_in || false)
+													}
 													variant="ghost"
 													size="small"
 												>
-													{(name.lockedIn || name.locked_in) ? <Lock size={14} /> : <Lock size={14} />}
+													{name.lockedIn || name.locked_in ? (
+														<Lock size={14} />
+													) : (
+														<Lock size={14} />
+													)}
 												</Button>
 											</div>
 										</div>

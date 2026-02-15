@@ -1,7 +1,7 @@
 /**
  * @module authAdapter
  * @description Simple authentication adapter for the naming tournament app.
- * 
+ *
  * This is a basic auth implementation that recognizes "Aaron" as an admin
  * and treats any other username as a regular user. No real authentication
  * - just username-based role detection for demo purposes.
@@ -17,12 +17,16 @@ export const authAdapter: AuthAdapter = {
 	 * Get current user from localStorage or return null
 	 */
 	async getCurrentUser(): Promise<AuthUser | null> {
-		if (typeof window === "undefined") return null;
-		
-		const userName = localStorage.getItem("userName");
-		if (!userName) return null;
+		if (typeof window === "undefined") {
+			return null;
+		}
 
-		const isAdmin = ADMIN_USERNAMES.some(admin => admin.toLowerCase() === userName.toLowerCase());
+		const userName = localStorage.getItem("userName");
+		if (!userName) {
+			return null;
+		}
+
+		const isAdmin = ADMIN_USERNAMES.some((admin) => admin.toLowerCase() === userName.toLowerCase());
 		console.log(`[AuthAdapter] User: ${userName}, IsAdmin: ${isAdmin}`);
 
 		return {

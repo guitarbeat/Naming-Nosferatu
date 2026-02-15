@@ -133,7 +133,12 @@ export function Dashboard({
 				<PersonalResults
 					personalRatings={personalRatings}
 					currentTournamentNames={currentTournamentNames}
-					onStartNew={onStartNew || (() => {})}
+					onStartNew={
+						onStartNew ||
+						(() => {
+							// Default no-op
+						})
+					}
 					onUpdateRatings={onUpdateRatings}
 					userName={userName}
 				/>

@@ -47,6 +47,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 	}, [currentIndex, images, preloadedImages]);
 
 	// Cleanup preloaded images when component unmounts or images change
+	// biome-ignore lint/correctness/useExhaustiveDependencies: images change triggers cleanup
 	useEffect(() => {
 		return () => {
 			setPreloadedImages(new Set());
@@ -60,6 +61,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 	}, []);
 
 	// Handle zoom reset when navigating
+	// biome-ignore lint/correctness/useExhaustiveDependencies: resetZoom is stable
 	useEffect(() => {
 		resetZoom();
 	}, [currentIndex, resetZoom]);
@@ -125,7 +127,9 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 	// Trap focus within lightbox when open with improved accessibility
 	useEffect(() => {
-		if (!lightboxRef.current) return;
+		if (!lightboxRef.current) {
+			return;
+		}
 
 		const focusableElements = lightboxRef.current.querySelectorAll(
 			'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -135,7 +139,9 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		const lastElement = focusableElements[focusableElements.length - 1];
 
 		const handleTabKey = (e: KeyboardEvent) => {
-			if (e.key !== "Tab") return;
+			if (e.key !== "Tab") {
+				return;
+			}
 
 			if (e.shiftKey) {
 				if (document.activeElement === firstElement) {
@@ -177,13 +183,17 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				case "a":
 				case "A":
 					e.preventDefault();
-					if (!isZoomed) handlePrevious();
+					if (!isZoomed) {
+						handlePrevious();
+					}
 					break;
 				case "ArrowRight":
 				case "d":
 				case "D":
 					e.preventDefault();
-					if (!isZoomed) handleNext();
+					if (!isZoomed) {
+						handleNext();
+					}
 					break;
 				case " ":
 				case "Enter":
@@ -227,7 +237,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				case "8":
 				case "9": {
 					e.preventDefault();
-					const targetIndex = parseInt(e.key) - 1;
+					const targetIndex = Number.parseInt(e.key, 10) - 1;
 					if (targetIndex < images.length) {
 						onNavigate(targetIndex);
 					}

@@ -2,13 +2,13 @@ import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNameData, useNameSelection } from "@/hooks/useNames";
-import useAppStore from "@/store/appStore";
 import type {
 	NameItem,
 	TournamentFilters,
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
 } from "@/shared/types";
+import useAppStore from "@/store/appStore";
 import { applyNameFilters, mapFilterStatusToVisibility } from "@/utils/basic";
 import { FILTER_OPTIONS } from "@/utils/constants";
 

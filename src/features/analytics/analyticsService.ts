@@ -351,7 +351,6 @@ export const analyticsAPI = {
 				startDate.setDate(startDate.getDate() - (periodCount - 1));
 
 				const { data: selections, error: selError } = await client
-					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 					.from("cat_tournament_selections" as any)
 					.select("name_id, name, selected_at")
 					.gte("selected_at", startDate.toISOString())
@@ -570,7 +569,6 @@ export const statsAPI = {
 					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
 					client.from("cat_name_ratings").select("rating"),
 					client
-						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 						.from("cat_tournament_selections" as any)
 						.select("id", { count: "exact", head: true }),
 				]);
