@@ -11,7 +11,9 @@ import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
 	const { user } = useAppStore();
-	const visibleNames = getVisibleNames(names);
+	// Optimization: Memoize visible names to prevent unnecessary recalculations
+	// in useTournamentState (namesKey) when TournamentContent re-renders.
+	const visibleNames = useMemo(() => getVisibleNames(names), [names]);
 	const audioManager = useAudioManager();
 	const prefersReducedMotion = useReducedMotion();
 

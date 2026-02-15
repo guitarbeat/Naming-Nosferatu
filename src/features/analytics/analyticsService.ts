@@ -96,9 +96,9 @@ export interface AnalysisDashboardProps {
 export const analyticsAPI = {
 	getTopSelectedNames: async (limit: number | null = 20) => {
 		try {
-			return await api.get<
-				{ name_id: string; name: string; times_selected: number }[]
-			>(`/analytics/top-selections?limit=${limit || 20}`);
+			return await api.get<{ name_id: string; name: string; times_selected: number }[]>(
+				`/analytics/top-selections?limit=${limit || 20}`,
+			);
 		} catch {
 			return [];
 		}
@@ -142,9 +142,7 @@ export const analyticsAPI = {
 export const leaderboardAPI = {
 	getLeaderboard: async (limit: number | null = 50) => {
 		try {
-			return await api.get<any[]>(
-				`/analytics/leaderboard?limit=${limit || 50}`,
-			);
+			return await api.get<any[]>(`/analytics/leaderboard?limit=${limit || 50}`);
 		} catch {
 			return [];
 		}
@@ -190,9 +188,7 @@ export const statsAPI = {
 
 	getUserStats: async (userName: string) => {
 		try {
-			return await api.get<any>(
-				`/analytics/user-stats?userName=${encodeURIComponent(userName)}`,
-			);
+			return await api.get<any>(`/analytics/user-stats?userName=${encodeURIComponent(userName)}`);
 		} catch {
 			return null;
 		}
