@@ -156,7 +156,7 @@ export const analyticsAPI = {
 				return [];
 			}
 
-			return (data || []).map((item: any) => ({
+			return (data || []).map((item) => ({
 				name_id: String(item.name_id),
 				name: item.name,
 				times_selected: item.count,
@@ -184,7 +184,7 @@ export const analyticsAPI = {
 				return [];
 			}
 
-			return (data || []).map((item: any) => ({
+			return (data || []).map((item) => ({
 				name_id: String(item.name_id),
 				name: item.name,
 				description: item.description,
@@ -368,7 +368,7 @@ export const leaderboardAPI = {
 				return [];
 			}
 
-			return (data || []).map((item: any) => ({
+			return (data || []).map((item) => ({
 				name_id: String(item.name_id),
 				name: item.name,
 				description: item.description,

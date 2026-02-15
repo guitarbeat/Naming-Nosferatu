@@ -50,8 +50,10 @@ export function Dashboard({
 		activeNames: number;
 		hiddenNames: number;
 		totalUsers: number;
+		totalRatings: number;
+		totalSelections: number;
 		avgRating: number;
-	} | null>(null);
+	} | null | undefined>(null);
 	const [userStats, setUserStats] = useState<{
 		totalRatings: number;
 		totalSelections: number;
@@ -88,7 +90,18 @@ export function Dashboard({
 					statsAPI.getSiteStats(),
 					userName ? statsAPI.getUserStats(userName) : Promise.resolve(null),
 				]);
-				setSiteStats(site);
+
+				if (site) {
+					setSiteStats({
+						totalNames: site.totalNames || 0,
+						activeNames: site.activeNames || 0,
+						hiddenNames: site.hiddenNames || 0,
+						totalUsers: site.totalUsers || 0,
+						totalRatings: site.totalRatings || 0,
+						totalSelections: site.totalSelections || 0,
+						avgRating: site.avgRating || 0
+					});
+				}
 				setUserStats(user);
 			} catch (error) {
 				console.error("Failed to fetch stats:", error);

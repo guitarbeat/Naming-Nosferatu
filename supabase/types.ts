@@ -749,6 +749,57 @@ export type Database = {
 			};
 			validate_environment_setup: { Args: never; Returns: boolean };
 			validate_username: { Args: { p_username: string }; Returns: Json };
+			get_top_selections: {
+				Args: { limit_count: number };
+				Returns: {
+					name_id: string;
+					name: string;
+					count: number;
+				}[];
+			};
+			get_popularity_scores: {
+				Args: {
+					p_limit: number;
+					p_user_filter: string;
+					p_current_user_name?: string | null;
+				};
+				Returns: {
+					name_id: string;
+					name: string;
+					description: string;
+					category: string;
+					times_selected: number;
+					avg_rating: number;
+					popularity_score: number;
+					created_at: string;
+				}[];
+			};
+			get_site_stats: {
+				Args: never;
+				Returns: {
+					totalNames: number;
+					hiddenNames: number;
+					activeNames: number;
+					totalUsers: number;
+					totalRatings: number;
+					totalSelections: number;
+					avgRating: number;
+				};
+			};
+			get_leaderboard_stats: {
+				Args: { limit_count: number };
+				Returns: {
+					name_id: string;
+					name: string;
+					description: string;
+					category: string;
+					avg_rating: number;
+					total_ratings: number;
+					wins: number;
+					losses: number;
+					created_at: string;
+				}[];
+			};
 		};
 		Enums: {
 			app_role: "admin" | "user";
