@@ -10,6 +10,7 @@ import {
   auditLog,
 } from "../shared/schema";
 import { eq, and, desc, asc, sql, inArray } from "drizzle-orm";
+import { createNameSchema, createUserSchema } from "./validation";
 
 export const router = Router();
 
@@ -35,12 +36,21 @@ router.get("/api/names", async (req, res) => {
 
 router.post("/api/names", async (req, res) => {
   try {
-    const { name, description, status, provenance } = req.body;
+    const validation = createNameSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({
+        success: false,
+        error: validation.error.errors[0].message,
+      });
+    }
+
+    const { name, description, status, provenance } = validation.data;
     const [inserted] = await db
       .insert(catNameOptions)
       .values({
-        name: name.trim(),
-        description: (description || "").trim(),
+        name,
+        description: description || "",
         status: status || "candidate",
         provenance: provenance || null,
       })
@@ -142,7 +152,16 @@ router.post("/api/names/:id/toggle-locked-in", async (req, res) => {
 
 router.post("/api/users/create", async (req, res) => {
   try {
-    const { userName, preferences } = req.body;
+    const validation = createUserSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      return res.status(400).json({
+        success: false,
+        error: validation.error.errors[0].message,
+      });
+    }
+
+    const { userName, preferences } = validation.data;
     await db
       .insert(catAppUsers)
       .values({
