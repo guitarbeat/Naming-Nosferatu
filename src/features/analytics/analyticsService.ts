@@ -121,25 +121,6 @@ export interface AnalysisDashboardProps {
    INTERNAL SERVICE TYPES
    ========================================================================== */
 
-interface SelectionStats {
-	name_id: string | number;
-	name: string;
-	count: number;
-}
-
-interface AnalyticsSelectionStats {
-	count: number;
-	users: Set<string>;
-}
-
-interface RatingStats {
-	totalRating: number;
-	count: number;
-	wins: number;
-	losses: number;
-	users: Set<string>;
-}
-
 interface RatingInfo {
 	rating: number;
 	wins: number;
@@ -160,52 +141,22 @@ interface RatingRow {
 	user_name: string;
 }
 
-interface NameRow {
-	id: string | number;
-	name: string;
-	description: string;
-	avg_rating: number;
-	categories: string[];
-	created_at: string;
-}
-
 export const analyticsAPI = {
 	/**
 	 * Get top selected names based on selection history
 	 */
 	getTopSelectedNames: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
-			const { data, error } = await client
-				.from("cat_tournament_selections" as any)
-				.select("name_id, name");
+			const { data, error } = await client.rpc("get_top_selections", {
+				limit_count: limit || 20,
+			});
+
 			if (error) {
+				console.error("Error fetching top selections:", error);
 				return [];
 			}
 
-			const typedData = data as unknown as SelectionRow[];
-
-			const selectionCounts = new Map<string | number, SelectionStats>();
-			(typedData || []).forEach((row) => {
-				const r = row as SelectionRow;
-				if (!selectionCounts.has(r.name_id)) {
-					selectionCounts.set(r.name_id, {
-						name_id: r.name_id,
-						name: r.name,
-						count: 0,
-					});
-				}
-				const sc = selectionCounts.get(r.name_id);
-				if (sc) {
-					sc.count += 1;
-				}
-			});
-
-			let results = Array.from(selectionCounts.values()).sort((a, b) => b.count - a.count);
-			if (limit) {
-				results = results.slice(0, limit);
-			}
-
-			return results.map((item) => ({
+			return (data || []).map((item: any) => ({
 				name_id: String(item.name_id),
 				name: item.name,
 				times_selected: item.count,
@@ -222,104 +173,27 @@ export const analyticsAPI = {
 		currentUserName: string | null = null,
 	) => {
 		return withSupabase(async (client) => {
-			let selectionsQuery = client
-				.from("cat_tournament_selections" as any)
-				.select("name_id, name, user_name");
-			let ratingsQuery = client
-				.from("cat_name_ratings")
-				.select("name_id, rating, wins, losses, user_name");
+			const { data, error } = await client.rpc("get_popularity_scores", {
+				p_limit: limit || 20,
+				p_user_filter: userFilter || "all",
+				p_current_user_name: currentUserName,
+			});
 
-			if (userFilter && userFilter !== "all") {
-				const targetUser = userFilter === "current" ? currentUserName : userFilter;
-				if (targetUser) {
-					selectionsQuery = selectionsQuery.eq("user_name", targetUser);
-					ratingsQuery = ratingsQuery.eq("user_name", targetUser);
-				}
+			if (error) {
+				console.error("Error fetching popularity scores:", error);
+				return [];
 			}
 
-			const [selectionsResult, ratingsResult, namesResult] = await Promise.all([
-				selectionsQuery,
-				ratingsQuery,
-				client
-					.from("cat_name_options")
-					.select("id, name, description, avg_rating, categories, created_at")
-					.eq("is_active", true)
-					.eq("is_hidden", false),
-			]);
-
-			const selections = (selectionsResult.data as unknown as SelectionRow[]) || [];
-			const ratings = ratingsResult.data || [];
-			const names = namesResult.data || [];
-
-			const selectionStats = new Map<string | number, AnalyticsSelectionStats>();
-			selections.forEach((item) => {
-				const s = item as SelectionRow;
-				if (!selectionStats.has(s.name_id)) {
-					selectionStats.set(s.name_id, { count: 0, users: new Set() });
-				}
-				const stat = selectionStats.get(s.name_id);
-				if (stat) {
-					stat.count += 1;
-					stat.users.add(s.user_name);
-				}
-			});
-
-			const ratingStats = new Map<string | number, RatingStats>();
-			ratings.forEach((item) => {
-				const r = item as RatingRow;
-				if (!ratingStats.has(r.name_id)) {
-					ratingStats.set(r.name_id, {
-						totalRating: 0,
-						count: 0,
-						wins: 0,
-						losses: 0,
-						users: new Set(),
-					});
-				}
-				const stat = ratingStats.get(r.name_id);
-				if (stat) {
-					stat.totalRating += Number(r.rating) || 1500;
-					stat.count += 1;
-					stat.wins += r.wins || 0;
-					stat.losses += r.losses || 0;
-					stat.users.add(r.user_name);
-				}
-			});
-
-			const analytics = names.map((item) => {
-				const name = item as NameRow;
-				const selStat = selectionStats.get(name.id) || {
-					count: 0,
-					users: new Set(),
-				};
-				const ratStat = ratingStats.get(name.id) || {
-					totalRating: 0,
-					count: 0,
-					wins: 0,
-					losses: 0,
-					users: new Set(),
-				};
-
-				const avgRating =
-					ratStat.count > 0 ? Math.round(ratStat.totalRating / ratStat.count) : 1500;
-				const popularityScore = Math.round(
-					selStat.count * 2 + ratStat.wins * 1.5 + (avgRating - 1500) * 0.5,
-				);
-
-				return {
-					name_id: name.id,
-					name: name.name,
-					description: name.description,
-					category: name.categories?.[0] || null,
-					times_selected: selStat.count,
-					avg_rating: avgRating,
-					popularity_score: popularityScore,
-					created_at: name.created_at || null,
-				};
-			});
-
-			const sorted = analytics.sort((a, b) => b.popularity_score - a.popularity_score);
-			return limit ? sorted.slice(0, limit) : sorted;
+			return (data || []).map((item: any) => ({
+				name_id: String(item.name_id),
+				name: item.name,
+				description: item.description,
+				category: item.category,
+				times_selected: item.times_selected,
+				avg_rating: item.avg_rating,
+				popularity_score: item.popularity_score,
+				created_at: item.created_at,
+			}));
 		}, []);
 	},
 
@@ -485,67 +359,26 @@ export const leaderboardAPI = {
 	 */
 	getLeaderboard: async (limit: number | null = 50) => {
 		return withSupabase(async (client) => {
-			const { data: ratings } = await client
-				.from("cat_name_ratings")
-				.select("name_id, rating, wins, losses");
-
-			const nameStatsMap = new Map<
-				string | number,
-				{
-					totalRating: number;
-					count: number;
-					totalWins: number;
-					totalLosses: number;
-				}
-			>();
-			(ratings || []).forEach((r) => {
-				if (!nameStatsMap.has(r.name_id)) {
-					nameStatsMap.set(r.name_id, {
-						totalRating: 0,
-						count: 0,
-						totalWins: 0,
-						totalLosses: 0,
-					});
-				}
-				const stats = nameStatsMap.get(r.name_id);
-				if (stats) {
-					stats.totalRating += Number(r.rating) || 1500;
-					stats.count += 1;
-					stats.totalWins += r.wins || 0;
-					stats.totalLosses += r.losses || 0;
-				}
+			const { data, error } = await client.rpc("get_leaderboard_stats", {
+				limit_count: limit || 50,
 			});
 
-			const { data: names } = await client
-				.from("cat_name_options")
-				.select("id, name, description, avg_rating, categories, created_at")
-				.eq("is_active", true)
-				.eq("is_hidden", false)
-				.order("avg_rating", { ascending: false })
-				.limit(limit ? limit * 2 : 100);
+			if (error) {
+				console.error("Error fetching leaderboard:", error);
+				return [];
+			}
 
-			const leaderboard = (names || [])
-				.map((row) => {
-					const stats = nameStatsMap.get(row.id);
-					const avgRating = stats
-						? Math.round(stats.totalRating / stats.count)
-						: row.avg_rating || 1500;
-					return {
-						name_id: row.id,
-						name: row.name,
-						description: row.description,
-						category: row.categories?.[0] || null,
-						avg_rating: avgRating,
-						total_ratings: stats?.count || 0,
-						wins: stats?.totalWins || 0,
-						losses: stats?.totalLosses || 0,
-						created_at: row.created_at || null,
-					};
-				})
-				.filter((row) => row.total_ratings > 0 || row.avg_rating > 1500)
-				.sort((a, b) => b.avg_rating - a.avg_rating);
-
-			return limit ? leaderboard.slice(0, limit) : leaderboard;
+			return (data || []).map((item: any) => ({
+				name_id: String(item.name_id),
+				name: item.name,
+				description: item.description,
+				category: item.category,
+				avg_rating: item.avg_rating,
+				total_ratings: item.total_ratings,
+				wins: item.wins,
+				losses: item.losses,
+				created_at: item.created_at,
+			}));
 		}, []);
 	},
 };
@@ -556,39 +389,14 @@ export const statsAPI = {
 	 */
 	getSiteStats: async () => {
 		return withSupabase(async (client) => {
-			const [namesResult, hiddenResult, usersResult, ratingsResult, selectionsResult] =
-				await Promise.all([
-					client
-						.from("cat_name_options")
-						.select("id", { count: "exact", head: true })
-						.eq("is_active", true),
-					client
-						.from("cat_name_options")
-						.select("id", { count: "exact", head: true })
-						.eq("is_hidden", true),
-					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
-					client.from("cat_name_ratings").select("rating"),
-					client
-						.from("cat_tournament_selections" as any)
-						.select("id", { count: "exact", head: true }),
-				]);
+			const { data, error } = await client.rpc("get_site_stats");
 
-			const totalNames = namesResult.count || 0;
-			const ratings = ratingsResult.data || [];
-			const avgRating =
-				ratings.length > 0
-					? Math.round(ratings.reduce((s, r) => s + Number(r.rating), 0) / ratings.length)
-					: 1500;
+			if (error) {
+				console.error("Error fetching site stats:", error);
+				return null;
+			}
 
-			return {
-				totalNames,
-				hiddenNames: hiddenResult.count || 0,
-				activeNames: totalNames - (hiddenResult.count || 0),
-				totalUsers: usersResult.count || 0,
-				totalRatings: ratings.length,
-				totalSelections: selectionsResult.count || 0,
-				avgRating,
-			};
+			return data as unknown as SummaryStats;
 		}, null);
 	},
 

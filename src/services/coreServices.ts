@@ -4,6 +4,18 @@ import type { NameItem } from "@/shared/types";
 import { devLog } from "@/utils/basic";
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Caching Layer
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const nameToIdCache = new Map<string, string | number>();
+
+export const invalidateNameCache = () => nameToIdCache.clear();
+export const updateNameCache = (name: string, id: string | number) => nameToIdCache.set(name, id);
+export const invalidateIdCache = () => {
+	/* stub */
+}; // Stub for API compatibility
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Offline Sync Queue
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -98,19 +110,33 @@ export const tournamentsAPI = {
 					return { success: false, error: "Missing data" };
 				}
 
-				// Resolve name → ID mapping
-				const nameStrings = ratings.map((r) => r.name);
-				const { data: nameData } = (await client
-					.from("cat_name_options")
-					.select("id, name")
-					.in("name", nameStrings)) as unknown as {
-					data: Array<{ id: string | number; name: string }> | null;
-					error: unknown;
-				};
-
+				// Resolve name → ID mapping with caching
 				const nameToId = new Map<string, string | number>();
-				for (const n of nameData ?? []) {
-					nameToId.set(n.name, n.id);
+				const missingNames: string[] = [];
+
+				for (const r of ratings) {
+					const cachedId = nameToIdCache.get(r.name);
+					if (cachedId !== undefined) {
+						nameToId.set(r.name, cachedId);
+					} else {
+						missingNames.push(r.name);
+					}
+				}
+
+				// Fetch missing names from DB
+				if (missingNames.length > 0) {
+					const { data: nameData } = (await client
+						.from("cat_name_options")
+						.select("id, name")
+						.in("name", missingNames)) as unknown as {
+						data: Array<{ id: string | number; name: string }> | null;
+						error: unknown;
+					};
+
+					for (const n of nameData ?? []) {
+						nameToIdCache.set(n.name, n.id);
+						nameToId.set(n.name, n.id);
+					}
 				}
 
 				// Build upsert records (only for names we found in the DB)
