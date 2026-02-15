@@ -1,17 +1,7 @@
 import { syncQueue } from "@/services/SyncQueue";
-import { withSupabase } from "@/services/supabase/client";
 import type { NameItem } from "@/shared/types";
 import { devLog } from "@/utils/basic";
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Offline Sync Queue
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// Implementation lives in `src/services/SyncQueue.ts`.
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Tournament API
-// ═══════════════════════════════════════════════════════════════════════════════
+import { api } from "@/services/apiClient";
 
 interface TournamentCreateResult {
 	success: boolean;
@@ -33,48 +23,30 @@ interface RatingSaveResult {
 	error?: string;
 }
 
-/**
- * Tournament persistence layer.
- *
- * @example
- * const result = await tournamentsAPI.saveTournamentRatings(userName, ratings);
- * if (result.offline) showToast("Saved offline — will sync later");
- */
 export const tournamentsAPI = {
-	/**
-	 * Create a tournament session. Creates the user account via RPC if needed.
-	 */
 	async createTournament(
 		userName: string,
 		tournamentName: string,
 		participantNames: NameItem[],
 	): Promise<TournamentCreateResult> {
-		return withSupabase<TournamentCreateResult>(
-			async (client) => {
-				await client.rpc("create_user_account", { p_user_name: userName });
-				return {
-					success: true,
-					data: {
-						id: globalThis.crypto?.randomUUID?.() ?? `t_${Date.now()}`,
-						user_name: userName,
-						tournament_name: tournamentName,
-						participant_names: participantNames,
-						status: "in_progress",
-						created_at: new Date().toISOString(),
-					},
-				};
-			},
-			{ success: false, error: "Supabase not configured" },
-		);
+		try {
+			await api.post("/users/create", { userName });
+			return {
+				success: true,
+				data: {
+					id: globalThis.crypto?.randomUUID?.() ?? `t_${Date.now()}`,
+					user_name: userName,
+					tournament_name: tournamentName,
+					participant_names: participantNames,
+					status: "in_progress",
+					created_at: new Date().toISOString(),
+				},
+			};
+		} catch (error: any) {
+			return { success: false, error: error.message || "Failed to create tournament" };
+		}
 	},
 
-	/**
-	 * Save tournament ratings to the database.
-	 * Falls back to offline queue when disconnected.
-	 *
-	 * @param skipQueue - When `true`, bypasses the offline queue check
-	 *   (used when processing the queue itself to prevent recursion).
-	 */
 	async saveTournamentRatings(
 		userName: string,
 		ratings: Array<{
@@ -85,68 +57,26 @@ export const tournamentsAPI = {
 		}>,
 		skipQueue = false,
 	): Promise<RatingSaveResult> {
-		// Offline: queue for later
 		if (!skipQueue && typeof navigator !== "undefined" && !navigator.onLine) {
 			syncQueue.enqueue("SAVE_RATINGS", { userName, ratings });
 			devLog("[TournamentAPI] Offline: queued ratings save");
 			return { success: true, savedCount: ratings.length, offline: true };
 		}
 
-		return withSupabase<RatingSaveResult>(
-			async (client) => {
-				if (!userName || !ratings?.length) {
-					return { success: false, error: "Missing data" };
-				}
-
-				// Resolve name → ID mapping
-				const nameStrings = ratings.map((r) => r.name);
-				const { data: nameData } = (await client
-					.from("cat_name_options")
-					.select("id, name")
-					.in("name", nameStrings)) as unknown as {
-					data: Array<{ id: string | number; name: string }> | null;
-					error: unknown;
-				};
-
-				const nameToId = new Map<string, string | number>();
-				for (const n of nameData ?? []) {
-					nameToId.set(n.name, n.id);
-				}
-
-				// Build upsert records (only for names we found in the DB)
-				const records = ratings
-					.filter((r) => nameToId.has(r.name))
-					.map((r) => ({
-						user_name: userName,
-						name_id: String(nameToId.get(r.name)),
-						rating: Math.min(2400, Math.max(800, Math.round(r.rating))),
-						wins: r.wins ?? 0,
-						losses: r.losses ?? 0,
-						updated_at: new Date().toISOString(),
-					}));
-
-				if (records.length === 0) {
-					return { success: false, error: "No valid ratings to save" };
-				}
-
-				const { error } = await client
-					.from("cat_name_ratings")
-					.upsert(records, { onConflict: "user_name,name_id" });
-
-				return { success: !error, savedCount: records.length };
-			},
-			{ success: false, error: "Supabase offline" },
-		);
+		try {
+			if (!userName || !ratings?.length) {
+				return { success: false, error: "Missing data" };
+			}
+			return await api.post<RatingSaveResult>("/ratings/save", {
+				userName,
+				ratings,
+			});
+		} catch (error: any) {
+			return { success: false, error: error.message || "Failed to save ratings" };
+		}
 	},
 };
 
-// EloRating consolidated to services/tournament.ts
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Utility Exports
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/** Calculate which bracket round a match falls in. */
 export function calculateBracketRound(totalNames: number, currentMatch: number): number {
 	if (totalNames <= 2) {
 		return 1;

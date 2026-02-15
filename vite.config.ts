@@ -19,17 +19,20 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [
     react(),
     tailwindcss(),
     viteSingleFile(),
     consoleForwardPlugin({
-      // Enable console forwarding (default: true in dev mode)
       enabled: true,
-      // Custom API endpoint (default: '/api/debug/client-logs')
       endpoint: "/api/debug/client-logs",
-      // Which console levels to forward (default: all)
       levels: ["log", "warn", "error", "info", "debug"],
     }),
   ],
