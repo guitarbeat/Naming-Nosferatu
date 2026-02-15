@@ -485,67 +485,27 @@ export const leaderboardAPI = {
 	 */
 	getLeaderboard: async (limit: number | null = 50) => {
 		return withSupabase(async (client) => {
-			const { data: ratings } = await client
-				.from("cat_name_ratings")
-				.select("name_id, rating, wins, losses");
-
-			const nameStatsMap = new Map<
-				string | number,
-				{
-					totalRating: number;
-					count: number;
-					totalWins: number;
-					totalLosses: number;
-				}
-			>();
-			(ratings || []).forEach((r) => {
-				if (!nameStatsMap.has(r.name_id)) {
-					nameStatsMap.set(r.name_id, {
-						totalRating: 0,
-						count: 0,
-						totalWins: 0,
-						totalLosses: 0,
-					});
-				}
-				const stats = nameStatsMap.get(r.name_id);
-				if (stats) {
-					stats.totalRating += Number(r.rating) || 1500;
-					stats.count += 1;
-					stats.totalWins += r.wins || 0;
-					stats.totalLosses += r.losses || 0;
-				}
+			const { data, error } = await client.rpc("get_leaderboard_stats", {
+				p_limit: limit || 50,
 			});
 
-			const { data: names } = await client
-				.from("cat_name_options")
-				.select("id, name, description, avg_rating, categories, created_at")
-				.eq("is_active", true)
-				.eq("is_hidden", false)
-				.order("avg_rating", { ascending: false })
-				.limit(limit ? limit * 2 : 100);
+			if (error) {
+				console.error("Error fetching leaderboard:", error);
+				return [];
+			}
 
-			const leaderboard = (names || [])
-				.map((row) => {
-					const stats = nameStatsMap.get(row.id);
-					const avgRating = stats
-						? Math.round(stats.totalRating / stats.count)
-						: row.avg_rating || 1500;
-					return {
-						name_id: row.id,
-						name: row.name,
-						description: row.description,
-						category: row.categories?.[0] || null,
-						avg_rating: avgRating,
-						total_ratings: stats?.count || 0,
-						wins: stats?.totalWins || 0,
-						losses: stats?.totalLosses || 0,
-						created_at: row.created_at || null,
-					};
-				})
-				.filter((row) => row.total_ratings > 0 || row.avg_rating > 1500)
-				.sort((a, b) => b.avg_rating - a.avg_rating);
-
-			return limit ? leaderboard.slice(0, limit) : leaderboard;
+			// Map the RPC result to match the expected interface
+			return (data || []).map((row: any) => ({
+				name_id: row.name_id,
+				name: row.name,
+				description: row.description,
+				category: row.category,
+				avg_rating: Number(row.avg_rating),
+				total_ratings: row.total_ratings,
+				wins: row.wins,
+				losses: row.losses,
+				created_at: row.created_at,
+			}));
 		}, []);
 	},
 };
