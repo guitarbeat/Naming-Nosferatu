@@ -13,8 +13,8 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
 	server: {
 		host: "0.0.0.0",
-		port: 5000,
-		strictPort: true,
+		port: 3000,
+		strictPort: false,
 		allowedHosts: true,
 		watch: {
 			usePolling: true,
