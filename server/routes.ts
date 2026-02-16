@@ -1,5 +1,6 @@
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { Router } from "express";
+import { ZodError } from "zod";
 import {
 	auditLog,
 	catAppUsers,
@@ -10,6 +11,7 @@ import {
 	userRoles,
 } from "../shared/schema";
 import { db } from "./db";
+import { createNameSchema, createUserSchema, saveRatingsSchema } from "./validation";
 
 export const router = Router();
 
@@ -35,7 +37,7 @@ router.get("/api/names", async (req, res) => {
 
 router.post("/api/names", async (req, res) => {
 	try {
-		const { name, description, status, provenance } = req.body;
+		const { name, description, status, provenance } = createNameSchema.parse(req.body);
 		const [inserted] = await db
 			.insert(catNameOptions)
 			.values({
@@ -47,6 +49,9 @@ router.post("/api/names", async (req, res) => {
 			.returning();
 		res.json({ success: true, data: inserted });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		console.error("Error adding name:", error);
 		res.status(500).json({ success: false, error: "Failed to add name" });
 	}
@@ -136,7 +141,7 @@ router.post("/api/names/:id/toggle-locked-in", async (req, res) => {
 
 router.post("/api/users/create", async (req, res) => {
 	try {
-		const { userName, preferences } = req.body;
+		const { userName, preferences } = createUserSchema.parse(req.body);
 		await db
 			.insert(catAppUsers)
 			.values({
@@ -154,6 +159,9 @@ router.post("/api/users/create", async (req, res) => {
 
 		res.json({ success: true });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		console.error("Error creating user:", error);
 		res.status(500).json({ success: false, error: "Failed to create user" });
 	}
@@ -175,12 +183,9 @@ router.get("/api/users/:userName/role", async (req, res) => {
 
 router.post("/api/ratings/save", async (req, res) => {
 	try {
-		const { userName, ratings } = req.body;
-		if (!userName || !ratings?.length) {
-			return res.status(400).json({ success: false, error: "Missing data" });
-		}
+		const { userName, ratings } = saveRatingsSchema.parse(req.body);
 
-		const nameStrings = ratings.map((r: any) => r.name);
+		const nameStrings = ratings.map((r) => r.name);
 		const nameRows = await db
 			.select({ id: catNameOptions.id, name: catNameOptions.name })
 			.from(catNameOptions)
@@ -223,6 +228,9 @@ router.post("/api/ratings/save", async (req, res) => {
 
 		res.json({ success: true, savedCount: records.length });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		console.error("Error saving ratings:", error);
 		res.status(500).json({ success: false, error: "Failed to save ratings" });
 	}

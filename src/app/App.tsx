@@ -18,7 +18,10 @@ import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/com
 import { useOfflineSync } from "@/shared/hooks";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import { cn } from "@/shared/lib/basic";
-import { cleanupPerformanceMonitoring, initializePerformanceMonitoring } from "@/shared/lib/performance";
+import {
+	cleanupPerformanceMonitoring,
+	initializePerformanceMonitoring,
+} from "@/shared/lib/performance";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
