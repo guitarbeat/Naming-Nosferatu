@@ -1,7 +1,6 @@
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { Router } from "express";
 import {
-	auditLog,
 	catAppUsers,
 	catChosenName,
 	catNameOptions,
@@ -86,18 +85,14 @@ router.post("/api/names/:id/toggle-hidden", async (req, res) => {
 router.post("/api/names/bulk-toggle-hidden", async (req, res) => {
 	try {
 		const { nameIds, isHidden } = req.body;
-		const results: { nameId: any; success: boolean; error?: string }[] = [];
-		for (const id of nameIds) {
-			try {
-				await db
-					.update(catNameOptions)
-					.set({ isHidden })
-					.where(eq(catNameOptions.id, String(id)));
-				results.push({ nameId: id, success: true });
-			} catch (err: any) {
-				results.push({ nameId: id, success: false, error: err.message });
-			}
+		if (nameIds && nameIds.length > 0) {
+			await db
+				.update(catNameOptions)
+				.set({ isHidden })
+				.where(inArray(catNameOptions.id, nameIds.map(String)));
 		}
+		// Return simulated results for compatibility
+		const results = nameIds.map((id: any) => ({ nameId: id, success: true }));
 		res.json(results);
 	} catch (error) {
 		console.error("Error bulk toggling hidden:", error);
@@ -206,20 +201,18 @@ router.post("/api/ratings/save", async (req, res) => {
 			return res.json({ success: false, error: "No valid ratings to save" });
 		}
 
-		for (const record of records) {
-			await db
-				.insert(catNameRatings)
-				.values(record)
-				.onConflictDoUpdate({
-					target: [catNameRatings.userName, catNameRatings.nameId],
-					set: {
-						rating: record.rating,
-						wins: record.wins,
-						losses: record.losses,
-						updatedAt: record.updatedAt,
-					},
-				});
-		}
+		await db
+			.insert(catNameRatings)
+			.values(records)
+			.onConflictDoUpdate({
+				target: [catNameRatings.userName, catNameRatings.nameId],
+				set: {
+					rating: sql`excluded.rating`,
+					wins: sql`excluded.wins`,
+					losses: sql`excluded.losses`,
+					updatedAt: sql`excluded.updated_at`,
+				},
+			});
 
 		res.json({ success: true, savedCount: records.length });
 	} catch (error) {
