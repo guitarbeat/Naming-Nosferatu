@@ -2,16 +2,22 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/shared/components/layout/Card";
 import { ErrorComponent } from "@/shared/components/layout/FeedbackComponents";
+import {
+	exportTournamentResultsToCSV,
+	getRandomCatImage,
+	getVisibleNames,
+} from "@/shared/lib/basic";
+import { CAT_IMAGES } from "@/shared/lib/constants";
 import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { exportTournamentResultsToCSV, getRandomCatImage, getVisibleNames } from "@/shared/lib/basic";
-import { CAT_IMAGES } from "@/shared/lib/constants";
 import CatImage from "./components/CatImage";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
 	const { user } = useAppStore();
-	const visibleNames = getVisibleNames(names);
+	// Memoize visibleNames to stabilize the array reference passed to useTournamentState,
+	// preventing unnecessary effect triggers and re-calculations on every render.
+	const visibleNames = useMemo(() => getVisibleNames(names), [names]);
 	const audioManager = useAudioManager();
 	const prefersReducedMotion = useReducedMotion();
 
