@@ -5,15 +5,15 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { imagesAPI } from "@/services/supabase/api";
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import { Loading } from "@/shared/components/layout/FeedbackComponents";
 import { Input } from "@/shared/components/layout/FormPrimitives";
-import { imagesAPI } from "@/services/supabase/api";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/shared/lib/icons";
 import type { NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/shared/lib/icons";
 
 interface AdminStats {
 	totalNames: number;

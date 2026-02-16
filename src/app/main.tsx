@@ -4,10 +4,10 @@ import { Analytics } from "@vercel/analytics/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { authAdapter } from "@/services/authAdapter";
 import { queryClient } from "@/services/supabase/client";
 import App from "./App";
 import { Providers } from "./providers/Providers";
-import { authAdapter } from "@/services/authAdapter";
 import "../index.css";
 
 const rootElement = document.getElementById("root");
