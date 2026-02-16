@@ -5,11 +5,11 @@
  */
 
 import { useCallback, useRef, useState } from "react";
-import { Toast } from "@/layout";
-import { useToast } from "@/providers/Providers";
+import { Toast } from "@/shared/components/layout";
+import { useToast } from "@/app/providers/Providers";
 import type { NameItem } from "@/shared/types";
-import { devError, devLog } from "@/utils/basic";
-import { NOTIFICATION } from "@/utils/constants";
+import { devError, devLog } from "@/shared/lib/basic";
+import { NOTIFICATION } from "@/shared/lib/constants";
 import {
 	getCurrentTrack,
 	playBackgroundMusic,
@@ -21,7 +21,7 @@ import {
 	playWowSound,
 	setBackgroundMusicVolume,
 	stopBackgroundMusic,
-} from "@/utils/sound";
+} from "@/shared/lib/sound";
 
 /* =========================================================================
    AUDIO MANAGER HOOK

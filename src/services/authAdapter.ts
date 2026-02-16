@@ -7,7 +7,7 @@
  * - just username-based role detection for demo purposes.
  */
 
-import type { AuthAdapter, AuthUser, LoginCredentials } from "@/providers/Providers";
+import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
 
 // Simple admin usernames - can be expanded as needed
 const ADMIN_USERNAMES = ["Aaron", "admin", "administrator"];

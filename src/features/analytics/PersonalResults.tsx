@@ -1,10 +1,10 @@
 import { CardBody, Button as HeroButton } from "@heroui/react";
 import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
-import { Card } from "@/layout";
-import { useToast } from "@/providers/Providers";
+import { Card } from "@/shared/components/layout";
+import { useToast } from "@/app/providers/Providers";
 import type { NameItem, RatingData } from "@/shared/types";
-import { exportTournamentResultsToCSV } from "@/utils/basic";
-import { Download, Plus } from "@/utils/icons";
+import { exportTournamentResultsToCSV } from "@/shared/lib/basic";
+import { Download, Plus } from "@/shared/lib/icons";
 import { RankingAdjustment } from "./RankingAdjustment";
 
 interface PersonalResultsProps {

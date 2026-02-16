@@ -10,10 +10,10 @@ import {
 import { Button, CardBody, CardHeader, Chip, cn, Divider } from "@heroui/react";
 import { motion } from "framer-motion";
 import { memo, useEffect, useRef, useState } from "react";
-import { Card } from "@/layout";
+import { Card } from "@/shared/components/layout";
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/shared/types";
-import { GripVertical, Loader2, Save } from "@/utils/icons";
+import { GripVertical, Loader2, Save } from "@/shared/lib/icons";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
 	if (newItems.length !== oldRankings.length) {

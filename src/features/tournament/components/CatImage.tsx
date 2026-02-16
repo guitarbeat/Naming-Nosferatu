@@ -5,7 +5,7 @@
 
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CAT_IMAGES } from "@/utils/constants";
+import { CAT_IMAGES } from "@/shared/lib/constants";
 
 function analyseImage(imgEl: HTMLImageElement): {
 	focal?: number;

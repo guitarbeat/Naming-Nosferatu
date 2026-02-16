@@ -5,12 +5,12 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { leaderboardAPI, statsAPI } from "@/features/analytics/analyticsService";
-import Button from "@/layout/Button";
-import { Card } from "@/layout/Card";
-import { Loading } from "@/layout/FeedbackComponents";
+import Button from "@/shared/components/layout/Button";
+import { Card } from "@/shared/components/layout/Card";
+import { Loading } from "@/shared/components/layout/FeedbackComponents";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
 import type { NameItem, RatingData } from "@/shared/types";
-import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
+import { BarChart3, Eye, EyeOff, Trophy } from "@/shared/lib/icons";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
 import { PersonalResults } from "./PersonalResults";
 

@@ -9,8 +9,8 @@ import type {
 	UseNameManagementViewResult,
 } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { applyNameFilters, mapFilterStatusToVisibility } from "@/utils/basic";
-import { FILTER_OPTIONS } from "@/utils/constants";
+import { applyNameFilters, mapFilterStatusToVisibility } from "@/shared/lib/basic";
+import { FILTER_OPTIONS } from "@/shared/lib/constants";
 
 export function useNameManagementView({
 	mode,

@@ -1,5 +1,5 @@
 import { tournamentsAPI } from "@/services/coreServices";
-import { ELO_RATING } from "@/utils/constants";
+import { ELO_RATING } from "@/shared/lib/constants";
 
 /* =========================================================================
    SERVICE

@@ -6,17 +6,17 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNamesCache } from "@/hooks/useNamesCache";
-import Button from "@/layout/Button";
-import { Card } from "@/layout/Card";
-import { CollapsibleContent } from "@/layout/CollapsibleHeader";
-import { Loading } from "@/layout/FeedbackComponents";
-import { Lightbox } from "@/layout/Lightbox";
+import Button from "@/shared/components/layout/Button";
+import { Card } from "@/shared/components/layout/Card";
+import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
+import { Loading } from "@/shared/components/layout/FeedbackComponents";
+import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import { useCollapsible } from "@/shared/hooks";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { getRandomCatImage } from "@/utils/basic";
-import { CAT_IMAGES } from "@/utils/constants";
+import { getRandomCatImage } from "@/shared/lib/basic";
+import { CAT_IMAGES } from "@/shared/lib/constants";
 import {
 	Check,
 	CheckCircle,
@@ -27,7 +27,7 @@ import {
 	Heart,
 	X,
 	ZoomIn,
-} from "@/utils/icons";
+} from "@/shared/lib/icons";
 import CatImage from "./CatImage";
 
 const SWIPE_OFFSET_THRESHOLD = 100;

@@ -5,7 +5,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useLocalStorage } from "@/hooks/useHooks";
-import { Copy, Heart, Shuffle } from "@/utils/icons";
+import { Copy, Heart, Shuffle } from "@/shared/lib/icons";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types

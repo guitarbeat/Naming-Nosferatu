@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useToast } from "@/providers/Providers";
+import { useToast } from "@/app/providers/Providers";
 import type { UseAudioManagerResult } from "./useHelpers";
 import type { UseTournamentStateResult } from "./useTournamentState";
 

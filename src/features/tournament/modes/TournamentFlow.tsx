@@ -5,8 +5,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/layout/Card";
-import { Section } from "@/layout/Section";
+import { Card } from "@/shared/components/layout/Card";
+import { Section } from "@/shared/components/layout/Section";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
 import { useTournamentHandlers } from "../hooks/useTournamentHandlers";
