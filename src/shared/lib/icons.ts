@@ -7,7 +7,7 @@
  * import directly from `lucide-react`.
  */
 
-export type { LucideIcon, LucideProps } from "lucide-react";
+export type { LucideIcon } from "lucide-react";
 export {
 	BarChart3,
 	Cat,
@@ -29,12 +29,10 @@ export {
 	Lock,
 	LogOut,
 	PawPrint,
-	Pencil,
 	Plus,
 	Save,
 	Shuffle,
 	Trophy,
-	Upload,
 	User,
 	X,
 	ZoomIn,

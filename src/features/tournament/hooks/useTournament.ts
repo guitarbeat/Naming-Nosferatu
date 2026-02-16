@@ -1,8 +1,5 @@
-export type { UseAudioManagerResult } from "./useHelpers";
 export { useAudioManager } from "./useHelpers";
 
-export type { UseTournamentStateResult } from "./useTournamentState";
-export { useTournamentState } from "./useTournamentState";
+export { type UseTournamentStateResult, useTournamentState } from "./useTournamentState";
 
-export type { UseTournamentVoteResult } from "./useTournamentVote";
-export { useTournamentVote } from "./useTournamentVote";
+export { type UseTournamentVoteResult, useTournamentVote } from "./useTournamentVote";

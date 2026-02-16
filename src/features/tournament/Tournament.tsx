@@ -2,10 +2,14 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/shared/components/layout/Card";
 import { ErrorComponent } from "@/shared/components/layout/FeedbackComponents";
+import {
+	exportTournamentResultsToCSV,
+	getRandomCatImage,
+	getVisibleNames,
+} from "@/shared/lib/basic";
+import { CAT_IMAGES } from "@/shared/lib/constants";
 import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { exportTournamentResultsToCSV, getRandomCatImage, getVisibleNames } from "@/shared/lib/basic";
-import { CAT_IMAGES } from "@/shared/lib/constants";
 import CatImage from "./components/CatImage";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
 

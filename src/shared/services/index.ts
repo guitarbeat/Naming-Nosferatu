@@ -15,4 +15,4 @@ export { syncQueue } from "@/services/SyncQueue";
 export { coreAPI, hiddenNamesAPI, imagesAPI, siteSettingsAPI } from "@/services/supabase/api";
 export { withSupabase } from "@/services/supabase/client";
 // Core application services
-export { tournamentsAPI } from "@/services/tournament";
+

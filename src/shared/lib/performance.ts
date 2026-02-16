@@ -151,6 +151,4 @@ export function cleanupPerformanceMonitoring(): void {
 }
 
 /** Retrieve a snapshot of all collected metrics. */
-export function getPerformanceMetrics(): Readonly<PerformanceMetrics> {
-	return { ...metrics };
-}
+

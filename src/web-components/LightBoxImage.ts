@@ -1,4 +1,4 @@
-export class LightBoxImage extends HTMLElement {
+class LightBoxImage extends HTMLElement {
 	image: HTMLImageElement | null = null;
 	toggle: HTMLButtonElement | null = null;
 

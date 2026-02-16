@@ -6,19 +6,24 @@
  * for consumers that depend on the legacy API.
  */
 
-export { useBrowserState, useOnlineStatus } from "./useHooks";
+import { useMediaQuery, useOnlineStatus } from "@/shared/hooks";
 
-/**
- * Legacy offline-sync hook.
- *
- * In the original codebase this directly imported a sync queue and API
- * client. Now it delegates to `useOnlineStatus` — consumers should pass
- * their own `onReconnect` callback to handle queue flushing.
- *
- * @example
- * useOfflineSync(); // no-op by default; attach sync logic via useOnlineStatus
- */
-export function useOfflineSync(): void {
-	// No-op stub — replace with `useOnlineStatus({ onReconnect: () => syncQueue.flush() })`
-	// when you have a real sync queue wired up.
+export function useBrowserState() {
+    const isOnline = useOnlineStatus();
+    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isTablet = useMediaQuery("(max-width: 1024px)");
+    const isDesktop = useMediaQuery("(min-width: 1025px)");
+    const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+    const isSlowConnection = false; // Placeholder as Network API is partial
+
+    return {
+        isOnline,
+        isMobile,
+        isTablet,
+        isDesktop,
+        prefersReducedMotion,
+        isSlowConnection,
+    };
 }
+
+

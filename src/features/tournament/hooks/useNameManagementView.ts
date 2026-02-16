@@ -2,15 +2,23 @@ import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNameData, useNameSelection } from "@/hooks/useNames";
+import { applyNameFilters, mapFilterStatusToVisibility } from "@/shared/lib/basic";
+import { FILTER_OPTIONS } from "@/shared/lib/constants";
 import type {
 	NameItem,
 	TournamentFilters,
-	UseNameManagementViewProps,
-	UseNameManagementViewResult,
 } from "@/shared/types";
+
+export interface UseNameManagementViewProps {
+	mode: "tournament" | "profile" | "management";
+	userName?: string | null;
+	profileProps?: any;
+	tournamentProps?: any;
+	analysisMode?: boolean;
+	setAnalysisMode?: (mode: boolean) => void;
+	extensions?: any;
+}
 import useAppStore from "@/store/appStore";
-import { applyNameFilters, mapFilterStatusToVisibility } from "@/shared/lib/basic";
-import { FILTER_OPTIONS } from "@/shared/lib/constants";
 
 export function useNameManagementView({
 	mode,
@@ -20,7 +28,7 @@ export function useNameManagementView({
 	analysisMode,
 	setAnalysisMode,
 	extensions = {},
-}: UseNameManagementViewProps): UseNameManagementViewResult {
+}: UseNameManagementViewProps) {
 	const nameHooksMode = mode === "profile" ? "management" : "tournament";
 
 	const {
@@ -79,7 +87,7 @@ export function useNameManagementView({
 
 	const handleAnalysisModeToggle = useCallback(() => {
 		const newValue = !analysisMode;
-		setAnalysisMode(newValue);
+		setAnalysisMode?.(newValue);
 
 		const currentPath = location.pathname;
 		const currentSearch = new URLSearchParams(location.search);
@@ -180,6 +188,7 @@ export function useNameManagementView({
 			};
 		} else if (mode === "tournament") {
 			return {
+				filterStatus: "visible",
 				searchTerm,
 			};
 		} else {

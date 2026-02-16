@@ -10,9 +10,12 @@ export const queryClient = new QueryClient({
 	},
 });
 
-export const isSupabaseAvailable = async () => true;
 
-export async function withSupabase<T>(operation: (client: any) => Promise<T>, fallback: T): Promise<T> {
+
+export async function withSupabase<T>(
+	operation: (client: any) => Promise<T>,
+	fallback: T,
+): Promise<T> {
 	try {
 		const client = await resolveSupabaseClient();
 		return await operation(client);
@@ -22,12 +25,10 @@ export async function withSupabase<T>(operation: (client: any) => Promise<T>, fa
 	}
 }
 
-export const updateSupabaseUserContext = (_userName: string | null): void => {
-	// No-op for now
-};
 
-export const resolveSupabaseClient = async () => null;
-export const supabase = resolveSupabaseClient;
+
+
+const resolveSupabaseClient = async () => null;
 
 export * from "@/features/analytics/analyticsService";
 export * from "./api";

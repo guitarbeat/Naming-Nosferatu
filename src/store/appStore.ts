@@ -30,6 +30,9 @@
 
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
+import { STORAGE_KEYS } from "@/shared/lib/constants";
+
+
 import type {
 	CatChosenName,
 	ErrorLog,
@@ -44,25 +47,9 @@ import type {
 	UserState,
 	VoteRecord,
 } from "@/shared/types";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
-import type { LucideIcon } from "@/shared/lib/icons";
-import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/shared/lib/icons";
 
 // Re-export domain types so consumers can import from either location
-export type {
-	CatChosenName,
-	ErrorLog,
-	ErrorState,
-	NameItem,
-	RatingData,
-	SiteSettingsState,
-	ThemePreference,
-	ThemeValue,
-	TournamentState,
-	UIState,
-	UserState,
-	VoteRecord,
-};
+export type { NameItem, RatingData, VoteRecord };
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Action Interfaces
@@ -82,7 +69,7 @@ export interface TournamentActions {
 	setSelection: (names: NameItem[]) => void;
 }
 
-export interface UserActions {
+interface UserActions {
 	setUser: (data: Partial<UserState>) => void;
 	login: (userName: string, onContext?: (name: string) => void) => void;
 	logout: (onContext?: (name: null) => void) => void;
@@ -91,7 +78,7 @@ export interface UserActions {
 	initializeFromStorage: (onContext?: (name: string) => void) => void;
 }
 
-export interface UIActions {
+interface UIActions {
 	setTheme: (theme: ThemePreference) => void;
 	initializeTheme: () => void;
 	setMatrixMode: (enabled: boolean) => void;
@@ -102,12 +89,12 @@ export interface UIActions {
 	setEditingProfile: (editing: boolean) => void;
 }
 
-export interface SiteSettingsActions {
+interface SiteSettingsActions {
 	setCatChosenName: (data: CatChosenName | null) => void;
 	markSettingsLoaded: () => void;
 }
 
-export interface ErrorActions {
+interface ErrorActions {
 	setError: (error: unknown | null) => void;
 	clearError: () => void;
 	logError: (error: unknown, context: string, metadata?: Record<string, unknown>) => void;
@@ -117,7 +104,7 @@ export interface ErrorActions {
 // Combined Store Type
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export interface AppState {
+interface AppState {
 	tournament: TournamentState;
 	tournamentActions: TournamentActions;
 
@@ -514,30 +501,9 @@ export default useAppStore;
 //
 // Use: `const userName = useAppStore(selectUserName);`
 
-export const selectTournamentNames = (s: AppState) => s.tournament.names;
-export const selectRatings = (s: AppState) => s.tournament.ratings;
-export const selectIsComplete = (s: AppState) => s.tournament.isComplete;
-export const selectIsLoading = (s: AppState) => s.tournament.isLoading;
-export const selectVoteHistory = (s: AppState) => s.tournament.voteHistory;
-export const selectSelectedNames = (s: AppState) => s.tournament.selectedNames;
 
-export const selectUserName = (s: AppState) => s.user.name;
-export const selectIsLoggedIn = (s: AppState) => s.user.isLoggedIn;
-export const selectIsAdmin = (s: AppState) => s.user.isAdmin;
-export const selectAvatarUrl = (s: AppState) => s.user.avatarUrl;
 
-export const selectTheme = (s: AppState) => s.ui.theme;
-export const selectThemePreference = (s: AppState) => s.ui.themePreference;
-export const selectIsSwipeMode = (s: AppState) => s.ui.isSwipeMode;
-export const selectShowCatPictures = (s: AppState) => s.ui.showCatPictures;
-export const selectMatrixMode = (s: AppState) => s.ui.matrixMode;
-export const selectIsEditingProfile = (s: AppState) => s.ui.isEditingProfile;
 
-export const selectCatChosenName = (s: AppState) => s.siteSettings.catChosenName;
-export const selectSettingsLoaded = (s: AppState) => s.siteSettings.isLoaded;
-
-export const selectCurrentError = (s: AppState) => s.errors.current;
-export const selectErrorHistory = (s: AppState) => s.errors.history;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Initialization Hook
@@ -569,18 +535,11 @@ export function useAppStoreInitialization(onUserContext?: (name: string) => void
 // App Route Configuration
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export const routes = {
-	home: { path: "/", label: "Tournament" },
-	analysis: { path: "/analysis", label: "Analytics" },
-} as const;
 
-export type RouteKey = keyof typeof routes;
 
-export const layoutConfig = {
-	contentPadding: "max(8rem,calc(120px+env(safe-area-inset-bottom)))",
-	contentGap: "gap-8",
-	contentFlex: "flex flex-col",
-} as const;
+
+
+
 
 export const errorContexts = {
 	tournamentFlow: "Tournament Flow",
@@ -592,37 +551,14 @@ export const errorContexts = {
 // Navigation Configuration
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export interface NavSection {
-	id: string;
-	label: string;
-	icon: LucideIcon;
-}
 
-export const keyToSectionId: Record<string, string> = {
-	pick: "pick",
-	play: "play",
-	analyze: "analysis",
-	suggest: "suggest",
-	profile: "profile",
-};
 
-export const navSections = {
-	pick: { id: "pick", label: "Pick", icon: CheckCircle },
-	play: { id: "play", label: "Play", icon: Trophy },
-	analyze: { id: "analyze", label: "Analyze", icon: BarChart3 },
-	suggest: { id: "suggest", label: "Suggest", icon: Lightbulb },
-	profile: { id: "profile", label: "Profile", icon: User },
-} as const satisfies Record<string, NavSection>;
 
-export type NavSectionKey = keyof typeof navSections;
 
-export const viewModeIcons = {
-	swipe: Layers,
-	grid: LayoutGrid,
-} as const;
 
-export const navAnimations = {
-	navTransitionDuration: 500,
-	navSpringConfig: { stiffness: 260, damping: 20 },
-	scrollSmoothBehavior: "smooth" as const,
-} as const;
+
+
+
+
+
+

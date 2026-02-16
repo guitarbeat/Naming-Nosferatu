@@ -10,7 +10,7 @@ import type { BackupInfo } from "./types";
 /**
  * Rollback result containing information about restored files
  */
-export interface RollbackResult {
+interface RollbackResult {
 	restoredFiles: string[];
 	restoredReferenceFiles: string[];
 	errors: Array<{ file: string; error: string }>;
@@ -376,7 +376,7 @@ function transformImportPath(
 /**
  * Rollback result containing information about restored files
  */
-export interface RollbackResult {
+interface RollbackResult {
 	restoredFiles: string[];
 	restoredReferenceFiles: string[];
 	errors: Array<{ file: string; error: string }>;

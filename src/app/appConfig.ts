@@ -9,7 +9,7 @@
 
 import { lazy } from "react";
 
-export { errorContexts, layoutConfig, routes } from "@/store/appStore";
+export { errorContexts } from "@/store/appStore";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Lazy-Loaded Route Components

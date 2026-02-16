@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useMemo, useState } from "react";
-import { useLocalStorage } from "@/hooks/useHooks";
+import { useLocalStorage } from "@/shared/hooks";
 import { Copy, Heart, Shuffle } from "@/shared/lib/icons";
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -16,7 +16,7 @@ interface NameEntry {
 	[key: string]: unknown;
 }
 
-export interface RandomGeneratorProps {
+interface RandomGeneratorProps {
 	fetchNames: () => Promise<NameEntry[]>;
 	storageKey?: string;
 }

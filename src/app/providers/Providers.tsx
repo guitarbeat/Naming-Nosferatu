@@ -89,7 +89,7 @@ export interface AuthAdapter {
 	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
 }
 
-export interface AuthContextValue {
+interface AuthContextValue {
 	user: AuthUser | null;
 	isLoading: boolean;
 	isAuthenticated: boolean;
@@ -103,16 +103,16 @@ export interface AuthContextValue {
 // Toast Types
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export type ToastType = "success" | "error" | "info" | "warning";
+type ToastType = "success" | "error" | "info" | "warning";
 
-export interface ToastOptions {
+interface ToastOptions {
 	/** How long the toast is visible in ms (default: 5 000). */
 	duration?: number;
 	/** Set `false` to keep the toast until manually dismissed. */
 	autoDismiss?: boolean;
 }
 
-export interface ToastItem {
+interface ToastItem {
 	id: string;
 	message: string;
 	type: ToastType;
@@ -122,7 +122,7 @@ export interface ToastItem {
 	createdAt: number;
 }
 
-export interface ToastContextValue {
+interface ToastContextValue {
 	toasts: ToastItem[];
 	showToast: (message: string, type?: ToastType, options?: ToastOptions) => string;
 	hideToast: (id: string) => void;
@@ -140,11 +140,7 @@ export interface ToastContextValue {
 /**
  * Check if `currentRole` meets or exceeds `requiredRole` in the role hierarchy.
  */
-export function hasRole(currentRole: string | null | undefined, requiredRole: UserRole): boolean {
-	const current = ROLE_HIERARCHY[(currentRole?.toLowerCase() ?? "") as UserRole] ?? -1;
-	const required = ROLE_HIERARCHY[requiredRole] ?? Infinity;
-	return current >= required;
-}
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Fallback Auth Adapter (no-op)
@@ -482,7 +478,7 @@ function useToastProvider(
 // <Providers> Component
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export interface ProvidersProps {
+interface ProvidersProps {
 	children: ReactNode;
 
 	/** Auth configuration. Omit to use a no-op adapter (no auth). */

@@ -21,7 +21,7 @@ interface ErrorBoundaryState {
 	errorId: string | null;
 }
 
-export interface ErrorFallbackProps {
+interface ErrorFallbackProps {
 	error: Error | null;
 	errorId: string | null;
 	resetError: () => void;
@@ -274,7 +274,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	);
 };
 
-export const ErrorComponent: React.FC<ErrorProps> = ({
+const ErrorComponent: React.FC<ErrorProps> = ({
 	variant = "inline",
 	error,
 	onRetry,

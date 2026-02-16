@@ -1,7 +1,7 @@
 import { api } from "@/services/apiClient";
 import { syncQueue } from "@/services/SyncQueue";
-import type { NameItem } from "@/shared/types";
 import { devLog } from "@/shared/lib/basic";
+import type { NameItem } from "@/shared/types";
 
 interface TournamentCreateResult {
 	success: boolean;
@@ -77,10 +77,4 @@ export const tournamentsAPI = {
 	},
 };
 
-export function calculateBracketRound(totalNames: number, currentMatch: number): number {
-	if (totalNames <= 2) {
-		return 1;
-	}
-	const matchesPerRound = Math.ceil(totalNames / 2);
-	return Math.ceil(currentMatch / matchesPerRound);
-}
+

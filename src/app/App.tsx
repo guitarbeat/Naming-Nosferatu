@@ -10,15 +10,18 @@
 import { Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
+import { useAuth } from "@/app/providers/Providers";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 import Tournament from "@/features/tournament/Tournament";
-import { useAuth } from "@/app/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { useOfflineSync } from "@/shared/hooks";
-import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import { cn } from "@/shared/lib/basic";
-import { cleanupPerformanceMonitoring, initializePerformanceMonitoring } from "@/shared/lib/performance";
+import {
+	cleanupPerformanceMonitoring,
+	initializePerformanceMonitoring,
+} from "@/shared/lib/performance";
+import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;

@@ -4,7 +4,7 @@
  * Single source of truth for glassmorphism effects across the app.
  */
 
-export interface GlassPreset {
+interface GlassPreset {
 	radius: number;
 	frost: number;
 	saturation: number;
@@ -83,11 +83,6 @@ export const GLASS_PRESETS = {
 	} satisfies GlassPreset,
 } as const;
 
-export type GlassPresetKey = keyof typeof GLASS_PRESETS;
 
-/**
- * Get a glass preset by key with optional overrides
- */
-export function getGlassPreset(key: GlassPresetKey, overrides?: Partial<GlassPreset>): GlassPreset {
-	return { ...GLASS_PRESETS[key], ...overrides };
-}
+
+

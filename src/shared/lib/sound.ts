@@ -8,8 +8,6 @@ interface SoundConfig {
 	preload?: boolean;
 }
 
-export type { SoundConfig };
-
 class SoundManager {
 	private audioCache: Map<string, HTMLAudioElement> = new Map();
 	private backgroundMusic: HTMLAudioElement | null = null;
@@ -221,10 +219,7 @@ export const getCurrentTrack = () => soundManager.getCurrentTrack();
 /**
  * Audio organization helpers
  */
-export const getAvailableSongs = () => soundManager.getAvailableSongs();
-export const getAvailableSoundEffects = () => soundManager.getAvailableSoundEffects();
-export const isSong = (name: string) => soundManager.isSong(name);
-export const isSoundEffect = (name: string) => soundManager.isSoundEffect(name);
+
 
 /**
  * Additional sound effects

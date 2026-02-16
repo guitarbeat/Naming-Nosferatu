@@ -462,7 +462,7 @@ interface PerformanceBadgesProps {
 	className?: string;
 }
 
-export function PerformanceBadges({ types = [], className = "" }: PerformanceBadgesProps) {
+function PerformanceBadges({ types = [], className = "" }: PerformanceBadgesProps) {
 	if (!types || types.length === 0) {
 		return null;
 	}
@@ -490,7 +490,7 @@ interface TrendIndicatorProps {
 	animated?: boolean;
 }
 
-export function TrendIndicator({
+function TrendIndicator({
 	direction = "stable",
 	percentChange = 0,
 	compact = false,
@@ -708,7 +708,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 	);
 };
 
-export interface IToastItem {
+interface IToastItem {
 	id: string;
 	message: string;
 	type: "success" | "error" | "info" | "warning";
@@ -730,7 +730,7 @@ interface ToastContainerProps {
 	className?: string;
 }
 
-export const ToastContainer: React.FC<ToastContainerProps> = ({
+const ToastContainer: React.FC<ToastContainerProps> = ({
 	toasts = [],
 	removeToast,
 	position = "top-right",
@@ -796,7 +796,7 @@ interface ToastProps extends Partial<ToastItemProps>, ToastContainerProps {
 	variant?: "item" | "container";
 }
 
-export const Toast: React.FC<ToastProps> = ({
+const Toast: React.FC<ToastProps> = ({
 	variant = "item",
 	toasts,
 	removeToast,

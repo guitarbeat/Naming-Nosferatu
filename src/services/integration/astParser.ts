@@ -17,7 +17,7 @@ import type { Dependency, Export } from "./types";
 /**
  * Parsed file information extracted from AST
  */
-export interface ParsedFile {
+interface ParsedFile {
 	imports: string[];
 	exports: Export[];
 	hasJSX: boolean;

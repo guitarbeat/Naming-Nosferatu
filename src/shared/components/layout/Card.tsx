@@ -12,7 +12,7 @@ import { cn } from "@/shared/lib/basic";
 import { TIMING } from "@/shared/lib/constants";
 import { DEFAULT_GLASS_CONFIG, LiquidGlass, resolveGlassConfig } from "./LayoutEffects";
 
-export type CardVariant =
+type CardVariant =
 	| "default"
 	| "elevated"
 	| "outlined"
@@ -24,9 +24,9 @@ export type CardVariant =
 	| "danger"
 	| "secondary";
 
-export type CardPadding = "none" | "small" | "medium" | "large" | "xl";
-export type CardShadow = "none" | "small" | "medium" | "large" | "xl";
-export type CardBackground = "solid" | "glass" | "gradient" | "transparent";
+type CardPadding = "none" | "small" | "medium" | "large" | "xl";
+type CardShadow = "none" | "small" | "medium" | "large" | "xl";
+type CardBackground = "solid" | "glass" | "gradient" | "transparent";
 
 // CVA variant for Card component
 const cardVariants = cva(
@@ -85,7 +85,7 @@ const cardVariants = cva(
 	},
 );
 
-export interface GlassConfig {
+interface GlassConfig {
 	width?: number;
 	height?: number;
 	radius?: number;
@@ -98,7 +98,7 @@ export interface GlassConfig {
 	[key: string]: unknown;
 }
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	children?: React.ReactNode;
 	variant?: CardVariant;
 	padding?: CardPadding;
@@ -294,7 +294,7 @@ export const Card = CardBase;
    CARD STATS SUB-COMPONENT
    ============================================================================ */
 
-export interface CardStatsProps extends CardProps {
+interface CardStatsProps extends CardProps {
 	title?: string;
 	label?: string;
 	value: string | number | React.ReactNode;
@@ -409,7 +409,7 @@ interface NameMetadata {
 	[key: string]: unknown;
 }
 
-export interface CardNameProps {
+interface CardNameProps {
 	name: string;
 	description?: string;
 	isSelected?: boolean;
