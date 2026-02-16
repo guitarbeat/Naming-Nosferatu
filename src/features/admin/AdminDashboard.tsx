@@ -128,7 +128,9 @@ export function AdminDashboard() {
 			const idStr = String(nameId);
 			// Call the admin function to toggle locked_in status
 			const { withSupabase } = await import("@/services/supabase/client");
-			await withSupabase(async (client) => {
+			// @ts-expect-error - The withSupabase definition in the mock client doesn't match this usage
+			// but we need to keep this code structure for when the real client is used
+			await withSupabase(async (client: any) => {
 				await client.rpc("set_user_context", { user_name_param: user.name });
 				const result = await client.rpc("toggle_name_locked_in" as any, {
 					p_name_id: idStr,

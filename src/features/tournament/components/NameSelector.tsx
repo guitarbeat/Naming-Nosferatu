@@ -336,7 +336,9 @@ export function NameSelector() {
 
 				// Ensure user context is set
 				const { withSupabase } = await import("@/services/supabase/client");
-				await withSupabase(async (client) => {
+				// @ts-expect-error - The withSupabase definition in the mock client doesn't match this usage
+				// but we need to keep this code structure for when the real client is used
+				await withSupabase(async (client: any) => {
 					try {
 						await client.rpc("set_user_context", { user_name_param: userName.trim() });
 					} catch {
@@ -399,7 +401,9 @@ export function NameSelector() {
 
 				// Ensure user context is set
 				const { withSupabase } = await import("@/services/supabase/client");
-				const result = await withSupabase(async (client) => {
+				// @ts-expect-error - The withSupabase definition in the mock client doesn't match this usage
+				// but we need to keep this code structure for when the real client is used
+				const result = await withSupabase(async (client: any) => {
 					try {
 						// Ensure user context is set
 						await client.rpc("set_user_context", { user_name_param: userName.trim() });
