@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import type React from "react";
 import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 
-
 /* ==========================================================================
    LIQUID GLASS COMPONENT
    ========================================================================== */
@@ -760,11 +759,5 @@ export function CatBackground() {
 /* ==========================================================================
    FLOATING BUBBLES COMPONENT
    ========================================================================== */
-
-
-
-
-
-
 
 export { LiquidGlass };

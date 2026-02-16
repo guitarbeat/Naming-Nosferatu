@@ -1,7 +1,5 @@
 import { api } from "@/services/apiClient";
 
-
-
 export const leaderboardAPI = {
 	getLeaderboard: async (limit: number | null = 50) => {
 		try {

@@ -82,7 +82,3 @@ export const GLASS_PRESETS = {
 		outputBlur: 0.3,
 	} satisfies GlassPreset,
 } as const;
-
-
-
-

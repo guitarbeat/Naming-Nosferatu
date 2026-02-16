@@ -10,8 +10,6 @@ export const queryClient = new QueryClient({
 	},
 });
 
-
-
 export async function withSupabase<T>(
 	operation: (client: any) => Promise<T>,
 	fallback: T,
@@ -24,9 +22,6 @@ export async function withSupabase<T>(
 		return fallback;
 	}
 }
-
-
-
 
 const resolveSupabaseClient = async () => null;
 

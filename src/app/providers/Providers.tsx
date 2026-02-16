@@ -141,7 +141,6 @@ interface ToastContextValue {
  * Check if `currentRole` meets or exceeds `requiredRole` in the role hierarchy.
  */
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Fallback Auth Adapter (no-op)
 // ═══════════════════════════════════════════════════════════════════════════════

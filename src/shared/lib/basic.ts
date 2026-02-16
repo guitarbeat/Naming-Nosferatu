@@ -18,10 +18,7 @@ import { CAT_IMAGES } from "./constants";
 // Types
 // ═══════════════════════════════════════════════════════════════════════════════
 
-
-
 /** Minimal interface for query-cache consumers (e.g. TanStack Query). */
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Class Names
@@ -44,7 +41,6 @@ export function cn(...inputs: ClassValue[]): string {
 
 /** Fisher-Yates shuffle — returns a new array. */
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Date Utilities
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -57,13 +53,11 @@ export function cn(...inputs: ClassValue[]): string {
  * formatDate(Date.now(), { month: "long" }) // "January 15, 2024"
  */
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Display Utilities
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** English ordinal suffix for a number (1st, 2nd, 3rd, 4th, 11th, 21st…). */
-
 
 /**
  * Rank with medal emoji and correct ordinal suffix.
@@ -72,9 +66,6 @@ export function cn(...inputs: ClassValue[]): string {
  * getRankDisplay(1)  // "🥇 1st"
  * getRankDisplay(21) // "21st"
  */
-
-
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Logging
@@ -90,8 +81,6 @@ const noop = (): void => {
 export const devLog: (...args: unknown[]) => void = isDev
 	? (...args) => console.log("[DEV]", ...args)
 	: noop;
-
-
 
 export const devError: (...args: unknown[]) => void = isDev
 	? (...args) => console.error("[DEV]", ...args)
@@ -114,7 +103,6 @@ export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[
 	return names.filter((n) => !isNameHidden(n));
 }
 
-
 /**
  * Filter names by visibility. Non-admin users always see only visible names.
  *
@@ -125,7 +113,9 @@ export function applyNameFilters(
 	names: NameItem[],
 	{ visibility = "visible", isAdmin = false }: { visibility?: string; isAdmin?: boolean } = {},
 ): NameItem[] {
-	if (!names) return [];
+	if (!names) {
+		return [];
+	}
 
 	let result = names;
 
@@ -153,13 +143,10 @@ export function mapFilterStatusToVisibility(status: string): "all" | "visible" |
 			return "hidden";
 		case "all":
 			return "all";
-		case "visible":
 		default:
 			return "visible";
 	}
 }
-
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Rating / Metrics Utilities
@@ -171,15 +158,11 @@ export function mapFilterStatusToVisibility(status: string): "all" | "visible" |
  * @param higherIsBetter - When `true` (default), higher values yield higher percentiles.
  */
 
-
 /** Normalize a ratings record into an array. Already-array input is returned as-is. */
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Cat Image Utilities
 // ═══════════════════════════════════════════════════════════════════════════════
-
-
 
 // Cache for memoization to avoid redundant hash calculations
 const imageCache = new Map<string, string>();
@@ -227,7 +210,6 @@ export function getRandomCatImage(
  * Fetch random cat thumbnails from The Cat API.
  * Falls back to Unsplash URLs if the request fails.
  */
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CSV Export
@@ -280,16 +262,13 @@ export function exportTournamentResultsToCSV(rankings: NameItem[], filename?: st
 
 /** Remove tournament-related entries from the query cache. */
 
-
 /** Clear the entire query cache and tournament localStorage entry. */
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Image Compression
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** Load a `File` into an `HTMLImageElement` (browser only). */
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Haptic Feedback
@@ -319,6 +298,3 @@ export function hapticTournamentStart(): void {
  * Register sounds with `soundManager.register("click", "/sounds/click.mp3")`,
  * then play them with `playSound("click")`.
  */
-
-
-

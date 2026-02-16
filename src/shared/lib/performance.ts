@@ -151,4 +151,3 @@ export function cleanupPerformanceMonitoring(): void {
 }
 
 /** Retrieve a snapshot of all collected metrics. */
-

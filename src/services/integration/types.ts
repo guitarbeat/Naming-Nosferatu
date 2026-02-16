@@ -118,12 +118,6 @@ export interface BuildResult {
 	warnings: BuildWarning[];
 }
 
-interface DiagnosticResult {
-	canAutoRecover: boolean;
-	suggestedFixes: string[];
-	errorSummary: string;
-}
-
 // ============================================================================
 // File Manager Types
 // ============================================================================

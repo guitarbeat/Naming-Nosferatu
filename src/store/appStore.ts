@@ -32,7 +32,6 @@ import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 
-
 import type {
 	CatChosenName,
 	ErrorLog,
@@ -449,11 +448,11 @@ const createErrorSlice: StateCreator<
 		setError: (error) => {
 			const log: ErrorLog | null = error
 				? {
-					error,
-					context: "setError",
-					metadata: {},
-					timestamp: new Date().toISOString(),
-				}
+						error,
+						context: "setError",
+						metadata: {},
+						timestamp: new Date().toISOString(),
+					}
 				: null;
 
 			patch(set, "errors", {
@@ -501,10 +500,6 @@ export default useAppStore;
 //
 // Use: `const userName = useAppStore(selectUserName);`
 
-
-
-
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Initialization Hook
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -535,12 +530,6 @@ export function useAppStoreInitialization(onUserContext?: (name: string) => void
 // App Route Configuration
 // ═══════════════════════════════════════════════════════════════════════════════
 
-
-
-
-
-
-
 export const errorContexts = {
 	tournamentFlow: "Tournament Flow",
 	analysisDashboard: "Analysis Dashboard",
@@ -550,15 +539,3 @@ export const errorContexts = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // Navigation Configuration
 // ═══════════════════════════════════════════════════════════════════════════════
-
-
-
-
-
-
-
-
-
-
-
-

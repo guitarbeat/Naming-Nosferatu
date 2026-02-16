@@ -1,8 +1,5 @@
 import type React from "react";
 
-
-
-
 export const CollapsibleContent: React.FC<{
 	id?: string;
 	isCollapsed: boolean;

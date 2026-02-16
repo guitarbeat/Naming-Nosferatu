@@ -220,7 +220,6 @@ export const getCurrentTrack = () => soundManager.getCurrentTrack();
  * Audio organization helpers
  */
 
-
 /**
  * Additional sound effects
  */

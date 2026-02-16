@@ -13,8 +13,6 @@
  * - Never duplicate a type — import it.
  */
 
-
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Identifiers
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -83,8 +81,6 @@ export interface RatingData {
 	losses: number;
 }
 
-
-
 /**
  * Flexible rating input — accepts either a full RatingData object or a
  * bare number (interpreted as rating with 0 wins/losses).
@@ -148,8 +144,6 @@ export interface TournamentProps {
 	onVote?: (voteData: VoteData) => Promise<void> | void;
 }
 
-
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Filter Types
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -161,10 +155,6 @@ export interface TournamentFilters {
 	dateFilter?: "all" | "today" | "week" | "month";
 	searchTerm?: string;
 }
-
-
-
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Site Settings

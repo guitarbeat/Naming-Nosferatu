@@ -26,12 +26,7 @@
  * - {@link useValidatedForm}  — Lightweight form state + validation
  */
 
-import {
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Internal Utilities
@@ -41,19 +36,15 @@ import {
  * Simple debounce utility for internal use.
  */
 
-
 const IS_BROWSER = typeof window !== "undefined";
 
-
 /** useLayoutEffect in the browser, useEffect on the server (avoids SSR warnings). */
-
 
 /**
  * Experimental Network Information API.
  * Defined here once to avoid `any` casts scattered throughout the file.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation
  */
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // useEventListener
@@ -78,7 +69,9 @@ export function useEventListener<K extends keyof WindowEventMap>(
 	useEffect(() => {
 		const targetElement: Window | HTMLElement | null =
 			element || (typeof window !== "undefined" ? window : null);
-		if (!targetElement?.addEventListener) return;
+		if (!targetElement?.addEventListener) {
+			return;
+		}
 
 		const eventListener: EventListener = (event) =>
 			savedHandler.current(event as WindowEventMap[K]);
@@ -91,7 +84,6 @@ export function useEventListener<K extends keyof WindowEventMap>(
 	}, [eventName, element, options]);
 }
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // useMediaQuery
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -103,10 +95,14 @@ export function useMediaQuery(query: string): boolean {
 	const [matches, setMatches] = useState(false);
 
 	useEffect(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		const media = window.matchMedia(query);
-		if (media.matches !== matches) setMatches(media.matches);
+		if (media.matches !== matches) {
+			setMatches(media.matches);
+		}
 
 		const listener = () => setMatches(media.matches);
 		media.addEventListener("change", listener);
@@ -116,7 +112,6 @@ export function useMediaQuery(query: string): boolean {
 
 	return matches;
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // useDebounce
@@ -140,7 +135,6 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 	return debouncedValue;
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // useThrottle
@@ -171,7 +165,6 @@ export function useThrottle<T>(value: T, interval = 500): T {
 	return throttledValue;
 }
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // useToggle
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -184,7 +177,6 @@ export function useToggle(defaultValue = false): [boolean, () => void, (value: b
 	const toggle = useCallback(() => setValue((v) => !v), []);
 	return [value, toggle, setValue];
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // usePrevious
@@ -200,7 +192,6 @@ export function usePrevious<T>(value: T): T | undefined {
 	}, [value]);
 	return prevRef.current;
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // useClickOutside
@@ -237,13 +228,11 @@ export function useClickOutside(
 	}, [ref]);
 }
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // useBrowserState
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** Customizable responsive breakpoints (in pixels). */
-
 
 /**
  * All-in-one hook for responsive design, network status, and accessibility prefs.
@@ -253,7 +242,6 @@ export function useClickOutside(
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
  * const browser = useBrowserState({ mobile: 640, tablet: 1280 });
  */
-
 
 /**
  * Legacy offline-sync hook.
@@ -297,7 +285,6 @@ export function useOnlineStatus(options?: {
 
 	return isOnline;
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // useLocalStorage
@@ -461,6 +448,4 @@ export function useCollapsible(defaultValue = false, storageKey?: string): Colla
 // useMasonryLayout
 // ═══════════════════════════════════════════════════════════════════════════════
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
-
