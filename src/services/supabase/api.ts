@@ -1,5 +1,5 @@
-import type { NameItem } from "@/shared/types";
 import { api } from "@/services/apiClient";
+import type { NameItem } from "@/shared/types";
 
 interface HiddenNameItem {
 	id: string;
@@ -24,9 +24,7 @@ export const imagesAPI = {
 export const coreAPI = {
 	getTrendingNames: async (includeHidden: boolean = false) => {
 		try {
-			const data = await api.get<any[]>(
-				`/names?includeHidden=${includeHidden}`,
-			);
+			const data = await api.get<any[]>(`/names?includeHidden=${includeHidden}`);
 			return (data ?? []).map((item: any) => ({
 				...item,
 				updated_at: null,
@@ -42,11 +40,7 @@ export const coreAPI = {
 		}
 	},
 
-	addName: async (
-		name: string,
-		description: string = "",
-		_userName: string | null = null,
-	) => {
+	addName: async (name: string, description: string = "", _userName: string | null = null) => {
 		try {
 			const result = await api.post<{ success: boolean; data?: any; error?: string }>("/names", {
 				name: name.trim(),
@@ -81,9 +75,7 @@ export const coreAPI = {
 
 	deleteById: async (nameId: string | number) => {
 		try {
-			return await api.delete<{ success: boolean; error?: string }>(
-				`/names/${nameId}`,
-			);
+			return await api.delete<{ success: boolean; error?: string }>(`/names/${nameId}`);
 		} catch (error: any) {
 			return { success: false, error: error.message || "Failed to delete name" };
 		}
@@ -127,9 +119,10 @@ export const hiddenNamesAPI = {
 
 	hideNames: async (_userName: string, nameIds: (string | number)[]) => {
 		try {
-			return await api.post<
-				{ nameId: string | number; success: boolean; error?: string }[]
-			>("/names/bulk-toggle-hidden", { nameIds, isHidden: true });
+			return await api.post<{ nameId: string | number; success: boolean; error?: string }[]>(
+				"/names/bulk-toggle-hidden",
+				{ nameIds, isHidden: true },
+			);
 		} catch {
 			return nameIds.map((id) => ({
 				nameId: id,
@@ -141,9 +134,10 @@ export const hiddenNamesAPI = {
 
 	unhideNames: async (_userName: string, nameIds: (string | number)[]) => {
 		try {
-			return await api.post<
-				{ nameId: string | number; success: boolean; error?: string }[]
-			>("/names/bulk-toggle-hidden", { nameIds, isHidden: false });
+			return await api.post<{ nameId: string | number; success: boolean; error?: string }[]>(
+				"/names/bulk-toggle-hidden",
+				{ nameIds, isHidden: false },
+			);
 		} catch {
 			return nameIds.map((id) => ({
 				nameId: id,
@@ -181,10 +175,7 @@ export const siteSettingsAPI = {
 		}
 	},
 
-	updateCatChosenName: async (
-		nameData: CatChosenNameUpdate,
-		_userName: string,
-	) => {
+	updateCatChosenName: async (nameData: CatChosenNameUpdate, _userName: string) => {
 		try {
 			const result = await api.post<{
 				success: boolean;

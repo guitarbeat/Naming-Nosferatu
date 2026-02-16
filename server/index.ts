@@ -1,5 +1,5 @@
-import express from "express";
 import cors from "cors";
+import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { router } from "./routes";
@@ -19,11 +19,11 @@ const distPath = path.resolve(__dirname, "../dist");
 app.use(express.static(distPath));
 
 app.get("/{*path}", (_req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+	res.sendFile(path.join(distPath, "index.html"));
 });
 
 const PORT = parseInt(process.env.PORT || "3001", 10);
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`API server running on port ${PORT}`);
+	console.log(`API server running on port ${PORT}`);
 });
