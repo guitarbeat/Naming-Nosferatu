@@ -21,7 +21,9 @@ export async function withSupabase<T>(operation: () => Promise<T>, fallback: T):
 	}
 }
 
-export const updateSupabaseUserContext = (_userName: string | null): void => {};
+export const updateSupabaseUserContext = (_userName: string | null): void => {
+	// No-op for now
+};
 
 export const resolveSupabaseClient = async () => null;
 export const supabase = resolveSupabaseClient;

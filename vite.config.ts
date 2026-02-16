@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
-import { consoleForwardPlugin } from "./vite-console-forward-plugin";
+import { consoleForwardPlugin } from "./scripts/vite-console-forward-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,6 +1,6 @@
 import type React from "react";
-import { ChevronDown, ChevronRight } from "@/icons";
 import { cn } from "@/utils/basic";
+import { ChevronDown, ChevronRight } from "@/utils/icons";
 
 interface CollapsibleHeaderProps {
 	title: string;

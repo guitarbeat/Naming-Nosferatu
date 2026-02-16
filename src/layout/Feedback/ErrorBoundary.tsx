@@ -4,9 +4,9 @@
  */
 
 import React, { Component, type ReactNode, useState } from "react";
-import { Copy } from "@/icons";
 import { ErrorManager } from "@/services/errorManager";
 import { cn } from "@/utils/basic";
+import { Copy } from "@/utils/icons";
 
 interface ErrorBoundaryProps {
 	children: ReactNode;
