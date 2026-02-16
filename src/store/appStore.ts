@@ -30,6 +30,17 @@
 
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
+import { STORAGE_KEYS } from "@/shared/lib/constants";
+import type { LucideIcon } from "@/shared/lib/icons";
+import {
+	BarChart3,
+	CheckCircle,
+	Layers,
+	LayoutGrid,
+	Lightbulb,
+	Trophy,
+	User,
+} from "@/shared/lib/icons";
 import type {
 	CatChosenName,
 	ErrorLog,
@@ -44,9 +55,6 @@ import type {
 	UserState,
 	VoteRecord,
 } from "@/shared/types";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
-import type { LucideIcon } from "@/shared/lib/icons";
-import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/shared/lib/icons";
 
 // Re-export domain types so consumers can import from either location
 export type {
@@ -462,11 +470,11 @@ const createErrorSlice: StateCreator<
 		setError: (error) => {
 			const log: ErrorLog | null = error
 				? {
-					error,
-					context: "setError",
-					metadata: {},
-					timestamp: new Date().toISOString(),
-				}
+						error,
+						context: "setError",
+						metadata: {},
+						timestamp: new Date().toISOString(),
+					}
 				: null;
 
 			patch(set, "errors", {

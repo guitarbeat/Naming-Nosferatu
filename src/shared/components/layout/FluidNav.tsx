@@ -6,11 +6,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/app/providers/Providers";
 import { useNameSuggestion } from "@/hooks/useNames";
 import Button from "@/shared/components/layout/Button";
 import { Input, Textarea } from "@/shared/components/layout/FormPrimitives";
-import { useAuth } from "@/app/providers/Providers";
-import useAppStore from "@/store/appStore";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/shared/lib/basic";
 import {
 	BarChart3,
@@ -22,6 +21,7 @@ import {
 	Trophy,
 	User,
 } from "@/shared/lib/icons";
+import useAppStore from "@/store/appStore";
 import { AnimatedNavButton, NavButton } from "./NavButton";
 
 // Map nav keys to Section IDs

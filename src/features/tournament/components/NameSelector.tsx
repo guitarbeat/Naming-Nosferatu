@@ -6,15 +6,13 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNamesCache } from "@/hooks/useNamesCache";
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
 import { Loading } from "@/shared/components/layout/FeedbackComponents";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import { useCollapsible } from "@/shared/hooks";
-import type { IdType, NameItem } from "@/shared/types";
-import useAppStore from "@/store/appStore";
 import { getRandomCatImage } from "@/shared/lib/basic";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import {
@@ -28,6 +26,8 @@ import {
 	X,
 	ZoomIn,
 } from "@/shared/lib/icons";
+import type { IdType, NameItem } from "@/shared/types";
+import useAppStore from "@/store/appStore";
 import CatImage from "./CatImage";
 
 const SWIPE_OFFSET_THRESHOLD = 100;

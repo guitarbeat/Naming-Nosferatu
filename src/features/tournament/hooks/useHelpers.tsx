@@ -5,9 +5,8 @@
  */
 
 import { useCallback, useRef, useState } from "react";
-import { Toast } from "@/shared/components/layout";
 import { useToast } from "@/app/providers/Providers";
-import type { NameItem } from "@/shared/types";
+import { Toast } from "@/shared/components/layout";
 import { devError, devLog } from "@/shared/lib/basic";
 import { NOTIFICATION } from "@/shared/lib/constants";
 import {
@@ -22,6 +21,7 @@ import {
 	setBackgroundMusicVolume,
 	stopBackgroundMusic,
 } from "@/shared/lib/sound";
+import type { NameItem } from "@/shared/types";
 
 /* =========================================================================
    AUDIO MANAGER HOOK
