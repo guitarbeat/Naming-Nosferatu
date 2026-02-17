@@ -18,7 +18,7 @@ import {
 	stopBackgroundMusic,
 } from "@/shared/lib/sound";
 import { Toast } from "@/shared/components/layout";
-import { useToast } from "@/providers/Providers";
+import { useToast } from "@/app/providers/Providers";
 import type { NameItem } from "@/shared/types";
 import { devError, devLog } from "@/shared/lib/basic";
 import { NOTIFICATION } from "@/shared/lib/constants";
