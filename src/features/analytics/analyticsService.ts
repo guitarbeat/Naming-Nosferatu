@@ -94,7 +94,9 @@ export const leaderboardAPI = {
 export const analyticsAPI = {
 	getTopSelectedNames: async (limit: number | null = 50): Promise<SelectionPopularityItem[]> => {
 		try {
-			return await api.get<SelectionPopularityItem[]>(`/analytics/top-selected?limit=${limit || 50}`);
+			return await api.get<SelectionPopularityItem[]>(
+				`/analytics/top-selected?limit=${limit || 50}`,
+			);
 		} catch {
 			return [];
 		}
@@ -112,7 +114,9 @@ export const analyticsAPI = {
 			if (userName) {
 				params.set("userName", userName);
 			}
-			return await api.get<AnalyticsDataItem[]>(`/analytics/popularity-scores?${params.toString()}`);
+			return await api.get<AnalyticsDataItem[]>(
+				`/analytics/popularity-scores?${params.toString()}`,
+			);
 		} catch {
 			return [];
 		}
@@ -130,7 +134,9 @@ export const analyticsAPI = {
 			if (options?.dateFilter) {
 				params.set("dateFilter", options.dateFilter);
 			}
-			return await api.get<Array<Record<string, unknown>>>(`/analytics/ranking-history?${params.toString()}`);
+			return await api.get<Array<Record<string, unknown>>>(
+				`/analytics/ranking-history?${params.toString()}`,
+			);
 		} catch {
 			return [];
 		}

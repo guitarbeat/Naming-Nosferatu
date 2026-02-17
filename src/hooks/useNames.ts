@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { coreAPI } from "@supabase/client";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { NameItem } from "@/shared/types";
 
 /* =========================================================================
@@ -19,10 +19,7 @@ interface UseNameDataResult {
 	setNames: (updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void;
 }
 
-export function useNameData({
-	userName,
-	mode = "tournament",
-}: UseNameDataProps = {}): UseNameDataResult {
+export function useNameData({ mode = "tournament" }: UseNameDataProps = {}): UseNameDataResult {
 	const [names, setNamesState] = useState<NameItem[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
@@ -272,7 +269,9 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 			setTouched({});
 			props.onSuccess?.();
 		} catch (submitError) {
-			setGlobalError(submitError instanceof Error ? submitError.message : "Failed to submit suggestion");
+			setGlobalError(
+				submitError instanceof Error ? submitError.message : "Failed to submit suggestion",
+			);
 		} finally {
 			setIsSubmitting(false);
 		}

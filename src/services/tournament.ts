@@ -1,5 +1,5 @@
-import { ELO_RATING, CAT_IMAGES } from "@/shared/lib/constants";
 import { getRandomCatImage as getRandomCatImageFromLib } from "@/shared/lib/basic";
+import { CAT_IMAGES, ELO_RATING } from "@/shared/lib/constants";
 /* =========================================================================
    SERVICE
    ========================================================================= */
