@@ -40,6 +40,14 @@ export function useNamesCache() {
 			data,
 			timestamp: Date.now(),
 		});
+
+		// Persist to localStorage after updating cache
+		try {
+			const cacheObject = Object.fromEntries(cacheRef.current);
+			localStorage.setItem("names_cache_map", JSON.stringify(cacheObject));
+		} catch (error) {
+			console.warn("Failed to persist names cache to localStorage:", error);
+		}
 	}, []);
 
 	const invalidateCache = useCallback((): void => {
@@ -66,12 +74,8 @@ export function useNamesCache() {
 		}
 	}, []);
 
-	// Save cache to localStorage when it changes
-	// biome-ignore lint/correctness/useExhaustiveDependencies: cacheRef.current.size is the trigger
-	useEffect(() => {
-		const cacheObject = Object.fromEntries(cacheRef.current);
-		localStorage.setItem("names_cache_map", JSON.stringify(cacheObject));
-	}, []);
+	// No automatic persistence - cache is loaded on mount and users can manually call setCachedData
+	// Manual persistence ensures we don't trigger renders during async operations
 
 	return {
 		getCachedData,
