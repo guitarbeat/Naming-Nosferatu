@@ -53,9 +53,6 @@ describe("API Validation", () => {
 				.post("/api/names")
 				.send({ name: "", description: "Desc" });
 
-			if (res.status !== 400) console.log("Status:", res.status);
-			if (!res.body.error) console.log("Body:", JSON.stringify(res.body, null, 2));
-
 			expect(res.status).toBe(400);
 			expect(res.body.success).toBe(false);
 			expect(res.body.error).toBeDefined();

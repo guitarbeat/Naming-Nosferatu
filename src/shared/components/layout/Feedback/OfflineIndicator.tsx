@@ -1,11 +1,3 @@
-<<<<<<< HEAD:src/shared/components/layout/Feedback/OfflineIndicator.tsx
-import React, { useEffect, useState } from "react";
-import { useBrowserState } from "@/hooks/useBrowserState";
-
-/* ==========================================================================
-   OFFLINE INDICATOR COMPONENT
-   ========================================================================== */
-=======
 /**
  * @module OfflineIndicator
  * @description Network status indicator showing online/offline/slow connection states
@@ -14,7 +6,10 @@ import { useBrowserState } from "@/hooks/useBrowserState";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useBrowserState } from "@/hooks/useBrowserState";
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Feedback/OfflineIndicator.tsx
+
+/* ==========================================================================
+   OFFLINE INDICATOR COMPONENT
+   ========================================================================== */
 
 interface OfflineIndicatorProps {
 	showWhenOnline?: boolean;

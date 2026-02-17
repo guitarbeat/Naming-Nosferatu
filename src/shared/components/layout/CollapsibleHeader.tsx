@@ -1,8 +1,6 @@
 import type React from "react";
-<<<<<<< HEAD:src/shared/components/layout/CollapsibleHeader.tsx
-=======
-import { ChevronDown, ChevronRight } from "@/icons";
 import { cn } from "@/shared/lib/basic";
+import { ChevronDown, ChevronRight } from "@/shared/lib/icons";
 
 interface CollapsibleHeaderProps {
 	title: string;
@@ -58,7 +56,6 @@ export const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
 		</div>
 	);
 };
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/CollapsibleHeader.tsx
 
 export const CollapsibleContent: React.FC<{
 	id?: string;

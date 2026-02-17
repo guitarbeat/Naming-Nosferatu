@@ -2,6 +2,8 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNameData, useNameSelection } from "@/hooks/useNames";
+import { applyNameFilters, mapFilterStatusToVisibility } from "@/shared/lib/basic";
+import { FILTER_OPTIONS } from "@/shared/lib/constants";
 import useAppStore from "@/store/appStore";
 import type {
 	NameItem,
@@ -9,8 +11,6 @@ import type {
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
 } from "@/types/appTypes";
-import { applyNameFilters, mapFilterStatusToVisibility } from "@/shared/lib/basic";
-import { FILTER_OPTIONS } from "@/shared/lib/constants";
 
 export function useNameManagementView({
 	mode,

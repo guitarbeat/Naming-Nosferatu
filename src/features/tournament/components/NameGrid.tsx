@@ -7,13 +7,13 @@
 import { useCallback, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import { EmptyState, Lightbox, Loading } from "@/shared/components/layout";
-import type { NameItem } from "@/types/appTypes";
 import {
 	applyNameFilters,
 	cn,
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
 } from "@/shared/lib/basic";
+import type { NameItem } from "@/types/appTypes";
 import { NameGridItem } from "./NameGridItem";
 import { NameUploadForm } from "./NameUploadForm";
 

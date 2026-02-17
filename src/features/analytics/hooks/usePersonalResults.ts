@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-<<<<<<< HEAD
 import type { NameItem } from "@/shared/types";
-=======
-import type { NameItem } from "@/types/appTypes";
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 
 export function usePersonalResults({
 	personalRatings,
