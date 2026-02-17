@@ -14,12 +14,13 @@ import CatImage from "./components/CatImage";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
-	const { user } = useAppStore();
+	// Optimization: Only select user.name to avoid re-renders on other store changes
+	const userName = useAppStore((state) => state.user.name);
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 	const prefersReducedMotion = useReducedMotion();
 
-	const tournament = useTournamentState(visibleNames, user.name);
+	const tournament = useTournamentState(visibleNames, userName);
 	const {
 		currentMatch,
 		ratings,
