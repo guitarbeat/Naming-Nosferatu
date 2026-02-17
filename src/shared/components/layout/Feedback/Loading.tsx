@@ -7,9 +7,15 @@ import { Skeleton, Spinner } from "@heroui/react";
 import { motion } from "framer-motion";
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";
+<<<<<<< HEAD:src/shared/components/layout/Feedback/Loading.tsx
 import { cn } from "@/shared/lib/basic";
 import { Cat, Heart, PawPrint } from "@/shared/lib/icons";
 import { BongoCat } from "./BongoCat";
+=======
+import { Cat, Heart, PawPrint } from "@/icons";
+import { cn } from "@/shared/lib/basic";
+import { BongoCat } from "../LayoutEffects";
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Feedback/Loading.tsx
 
 const LOADING_ASSETS = ["/assets/images/cat.gif"];
 
@@ -21,7 +27,11 @@ type CatVariant = "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orbit";
 type CatColor = "neon" | "pastel" | "warm";
 type CardSkeletonVariant = "name-card" | "elevated-card" | "mosaic-card";
 
+<<<<<<< HEAD:src/shared/components/layout/Feedback/Loading.tsx
 interface LoadingProps {
+=======
+export interface LoadingProps {
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Feedback/Loading.tsx
 	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton" | "card-skeleton";
 	catVariant?: CatVariant;
 	catColor?: CatColor;

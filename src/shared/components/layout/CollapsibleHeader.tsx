@@ -1,4 +1,64 @@
 import type React from "react";
+<<<<<<< HEAD:src/shared/components/layout/CollapsibleHeader.tsx
+=======
+import { ChevronDown, ChevronRight } from "@/icons";
+import { cn } from "@/shared/lib/basic";
+
+interface CollapsibleHeaderProps {
+	title: string;
+	icon?: React.ReactNode;
+	actions?: React.ReactNode;
+	isCollapsed?: boolean;
+	onToggle?: () => void;
+	contentId?: string;
+	variant?: "default" | "compact";
+	toolbar?: React.ReactNode;
+}
+
+export const CollapsibleHeader: React.FC<CollapsibleHeaderProps> = ({
+	title,
+	icon,
+	actions,
+	isCollapsed,
+	onToggle,
+	contentId,
+	variant = "default",
+	toolbar,
+}) => {
+	return (
+		<div className={cn("flex items-center justify-between", variant === "default" && "mb-4")}>
+			{onToggle ? (
+				<button
+					type="button"
+					className={cn("flex items-center gap-2 cursor-pointer select-none")}
+					onClick={onToggle}
+					aria-expanded={isCollapsed === undefined ? undefined : !isCollapsed}
+					aria-controls={contentId}
+				>
+					<div className="text-white/60 hover:text-white transition-colors">
+						{isCollapsed ? <ChevronRight size={20} /> : <ChevronDown size={20} />}
+					</div>
+					<div className="text-lg font-semibold text-white flex items-center gap-2">
+						{icon && <span>{icon}</span>}
+						{title}
+					</div>
+				</button>
+			) : (
+				<div className={cn("flex items-center gap-2")}>
+					<div className="text-lg font-semibold text-white flex items-center gap-2">
+						{icon && <span>{icon}</span>}
+						{title}
+					</div>
+				</div>
+			)}
+			<div className="flex items-center gap-4">
+				{toolbar}
+				{actions}
+			</div>
+		</div>
+	);
+};
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/CollapsibleHeader.tsx
 
 export const CollapsibleContent: React.FC<{
 	id?: string;

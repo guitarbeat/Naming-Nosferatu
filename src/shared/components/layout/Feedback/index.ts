@@ -4,7 +4,16 @@
  * Provides backward compatibility for existing imports from FeedbackComponents
  */
 
-export { ErrorBoundary, ErrorComponent } from "./ErrorBoundary";
-export { Loading } from "./Loading";
+export {
+	ErrorBoundary,
+	ErrorComponent,
+	type ErrorFallbackProps,
+} from "./ErrorBoundary";
+export { Loading, type LoadingProps } from "./Loading";
 export { OfflineIndicator } from "./OfflineIndicator";
-export { Toast } from "./Toast";
+export { PerformanceBadges, TrendIndicator } from "./PerformanceBadges";
+export {
+	type IToastItem,
+	Toast,
+	ToastContainer,
+} from "./Toast";

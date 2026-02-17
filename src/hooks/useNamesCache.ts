@@ -71,7 +71,7 @@ export function useNamesCache() {
 	useEffect(() => {
 		const cacheObject = Object.fromEntries(cacheRef.current);
 		localStorage.setItem("names_cache_map", JSON.stringify(cacheObject));
-	}, [cacheRef.current.size]);
+	}, []);
 
 	return {
 		getCachedData,
