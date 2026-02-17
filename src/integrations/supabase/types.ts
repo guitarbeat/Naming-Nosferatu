@@ -16,6 +16,7 @@ export type Database = {
 					old_values: Json | null;
 					operation: string;
 					table_name: string;
+					user_id: string | null;
 					user_name: string | null;
 				};
 				Insert: {
@@ -25,6 +26,7 @@ export type Database = {
 					old_values?: Json | null;
 					operation: string;
 					table_name: string;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Update: {
@@ -34,6 +36,7 @@ export type Database = {
 					old_values?: Json | null;
 					operation?: string;
 					table_name?: string;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Relationships: [];
@@ -43,22 +46,26 @@ export type Database = {
 					created_at: string;
 					preferences: Json | null;
 					updated_at: string;
+					user_id: string;
 					user_name: string;
 				};
 				Insert: {
 					created_at?: string;
 					preferences?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name: string;
 				};
 				Update: {
 					created_at?: string;
 					preferences?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name?: string;
 				};
 				Relationships: [];
 			};
+
 			cat_audit_log: {
 				Row: {
 					client_ip: unknown;
@@ -69,6 +76,7 @@ export type Database = {
 					operation: string;
 					table_name: string;
 					user_agent: string | null;
+					user_id: string | null;
 					user_name: string | null;
 				};
 				Insert: {
@@ -80,6 +88,7 @@ export type Database = {
 					operation: string;
 					table_name: string;
 					user_agent?: string | null;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Update: {
@@ -91,10 +100,12 @@ export type Database = {
 					operation?: string;
 					table_name?: string;
 					user_agent?: string | null;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Relationships: [];
 			};
+
 			cat_name_options: {
 				Row: {
 					avg_rating: number | null;
@@ -139,6 +150,7 @@ export type Database = {
 					rating: number | null;
 					rating_history: Json | null;
 					updated_at: string;
+					user_id: string;
 					user_name: string;
 					wins: number | null;
 				};
@@ -149,6 +161,7 @@ export type Database = {
 					rating?: number | null;
 					rating_history?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name: string;
 					wins?: number | null;
 				};
@@ -159,6 +172,7 @@ export type Database = {
 					rating?: number | null;
 					rating_history?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name?: string;
 					wins?: number | null;
 				};
@@ -176,6 +190,13 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "cat_app_users";
 						referencedColumns: ["user_name"];
+					},
+					{
+						foreignKeyName: "cat_name_ratings_user_id_fkey";
+						columns: ["user_id"];
+						isOneToOne: false;
+						referencedRelation: "cat_app_users";
+						referencedColumns: ["user_id"];
 					},
 				];
 			};
@@ -329,43 +350,34 @@ export type Database = {
 				Row: {
 					apps: string[] | null;
 					avatar_url: string | null;
-					created_at: string;
+					created_at: string | null;
 					display_name: string | null;
 					email: string | null;
 					first_name: string | null;
-					has_custom_password: boolean;
 					id: string;
-					is_private: boolean;
-					pin_hash: string | null;
-					updated_at: string;
+					updated_at: string | null;
 					username: string | null;
 				};
 				Insert: {
 					apps?: string[] | null;
 					avatar_url?: string | null;
-					created_at?: string;
+					created_at?: string | null;
 					display_name?: string | null;
 					email?: string | null;
 					first_name?: string | null;
-					has_custom_password?: boolean;
 					id: string;
-					is_private?: boolean;
-					pin_hash?: string | null;
-					updated_at?: string;
+					updated_at?: string | null;
 					username?: string | null;
 				};
 				Update: {
 					apps?: string[] | null;
 					avatar_url?: string | null;
-					created_at?: string;
+					created_at?: string | null;
 					display_name?: string | null;
 					email?: string | null;
 					first_name?: string | null;
-					has_custom_password?: boolean;
 					id?: string;
-					is_private?: boolean;
-					pin_hash?: string | null;
-					updated_at?: string;
+					updated_at?: string | null;
 					username?: string | null;
 				};
 				Relationships: [];
@@ -421,9 +433,9 @@ export type Database = {
 					id?: string;
 					retrospective_date?: string;
 					retrospective_type?: string;
-					title: string;
+					title?: string;
 					updated_at?: string;
-					user_id: string;
+					user_id?: string;
 				};
 				Relationships: [];
 			};
@@ -463,6 +475,7 @@ export type Database = {
 					selected_at: string;
 					selection_type: string | null;
 					tournament_id: string;
+					user_id: string;
 					user_name: string;
 				};
 				Insert: {
@@ -473,6 +486,7 @@ export type Database = {
 					selected_at?: string;
 					selection_type?: string | null;
 					tournament_id: string;
+					user_id?: string;
 					user_name: string;
 				};
 				Update: {
@@ -483,6 +497,7 @@ export type Database = {
 					selected_at?: string;
 					selection_type?: string | null;
 					tournament_id?: string;
+					user_id?: string;
 					user_name?: string;
 				};
 				Relationships: [
@@ -492,6 +507,13 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "cat_name_options";
 						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "tournament_selections_user_id_fkey";
+						columns: ["user_id"];
+						isOneToOne: false;
+						referencedRelation: "cat_app_users";
+						referencedColumns: ["user_id"];
 					},
 				];
 			};
@@ -569,10 +591,304 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-		};
-		Views: {
-			public_profiles: {
+
+			fin_charts: {
 				Row: {
+					created_at: string;
+					id: string;
+					name: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					name: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					name?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
+			fin_transactions: {
+				Row: {
+					created_at: string;
+					date: string;
+					enabled: boolean;
+					fin_chart_id: string | null;
+					id: string;
+					inflow: number;
+					name: string;
+					outflow: number;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					date: string;
+					enabled?: boolean;
+					fin_chart_id?: string | null;
+					id?: string;
+					inflow?: number;
+					name: string;
+					outflow?: number;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					date?: string;
+					enabled?: boolean;
+					fin_chart_id?: string | null;
+					id?: string;
+					inflow?: number;
+					name?: string;
+					outflow?: number;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "fin_transactions_fin_chart_id_fkey";
+						columns: ["fin_chart_id"];
+						isOneToOne: false;
+						referencedRelation: "fin_charts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			flo_entries: {
+				Row: {
+					created_at: string;
+					date: string;
+					id: string;
+					is_period_day: boolean;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					date: string;
+					id?: string;
+					is_period_day?: boolean;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					date?: string;
+					id?: string;
+					is_period_day?: boolean;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
+			flo_shares: {
+				Row: {
+					created_at: string;
+					id: string;
+					owner_id: string;
+					shared_with_id: string;
+					updated_at: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					owner_id: string;
+					shared_with_id: string;
+					updated_at?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					owner_id?: string;
+					shared_with_id?: string;
+					updated_at?: string | null;
+				};
+				Relationships: [];
+			};
+			profile_access_audit: {
+				Row: {
+					accessed_profile_id: string | null;
+					action_type: string;
+					admin_user_id: string | null;
+					created_at: string;
+					id: string;
+					metadata: Json | null;
+				};
+				Insert: {
+					accessed_profile_id?: string | null;
+					action_type: string;
+					admin_user_id?: string | null;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+				};
+				Update: {
+					accessed_profile_id?: string | null;
+					action_type?: string;
+					admin_user_id?: string | null;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+				};
+				Relationships: [];
+			};
+			profile_access_rate_limit: {
+				Row: {
+					access_count: number;
+					id: string;
+					is_blocked: boolean;
+					last_reset: string;
+					user_id: string;
+				};
+				Insert: {
+					access_count?: number;
+					id?: string;
+					is_blocked?: boolean;
+					last_reset?: string;
+					user_id: string;
+				};
+				Update: {
+					access_count?: number;
+					id?: string;
+					is_blocked?: boolean;
+					last_reset?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
+			profiles: {
+				Row: {
+					apps: string[] | null;
+					avatar_url: string | null;
+					created_at: string;
+					display_name: string | null;
+					email: string | null;
+					first_name: string | null;
+					has_custom_password: boolean;
+					id: string;
+					is_private: boolean;
+					pin_hash: string | null;
+					updated_at: string;
+					username: string | null;
+				};
+				Insert: {
+					apps?: string[] | null;
+					avatar_url?: string | null;
+					created_at?: string;
+					display_name?: string | null;
+					email?: string | null;
+					first_name?: string | null;
+					has_custom_password?: boolean;
+					id: string;
+					is_private?: boolean;
+					pin_hash?: string | null;
+					updated_at?: string;
+					username?: string | null;
+				};
+				Update: {
+					apps?: string[] | null;
+					avatar_url?: string | null;
+					created_at?: string;
+					display_name?: string | null;
+					email?: string | null;
+					first_name?: string | null;
+					has_custom_password?: boolean;
+					id?: string;
+					is_private?: boolean;
+					pin_hash?: string | null;
+					updated_at?: string;
+					username?: string | null;
+				};
+				Relationships: [];
+			};
+			user_credentials: {
+				Row: {
+					created_at: string;
+					id: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
+			user_roles: {
+				Row: {
+					created_at: string | null;
+					id: string;
+					role: Database["public"]["Enums"]["app_role"];
+					user_id: string | null;
+					user_name: string | null;
+				};
+				Insert: {
+					created_at?: string | null;
+					id?: string;
+					role?: Database["public"]["Enums"]["app_role"];
+					user_id?: string | null;
+					user_name?: string | null;
+				};
+				Update: {
+					created_at?: string | null;
+					id?: string;
+					role?: Database["public"]["Enums"]["app_role"];
+					user_id?: string | null;
+					user_name?: string | null;
+				};
+				Relationships: [];
+			};
+>>>>>>>> origin / perf / optimize - useMasonryLayout - 7758059108689479976: src / integrations / supabase / types.ts
+		};
+Views: {
+	public_profiles: {
+		Row: {
+<<<<<<<< HEAD: supabase / types.ts
+			apps: string[] | null;
+			avatar_url: string | null;
+			created_at: string | null;
+			display_name: string | null;
+			first_name: string | null;
+			id: string | null;
+			updated_at: string | null;
+			username: string | null;
+		};
+		Insert: {
+			apps ?: string[] | null;
+			avatar_url ?: string | null;
+			created_at ?: string | null;
+			display_name ?: string | null;
+			first_name ?: string | null;
+			id ?: string | null;
+			updated_at ?: string | null;
+			username ?: string | null;
+		};
+		Update: {
+			apps ?: string[] | null;
+			avatar_url ?: string | null;
+			created_at ?: string | null;
+			display_name ?: string | null;
+			first_name ?: string | null;
+			id ?: string | null;
+			updated_at ?: string | null;
+========
 					avatar_url: string | null;
 					created_at: string | null;
 					display_name: string | null;
@@ -591,6 +907,7 @@ export type Database = {
 					created_at?: string | null;
 					display_name?: string | null;
 					id?: string | null;
+>>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
 					username?: string | null;
 				};
 				Relationships: [];

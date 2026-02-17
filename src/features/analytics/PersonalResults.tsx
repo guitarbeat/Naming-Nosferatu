@@ -1,4 +1,5 @@
 import { CardBody, Button as HeroButton } from "@heroui/react";
+<<<<<<< HEAD
 import { useToast } from "@/app/providers/Providers";
 import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
 import { Card } from "@/shared/components/layout";
@@ -15,6 +16,22 @@ interface PersonalResultsProps {
 		ratings:
 			| Record<string, RatingData>
 			| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
+=======
+import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
+import { Download, Plus } from "@/icons";
+import { Card } from "@/shared/components/layout";
+import { useToast } from "@/providers/Providers";
+import type { NameItem } from "@/types/appTypes";
+import { exportTournamentResultsToCSV } from "@/shared/lib/basic";
+import { RankingAdjustment } from "./RankingAdjustment";
+
+interface PersonalResultsProps {
+	personalRatings: Record<string, unknown> | undefined;
+	currentTournamentNames?: NameItem[];
+	onStartNew: () => void;
+	onUpdateRatings: (
+		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 	) => void;
 	userName?: string;
 }
@@ -65,6 +82,7 @@ export const PersonalResults = ({
 				rankings={rankings}
 				onSave={async (r: NameItem[]) => {
 					const ratingsMap = Object.fromEntries(
+<<<<<<< HEAD
 						r.map((n) => [
 							n.name,
 							{
@@ -73,9 +91,11 @@ export const PersonalResults = ({
 								losses: n.losses ?? 0,
 							},
 						]),
+=======
+						r.map((n) => [n.name, { rating: n.rating as number, wins: n.wins, losses: n.losses }]),
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 					);
-					// @ts-expect-error - types are slightly incompatible but logic is sound
-					onUpdateRatings(ratingsMap);
+					await onUpdateRatings(ratingsMap);
 					showToast("Updated!", "success");
 				}}
 				onCancel={onStartNew}
@@ -83,7 +103,7 @@ export const PersonalResults = ({
 
 			<div className="flex flex-wrap gap-3 justify-end">
 				<HeroButton
-					onPress={onStartNew}
+					onClick={onStartNew}
 					variant="flat"
 					className="bg-purple-500/20 hover:bg-purple-500/30 text-white"
 					startContent={<Plus size={18} />}
@@ -94,7 +114,7 @@ export const PersonalResults = ({
 					variant="flat"
 					className="bg-white/5 hover:bg-white/10 text-white"
 					startContent={<Download size={18} />}
-					onPress={() => {
+					onClick={() => {
 						if (!rankings.length) {
 							return;
 						}

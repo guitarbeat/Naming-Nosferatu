@@ -6,10 +6,10 @@
 
 import { motion } from "framer-motion";
 import { memo, useCallback, useMemo } from "react";
-import { getRandomCatImage } from "@/services/tournament";
 import { CardName } from "@/shared/components/layout/Card";
-import { cn, isNameHidden } from "@/shared/lib/basic";
+import { getRandomCatImage } from "@/services/tournament";
 import type { NameItem } from "@/types/appTypes";
+import { cn, isNameHidden } from "@/shared/lib/basic";
 
 interface NameGridItemProps {
 	nameObj: NameItem;

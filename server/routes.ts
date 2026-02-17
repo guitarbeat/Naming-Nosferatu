@@ -1,4 +1,4 @@
-import { Router, type Request, type Response } from "express";
+import { Router } from "express";
 import { supabase } from "./db";
 import { NameSchema, UserSchema } from "./validation";
 
@@ -44,8 +44,8 @@ router.post("/api/names", async (req, res) => {
 		if (!validation.success) {
 			return res.status(400).json({ success: false, error: validation.error.format() });
 		}
+		const { name, description, status, provenance } = validation.data;
 
-		const { name, description, status, provenance } = req.body;
 		const { data, error } = await supabase
 			.from("cat_name_options")
 			.insert({
@@ -206,14 +206,13 @@ router.post("/api/names/reorder", async (req, res) => {
 	}
 });
 
-const handleCreateUser = async (req: Request, res: Response) => {
+router.post("/api/users/create", async (req, res) => {
 	try {
 		const validation = UserSchema.safeParse(req.body);
 		if (!validation.success) {
 			return res.status(400).json({ success: false, error: validation.error.format() });
 		}
-
-		const { userName, preferences } = req.body;
+		const { userName, preferences } = validation.data;
 
 		// Upsert user
 		const { error: userError } = await supabase
@@ -245,10 +244,7 @@ const handleCreateUser = async (req: Request, res: Response) => {
 		const err = handleSupabaseError(error, "create user");
 		res.status(500).json({ ...err, success: false });
 	}
-};
-
-router.post("/api/users/create", handleCreateUser);
-router.post("/api/users", handleCreateUser);
+});
 
 router.get("/api/users/:userName/role", async (req, res) => {
 	try {

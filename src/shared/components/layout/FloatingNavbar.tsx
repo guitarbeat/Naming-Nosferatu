@@ -55,7 +55,7 @@ function FloatingNavItem({
 			className={cn(
 				"group flex items-center justify-center gap-0 hover:gap-3 p-2.5 cursor-pointer transition-all duration-300 ease-in-out border-radius-[30px] rounded-full overflow-hidden w-[44px] hover:w-[140px] bg-transparent text-white/70 hover:text-white hover:bg-white/20",
 				isActive && "bg-white/10 text-white",
-				className,
+				className
 			)}
 			onClick={onClick}
 		>
@@ -195,7 +195,7 @@ export function FloatingNavbar() {
 				className={cn(
 					"fixed bottom-5 left-1/2 -translate-x-1/2 z-[100]",
 					"bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-1.5 flex gap-1.5 transition-all duration-300",
-					"shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
+					"shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
 				)}
 			>
 				{/* Tournament Controller */}
@@ -239,7 +239,7 @@ export function FloatingNavbar() {
 				{/* Profile */}
 				<FloatingNavItem
 					icon={User}
-					label={isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Login"}
+					label={isLoggedIn ? (userName?.split(" ")[0] || "Profile") : "Login"}
 					isActive={isLoginExpanded}
 					onClick={() => {
 						setIsLoginExpanded(!isLoginExpanded);
@@ -247,19 +247,9 @@ export function FloatingNavbar() {
 					}}
 					customIcon={
 						isLoggedIn && avatarUrl ? (
-							<img
-								src={avatarUrl}
-								alt={userName}
-								className="w-6 h-6 rounded-full object-cover border border-white/20"
-							/>
+							<img src={avatarUrl} alt={userName} className="w-6 h-6 rounded-full object-cover border border-white/20" />
 						) : (
-							<User
-								className={cn(
-									"w-6 h-6",
-									isLoggedIn && isAdmin && "text-amber-400",
-									isLoggedIn && !isAdmin && "text-purple-400",
-								)}
-							/>
+							<User className={cn("w-6 h-6", isLoggedIn && isAdmin && "text-amber-400", isLoggedIn && !isAdmin && "text-purple-400")} />
 						)
 					}
 				/>
@@ -276,9 +266,7 @@ export function FloatingNavbar() {
 					>
 						{isLoggedIn ? (
 							<div className="flex flex-col items-center gap-6">
-								<h3 className="text-xl font-bold text-white">
-									Hi, {userName}! {isAdmin && "👑"}
-								</h3>
+								<h3 className="text-xl font-bold text-white">Hi, {userName}! {isAdmin && "👑"}</h3>
 								<Button variant="ghost" className="text-red-400" onClick={handleLogout}>
 									<LogOut size={18} className="mr-2" /> Logout
 								</Button>
@@ -286,9 +274,7 @@ export function FloatingNavbar() {
 						) : (
 							<div className="space-y-6">
 								<div className="text-center">
-									<h3 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-										Login
-									</h3>
+									<h3 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Login</h3>
 									<p className="text-white/60 text-sm">Join the tournament!</p>
 								</div>
 								<Input

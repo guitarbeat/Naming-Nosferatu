@@ -169,13 +169,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			rightDescription:
 				typeof currentMatch.right === "object" ? currentMatch.right.description : undefined,
 			leftPronunciation:
-				typeof currentMatch.left === "object"
-					? (currentMatch.left as NameItem).pronunciation
-					: undefined,
+				typeof currentMatch.left === "object" ? (currentMatch.left as NameItem).pronunciation : undefined,
 			rightPronunciation:
-				typeof currentMatch.right === "object"
-					? (currentMatch.right as NameItem).pronunciation
-					: undefined,
+				typeof currentMatch.right === "object" ? (currentMatch.right as NameItem).pronunciation : undefined,
 		};
 	}, [currentMatch]);
 	const selectedName =

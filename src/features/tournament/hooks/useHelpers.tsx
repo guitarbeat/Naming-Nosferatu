@@ -1,14 +1,10 @@
 /**
  * @module useHelpers
  * @description Consolidated tournament helper hooks
- * Combines: useAudioManager, useTournamentSelectionSaver, useProfileNotifications
+<<<<<<< HEAD
  */
 
-import { useCallback, useRef, useState } from "react";
-import { useToast } from "@/app/providers/Providers";
-import { Toast } from "@/shared/components/layout";
-import { devError, devLog } from "@/shared/lib/basic";
-import { NOTIFICATION } from "@/shared/lib/constants";
+import { useCallback, useState } from "react";
 import {
 	getCurrentTrack,
 	playBackgroundMusic,
@@ -21,12 +17,23 @@ import {
 	setBackgroundMusicVolume,
 	stopBackgroundMusic,
 } from "@/shared/lib/sound";
-import type { NameItem } from "@/shared/types";
+=======
+ * Combines: useAudioManager, useTournamentSelectionSaver, useProfileNotifications
+ */
+
+import { useCallback, useRef, useState } from "react";
+import { Toast } from "@/shared/components/layout";
+import { useToast } from "@/providers/Providers";
+import type { NameItem } from "@/types/appTypes";
+import { devError, devLog } from "@/shared/lib/basic";
+import { NOTIFICATION } from "@/shared/lib/constants";
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 
 /* =========================================================================
    AUDIO MANAGER HOOK
    ========================================================================= */
 
+<<<<<<< HEAD
 export interface UseAudioManagerResult {
 	isMuted: boolean;
 	handleToggleMute: () => void;
@@ -116,25 +123,41 @@ export function useAudioManager(): UseAudioManagerResult {
 		playPreviousTrack();
 	}, []);
 
+=======
+export function useAudioManager() {
+	const [isMuted, setIsMuted] = useState(true);
+	const [volume, setVolume] = useState(0.2);
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 	return {
 		playAudioTrack: () => {
 			/* No-op: handled by external audio services if available */
 		},
 		isMuted,
 		handleToggleMute: () => setIsMuted((p) => !p),
+<<<<<<< HEAD
 		handleNextTrack,
 		handlePreviousTrack,
+=======
+		handleNextTrack: () => {
+			/* No-op: logic not implemented for simple tournaments */
+		},
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 		isShuffle: false,
 		handleToggleShuffle: () => {
 			/* No-op: logic not implemented for simple tournaments */
 		},
+<<<<<<< HEAD
 		currentTrack: getCurrentTrack(),
+=======
+		currentTrack: null,
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 		trackInfo: null,
 		audioError: null,
 		retryAudio: () => {
 			/* No-op: handled by external audio services if available */
 		},
 		volume,
+<<<<<<< HEAD
 		handleVolumeChange,
 		playVoteSound,
 		playUndoSound,
@@ -145,6 +168,12 @@ export function useAudioManager(): UseAudioManagerResult {
 		playLevelUpSound: playLevelUpEffect,
 		playWowSound: playWowEffect,
 		playSurpriseSound: playSurpriseEffect,
+	};
+}
+
+
+=======
+		handleVolumeChange: (_unused: unknown, v: number) => setVolume(Math.min(1, Math.max(0, v))),
 	};
 }
 
@@ -289,3 +318,4 @@ export function useProfileNotifications() {
 		ToastContainer,
 	};
 }
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976

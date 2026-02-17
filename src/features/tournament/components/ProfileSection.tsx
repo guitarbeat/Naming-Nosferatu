@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
 import { LogOut, Pencil, User } from "@/icons";
 import { Button, Input, LiquidGlass, Section } from "@/shared/components/layout";
 import { getGlassPreset } from "@/shared/components/layout/GlassPresets";
-import { CAT_IMAGES } from "@/shared/lib/constants";
 import useAppStore from "@/store/appStore";
+import { CAT_IMAGES } from "@/shared/lib/constants";
 
 interface ProfileSectionProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

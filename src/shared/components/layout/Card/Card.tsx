@@ -1,3 +1,12 @@
+<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
+import { cva } from "class-variance-authority";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import React, { memo, useId } from "react";
+import { cn } from "@/shared/lib/basic";
+import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
+
+type CardVariant =
+=======
 /**
  * @module Card
  * @description Reusable card component with flexible styling options
@@ -13,6 +22,7 @@ import { TIMING } from "@/shared/lib/constants";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 export type CardVariant =
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	| "default"
 	| "elevated"
 	| "outlined"
@@ -24,9 +34,15 @@ export type CardVariant =
 	| "danger"
 	| "secondary";
 
+<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
+type CardPadding = "none" | "small" | "medium" | "large" | "xl";
+type CardShadow = "none" | "small" | "medium" | "large" | "xl";
+type CardBackground = "solid" | "glass" | "gradient" | "transparent";
+=======
 export type CardPadding = "none" | "small" | "medium" | "large" | "xl";
 export type CardShadow = "none" | "small" | "medium" | "large" | "xl";
 export type CardBackground = "solid" | "glass" | "gradient" | "transparent";
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 
 // CVA variant for Card component
 const cardVariants = cva(
@@ -85,7 +101,11 @@ const cardVariants = cva(
 	},
 );
 
-export type GlassConfig = {
+<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
+interface GlassConfig {
+=======
+export interface GlassConfig {
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	width?: number;
 	height?: number;
 	radius?: number;
@@ -96,9 +116,13 @@ export type GlassConfig = {
 	outputBlur?: number;
 	id?: string;
 	[key: string]: unknown;
-};
+}
 
+<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+=======
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	children?: React.ReactNode;
 	variant?: CardVariant;
 	padding?: CardPadding;
@@ -290,6 +314,9 @@ CardBase.displayName = "Card";
 
 export const Card = CardBase;
 
+<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
+
+=======
 /* ============================================================================
    CARD STATS SUB-COMPONENT
    ============================================================================ */
@@ -689,3 +716,4 @@ const CardNameBase = memo(function CardName({
 CardNameBase.displayName = "CardName";
 
 export const CardName = CardNameBase;
+>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
