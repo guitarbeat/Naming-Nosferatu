@@ -12,7 +12,7 @@ import type { Conflict, Export, MergeStrategy } from "./types";
 /**
  * Result of a merge operation
  */
-interface MergeResult {
+export interface MergeResult {
 	mergedContent: string;
 	conflicts: Conflict[];
 	addedExports: Export[];

@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { ZodError } from "zod";
 import { supabase } from "./db";
+import { createNameSchema, createUserSchema, saveRatingsSchema } from "./validation";
 
 export const router = Router();
 
@@ -39,7 +41,7 @@ router.get("/api/names", async (req, res) => {
 
 router.post("/api/names", async (req, res) => {
 	try {
-		const { name, description, status, provenance } = req.body;
+		const { name, description, status, provenance } = createNameSchema.parse(req.body);
 		const { data, error } = await supabase
 			.from("cat_name_options")
 			.insert({
@@ -54,6 +56,9 @@ router.post("/api/names", async (req, res) => {
 		if (error) throw error;
 		res.json({ success: true, data });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		const err = handleSupabaseError(error, "add name");
 		res.status(500).json({ ...err, success: false });
 	}
@@ -202,7 +207,7 @@ router.post("/api/names/reorder", async (req, res) => {
 
 router.post("/api/users/create", async (req, res) => {
 	try {
-		const { userName, preferences } = req.body;
+		const { userName, preferences } = createUserSchema.parse(req.body);
 
 		// Upsert user
 		const { error: userError } = await supabase
@@ -231,6 +236,9 @@ router.post("/api/users/create", async (req, res) => {
 
 		res.json({ success: true });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		const err = handleSupabaseError(error, "create user");
 		res.status(500).json({ ...err, success: false });
 	}
@@ -255,10 +263,7 @@ router.get("/api/users/:userName/role", async (req, res) => {
 
 router.post("/api/ratings/save", async (req, res) => {
 	try {
-		const { userName, ratings } = req.body;
-		if (!userName || !ratings?.length) {
-			return res.status(400).json({ success: false, error: "Missing data" });
-		}
+		const { userName, ratings } = saveRatingsSchema.parse(req.body);
 
 		// Get IDs for names
 		const nameStrings = ratings.map((r: any) => r.name);
@@ -298,6 +303,9 @@ router.post("/api/ratings/save", async (req, res) => {
 
 		res.json({ success: true, savedCount: records.length });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		const err = handleSupabaseError(error, "save ratings");
 		res.status(500).json({ ...err, success: false });
 	}
