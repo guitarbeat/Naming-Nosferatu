@@ -59,6 +59,8 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+<<<<<<< HEAD
+=======
 <<<<<<<< HEAD:supabase/types.ts
 ========
 			cat_audit_log: {
@@ -98,6 +100,7 @@ export type Database = {
 				Relationships: [];
 			};
 >>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
+>>>>>>> main
 			cat_name_options: {
 				Row: {
 					avg_rating: number | null;
@@ -563,6 +566,8 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+<<<<<<< HEAD
+=======
 <<<<<<<< HEAD:supabase/types.ts
 ========
 			fin_charts: {
@@ -829,11 +834,15 @@ export type Database = {
 				Relationships: [];
 			};
 >>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
+>>>>>>> main
 		};
 		Views: {
 			public_profiles: {
 				Row: {
+<<<<<<< HEAD
+=======
 <<<<<<<< HEAD:supabase/types.ts
+>>>>>>> main
 					apps: string[] | null;
 					avatar_url: string | null;
 					created_at: string | null;
@@ -861,6 +870,8 @@ export type Database = {
 					first_name?: string | null;
 					id?: string | null;
 					updated_at?: string | null;
+<<<<<<< HEAD
+=======
 ========
 					avatar_url: string | null;
 					created_at: string | null;
@@ -881,6 +892,7 @@ export type Database = {
 					display_name?: string | null;
 					id?: string | null;
 >>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
+>>>>>>> main
 					username?: string | null;
 				};
 				Relationships: [];

@@ -3,6 +3,10 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
+<<<<<<< HEAD
+import { viteSingleFile } from "vite-plugin-singlefile";
+=======
+>>>>>>> main
 import { consoleForwardPlugin } from "./scripts/vite-console-forward-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,8 +16,13 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
 	server: {
 		host: "0.0.0.0",
+<<<<<<< HEAD
+		port: 5000,
+		strictPort: true,
+=======
 		port: 3000,
 		strictPort: false,
+>>>>>>> main
 		allowedHosts: true,
 		watch: {
 			usePolling: true,
@@ -28,6 +37,10 @@ export default defineConfig({
 	plugins: [
 		react(),
 		tailwindcss(),
+<<<<<<< HEAD
+		viteSingleFile(),
+=======
+>>>>>>> main
 		consoleForwardPlugin({
 			enabled: true,
 			endpoint: "/api/debug/client-logs",
@@ -42,6 +55,8 @@ export default defineConfig({
 			"@db": path.resolve(__dirname, "supabase"),
 		},
 	},
+<<<<<<< HEAD
+=======
 	build: {
 		rollupOptions: {
 			output: {
@@ -53,4 +68,5 @@ export default defineConfig({
 			},
 		},
 	},
+>>>>>>> main
 });
