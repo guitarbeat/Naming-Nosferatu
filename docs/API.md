@@ -146,6 +146,17 @@ SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
 ```
 
+### Optional Variables
+
+```bash
+# API host override (use only when an external API server exists)
+# Example: https://api.example.com/api
+VITE_API_BASE_URL=
+```
+
+- For static-only deployments without a separate API server, leave `VITE_API_BASE_URL` unset.
+- In static-only mode, name reads fall back to Supabase when `/api/*` endpoints are unavailable.
+
 ### Getting Supabase Credentials
 
 1. Visit [Supabase Dashboard](https://supabase.com/dashboard)

@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
-import { viteSingleFile } from "vite-plugin-singlefile";
 import { consoleForwardPlugin } from "./scripts/vite-console-forward-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,7 +28,6 @@ export default defineConfig({
 	plugins: [
 		react(),
 		tailwindcss(),
-		viteSingleFile(),
 		consoleForwardPlugin({
 			enabled: true,
 			endpoint: "/api/debug/client-logs",
@@ -42,17 +40,6 @@ export default defineConfig({
 			"@supabase/client": path.resolve(__dirname, "src/services/supabase/client.ts"),
 			"@supabase/types": path.resolve(__dirname, "supabase/types.ts"),
 			"@db": path.resolve(__dirname, "supabase"),
-		},
-	},
-	build: {
-		rollupOptions: {
-			output: {
-				manualChunks: {
-					vendor: ["react", "react-dom", "react-router-dom"],
-					ui: ["framer-motion", "lucide-react", "class-variance-authority", "clsx", "tailwind-merge"],
-					supabase: ["@supabase/supabase-js"],
-				},
-			},
 		},
 	},
 });
