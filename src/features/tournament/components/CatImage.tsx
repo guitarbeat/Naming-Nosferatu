@@ -142,34 +142,37 @@ function CatImage({
 		setHasError(false);
 	}, [src]);
 
-	const applyImageEnhancements = useCallback((imgEl: HTMLImageElement | null) => {
-		if (!imgEl) {
-			return;
-		}
-		const container = containerRef.current;
-		if (!container) {
-			return;
-		}
+	const applyImageEnhancements = useCallback(
+		(imgEl: HTMLImageElement | null) => {
+			if (!imgEl) {
+				return;
+			}
+			const container = containerRef.current;
+			if (!container) {
+				return;
+			}
 
-		const { focal, accent, orientation } = analyseImage(imgEl);
-		if (focal != null) {
-			container.style.setProperty("--image-pos-y", `${focal}%`);
-		}
-		if (accent) {
-			container.style.setProperty("--cat-image-accent-rgb", accent);
-		}
-		if (orientation) {
-			container.dataset.orientation = orientation;
-		}
+			const { focal, accent, orientation } = analyseImage(imgEl);
+			if (focal != null) {
+				container.style.setProperty("--image-pos-y", `${focal}%`);
+			}
+			if (accent) {
+				container.style.setProperty("--cat-image-accent-rgb", accent);
+			}
+			if (orientation) {
+				container.dataset.orientation = orientation;
+			}
 
-		if (imgEl.naturalWidth && imgEl.naturalHeight && imgEl.naturalHeight > 0) {
-			const ratio = imgEl.naturalWidth / imgEl.naturalHeight;
-			const steps = objectFit || (ratio <= 0.85 || ratio >= 1.9 ? "contain" : "cover");
-			container.style.setProperty("--cat-image-fit", steps as string);
-			container.style.setProperty("--cat-image-ratio", ratio.toFixed(3));
-		}
-		container.dataset.loaded = "true";
-	}, []);
+			if (imgEl.naturalWidth && imgEl.naturalHeight && imgEl.naturalHeight > 0) {
+				const ratio = imgEl.naturalWidth / imgEl.naturalHeight;
+				const steps = objectFit || (ratio <= 0.85 || ratio >= 1.9 ? "contain" : "cover");
+				container.style.setProperty("--cat-image-fit", steps as string);
+				container.style.setProperty("--cat-image-ratio", ratio.toFixed(3));
+			}
+			container.dataset.loaded = "true";
+		},
+		[objectFit],
+	);
 
 	const handleLoad = useCallback(
 		(event: React.SyntheticEvent<HTMLImageElement, Event>) => {

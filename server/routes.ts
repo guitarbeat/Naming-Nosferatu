@@ -10,6 +10,7 @@ import {
 	catTournamentSelections,
 	userRoles,
 } from "../shared/schema";
+import { requireAdmin } from "./auth";
 import { db } from "./db";
 import { createNameSchema, createUserSchema, saveRatingsSchema } from "./validation";
 
@@ -92,7 +93,7 @@ router.post("/api/names", async (req, res) => {
 });
 
 // Delete a name by ID
-router.delete("/api/names/:id", async (req, res) => {
+router.delete("/api/names/:id", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
@@ -106,7 +107,7 @@ router.delete("/api/names/:id", async (req, res) => {
 });
 
 // Delete a name by name string
-router.delete("/api/names-by-name/:name", async (req, res) => {
+router.delete("/api/names-by-name/:name", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
@@ -120,7 +121,7 @@ router.delete("/api/names-by-name/:name", async (req, res) => {
 });
 
 // Update hidden status
-router.patch("/api/names/:id/hide", async (req, res) => {
+router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
@@ -135,7 +136,7 @@ router.patch("/api/names/:id/hide", async (req, res) => {
 });
 
 // Batch update hidden status
-router.post("/api/names/batch-hide", async (req, res) => {
+router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
 		const { nameIds, isHidden } = req.body;
 		const results: { nameId: any; success: boolean; error?: string }[] = [];
@@ -182,7 +183,7 @@ router.get("/api/hidden-names", async (req, res) => {
 });
 
 // Update locked in status
-router.patch("/api/names/:id/lock", async (req, res) => {
+router.patch("/api/names/:id/lock", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });

@@ -4,8 +4,6 @@ import { useCallback, useState } from "react";
    useNameData - Fetch and manage name data
    ========================================================================= */
 
-
-
 /* =========================================================================
    useNameSuggestion - Handle name suggestion form
    ========================================================================= */

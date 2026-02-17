@@ -59,10 +59,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-<<<<<<< HEAD
-=======
-<<<<<<<< HEAD:supabase/types.ts
-========
 			cat_audit_log: {
 				Row: {
 					client_ip: unknown;
@@ -99,8 +95,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
->>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
->>>>>>> main
 			cat_name_options: {
 				Row: {
 					avg_rating: number | null;
@@ -566,10 +560,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-<<<<<<< HEAD
-=======
-<<<<<<<< HEAD:supabase/types.ts
-========
 			fin_charts: {
 				Row: {
 					created_at: string;
@@ -641,57 +631,6 @@ export type Database = {
 					},
 				];
 			};
-			flo_entries: {
-				Row: {
-					created_at: string;
-					date: string;
-					id: string;
-					is_period_day: boolean;
-					updated_at: string;
-					user_id: string;
-				};
-				Insert: {
-					created_at?: string;
-					date: string;
-					id?: string;
-					is_period_day?: boolean;
-					updated_at?: string;
-					user_id: string;
-				};
-				Update: {
-					created_at?: string;
-					date?: string;
-					id?: string;
-					is_period_day?: boolean;
-					updated_at?: string;
-					user_id?: string;
-				};
-				Relationships: [];
-			};
-			flo_shares: {
-				Row: {
-					created_at: string;
-					id: string;
-					owner_id: string;
-					shared_with_id: string;
-					updated_at: string | null;
-				};
-				Insert: {
-					created_at?: string;
-					id?: string;
-					owner_id: string;
-					shared_with_id: string;
-					updated_at?: string | null;
-				};
-				Update: {
-					created_at?: string;
-					id?: string;
-					owner_id?: string;
-					shared_with_id?: string;
-					updated_at?: string | null;
-				};
-				Relationships: [];
-			};
 			profile_access_audit: {
 				Row: {
 					accessed_profile_id: string | null;
@@ -743,51 +682,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-			profiles: {
-				Row: {
-					apps: string[] | null;
-					avatar_url: string | null;
-					created_at: string;
-					display_name: string | null;
-					email: string | null;
-					first_name: string | null;
-					has_custom_password: boolean;
-					id: string;
-					is_private: boolean;
-					pin_hash: string | null;
-					updated_at: string;
-					username: string | null;
-				};
-				Insert: {
-					apps?: string[] | null;
-					avatar_url?: string | null;
-					created_at?: string;
-					display_name?: string | null;
-					email?: string | null;
-					first_name?: string | null;
-					has_custom_password?: boolean;
-					id: string;
-					is_private?: boolean;
-					pin_hash?: string | null;
-					updated_at?: string;
-					username?: string | null;
-				};
-				Update: {
-					apps?: string[] | null;
-					avatar_url?: string | null;
-					created_at?: string;
-					display_name?: string | null;
-					email?: string | null;
-					first_name?: string | null;
-					has_custom_password?: boolean;
-					id?: string;
-					is_private?: boolean;
-					pin_hash?: string | null;
-					updated_at?: string;
-					username?: string | null;
-				};
-				Relationships: [];
-			};
 			user_credentials: {
 				Row: {
 					created_at: string;
@@ -809,40 +703,10 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-			user_roles: {
-				Row: {
-					created_at: string | null;
-					id: string;
-					role: Database["public"]["Enums"]["app_role"];
-					user_id: string | null;
-					user_name: string | null;
-				};
-				Insert: {
-					created_at?: string | null;
-					id?: string;
-					role?: Database["public"]["Enums"]["app_role"];
-					user_id?: string | null;
-					user_name?: string | null;
-				};
-				Update: {
-					created_at?: string | null;
-					id?: string;
-					role?: Database["public"]["Enums"]["app_role"];
-					user_id?: string | null;
-					user_name?: string | null;
-				};
-				Relationships: [];
-			};
->>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
->>>>>>> main
 		};
 		Views: {
 			public_profiles: {
 				Row: {
-<<<<<<< HEAD
-=======
-<<<<<<<< HEAD:supabase/types.ts
->>>>>>> main
 					apps: string[] | null;
 					avatar_url: string | null;
 					created_at: string | null;
@@ -870,29 +734,6 @@ export type Database = {
 					first_name?: string | null;
 					id?: string | null;
 					updated_at?: string | null;
-<<<<<<< HEAD
-=======
-========
-					avatar_url: string | null;
-					created_at: string | null;
-					display_name: string | null;
-					id: string | null;
-					username: string | null;
-				};
-				Insert: {
-					avatar_url?: string | null;
-					created_at?: string | null;
-					display_name?: string | null;
-					id?: string | null;
-					username?: string | null;
-				};
-				Update: {
-					avatar_url?: string | null;
-					created_at?: string | null;
-					display_name?: string | null;
-					id?: string | null;
->>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
->>>>>>> main
 					username?: string | null;
 				};
 				Relationships: [];
