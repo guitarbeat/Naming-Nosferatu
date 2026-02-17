@@ -73,20 +73,7 @@
 </head>
 
 <body>
-  <script>
-    (function applyInitialTheme() {
-      const { documentElement, body } = document;
-      if (!documentElement) {
-        return;
-      }
 
-      const theme = "dark";
-      documentElement.dataset.theme = theme;
-      if (body) {
-        body.dataset.theme = theme;
-      }
-    })();
-  </script>
   <div id="root"></div>
   <!-- * Entry point - Vite transforms this path during build to point to bundled assets -->
   <script type="module" src="/src/app/deployment.ts"></script>

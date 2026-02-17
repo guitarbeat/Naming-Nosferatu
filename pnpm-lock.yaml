@@ -65,6 +65,9 @@ importers:
       react-router-dom:
         specifier: ^7.13.0
         version: 7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      rectpackr-layout:
+        specifier: ^1.0.1
+        version: 1.0.1
       tailwind-merge:
         specifier: 3.4.0
         version: 3.4.0
@@ -2194,6 +2197,10 @@ packages:
   '@webgpu/types@0.1.69':
     resolution: {integrity: sha512-RPmm6kgRbI8e98zSD3RVACvnuktIja5+yLgDAkTmxLr90BEwdTXRQWNLF3ETTTyH/8mKhznZuN5AveXYFEsMGQ==}
 
+  abstract-linked-lists@1.1.0:
+    resolution: {integrity: sha512-WfP/TfjAA1vRbLusO74VAj8xNQAjDw1tFe5hUujdb0mRZr3SouhKoTco56EY0LAzPwhdqRafzkIDzMY+Y+HQBw==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
+
   accepts@2.0.0:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
     engines: {node: '>= 0.6'}
@@ -2202,6 +2209,10 @@ packages:
     resolution: {integrity: sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  addressable-binary-heaps@1.1.0:
+    resolution: {integrity: sha512-5NbjI1g+uteL4ZueG+F5VEi3qk02D/jRQFeC50BvGB05bGXiD4CwPbDpuNfDDOI6eLZkwiZdc4NVRLY4yVIuCw==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
@@ -2220,6 +2231,10 @@ packages:
   baseline-browser-mapping@2.9.19:
     resolution: {integrity: sha512-ipDqC8FrAl/76p2SSWKSI+H9tFwm7vYqXQrItCuiVPt26Km0jS+NzSsBWAaBusvSbQcfJG+JitdMm+wZAgTYqg==}
     hasBin: true
+
+  best-fit-strip-pack@1.1.0:
+    resolution: {integrity: sha512-eouUUxLXeA9tbUUAbjCUOBvAHhcS3HVBsYVp8yvx5h29HMhupjuo7xB82MlUdMCVTBpPNVOuugEBZkKjny8kZg==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
 
   body-parser@2.2.2:
     resolution: {integrity: sha512-oP5VkATKlNwcgvxi0vM0p/D3n2C3EReYVX+DNYs5TjZFn/oQt2j+4sVJtSMr18pdRr8wjTcBl6LoV+FUwzPmNA==}
@@ -2860,6 +2875,10 @@ packages:
   react@19.2.4:
     resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
     engines: {node: '>=0.10.0'}
+
+  rectpackr-layout@1.0.1:
+    resolution: {integrity: sha512-X64DcitM9E59dSQ6/1tmpbCr1vV6lj1qlxLVZU65GTDRScZWT5seyEQ/IjOXmvngI9BOhZbAlG6u5tUjx9MVTw==}
+    engines: {node: '>=18.0.0', npm: '>=8.0.0'}
 
   redux@5.0.1:
     resolution: {integrity: sha512-M9/ELqF6fy8FwmkpnF0S3YKOqMyoWJ4+CS5Efg2ct3oY9daQvd/Pc71FpGZsVsbl3Cpb+IIcjBDUnnyBdQbq4w==}
@@ -6065,12 +6084,16 @@ snapshots:
 
   '@webgpu/types@0.1.69': {}
 
+  abstract-linked-lists@1.1.0: {}
+
   accepts@2.0.0:
     dependencies:
       mime-types: 3.0.2
       negotiator: 1.0.0
 
   acorn@8.15.0: {}
+
+  addressable-binary-heaps@1.1.0: {}
 
   argparse@2.0.1: {}
 
@@ -6086,6 +6109,11 @@ snapshots:
       postcss-value-parser: 4.2.0
 
   baseline-browser-mapping@2.9.19: {}
+
+  best-fit-strip-pack@1.1.0:
+    dependencies:
+      abstract-linked-lists: 1.1.0
+      addressable-binary-heaps: 1.1.0
 
   body-parser@2.2.2:
     dependencies:
@@ -6702,6 +6730,10 @@ snapshots:
       - '@types/react'
 
   react@19.2.4: {}
+
+  rectpackr-layout@1.0.1:
+    dependencies:
+      best-fit-strip-pack: 1.1.0
 
   redux@5.0.1: {}
 

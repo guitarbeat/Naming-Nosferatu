@@ -8,7 +8,7 @@ import { leaderboardAPI, statsAPI } from "@/features/analytics/analyticsService"
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
-import { Loading } from "@/shared/components/layout/FeedbackComponents";
+import { Loading } from "@/shared/components/layout/Feedback";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";

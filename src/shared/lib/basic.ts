@@ -71,20 +71,9 @@ export function cn(...inputs: ClassValue[]): string {
 // Logging
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const isDev = import.meta.env?.DEV ?? false;
 
-const noop = (): void => {
-	/* Intentional no-op for production builds */
-};
 
-/** Console helpers that compile to no-ops in production. */
-export const devLog: (...args: unknown[]) => void = isDev
-	? (...args) => console.log("[DEV]", ...args)
-	: noop;
 
-export const devError: (...args: unknown[]) => void = isDev
-	? (...args) => console.error("[DEV]", ...args)
-	: noop;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Name / Filter Utilities
@@ -103,50 +92,7 @@ export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[
 	return names.filter((n) => !isNameHidden(n));
 }
 
-/**
- * Filter names by visibility. Non-admin users always see only visible names.
- *
- * @example
- * applyNameFilters(names, { visibility: "hidden", isAdmin: true })
- */
-export function applyNameFilters(
-	names: NameItem[],
-	{ visibility = "visible", isAdmin = false }: { visibility?: string; isAdmin?: boolean } = {},
-): NameItem[] {
-	if (!names) {
-		return [];
-	}
 
-	let result = names;
-
-	// Filter by visibility
-	if (visibility === "visible") {
-		result = result.filter((n) => !isNameHidden(n));
-	} else if (visibility === "hidden") {
-		result = result.filter((n) => isNameHidden(n));
-	}
-	// "all" includes everything (if admin)
-
-	// Enforce admin privileges for hidden names
-	if (!isAdmin && visibility !== "visible") {
-		// Non-admins can only see visible names regardless of filter
-		result = result.filter((n) => !isNameHidden(n));
-	}
-
-	return result;
-}
-
-/** Map a raw filter string to a typed visibility value. */
-export function mapFilterStatusToVisibility(status: string): "all" | "visible" | "hidden" {
-	switch (status) {
-		case "hidden":
-			return "hidden";
-		case "all":
-			return "all";
-		default:
-			return "visible";
-	}
-}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Rating / Metrics Utilities

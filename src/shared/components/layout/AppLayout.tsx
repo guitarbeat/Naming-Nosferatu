@@ -10,8 +10,8 @@ import {
 	ErrorComponent,
 	Loading,
 	OfflineIndicator,
-} from "@/shared/components/layout/FeedbackComponents";
-import { FluidNav } from "@/shared/components/layout/FluidNav";
+} from "@/shared/components/layout/Feedback";
+import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
 // import CatBackground from "@/shared/components/layout/LayoutEffects"; // Replaced with LiquidGradientBackground
 import LiquidGradientBackground from "@/shared/components/layout/LiquidGradientBackground";
 import useAppStore from "@/store/appStore";
@@ -47,7 +47,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 				{/* <CatBackground /> */}
 				<LiquidGradientBackground />
 
-				<FluidNav />
+				<FloatingNavbar />
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{Boolean(errors.current) && (

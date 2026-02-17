@@ -1,4 +1,10 @@
+import { createClient } from "@supabase/supabase-js";
 import { QueryClient } from "@tanstack/react-query";
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const queryClient = new QueryClient({
 	defaultOptions: {
@@ -15,15 +21,12 @@ export async function withSupabase<T>(
 	fallback: T,
 ): Promise<T> {
 	try {
-		const client = await resolveSupabaseClient();
-		return await operation(client);
+		return await operation(supabase);
 	} catch (error) {
 		console.error("API operation failed:", error);
 		return fallback;
 	}
 }
-
-const resolveSupabaseClient = async () => null;
 
 export * from "@/features/analytics/analyticsService";
 export * from "./api";

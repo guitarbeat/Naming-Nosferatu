@@ -157,34 +157,4 @@ export const hiddenNamesAPI = {
 	},
 };
 
-interface CatChosenNameUpdate {
-	first_name: string;
-	middle_names?: string | string[];
-	last_name?: string;
-	greeting_text?: string;
-	show_banner?: boolean;
-}
 
-export const siteSettingsAPI = {
-	getCatChosenName: async () => {
-		try {
-			return await api.get<any>("/settings/cat-chosen-name");
-		} catch (error) {
-			console.error("Error fetching cat chosen name:", error);
-			return null;
-		}
-	},
-
-	updateCatChosenName: async (nameData: CatChosenNameUpdate, _userName: string) => {
-		try {
-			const result = await api.post<{
-				success: boolean;
-				data?: any;
-				error?: string;
-			}>("/settings/cat-chosen-name", nameData);
-			return result;
-		} catch (error: any) {
-			return { success: false, error: error.message || "Failed to update" };
-		}
-	},
-};

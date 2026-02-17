@@ -54,7 +54,7 @@ const IS_BROWSER = typeof window !== "undefined";
  * Attach an event listener that auto-cleans on unmount.
  * The handler is kept in a ref — no need to memoize it.
  */
-export function useEventListener<K extends keyof WindowEventMap>(
+function useEventListener<K extends keyof WindowEventMap>(
 	eventName: K,
 	handler: (event: WindowEventMap[K]) => void,
 	element?: Window | HTMLElement | null,
@@ -111,121 +111,6 @@ export function useMediaQuery(query: string): boolean {
 	}, [query, matches]);
 
 	return matches;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// useDebounce
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Debounce a value — returns the latest value only after `delay` ms of inactivity.
- */
-export function useDebounce<T>(value: T, delay: number): T {
-	const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-	useEffect(() => {
-		const handler = setTimeout(() => {
-			setDebouncedValue(value);
-		}, delay);
-
-		return () => {
-			clearTimeout(handler);
-		};
-	}, [value, delay]);
-
-	return debouncedValue;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// useThrottle
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Throttle a value — emits at most once per `interval` ms.
- * Always delivers the **latest** value on the trailing edge.
- */
-export function useThrottle<T>(value: T, interval = 500): T {
-	const [throttledValue, setThrottledValue] = useState<T>(value);
-	const lastExecuted = useRef<number>(Date.now());
-
-	useEffect(() => {
-		if (Date.now() >= lastExecuted.current + interval) {
-			lastExecuted.current = Date.now();
-			setThrottledValue(value);
-			return;
-		} else {
-			const timerId = setTimeout(() => {
-				lastExecuted.current = Date.now();
-				setThrottledValue(value);
-			}, interval);
-			return () => clearTimeout(timerId);
-		}
-	}, [value, interval]);
-
-	return throttledValue;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// useToggle
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Boolean toggle with a stable `toggle` callback and an escape-hatch `setValue`.
- */
-export function useToggle(defaultValue = false): [boolean, () => void, (value: boolean) => void] {
-	const [value, setValue] = useState(defaultValue);
-	const toggle = useCallback(() => setValue((v) => !v), []);
-	return [value, toggle, setValue];
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// usePrevious
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Returns the value from the previous render.
- */
-export function usePrevious<T>(value: T): T | undefined {
-	const prevRef = useRef<T | undefined>(undefined);
-	useEffect(() => {
-		prevRef.current = value;
-	}, [value]);
-	return prevRef.current;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// useClickOutside
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Fire a callback when a click/touch occurs outside the referenced element.
- */
-export function useClickOutside(
-	ref: React.RefObject<HTMLElement | null>,
-	handler: (event: MouseEvent | TouchEvent) => void,
-): void {
-	const savedHandler = useRef(handler);
-	useEffect(() => {
-		savedHandler.current = handler;
-	}, [handler]);
-
-	useEffect(() => {
-		const listener = (event: MouseEvent | TouchEvent) => {
-			const el = ref.current;
-			if (!el || el.contains(event.target as Node)) {
-				return;
-			}
-			savedHandler.current(event);
-		};
-
-		document.addEventListener("mousedown", listener);
-		document.addEventListener("touchstart", listener);
-
-		return () => {
-			document.removeEventListener("mousedown", listener);
-			document.removeEventListener("touchstart", listener);
-		};
-	}, [ref]);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

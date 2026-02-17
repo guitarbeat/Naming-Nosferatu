@@ -1,3 +1,3 @@
-import { Card, CardName, CardStats } from "./Card";
+import { Card } from "./Card";
 
-export { Card, CardName, CardStats };
+export { Card };

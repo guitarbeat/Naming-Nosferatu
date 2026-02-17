@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/shared/components/layout/Card";
-import { ErrorComponent } from "@/shared/components/layout/FeedbackComponents";
+import { ErrorComponent } from "@/shared/components/layout/Feedback";
 import {
 	exportTournamentResultsToCSV,
 	getRandomCatImage,

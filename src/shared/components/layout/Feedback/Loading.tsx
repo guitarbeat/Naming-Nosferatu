@@ -9,7 +9,7 @@ import type React from "react";
 import { memo, Suspense, useMemo } from "react";
 import { cn } from "@/shared/lib/basic";
 import { Cat, Heart, PawPrint } from "@/shared/lib/icons";
-import { BongoCat } from "../LayoutEffects";
+import { BongoCat } from "./BongoCat";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif"];
 

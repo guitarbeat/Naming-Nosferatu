@@ -5,12 +5,13 @@
 
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import "rectpackr-layout";
 import { useNamesCache } from "@/hooks/useNamesCache";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
-import { Loading } from "@/shared/components/layout/FeedbackComponents";
+import { Loading } from "@/shared/components/layout/Feedback";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { useCollapsible } from "@/shared/hooks";
 import { getRandomCatImage } from "@/shared/lib/basic";
@@ -577,13 +578,13 @@ export function NameSelector() {
 							<h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
 								My cat's name is
 							</h3>
-							<div className="flex flex-wrap justify-center gap-3">
+							<div className="flex flex-nowrap justify-center items-center gap-1 sm:gap-2 md:gap-3 w-full px-2">
 								{lockedInNames.map((nameItem) => (
 									<div
 										key={nameItem.id}
-										className="px-6 py-3 border-2 border-amber-500/30 bg-amber-500/10 ring-2 ring-amber-500/40 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+										className="shrink min-w-0 px-1.5 py-1 sm:px-3 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
 									>
-										<div className="text-white font-bold text-lg">{nameItem.name}</div>
+										<div className="text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-lg whitespace-nowrap truncate">{nameItem.name}</div>
 									</div>
 								))}
 							</div>
@@ -854,8 +855,9 @@ export function NameSelector() {
 							);
 							return (
 								activeNames.length > 0 && (
+								activeNames.length > 0 && (
 									<div>
-										<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+										<rectpackr-layout>
 											{activeNames.map((nameItem) => {
 												const isSelected = selectedNames.has(nameItem.id);
 												const catImage =
@@ -882,12 +884,12 @@ export function NameSelector() {
 																: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
 														} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
 													>
-														<div className="aspect-[4/3] w-full relative">
+														<div className="w-full relative">
 															<CatImage
 																src={catImage}
 																alt={nameItem.name}
-																containerClassName="w-full h-full"
-																imageClassName="w-full h-full object-cover"
+																containerClassName="w-full h-auto min-h-[150px]"
+																imageClassName="w-full h-auto object-cover"
 															/>
 															<button
 																type="button"
@@ -1009,8 +1011,165 @@ export function NameSelector() {
 													</motion.div>
 												);
 											})}
-										</div>
+										</rectpackr-layout>
 									</div>
+								)
+							);
+						})()}
+861: 												const catImage =
+862: 													catImageById.get(nameItem.id) ??
+863: 													getRandomCatImage(nameItem.id, CAT_IMAGES);
+864: 												return (
+865: 													<motion.div
+866: 														key={nameItem.id}
+867: 														onClick={() => handleToggleName(nameItem.id)}
+868: 														onKeyDown={(e) => {
+869: 															if (e.key === "Enter" || e.key === " ") {
+870: 																e.preventDefault();
+871: 																handleToggleName(nameItem.id);
+872: 															}
+873: 														}}
+874: 														role="button"
+875: 														tabIndex={0}
+876: 														whileHover={{ scale: 1.02 }}
+877: 														whileTap={{ scale: 0.98 }}
+878: 														transition={{ type: "spring", stiffness: 400, damping: 25 }}
+879: 														className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
+880: 															isSelected
+881: 																? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
+882: 																: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
+883: 														} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
+884: 													>
+885: 														<div className="w-full relative">
+886: 															<CatImage
+887: 																src={catImage}
+888: 																alt={nameItem.name}
+889: 																containerClassName="w-full h-auto min-h-[150px]"
+890: 																imageClassName="w-full h-auto object-cover"
+891: 															/>
+892: 															<button
+893: 																type="button"
+894: 																onClick={(e) => {
+895: 																	e.stopPropagation();
+896: 																	handleOpenLightbox(nameItem.id);
+897: 																}}
+898: 																className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+899: 																aria-label="View full size"
+900: 															>
+901: 																<ZoomIn size={16} />
+902: 															</button>
+903: 														</div>
+904: 														<div className="p-3 flex flex-col gap-1">
+905: 															<div className="flex items-center justify-between gap-2">
+906: 																<span className="font-medium text-white text-sm">
+907: 																	{nameItem.name}
+908: 																</span>
+909: 																{isSelected && (
+910: 																	<motion.div
+911: 																		initial={{ scale: 0, opacity: 0 }}
+912: 																		animate={{ scale: 1, opacity: 1 }}
+913: 																		className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center gap-1"
+914: 																	>
+915: 																		<Check size={10} className="text-purple-500" />
+916: 																		<span className="text-purple-500 font-bold text-xs">
+917: 																			Selected
+918: 																		</span>
+919: 																	</motion.div>
+920: 																)}
+921: 															</div>
+922: 															{nameItem.description && (
+923: 																<p className="text-white/60 text-xs leading-relaxed">
+924: 																	{nameItem.description}
+925: 																</p>
+926: 															)}
+927: 														</div>
+928: 														{isAdmin && !isSwipeMode && (
+929: 															<motion.div
+930: 																initial={{ opacity: 0, y: 10 }}
+931: 																animate={{ opacity: 1, y: 0 }}
+932: 																transition={{ delay: 0.1 }}
+933: 																className="px-3 pb-3 flex gap-2"
+934: 															>
+935: 																{/* Hide/Unhide Button */}
+936: 																<motion.button
+937: 																	type="button"
+938: 																	onClick={(e) => {
+939: 																		e.stopPropagation();
+940: 																		handleToggleHidden(nameItem.id, nameItem.isHidden || false);
+941: 																	}}
+942: 																	disabled={togglingHidden.has(nameItem.id)}
+943: 																	whileHover={{ scale: 1.05 }}
+944: 																	whileTap={{ scale: 0.95 }}
+945: 																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
+946: 																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+947: 																		nameItem.isHidden
+948: 																			? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
+949: 																			: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
+950: 																	} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
+951: 																>
+952: 																	{togglingHidden.has(nameItem.id) ? (
+953: 																		<div className="flex items-center justify-center gap-1">
+954: 																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+955: 																			<span>Processing...</span>
+956: 																		</div>
+957: 																	) : nameItem.isHidden ? (
+958: 																		<>
+959: 																			<Eye size={12} className="mr-1" />
+960: 																			Unhide
+961: 																		</>
+962: 																	) : (
+963: 																		<>
+964: 																			<EyeOff size={12} className="mr-1" />
+965: 																			Hide
+966: 																		</>
+967: 																	)}
+968: 																</motion.button>
+969: 
+970: 																{/* Lock/Unlock Button */}
+971: 																<motion.button
+972: 																	type="button"
+973: 																	onClick={(e) => {
+974: 																		e.stopPropagation();
+975: 																		handleToggleLocked(
+976: 																			nameItem.id,
+977: 																			nameItem.lockedIn || nameItem.locked_in || false,
+978: 																		);
+979: 																	}}
+980: 																	disabled={togglingLocked.has(nameItem.id)}
+981: 																	whileHover={{ scale: 1.05 }}
+982: 																	whileTap={{ scale: 0.95 }}
+983: 																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
+984: 																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+985: 																		nameItem.lockedIn || nameItem.locked_in
+986: 																			? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
+987: 																			: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
+988: 																	} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
+989: 																>
+990: 																	{togglingLocked.has(nameItem.id) ? (
+991: 																		<div className="flex items-center justify-center gap-1">
+992: 																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+993: 																			<span>Processing...</span>
+994: 																		</div>
+995: 																	) : nameItem.lockedIn || nameItem.locked_in ? (
+996: 																		<>
+997: 																			<CheckCircle size={12} className="mr-1" />
+998: 																			Unlock
+999: 																		</>
+1000: 																	) : (
+1001: 																		<>
+1002: 																			<CheckCircle size={12} className="mr-1" />
+1003: 																			Lock
+1004: 																		</>
+1005: 																	)}
+1006: 																</motion.button>
+1007: 															</motion.div>
+1008: 														)}
+1009: 													</motion.div>
+1010: 												);
+1011: 											})}
+1012: 										</rectpackr-layout>
+1013: 									</div>
+1014: 								)
 								)
 							);
 						})()}

@@ -78,12 +78,17 @@ Timestamp: ${new Date().toISOString()}
 							className="flex items-center gap-1.5 text-white/40 hover:text-white px-2 py-1 rounded transition-colors group-open:text-white/60"
 							aria-label="Copy error details"
 						>
-							<Copy size={14} />
-							{copySuccess && (
-								<span className="text-green-400 font-bold ml-1 animate-in fade-in zoom-in">
-									Copied!
-								</span>
-							)}
+							<button
+								type="button"
+								className="flex items-center gap-1.5"
+							>
+								<Copy size={14} />
+								{copySuccess && (
+									<span className="text-green-400 font-bold ml-1 animate-in fade-in zoom-in">
+										Copied!
+									</span>
+								)}
+							</button>
 						</button>
 					</summary>
 					<div className="mt-4 space-y-3 pt-2 border-t border-white/5">
@@ -160,7 +165,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 	}
 }
 
-interface AppError {
+export interface AppError {
 	message?: string;
 	severity?: string;
 	isRetryable?: boolean;
@@ -172,9 +177,10 @@ interface AppError {
 	originalError?: unknown;
 	stack?: string;
 	context?: string;
+	[key: string]: unknown;
 }
 
-interface ErrorProps {
+export interface ErrorProps {
 	variant?: "boundary" | "list" | "inline";
 	error?: AppError | string | unknown;
 	onRetry?: (...args: unknown[]) => void;
@@ -227,7 +233,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
 						className="relative flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-sm animate-in fade-in slide-in-from-top-1 shadow-sm backdrop-blur-sm"
 					>
 						<div className="flex-1 break-words font-medium">
-							{(err as any).message || String(err)}
+							{err instanceof Error ? err.message : String(err)}
 						</div>
 						{onDismiss && (
 							<button
@@ -274,7 +280,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	);
 };
 
-const ErrorComponent: React.FC<ErrorProps> = ({
+export const ErrorComponent: React.FC<ErrorProps> = ({
 	variant = "inline",
 	error,
 	onRetry,

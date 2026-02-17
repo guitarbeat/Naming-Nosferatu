@@ -4,5 +4,4 @@ export { Card } from "./Card/index";
 
 export {
 	Toast,
-	TrendIndicator,
 } from "./Feedback";
