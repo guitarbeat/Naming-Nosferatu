@@ -126,7 +126,10 @@ const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Databas
 
 export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
 
-export const updateSupabaseUserContext = (userName: string | null, userId: string | null = null): void => {
+export const updateSupabaseUserContext = (
+	userName: string | null,
+	userId: string | null = null,
+): void => {
 	if (!supabaseInstance) {
 		return;
 	}

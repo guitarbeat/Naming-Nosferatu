@@ -1,18 +1,3 @@
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-import { cva } from "class-variance-authority";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import React, { memo, useId } from "react";
-import { cn } from "@/shared/lib/basic";
-import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
-
-type CardVariant =
-=======
-/**
- * @module Card
- * @description Reusable card component with flexible styling options
- * Includes sub-components: CardStats and CardName
- */
-
 import { cva } from "class-variance-authority";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
@@ -22,7 +7,6 @@ import { TIMING } from "@/shared/lib/constants";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 export type CardVariant =
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	| "default"
 	| "elevated"
 	| "outlined"
@@ -34,15 +18,9 @@ export type CardVariant =
 	| "danger"
 	| "secondary";
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-type CardPadding = "none" | "small" | "medium" | "large" | "xl";
-type CardShadow = "none" | "small" | "medium" | "large" | "xl";
-type CardBackground = "solid" | "glass" | "gradient" | "transparent";
-=======
 export type CardPadding = "none" | "small" | "medium" | "large" | "xl";
 export type CardShadow = "none" | "small" | "medium" | "large" | "xl";
 export type CardBackground = "solid" | "glass" | "gradient" | "transparent";
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 
 // CVA variant for Card component
 const cardVariants = cva(
@@ -101,11 +79,7 @@ const cardVariants = cva(
 	},
 );
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-interface GlassConfig {
-=======
 export interface GlassConfig {
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	width?: number;
 	height?: number;
 	radius?: number;
@@ -118,11 +92,7 @@ export interface GlassConfig {
 	[key: string]: unknown;
 }
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-=======
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	children?: React.ReactNode;
 	variant?: CardVariant;
 	padding?: CardPadding;
@@ -314,65 +284,62 @@ CardBase.displayName = "Card";
 
 export const Card = CardBase;
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-
-=======
 /* ============================================================================
    CARD STATS SUB-COMPONENT
    ============================================================================ */
 
 export interface CardStatsProps extends CardProps {
-	title?: string;
+	value: string | number;
 	label?: string;
-	value: string | number | React.ReactNode;
-	emoji?: React.ReactNode;
-	labelClassName?: string;
+	title?: string;
+	emoji?: string;
 	valueClassName?: string;
+	labelClassName?: string;
 	emojiClassName?: string;
 }
 
 const CardStatsBase = memo(function CardStats({
-	title,
-	label,
 	value,
+	label,
+	title,
 	emoji,
-	className = "",
-	labelClassName = "",
-	valueClassName = "",
-	emojiClassName = "",
+	valueClassName,
+	labelClassName,
+	emojiClassName,
+	className,
 	variant = "default",
 	...props
 }: CardStatsProps) {
-	const labelText = title || label || "Statistic";
-	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
-	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
-
-	// Determine top accent color based on variant
-	const accentGradient: Record<CardVariant, string> = {
-		default: "from-white/20 to-white/5",
-		primary: "from-purple-500 to-purple-700",
-		success: "from-green-500 to-green-700",
-		warning: "from-yellow-500 to-yellow-700",
-		info: "from-cyan-500 to-cyan-700",
-		danger: "from-red-500 to-red-700",
-		secondary: "from-gray-500 to-gray-700",
-		elevated: "from-white/20 to-white/5",
-		outlined: "from-transparent to-transparent",
-		filled: "from-transparent to-transparent",
-	};
-
-	const valueColor: Record<CardVariant, string> = {
+	// Simple lookup for value color based on variant
+	const valueColor: Record<string, string> = {
 		default: "text-white",
-		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
-		success: "text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
-		warning: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200",
-		info: "text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-200",
-		danger: "text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-200",
+		primary: "text-purple-400",
+		success: "text-green-400",
+		warning: "text-yellow-400",
+		info: "text-cyan-400",
+		danger: "text-red-400",
 		secondary: "text-gray-400",
 		elevated: "text-white",
 		outlined: "text-white",
 		filled: "text-white",
 	};
+
+	// Accent line gradient based on variant
+	const accentGradient: Record<string, string> = {
+		default: "from-white/20 to-transparent",
+		primary: "from-purple-500 to-purple-500/0",
+		success: "from-green-500 to-green-500/0",
+		warning: "from-yellow-500 to-yellow-500/0",
+		info: "from-cyan-500 to-cyan-500/0",
+		danger: "from-red-500 to-red-500/0",
+		secondary: "from-gray-500 to-gray-500/0",
+		elevated: "from-white/30 to-transparent",
+		outlined: "from-white/10 to-transparent",
+		filled: "from-white/20 to-transparent",
+	};
+
+	// Get aria-label
+	const ariaLabel = props["aria-label"] || `${label || title}: ${value}`;
 
 	return (
 		<Card
@@ -716,4 +683,3 @@ const CardNameBase = memo(function CardName({
 CardNameBase.displayName = "CardName";
 
 export const CardName = CardNameBase;
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx

@@ -28,8 +28,6 @@ export const CAT_IMAGES = [
 	"/assets/images/75209580524__60DCC26F-55A1-4EF8-A0B2-14E80A026A8D.avif",
 ] as const;
 
-
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Elo Rating System
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -76,4 +74,13 @@ export const STORAGE_KEYS = {
 	SOUND_ENABLED: "soundEnabled",
 	MUSIC_VOLUME: "musicVolume",
 	EFFECTS_VOLUME: "effectsVolume",
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// UI Timing / Animation
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const TIMING = {
+	RIPPLE_ANIMATION_DURATION_MS: 600,
+	TOAST_DURATION: 3000,
 } as const;

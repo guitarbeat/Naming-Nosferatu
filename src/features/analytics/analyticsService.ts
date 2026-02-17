@@ -125,25 +125,6 @@ export interface AnalysisDashboardProps {
    INTERNAL SERVICE TYPES
    ========================================================================== */
 
-interface SelectionStats {
-	name_id: string | number;
-	name: string;
-	count: number;
-}
-
-interface AnalyticsSelectionStats {
-	count: number;
-	users: Set<string>;
-}
-
-interface RatingStats {
-	totalRating: number;
-	count: number;
-	wins: number;
-	losses: number;
-	users: Set<string>;
-}
-
 interface RatingInfo {
 	rating: number;
 	wins: number;
@@ -162,15 +143,6 @@ interface RatingRow {
 	wins: number;
 	losses: number;
 	user_name: string;
-}
-
-interface NameRow {
-	id: string | number;
-	name: string;
-	description: string;
-	avg_rating: number;
-	categories: string[];
-	created_at: string;
 }
 
 export const analyticsAPI = {
