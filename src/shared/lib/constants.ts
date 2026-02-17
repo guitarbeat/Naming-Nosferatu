@@ -12,8 +12,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const CAT_IMAGES = [
-	"/assets/images/bby-cat.GIF",
-	"/assets/images/cat.gif",
 	"/assets/images/IMG_4844.avif",
 	"/assets/images/IMG_4845.avif",
 	"/assets/images/IMG_4846.avif",
