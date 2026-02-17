@@ -5,7 +5,10 @@
 	"installCommand": "pnpm install --no-frozen-lockfile",
 	"buildCommand": "pnpm run build",
 	"outputDirectory": "dist",
+<<<<<<< HEAD
+=======
 	"packageManager": "pnpm@10.27.0",
+>>>>>>> main
 	"git": {
 		"deploymentEnabled": {
 			"main": true,
