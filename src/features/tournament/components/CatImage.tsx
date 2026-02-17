@@ -112,6 +112,7 @@ interface CatImageProps {
 	loading?: "lazy" | "eager";
 	decoding?: "async" | "auto" | "sync";
 	containerStyle?: React.CSSProperties;
+	objectFit?: React.CSSProperties["objectFit"];
 	onLoad?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 	onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 }
@@ -124,6 +125,7 @@ function CatImage({
 	loading = "lazy",
 	decoding = "async",
 	containerStyle,
+	objectFit,
 	onLoad,
 	onError,
 }: CatImageProps) {
@@ -162,8 +164,8 @@ function CatImage({
 
 		if (imgEl.naturalWidth && imgEl.naturalHeight && imgEl.naturalHeight > 0) {
 			const ratio = imgEl.naturalWidth / imgEl.naturalHeight;
-			const steps = ratio <= 0.85 || ratio >= 1.9 ? "contain" : "cover";
-			container.style.setProperty("--cat-image-fit", steps);
+			const steps = objectFit || (ratio <= 0.85 || ratio >= 1.9 ? "contain" : "cover");
+			container.style.setProperty("--cat-image-fit", steps as string);
 			container.style.setProperty("--cat-image-ratio", ratio.toFixed(3));
 		}
 		container.dataset.loaded = "true";

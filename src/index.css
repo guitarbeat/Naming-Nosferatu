@@ -179,54 +179,5 @@ dialog img {
 	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Rectpackr Layout */
-rectpackr-layout {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-start;
-	padding: 8px;
-}
 
-rectpackr-layout > * {
-	box-sizing: border-box;
-	width: 100%;
-	height: auto;
-	padding: 8px;
-}
-
-@media (min-width: 400px) {
-	rectpackr-layout > * {
-		width: 50%;
-	}
-}
-
-@media (min-width: 800px) {
-	rectpackr-layout > * {
-		width: 33.333%;
-	}
-}
-
-@media (min-width: 1200px) {
-	rectpackr-layout > * {
-		width: 25%;
-	}
-}
-
-@media (min-width: 1600px) {
-	rectpackr-layout > * {
-		width: 19.999%;
-	}
-}
-
-@media (min-width: 2000px) {
-	rectpackr-layout > * {
-		width: 12.5%;
-	}
-}
-
-@media (min-width: 2400px) {
-	rectpackr-layout > * {
-		width: 9.999%;
-	}
-}
 

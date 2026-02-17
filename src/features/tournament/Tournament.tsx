@@ -167,6 +167,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				typeof currentMatch.left === "object" ? currentMatch.left.description : undefined,
 			rightDescription:
 				typeof currentMatch.right === "object" ? currentMatch.right.description : undefined,
+			leftPronunciation:
+				typeof currentMatch.left === "object" ? (currentMatch.left as NameItem).pronunciation : undefined,
+			rightPronunciation:
+				typeof currentMatch.right === "object" ? (currentMatch.right as NameItem).pronunciation : undefined,
 		};
 	}, [currentMatch]);
 	const selectedName =
@@ -313,7 +317,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		);
 	}
 
-	const { leftName, rightName, leftDescription, rightDescription } = matchData;
+	const {
+		leftName,
+		rightName,
+		leftDescription,
+		rightDescription,
+		leftPronunciation,
+		rightPronunciation,
+	} = matchData;
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden font-display text-white selection:bg-primary/30">
@@ -550,7 +561,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						{/* Left Card */}
 						<Card
 							interactive={true}
-							className={`flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
+							padding="none"
+							className={`relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
 								isVoting ? "pointer-events-none" : ""
 							} ${
 								leftSelected
@@ -562,11 +574,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							variant="default"
 							onClick={() => handleVoteForSide("left")}
 						>
-							<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative max-w-sm">
+							<div className="relative w-full aspect-square flex items-center justify-center bg-white/10">
 								{leftImg ? (
 									<CatImage
 										src={leftImg}
 										alt={leftName}
+										objectFit="cover"
 										containerClassName="w-full h-full"
 										imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 									/>
@@ -575,14 +588,23 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 										{leftName[0]?.toUpperCase() || "?"}
 									</span>
 								)}
-							</div>
-							<div className="text-center pb-4 z-10 w-full px-4">
-								<h3 className="font-whimsical text-2xl text-white tracking-wide break-words w-full mb-2">
-									{leftName}
-								</h3>
-								{leftDescription && (
-									<p className="text-sm text-white/60 italic line-clamp-2">{leftDescription}</p>
-								)}
+
+								{/* Name Overlay */}
+								<div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+									<h3 className="font-whimsical text-3xl text-white tracking-wide break-words w-full drop-shadow-md">
+										{leftName}
+										{leftPronunciation && (
+											<span className="ml-2 text-amber-400 text-xl font-bold italic opacity-90">
+												[{leftPronunciation}]
+											</span>
+										)}
+									</h3>
+									{leftDescription && (
+										<p className="text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm">
+											{leftDescription}
+										</p>
+									)}
+								</div>
 							</div>
 						</Card>
 
@@ -631,7 +653,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						{/* Right Card */}
 						<Card
 							interactive={true}
-							className={`flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
+							padding="none"
+							className={`relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
 								isVoting ? "pointer-events-none" : ""
 							} ${
 								rightSelected
@@ -644,11 +667,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							variant="default"
 							onClick={() => handleVoteForSide("right")}
 						>
-							<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative max-w-sm">
+							<div className="relative w-full aspect-square flex items-center justify-center bg-white/10">
 								{rightImg ? (
 									<CatImage
 										src={rightImg}
 										alt={rightName}
+										objectFit="cover"
 										containerClassName="w-full h-full"
 										imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 									/>
@@ -657,14 +681,23 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 										{rightName[0]?.toUpperCase() || "?"}
 									</span>
 								)}
-							</div>
-							<div className="text-center pb-4 z-10 w-full px-4">
-								<h3 className="font-whimsical text-2xl text-white tracking-wide break-words w-full mb-2">
-									{rightName}
-								</h3>
-								{rightDescription && (
-									<p className="text-sm text-white/60 italic line-clamp-2">{rightDescription}</p>
-								)}
+
+								{/* Name Overlay */}
+								<div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+									<h3 className="font-whimsical text-3xl text-white tracking-wide break-words w-full drop-shadow-md text-right">
+										{rightPronunciation && (
+											<span className="mr-2 text-amber-400 text-xl font-bold italic opacity-90">
+												[{rightPronunciation}]
+											</span>
+										)}
+										{rightName}
+									</h3>
+									{rightDescription && (
+										<p className="text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm text-right">
+											{rightDescription}
+										</p>
+									)}
+								</div>
 							</div>
 						</Card>
 					</motion.div>

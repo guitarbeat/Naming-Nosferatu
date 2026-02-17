@@ -17,8 +17,10 @@ router.get("/api/names", async (req, res) => {
 
 		let query = supabase
 			.from("cat_name_options")
-			.select("*, avgRating:avg_rating, isActive:is_active, isHidden:is_hidden, createdAt:created_at, lockedIn:locked_in")
+			.select("*, avgRating:avg_rating, isActive:is_active, isHidden:is_hidden, createdAt:created_at, lockedIn:locked_in, sortOrder:sort_order")
 			.eq("is_active", true)
+			.order("locked_in", { ascending: false })
+			.order("sort_order", { ascending: true })
 			.order("avg_rating", { ascending: false })
 			.limit(1000);
 
@@ -154,6 +156,46 @@ router.post("/api/names/:id/toggle-locked-in", async (req, res) => {
 		res.json({ success: true });
 	} catch (error) {
 		const err = handleSupabaseError(error, "toggle locked in");
+		res.status(500).json({ ...err, success: false });
+	}
+});
+
+router.post("/api/names/reorder", async (req, res) => {
+	try {
+		const { orders, userName } = req.body; // Array of { id: string, sortOrder: number }
+		if (!Array.isArray(orders)) {
+			return res.status(400).json({ success: false, error: "Orders must be an array" });
+		}
+
+		if (!userName) {
+			return res.status(401).json({ success: false, error: "Username required for authorization" });
+		}
+
+		// Verify admin role
+		const { data: roleData, error: roleError } = await supabase
+			.from("cat_user_roles")
+			.select("role")
+			.eq("user_name", userName)
+			.eq("role", "admin")
+			.maybeSingle();
+
+		if (roleError || !roleData) {
+			return res.status(403).json({ success: false, error: "Unauthorized: Admin privileges required" });
+		}
+
+		// Update each item
+		const promises = orders.map((o: any) =>
+			supabase
+				.from("cat_name_options")
+				.update({ sort_order: o.sortOrder })
+				.eq("id", o.id)
+		);
+
+		await Promise.all(promises);
+
+		res.json({ success: true });
+	} catch (error) {
+		const err = handleSupabaseError(error, "reorder names");
 		res.status(500).json({ ...err, success: false });
 	}
 });

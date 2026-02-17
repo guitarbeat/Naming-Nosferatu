@@ -5,7 +5,6 @@
 
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import "rectpackr-layout";
 import { useNamesCache } from "@/hooks/useNamesCache";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import Button from "@/shared/components/layout/Button";
@@ -578,14 +577,30 @@ export function NameSelector() {
 							<h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
 								My cat's name is
 							</h3>
-							<div className="flex flex-nowrap justify-center items-center gap-1 sm:gap-2 md:gap-3 w-full px-2">
+							<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 w-full px-2">
 								{lockedInNames.map((nameItem) => (
-									<div
+									<motion.div
 										key={nameItem.id}
-										className="shrink min-w-0 px-1.5 py-1 sm:px-3 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+										whileHover={{ y: -4, scale: 1.02 }}
+										className="group relative shrink-0 px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] rounded-sm"
 									>
-										<div className="text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-lg whitespace-nowrap truncate">{nameItem.name}</div>
-									</div>
+										<div className="text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-lg">{nameItem.name}</div>
+										
+										{ (nameItem.description || nameItem.pronunciation) && (
+											<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 p-3 bg-slate-950/90 backdrop-blur-xl border border-amber-500/30 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 text-xs text-slate-200 leading-relaxed shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] scale-95 group-hover:scale-100 origin-bottom">
+												{nameItem.pronunciation && (
+													<div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
+														<div className="text-[10px] font-black uppercase tracking-widest text-amber-500/70">Pronunciation</div>
+														<div className="font-bold text-amber-400 italic">
+															{nameItem.pronunciation}
+														</div>
+													</div>
+												)}
+												<div className="opacity-90">{nameItem.description}</div>
+												<div className="absolute top-[calc(100%-1px)] left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-950/90" />
+											</div>
+										)}
+									</motion.div>
 								))}
 							</div>
 						</div>
@@ -672,7 +687,7 @@ export function NameSelector() {
 													className="w-full max-w-md h-[550px]"
 												>
 													<Card
-														className={`relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full ${
+														className={`relative overflow-hidden group transition-all duration-200 h-full ${
 															selectedNames.has(nameItem.id)
 																? "shadow-[0_0_30px_rgba(34,197,94,0.3)]"
 																: ""
@@ -682,16 +697,16 @@ export function NameSelector() {
 																: "pointer-events-none"
 														}`}
 														variant="filled"
-														padding="medium"
+														padding="none"
 													>
 														{index === 0 && (
 															<>
 																<motion.div
-																	className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
+																	className="absolute left-8 top-1/2 -translate-y-1/2 z-20"
 																	initial={{ opacity: 0, scale: 0.8 }}
 																	animate={{
 																		opacity: dragOffset < -50 ? 1 : 0,
-																		scale: dragOffset < -50 ? 1 : 0.8,
+                                                                        scale: dragOffset < -50 ? 1 : 0.8,
 																	}}
 																>
 																	<div className="flex items-center gap-2 px-6 py-3 bg-red-500/90 backdrop-blur-md rounded-full border-2 border-red-500 shadow-lg rotate-[-20deg]">
@@ -703,7 +718,7 @@ export function NameSelector() {
 																</motion.div>
 
 																<motion.div
-																	className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
+																	className="absolute right-8 top-1/2 -translate-y-1/2 z-20"
 																	initial={{ opacity: 0, scale: 0.8 }}
 																	animate={{
 																		opacity: dragOffset > 50 ? 1 : 0,
@@ -720,13 +735,16 @@ export function NameSelector() {
 															</>
 														)}
 
-														<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center relative">
+														<div className="relative w-full h-full flex flex-col justify-end bg-white/10">
 															<CatImage
 																src={catImage}
 																alt={nameItem.name}
-																containerClassName="w-full h-full"
-																imageClassName="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700"
+																objectFit="cover"
+																containerClassName="absolute inset-0 w-full h-full"
+																imageClassName="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
 															/>
+
+															{/* Zoom Button Overlay */}
 															{index === 0 && (
 																<button
 																	type="button"
@@ -734,65 +752,73 @@ export function NameSelector() {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-3 right-3 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-20"
+																	className="absolute top-4 right-4 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-30"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={18} />
 																</button>
 															)}
-														</div>
 
-														<div className="text-center pb-4 z-10 w-full">
-															<h3 className="font-whimsical text-2xl lg:text-3xl text-white tracking-wide drop-shadow-lg break-words w-full">
-																{nameItem.name}
-															</h3>
-															{nameItem.description && (
-																<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto line-clamp-3">
-																	{nameItem.description}
-																</p>
-															)}
-															{isAdmin && (
-																<button
-																	type="button"
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		handleToggleHidden(nameItem.id, nameItem.isHidden || false);
-																	}}
-																	disabled={togglingHidden.has(nameItem.id)}
-																	className={`mt-2 flex items-center gap-1 text-xs transition-colors mx-auto ${
-																		togglingHidden.has(nameItem.id)
-																			? "text-slate-500 cursor-not-allowed"
-																			: "text-amber-400 hover:text-amber-300"
-																	}`}
-																>
-																	{togglingHidden.has(nameItem.id) ? (
-																		<>
-																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-																			<span>Processing...</span>
-																		</>
-																	) : nameItem.isHidden ? (
-																		<>
-																			<Eye size={12} />
-																			<span>Unhide</span>
-																		</>
-																	) : (
-																		<>
-																			<EyeOff size={12} />
-																			<span>Hide</span>
-																		</>
-																	)}
-																</button>
-															)}
-															{selectedNames.has(nameItem.id) && (
-																<div className="flex justify-center mt-3">
-																	<div className="px-3 py-1 bg-green-500/20 backdrop-blur-md border border-green-500/30 rounded-full flex items-center gap-2">
-																		<Check size={14} className="text-green-500" />
-																		<span className="text-green-500 font-bold text-xs tracking-widest uppercase">
-																			Selected
+															{/* Name and Info Overlay */}
+															<div className="relative z-10 p-8 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex flex-col justify-end pointer-events-none">
+																<h3 className="font-whimsical text-4xl lg:text-5xl text-white tracking-wide drop-shadow-2xl break-words w-full">
+																	{nameItem.name}
+																	{nameItem.pronunciation && (
+																		<span className="ml-3 text-amber-400 text-2xl lg:text-3xl font-bold italic opacity-90">
+																			[{nameItem.pronunciation}]
 																		</span>
+																	)}
+																</h3>
+																{nameItem.description && (
+																	<p className="text-white/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3">
+																		{nameItem.description}
+																	</p>
+																)}
+
+																{isAdmin && (
+																	<button
+																		type="button"
+																		onClick={(e) => {
+																			e.stopPropagation();
+																			handleToggleHidden(nameItem.id, nameItem.isHidden || false);
+																		}}
+																		disabled={togglingHidden.has(nameItem.id)}
+																		className={`mt-4 flex items-center gap-2 pointer-events-auto w-fit text-sm font-bold tracking-wider uppercase transition-all ${
+																			togglingHidden.has(nameItem.id)
+																				? "text-slate-500 cursor-not-allowed"
+																				: "text-amber-400 hover:text-amber-300 hover:scale-105 active:scale-95"
+																		}`}
+																	>
+																		{togglingHidden.has(nameItem.id) ? (
+																			<>
+																				<div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+																				<span>Processing...</span>
+																			</>
+																		) : nameItem.isHidden ? (
+																			<>
+																				<Eye size={16} />
+																				<span>Unhide From Public</span>
+																			</>
+																		) : (
+																			<>
+																				<EyeOff size={16} />
+																				<span>Hide From Public</span>
+																			</>
+																		)}
+																	</button>
+																)}
+
+																{selectedNames.has(nameItem.id) && (
+																	<div className="flex mt-4">
+																		<div className="px-4 py-1.5 bg-green-500/30 backdrop-blur-md border border-green-500/40 rounded-full flex items-center gap-2 shadow-lg shadow-green-500/20">
+																			<Check size={16} className="text-green-400" />
+																			<span className="text-green-400 font-black text-xs tracking-[0.2em] uppercase">
+																				Selected
+																			</span>
+																		</div>
 																	</div>
-																</div>
-															)}
+																)}
+															</div>
 														</div>
 													</Card>
 												</motion.div>
@@ -848,328 +874,175 @@ export function NameSelector() {
 					</>
 				) : (
 					<div className="space-y-8">
-						{/* Active Names Container */}
 						{(() => {
 							const activeNames = names.filter(
 								(name) => !(name.lockedIn || name.locked_in) && !name.isHidden,
 							);
 							return (
 								activeNames.length > 0 && (
-								activeNames.length > 0 && (
-									<div>
-										<rectpackr-layout>
-											{activeNames.map((nameItem) => {
-												const isSelected = selectedNames.has(nameItem.id);
-												const catImage =
-													catImageById.get(nameItem.id) ??
-													getRandomCatImage(nameItem.id, CAT_IMAGES);
-												return (
-													<motion.div
-														key={nameItem.id}
-														onClick={() => handleToggleName(nameItem.id)}
-														onKeyDown={(e) => {
-															if (e.key === "Enter" || e.key === " ") {
-																e.preventDefault();
-																handleToggleName(nameItem.id);
-															}
-														}}
-														role="button"
-														tabIndex={0}
-														whileHover={{ scale: 1.02 }}
-														whileTap={{ scale: 0.98 }}
-														transition={{ type: "spring", stiffness: 400, damping: 25 }}
-														className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
-															isSelected
-																? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
-																: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
-														} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
-													>
-														<div className="w-full relative">
-															<CatImage
-																src={catImage}
-																alt={nameItem.name}
-																containerClassName="w-full h-auto min-h-[150px]"
-																imageClassName="w-full h-auto object-cover"
-															/>
-															<button
+									<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+										{activeNames.map((nameItem) => {
+											const isSelected = selectedNames.has(nameItem.id);
+											const catImage =
+												catImageById.get(nameItem.id) ??
+												getRandomCatImage(nameItem.id, CAT_IMAGES);
+											return (
+												<motion.div
+													key={nameItem.id}
+													onClick={() => handleToggleName(nameItem.id)}
+													onKeyDown={(e) => {
+														if (e.key === "Enter" || e.key === " ") {
+															e.preventDefault();
+															handleToggleName(nameItem.id);
+														}
+													}}
+													role="button"
+													tabIndex={0}
+													whileHover={{ scale: 1.02 }}
+													whileTap={{ scale: 0.98 }}
+													transition={{ type: "spring", stiffness: 400, damping: 25 }}
+													className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
+														isSelected
+															? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
+															: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
+													} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
+												>
+													<div className="w-full relative aspect-[4/3] group/img">
+														<CatImage
+															src={catImage}
+															alt={nameItem.name}
+															objectFit="cover"
+															containerClassName="w-full h-full"
+															imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+														/>
+														
+														{/* Grid Name Overlay */}
+														<div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end pointer-events-none">
+															<div className="flex flex-col gap-0.5">
+																<div className="flex items-center justify-between gap-2">
+																	<span className="font-bold text-white text-sm drop-shadow-md truncate">
+																		{nameItem.name}
+																	</span>
+																	{isSelected && (
+																		<motion.div
+																			initial={{ scale: 0, opacity: 0 }}
+																			animate={{ scale: 1, opacity: 1 }}
+																			className="shrink-0 size-5 bg-purple-500 rounded-full flex items-center justify-center shadow-lg"
+																		>
+																			<Check size={12} className="text-white" />
+																		</motion.div>
+																	)}
+																</div>
+																{nameItem.pronunciation && (
+																	<span className="text-amber-400 text-[10px] font-bold italic opacity-90 drop-shadow-md truncate">
+																		[{nameItem.pronunciation}]
+																	</span>
+																)}
+																{nameItem.description && (
+																	<p className="text-white/80 text-[10px] leading-tight line-clamp-2 mt-1 drop-shadow-sm italic">
+																		{nameItem.description}
+																	</p>
+																)}
+															</div>
+														</div>
+
+														<button
+															type="button"
+															onClick={(e) => {
+																e.stopPropagation();
+																handleOpenLightbox(nameItem.id);
+															}}
+															className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-black/70 z-10"
+															aria-label="View full size"
+														>
+															<ZoomIn size={14} />
+														</button>
+													</div>
+													{isAdmin && !isSwipeMode && (
+														<motion.div
+															initial={{ opacity: 0, y: 10 }}
+															animate={{ opacity: 1, y: 0 }}
+															transition={{ delay: 0.1 }}
+															className="px-3 pb-3 flex gap-2"
+														>
+															{/* Hide/Unhide Button */}
+															<motion.button
 																type="button"
 																onClick={(e) => {
 																	e.stopPropagation();
-																	handleOpenLightbox(nameItem.id);
+																	handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 																}}
-																className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-																aria-label="View full size"
+																disabled={togglingHidden.has(nameItem.id)}
+																whileHover={{ scale: 1.05 }}
+																whileTap={{ scale: 0.95 }}
+																transition={{ type: "spring", stiffness: 400, damping: 25 }}
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+																	nameItem.isHidden
+																		? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
+																		: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
+																} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
 															>
-																<ZoomIn size={16} />
-															</button>
-														</div>
-														<div className="p-3 flex flex-col gap-1">
-															<div className="flex items-center justify-between gap-2">
-																<span className="font-medium text-white text-sm">
-																	{nameItem.name}
-																</span>
-																{isSelected && (
-																	<motion.div
-																		initial={{ scale: 0, opacity: 0 }}
-																		animate={{ scale: 1, opacity: 1 }}
-																		className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center gap-1"
-																	>
-																		<Check size={10} className="text-purple-500" />
-																		<span className="text-purple-500 font-bold text-xs">
-																			Selected
-																		</span>
-																	</motion.div>
+																{togglingHidden.has(nameItem.id) ? (
+																	<div className="flex items-center justify-center gap-1">
+																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																		<span>Processing...</span>
+																	</div>
+																) : nameItem.isHidden ? (
+																	<>
+																		<Eye size={12} className="mr-1" />
+																		Unhide
+																	</>
+																) : (
+																	<>
+																		<EyeOff size={12} className="mr-1" />
+																		Hide
+																	</>
 																)}
-															</div>
-															{nameItem.description && (
-																<p className="text-white/60 text-xs leading-relaxed">
-																	{nameItem.description}
-																</p>
-															)}
-														</div>
-														{isAdmin && !isSwipeMode && (
-															<motion.div
-																initial={{ opacity: 0, y: 10 }}
-																animate={{ opacity: 1, y: 0 }}
-																transition={{ delay: 0.1 }}
-																className="px-3 pb-3 flex gap-2"
-															>
-																{/* Hide/Unhide Button */}
-																<motion.button
-																	type="button"
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		handleToggleHidden(nameItem.id, nameItem.isHidden || false);
-																	}}
-																	disabled={togglingHidden.has(nameItem.id)}
-																	whileHover={{ scale: 1.05 }}
-																	whileTap={{ scale: 0.95 }}
-																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
-																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-																		nameItem.isHidden
-																			? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
-																			: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
-																	} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
-																>
-																	{togglingHidden.has(nameItem.id) ? (
-																		<div className="flex items-center justify-center gap-1">
-																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-																			<span>Processing...</span>
-																		</div>
-																	) : nameItem.isHidden ? (
-																		<>
-																			<Eye size={12} className="mr-1" />
-																			Unhide
-																		</>
-																	) : (
-																		<>
-																			<EyeOff size={12} className="mr-1" />
-																			Hide
-																		</>
-																	)}
-																</motion.button>
+															</motion.button>
 
-																{/* Lock/Unlock Button */}
-																<motion.button
-																	type="button"
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		handleToggleLocked(
-																			nameItem.id,
-																			nameItem.lockedIn || nameItem.locked_in || false,
-																		);
-																	}}
-																	disabled={togglingLocked.has(nameItem.id)}
-																	whileHover={{ scale: 1.05 }}
-																	whileTap={{ scale: 0.95 }}
-																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
-																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-																		nameItem.lockedIn || nameItem.locked_in
-																			? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
-																			: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
-																	} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
-																>
-																	{togglingLocked.has(nameItem.id) ? (
-																		<div className="flex items-center justify-center gap-1">
-																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-																			<span>Processing...</span>
-																		</div>
-																	) : nameItem.lockedIn || nameItem.locked_in ? (
-																		<>
-																			<CheckCircle size={12} className="mr-1" />
-																			Unlock
-																		</>
-																	) : (
-																		<>
-																			<CheckCircle size={12} className="mr-1" />
-																			Lock
-																		</>
-																	)}
-																</motion.button>
-															</motion.div>
-														)}
-													</motion.div>
-												);
-											})}
-										</rectpackr-layout>
+															{/* Lock/Unlock Button */}
+															<motion.button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	handleToggleLocked(
+																		nameItem.id,
+																		nameItem.lockedIn || nameItem.locked_in || false,
+																	);
+																}}
+																disabled={togglingLocked.has(nameItem.id)}
+																whileHover={{ scale: 1.05 }}
+																whileTap={{ scale: 0.95 }}
+																transition={{ type: "spring", stiffness: 400, damping: 25 }}
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+																	nameItem.lockedIn || nameItem.locked_in
+																		? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
+																		: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
+																} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
+															>
+																{togglingLocked.has(nameItem.id) ? (
+																	<div className="flex items-center justify-center gap-1">
+																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																		<span>Processing...</span>
+																	</div>
+																) : nameItem.lockedIn || nameItem.locked_in ? (
+																	<>
+																		<CheckCircle size={12} className="mr-1" />
+																		Unlock
+																	</>
+																) : (
+																	<>
+																		<CheckCircle size={12} className="mr-1" />
+																		Lock
+																	</>
+																)}
+															</motion.button>
+														</motion.div>
+													)}
+												</motion.div>
+											);
+										})}
 									</div>
-								)
-							);
-						})()}
-861: 												const catImage =
-862: 													catImageById.get(nameItem.id) ??
-863: 													getRandomCatImage(nameItem.id, CAT_IMAGES);
-864: 												return (
-865: 													<motion.div
-866: 														key={nameItem.id}
-867: 														onClick={() => handleToggleName(nameItem.id)}
-868: 														onKeyDown={(e) => {
-869: 															if (e.key === "Enter" || e.key === " ") {
-870: 																e.preventDefault();
-871: 																handleToggleName(nameItem.id);
-872: 															}
-873: 														}}
-874: 														role="button"
-875: 														tabIndex={0}
-876: 														whileHover={{ scale: 1.02 }}
-877: 														whileTap={{ scale: 0.98 }}
-878: 														transition={{ type: "spring", stiffness: 400, damping: 25 }}
-879: 														className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
-880: 															isSelected
-881: 																? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
-882: 																: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
-883: 														} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
-884: 													>
-885: 														<div className="w-full relative">
-886: 															<CatImage
-887: 																src={catImage}
-888: 																alt={nameItem.name}
-889: 																containerClassName="w-full h-auto min-h-[150px]"
-890: 																imageClassName="w-full h-auto object-cover"
-891: 															/>
-892: 															<button
-893: 																type="button"
-894: 																onClick={(e) => {
-895: 																	e.stopPropagation();
-896: 																	handleOpenLightbox(nameItem.id);
-897: 																}}
-898: 																className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-899: 																aria-label="View full size"
-900: 															>
-901: 																<ZoomIn size={16} />
-902: 															</button>
-903: 														</div>
-904: 														<div className="p-3 flex flex-col gap-1">
-905: 															<div className="flex items-center justify-between gap-2">
-906: 																<span className="font-medium text-white text-sm">
-907: 																	{nameItem.name}
-908: 																</span>
-909: 																{isSelected && (
-910: 																	<motion.div
-911: 																		initial={{ scale: 0, opacity: 0 }}
-912: 																		animate={{ scale: 1, opacity: 1 }}
-913: 																		className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center gap-1"
-914: 																	>
-915: 																		<Check size={10} className="text-purple-500" />
-916: 																		<span className="text-purple-500 font-bold text-xs">
-917: 																			Selected
-918: 																		</span>
-919: 																	</motion.div>
-920: 																)}
-921: 															</div>
-922: 															{nameItem.description && (
-923: 																<p className="text-white/60 text-xs leading-relaxed">
-924: 																	{nameItem.description}
-925: 																</p>
-926: 															)}
-927: 														</div>
-928: 														{isAdmin && !isSwipeMode && (
-929: 															<motion.div
-930: 																initial={{ opacity: 0, y: 10 }}
-931: 																animate={{ opacity: 1, y: 0 }}
-932: 																transition={{ delay: 0.1 }}
-933: 																className="px-3 pb-3 flex gap-2"
-934: 															>
-935: 																{/* Hide/Unhide Button */}
-936: 																<motion.button
-937: 																	type="button"
-938: 																	onClick={(e) => {
-939: 																		e.stopPropagation();
-940: 																		handleToggleHidden(nameItem.id, nameItem.isHidden || false);
-941: 																	}}
-942: 																	disabled={togglingHidden.has(nameItem.id)}
-943: 																	whileHover={{ scale: 1.05 }}
-944: 																	whileTap={{ scale: 0.95 }}
-945: 																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
-946: 																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-947: 																		nameItem.isHidden
-948: 																			? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
-949: 																			: "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
-950: 																	} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
-951: 																>
-952: 																	{togglingHidden.has(nameItem.id) ? (
-953: 																		<div className="flex items-center justify-center gap-1">
-954: 																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-955: 																			<span>Processing...</span>
-956: 																		</div>
-957: 																	) : nameItem.isHidden ? (
-958: 																		<>
-959: 																			<Eye size={12} className="mr-1" />
-960: 																			Unhide
-961: 																		</>
-962: 																	) : (
-963: 																		<>
-964: 																			<EyeOff size={12} className="mr-1" />
-965: 																			Hide
-966: 																		</>
-967: 																	)}
-968: 																</motion.button>
-969: 
-970: 																{/* Lock/Unlock Button */}
-971: 																<motion.button
-972: 																	type="button"
-973: 																	onClick={(e) => {
-974: 																		e.stopPropagation();
-975: 																		handleToggleLocked(
-976: 																			nameItem.id,
-977: 																			nameItem.lockedIn || nameItem.locked_in || false,
-978: 																		);
-979: 																	}}
-980: 																	disabled={togglingLocked.has(nameItem.id)}
-981: 																	whileHover={{ scale: 1.05 }}
-982: 																	whileTap={{ scale: 0.95 }}
-983: 																	transition={{ type: "spring", stiffness: 400, damping: 25 }}
-984: 																	className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-985: 																		nameItem.lockedIn || nameItem.locked_in
-986: 																			? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
-987: 																			: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
-988: 																	} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
-989: 																>
-990: 																	{togglingLocked.has(nameItem.id) ? (
-991: 																		<div className="flex items-center justify-center gap-1">
-992: 																			<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-993: 																			<span>Processing...</span>
-994: 																		</div>
-995: 																	) : nameItem.lockedIn || nameItem.locked_in ? (
-996: 																		<>
-997: 																			<CheckCircle size={12} className="mr-1" />
-998: 																			Unlock
-999: 																		</>
-1000: 																	) : (
-1001: 																		<>
-1002: 																			<CheckCircle size={12} className="mr-1" />
-1003: 																			Lock
-1004: 																		</>
-1005: 																	)}
-1006: 																</motion.button>
-1007: 															</motion.div>
-1008: 														)}
-1009: 													</motion.div>
-1010: 												);
-1011: 											})}
-1012: 										</rectpackr-layout>
-1013: 									</div>
-1014: 								)
 								)
 							);
 						})()}
@@ -1325,48 +1198,56 @@ export function NameSelector() {
 																	: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
 															}`}
 														>
-															<div className="aspect-[4/3] w-full relative">
+															<div className="aspect-[4/3] w-full relative group/hidden">
 																<CatImage
 																	src={catImage}
 																	alt={nameItem.name}
+																	objectFit="cover"
 																	containerClassName="w-full h-full"
-																	imageClassName="w-full h-full object-cover"
+																	imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 																/>
+																
+																{/* Hidden Grid Name Overlay */}
+																<div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end pointer-events-none">
+																	<div className="flex flex-col gap-0.5">
+																		<div className="flex items-center justify-between gap-2">
+																			<span className="font-bold text-white text-[10px] sm:text-xs drop-shadow-md truncate">
+																				{nameItem.name}
+																			</span>
+																			{isSelected && (
+																				<motion.div
+																					initial={{ scale: 0, opacity: 0 }}
+																					animate={{ scale: 1, opacity: 1 }}
+																					className="shrink-0 size-4 bg-purple-500 rounded-full flex items-center justify-center shadow-md"
+																				>
+																					<Check size={10} className="text-white" />
+																				</motion.div>
+																			)}
+																		</div>
+																		{nameItem.pronunciation && (
+																			<span className="text-amber-400 text-[9px] font-bold italic opacity-90 drop-shadow-md truncate">
+																				[{nameItem.pronunciation}]
+																			</span>
+																		)}
+																		{nameItem.description && (
+																			<p className="text-white/80 text-[9px] leading-tight line-clamp-1 mt-0.5 drop-shadow-sm italic">
+																				{nameItem.description}
+																			</p>
+																		)}
+																	</div>
+																</div>
+
 																<button
 																	type="button"
 																	onClick={(e) => {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+																	className="absolute top-2 right-2 p-1 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/hidden:opacity-100 transition-opacity hover:bg-black/70 z-10"
 																	aria-label="View full size"
 																>
-																	<ZoomIn size={16} />
+																	<ZoomIn size={12} />
 																</button>
-															</div>
-															<div className="p-3 flex flex-col gap-1">
-																<div className="flex items-center justify-between gap-2">
-																	<span className="font-medium text-white text-sm">
-																		{nameItem.name}
-																	</span>
-																	{isSelected && (
-																		<motion.div
-																			initial={{ scale: 0, opacity: 0 }}
-																			animate={{ scale: 1, opacity: 1 }}
-																			className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center gap-1"
-																		>
-																			<Check size={10} className="text-purple-500" />
-																			<span className="text-purple-500 font-bold text-xs">
-																				Selected
-																			</span>
-																		</motion.div>
-																	)}
-																</div>
-																{nameItem.description && (
-																	<p className="text-white/60 text-xs leading-relaxed">
-																		{nameItem.description}
-																	</p>
-																)}
 															</div>
 															{isAdmin && (
 																<div className="px-3 pb-3">
@@ -1433,3 +1314,5 @@ export function NameSelector() {
 		</Card>
 	);
 }
+
+export default NameSelector;

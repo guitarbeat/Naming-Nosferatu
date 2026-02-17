@@ -22,6 +22,7 @@ export {
 	EyeOff,
 	GripVertical,
 	Heart,
+	Info,
 	Layers,
 	LayoutGrid,
 	Lightbulb,

@@ -80,6 +80,20 @@ export const coreAPI = {
 			return { success: false, error: error.message || "Failed to delete name" };
 		}
 	},
+
+	reorderNames: async (orders: { id: string | number; sortOrder: number }[], userName: string) => {
+		try {
+			return await api.post<{ success: boolean; error?: string }>("/names/reorder", {
+				orders,
+				userName,
+			});
+		} catch (error: any) {
+			return {
+				success: false,
+				error: error.message || "Failed to reorder names",
+			};
+		}
+	},
 };
 
 export const hiddenNamesAPI = {

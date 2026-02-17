@@ -34,6 +34,7 @@ export interface NameItem {
 	id: IdType;
 	name: string;
 	description?: string;
+	pronunciation?: string;
 
 	// Visibility
 	isHidden?: boolean;
@@ -42,6 +43,8 @@ export interface NameItem {
 	// Admin controls
 	lockedIn?: boolean;
 	locked_in?: boolean;
+	sortOrder?: number;
+	sort_order?: number;
 
 	// Ratings & stats
 	rating?: number;
