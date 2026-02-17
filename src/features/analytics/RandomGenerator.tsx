@@ -1,8 +1,8 @@
 import { CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import React, { useMemo, useState } from "react";
-import useLocalStorage from "@/hooks/useBrowserState";
 import { Copy, Heart, Shuffle } from "@/icons";
+import { useLocalStorage } from "@/shared/hooks";
 import { Card } from "@/shared/components/layout";
 
 interface RandomGeneratorProps {

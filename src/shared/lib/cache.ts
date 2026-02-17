@@ -3,7 +3,7 @@
  * @description Cache management utilities
  */
 
-import { queryClient } from "../services/supabase/client";
+import { queryClient } from "@/services/supabase/client";
 import { STORAGE_KEYS } from "./constants";
 
 /**

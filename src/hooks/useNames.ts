@@ -1,10 +1,195 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { coreAPI } from "@supabase/client";
+import type { NameItem } from "@/shared/types";
 
 /* =========================================================================
    useNameData - Fetch and manage name data
    ========================================================================= */
 
+interface UseNameDataProps {
+	userName?: string | null;
+	mode?: "tournament" | "profile";
+}
 
+interface UseNameDataResult {
+	names: NameItem[];
+	isLoading: boolean;
+	error: Error | null;
+	refetch: () => Promise<void>;
+	setNames: (updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void;
+}
+
+export function useNameData({
+	userName,
+	mode = "tournament",
+}: UseNameDataProps = {}): UseNameDataResult {
+	const [names, setNamesState] = useState<NameItem[]>([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<Error | null>(null);
+
+	const setNames = useCallback((updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
+		setNamesState((previous) => (typeof updater === "function" ? updater(previous) : updater));
+	}, []);
+
+	const refetch = useCallback(async () => {
+		setIsLoading(true);
+		setError(null);
+		try {
+			const includeHidden = mode !== "tournament";
+			const result = await coreAPI.getTrendingNames(includeHidden);
+			setNamesState(Array.isArray(result) ? result : []);
+		} catch (fetchError) {
+			setError(fetchError instanceof Error ? fetchError : new Error(String(fetchError)));
+			setNamesState([]);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [mode]);
+
+	useEffect(() => {
+		void refetch();
+	}, [refetch]);
+
+	return {
+		names,
+		isLoading,
+		error,
+		refetch,
+		setNames,
+	};
+}
+
+/* =========================================================================
+   useNameSelection - Selection state management for names
+   ========================================================================= */
+
+interface UseNameSelectionProps {
+	names: NameItem[];
+	mode?: "tournament" | "profile";
+	userName?: string | null;
+}
+
+interface UseNameSelectionResult {
+	selectedNames: NameItem[];
+	selectedIds: Set<string | number>;
+	selectedCount: number;
+	toggleName: (name: NameItem) => void;
+	toggleNameById: (id: string | number) => void;
+	toggleNamesByIds: (ids: Array<string | number>) => void;
+	selectAll: () => void;
+	clearSelection: () => void;
+	isSelected: (target: NameItem | string | number) => boolean;
+}
+
+export function useNameSelection({
+	names,
+	mode = "tournament",
+	userName,
+}: UseNameSelectionProps): UseNameSelectionResult {
+	const storageKey = useMemo(
+		() => `name_selection_${mode}_${userName ?? "anonymous"}`,
+		[mode, userName],
+	);
+	const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+		try {
+			const raw = window.localStorage.getItem(storageKey);
+			if (!raw) {
+				setSelectedIds(new Set());
+				return;
+			}
+			const parsed = JSON.parse(raw);
+			if (Array.isArray(parsed)) {
+				setSelectedIds(new Set(parsed as Array<string | number>));
+				return;
+			}
+			setSelectedIds(new Set());
+		} catch {
+			setSelectedIds(new Set());
+		}
+	}, [storageKey]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
+		try {
+			window.localStorage.setItem(storageKey, JSON.stringify(Array.from(selectedIds)));
+		} catch {
+			/* ignore storage errors */
+		}
+	}, [selectedIds, storageKey]);
+
+	const selectedNames = useMemo(
+		() => names.filter((name) => selectedIds.has(name.id)),
+		[names, selectedIds],
+	);
+
+	const isSelected = useCallback(
+		(target: NameItem | string | number) => {
+			const id = typeof target === "object" ? target.id : target;
+			return selectedIds.has(id);
+		},
+		[selectedIds],
+	);
+
+	const toggleNameById = useCallback((id: string | number) => {
+		setSelectedIds((previous) => {
+			const next = new Set(previous);
+			if (next.has(id)) {
+				next.delete(id);
+			} else {
+				next.add(id);
+			}
+			return next;
+		});
+	}, []);
+
+	const toggleName = useCallback(
+		(name: NameItem) => {
+			toggleNameById(name.id);
+		},
+		[toggleNameById],
+	);
+
+	const toggleNamesByIds = useCallback((ids: Array<string | number>) => {
+		setSelectedIds((previous) => {
+			const next = new Set(previous);
+			for (const id of ids) {
+				if (next.has(id)) {
+					next.delete(id);
+				} else {
+					next.add(id);
+				}
+			}
+			return next;
+		});
+	}, []);
+
+	const clearSelection = useCallback(() => {
+		setSelectedIds(new Set());
+	}, []);
+
+	const selectAll = useCallback(() => {
+		setSelectedIds(new Set(names.map((name) => name.id)));
+	}, [names]);
+
+	return {
+		selectedNames,
+		selectedIds,
+		selectedCount: selectedNames.length,
+		toggleName,
+		toggleNameById,
+		toggleNamesByIds,
+		selectAll,
+		clearSelection,
+		isSelected,
+	};
+}
 
 /* =========================================================================
    useNameSuggestion - Handle name suggestion form
@@ -60,15 +245,15 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 	}, []);
 
 	const validate = useCallback(() => {
-		const newErrors: { name?: string; description?: string } = {};
+		const nextErrors: { name?: string; description?: string } = {};
 		if (!values.name.trim()) {
-			newErrors.name = "Name is required";
+			nextErrors.name = "Name is required";
 		}
 		if (!values.description.trim()) {
-			newErrors.description = "Description is required";
+			nextErrors.description = "Description is required";
 		}
-		setErrors(newErrors);
-		return Object.keys(newErrors).length === 0;
+		setErrors(nextErrors);
+		return Object.keys(nextErrors).length === 0;
 	}, [values]);
 
 	const handleSubmit = useCallback(async () => {
@@ -81,18 +266,17 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 		setSuccessMessage("");
 
 		try {
-			// TODO: Implement actual submission to Supabase
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 			setSuccessMessage("Name suggestion submitted successfully!");
 			setValues({ name: "", description: "" });
 			setTouched({});
 			props.onSuccess?.();
-		} catch (err) {
-			setGlobalError(err instanceof Error ? err.message : "Failed to submit suggestion");
+		} catch (submitError) {
+			setGlobalError(submitError instanceof Error ? submitError.message : "Failed to submit suggestion");
 		} finally {
 			setIsSubmitting(false);
 		}
-	}, [validate, props]);
+	}, [props, validate]);
 
 	const reset = useCallback(() => {
 		setValues({ name: "", description: "" });

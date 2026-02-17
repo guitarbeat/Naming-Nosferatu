@@ -5,16 +5,16 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { useToast } from "@/app/providers/Providers";
 import { NameManagementProvider } from "@/features/tournament/context/NameManagementContext";
 import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
 import { ErrorComponent } from "@/shared/components/layout";
-import { useToast } from "@/providers/Providers";
+import { cn } from "@/shared/lib/basic";
 import type {
 	NameItem,
 	NameManagementViewExtensions,
 	UseNameManagementViewProps,
 } from "@/types/appTypes";
-import { cn } from "@/shared/lib/basic";
 import { ManagementMode } from "./ManagementMode";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {

@@ -167,6 +167,7 @@ const IS_DEV = import.meta.env?.DEV ?? false;
 
 function getInitialUserState(): UserState {
 	const base: UserState = {
+		id: null,
 		name: "",
 		isLoggedIn: false,
 		isAdmin: false,

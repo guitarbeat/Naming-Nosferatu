@@ -11,9 +11,9 @@
 
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { queryClient } from "@/services/supabase/client";
 import type { NameItem } from "@/shared/types";
 import { CAT_IMAGES, STORAGE_KEYS } from "./constants";
-import { queryClient } from "@/services/supabase/client";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types
@@ -123,10 +123,6 @@ export const devLog = isDev ? (...args: unknown[]) => console.log("[DEV]", ...ar
 export const devWarn = isDev ? (...args: unknown[]) => console.warn("[DEV]", ...args) : noop;
 export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", ...args) : noop;
 
-
-
-
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Name / Filter Utilities
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -215,8 +211,6 @@ export function selectedNamesToSet(
 	}
 	return new Set(selectedNames.map((n) => n.id));
 }
-
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Rating / Metrics Utilities
@@ -683,3 +677,5 @@ export function cleanupPerformanceMonitoring(): void {
 	}
 	observers.length = 0;
 }
+
+export { playSound } from "./sound";

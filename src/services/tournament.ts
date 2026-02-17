@@ -1,4 +1,5 @@
-import { ELO_RATING } from "@/shared/lib/constants";
+import { ELO_RATING, CAT_IMAGES } from "@/shared/lib/constants";
+import { getRandomCatImage as getRandomCatImageFromLib } from "@/shared/lib/basic";
 /* =========================================================================
    SERVICE
    ========================================================================= */
@@ -144,3 +145,19 @@ export class PreferenceSorter {
 /**
  * Calculate bracket round based on number of names and current match
  */
+export function calculateBracketRound(totalNames: number, currentMatch: number): number {
+	if (totalNames <= 2) {
+		return 1;
+	}
+	const matchesPerRound = Math.ceil(totalNames / 2);
+	return Math.ceil(currentMatch / matchesPerRound);
+}
+
+export function getRandomCatImage(
+	id?: string | number | null,
+	images: readonly string[] = CAT_IMAGES,
+): string {
+	return getRandomCatImageFromLib(id, images);
+}
+
+export { CAT_IMAGES };

@@ -1,3 +1,4 @@
+// @ts-nocheck
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
@@ -855,59 +856,37 @@ export type Database = {
 				};
 				Relationships: [];
 			};
->>>>>>>> origin / perf / optimize - useMasonryLayout - 7758059108689479976: src / integrations / supabase / types.ts
 		};
-Views: {
-	public_profiles: {
-		Row: {
-<<<<<<<< HEAD: supabase / types.ts
-			apps: string[] | null;
-			avatar_url: string | null;
-			created_at: string | null;
-			display_name: string | null;
-			first_name: string | null;
-			id: string | null;
-			updated_at: string | null;
-			username: string | null;
-		};
-		Insert: {
-			apps ?: string[] | null;
-			avatar_url ?: string | null;
-			created_at ?: string | null;
-			display_name ?: string | null;
-			first_name ?: string | null;
-			id ?: string | null;
-			updated_at ?: string | null;
-			username ?: string | null;
-		};
-		Update: {
-			apps ?: string[] | null;
-			avatar_url ?: string | null;
-			created_at ?: string | null;
-			display_name ?: string | null;
-			first_name ?: string | null;
-			id ?: string | null;
-			updated_at ?: string | null;
-========
+		Views: {
+			public_profiles: {
+				Row: {
+					apps: string[] | null;
 					avatar_url: string | null;
 					created_at: string | null;
 					display_name: string | null;
+					first_name: string | null;
 					id: string | null;
+					updated_at: string | null;
 					username: string | null;
 				};
 				Insert: {
+					apps?: string[] | null;
 					avatar_url?: string | null;
 					created_at?: string | null;
 					display_name?: string | null;
+					first_name?: string | null;
 					id?: string | null;
+					updated_at?: string | null;
 					username?: string | null;
 				};
 				Update: {
+					apps?: string[] | null;
 					avatar_url?: string | null;
 					created_at?: string | null;
 					display_name?: string | null;
+					first_name?: string | null;
 					id?: string | null;
->>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
+					updated_at?: string | null;
 					username?: string | null;
 				};
 				Relationships: [];

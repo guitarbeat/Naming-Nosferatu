@@ -169,7 +169,9 @@ export const ManagementMode = memo<ManagementModeProps>(
 										<span className="tournament-toolbar-filter-label">Visibility</span>
 										<select
 											value={filterStatus}
-											onChange={(event) => setFilterStatus(event.target.value)}
+											onChange={(event) =>
+												setFilterStatus(event.target.value as "all" | "visible" | "hidden")
+											}
 											className="tournament-toolbar-filter-select"
 											disabled={!analysisMode}
 										>
@@ -343,7 +345,11 @@ export const ManagementMode = memo<ManagementModeProps>(
 									isAdmin={Boolean(profileProps.isAdmin)}
 									showCatPictures={showCatPictures}
 									imageList={tournamentProps.imageList as string[]}
-									onNamesUpdate={setNames}
+									onNamesUpdate={(updater) => {
+										setNames((previousNames) =>
+											typeof updater === "function" ? updater(previousNames) : updater,
+										);
+									}}
 								/>
 							</motion.div>
 						)}
@@ -356,7 +362,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 						{React.isValidElement(extensions.bulkActions)
 							? extensions.bulkActions
 							: typeof extensions.bulkActions === "function"
-								? React.createElement(extensions.bulkActions)
+								? React.createElement(extensions.bulkActions as React.ComponentType)
 								: null}
 					</div>
 				)}

@@ -11,6 +11,8 @@ import { createDirectory, fileExists, readFile, writeFile } from "./fileManager"
 import { mergeFiles } from "./fileMerger";
 import type { FileAnalysis, IntegrationResult, MergeStrategy } from "./types";
 
+const INVALID_FILENAME_REGEX = /[<>:"/\\|?*]/;
+
 /**
  * Integrates a reference file into the target location
  *
@@ -52,6 +54,18 @@ export function integrateFile(
 				targetPath,
 				action: "skipped",
 				error: new Error("Missing fileName"),
+				actionsLog,
+			};
+		}
+		if (isInvalidFileName(finalFileName)) {
+			const error = new Error(`Invalid file name: ${finalFileName}`);
+			actionsLog.push(`Integration failed: ${error.message}`);
+			return {
+				success: false,
+				filePath: analysis.filePath,
+				targetPath,
+				action: "skipped",
+				error,
 				actionsLog,
 			};
 		}
@@ -104,8 +118,9 @@ function createNewFile(
 ): IntegrationResult {
 	try {
 		// Ensure target directory exists
-		actionsLog.push(`Creating directory structure: ${analysis.targetLocation}`);
-		createDirectory(analysis.targetLocation);
+		const targetDirectory = path.dirname(targetPath);
+		actionsLog.push(`Creating directory structure: ${targetDirectory}`);
+		createDirectory(targetDirectory);
 
 		// Write the file
 		actionsLog.push(`Writing new file to ${targetPath}`);
@@ -132,6 +147,25 @@ function createNewFile(
 			actionsLog,
 		};
 	}
+}
+
+function isInvalidFileName(fileName: string): boolean {
+	if (!fileName || fileName === "." || fileName === "..") {
+		return true;
+	}
+
+	if (INVALID_FILENAME_REGEX.test(fileName)) {
+		return true;
+	}
+
+	for (let index = 0; index < fileName.length; index += 1) {
+		const code = fileName.charCodeAt(index);
+		if (Number.isFinite(code) && code < 32) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**

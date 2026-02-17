@@ -192,6 +192,7 @@ export type NameManagementViewExtensions = {
 	header?: React.ReactNode | (() => React.ReactNode);
 	dashboard?: React.ReactNode | React.ComponentType | (() => React.ReactNode);
 	contextLogic?: React.ReactNode | (() => React.ReactNode);
+	bulkActions?: React.ReactNode | React.ComponentType | (() => React.ReactNode);
 } & Record<string, unknown>;
 
 export interface UseNameManagementViewProps {
@@ -217,7 +218,7 @@ export interface UseNameManagementViewResult {
 	refetch: () => void;
 	clearErrors: () => void;
 
-	setNames: (names: NameItem[]) => void;
+	setNames: (updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void;
 	setHiddenIds: (ids: Set<string | number>) => void;
 
 	selectedNames: NameItem[];

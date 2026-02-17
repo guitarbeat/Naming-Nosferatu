@@ -44,12 +44,14 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 	}, [retryCount, onError]);
 
 	// Reset state when src changes
-	// biome-ignore lint/correctness/useExhaustiveDependencies: src change triggers reset
 	useEffect(() => {
 		setIsLoading(true);
 		setHasError(false);
 		setRetryCount(0);
-	}, []);
+		if (!src) {
+			return;
+		}
+	}, [src]);
 
 	if (hasError) {
 		return (

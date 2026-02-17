@@ -28,8 +28,6 @@ export const CAT_IMAGES = [
 	"/assets/images/75209580524__60DCC26F-55A1-4EF8-A0B2-14E80A026A8D.avif",
 ] as const;
 
-
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Elo Rating System
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -93,4 +91,12 @@ export const TIMING = {
 export const NOTIFICATION = {
 	ERROR_DURATION_MS: 5000,
 	MAX_TOASTS: 5,
+} as const;
+
+export const FILTER_OPTIONS = {
+	VISIBILITY: {
+		ALL: "all",
+		VISIBLE: "visible",
+		HIDDEN: "hidden",
+	},
 } as const;

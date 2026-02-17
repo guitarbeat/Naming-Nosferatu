@@ -1,7 +1,7 @@
 import { api } from "@/services/apiClient";
 import { syncQueue } from "@/services/SyncQueue";
-import type { NameItem } from "@/shared/types";
 import { devLog } from "@/shared/lib/basic";
+import type { NameItem } from "@/shared/types";
 
 interface TournamentCreateResult {
 	success: boolean;

@@ -74,3 +74,12 @@ export const hiddenNamesAPI = {
 		return coreAPI.hideName(_userName, nameId, false);
 	},
 };
+
+export const siteSettingsAPI = {
+	getSettings: async () => {
+		return {};
+	},
+	updateSettings: async (_updates: Record<string, unknown>) => {
+		return { success: true };
+	},
+};

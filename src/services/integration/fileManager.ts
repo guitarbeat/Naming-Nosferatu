@@ -20,14 +20,21 @@ export function createBackup(filePath: string): BackupInfo {
 	}
 
 	// Generate timestamp for backup
-	const timestamp = Date.now();
-
-	// Create backup path with timestamp
 	const parsedPath = path.parse(filePath);
-	const backupPath = path.join(
+	let timestamp = Date.now();
+	let backupPath = path.join(
 		parsedPath.dir,
 		`.backup_${parsedPath.name}_${timestamp}${parsedPath.ext}`,
 	);
+
+	// Ensure backup path is unique even when multiple backups happen in the same millisecond
+	while (fs.existsSync(backupPath)) {
+		timestamp += 1;
+		backupPath = path.join(
+			parsedPath.dir,
+			`.backup_${parsedPath.name}_${timestamp}${parsedPath.ext}`,
+		);
+	}
 
 	// Copy file to backup location
 	try {
@@ -317,19 +324,22 @@ function transformImportPath(
 	newFilePath: string,
 	referenceMap?: Map<string, string>,
 ): string {
+	const normalizedImportPath = normalizePathForComparison(importPath);
+	const normalizedOldFilePath = toNormalizedAbsolutePath(oldFilePath);
+	const normalizedNewFilePath = toNormalizedAbsolutePath(newFilePath);
+
 	// Resolve the absolute path that the import currently points to
-	const oldFileDir = path.dirname(oldFilePath);
-	const absoluteImportPath = path.resolve(oldFileDir, importPath);
+	const oldFileDir = path.posix.dirname(normalizedOldFilePath);
+	const absoluteImportPath = path.posix.resolve(oldFileDir, normalizedImportPath);
 
 	// Check if this import points to a file that has been moved (using referenceMap)
 	let targetPath = absoluteImportPath;
 	if (referenceMap) {
-		// Normalize the path for comparison
-		const normalizedPath = path.normalize(absoluteImportPath);
+		const normalizedPath = toNormalizedAbsolutePath(absoluteImportPath);
 
 		// Check if this path (or with extensions) exists in the reference map
 		for (const [oldRef, newRef] of referenceMap.entries()) {
-			const normalizedOldRef = path.normalize(oldRef);
+			const normalizedOldRef = toNormalizedAbsolutePath(oldRef);
 
 			// Check exact match or match without extension
 			if (
@@ -338,28 +348,123 @@ function transformImportPath(
 				`${normalizedPath}.ts` === normalizedOldRef ||
 				`${normalizedPath}.tsx` === normalizedOldRef
 			) {
-				targetPath = newRef;
+				targetPath = toNormalizedAbsolutePath(newRef);
 				break;
 			}
 		}
 	}
 
 	// Calculate the new relative path from the new file location to the target
-	const newFileDir = path.dirname(newFilePath);
-	let newRelativePath = path.relative(newFileDir, targetPath);
+	const newFileDir = path.posix.dirname(normalizedNewFilePath);
+	let newRelativePath = path.posix.relative(newFileDir, targetPath);
 
 	// Ensure the path starts with ./ or ../
 	if (!newRelativePath.startsWith(".")) {
 		newRelativePath = `./${newRelativePath}`;
 	}
 
-	// Normalize path separators to forward slashes (for cross-platform compatibility)
-	newRelativePath = newRelativePath.replace(/\\/g, "/");
-
 	// Remove file extensions if the original import didn't have them
-	if (!importPath.match(/\.(ts|tsx|js|jsx)$/)) {
+	if (!normalizedImportPath.match(/\.(ts|tsx|js|jsx)$/)) {
 		newRelativePath = newRelativePath.replace(/\.(ts|tsx|js|jsx)$/, "");
 	}
 
 	return newRelativePath;
+}
+
+function normalizePathForComparison(filePath: string): string {
+	return filePath.replace(/\\/g, "/");
+}
+
+function toNormalizedAbsolutePath(filePath: string): string {
+	const normalizedPath = normalizePathForComparison(filePath);
+	if (path.posix.isAbsolute(normalizedPath)) {
+		return path.posix.normalize(normalizedPath);
+	}
+
+	const cwd = normalizePathForComparison(process.cwd());
+	return path.posix.normalize(path.posix.resolve(cwd, normalizedPath));
+}
+
+export interface RollbackResult {
+	restoredFiles: string[];
+	restoredReferenceFiles: string[];
+	errors: Array<{
+		file: string;
+		error: string;
+	}>;
+}
+
+/**
+ * Creates an in-memory snapshot of reference files before deletion.
+ */
+export function snapshotReferenceFiles(referenceFiles: string[]): Map<string, string> {
+	const snapshot = new Map<string, string>();
+
+	for (const filePath of referenceFiles) {
+		try {
+			if (!fs.existsSync(filePath)) {
+				throw new Error(`file does not exist at ${filePath}`);
+			}
+
+			const content = fs.readFileSync(filePath, "utf-8");
+			snapshot.set(filePath, content);
+		} catch (error) {
+			throw new Error(
+				`Failed to snapshot reference file ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
+			);
+		}
+	}
+
+	return snapshot;
+}
+
+/**
+ * Restores backed up target files and deleted reference files.
+ */
+export function rollback(
+	backups: BackupInfo[],
+	deletedReferenceFiles?: Map<string, string>,
+): RollbackResult {
+	const result: RollbackResult = {
+		restoredFiles: [],
+		restoredReferenceFiles: [],
+		errors: [],
+	};
+
+	for (const backup of backups) {
+		try {
+			restoreBackup(backup);
+			result.restoredFiles.push(backup.originalPath);
+		} catch (error) {
+			result.errors.push({
+				file: backup.originalPath,
+				error: error instanceof Error ? error.message : String(error),
+			});
+		}
+	}
+
+	if (deletedReferenceFiles) {
+		for (const [filePath, content] of deletedReferenceFiles.entries()) {
+			try {
+				if (!filePath) {
+					throw new Error("Invalid reference file path");
+				}
+
+				const directory = path.dirname(filePath);
+				if (directory && !fs.existsSync(directory)) {
+					fs.mkdirSync(directory, { recursive: true });
+				}
+
+				fs.writeFileSync(filePath, content, "utf-8");
+				result.restoredReferenceFiles.push(filePath);
+			} catch (error) {
+				result.errors.push({
+					file: filePath,
+					error: error instanceof Error ? error.message : String(error),
+				});
+			}
+		}
+	}
+
+	return result;
 }

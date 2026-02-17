@@ -286,7 +286,6 @@ export function formatErrorWithSuggestions(
 
 	if (strategy.requiresUserInput) {
 		message += "\n\nAction Required: This error requires user input to resolve.";
-		message += getSuggestionsForErrorCode(error.code);
 	}
 
 	if (strategy.shouldRollback) {
@@ -296,6 +295,8 @@ export function formatErrorWithSuggestions(
 	if (strategy.retryable) {
 		message += "\n\nRetry: This operation can be retried.";
 	}
+
+	message += getSuggestionsForErrorCode(error.code);
 
 	return message;
 }

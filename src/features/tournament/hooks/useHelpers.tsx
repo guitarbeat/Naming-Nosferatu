@@ -5,6 +5,10 @@
  */
 
 import { useCallback, useRef, useState } from "react";
+import { useToast } from "@/app/providers/Providers";
+import { Toast } from "@/shared/components/layout";
+import { devError, devLog } from "@/shared/lib/basic";
+import { NOTIFICATION } from "@/shared/lib/constants";
 import {
 	getCurrentTrack,
 	playBackgroundMusic,
@@ -17,11 +21,7 @@ import {
 	setBackgroundMusicVolume,
 	stopBackgroundMusic,
 } from "@/shared/lib/sound";
-import { Toast } from "@/shared/components/layout";
-import { useToast } from "@/app/providers/Providers";
 import type { NameItem } from "@/shared/types";
-import { devError, devLog } from "@/shared/lib/basic";
-import { NOTIFICATION } from "@/shared/lib/constants";
 
 /* =========================================================================
    AUDIO MANAGER HOOK
@@ -237,7 +237,7 @@ export function useProfileNotifications() {
 		showSuccess: showSuccessToast,
 		showError: showErrorToast,
 		showToast: showToastMessage,
-		removeToast,
+		hideToast,
 	} = useToast();
 
 	const showSuccess = useCallback(
@@ -271,7 +271,7 @@ export function useProfileNotifications() {
 			<Toast
 				variant="container"
 				toasts={toasts}
-				removeToast={removeToast}
+				removeToast={hideToast}
 				position="top-right"
 				maxToasts={NOTIFICATION.MAX_TOASTS}
 				onDismiss={() => {
@@ -280,7 +280,7 @@ export function useProfileNotifications() {
 				message=""
 			/>
 		);
-	}, [toasts, removeToast]);
+	}, [toasts, hideToast]);
 
 	return {
 		showSuccess,

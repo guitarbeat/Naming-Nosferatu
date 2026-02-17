@@ -11,6 +11,7 @@ import { Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
+import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { ErrorManager } from "@/services/errorManager";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
@@ -29,7 +30,7 @@ const AdminDashboardLazy = routeComponents.AdminDashboardLazy;
 function App() {
 	const { user: authUser, isLoading } = useAuth();
 	const isInitialized = !isLoading;
-	const { user, userActions } = useAppStore();
+	const { userActions } = useAppStore();
 
 	// Sync auth user with store
 	useEffect(() => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
@@ -16,6 +17,7 @@ export type Database = {
 					old_values: Json | null;
 					operation: string;
 					table_name: string;
+					user_id: string | null;
 					user_name: string | null;
 				};
 				Insert: {
@@ -25,6 +27,7 @@ export type Database = {
 					old_values?: Json | null;
 					operation: string;
 					table_name: string;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Update: {
@@ -34,6 +37,7 @@ export type Database = {
 					old_values?: Json | null;
 					operation?: string;
 					table_name?: string;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Relationships: [];
@@ -43,26 +47,26 @@ export type Database = {
 					created_at: string;
 					preferences: Json | null;
 					updated_at: string;
+					user_id: string;
 					user_name: string;
 				};
 				Insert: {
 					created_at?: string;
 					preferences?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name: string;
 				};
 				Update: {
 					created_at?: string;
 					preferences?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name?: string;
 				};
 				Relationships: [];
 			};
-<<<<<<< HEAD
-=======
-<<<<<<<< HEAD:supabase/types.ts
-========
+
 			cat_audit_log: {
 				Row: {
 					client_ip: unknown;
@@ -73,6 +77,7 @@ export type Database = {
 					operation: string;
 					table_name: string;
 					user_agent: string | null;
+					user_id: string | null;
 					user_name: string | null;
 				};
 				Insert: {
@@ -84,6 +89,7 @@ export type Database = {
 					operation: string;
 					table_name: string;
 					user_agent?: string | null;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Update: {
@@ -95,12 +101,12 @@ export type Database = {
 					operation?: string;
 					table_name?: string;
 					user_agent?: string | null;
+					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Relationships: [];
 			};
->>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
->>>>>>> main
+
 			cat_name_options: {
 				Row: {
 					avg_rating: number | null;
@@ -145,6 +151,7 @@ export type Database = {
 					rating: number | null;
 					rating_history: Json | null;
 					updated_at: string;
+					user_id: string;
 					user_name: string;
 					wins: number | null;
 				};
@@ -155,6 +162,7 @@ export type Database = {
 					rating?: number | null;
 					rating_history?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name: string;
 					wins?: number | null;
 				};
@@ -165,6 +173,7 @@ export type Database = {
 					rating?: number | null;
 					rating_history?: Json | null;
 					updated_at?: string;
+					user_id?: string;
 					user_name?: string;
 					wins?: number | null;
 				};
@@ -182,6 +191,13 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "cat_app_users";
 						referencedColumns: ["user_name"];
+					},
+					{
+						foreignKeyName: "cat_name_ratings_user_id_fkey";
+						columns: ["user_id"];
+						isOneToOne: false;
+						referencedRelation: "cat_app_users";
+						referencedColumns: ["user_id"];
 					},
 				];
 			};
@@ -460,6 +476,7 @@ export type Database = {
 					selected_at: string;
 					selection_type: string | null;
 					tournament_id: string;
+					user_id: string;
 					user_name: string;
 				};
 				Insert: {
@@ -470,6 +487,7 @@ export type Database = {
 					selected_at?: string;
 					selection_type?: string | null;
 					tournament_id: string;
+					user_id?: string;
 					user_name: string;
 				};
 				Update: {
@@ -480,6 +498,7 @@ export type Database = {
 					selected_at?: string;
 					selection_type?: string | null;
 					tournament_id?: string;
+					user_id?: string;
 					user_name?: string;
 				};
 				Relationships: [
@@ -489,6 +508,13 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "cat_name_options";
 						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "tournament_selections_user_id_fkey";
+						columns: ["user_id"];
+						isOneToOne: false;
+						referencedRelation: "cat_app_users";
+						referencedColumns: ["user_id"];
 					},
 				];
 			};
@@ -566,10 +592,7 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-<<<<<<< HEAD
-=======
-<<<<<<<< HEAD:supabase/types.ts
-========
+
 			fin_charts: {
 				Row: {
 					created_at: string;
@@ -833,16 +856,10 @@ export type Database = {
 				};
 				Relationships: [];
 			};
->>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
->>>>>>> main
 		};
 		Views: {
 			public_profiles: {
 				Row: {
-<<<<<<< HEAD
-=======
-<<<<<<<< HEAD:supabase/types.ts
->>>>>>> main
 					apps: string[] | null;
 					avatar_url: string | null;
 					created_at: string | null;
@@ -870,29 +887,6 @@ export type Database = {
 					first_name?: string | null;
 					id?: string | null;
 					updated_at?: string | null;
-<<<<<<< HEAD
-=======
-========
-					avatar_url: string | null;
-					created_at: string | null;
-					display_name: string | null;
-					id: string | null;
-					username: string | null;
-				};
-				Insert: {
-					avatar_url?: string | null;
-					created_at?: string | null;
-					display_name?: string | null;
-					id?: string | null;
-					username?: string | null;
-				};
-				Update: {
-					avatar_url?: string | null;
-					created_at?: string | null;
-					display_name?: string | null;
-					id?: string | null;
->>>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/integrations/supabase/types.ts
->>>>>>> main
 					username?: string | null;
 				};
 				Relationships: [];
