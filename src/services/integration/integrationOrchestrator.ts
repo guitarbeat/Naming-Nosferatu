@@ -51,7 +51,7 @@ import {
 /**
  * Result of the complete integration workflow
  */
-export interface OrchestrationResult {
+interface OrchestrationResult {
 	success: boolean;
 	totalFiles: number;
 	completedFiles: number;

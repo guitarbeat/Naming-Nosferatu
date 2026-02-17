@@ -8,15 +8,6 @@ import * as path from "node:path";
 import type { BackupInfo } from "./types";
 
 /**
- * Rollback result containing information about restored files
- */
-export interface RollbackResult {
-	restoredFiles: string[];
-	restoredReferenceFiles: string[];
-	errors: Array<{ file: string; error: string }>;
-}
-
-/**
  * Creates a timestamped backup of a file before modification
  * @param filePath - Path to the file to backup
  * @returns BackupInfo containing backup details
@@ -371,96 +362,4 @@ function transformImportPath(
 	}
 
 	return newRelativePath;
-}
-
-/**
- * Rollback result containing information about restored files
- */
-export interface RollbackResult {
-	restoredFiles: string[];
-	restoredReferenceFiles: string[];
-	errors: Array<{ file: string; error: string }>;
-}
-
-/**
- * Performs a complete rollback of an integration operation
- *
- * This function:
- * 1. Restores all modified files from their backups
- * 2. Restores deleted reference files if backup information is provided
- *
- * @param backups - Array of BackupInfo for files to restore
- * @param deletedReferenceFiles - Optional map of deleted reference files to their backup content
- * @returns RollbackResult containing information about restored files and any errors
- *
- * Requirements: 10.2, 10.3, 10.4
- */
-export function rollback(
-	backups: BackupInfo[],
-	deletedReferenceFiles?: Map<string, string>,
-): RollbackResult {
-	const result: RollbackResult = {
-		restoredFiles: [],
-		restoredReferenceFiles: [],
-		errors: [],
-	};
-
-	// Restore modified files from backups
-	for (const backup of backups) {
-		try {
-			restoreBackup(backup);
-			result.restoredFiles.push(backup.originalPath);
-		} catch (error) {
-			result.errors.push({
-				file: backup.originalPath,
-				error: error instanceof Error ? error.message : String(error),
-			});
-		}
-	}
-
-	// Restore deleted reference files
-	if (deletedReferenceFiles) {
-		for (const [filePath, content] of deletedReferenceFiles.entries()) {
-			try {
-				writeFile(filePath, content);
-				result.restoredReferenceFiles.push(filePath);
-			} catch (error) {
-				result.errors.push({
-					file: filePath,
-					error: error instanceof Error ? error.message : String(error),
-				});
-			}
-		}
-	}
-
-	return result;
-}
-
-/**
- * Creates a snapshot of reference files before deletion
- *
- * This function reads and stores the content of reference files so they can be
- * restored during rollback if needed.
- *
- * @param filePaths - Array of file paths to snapshot
- * @returns Map of file paths to their content
- * @throws Error if any file cannot be read
- *
- * Requirements: 10.3
- */
-export function snapshotReferenceFiles(filePaths: string[]): Map<string, string> {
-	const snapshot = new Map<string, string>();
-
-	for (const filePath of filePaths) {
-		try {
-			const content = readFile(filePath);
-			snapshot.set(filePath, content);
-		} catch (error) {
-			throw new Error(
-				`Failed to snapshot reference file ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
-			);
-		}
-	}
-
-	return snapshot;
 }
