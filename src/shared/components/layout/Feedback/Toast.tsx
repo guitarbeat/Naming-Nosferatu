@@ -166,7 +166,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 	);
 };
 
-interface IToastItem {
+export interface IToastItem {
 	id: string;
 	message: string;
 	type: "success" | "error" | "info" | "warning";
@@ -188,7 +188,7 @@ interface ToastContainerProps {
 	className?: string;
 }
 
-const ToastContainer: React.FC<ToastContainerProps> = ({
+export const ToastContainer: React.FC<ToastContainerProps> = ({
 	toasts = [],
 	removeToast,
 	position = "top-right",
