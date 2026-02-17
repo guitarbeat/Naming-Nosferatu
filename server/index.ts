@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import "dotenv/config";
->>>>>>> main
 import cors from "cors";
 import express from "express";
 import path from "path";

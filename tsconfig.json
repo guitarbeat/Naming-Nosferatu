@@ -1,10 +1,5 @@
 {
 	"compilerOptions": {
-<<<<<<< HEAD
-		"target": "ES2020",
-		"useDefineForClassFields": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
-=======
 		"target": "ES2022",
 		"useDefineForClassFields": true,
 		"lib": [
@@ -12,7 +7,6 @@
 			"DOM",
 			"DOM.Iterable"
 		],
->>>>>>> main
 		"module": "ESNext",
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
@@ -37,21 +31,6 @@
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": false,
 		"exactOptionalPropertyTypes": false,
-<<<<<<< HEAD
-		"types": ["vite/client", "node"],
-		"baseUrl": ".",
-		"paths": {
-			"@supabase/client": ["src/services/supabase/client.ts"],
-			"@supabase/types": ["supabase/types.ts"],
-			"@db": ["supabase"],
-			"@db/*": ["supabase/*"],
-			"@/*": ["./src/*"]
-		}
-	},
-	"include": ["src/**/*", "vite.config.ts"],
-	"exclude": ["node_modules", "build", "dist"]
-}
-=======
 		"types": [
 			"vite/client",
 			"node"
@@ -85,4 +64,3 @@
 		"dist"
 	]
 }
->>>>>>> main
