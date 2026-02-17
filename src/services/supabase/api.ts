@@ -60,3 +60,17 @@ export const coreAPI = {
 		}
 	},
 };
+
+export const hiddenNamesAPI = {
+	getHiddenNames: async () => {
+		return coreAPI.getHiddenNames();
+	},
+
+	hideName: async (_userName: string, nameId: string | number) => {
+		return coreAPI.hideName(_userName, nameId, true);
+	},
+
+	unhideName: async (_userName: string, nameId: string | number) => {
+		return coreAPI.hideName(_userName, nameId, false);
+	},
+};
