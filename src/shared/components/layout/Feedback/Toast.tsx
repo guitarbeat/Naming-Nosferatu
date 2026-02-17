@@ -6,11 +6,7 @@
 import { cva } from "class-variance-authority";
 import type React from "react";
 import { useCallback, useEffect, useId, useState } from "react";
-<<<<<<< HEAD:src/shared/components/layout/Feedback/Toast.tsx
 import { cn } from "@/shared/lib/basic";
-=======
-import { cn } from "@/shared/lib/basic";
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Feedback/Toast.tsx
 import { GLASS_PRESETS } from "../GlassPresets";
 import LiquidGlass from "../LiquidGlass";
 
@@ -170,11 +166,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 	);
 };
 
-<<<<<<< HEAD:src/shared/components/layout/Feedback/Toast.tsx
-interface IToastItem {
-=======
 export interface IToastItem {
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Feedback/Toast.tsx
 	id: string;
 	message: string;
 	type: "success" | "error" | "info" | "warning";
@@ -196,11 +188,7 @@ interface ToastContainerProps {
 	className?: string;
 }
 
-<<<<<<< HEAD:src/shared/components/layout/Feedback/Toast.tsx
-const ToastContainer: React.FC<ToastContainerProps> = ({
-=======
 export const ToastContainer: React.FC<ToastContainerProps> = ({
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Feedback/Toast.tsx
 	toasts = [],
 	removeToast,
 	position = "top-right",

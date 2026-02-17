@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";
 import { Cat, Heart, PawPrint } from "@/icons";
-import { cn } from "@/utils/basic";
+import { cn } from "@/shared/lib/basic";
 import { BongoCat } from "../LayoutEffects";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif"];

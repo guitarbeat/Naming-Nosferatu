@@ -1,12 +1,3 @@
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-import { cva } from "class-variance-authority";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import React, { memo, useId } from "react";
-import { cn } from "@/shared/lib/basic";
-import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
-
-type CardVariant =
-=======
 /**
  * @module Card
  * @description Reusable card component with flexible styling options
@@ -22,7 +13,6 @@ import { TIMING } from "@/shared/lib/constants";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 export type CardVariant =
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	| "default"
 	| "elevated"
 	| "outlined"
@@ -34,19 +24,13 @@ export type CardVariant =
 	| "danger"
 	| "secondary";
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-type CardPadding = "none" | "small" | "medium" | "large" | "xl";
-type CardShadow = "none" | "small" | "medium" | "large" | "xl";
-type CardBackground = "solid" | "glass" | "gradient" | "transparent";
-=======
 export type CardPadding = "none" | "small" | "medium" | "large" | "xl";
 export type CardShadow = "none" | "small" | "medium" | "large" | "xl";
 export type CardBackground = "solid" | "glass" | "gradient" | "transparent";
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 
 // CVA variant for Card component
 const cardVariants = cva(
-	"relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 backdrop-blur-md", // Base classes
+	"relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 backdrop-blur-md",
 	{
 		variants: {
 			variant: {
@@ -101,11 +85,7 @@ const cardVariants = cva(
 	},
 );
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-interface GlassConfig {
-=======
 export interface GlassConfig {
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	width?: number;
 	height?: number;
 	radius?: number;
@@ -118,11 +98,7 @@ export interface GlassConfig {
 	[key: string]: unknown;
 }
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-=======
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
 	children?: React.ReactNode;
 	variant?: CardVariant;
 	padding?: CardPadding;
@@ -172,7 +148,6 @@ const CardBase = memo(
 				const x = e.clientX - rect.left;
 				const y = e.clientY - rect.top;
 
-				// Update CSS variables for the CSS-based glow effect
 				e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
 				e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
 
@@ -209,17 +184,13 @@ const CardBase = memo(
 				interactive &&
 					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-purple-500",
 				interactive && onClick && "active:translate-y-0",
-				// Glow effect helper
 				"before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
 				"before:bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(168,85,247,0.15),transparent_50%)]",
 			);
 
-			// * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
-			const shouldUseLiquidGlass = liquidGlass || background === "glass";
-			// * Generate unique ID for this LiquidGlass instance
 			const glassId = useId();
 
-			if (shouldUseLiquidGlass) {
+			if (liquidGlass || background === "glass") {
 				const glassConfig = resolveGlassConfig(liquidGlass, DEFAULT_GLASS_CONFIG) as GlassConfig;
 				const {
 					width = 240,
@@ -292,7 +263,7 @@ const CardBase = memo(
 					{...props}
 				>
 					<div
-						className="relative z-10" // Ensure content is above glow
+						className="relative z-10"
 						style={
 							enableTilt
 								? {
@@ -314,9 +285,6 @@ CardBase.displayName = "Card";
 
 export const Card = CardBase;
 
-<<<<<<< HEAD:src/shared/components/layout/Card/Card.tsx
-
-=======
 /* ============================================================================
    CARD STATS SUB-COMPONENT
    ============================================================================ */
@@ -347,7 +315,6 @@ const CardStatsBase = memo(function CardStats({
 	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
 	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
 
-	// Determine top accent color based on variant
 	const accentGradient: Record<CardVariant, string> = {
 		default: "from-white/20 to-white/5",
 		primary: "from-purple-500 to-purple-700",
@@ -385,7 +352,6 @@ const CardStatsBase = memo(function CardStats({
 			aria-label={ariaLabel}
 			{...props}
 		>
-			{/* Top accent bar */}
 			<div
 				className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accentGradient[variant] || accentGradient.default}`}
 			/>
@@ -579,7 +545,6 @@ const CardNameBase = memo(function CardName({
 				padding={size === "small" ? "small" : "medium"}
 				interactive={isInteractive}
 			>
-				{/* Hidden Badge */}
 				{isHidden && (
 					<div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 text-[10px] font-bold text-black bg-amber-500 rounded-full shadow-sm animate-in slide-in-from-top-2 fade-in duration-300">
 						🔒 HIDDEN
@@ -716,4 +681,3 @@ const CardNameBase = memo(function CardName({
 CardNameBase.displayName = "CardName";
 
 export const CardName = CardNameBase;
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976:src/layout/Card/Card.tsx
