@@ -77,3 +77,11 @@ export const STORAGE_KEYS = {
 	MUSIC_VOLUME: "musicVolume",
 	EFFECTS_VOLUME: "effectsVolume",
 } as const;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Animation & Timing
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const TIMING = {
+	RIPPLE_ANIMATION_DURATION_MS: 400,
+} as const;
