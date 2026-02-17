@@ -561,21 +561,34 @@ const CardNameBase = memo(function CardName({
 
 				{image && (
 					<div
-						className="relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner group/image"
+						className={cn(
+							"relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner group/image outline-none focus-visible:ring-2 focus-visible:ring-purple-500",
+							onImageClick && "cursor-pointer",
+						)}
 						onClick={(e) => {
 							if (onImageClick) {
 								e.stopPropagation();
 								onImageClick(e);
 							}
 						}}
+						role={onImageClick ? "button" : undefined}
+						tabIndex={onImageClick ? 0 : undefined}
+						onKeyDown={(e) => {
+							if (onImageClick && (e.key === "Enter" || e.key === " ")) {
+								e.preventDefault();
+								e.stopPropagation();
+								onImageClick(e as unknown as React.MouseEvent);
+							}
+						}}
+						aria-label={onImageClick ? "Zoom image" : undefined}
 					>
 						<CatImage
 							src={image}
 							containerClassName="w-full h-full"
-							imageClassName="w-full h-full object-cover scale-125 transition-transform duration-500 hover:scale-110"
+							imageClassName="w-full h-full object-cover scale-125 transition-transform duration-500 hover:scale-110 group-focus-visible/image:scale-110"
 						/>
 						{onImageClick && (
-							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 group-focus-visible/image:opacity-100 transition-opacity flex items-center justify-center">
 								<span className="material-symbols-outlined text-white text-3xl drop-shadow-md">
 									zoom_in
 								</span>

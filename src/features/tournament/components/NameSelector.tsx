@@ -584,13 +584,17 @@ export function NameSelector() {
 										whileHover={{ y: -4, scale: 1.02 }}
 										className="group relative shrink-0 px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] rounded-sm"
 									>
-										<div className="text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-lg">{nameItem.name}</div>
-										
-										{ (nameItem.description || nameItem.pronunciation) && (
+										<div className="text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-lg">
+											{nameItem.name}
+										</div>
+
+										{(nameItem.description || nameItem.pronunciation) && (
 											<div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 p-3 bg-slate-950/90 backdrop-blur-xl border border-amber-500/30 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 text-xs text-slate-200 leading-relaxed shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] scale-95 group-hover:scale-100 origin-bottom">
 												{nameItem.pronunciation && (
 													<div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
-														<div className="text-[10px] font-black uppercase tracking-widest text-amber-500/70">Pronunciation</div>
+														<div className="text-[10px] font-black uppercase tracking-widest text-amber-500/70">
+															Pronunciation
+														</div>
 														<div className="font-bold text-amber-400 italic">
 															{nameItem.pronunciation}
 														</div>
@@ -706,7 +710,7 @@ export function NameSelector() {
 																	initial={{ opacity: 0, scale: 0.8 }}
 																	animate={{
 																		opacity: dragOffset < -50 ? 1 : 0,
-                                                                        scale: dragOffset < -50 ? 1 : 0.8,
+																		scale: dragOffset < -50 ? 1 : 0.8,
 																	}}
 																>
 																	<div className="flex items-center gap-2 px-6 py-3 bg-red-500/90 backdrop-blur-md rounded-full border-2 border-red-500 shadow-lg rotate-[-20deg]">
@@ -752,7 +756,7 @@ export function NameSelector() {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-4 right-4 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-30"
+																	className="absolute top-4 right-4 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-30"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={18} />
@@ -884,8 +888,7 @@ export function NameSelector() {
 										{activeNames.map((nameItem) => {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage =
-												catImageById.get(nameItem.id) ??
-												getRandomCatImage(nameItem.id, CAT_IMAGES);
+												catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
 											return (
 												<motion.div
 													key={nameItem.id}
@@ -915,7 +918,7 @@ export function NameSelector() {
 															containerClassName="w-full h-full"
 															imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 														/>
-														
+
 														{/* Grid Name Overlay */}
 														<div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end pointer-events-none">
 															<div className="flex flex-col gap-0.5">
@@ -952,7 +955,7 @@ export function NameSelector() {
 																e.stopPropagation();
 																handleOpenLightbox(nameItem.id);
 															}}
-															className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-black/70 z-10"
+															className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-10"
 															aria-label="View full size"
 														>
 															<ZoomIn size={14} />
@@ -1206,7 +1209,7 @@ export function NameSelector() {
 																	containerClassName="w-full h-full"
 																	imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 																/>
-																
+
 																{/* Hidden Grid Name Overlay */}
 																<div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end pointer-events-none">
 																	<div className="flex flex-col gap-0.5">
@@ -1243,7 +1246,7 @@ export function NameSelector() {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-2 right-2 p-1 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/hidden:opacity-100 transition-opacity hover:bg-black/70 z-10"
+																	className="absolute top-2 right-2 p-1 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-10"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={12} />

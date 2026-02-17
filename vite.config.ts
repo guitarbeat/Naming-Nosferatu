@@ -47,11 +47,11 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			output: {
-				manualChunks: {
-					vendor: ["react", "react-dom", "react-router-dom"],
-					ui: ["framer-motion", "lucide-react", "class-variance-authority", "clsx", "tailwind-merge"],
-					supabase: ["@supabase/supabase-js"],
-				},
+				// manualChunks: {
+				// 	vendor: ["react", "react-dom", "react-router-dom"],
+				// 	ui: ["framer-motion", "lucide-react", "class-variance-authority", "clsx", "tailwind-merge"],
+				// 	supabase: ["@supabase/supabase-js"],
+				// },
 			},
 		},
 	},
