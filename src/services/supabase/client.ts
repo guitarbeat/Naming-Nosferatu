@@ -1,52 +1,18 @@
-<<<<<<< HEAD
-import { createClient } from "@supabase/supabase-js";
-import { QueryClient } from "@tanstack/react-query";
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-=======
-/**
- * @module supabaseClient
- * @description Consolidated Supabase client with unified API for cat name tournament system.
- * Combines all database operations, real-time subscriptions, and utility functions.
- */
-
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@supabase/types";
 import { QueryClient } from "@tanstack/react-query";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 
-/* ==========================================================================
-   TANSTACK QUERY CLIENT
-   ========================================================================== */
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
-
 export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-<<<<<<< HEAD
-			staleTime: 1000 * 60 * 5,
-=======
 			staleTime: 1000 * 60 * 5, // 5 minutes
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 			retry: 1,
 			refetchOnWindowFocus: false,
 		},
 	},
 });
 
-<<<<<<< HEAD
-export async function withSupabase<T>(
-	operation: (client: any) => Promise<T>,
-	fallback: T,
-): Promise<T> {
-	try {
-		return await operation(supabase);
-	} catch (error) {
-		console.error("API operation failed:", error);
-=======
 /* ==========================================================================
    SUPABASE CLIENT CONFIGURATION
    ========================================================================== */
@@ -102,12 +68,25 @@ const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> 
 			/* ignore */
 		}
 
+		/* ----------------------------------------------------------------------
+		   MIGRATION UPDATE: Using x-user-id for future RLS policies
+		   ---------------------------------------------------------------------- */
+		let currentUserId: string | null = null;
+		try {
+			if (typeof window !== "undefined" && window.localStorage) {
+				currentUserId = window.localStorage.getItem(STORAGE_KEYS.USER_ID);
+			}
+		} catch {
+			/* ignore */
+		}
+
 		const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
 			auth: authOptions,
 			global: {
 				headers: {
 					"X-Client-Info": "cat-name-tournament",
 					...(currentUserName ? { "x-user-name": currentUserName } : {}),
+					...(currentUserId ? { "x-user-id": currentUserId } : {}),
 				},
 			},
 			db: { schema: "public" },
@@ -147,7 +126,7 @@ const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Databas
 
 export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
 
-export const updateSupabaseUserContext = (userName: string | null): void => {
+export const updateSupabaseUserContext = (userName: string | null, userId: string | null = null): void => {
 	if (!supabaseInstance) {
 		return;
 	}
@@ -159,6 +138,14 @@ export const updateSupabaseUserContext = (userName: string | null): void => {
 		} else {
 			// @ts-expect-error - Accessing internal Supabase client headers
 			supabaseInstance.rest.headers["x-user-name"] = undefined;
+		}
+
+		if (userId) {
+			// @ts-expect-error - Accessing internal Supabase client headers
+			supabaseInstance.rest.headers["x-user-id"] = userId;
+		} else {
+			// @ts-expect-error - Accessing internal Supabase client headers
+			supabaseInstance.rest.headers["x-user-id"] = undefined;
 		}
 	}
 };
@@ -196,13 +183,10 @@ export async function withSupabase<T>(
 		if (isDev) {
 			console.error("Supabase operation failed:", error);
 		}
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 		return fallback;
 	}
 }
 
-<<<<<<< HEAD
-=======
 // Re-export client for modern usage
 export { resolveSupabaseClient as supabase };
 
@@ -211,6 +195,5 @@ export { resolveSupabaseClient as supabase };
    ========================================================================== */
 
 // Re-export common helpers/types if needed by other modules
->>>>>>> origin/perf/optimize-useMasonryLayout-7758059108689479976
 export * from "@/features/analytics/analyticsService";
 export * from "./api";

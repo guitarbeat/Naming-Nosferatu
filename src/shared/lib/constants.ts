@@ -64,6 +64,7 @@ export const ELO_RATING = {
 
 export const STORAGE_KEYS = {
 	USER: "catNamesUser",
+	USER_ID: "catNamesUserId",
 	USER_AVATAR: "catNamesUserAvatar",
 	THEME: "theme",
 	SWIPE_MODE: "tournamentSwipeMode",

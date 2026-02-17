@@ -198,6 +198,7 @@ export interface UserBubbleProfile {
 // appStore.ts because they reference `set`/`get` closures.
 
 export interface UserState {
+	id: string | null;
 	name: string;
 	isLoggedIn: boolean;
 	isAdmin: boolean;
