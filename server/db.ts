@@ -4,9 +4,21 @@ import * as schema from "../shared/schema";
 
 const { Pool } = pg;
 
-if (!process.env.DATABASE_URL) {
-	throw new Error("DATABASE_URL must be set. Did you forget to provision a database?");
+let pool: pg.Pool | null = null;
+let db: any = null;
+
+if (process.env.DATABASE_URL) {
+	try {
+		pool = new Pool({ connectionString: process.env.DATABASE_URL });
+		db = drizzle(pool, { schema });
+		console.log("✓ Database connected successfully");
+	} catch (error) {
+		console.warn("⚠ Failed to connect to database:", error instanceof Error ? error.message : String(error));
+		db = null;
+		pool = null;
+	}
+} else {
+	console.log("ℹ DATABASE_URL not set - running in mock mode without database");
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool, { schema });
+export { pool, db };
