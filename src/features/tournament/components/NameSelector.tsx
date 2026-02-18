@@ -7,6 +7,7 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNamesCache } from "@/hooks/useNamesCache";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
+import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
@@ -335,7 +336,6 @@ export function NameSelector() {
 				}
 
 				// Ensure user context is set
-				const { withSupabase } = await import("@/services/supabase/client");
 				await withSupabase(async (client) => {
 					try {
 						await client.rpc("set_user_context", { user_name_param: userName.trim() });
@@ -404,7 +404,6 @@ export function NameSelector() {
 				}
 
 				// Ensure user context is set
-				const { withSupabase } = await import("@/services/supabase/client");
 				const result = await withSupabase(async (client) => {
 					try {
 						// Ensure user context is set

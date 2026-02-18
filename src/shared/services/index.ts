@@ -13,4 +13,4 @@ export { ErrorManager } from "@/services/errorManager";
 export { syncQueue } from "@/services/SyncQueue";
 // Supabase integration services
 export { coreAPI, hiddenNamesAPI, imagesAPI, siteSettingsAPI } from "@/services/supabase/api";
-export { withSupabase } from "@/services/supabase/client";
+export { withSupabase } from "@/services/supabase/runtime";

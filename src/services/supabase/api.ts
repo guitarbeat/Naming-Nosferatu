@@ -1,5 +1,6 @@
 import { api } from "@/services/apiClient";
 import type { NameItem } from "@/shared/types";
+import { resolveSupabaseClient } from "./runtime";
 
 interface ApiNameRow {
 	id: string | number;
@@ -37,7 +38,6 @@ function mapNameRow(item: ApiNameRow): NameItem {
 
 async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]> {
 	try {
-		const { resolveSupabaseClient } = await import("./client");
 		const client = await resolveSupabaseClient();
 		if (!client) {
 			return [];
@@ -116,7 +116,6 @@ export const coreAPI = {
 		}
 
 		try {
-			const { resolveSupabaseClient } = await import("./client");
 			const client = await resolveSupabaseClient();
 			if (!client) {
 				return { success: false, error: lastError };

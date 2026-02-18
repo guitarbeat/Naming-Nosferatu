@@ -5,8 +5,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { imagesAPI } from "@/services/supabase/api";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import { coreAPI, hiddenNamesAPI, imagesAPI } from "@/services/supabase/api";
+import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import { Loading } from "@/shared/components/layout/Feedback";
@@ -133,7 +133,6 @@ export function AdminDashboard() {
 		try {
 			const idStr = String(nameId);
 			// Call the admin function to toggle locked_in status
-			const { withSupabase } = await import("@/services/supabase/client");
 			await withSupabase(async (client) => {
 				await client.rpc("set_user_context", { user_name_param: user.name });
 				const result = await client.rpc("toggle_name_locked_in" as any, {

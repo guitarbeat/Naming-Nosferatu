@@ -5,7 +5,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { leaderboardAPI, statsAPI } from "@/features/analytics/analyticsService";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import { Loading } from "@/shared/components/layout/Feedback";
