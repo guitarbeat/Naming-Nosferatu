@@ -19,13 +19,6 @@ interface ApiNameRow {
 	provenance?: unknown;
 }
 
-interface HiddenNameItem {
-	id: string;
-	name: string;
-	description: string | null;
-	created_at: string;
-}
-
 function mapNameRow(item: ApiNameRow): NameItem {
 	return {
 		id: String(item.id),
@@ -95,25 +88,20 @@ export const coreAPI = {
 	},
 
 	getHiddenNames: async () => {
-		try {
-			const data = await api.get<HiddenNameItem[]>("/names?includeHidden=true");
-			return (data ?? []).filter((item) => item.id && item.name) || [];
-		} catch {
-			const names = await getNamesFromSupabase(true);
-			return names
-				.filter((item) => item.isHidden ?? item.is_hidden)
-				.map((item) => ({
-					id: String(item.id),
-					name: String(item.name),
-					description: typeof item.description === "string" ? item.description : null,
-					created_at:
-						typeof item.created_at === "string"
-							? item.created_at
-							: typeof item.createdAt === "string"
-								? item.createdAt
-								: "",
-				}));
-		}
+		const names = await coreAPI.getTrendingNames(true);
+		return names
+			.filter((item) => item.isHidden ?? item.is_hidden)
+			.map((item) => ({
+				id: String(item.id),
+				name: String(item.name),
+				description: typeof item.description === "string" ? item.description : null,
+				created_at:
+					typeof item.created_at === "string"
+						? item.created_at
+						: typeof item.createdAt === "string"
+							? item.createdAt
+							: "",
+			}));
 	},
 
 	hideName: async (_userName: string, nameId: string | number, isHidden: boolean) => {
