@@ -8,7 +8,7 @@
  */
 
 import { Suspense, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
@@ -34,9 +34,7 @@ function App() {
 
 	// Sync auth user with store
 	useEffect(() => {
-		if (authUser) {
-			userActions.setAdminStatus(authUser.isAdmin);
-		}
+		userActions.setAdminStatus(Boolean(authUser?.isAdmin));
 	}, [authUser, userActions]);
 
 	useEffect(() => {
@@ -95,6 +93,7 @@ function App() {
 							</div>
 						}
 					/>
+					<Route path="/analaysis" element={<Navigate to="/analysis" replace={true} />} />
 					<Route
 						path="/admin"
 						element={

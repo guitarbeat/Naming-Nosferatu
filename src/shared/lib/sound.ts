@@ -177,20 +177,10 @@ class SoundManager {
 	}
 
 	canPlaySounds(): boolean {
-		const soundEnabled = localStorage.getItem("sound-enabled");
-		if (soundEnabled === "false") {
-			return false;
-		}
-
-		try {
-			const AudioContextClass =
-				window.AudioContext ||
-				(window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-			const audioContext = new AudioContextClass();
-			return audioContext.state !== "suspended";
-		} catch {
-			return false;
-		}
+		// Support both historical and current key names.
+		const soundEnabled =
+			localStorage.getItem("soundEnabled") ?? localStorage.getItem("sound-enabled");
+		return soundEnabled !== "false";
 	}
 }
 

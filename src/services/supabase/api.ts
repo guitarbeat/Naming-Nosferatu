@@ -105,27 +105,60 @@ export const coreAPI = {
 	},
 
 	hideName: async (_userName: string, nameId: string | number, isHidden: boolean) => {
+		const userName = _userName?.trim();
+		let lastError = "Failed to hide name";
+
 		try {
 			await api.patch(`/names/${nameId}/hide`, { isHidden });
 			return { success: true };
-		} catch {
-			try {
-				const { resolveSupabaseClient } = await import("./client");
-				const client = await resolveSupabaseClient();
-				if (!client) {
-					return { success: false, error: "Failed to hide name" };
-				}
-				const { error } = await client
-					.from("cat_name_options")
-					.update({ is_hidden: isHidden })
-					.eq("id", String(nameId));
-				if (error) {
-					return { success: false, error: error.message };
-				}
-				return { success: true };
-			} catch {
-				return { success: false, error: "Failed to hide name" };
+		} catch (error) {
+			lastError = error instanceof Error ? error.message : lastError;
+		}
+
+		try {
+			const { resolveSupabaseClient } = await import("./client");
+			const client = await resolveSupabaseClient();
+			if (!client) {
+				return { success: false, error: lastError };
 			}
+
+			try {
+				if (userName) {
+					await client.rpc("set_user_context", { user_name_param: userName });
+				}
+			} catch {
+				/* ignore */
+			}
+
+			try {
+				const rpcResult = await client.rpc("toggle_name_visibility" as any, {
+					p_name_id: String(nameId),
+					p_hide: isHidden,
+					p_user_name: userName || undefined,
+				});
+
+				if (rpcResult.error) {
+					lastError = rpcResult.error.message || lastError;
+				} else if (rpcResult.data === true) {
+					return { success: true };
+				}
+			} catch (error) {
+				lastError = error instanceof Error ? error.message : lastError;
+			}
+
+			const { error } = await client
+				.from("cat_name_options")
+				.update({ is_hidden: isHidden })
+				.eq("id", String(nameId));
+			if (error) {
+				return { success: false, error: error.message || lastError };
+			}
+			return { success: true };
+		} catch (error) {
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : lastError,
+			};
 		}
 	},
 };

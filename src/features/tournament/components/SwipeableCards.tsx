@@ -1,6 +1,6 @@
 import { Button, Chip, cn, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/icons";
 import { getRandomCatImage } from "@/services/tournament";
 import { Card } from "@/shared/components/layout/Card";
@@ -26,6 +26,7 @@ export const SwipeableCards = memo(
 		const [swipedIds, setSwipedIds] = useState<Set<string>>(new Set());
 		const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
 		const [dragOffset, setDragOffset] = useState(0);
+		const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 		const visibleCards = useMemo(
 			() => names.filter((n: NameItem) => !swipedIds.has(String(n.id))),
@@ -37,6 +38,46 @@ export const SwipeableCards = memo(
 			(n: NameItem) => selectedNames.some((s: NameItem) => s.id === n.id),
 			[selectedNames],
 		);
+		const resetDragState = useCallback(() => {
+			if (resetTimerRef.current) {
+				clearTimeout(resetTimerRef.current);
+			}
+			resetTimerRef.current = setTimeout(() => {
+				setDragDirection(null);
+				setDragOffset(0);
+			}, 300);
+		}, []);
+
+		const applySwipe = useCallback(
+			(card: NameItem, direction: "left" | "right") => {
+				setDragDirection(direction);
+				setDragOffset(0);
+
+				if (direction === "right") {
+					playSound("gameboy-pluck");
+					if (!isSelected(card)) {
+						onToggleName(card);
+					}
+				} else {
+					playSound("wow");
+					if (isSelected(card)) {
+						onToggleName(card);
+					}
+				}
+
+				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+				resetDragState();
+			},
+			[isSelected, onToggleName, resetDragState],
+		);
+
+		useEffect(() => {
+			return () => {
+				if (resetTimerRef.current) {
+					clearTimeout(resetTimerRef.current);
+				}
+			};
+		}, []);
 
 		const handleDragEnd = useCallback(
 			(card: NameItem, info: PanInfo) => {
@@ -51,28 +92,15 @@ export const SwipeableCards = memo(
 				}
 
 				if (offset > threshold || velocity > velocityThreshold) {
-					setDragDirection("right");
-					playSound("gameboy-pluck");
-					if (!isSelected(card)) {
-						onToggleName(card);
-					}
+					applySwipe(card, "right");
 				} else {
-					setDragDirection("left");
-					playSound("wow");
-					if (isSelected(card)) {
-						onToggleName(card);
-					}
+					applySwipe(card, "left");
 				}
-				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
-				setTimeout(() => {
-					setDragDirection(null);
-					setDragOffset(0);
-				}, 300);
 			},
-			[isSelected, onToggleName],
+			[applySwipe],
 		);
 
-		const progressValue = (swipedIds.size / names.length) * 100;
+		const progressValue = names.length > 0 ? (swipedIds.size / names.length) * 100 : 0;
 
 		return (
 			<div className="flex flex-col gap-6 w-full">
@@ -118,6 +146,7 @@ export const SwipeableCards = memo(
 									<motion.div
 										drag={index === 0 ? "x" : false}
 										dragConstraints={{ left: -200, right: 200 }}
+										style={{ touchAction: "pan-y" }}
 										onDrag={(_, info) => {
 											if (index === 0) {
 												setDragOffset(info.offset.x);
@@ -264,10 +293,7 @@ export const SwipeableCards = memo(
 							aria-label={currentCard ? `Discard ${currentCard.name}` : "Discard"}
 							onClick={() => {
 								if (currentCard) {
-									setDragDirection("left");
-									playSound("wow");
-									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
+									applySwipe(currentCard, "left");
 								}
 							}}
 						>
@@ -293,13 +319,7 @@ export const SwipeableCards = memo(
 							aria-label={currentCard ? `Keep ${currentCard.name}` : "Keep"}
 							onClick={() => {
 								if (currentCard) {
-									setDragDirection("right");
-									playSound("gameboy-pluck");
-									if (!isSelected(currentCard)) {
-										onToggleName(currentCard);
-									}
-									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
+									applySwipe(currentCard, "right");
 								}
 							}}
 						>

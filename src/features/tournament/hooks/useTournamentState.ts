@@ -118,11 +118,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		ratingsRef.current = ratings;
 	}, [ratings]);
 
-	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
-	const [elo] = useState(() => new EloRating());
-	const [_refreshKey, setRefreshKey] = useState(0);
-
 	// Memoize names key to prevent unnecessary re-initializations
 	const namesKey = useMemo(
 		() =>
@@ -133,6 +128,14 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				.join(","),
 		[names],
 	);
+
+	const [history, setHistory] = useState<HistoryEntry[]>([]);
+	const sorter = useMemo(
+		() => new PreferenceSorter(names.map((n) => String(n.id))),
+		[namesKey, names],
+	);
+	const [elo] = useState(() => new EloRating());
+	const [_refreshKey, setRefreshKey] = useState(0);
 
 	// Initialize tournament when names change
 	useEffect(() => {
@@ -180,25 +183,30 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
-	const matchNumber = Math.max(1, persistentState.currentMatch);
-	const round = Math.floor((matchNumber - 1) / Math.max(1, names.length)) + 1;
+	const completedMatches = persistentState.matchHistory.length;
+	const matchNumber =
+		totalPairs > 0
+			? Math.min(totalPairs, completedMatches + (isComplete ? 0 : 1))
+			: 0;
+	const roundMatchIndex = isComplete ? Math.max(1, completedMatches) : Math.max(1, matchNumber);
+	const round = Math.floor((roundMatchIndex - 1) / Math.max(1, names.length)) + 1;
 
 	// Progress and ETA
 	const progress = useMemo(() => {
 		if (!totalPairs) {
 			return 0;
 		}
-		return Math.round((matchNumber / totalPairs) * 100);
-	}, [matchNumber, totalPairs]);
+		return Math.round((Math.min(completedMatches, totalPairs) / totalPairs) * 100);
+	}, [completedMatches, totalPairs]);
 
 	const etaMinutes = useMemo(() => {
-		if (!totalPairs || matchNumber >= totalPairs) {
+		if (!totalPairs || completedMatches >= totalPairs) {
 			return 0;
 		}
-		const remaining = totalPairs - matchNumber;
+		const remaining = totalPairs - completedMatches;
 		// Assume 5 seconds per match as baseline
 		return Math.ceil((remaining * 5) / 60);
-	}, [matchNumber, totalPairs]);
+	}, [completedMatches, totalPairs]);
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
