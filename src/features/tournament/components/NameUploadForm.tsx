@@ -53,13 +53,13 @@ export function NameUploadForm({ onImagesUploaded, isAdmin = false }: NameUpload
 
 	return (
 		<div className="flex justify-center mt-12 mb-8">
-			<label className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-full transition-all font-bold tracking-wider uppercase text-sm border border-purple-500/20 active:scale-95 shadow-xl shadow-purple-900/30">
+			<label className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-purple-600 hover:bg-purple-500 focus-within:ring-4 focus-within:ring-purple-400/50 text-white rounded-full transition-all font-bold tracking-wider uppercase text-sm border border-purple-500/20 active:scale-95 shadow-xl shadow-purple-900/30">
 				<input
 					type="file"
 					accept="image/*"
 					multiple={true}
 					onChange={handleFileUpload}
-					style={{ display: "none" }}
+					className="sr-only"
 				/>
 				<Upload size={20} />
 				<span>Upload New Cat Photos</span>

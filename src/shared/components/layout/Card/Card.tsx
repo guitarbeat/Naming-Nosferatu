@@ -311,23 +311,6 @@ const CardStatsBase = memo(function CardStats({
 	variant = "default",
 	...props
 }: CardStatsProps) {
-	const labelText = title || label || "Statistic";
-	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
-	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
-
-	const accentGradient: Record<CardVariant, string> = {
-		default: "from-white/20 to-white/5",
-		primary: "from-purple-500 to-purple-700",
-		success: "from-green-500 to-green-700",
-		warning: "from-yellow-500 to-yellow-700",
-		info: "from-cyan-500 to-cyan-700",
-		danger: "from-red-500 to-red-700",
-		secondary: "from-gray-500 to-gray-700",
-		elevated: "from-white/20 to-white/5",
-		outlined: "from-transparent to-transparent",
-		filled: "from-transparent to-transparent",
-	};
-
 	const valueColor: Record<CardVariant, string> = {
 		default: "text-white",
 		primary: "text-purple-400",
