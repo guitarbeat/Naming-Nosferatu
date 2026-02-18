@@ -231,6 +231,11 @@ export const SwipeableCards = memo(
 												<h3 className="font-whimsical text-2xl lg:text-3xl text-white tracking-wide drop-shadow-lg break-words w-full">
 													{card.name}
 												</h3>
+												{typeof card.pronunciation === "string" && card.pronunciation && (
+													<p className="text-white/80 text-sm leading-relaxed max-w-md mt-1 mx-auto font-medium">
+														[{card.pronunciation}]
+													</p>
+												)}
 												{card.description && (
 													<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto">
 														{card.description}

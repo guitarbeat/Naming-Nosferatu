@@ -36,6 +36,7 @@ export interface NameItem {
 	id: IdType;
 	name: string;
 	description?: string;
+	pronunciation?: string;
 
 	// Visibility
 	isHidden?: boolean;

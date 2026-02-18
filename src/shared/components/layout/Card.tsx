@@ -412,6 +412,7 @@ interface NameMetadata {
 export interface CardNameProps {
 	name: string;
 	description?: string;
+	pronunciation?: string;
 	isSelected?: boolean;
 	onClick?: () => void;
 	disabled?: boolean;
@@ -431,6 +432,7 @@ export interface CardNameProps {
 const CardNameBase = memo(function CardName({
 	name,
 	description,
+	pronunciation,
 	isSelected,
 	onClick,
 	disabled = false,
@@ -495,6 +497,9 @@ const CardNameBase = memo(function CardName({
 
 	const getAriaLabel = () => {
 		let label = name;
+		if (pronunciation) {
+			label += ` - pronunciation ${pronunciation}`;
+		}
 		if (description) {
 			label += ` - ${description}`;
 		}
@@ -544,7 +549,15 @@ const CardNameBase = memo(function CardName({
 				disabled={isInteractive ? disabled : undefined}
 				aria-pressed={isInteractive ? isSelected : undefined}
 				aria-label={getAriaLabel()}
-				aria-describedby={description ? `${getSafeId(name)}-description` : undefined}
+				aria-describedby={
+					pronunciation && description
+						? `${getSafeId(name)}-pronunciation ${getSafeId(name)}-description`
+						: pronunciation
+							? `${getSafeId(name)}-pronunciation`
+							: description
+								? `${getSafeId(name)}-description`
+								: undefined
+				}
 				aria-labelledby={`${getSafeId(name)}-title`}
 				type={isInteractive ? "button" : undefined}
 				role={isInteractive ? undefined : "article"}
@@ -594,6 +607,19 @@ const CardNameBase = memo(function CardName({
 				>
 					{name}
 				</h3>
+
+				{pronunciation && (
+					<p
+						id={`${getSafeId(name)}-pronunciation`}
+						className={cn(
+							"m-0 text-white/80 font-medium z-10",
+							size === "small" ? "text-[10px]" : "text-xs",
+							isHidden && "text-amber-500/70",
+						)}
+					>
+						[{pronunciation}]
+					</p>
+				)}
 
 				{description && (
 					<p
