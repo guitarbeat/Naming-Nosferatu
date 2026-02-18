@@ -76,21 +76,36 @@ async function testLockUnlock(client, userName) {
 		console.log(`Current locked status: ${testName.locked_in}`);
 
 		// Test lock
-		const { data: lockResult, error: lockError } = await client.rpc("toggle_name_locked_in", {
+		let { data: lockResult, error: lockError } = await client.rpc("toggle_name_locked_in", {
 			p_name_id: testName.id,
 			p_locked_in: true,
-			p_user_name: userName,
 		});
+		if (lockError && /function .* does not exist|no function matches|could not find/i.test(lockError.message)) {
+			({ data: lockResult, error: lockError } = await client.rpc("toggle_name_locked_in", {
+				p_name_id: testName.id,
+				p_locked_in: true,
+				p_user_name: userName,
+			}));
+		}
 
 		if (lockError) throw lockError;
 		console.log("✅ Lock result:", lockResult);
 
 		// Test unlock
-		const { data: unlockResult, error: unlockError } = await client.rpc("toggle_name_locked_in", {
+		let { data: unlockResult, error: unlockError } = await client.rpc("toggle_name_locked_in", {
 			p_name_id: testName.id,
 			p_locked_in: false,
-			p_user_name: userName,
 		});
+		if (
+			unlockError &&
+			/function .* does not exist|no function matches|could not find/i.test(unlockError.message)
+		) {
+			({ data: unlockResult, error: unlockError } = await client.rpc("toggle_name_locked_in", {
+				p_name_id: testName.id,
+				p_locked_in: false,
+				p_user_name: userName,
+			}));
+		}
 
 		if (unlockError) throw unlockError;
 		console.log("✅ Unlock result:", unlockResult);
@@ -124,9 +139,9 @@ async function testHideUnhide(client, userName) {
 		console.log(`Current hidden status: ${testName.is_hidden}`);
 
 		// Test hide
-		const { data: hideResult, error: hideError } = await client.rpc("toggle_name_hidden", {
+		const { data: hideResult, error: hideError } = await client.rpc("toggle_name_visibility", {
 			p_name_id: testName.id,
-			p_hidden: true,
+			p_hide: true,
 			p_user_name: userName,
 		});
 
@@ -134,9 +149,9 @@ async function testHideUnhide(client, userName) {
 		console.log("✅ Hide result:", hideResult);
 
 		// Test unhide
-		const { data: unhideResult, error: unhideError } = await client.rpc("toggle_name_hidden", {
+		const { data: unhideResult, error: unhideError } = await client.rpc("toggle_name_visibility", {
 			p_name_id: testName.id,
-			p_hidden: false,
+			p_hide: false,
 			p_user_name: userName,
 		});
 

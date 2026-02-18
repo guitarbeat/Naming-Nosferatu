@@ -106,59 +106,72 @@ export const coreAPI = {
 
 	hideName: async (_userName: string, nameId: string | number, isHidden: boolean) => {
 		const userName = _userName?.trim();
-		let lastError = "Failed to hide name";
+		const failures: string[] = [];
+		const defaultError = `Failed to ${isHidden ? "hide" : "unhide"} name`;
+		let client = null as Awaited<ReturnType<typeof resolveSupabaseClient>>;
+
+		try {
+			client = await resolveSupabaseClient();
+			if (!client) {
+				failures.push("Supabase client unavailable");
+			} else {
+				try {
+					if (userName) {
+						await client.rpc("set_user_context", { user_name_param: userName });
+					}
+				} catch (error) {
+					failures.push(
+						`set_user_context failed: ${error instanceof Error ? error.message : "unknown error"}`,
+					);
+				}
+
+				try {
+					const rpcResult = await client.rpc("toggle_name_visibility" as any, {
+						p_name_id: String(nameId),
+						p_hide: isHidden,
+						p_user_name: userName || undefined,
+					});
+
+					if (rpcResult.error) {
+						failures.push(`toggle_name_visibility failed: ${rpcResult.error.message}`);
+					} else if (rpcResult.data === true) {
+						return { success: true };
+					} else {
+						failures.push("toggle_name_visibility returned unexpected response");
+					}
+				} catch (error) {
+					failures.push(
+						`toggle_name_visibility failed: ${error instanceof Error ? error.message : "unknown error"}`,
+					);
+				}
+			}
+		} catch (error) {
+			failures.push(error instanceof Error ? error.message : "unknown error");
+		}
 
 		try {
 			await api.patch(`/names/${nameId}/hide`, { isHidden });
 			return { success: true };
 		} catch (error) {
-			lastError = error instanceof Error ? error.message : lastError;
+			failures.push(`API fallback failed: ${error instanceof Error ? error.message : "unknown error"}`);
 		}
 
-		try {
-			const client = await resolveSupabaseClient();
-			if (!client) {
-				return { success: false, error: lastError };
-			}
-
-			try {
-				if (userName) {
-					await client.rpc("set_user_context", { user_name_param: userName });
-				}
-			} catch {
-				/* ignore */
-			}
-
-			try {
-				const rpcResult = await client.rpc("toggle_name_visibility" as any, {
-					p_name_id: String(nameId),
-					p_hide: isHidden,
-					p_user_name: userName || undefined,
-				});
-
-				if (rpcResult.error) {
-					lastError = rpcResult.error.message || lastError;
-				} else if (rpcResult.data === true) {
-					return { success: true };
-				}
-			} catch (error) {
-				lastError = error instanceof Error ? error.message : lastError;
-			}
-
+		if (client) {
 			const { error } = await client
 				.from("cat_name_options")
 				.update({ is_hidden: isHidden })
 				.eq("id", String(nameId));
 			if (error) {
-				return { success: false, error: error.message || lastError };
+				failures.push(`Direct table fallback failed: ${error.message}`);
+			} else {
+				return { success: true };
 			}
-			return { success: true };
-		} catch (error) {
-			return {
-				success: false,
-				error: error instanceof Error ? error.message : lastError,
-			};
 		}
+
+		return {
+			success: false,
+			error: failures.join(" | ") || defaultError,
+		};
 	},
 };
 

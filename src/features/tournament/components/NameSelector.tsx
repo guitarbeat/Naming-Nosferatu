@@ -50,6 +50,16 @@ const EXIT_SPRING_CONFIG = {
 	velocity: 50,
 };
 
+function isRpcSignatureError(message: string): boolean {
+	const normalized = message.toLowerCase();
+	return (
+		normalized.includes("function") &&
+		(normalized.includes("does not exist") ||
+			normalized.includes("no function matches") ||
+			normalized.includes("could not find"))
+	);
+}
+
 export function NameSelector() {
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
@@ -344,29 +354,25 @@ export function NameSelector() {
 					}
 				}, null);
 
-				try {
-					if (isCurrentlyHidden) {
-						const result = await hiddenNamesAPI.unhideName(userName, nameId);
-						if (!result.success) {
-							throw new Error(result.error || "Failed to unhide name");
-						}
-					} else {
-						const result = await hiddenNamesAPI.hideName(userName, nameId);
-						if (!result.success) {
-							throw new Error(result.error || "Failed to hide name");
-						}
+				if (isCurrentlyHidden) {
+					const result = await hiddenNamesAPI.unhideName(userName, nameId);
+					if (!result.success) {
+						throw new Error(result.error || "Failed to unhide name");
 					}
-
-					// Refresh names after toggling hidden status
-					const fetchedNames = await coreAPI.getTrendingNames(true);
-					setNames(fetchedNames);
-				} catch (apiError) {
-					console.error("Failed to toggle hidden status:", apiError);
-					alert(`Failed to ${action} name. Please try again.`);
+				} else {
+					const result = await hiddenNamesAPI.hideName(userName, nameId);
+					if (!result.success) {
+						throw new Error(result.error || "Failed to hide name");
+					}
 				}
+
+				// Refresh names after toggling hidden status
+				const fetchedNames = await coreAPI.getTrendingNames(true);
+				setNames(fetchedNames);
 			} catch (error) {
-				console.error("Unexpected error in toggle hidden:", error);
-				alert("An unexpected error occurred. Please try again.");
+				console.error("Failed to toggle hidden status:", error);
+				const detail = error instanceof Error ? error.message : "Unknown error";
+				alert(`Failed to ${isCurrentlyHidden ? "unhide" : "hide"} name: ${detail}`);
 			} finally {
 				setTogglingHidden((prev) => {
 					const next = new Set(prev);
@@ -412,20 +418,26 @@ export function NameSelector() {
 						/* ignore */
 					}
 
-					// Toggle lock
-					const result = await client.rpc("toggle_name_locked_in" as any, {
+					const canonicalArgs = {
 						p_name_id: String(nameId),
 						p_locked_in: !isCurrentlyLocked,
-						p_user_name: userName.trim(),
-					});
+					};
+					let rpcResult = await client.rpc("toggle_name_locked_in" as any, canonicalArgs);
 
-					if (result.error) {
-						throw new Error(result.error.message || "Failed to toggle locked status");
+					if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
+						rpcResult = await client.rpc("toggle_name_locked_in" as any, {
+							...canonicalArgs,
+							p_user_name: userName.trim(),
+						});
 					}
-					if (result.data !== true) {
+
+					if (rpcResult.error) {
+						throw new Error(rpcResult.error.message || "Failed to toggle locked status");
+					}
+					if (rpcResult.data !== true) {
 						throw new Error("Failed to toggle locked status");
 					}
-					return result.data;
+					return rpcResult.data;
 				}, null);
 
 				if (result) {
@@ -435,7 +447,8 @@ export function NameSelector() {
 				}
 			} catch (error) {
 				console.error("Failed to toggle locked status:", error);
-				alert(`Failed to ${isCurrentlyLocked ? "unlock" : "lock"} name. Please try again.`);
+				const detail = error instanceof Error ? error.message : "Unknown error";
+				alert(`Failed to ${isCurrentlyLocked ? "unlock" : "lock"} name: ${detail}`);
 			} finally {
 				setTogglingLocked((prev) => {
 					const newSet = new Set(prev);

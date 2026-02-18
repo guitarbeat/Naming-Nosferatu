@@ -8,9 +8,38 @@
  */
 
 import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
+import { resolveSupabaseClient } from "@/services/supabase/runtime";
 
 // Simple admin usernames - can be expanded as needed
 const ADMIN_USERNAMES = ["Aaron", "admin", "administrator"];
+
+function isKnownAdminUser(userName: string): boolean {
+	return ADMIN_USERNAMES.some((admin) => admin.toLowerCase() === userName.toLowerCase());
+}
+
+async function getSupabaseAdminStatus(userName: string): Promise<boolean | null> {
+	try {
+		const client = await resolveSupabaseClient();
+		if (!client) {
+			return null;
+		}
+
+		try {
+			await client.rpc("set_user_context", { user_name_param: userName });
+		} catch {
+			/* ignore */
+		}
+
+		const { data, error } = await client.rpc("is_admin");
+		if (error) {
+			return null;
+		}
+
+		return Boolean(data);
+	} catch {
+		return null;
+	}
+}
 
 export const authAdapter: AuthAdapter = {
 	/**
@@ -26,7 +55,8 @@ export const authAdapter: AuthAdapter = {
 			return null;
 		}
 
-		const isAdmin = ADMIN_USERNAMES.some((admin) => admin.toLowerCase() === userName.toLowerCase());
+		const supabaseIsAdmin = await getSupabaseAdminStatus(userName);
+		const isAdmin = supabaseIsAdmin ?? isKnownAdminUser(userName);
 		console.log(`[AuthAdapter] User: ${userName}, IsAdmin: ${isAdmin}`);
 
 		return {
@@ -73,7 +103,12 @@ export const authAdapter: AuthAdapter = {
 	 * Check if a user is admin based on username
 	 */
 	async checkAdminStatus(userIdOrName: string): Promise<boolean> {
-		const normalized = userIdOrName?.trim().toLowerCase();
-		return ADMIN_USERNAMES.some((admin) => admin.toLowerCase() === normalized);
+		const normalized = userIdOrName?.trim();
+		if (!normalized) {
+			return false;
+		}
+
+		const supabaseIsAdmin = await getSupabaseAdminStatus(normalized);
+		return supabaseIsAdmin ?? isKnownAdminUser(normalized);
 	},
 };

@@ -1054,6 +1054,12 @@ export type Database = {
 				Args: { user_name_param: string };
 				Returns: undefined;
 			};
+			toggle_name_locked_in:
+				| { Args: { p_locked_in: boolean; p_name_id: string }; Returns: boolean }
+				| {
+						Args: { p_locked_in: boolean; p_name_id: string; p_user_name?: string };
+						Returns: boolean;
+				  };
 			toggle_name_visibility:
 				| { Args: { p_hide: boolean; p_name_id: string }; Returns: boolean }
 				| {

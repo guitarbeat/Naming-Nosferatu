@@ -31,6 +31,16 @@ interface NameWithStats extends NameItem {
 	popularityScore?: number;
 }
 
+function isRpcSignatureError(message: string): boolean {
+	const normalized = message.toLowerCase();
+	return (
+		normalized.includes("function") &&
+		(normalized.includes("does not exist") ||
+			normalized.includes("no function matches") ||
+			normalized.includes("could not find"))
+	);
+}
+
 export function AdminDashboard() {
 	const { user } = useAppStore();
 	const [activeTab, setActiveTab] = useState<"overview" | "names" | "users" | "analytics">(
@@ -135,10 +145,18 @@ export function AdminDashboard() {
 			// Call the admin function to toggle locked_in status
 			await withSupabase(async (client) => {
 				await client.rpc("set_user_context", { user_name_param: user.name });
-				const result = await client.rpc("toggle_name_locked_in" as any, {
+				const canonicalArgs = {
 					p_name_id: idStr,
 					p_locked_in: !isLocked,
-				});
+				};
+				let result = await client.rpc("toggle_name_locked_in" as any, canonicalArgs);
+
+				if (result.error && isRpcSignatureError(result.error.message || "")) {
+					result = await client.rpc("toggle_name_locked_in" as any, {
+						...canonicalArgs,
+						p_user_name: user.name,
+					});
+				}
 
 				if (result.error) {
 					throw new Error(result.error.message || "Failed to toggle locked status");
