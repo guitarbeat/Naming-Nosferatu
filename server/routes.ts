@@ -177,10 +177,12 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
 		const { nameIds, isHidden } = req.body;
+		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const results: { nameId: any; success: boolean; error?: string }[] = [];
 
 		if (!db) {
 			// Return mock results when database is unavailable
+			// biome-ignore lint/suspicious/noExplicitAny: mocking simple object
 			return res.json({ results: nameIds.map((id: any) => ({ nameId: id, success: true })) });
 		}
 
@@ -288,6 +290,7 @@ router.post("/api/ratings", async (req, res) => {
 			return res.json({ success: true, count: ratings.length });
 		}
 
+		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const records = ratings.map((r: any) => ({
 			userName,
 			nameId: r.nameId,
@@ -437,6 +440,7 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 });
 
 // Default error handler
+// biome-ignore lint/suspicious/noExplicitAny: error handler middleware has specific signature
 router.use((err: any, _req: any, res: any, _next: any) => {
 	console.error("Route error:", err);
 	res.status(500).json({ error: "Internal server error" });

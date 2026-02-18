@@ -346,12 +346,13 @@ export function NameSelector() {
 				}
 
 				// Ensure user context is set
-				await withSupabase(async (client) => {
+				await withSupabase(async (_client) => {
 					try {
 						const client = await (
 							await import("@/services/supabase/client")
 						).resolveSupabaseClient();
 						if (client) {
+							// biome-ignore lint/suspicious/noExplicitAny: using any to bypass type check for rpc
 							const supabase = client as any;
 							await supabase.rpc("set_user_context", { user_name_param: userName.trim() });
 						}
@@ -419,7 +420,8 @@ export function NameSelector() {
 				const result = await withSupabase(async (client) => {
 					try {
 						// Ensure user context is set
-						await supabase.rpc("set_user_context", { user_name_param: userName.trim() });
+						// biome-ignore lint/suspicious/noExplicitAny: using any to bypass type check for rpc
+						await (client as any).rpc("set_user_context", { user_name_param: userName.trim() });
 					} catch {
 						/* ignore */
 					}
@@ -428,9 +430,11 @@ export function NameSelector() {
 						p_name_id: String(nameId),
 						p_locked_in: !isCurrentlyLocked,
 					};
+					// biome-ignore lint/suspicious/noExplicitAny: using any to bypass type check for rpc
 					let rpcResult = await client.rpc("toggle_name_locked_in" as any, canonicalArgs);
 
 					if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
+						// biome-ignore lint/suspicious/noExplicitAny: using any to bypass type check for rpc
 						rpcResult = await client.rpc("toggle_name_locked_in" as any, {
 							...canonicalArgs,
 							p_user_name: userName.trim(),

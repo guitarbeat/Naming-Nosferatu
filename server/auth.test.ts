@@ -1,9 +1,12 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { requireAdmin } from "./auth";
 
 describe("requireAdmin middleware", () => {
+	// biome-ignore lint/suspicious/noExplicitAny: mocking express request/response
 	let req: any;
+	// biome-ignore lint/suspicious/noExplicitAny: mocking express request/response
 	let res: any;
+	// biome-ignore lint/suspicious/noExplicitAny: mocking express next function
 	let next: any;
 	const originalEnv = process.env;
 
@@ -22,10 +25,14 @@ describe("requireAdmin middleware", () => {
 	});
 
 	it("should return 500 if ADMIN_API_KEY is not set", () => {
-		delete process.env.ADMIN_API_KEY;
+		process.env.ADMIN_API_KEY = undefined;
 		requireAdmin(req, res, next);
 		expect(res.status).toHaveBeenCalledWith(500);
-		expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.stringContaining("configuration error") }));
+		expect(res.json).toHaveBeenCalledWith(
+			expect.objectContaining({
+				error: expect.stringContaining("configuration error"),
+			}),
+		);
 		expect(next).not.toHaveBeenCalled();
 	});
 
@@ -33,7 +40,9 @@ describe("requireAdmin middleware", () => {
 		process.env.ADMIN_API_KEY = "secret";
 		requireAdmin(req, res, next);
 		expect(res.status).toHaveBeenCalledWith(401);
-		expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.stringContaining("Unauthorized") }));
+		expect(res.json).toHaveBeenCalledWith(
+			expect.objectContaining({ error: expect.stringContaining("Unauthorized") }),
+		);
 		expect(next).not.toHaveBeenCalled();
 	});
 
@@ -42,7 +51,9 @@ describe("requireAdmin middleware", () => {
 		req.headers["x-admin-key"] = ["secret"]; // Array of strings
 		requireAdmin(req, res, next);
 		expect(res.status).toHaveBeenCalledWith(401);
-		expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.stringContaining("Unauthorized") }));
+		expect(res.json).toHaveBeenCalledWith(
+			expect.objectContaining({ error: expect.stringContaining("Unauthorized") }),
+		);
 		expect(next).not.toHaveBeenCalled();
 	});
 
