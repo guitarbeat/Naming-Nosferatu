@@ -240,6 +240,16 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[isVoting, matchData, triggerVoteFeedback, handleVoteWithAnimation],
 	);
 
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent, side: "left" | "right") => {
+			if (e.key === "Enter" || e.key === " ") {
+				e.preventDefault();
+				handleVoteForSide(side);
+			}
+		},
+		[handleVoteForSide],
+	);
+
 	const leftImg =
 		showCatPictures && matchData ? getRandomCatImage(matchData.leftId, CAT_IMAGES) : null;
 	const rightImg =
@@ -581,6 +591,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 										: ""
 							}`}
 							variant="default"
+							role="button"
+							tabIndex={isVoting ? -1 : 0}
+							aria-label={`Vote for ${leftName}`}
+							aria-disabled={isVoting}
+							onKeyDown={(e) => handleKeyDown(e, "left")}
 							onClick={() => handleVoteForSide("left")}
 						>
 							<div className="relative w-full aspect-[4/5] sm:aspect-square flex items-center justify-center bg-white/10">
@@ -674,6 +689,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							}`}
 							style={{ animationDelay: "2s" }}
 							variant="default"
+							role="button"
+							tabIndex={isVoting ? -1 : 0}
+							aria-label={`Vote for ${rightName}`}
+							aria-disabled={isVoting}
+							onKeyDown={(e) => handleKeyDown(e, "right")}
 							onClick={() => handleVoteForSide("right")}
 						>
 							<div className="relative w-full aspect-[4/5] sm:aspect-square flex items-center justify-center bg-white/10">
