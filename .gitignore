@@ -140,6 +140,11 @@ jscpd-report.html
 *.m4v
 .smart-coding-cache/
 
+# Avoid case-collision with tracked .Jules directory
+.jules/
+!.Jules/
+!.Jules/**
+
 # Supabase
 supabase/.temp/
 supabase/.branches/
