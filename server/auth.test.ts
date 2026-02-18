@@ -2,11 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { requireAdmin } from "./auth";
 
 describe("requireAdmin middleware", () => {
-	// biome-ignore lint/suspicious/noExplicitAny: mocking express request/response
 	let req: any;
-	// biome-ignore lint/suspicious/noExplicitAny: mocking express request/response
 	let res: any;
-	// biome-ignore lint/suspicious/noExplicitAny: mocking express next function
 	let next: any;
 	const originalEnv = process.env;
 

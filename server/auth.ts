@@ -1,5 +1,5 @@
-import type { NextFunction, Request, Response } from "express";
 import crypto from "node:crypto";
+import type { NextFunction, Request, Response } from "express";
 
 export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
 	const apiKey = req.headers["x-admin-key"];
