@@ -332,13 +332,13 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	} = matchData;
 
 	return (
-		<div className="relative min-h-screen w-full flex flex-col overflow-hidden font-display text-white selection:bg-primary/30">
-			<header className="pt-4 px-6 space-y-3 flex-shrink-0">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-4">
-						<div className="px-4 py-1.5 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
+		<div className="relative min-h-screen w-full overflow-x-hidden flex flex-col overflow-hidden font-display text-white selection:bg-primary/30">
+			<header className="pt-4 px-3 sm:px-6 space-y-3 flex-shrink-0">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+					<div className="flex flex-wrap items-center gap-2 sm:gap-4">
+						<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
 							<span className="material-symbols-outlined text-primary text-sm">sports_esports</span>
-							<span className="text-xs font-bold tracking-widest uppercase text-white/90">
+							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-white/90">
 								{isComplete ? "Tournament Complete!" : `Round ${roundNumber}`}
 							</span>
 						</div>
@@ -347,19 +347,21 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								<span className="material-symbols-outlined text-green-400 text-sm">
 									celebration
 								</span>
-								<span className="text-xs font-bold text-green-400">Results Downloaded</span>
+								<span className="text-[11px] sm:text-xs font-bold text-green-400">
+									Results Downloaded
+								</span>
 							</div>
 						)}
 					</div>
-					<div className="flex items-center gap-4">
+					<div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
 						<div className="flex items-center gap-2">
 							<span className="material-symbols-outlined text-stardust">workspace_premium</span>
-							<span className="text-xs font-bold">
+							<span className="text-[11px] sm:text-xs font-bold">
 								{currentMatchNumber} / {totalMatches}
 							</span>
 						</div>
 						{etaMinutes > 0 && !isComplete && (
-							<div className="flex items-center gap-1 text-xs text-white/60">
+							<div className="flex items-center gap-1 text-[11px] sm:text-xs text-white/60">
 								<span className="material-symbols-outlined text-sm">schedule</span>
 								<span>~{etaMinutes}m</span>
 							</div>
@@ -375,7 +377,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							style={{ width: `${progress || (currentMatchNumber / totalMatches) * 100}%` }}
 						/>
 					</div>
-					<div className="text-center text-xs text-white/60">
+					<div className="text-center text-[11px] sm:text-xs text-white/60">
 						{isComplete ? (
 							<span className="text-green-400 font-bold">🎉 Tournament Complete! 🎉</span>
 						) : (
@@ -385,17 +387,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</div>
 			</header>
 
-			<section className="px-6 py-3 flex-shrink-0">
+			<section className="px-3 sm:px-6 py-3 flex-shrink-0">
 				<Card
-					className="flex flex-row items-center justify-between"
+					className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
 					padding="small"
 					variant="default"
 				>
-					<div className="flex gap-2 items-center">
+					<div className="w-full sm:w-auto flex flex-wrap gap-2 items-center justify-center sm:justify-start">
 						<button
 							type="button"
 							onClick={audioManager.handleToggleMute}
-							className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							className="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
 							aria-label={audioManager.isMuted ? "Unmute audio" : "Mute audio"}
 							aria-pressed={!audioManager.isMuted}
 							title={audioManager.isMuted ? "Unmute audio" : "Mute audio"}
@@ -411,14 +413,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							step="0.1"
 							value={audioManager.volume}
 							onChange={(e) => audioManager.handleVolumeChange(null, parseFloat(e.target.value))}
-							className="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+							className="w-full max-w-[180px] sm:w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
 							aria-label="Volume control"
 							title={`Volume: ${Math.round(audioManager.volume * 100)}%`}
 						/>
 						<button
 							type="button"
 							onClick={audioManager.handlePreviousTrack}
-							className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
 							aria-label="Previous track"
 							title="Previous track"
 						>
@@ -427,7 +429,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<button
 							type="button"
 							onClick={audioManager.toggleBackgroundMusic}
-							className={`w-10 h-10 flex items-center justify-center rounded-lg transition-colors ${
+							className={`w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg transition-colors ${
 								audioManager.backgroundMusicEnabled
 									? "bg-primary/20 text-primary"
 									: "bg-white/5 text-white/60 hover:text-white"
@@ -447,7 +449,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<button
 							type="button"
 							onClick={audioManager.handleNextTrack}
-							className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
 							aria-label="Next track"
 							title="Next track"
 						>
@@ -457,7 +459,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							<button
 								type="button"
 								onClick={handleQuit}
-								className="w-10 h-10 flex items-center justify-center rounded-lg bg-red-500/20 text-red-400 hover:text-red-300 transition-colors"
+								className="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-red-500/20 text-red-400 hover:text-red-300 transition-colors"
 								aria-label="Quit tournament"
 								title="Quit tournament"
 							>
@@ -468,7 +470,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					<button
 						type="button"
 						onClick={() => setCatPictures(!showCatPictures)}
-						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
+						className={`w-full sm:w-auto justify-center flex items-center gap-2 px-4 h-11 sm:h-10 rounded-lg font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
 						aria-pressed={showCatPictures}
 						title={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
 					>
@@ -478,7 +480,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</Card>
 			</section>
 
-			<main className="flex-1 flex flex-col items-center justify-center px-6 relative py-4">
+			<main className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6 relative py-3 sm:py-4">
 				{/* Animated blob backgrounds */}
 				<div className="absolute inset-0 overflow-hidden pointer-events-none">
 					<div className="absolute top-0 left-0 w-32 h-32 bg-primary/20 rounded-full animate-blob animation-delay-2000" />
@@ -500,14 +502,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
 							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
 							transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
-							className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-30"
+							className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-1.5rem)] sm:w-auto max-w-full"
 						>
-							<div className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-4 py-2 backdrop-blur-md shadow-[0_0_40px_rgba(16,185,129,0.35)]">
+							<div className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-3 sm:px-4 py-2 backdrop-blur-md shadow-[0_0_40px_rgba(16,185,129,0.35)]">
 								<div className="flex items-center gap-2 text-emerald-100">
 									<span className="material-symbols-outlined text-base text-emerald-300">
 										emoji_events
 									</span>
-									<span className="text-sm font-bold tracking-wide">
+									<span className="text-xs sm:text-sm font-bold tracking-wide truncate">
 										{voteAnnouncement} advances
 									</span>
 								</div>
@@ -531,17 +533,19 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 								exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
 								transition={{ duration: prefersReducedMotion ? 0.01 : 0.3 }}
-								className="relative overflow-hidden rounded-2xl border border-purple-300/40 bg-slate-900/80 px-8 py-6 text-center shadow-[0_0_80px_rgba(168,85,247,0.35)] backdrop-blur-xl"
+								className="relative overflow-hidden rounded-2xl border border-purple-300/40 bg-slate-900/80 px-5 sm:px-8 py-5 sm:py-6 text-center shadow-[0_0_80px_rgba(168,85,247,0.35)] backdrop-blur-xl"
 							>
 								<div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-fuchsia-500/10 to-blue-500/20" />
 								<div className="relative">
-									<p className="text-xs uppercase tracking-[0.3em] text-purple-200/70 mb-2">
+									<p className="text-[11px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-purple-200/70 mb-2">
 										Next Stage
 									</p>
-									<p className="text-3xl md:text-4xl font-black text-white tracking-tight">
+									<p className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
 										Round {roundAnnouncement}
 									</p>
-									<p className="text-sm text-purple-100/80 mt-1">New head-to-head matchups ready</p>
+									<p className="text-xs sm:text-sm text-purple-100/80 mt-1">
+										New head-to-head matchups ready
+									</p>
 								</div>
 							</motion.div>
 						</motion.div>
@@ -561,25 +565,25 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
 						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.32 }}
-						className="relative grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-7xl mx-auto z-10 items-center"
+						className="relative grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-7xl mx-auto z-10 items-center"
 					>
 						{/* Left Card */}
 						<Card
 							interactive={true}
 							padding="none"
-							className={`relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
+							className={`relative overflow-hidden group cursor-pointer h-full min-h-[280px] sm:min-h-[340px] md:min-h-[400px] animate-float transition-all duration-300 ${
 								isVoting ? "pointer-events-none" : ""
 							} ${
 								leftSelected
 									? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
 									: hasSelectionFeedback
-										? "opacity-55 scale-[0.98]"
+										? "opacity-[0.55] scale-[0.98]"
 										: ""
 							}`}
 							variant="default"
 							onClick={() => handleVoteForSide("left")}
 						>
-							<div className="relative w-full aspect-square flex items-center justify-center bg-white/10">
+							<div className="relative w-full aspect-[4/5] sm:aspect-square flex items-center justify-center bg-white/10">
 								{leftImg ? (
 									<CatImage
 										src={leftImg}
@@ -595,17 +599,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								)}
 
 								{/* Name Overlay */}
-								<div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
-									<h3 className="font-whimsical text-3xl text-white tracking-wide break-words w-full drop-shadow-md">
+								<div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+									<h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight">
 										{leftName}
 										{leftPronunciation && (
-											<span className="ml-2 text-amber-400 text-xl font-bold italic opacity-90">
+											<span className="ml-2 text-amber-400 text-lg sm:text-xl font-bold italic opacity-90">
 												[{leftPronunciation}]
 											</span>
 										)}
 									</h3>
 									{leftDescription && (
-										<p className="text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm">
+										<p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm">
 											{leftDescription}
 										</p>
 									)}
@@ -614,13 +618,13 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						</Card>
 
 						{/* VS Indicator */}
-						<div className="flex flex-col items-center justify-center">
-							<div className="size-20 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg mb-4">
+						<div className="flex flex-col items-center justify-center py-2">
+							<div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg mb-3 sm:mb-4">
 								<span className="font-bold text-2xl italic tracking-tighter">VS</span>
 							</div>
-							<div className="text-center space-y-3">
+							<div className="text-center space-y-3 w-full max-w-xs">
 								<div
-									className={`text-xs uppercase tracking-wider transition-colors ${
+									className={`text-[11px] sm:text-xs uppercase tracking-wider transition-colors ${
 										isVoting && selectedName ? "text-emerald-300" : "text-white/60"
 									}`}
 								>
@@ -630,7 +634,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									<button
 										type="button"
 										onClick={() => handleUndo()}
-										className="glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
+										className="glass-panel min-h-11 py-2 px-6 rounded-full flex items-center justify-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
 									>
 										<span className="material-symbols-outlined text-sm text-primary">undo</span>
 										<span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">
@@ -641,7 +645,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 										<button
 											type="button"
 											onClick={handleQuit}
-											className="glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors"
+											className="glass-panel min-h-11 py-2 px-6 rounded-full flex items-center justify-center gap-3 border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors"
 										>
 											<span className="material-symbols-outlined text-sm text-red-400">
 												exit_to_app
@@ -659,20 +663,20 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<Card
 							interactive={true}
 							padding="none"
-							className={`relative overflow-hidden group cursor-pointer h-full min-h-[400px] animate-float transition-all duration-300 ${
+							className={`relative overflow-hidden group cursor-pointer h-full min-h-[280px] sm:min-h-[340px] md:min-h-[400px] animate-float transition-all duration-300 ${
 								isVoting ? "pointer-events-none" : ""
 							} ${
 								rightSelected
 									? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
 									: hasSelectionFeedback
-										? "opacity-55 scale-[0.98]"
+										? "opacity-[0.55] scale-[0.98]"
 										: ""
 							}`}
 							style={{ animationDelay: "2s" }}
 							variant="default"
 							onClick={() => handleVoteForSide("right")}
 						>
-							<div className="relative w-full aspect-square flex items-center justify-center bg-white/10">
+							<div className="relative w-full aspect-[4/5] sm:aspect-square flex items-center justify-center bg-white/10">
 								{rightImg ? (
 									<CatImage
 										src={rightImg}
@@ -688,17 +692,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								)}
 
 								{/* Name Overlay */}
-								<div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
-									<h3 className="font-whimsical text-3xl text-white tracking-wide break-words w-full drop-shadow-md text-right">
+								<div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+									<h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight text-left sm:text-right">
 										{rightPronunciation && (
-											<span className="mr-2 text-amber-400 text-xl font-bold italic opacity-90">
+											<span className="mr-2 text-amber-400 text-lg sm:text-xl font-bold italic opacity-90">
 												[{rightPronunciation}]
 											</span>
 										)}
 										{rightName}
 									</h3>
 									{rightDescription && (
-										<p className="text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm text-right">
+										<p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm text-left sm:text-right">
 											{rightDescription}
 										</p>
 									)}
@@ -709,8 +713,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</AnimatePresence>
 			</main>
 
-			<div className="absolute top-[-10%] left-[-10%] size-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
-			<div className="absolute bottom-[-10%] right-[-10%] size-64 bg-stardust/10 rounded-full blur-[100px] -z-10" />
+			<div className="absolute top-[-10%] left-[-10%] w-40 h-40 sm:size-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
+			<div className="absolute bottom-[-10%] right-[-10%] w-40 h-40 sm:size-64 bg-stardust/10 rounded-full blur-[100px] -z-10" />
 		</div>
 	);
 }
