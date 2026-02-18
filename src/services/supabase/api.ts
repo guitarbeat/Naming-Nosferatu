@@ -112,9 +112,7 @@ export const coreAPI = {
 
 		try {
 			client = await resolveSupabaseClient();
-			if (!client) {
-				failures.push("Supabase client unavailable");
-			} else {
+			if (client) {
 				try {
 					if (userName) {
 						await client.rpc("set_user_context", { user_name_param: userName });
@@ -144,6 +142,8 @@ export const coreAPI = {
 						`toggle_name_visibility failed: ${error instanceof Error ? error.message : "unknown error"}`,
 					);
 				}
+			} else {
+				failures.push("Supabase client unavailable");
 			}
 		} catch (error) {
 			failures.push(error instanceof Error ? error.message : "unknown error");
@@ -153,7 +153,9 @@ export const coreAPI = {
 			await api.patch(`/names/${nameId}/hide`, { isHidden });
 			return { success: true };
 		} catch (error) {
-			failures.push(`API fallback failed: ${error instanceof Error ? error.message : "unknown error"}`);
+			failures.push(
+				`API fallback failed: ${error instanceof Error ? error.message : "unknown error"}`,
+			);
 		}
 
 		if (client) {

@@ -66,7 +66,9 @@ export const NameGridItem = memo(function NameGridItem({
 			<CardName
 				name={nameObj.name || ""}
 				description={nameObj.description}
-				pronunciation={typeof nameObj.pronunciation === "string" ? nameObj.pronunciation : undefined}
+				pronunciation={
+					typeof nameObj.pronunciation === "string" ? nameObj.pronunciation : undefined
+				}
 				isSelected={isSelected}
 				onClick={() => onToggleName?.(nameObj)}
 				image={cardImage}
