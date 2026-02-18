@@ -116,7 +116,6 @@ export type Database = {
 					id: string;
 					is_active: boolean | null;
 					is_hidden: boolean;
-					locked_in: boolean;
 					name: string;
 				};
 				Insert: {
@@ -127,7 +126,6 @@ export type Database = {
 					id?: string;
 					is_active?: boolean | null;
 					is_hidden?: boolean;
-					locked_in?: boolean;
 					name: string;
 				};
 				Update: {
@@ -138,7 +136,6 @@ export type Database = {
 					id?: string;
 					is_active?: boolean | null;
 					is_hidden?: boolean;
-					locked_in?: boolean;
 					name?: string;
 				};
 				Relationships: [];
@@ -971,6 +968,37 @@ export type Database = {
 					username: string;
 				}[];
 			};
+			get_leaderboard_stats: {
+				Args: { limit_count?: number };
+				Returns: {
+					name_id: string;
+					name: string;
+					description: string | null;
+					category: string | null;
+					avg_rating: number;
+					total_ratings: number;
+					wins: number;
+					losses: number;
+					created_at: string;
+				}[];
+			};
+			get_popularity_scores: {
+				Args: {
+					limit_count?: number;
+					user_filter?: string;
+					current_user_name?: string;
+				};
+				Returns: {
+					name_id: string;
+					name: string;
+					description: string;
+					category: string;
+					times_selected: number;
+					avg_rating: number;
+					popularity_score: number;
+					created_at: string;
+				}[];
+			};
 			get_safe_profile_data: {
 				Args: { profile_user_id: string };
 				Returns: {
@@ -982,6 +1010,18 @@ export type Database = {
 				}[];
 			};
 			get_secure_profile: { Args: { target_user_id: string }; Returns: Json };
+			get_site_stats: {
+				Args: never;
+				Returns: {
+					total_names: number;
+					hidden_names: number;
+					active_names: number;
+					total_users: number;
+					total_ratings: number;
+					total_selections: number;
+					avg_rating: number;
+				}[];
+			};
 			get_top_names_by_category: {
 				Args: { p_category: string; p_limit?: number };
 				Returns: {
@@ -991,6 +1031,14 @@ export type Database = {
 					id: string;
 					name: string;
 					total_ratings: number;
+				}[];
+			};
+			get_top_selections: {
+				Args: { limit_count?: number };
+				Returns: {
+					name_id: string;
+					name: string;
+					times_selected: number;
 				}[];
 			};
 			get_user_flo_data_admin: {

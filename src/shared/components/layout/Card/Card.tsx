@@ -290,24 +290,24 @@ export const Card = CardBase;
    ============================================================================ */
 
 export interface CardStatsProps extends CardProps {
-	title?: string;
+	value: string | number;
 	label?: string;
-	value: string | number | React.ReactNode;
-	emoji?: React.ReactNode;
-	labelClassName?: string;
+	title?: string;
+	emoji?: string;
 	valueClassName?: string;
+	labelClassName?: string;
 	emojiClassName?: string;
 }
 
 const CardStatsBase = memo(function CardStats({
-	title,
-	label,
 	value,
+	label,
+	title,
 	emoji,
-	className = "",
-	labelClassName = "",
-	valueClassName = "",
-	emojiClassName = "",
+	valueClassName,
+	labelClassName,
+	emojiClassName,
+	className,
 	variant = "default",
 	...props
 }: CardStatsProps) {
@@ -330,16 +330,33 @@ const CardStatsBase = memo(function CardStats({
 
 	const valueColor: Record<CardVariant, string> = {
 		default: "text-white",
-		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
-		success: "text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
-		warning: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200",
-		info: "text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-200",
-		danger: "text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-200",
+		primary: "text-purple-400",
+		success: "text-green-400",
+		warning: "text-yellow-400",
+		info: "text-cyan-400",
+		danger: "text-red-400",
 		secondary: "text-gray-400",
 		elevated: "text-white",
 		outlined: "text-white",
 		filled: "text-white",
 	};
+
+	// Accent line gradient based on variant
+	const accentGradient: Record<string, string> = {
+		default: "from-white/20 to-transparent",
+		primary: "from-purple-500 to-purple-500/0",
+		success: "from-green-500 to-green-500/0",
+		warning: "from-yellow-500 to-yellow-500/0",
+		info: "from-cyan-500 to-cyan-500/0",
+		danger: "from-red-500 to-red-500/0",
+		secondary: "from-gray-500 to-gray-500/0",
+		elevated: "from-white/30 to-transparent",
+		outlined: "from-white/10 to-transparent",
+		filled: "from-white/20 to-transparent",
+	};
+
+	// Get aria-label
+	const ariaLabel = props["aria-label"] || `${label || title}: ${value}`;
 
 	return (
 		<Card

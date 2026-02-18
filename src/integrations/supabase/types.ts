@@ -17,7 +17,6 @@ export type Database = {
 					old_values: Json | null;
 					operation: string;
 					table_name: string;
-					user_id: string | null;
 					user_name: string | null;
 				};
 				Insert: {
@@ -27,7 +26,6 @@ export type Database = {
 					old_values?: Json | null;
 					operation: string;
 					table_name: string;
-					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Update: {
@@ -37,7 +35,6 @@ export type Database = {
 					old_values?: Json | null;
 					operation?: string;
 					table_name?: string;
-					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Relationships: [];
@@ -47,66 +44,22 @@ export type Database = {
 					created_at: string;
 					preferences: Json | null;
 					updated_at: string;
-					user_id: string;
 					user_name: string;
 				};
 				Insert: {
 					created_at?: string;
 					preferences?: Json | null;
 					updated_at?: string;
-					user_id?: string;
 					user_name: string;
 				};
 				Update: {
 					created_at?: string;
 					preferences?: Json | null;
 					updated_at?: string;
-					user_id?: string;
 					user_name?: string;
 				};
 				Relationships: [];
 			};
-
-			cat_audit_log: {
-				Row: {
-					client_ip: unknown;
-					created_at: string | null;
-					id: string;
-					new_values: Json | null;
-					old_values: Json | null;
-					operation: string;
-					table_name: string;
-					user_agent: string | null;
-					user_id: string | null;
-					user_name: string | null;
-				};
-				Insert: {
-					client_ip?: unknown;
-					created_at?: string | null;
-					id?: string;
-					new_values?: Json | null;
-					old_values?: Json | null;
-					operation: string;
-					table_name: string;
-					user_agent?: string | null;
-					user_id?: string | null;
-					user_name?: string | null;
-				};
-				Update: {
-					client_ip?: unknown;
-					created_at?: string | null;
-					id?: string;
-					new_values?: Json | null;
-					old_values?: Json | null;
-					operation?: string;
-					table_name?: string;
-					user_agent?: string | null;
-					user_id?: string | null;
-					user_name?: string | null;
-				};
-				Relationships: [];
-			};
-
 			cat_name_options: {
 				Row: {
 					avg_rating: number | null;
@@ -116,7 +69,6 @@ export type Database = {
 					id: string;
 					is_active: boolean | null;
 					is_hidden: boolean;
-					locked_in: boolean;
 					name: string;
 				};
 				Insert: {
@@ -127,7 +79,6 @@ export type Database = {
 					id?: string;
 					is_active?: boolean | null;
 					is_hidden?: boolean;
-					locked_in?: boolean;
 					name: string;
 				};
 				Update: {
@@ -138,7 +89,6 @@ export type Database = {
 					id?: string;
 					is_active?: boolean | null;
 					is_hidden?: boolean;
-					locked_in?: boolean;
 					name?: string;
 				};
 				Relationships: [];
@@ -151,7 +101,6 @@ export type Database = {
 					rating: number | null;
 					rating_history: Json | null;
 					updated_at: string;
-					user_id: string;
 					user_name: string;
 					wins: number | null;
 				};
@@ -162,7 +111,6 @@ export type Database = {
 					rating?: number | null;
 					rating_history?: Json | null;
 					updated_at?: string;
-					user_id?: string;
 					user_name: string;
 					wins?: number | null;
 				};
@@ -173,7 +121,6 @@ export type Database = {
 					rating?: number | null;
 					rating_history?: Json | null;
 					updated_at?: string;
-					user_id?: string;
 					user_name?: string;
 					wins?: number | null;
 				};
@@ -191,13 +138,6 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "cat_app_users";
 						referencedColumns: ["user_name"];
-					},
-					{
-						foreignKeyName: "cat_name_ratings_user_id_fkey";
-						columns: ["user_id"];
-						isOneToOne: false;
-						referencedRelation: "cat_app_users";
-						referencedColumns: ["user_id"];
 					},
 				];
 			};
@@ -476,7 +416,6 @@ export type Database = {
 					selected_at: string;
 					selection_type: string | null;
 					tournament_id: string;
-					user_id: string;
 					user_name: string;
 				};
 				Insert: {
@@ -487,7 +426,6 @@ export type Database = {
 					selected_at?: string;
 					selection_type?: string | null;
 					tournament_id: string;
-					user_id?: string;
 					user_name: string;
 				};
 				Update: {
@@ -498,7 +436,6 @@ export type Database = {
 					selected_at?: string;
 					selection_type?: string | null;
 					tournament_id?: string;
-					user_id?: string;
 					user_name?: string;
 				};
 				Relationships: [
@@ -508,13 +445,6 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "cat_name_options";
 						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "tournament_selections_user_id_fkey";
-						columns: ["user_id"];
-						isOneToOne: false;
-						referencedRelation: "cat_app_users";
-						referencedColumns: ["user_id"];
 					},
 				];
 			};
@@ -592,187 +522,14 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-
-			fin_charts: {
-				Row: {
-					created_at: string;
-					id: string;
-					name: string;
-					updated_at: string;
-					user_id: string;
-				};
-				Insert: {
-					created_at?: string;
-					id?: string;
-					name: string;
-					updated_at?: string;
-					user_id: string;
-				};
-				Update: {
-					created_at?: string;
-					id?: string;
-					name?: string;
-					updated_at?: string;
-					user_id?: string;
-				};
-				Relationships: [];
-			};
-			fin_transactions: {
-				Row: {
-					created_at: string;
-					date: string;
-					enabled: boolean;
-					fin_chart_id: string | null;
-					id: string;
-					inflow: number;
-					name: string;
-					outflow: number;
-					updated_at: string;
-					user_id: string;
-				};
-				Insert: {
-					created_at?: string;
-					date: string;
-					enabled?: boolean;
-					fin_chart_id?: string | null;
-					id?: string;
-					inflow?: number;
-					name: string;
-					outflow?: number;
-					updated_at?: string;
-					user_id: string;
-				};
-				Update: {
-					created_at?: string;
-					date?: string;
-					enabled?: boolean;
-					fin_chart_id?: string | null;
-					id?: string;
-					inflow?: number;
-					name?: string;
-					outflow?: number;
-					updated_at?: string;
-					user_id?: string;
-				};
-				Relationships: [
-					{
-						foreignKeyName: "fin_transactions_fin_chart_id_fkey";
-						columns: ["fin_chart_id"];
-						isOneToOne: false;
-						referencedRelation: "fin_charts";
-						referencedColumns: ["id"];
-					},
-				];
-			};
-			flo_entries: {
-				Row: {
-					created_at: string;
-					date: string;
-					id: string;
-					is_period_day: boolean;
-					updated_at: string;
-					user_id: string;
-				};
-				Insert: {
-					created_at?: string;
-					date: string;
-					id?: string;
-					is_period_day?: boolean;
-					updated_at?: string;
-					user_id: string;
-				};
-				Update: {
-					created_at?: string;
-					date?: string;
-					id?: string;
-					is_period_day?: boolean;
-					updated_at?: string;
-					user_id?: string;
-				};
-				Relationships: [];
-			};
-			flo_shares: {
-				Row: {
-					created_at: string;
-					id: string;
-					owner_id: string;
-					shared_with_id: string;
-					updated_at: string | null;
-				};
-				Insert: {
-					created_at?: string;
-					id?: string;
-					owner_id: string;
-					shared_with_id: string;
-					updated_at?: string | null;
-				};
-				Update: {
-					created_at?: string;
-					id?: string;
-					owner_id?: string;
-					shared_with_id?: string;
-					updated_at?: string | null;
-				};
-				Relationships: [];
-			};
-			profile_access_audit: {
-				Row: {
-					accessed_profile_id: string | null;
-					action_type: string;
-					admin_user_id: string | null;
-					created_at: string;
-					id: string;
-					metadata: Json | null;
-				};
-				Insert: {
-					accessed_profile_id?: string | null;
-					action_type: string;
-					admin_user_id?: string | null;
-					created_at?: string;
-					id?: string;
-					metadata?: Json | null;
-				};
-				Update: {
-					accessed_profile_id?: string | null;
-					action_type?: string;
-					admin_user_id?: string | null;
-					created_at?: string;
-					id?: string;
-					metadata?: Json | null;
-				};
-				Relationships: [];
-			};
-			profile_access_rate_limit: {
-				Row: {
-					access_count: number;
-					id: string;
-					is_blocked: boolean;
-					last_reset: string;
-					user_id: string;
-				};
-				Insert: {
-					access_count?: number;
-					id?: string;
-					is_blocked?: boolean;
-					last_reset?: string;
-					user_id: string;
-				};
-				Update: {
-					access_count?: number;
-					id?: string;
-					is_blocked?: boolean;
-					last_reset?: string;
-					user_id?: string;
-				};
-				Relationships: [];
-			};
-			profiles: {
+		};
+		Views: {
+			public_profiles: {
 				Row: {
 					apps: string[] | null;
 					avatar_url: string | null;
-					created_at: string;
+					created_at: string | null;
 					display_name: string | null;
-					email: string | null;
 					first_name: string | null;
 					has_custom_password: boolean;
 					id: string;
@@ -957,6 +714,37 @@ export type Database = {
 					username: string;
 				}[];
 			};
+			get_leaderboard_stats: {
+				Args: { limit_count?: number };
+				Returns: {
+					name_id: string;
+					name: string;
+					description: string | null;
+					category: string | null;
+					avg_rating: number;
+					total_ratings: number;
+					wins: number;
+					losses: number;
+					created_at: string;
+				}[];
+			};
+			get_popularity_scores: {
+				Args: {
+					limit_count?: number;
+					user_filter?: string;
+					current_user_name?: string;
+				};
+				Returns: {
+					name_id: string;
+					name: string;
+					description: string;
+					category: string;
+					times_selected: number;
+					avg_rating: number;
+					popularity_score: number;
+					created_at: string;
+				}[];
+			};
 			get_safe_profile_data: {
 				Args: { profile_user_id: string };
 				Returns: {
@@ -968,6 +756,18 @@ export type Database = {
 				}[];
 			};
 			get_secure_profile: { Args: { target_user_id: string }; Returns: Json };
+			get_site_stats: {
+				Args: never;
+				Returns: {
+					total_names: number;
+					hidden_names: number;
+					active_names: number;
+					total_users: number;
+					total_ratings: number;
+					total_selections: number;
+					avg_rating: number;
+				}[];
+			};
 			get_top_names_by_category: {
 				Args: { p_category: string; p_limit?: number };
 				Returns: {
@@ -977,6 +777,14 @@ export type Database = {
 					id: string;
 					name: string;
 					total_ratings: number;
+				}[];
+			};
+			get_top_selections: {
+				Args: { limit_count?: number };
+				Returns: {
+					name_id: string;
+					name: string;
+					times_selected: number;
 				}[];
 			};
 			get_user_flo_data_admin: {
