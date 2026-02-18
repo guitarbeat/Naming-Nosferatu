@@ -130,10 +130,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	);
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const sorter = useMemo(
-		() => new PreferenceSorter(names.map((n) => String(n.id))),
-		[namesKey, names],
-	);
+	const sorter = useMemo(() => new PreferenceSorter(names.map((n) => String(n.id))), [names]);
 	const [elo] = useState(() => new EloRating());
 	const [_refreshKey, setRefreshKey] = useState(0);
 
@@ -185,9 +182,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	const totalPairs = (names.length * (names.length - 1)) / 2;
 	const completedMatches = persistentState.matchHistory.length;
 	const matchNumber =
-		totalPairs > 0
-			? Math.min(totalPairs, completedMatches + (isComplete ? 0 : 1))
-			: 0;
+		totalPairs > 0 ? Math.min(totalPairs, completedMatches + (isComplete ? 0 : 1)) : 0;
 	const roundMatchIndex = isComplete ? Math.max(1, completedMatches) : Math.max(1, matchNumber);
 	const round = Math.floor((roundMatchIndex - 1) / Math.max(1, names.length)) + 1;
 
