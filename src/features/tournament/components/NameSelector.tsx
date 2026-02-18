@@ -774,7 +774,7 @@ export function NameSelector() {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-4 right-4 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-30"
+																	className="absolute top-4 right-4 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-30"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={18} />
@@ -973,7 +973,7 @@ export function NameSelector() {
 																e.stopPropagation();
 																handleOpenLightbox(nameItem.id);
 															}}
-															className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-opacity hover:bg-black/70 z-10"
+															className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-10"
 															aria-label="View full size"
 														>
 															<ZoomIn size={14} />
@@ -1264,7 +1264,7 @@ export function NameSelector() {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-2 right-2 p-1 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/hidden:opacity-100 transition-opacity hover:bg-black/70 z-10"
+																	className="absolute top-2 right-2 p-1 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-10"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={12} />
