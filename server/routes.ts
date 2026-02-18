@@ -1,10 +1,8 @@
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { Router } from "express";
 import { ZodError } from "zod";
 import {
-	auditLog,
 	catAppUsers,
-	catChosenName,
 	catNameOptions,
 	catNameRatings,
 	catTournamentSelections,
@@ -17,11 +15,51 @@ export const router = Router();
 
 // Mock data for when database is unavailable
 const mockNames = [
-	{ id: "1", name: "Whiskers", description: "Classic tabby cat", avgRating: 1650, isActive: true, isHidden: false, status: "approved" },
-	{ id: "2", name: "Shadow", description: "Mysterious black cat", avgRating: 1600, isActive: true, isHidden: false, status: "approved" },
-	{ id: "3", name: "Luna", description: "Elegant white cat", avgRating: 1580, isActive: true, isHidden: false, status: "approved" },
-	{ id: "4", name: "Muffin", description: "Sweet orange cat", avgRating: 1550, isActive: true, isHidden: false, status: "approved" },
-	{ id: "5", name: "Mittens", description: "Playful kitten", avgRating: 1500, isActive: true, isHidden: false, status: "candidate" },
+	{
+		id: "1",
+		name: "Whiskers",
+		description: "Classic tabby cat",
+		avgRating: 1650,
+		isActive: true,
+		isHidden: false,
+		status: "approved",
+	},
+	{
+		id: "2",
+		name: "Shadow",
+		description: "Mysterious black cat",
+		avgRating: 1600,
+		isActive: true,
+		isHidden: false,
+		status: "approved",
+	},
+	{
+		id: "3",
+		name: "Luna",
+		description: "Elegant white cat",
+		avgRating: 1580,
+		isActive: true,
+		isHidden: false,
+		status: "approved",
+	},
+	{
+		id: "4",
+		name: "Muffin",
+		description: "Sweet orange cat",
+		avgRating: 1550,
+		isActive: true,
+		isHidden: false,
+		status: "approved",
+	},
+	{
+		id: "5",
+		name: "Mittens",
+		description: "Playful kitten",
+		avgRating: 1500,
+		isActive: true,
+		isHidden: false,
+		status: "candidate",
+	},
 ];
 
 // Basic endpoint to get all active names
@@ -67,8 +105,8 @@ router.post("/api/names", async (req, res) => {
 					provenance: provenance || null,
 					avgRating: 1500,
 					isActive: true,
-					isHidden: false
-				}
+					isHidden: false,
+				},
 			});
 		}
 
@@ -147,10 +185,7 @@ router.post("/api/names/batch-hide", async (req, res) => {
 
 		for (const nameId of nameIds) {
 			try {
-				await db
-					.update(catNameOptions)
-					.set({ isHidden })
-					.where(eq(catNameOptions.id, nameId));
+				await db.update(catNameOptions).set({ isHidden }).where(eq(catNameOptions.id, nameId));
 				results.push({ nameId, success: true });
 			} catch (error) {
 				results.push({ nameId, success: false, error: String(error) });
@@ -165,15 +200,12 @@ router.post("/api/names/batch-hide", async (req, res) => {
 });
 
 // Get hidden names
-router.get("/api/hidden-names", async (req, res) => {
+router.get("/api/hidden-names", async (_req, res) => {
 	try {
 		if (!db) {
 			return res.json([]);
 		}
-		const hidden = await db
-			.select()
-			.from(catNameOptions)
-			.where(eq(catNameOptions.isHidden, true));
+		const hidden = await db.select().from(catNameOptions).where(eq(catNameOptions.isHidden, true));
 		res.json(hidden);
 	} catch (error) {
 		console.error("Error fetching hidden names:", error);
@@ -208,7 +240,7 @@ router.post("/api/users", async (req, res) => {
 					id: String(Date.now()),
 					userName,
 					preferences: preferences || {},
-				}
+				},
 			});
 		}
 
@@ -281,14 +313,16 @@ router.post("/api/ratings", async (req, res) => {
 // Get analytics - popularity
 router.get("/api/analytics/popularity", async (req, res) => {
 	try {
-		const limit = parseInt(req.query.limit as string) || 20;
+		const limit = parseInt(req.query.limit as string, 10) || 20;
 
 		if (!db) {
-			return res.json(mockNames.slice(0, limit).map((n) => ({
-				nameId: n.id,
-				name: n.name,
-				count: Math.floor(Math.random() * 100),
-			})));
+			return res.json(
+				mockNames.slice(0, limit).map((n) => ({
+					nameId: n.id,
+					name: n.name,
+					count: Math.floor(Math.random() * 100),
+				})),
+			);
 		}
 
 		const results = await db
@@ -299,7 +333,7 @@ router.get("/api/analytics/popularity", async (req, res) => {
 			})
 			.from(catTournamentSelections)
 			.groupBy(catTournamentSelections.nameId, catTournamentSelections.name)
-			.orderBy((t) => desc(sql<number>`count(*)`))
+			.orderBy((_t) => desc(sql<number>`count(*)`))
 			.limit(limit);
 		res.json(results);
 	} catch (error) {
@@ -309,14 +343,16 @@ router.get("/api/analytics/popularity", async (req, res) => {
 });
 
 // Get analytics - ranking history
-router.get("/api/analytics/ranking-history", async (req, res) => {
+router.get("/api/analytics/ranking-history", async (_req, res) => {
 	try {
 		if (!db) {
-			return res.json(mockNames.map((n) => ({
-				nameId: n.id,
-				name: n.name,
-				avgRating: n.avgRating,
-			})));
+			return res.json(
+				mockNames.map((n) => ({
+					nameId: n.id,
+					name: n.name,
+					avgRating: n.avgRating,
+				})),
+			);
 		}
 
 		const ratings = await db
@@ -339,15 +375,17 @@ router.get("/api/analytics/ranking-history", async (req, res) => {
 // Get analytics - leaderboard
 router.get("/api/analytics/leaderboard", async (req, res) => {
 	try {
-		const limit = parseInt(req.query.limit as string) || 50;
+		const limit = parseInt(req.query.limit as string, 10) || 50;
 
 		if (!db) {
-			return res.json(mockNames.slice(0, limit).map((n) => ({
-				nameId: n.id,
-				avgRating: n.avgRating,
-				totalWins: Math.floor(Math.random() * 50),
-				totalLosses: Math.floor(Math.random() * 50),
-			})));
+			return res.json(
+				mockNames.slice(0, limit).map((n) => ({
+					nameId: n.id,
+					avgRating: n.avgRating,
+					totalWins: Math.floor(Math.random() * 50),
+					totalLosses: Math.floor(Math.random() * 50),
+				})),
+			);
 		}
 
 		const ratings = await db
@@ -359,7 +397,7 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 			})
 			.from(catNameRatings)
 			.groupBy(catNameRatings.nameId)
-			.orderBy((r) => desc(sql<number>`avg(rating)`))
+			.orderBy((_r) => desc(sql<number>`avg(rating)`))
 			.limit(limit);
 
 		res.json(ratings);
@@ -370,7 +408,7 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 });
 
 // Site stats
-router.get("/api/analytics/site-stats", async (req, res) => {
+router.get("/api/analytics/site-stats", async (_req, res) => {
 	try {
 		if (!db) {
 			return res.json({
@@ -382,7 +420,9 @@ router.get("/api/analytics/site-stats", async (req, res) => {
 
 		const totalNames = await db.select({ count: sql<number>`count(*)` }).from(catNameOptions);
 		const totalRatings = await db.select({ count: sql<number>`count(*)` }).from(catNameRatings);
-		const totalUsers = await db.select({ count: sql<number>`count(distinct user_name)` }).from(catNameRatings);
+		const totalUsers = await db
+			.select({ count: sql<number>`count(distinct user_name)` })
+			.from(catNameRatings);
 
 		res.json({
 			totalNames: totalNames[0]?.count || 0,
@@ -396,7 +436,7 @@ router.get("/api/analytics/site-stats", async (req, res) => {
 });
 
 // Default error handler
-router.use((err: any, req: any, res: any, next: any) => {
+router.use((err: any, _req: any, res: any, _next: any) => {
 	console.error("Route error:", err);
 	res.status(500).json({ error: "Internal server error" });
 });

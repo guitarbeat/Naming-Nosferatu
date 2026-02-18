@@ -13,7 +13,10 @@ if (process.env.DATABASE_URL) {
 		db = drizzle(pool, { schema });
 		console.log("✓ Database connected successfully");
 	} catch (error) {
-		console.warn("⚠ Failed to connect to database:", error instanceof Error ? error.message : String(error));
+		console.warn(
+			"⚠ Failed to connect to database:",
+			error instanceof Error ? error.message : String(error),
+		);
 		db = null;
 		pool = null;
 	}
