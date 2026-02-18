@@ -119,7 +119,10 @@ export function Dashboard({
 			return;
 		}
 		try {
-			await hiddenNamesAPI.unhideName(userName, nameId);
+			const result = await hiddenNamesAPI.unhideName(userName, nameId);
+			if (!result.success) {
+				throw new Error(result.error || "Failed to unhide name");
+			}
 			setHiddenNames((prev) => prev.filter((n) => n.id !== nameId));
 		} catch (error) {
 			console.error("Failed to unhide name:", error);

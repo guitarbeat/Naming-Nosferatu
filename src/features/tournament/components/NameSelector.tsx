@@ -346,9 +346,15 @@ export function NameSelector() {
 
 				try {
 					if (isCurrentlyHidden) {
-						await hiddenNamesAPI.unhideName(userName, nameId);
+						const result = await hiddenNamesAPI.unhideName(userName, nameId);
+						if (!result.success) {
+							throw new Error(result.error || "Failed to unhide name");
+						}
 					} else {
-						await hiddenNamesAPI.hideName(userName, nameId);
+						const result = await hiddenNamesAPI.hideName(userName, nameId);
+						if (!result.success) {
+							throw new Error(result.error || "Failed to hide name");
+						}
 					}
 
 					// Refresh names after toggling hidden status

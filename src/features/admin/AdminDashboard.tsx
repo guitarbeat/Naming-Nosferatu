@@ -113,9 +113,15 @@ export function AdminDashboard() {
 		try {
 			const idStr = String(nameId);
 			if (isHidden) {
-				await hiddenNamesAPI.unhideName(user.name, idStr);
+				const result = await hiddenNamesAPI.unhideName(user.name, idStr);
+				if (!result.success) {
+					throw new Error(result.error || "Failed to unhide name");
+				}
 			} else {
-				await hiddenNamesAPI.hideName(user.name, idStr);
+				const result = await hiddenNamesAPI.hideName(user.name, idStr);
+				if (!result.success) {
+					throw new Error(result.error || "Failed to hide name");
+				}
 			}
 			await loadAdminData();
 		} catch (error) {

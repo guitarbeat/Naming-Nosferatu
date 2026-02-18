@@ -73,6 +73,7 @@ export const authAdapter: AuthAdapter = {
 	 * Check if a user is admin based on username
 	 */
 	async checkAdminStatus(userIdOrName: string): Promise<boolean> {
-		return ADMIN_USERNAMES.includes(userIdOrName);
+		const normalized = userIdOrName?.trim().toLowerCase();
+		return ADMIN_USERNAMES.some((admin) => admin.toLowerCase() === normalized);
 	},
 };
