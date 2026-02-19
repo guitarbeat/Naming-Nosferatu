@@ -47,6 +47,28 @@ describe("Server Routes", () => {
 			expect(res.status).toBe(400);
 			expect(res.body.success).toBe(false);
 		});
+
+		it("should reject invalid provenance data", async () => {
+			const invalidCat = {
+				name: "Invalid Provenance Cat",
+				provenance: "not an array",
+			};
+
+			const res = await request(app).post("/api/names").send(invalidCat);
+			expect(res.status).toBe(400);
+			expect(res.body.success).toBe(false);
+		});
+
+		it("should reject invalid provenance entries", async () => {
+			const invalidCat = {
+				name: "Invalid Entry Cat",
+				provenance: [{ action: "created" }], // Missing timestamp
+			};
+
+			const res = await request(app).post("/api/names").send(invalidCat);
+			expect(res.status).toBe(400);
+			expect(res.body.success).toBe(false);
+		});
 	});
 
 	describe("Analytics Endpoints", () => {
