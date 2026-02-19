@@ -1,58 +1,58 @@
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { usePrevious } from "./useHooks";
+import { useToggle } from "./useHooks";
 
-describe("usePrevious", () => {
-	it("should return undefined on initial render", () => {
-		const { result } = renderHook(() => usePrevious(0));
-		expect(result.current).toBeUndefined();
+describe("useToggle", () => {
+	it("initializes with default value (false)", () => {
+		const { result } = renderHook(() => useToggle());
+		const [value] = result.current;
+		expect(value).toBe(false);
 	});
 
-	it("should return the previous value after update", () => {
-		const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
-			initialProps: { value: 0 },
-		});
-
-		// First render: prev is undefined, current value is 0
-		expect(result.current).toBeUndefined();
-
-		// Second render: value is 1, prev should be 0
-		rerender({ value: 1 });
-		expect(result.current).toBe(0);
-
-		// Third render: value is 2, prev should be 1
-		rerender({ value: 2 });
-		expect(result.current).toBe(1);
+	it("initializes with provided value", () => {
+		const { result } = renderHook(() => useToggle(true));
+		const [value] = result.current;
+		expect(value).toBe(true);
 	});
 
-	it("should handle different types of values", () => {
-		const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
-			initialProps: { value: "a" as any },
+	it("toggles value", () => {
+		const { result } = renderHook(() => useToggle(false));
+		const [, toggle] = result.current;
+
+		act(() => {
+			toggle();
 		});
+		expect(result.current[0]).toBe(true);
 
-		expect(result.current).toBeUndefined();
-
-		rerender({ value: "b" });
-		expect(result.current).toBe("a");
-
-		rerender({ value: { foo: "bar" } });
-		expect(result.current).toBe("b");
-
-		rerender({ value: { foo: "baz" } });
-		expect(result.current).toEqual({ foo: "bar" });
+		act(() => {
+			toggle();
+		});
+		expect(result.current[0]).toBe(false);
 	});
 
-	it("should return the same previous value if the value hasn't changed", () => {
-		const { result, rerender } = renderHook(({ value }) => usePrevious(value), {
-			initialProps: { value: 0 },
+	it("sets value explicitly", () => {
+		const { result } = renderHook(() => useToggle(false));
+		const [, , setValue] = result.current;
+
+		act(() => {
+			setValue(true);
 		});
+		expect(result.current[0]).toBe(true);
 
-		expect(result.current).toBeUndefined();
+		act(() => {
+			setValue(false);
+		});
+		expect(result.current[0]).toBe(false);
+	});
 
-		rerender({ value: 1 });
-		expect(result.current).toBe(0);
+	it("maintains function reference stability", () => {
+		const { result, rerender } = renderHook(() => useToggle());
+		const [, toggle1, setValue1] = result.current;
 
-		rerender({ value: 1 });
-		expect(result.current).toBe(1);
+		rerender();
+		const [, toggle2, setValue2] = result.current;
+
+		expect(toggle1).toBe(toggle2);
+		expect(setValue1).toBe(setValue2);
 	});
 });
