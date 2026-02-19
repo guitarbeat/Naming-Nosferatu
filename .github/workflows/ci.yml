@@ -10,11 +10,6 @@ on:
       - docs/**
   pull_request:
     branches: [main, develop]
-    paths-ignore:
-      - "**/*.md"
-      - "**/*.mdx"
-      - "**/*.txt"
-      - docs/**
   workflow_dispatch:
 
 permissions:
