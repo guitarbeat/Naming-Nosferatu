@@ -77,6 +77,24 @@ export const imagesAPI = {
 };
 
 export const coreAPI = {
+	addName: async (name: string, description: string) => {
+		try {
+			const response = await api.post<{ success: boolean; data: any; error?: any }>("/names", {
+				name,
+				description,
+			});
+			if (response.success && response.data) {
+				return { success: true, data: mapNameRow(response.data) };
+			}
+			return { success: false, error: response.error || "Failed to add name" };
+		} catch (error) {
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : "An unknown error occurred",
+			};
+		}
+	},
+
 	getTrendingNames: async (includeHidden: boolean = false) => {
 		try {
 			const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
