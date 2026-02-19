@@ -304,9 +304,9 @@ router.post("/api/ratings", async (req, res) => {
 			losses: r.losses || 0,
 		}));
 
-		// Upsert logic - simple insert for now
-		for (const record of records) {
-			await db.insert(catNameRatings).values(record);
+		// Upsert logic - bulk insert
+		if (records.length > 0) {
+			await db.insert(catNameRatings).values(records);
 		}
 
 		res.json({ success: true, count: records.length });
