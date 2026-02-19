@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { Router } from "express";
 import { ZodError } from "zod";
 import {
@@ -186,16 +186,26 @@ router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 			return res.json({ results: nameIds.map((id: any) => ({ nameId: id, success: true })) });
 		}
 
-		for (const nameId of nameIds) {
-			try {
-				await db.update(catNameOptions).set({ isHidden }).where(eq(catNameOptions.id, nameId));
+		try {
+			if (nameIds.length > 0) {
+				await db
+					.update(catNameOptions)
+					.set({ isHidden })
+					.where(inArray(catNameOptions.id, nameIds));
+			}
+
+			// All succeeded
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: true });
-			} catch (error) {
+			}
+			res.json({ results });
+		} catch (error) {
+			// All failed
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: false, error: String(error) });
 			}
+			res.json({ results });
 		}
-
-		res.json({ results });
 	} catch (error) {
 		console.error("Error batch updating names:", error);
 		res.status(500).json({ error: "Failed to batch update names" });
