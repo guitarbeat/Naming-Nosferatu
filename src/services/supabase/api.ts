@@ -15,7 +15,6 @@ interface ApiNameRow {
 	isActive?: boolean | null;
 	is_active?: boolean | null;
 	lockedIn?: boolean;
-	locked_in?: boolean;
 	status?: string | null;
 	provenance?: unknown;
 }
@@ -29,7 +28,7 @@ function mapNameRow(item: ApiNameRow): NameItem {
 		createdAt: item.createdAt ?? item.created_at ?? null,
 		isHidden: item.isHidden ?? item.is_hidden ?? false,
 		isActive: item.isActive ?? item.is_active ?? true,
-		lockedIn: item.lockedIn ?? item.locked_in ?? false,
+		lockedIn: item.lockedIn ?? false,
 		status: (item.status as NameItem["status"]) ?? "candidate",
 		provenance: item.provenance as NameItem["provenance"],
 		has_user_rating: false,
@@ -45,7 +44,7 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 
 		let query = client
 			.from("cat_name_options")
-			.select("id, name, description, avg_rating, created_at, is_hidden, is_active, locked_in")
+			.select("id, name, description, avg_rating, created_at, is_hidden, is_active")
 			.eq("is_active", true);
 
 		if (!includeHidden) {
@@ -57,7 +56,7 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 			return [];
 		}
 
-		return (data ?? []).map((item) => mapNameRow(item as ApiNameRow));
+		return (data ?? []).map((item) => mapNameRow(item as unknown as ApiNameRow));
 	} catch {
 		return [];
 	}
@@ -77,6 +76,24 @@ export const imagesAPI = {
 };
 
 export const coreAPI = {
+	addName: async (name: string, description: string) => {
+		try {
+			const response = await api.post<{ success: boolean; data: any; error?: any }>("/names", {
+				name,
+				description,
+			});
+			if (response.success && response.data) {
+				return { success: true, data: mapNameRow(response.data) };
+			}
+			return { success: false, error: response.error || "Failed to add name" };
+		} catch (error) {
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : "An unknown error occurred",
+			};
+		}
+	},
+
 	getTrendingNames: async (includeHidden: boolean = false) => {
 		try {
 			const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
