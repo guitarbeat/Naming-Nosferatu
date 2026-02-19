@@ -17,9 +17,22 @@ app.use(router);
 
 const distPath = path.resolve(__dirname, "../dist");
 
-app.use(express.static(distPath));
+app.use(
+	express.static(distPath, {
+		setHeaders: (res, filePath) => {
+			if (filePath.endsWith(".html")) {
+				res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
+			} else if (filePath.includes("assets/") || /\.[a-f0-9]{8}\./.test(filePath)) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			} else {
+				res.setHeader("Cache-Control", "public, max-age=3600");
+			}
+		},
+	}),
+);
 
 app.get("/{*path}", (_req, res) => {
+	res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
 	res.sendFile(path.join(distPath, "index.html"));
 });
 
