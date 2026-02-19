@@ -66,6 +66,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
 		tournamentId,
 		defaultPersistentState,
+		{ debounceDelay: 1000 },
 	);
 
 	const persistentState = useMemo(() => {
