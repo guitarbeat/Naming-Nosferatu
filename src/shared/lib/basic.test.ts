@@ -1,50 +1,83 @@
 import { describe, expect, it } from "vitest";
-import { formatDate } from "./basic";
+import type { NameItem } from "@/shared/types";
+import { getVisibleNames, isNameHidden } from "./basic";
 
-describe("formatDate", () => {
-	// These tests assume the test environment uses en-US locale by default.
-	// If the environment locale is different, these tests might fail on the specific string format.
+describe("basic.ts", () => {
+	describe("isNameHidden", () => {
+		it("returns true if isHidden is true", () => {
+			const item = { id: 1, name: "Test", isHidden: true } as unknown as NameItem;
+			expect(isNameHidden(item)).toBe(true);
+		});
 
-	it("formats a Date object correctly", () => {
-		// Note: The output depends on the timezone of the test runner if the input is UTC
-		// To avoid timezone issues, we can use a local date string
-		const localDate = new Date(2023, 0, 1); // Jan 1, 2023 local time
-		expect(formatDate(localDate)).toMatch(/Jan 1, 2023/);
+		it("returns true if is_hidden is true", () => {
+			const item = { id: 1, name: "Test", is_hidden: true } as unknown as NameItem;
+			expect(isNameHidden(item)).toBe(true);
+		});
+
+		it("returns true if both are true", () => {
+			const item = { id: 1, name: "Test", isHidden: true, is_hidden: true } as unknown as NameItem;
+			expect(isNameHidden(item)).toBe(true);
+		});
+
+		it("returns true if mixed (one true, one false)", () => {
+			const item1 = {
+				id: 1,
+				name: "Test",
+				isHidden: true,
+				is_hidden: false,
+			} as unknown as NameItem;
+			const item2 = {
+				id: 1,
+				name: "Test",
+				isHidden: false,
+				is_hidden: true,
+			} as unknown as NameItem;
+			expect(isNameHidden(item1)).toBe(true);
+			expect(isNameHidden(item2)).toBe(true);
+		});
+
+		it("returns false if neither is true", () => {
+			const item = { id: 1, name: "Test" } as unknown as NameItem;
+			expect(isNameHidden(item)).toBe(false);
+		});
+
+		it("returns false if explicitly false", () => {
+			const item = {
+				id: 1,
+				name: "Test",
+				isHidden: false,
+				is_hidden: false,
+			} as unknown as NameItem;
+			expect(isNameHidden(item)).toBe(false);
+		});
+
+		it("returns false for null or undefined input", () => {
+			expect(isNameHidden(null)).toBe(false);
+			expect(isNameHidden(undefined)).toBe(false);
+		});
 	});
 
-	it("formats a string date correctly", () => {
-		const dateStr = "2023-01-01";
-		// When parsing a date-only string, it's treated as UTC usually, but browser/node behavior can vary.
-		// Let's check if it returns a valid formatted date string.
-		const result = formatDate(dateStr);
-		expect(result).not.toBe("Invalid Date");
-		expect(result).toContain("2023");
-		expect(result).toMatch(/[A-Z][a-z]{2}/); // Month short name
-	});
+	describe("getVisibleNames", () => {
+		it("filters out hidden names", () => {
+			const names: NameItem[] = [
+				{ id: 1, name: "Visible", isHidden: false } as NameItem,
+				{ id: 2, name: "Hidden", isHidden: true } as NameItem,
+				{ id: 3, name: "Hidden Snake", is_hidden: true } as NameItem,
+				{ id: 4, name: "Visible Snake", is_hidden: false } as NameItem,
+			];
+			const result = getVisibleNames(names);
+			expect(result).toHaveLength(2);
+			expect(result.map((n) => n.id)).toEqual([1, 4]);
+		});
 
-	it("formats a timestamp number correctly", () => {
-		const timestamp = new Date(2023, 0, 1).getTime();
-		expect(formatDate(timestamp)).toMatch(/Jan 1, 2023/);
-	});
+		it("returns empty array for null/undefined input", () => {
+			expect(getVisibleNames(null)).toEqual([]);
+			expect(getVisibleNames(undefined)).toEqual([]);
+		});
 
-	it("returns 'Invalid Date' for invalid date string", () => {
-		expect(formatDate("invalid-date")).toBe("Invalid Date");
-	});
-
-	it("returns 'Invalid Date' for NaN", () => {
-		expect(formatDate(NaN)).toBe("Invalid Date");
-	});
-
-	it("accepts custom options", () => {
-		const date = new Date(2023, 0, 1);
-		const result = formatDate(date, { weekday: "long" });
-		expect(result).toContain("Sunday"); // Jan 1, 2023 was a Sunday
-	});
-
-	it("overrides default options with custom options", () => {
-		const date = new Date(2023, 0, 1);
-		// Default is month: 'short'. Override with 'long'.
-		const result = formatDate(date, { month: "long" });
-		expect(result).toMatch(/January 1, 2023/);
+		it("returns empty array if input is not an array", () => {
+			// @ts-expect-error Testing runtime check
+			expect(getVisibleNames("not an array" as any)).toEqual([]);
+		});
 	});
 });
