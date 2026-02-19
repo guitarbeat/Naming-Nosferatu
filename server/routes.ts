@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { Router } from "express";
 import { ZodError } from "zod";
 import {
@@ -177,6 +177,9 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
 		const { nameIds, isHidden } = req.body;
+		if (!Array.isArray(nameIds) || nameIds.length === 0) {
+			return res.json({ results: [] });
+		}
 		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const results: { nameId: any; success: boolean; error?: string }[] = [];
 
@@ -186,11 +189,13 @@ router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 			return res.json({ results: nameIds.map((id: any) => ({ nameId: id, success: true })) });
 		}
 
-		for (const nameId of nameIds) {
-			try {
-				await db.update(catNameOptions).set({ isHidden }).where(eq(catNameOptions.id, nameId));
+		try {
+			await db.update(catNameOptions).set({ isHidden }).where(inArray(catNameOptions.id, nameIds));
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: true });
-			} catch (error) {
+			}
+		} catch (error) {
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: false, error: String(error) });
 			}
 		}
@@ -299,9 +304,9 @@ router.post("/api/ratings", async (req, res) => {
 			losses: r.losses || 0,
 		}));
 
-		// Upsert logic - simple insert for now
-		for (const record of records) {
-			await db.insert(catNameRatings).values(record);
+		// Upsert logic - bulk insert
+		if (records.length > 0) {
+			await db.insert(catNameRatings).values(records);
 		}
 
 		res.json({ success: true, count: records.length });
@@ -384,27 +389,19 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 		if (!db) {
 			return res.json(
 				mockNames.slice(0, limit).map((n) => ({
-					nameId: n.id,
-					avgRating: n.avgRating,
-					totalWins: Math.floor(Math.random() * 50),
-					totalLosses: Math.floor(Math.random() * 50),
+					name_id: n.id,
+					name: n.name,
+					avg_rating: n.avgRating,
+					wins: Math.floor(Math.random() * 50),
+					losses: Math.floor(Math.random() * 50),
+					total_ratings: 0,
 				})),
 			);
 		}
 
-		const ratings = await db
-			.select({
-				nameId: catNameRatings.nameId,
-				avgRating: sql<number>`avg(rating)`,
-				totalWins: sql<number>`sum(wins)`,
-				totalLosses: sql<number>`sum(losses)`,
-			})
-			.from(catNameRatings)
-			.groupBy(catNameRatings.nameId)
-			.orderBy((_r) => desc(sql<number>`avg(rating)`))
-			.limit(limit);
-
-		res.json(ratings);
+		// Use optimized RPC function for better performance and correct data (names, filtering)
+		const result = await db.execute(sql`SELECT * FROM get_leaderboard_stats(${limit})`);
+		res.json(result.rows);
 	} catch (error) {
 		console.error("Error fetching leaderboard:", error);
 		res.status(500).json({ error: "Failed to fetch leaderboard" });

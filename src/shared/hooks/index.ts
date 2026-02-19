@@ -26,7 +26,8 @@
  * - {@link useValidatedForm}  — Lightweight form state + validation
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { debounce } from "../lib/debounce";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Internal Utilities
@@ -254,11 +255,26 @@ export function useLocalStorage<T>(
 						localStorage.setItem(key, JSON.stringify(resolved));
 					}
 				}
-			} catch (err) {
-				console.warn(`[useLocalStorage] write "${key}" failed:`, err);
 			}
 		},
 		[key],
+	);
+
+	const debouncedSave = useMemo(() => {
+		if (options?.debounceDelay) {
+			return debounce(saveToStorage, options.debounceDelay);
+		}
+		return saveToStorage;
+	}, [saveToStorage, options?.debounceDelay]);
+
+	const setValue = useCallback(
+		(next: SetStateAction<T>) => {
+			const resolved = next instanceof Function ? next(valueRef.current) : next;
+			setStored(resolved);
+			valueRef.current = resolved;
+			debouncedSave(resolved);
+		},
+		[debouncedSave],
 	);
 
 	const removeValue = useCallback(() => {
