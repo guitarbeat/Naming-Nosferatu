@@ -1,83 +1,74 @@
 import { describe, expect, it } from "vitest";
-import type { NameItem } from "@/shared/types";
-import { getVisibleNames, isNameHidden } from "./basic";
+import { calculatePercentile } from "./basic";
 
-describe("basic.ts", () => {
-	describe("isNameHidden", () => {
-		it("returns true if isHidden is true", () => {
-			const item = { id: 1, name: "Test", isHidden: true } as unknown as NameItem;
-			expect(isNameHidden(item)).toBe(true);
+describe("calculatePercentile", () => {
+	describe("Higher is better (default)", () => {
+		it("returns 50 when array is empty", () => {
+			expect(calculatePercentile(10, [])).toBe(50);
 		});
 
-		it("returns true if is_hidden is true", () => {
-			const item = { id: 1, name: "Test", is_hidden: true } as unknown as NameItem;
-			expect(isNameHidden(item)).toBe(true);
+		it("returns 50 when array has no valid numbers", () => {
+			// @ts-expect-error testing runtime safety
+			expect(calculatePercentile(10, [null, undefined, NaN])).toBe(50);
 		});
 
-		it("returns true if both are true", () => {
-			const item = { id: 1, name: "Test", isHidden: true, is_hidden: true } as unknown as NameItem;
-			expect(isNameHidden(item)).toBe(true);
+		it("calculates percentile correctly for simple case", () => {
+			// 5, 10, 15. Value 10. Below: 5 (1 item). Total 3. 1/3 = 33%
+			expect(calculatePercentile(10, [5, 10, 15])).toBe(33);
 		});
 
-		it("returns true if mixed (one true, one false)", () => {
-			const item1 = {
-				id: 1,
-				name: "Test",
-				isHidden: true,
-				is_hidden: false,
-			} as unknown as NameItem;
-			const item2 = {
-				id: 1,
-				name: "Test",
-				isHidden: false,
-				is_hidden: true,
-			} as unknown as NameItem;
-			expect(isNameHidden(item1)).toBe(true);
-			expect(isNameHidden(item2)).toBe(true);
+		it("calculates 0th percentile for lowest value", () => {
+			// 5, 10, 15. Value 5. Below: 0. Total 3. 0/3 = 0%
+			expect(calculatePercentile(5, [5, 10, 15])).toBe(0);
 		});
 
-		it("returns false if neither is true", () => {
-			const item = { id: 1, name: "Test" } as unknown as NameItem;
-			expect(isNameHidden(item)).toBe(false);
+		it("calculates percentile for highest value", () => {
+			// 5, 10, 15. Value 15. Below: 5, 10. Total 3. 2/3 = 67%
+			expect(calculatePercentile(15, [5, 10, 15])).toBe(67);
 		});
 
-		it("returns false if explicitly false", () => {
-			const item = {
-				id: 1,
-				name: "Test",
-				isHidden: false,
-				is_hidden: false,
-			} as unknown as NameItem;
-			expect(isNameHidden(item)).toBe(false);
+		it("calculates 100th percentile if value is greater than all values in array", () => {
+			// 5, 10. Value 15. Below: 5, 10. Total 2. 2/2 = 100%
+			expect(calculatePercentile(15, [5, 10])).toBe(100);
 		});
 
-		it("returns false for null or undefined input", () => {
-			expect(isNameHidden(null)).toBe(false);
-			expect(isNameHidden(undefined)).toBe(false);
+		it("calculates correctly when explicitly passing true", () => {
+			expect(calculatePercentile(10, [5, 10, 15], true)).toBe(33);
 		});
 	});
 
-	describe("getVisibleNames", () => {
-		it("filters out hidden names", () => {
-			const names: NameItem[] = [
-				{ id: 1, name: "Visible", isHidden: false } as NameItem,
-				{ id: 2, name: "Hidden", isHidden: true } as NameItem,
-				{ id: 3, name: "Hidden Snake", is_hidden: true } as NameItem,
-				{ id: 4, name: "Visible Snake", is_hidden: false } as NameItem,
-			];
-			const result = getVisibleNames(names);
-			expect(result).toHaveLength(2);
-			expect(result.map((n) => n.id)).toEqual([1, 4]);
+	describe("Lower is better", () => {
+		it("calculates percentile correctly for simple case", () => {
+			// 5, 10, 15. Value 10. Above: 15 (1 item). Total 3. 1/3 = 33%
+			expect(calculatePercentile(10, [5, 10, 15], false)).toBe(33);
 		});
 
-		it("returns empty array for null/undefined input", () => {
-			expect(getVisibleNames(null)).toEqual([]);
-			expect(getVisibleNames(undefined)).toEqual([]);
+		it("calculates 0th percentile for highest value (worst)", () => {
+			// 5, 10, 15. Value 15. Above: 0. Total 3. 0/3 = 0%
+			expect(calculatePercentile(15, [5, 10, 15], false)).toBe(0);
 		});
 
-		it("returns empty array if input is not an array", () => {
-			// @ts-expect-error Testing runtime check
-			expect(getVisibleNames("not an array" as any)).toEqual([]);
+		it("calculates percentile for lowest value (best)", () => {
+			// 5, 10, 15. Value 5. Above: 10, 15. Total 3. 2/3 = 67%
+			expect(calculatePercentile(5, [5, 10, 15], false)).toBe(67);
+		});
+
+		it("calculates 100th percentile if value is lower than all values in array (best)", () => {
+			// 10, 15. Value 5. Above: 10, 15. Total 2. 2/2 = 100%
+			expect(calculatePercentile(5, [10, 15], false)).toBe(100);
+		});
+	});
+
+	describe("Edge Cases", () => {
+		it("ignores null/undefined/NaN values within the array", () => {
+			// [5, 10, 15] effectively. Value 10 -> 33%
+			// @ts-expect-error
+			expect(calculatePercentile(10, [5, null, 10, undefined, 15, NaN])).toBe(33);
+		});
+
+		it("returns 0 if value is NaN (invalid input)", () => {
+			// 5, 10. Value NaN. Below: 0. Total 2.
+			expect(calculatePercentile(NaN, [5, 10])).toBe(0);
 		});
 	});
 });
