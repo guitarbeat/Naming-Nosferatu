@@ -47,6 +47,28 @@ describe("Server Routes", () => {
 			expect(res.status).toBe(400);
 			expect(res.body.success).toBe(false);
 		});
+
+		it("should reject invalid provenance data", async () => {
+			const invalidCat = {
+				name: "Invalid Provenance Cat",
+				provenance: "not an array",
+			};
+
+			const res = await request(app).post("/api/names").send(invalidCat);
+			expect(res.status).toBe(400);
+			expect(res.body.success).toBe(false);
+		});
+
+		it("should reject invalid provenance entries", async () => {
+			const invalidCat = {
+				name: "Invalid Entry Cat",
+				provenance: [{ action: "created" }], // Missing timestamp
+			};
+
+			const res = await request(app).post("/api/names").send(invalidCat);
+			expect(res.status).toBe(400);
+			expect(res.body.success).toBe(false);
+		});
 	});
 
 	describe("Analytics Endpoints", () => {
@@ -62,10 +84,14 @@ describe("Server Routes", () => {
 			expect(Array.isArray(res.body)).toBe(true);
 		});
 
-		it("should return leaderboard (mock)", async () => {
+		it("should return leaderboard (mock) with correct structure", async () => {
 			const res = await request(app).get("/api/analytics/leaderboard");
 			expect(res.status).toBe(200);
 			expect(Array.isArray(res.body)).toBe(true);
+			expect(res.body.length).toBeGreaterThan(0);
+			expect(res.body[0]).toHaveProperty("name_id");
+			expect(res.body[0]).toHaveProperty("name");
+			expect(res.body[0]).toHaveProperty("avg_rating");
 		});
 
 		it("should return site stats (mock)", async () => {
