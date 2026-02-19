@@ -1,7 +1,7 @@
-import { renderHook, act } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useNameSuggestion } from "./useNames";
 import { coreAPI } from "@supabase/client";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useNameSuggestion } from "./useNames";
 
 // Mock the dependencies
 vi.mock("@supabase/client", () => ({
@@ -47,7 +47,10 @@ describe("useNameSuggestion", () => {
 		const { result } = renderHook(() => useNameSuggestion({ onSuccess: onSuccessMock }));
 
 		// Setup mock success response
-		(coreAPI.addName as any).mockResolvedValue({ success: true, data: { id: "123", name: "Test Cat" } });
+		(coreAPI.addName as any).mockResolvedValue({
+			success: true,
+			data: { id: "123", name: "Test Cat" },
+		});
 
 		act(() => {
 			result.current.handleChange("name", "Test Cat");
@@ -85,7 +88,7 @@ describe("useNameSuggestion", () => {
 		expect(result.current.successMessage).toBe("");
 	});
 
-    it("handles exception during submission", async () => {
+	it("handles exception during submission", async () => {
 		const { result } = renderHook(() => useNameSuggestion());
 
 		// Setup mock exception

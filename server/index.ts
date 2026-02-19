@@ -10,7 +10,33 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+	.split(",")
+	.map((origin) => origin.trim())
+	.filter((origin) => origin.length > 0);
+
+if (process.env.NODE_ENV !== "production") {
+	allowedOrigins.push(
+		"http://localhost:5000",
+		"http://localhost:5173",
+		"http://localhost:3000",
+		"http://localhost:3001",
+	);
+}
+
+app.use(
+	cors({
+		origin: (origin, callback) => {
+			if (!origin || allowedOrigins.includes(origin)) {
+				callback(null, true);
+			} else {
+				callback(new Error("Not allowed by CORS"));
+			}
+		},
+		credentials: true,
+	}),
+);
+
 app.use(express.json({ limit: "10mb" }));
 
 app.use(router);
