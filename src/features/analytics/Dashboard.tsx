@@ -45,15 +45,19 @@ export function Dashboard({
 			total_ratings: number;
 		}>
 	>([]);
-	const [siteStats, setSiteStats] = useState<{
-		totalNames: number;
-		activeNames: number;
-		hiddenNames: number;
-		totalUsers: number;
-		totalRatings: number;
-		totalSelections: number;
-		avgRating: number;
-	} | null | undefined>(null);
+	const [siteStats, setSiteStats] = useState<
+		| {
+				totalNames: number;
+				activeNames: number;
+				hiddenNames: number;
+				totalUsers: number;
+				totalRatings: number;
+				totalSelections: number;
+				avgRating: number;
+		  }
+		| null
+		| undefined
+	>(null);
 	const [userStats, setUserStats] = useState<{
 		totalRatings: number;
 		totalSelections: number;
@@ -99,7 +103,7 @@ export function Dashboard({
 						totalUsers: site.totalUsers || 0,
 						totalRatings: site.totalRatings || 0,
 						totalSelections: site.totalSelections || 0,
-						avgRating: site.avgRating || 0
+						avgRating: site.avgRating || 0,
 					});
 				}
 				setUserStats(user);

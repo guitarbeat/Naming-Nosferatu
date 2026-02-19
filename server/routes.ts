@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { Router } from "express";
 import { ZodError } from "zod";
 import {
@@ -8,6 +8,7 @@ import {
 	catTournamentSelections,
 	userRoles,
 } from "../shared/schema";
+import { requireAdmin } from "./auth";
 import { db } from "./db";
 import { createNameSchema, createUserSchema, saveRatingsSchema } from "./validation";
 
@@ -130,7 +131,7 @@ router.post("/api/names", async (req, res) => {
 });
 
 // Delete a name by ID
-router.delete("/api/names/:id", async (req, res) => {
+router.delete("/api/names/:id", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
@@ -144,7 +145,7 @@ router.delete("/api/names/:id", async (req, res) => {
 });
 
 // Delete a name by name string
-router.delete("/api/names-by-name/:name", async (req, res) => {
+router.delete("/api/names-by-name/:name", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
@@ -158,7 +159,7 @@ router.delete("/api/names-by-name/:name", async (req, res) => {
 });
 
 // Update hidden status
-router.patch("/api/names/:id/hide", async (req, res) => {
+router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
@@ -173,26 +174,38 @@ router.patch("/api/names/:id/hide", async (req, res) => {
 });
 
 // Batch update hidden status
-router.post("/api/names/batch-hide", async (req, res) => {
+router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
 		const { nameIds, isHidden } = req.body;
+		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const results: { nameId: any; success: boolean; error?: string }[] = [];
 
 		if (!db) {
 			// Return mock results when database is unavailable
+			// biome-ignore lint/suspicious/noExplicitAny: mocking simple object
 			return res.json({ results: nameIds.map((id: any) => ({ nameId: id, success: true })) });
 		}
 
-		for (const nameId of nameIds) {
-			try {
-				await db.update(catNameOptions).set({ isHidden }).where(eq(catNameOptions.id, nameId));
+		try {
+			if (nameIds.length > 0) {
+				await db
+					.update(catNameOptions)
+					.set({ isHidden })
+					.where(inArray(catNameOptions.id, nameIds));
+			}
+
+			// All succeeded
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: true });
-			} catch (error) {
+			}
+			res.json({ results });
+		} catch (error) {
+			// All failed
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: false, error: String(error) });
 			}
+			res.json({ results });
 		}
-
-		res.json({ results });
 	} catch (error) {
 		console.error("Error batch updating names:", error);
 		res.status(500).json({ error: "Failed to batch update names" });
@@ -200,7 +213,7 @@ router.post("/api/names/batch-hide", async (req, res) => {
 });
 
 // Get hidden names
-router.get("/api/hidden-names", async (_req, res) => {
+router.get("/api/hidden-names", requireAdmin, async (_req, res) => {
 	try {
 		if (!db) {
 			return res.json([]);
@@ -214,7 +227,7 @@ router.get("/api/hidden-names", async (_req, res) => {
 });
 
 // Update locked in status
-router.patch("/api/names/:id/lock", async (req, res) => {
+router.patch("/api/names/:id/lock", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
@@ -287,6 +300,7 @@ router.post("/api/ratings", async (req, res) => {
 			return res.json({ success: true, count: ratings.length });
 		}
 
+		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const records = ratings.map((r: any) => ({
 			userName,
 			nameId: r.nameId,
@@ -436,6 +450,7 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 });
 
 // Default error handler
+// biome-ignore lint/suspicious/noExplicitAny: error handler middleware has specific signature
 router.use((err: any, _req: any, res: any, _next: any) => {
 	console.error("Route error:", err);
 	res.status(500).json({ error: "Internal server error" });

@@ -346,7 +346,7 @@ export function NameSelector() {
 				}
 
 				// Ensure user context is set
-				await withSupabase(async (client) => {
+				await withSupabase(async (_client) => {
 					try {
 						const client = await (
 							await import("@/services/supabase/client")
@@ -419,7 +419,7 @@ export function NameSelector() {
 				const result = await withSupabase(async (client) => {
 					try {
 						// Ensure user context is set
-						await supabase.rpc("set_user_context", { user_name_param: userName.trim() });
+						await (client as any).rpc("set_user_context", { user_name_param: userName.trim() });
 					} catch {
 						/* ignore */
 					}

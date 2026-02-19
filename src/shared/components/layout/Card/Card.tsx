@@ -30,7 +30,7 @@ export type CardBackground = "solid" | "glass" | "gradient" | "transparent";
 
 // CVA variant for Card component
 const cardVariants = cva(
-	"relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 backdrop-blur-md",
+	"relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 backdrop-blur-md", // Base classes
 	{
 		variants: {
 			variant: {
@@ -148,6 +148,7 @@ const CardBase = memo(
 				const x = e.clientX - rect.left;
 				const y = e.clientY - rect.top;
 
+				// Update CSS variables for the CSS-based glow effect
 				e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
 				e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
 
@@ -184,13 +185,17 @@ const CardBase = memo(
 				interactive &&
 					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-purple-500",
 				interactive && onClick && "active:translate-y-0",
+				// Glow effect helper
 				"before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
 				"before:bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(168,85,247,0.15),transparent_50%)]",
 			);
 
+			// * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
+			const shouldUseLiquidGlass = liquidGlass || background === "glass";
+			// * Generate unique ID for this LiquidGlass instance
 			const glassId = useId();
 
-			if (liquidGlass || background === "glass") {
+			if (shouldUseLiquidGlass) {
 				const glassConfig = resolveGlassConfig(liquidGlass, DEFAULT_GLASS_CONFIG) as GlassConfig;
 				const {
 					width = 240,
@@ -239,6 +244,8 @@ const CardBase = memo(
 				);
 			}
 
+			const CommonComponent = (enableTilt ? motion.div : Component) as any;
+
 			const motionProps = enableTilt
 				? {
 						style: {
@@ -250,7 +257,7 @@ const CardBase = memo(
 					}
 				: { style };
 
-			const CommonComponent = (enableTilt ? motion.div : Component) as any;
+			const CommonComponent = (enableTilt ? motion.div : Component) as React.ElementType;
 
 			return (
 				<CommonComponent
@@ -263,7 +270,7 @@ const CardBase = memo(
 					{...props}
 				>
 					<div
-						className="relative z-10"
+						className="relative z-10" // Ensure content is above glow
 						style={
 							enableTilt
 								? {
@@ -290,31 +297,30 @@ export const Card = CardBase;
    ============================================================================ */
 
 export interface CardStatsProps extends CardProps {
-	value: string | number;
-	label?: string;
 	title?: string;
-	emoji?: string;
-	valueClassName?: string;
+	label?: string;
+	value: string | number | React.ReactNode;
+	emoji?: React.ReactNode;
 	labelClassName?: string;
+	valueClassName?: string;
 	emojiClassName?: string;
 }
 
 const CardStatsBase = memo(function CardStats({
-	value,
-	label,
 	title,
+	label,
+	value,
 	emoji,
-	valueClassName,
-	labelClassName,
-	emojiClassName,
-	className,
+	className = "",
+	labelClassName = "",
+	valueClassName = "",
+	emojiClassName = "",
 	variant = "default",
 	...props
 }: CardStatsProps) {
-	const labelText = title || label || "Statistic";
-	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
-	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
+	// Calculate these for aria-label or usage, but if unused, prefix with _
 
+	// Determine top accent color based on variant
 	const accentGradient: Record<CardVariant, string> = {
 		default: "from-white/20 to-white/5",
 		primary: "from-purple-500 to-purple-700",
@@ -330,33 +336,16 @@ const CardStatsBase = memo(function CardStats({
 
 	const valueColor: Record<CardVariant, string> = {
 		default: "text-white",
-		primary: "text-purple-400",
-		success: "text-green-400",
-		warning: "text-yellow-400",
-		info: "text-cyan-400",
-		danger: "text-red-400",
+		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
+		success: "text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
+		warning: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200",
+		info: "text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-200",
+		danger: "text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-200",
 		secondary: "text-gray-400",
 		elevated: "text-white",
 		outlined: "text-white",
 		filled: "text-white",
 	};
-
-	// Accent line gradient based on variant
-	const accentGradient: Record<string, string> = {
-		default: "from-white/20 to-transparent",
-		primary: "from-purple-500 to-purple-500/0",
-		success: "from-green-500 to-green-500/0",
-		warning: "from-yellow-500 to-yellow-500/0",
-		info: "from-cyan-500 to-cyan-500/0",
-		danger: "from-red-500 to-red-500/0",
-		secondary: "from-gray-500 to-gray-500/0",
-		elevated: "from-white/30 to-transparent",
-		outlined: "from-white/10 to-transparent",
-		filled: "from-white/20 to-transparent",
-	};
-
-	// Get aria-label
-	const ariaLabel = props["aria-label"] || `${label || title}: ${value}`;
 
 	return (
 		<Card
@@ -369,6 +358,7 @@ const CardStatsBase = memo(function CardStats({
 			aria-label={ariaLabel}
 			{...props}
 		>
+			{/* Top accent bar */}
 			<div
 				className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accentGradient[variant] || accentGradient.default}`}
 			/>
@@ -575,6 +565,7 @@ const CardNameBase = memo(function CardName({
 				padding={size === "small" ? "small" : "medium"}
 				interactive={isInteractive}
 			>
+				{/* Hidden Badge */}
 				{isHidden && (
 					<div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 text-[10px] font-bold text-black bg-amber-500 rounded-full shadow-sm animate-in slide-in-from-top-2 fade-in duration-300">
 						🔒 HIDDEN
@@ -583,21 +574,34 @@ const CardNameBase = memo(function CardName({
 
 				{image && (
 					<div
-						className="relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner group/image"
+						className={cn(
+							"relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner group/image outline-none focus-visible:ring-2 focus-visible:ring-purple-500",
+							onImageClick && "cursor-pointer",
+						)}
 						onClick={(e) => {
 							if (onImageClick) {
 								e.stopPropagation();
 								onImageClick(e);
 							}
 						}}
+						role={onImageClick ? "button" : undefined}
+						tabIndex={onImageClick ? 0 : undefined}
+						onKeyDown={(e) => {
+							if (onImageClick && (e.key === "Enter" || e.key === " ")) {
+								e.preventDefault();
+								e.stopPropagation();
+								onImageClick(e as unknown as React.MouseEvent);
+							}
+						}}
+						aria-label={onImageClick ? "Zoom image" : undefined}
 					>
 						<CatImage
 							src={image}
 							containerClassName="w-full h-full"
-							imageClassName="w-full h-full object-cover scale-125 transition-transform duration-500 hover:scale-110"
+							imageClassName="w-full h-full object-cover scale-125 transition-transform duration-500 hover:scale-110 group-focus-visible/image:scale-110"
 						/>
 						{onImageClick && (
-							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 group-focus-visible/image:opacity-100 transition-opacity flex items-center justify-center">
 								<span className="material-symbols-outlined text-white text-3xl drop-shadow-md">
 									zoom_in
 								</span>
