@@ -92,7 +92,7 @@ router.get("/api/names", async (req, res) => {
 // Create a new name
 router.post("/api/names", async (req, res) => {
 	try {
-		const { name, description, status, provenance } = createNameSchema.parse(req.body);
+		const { name, description } = createNameSchema.parse(req.body);
 
 		if (!db) {
 			// Return mock response when database is unavailable
@@ -102,8 +102,8 @@ router.post("/api/names", async (req, res) => {
 					id: String(Date.now()),
 					name: name.trim(),
 					description: (description || "").trim(),
-					status: status || "candidate",
-					provenance: provenance || null,
+					status: "candidate",
+					provenance: null,
 					avgRating: 1500,
 					isActive: true,
 					isHidden: false,
@@ -116,8 +116,8 @@ router.post("/api/names", async (req, res) => {
 			.values({
 				name: name.trim(),
 				description: (description || "").trim(),
-				status: status || "candidate",
-				provenance: provenance || null,
+				status: "candidate",
+				provenance: null,
 			})
 			.returning();
 		res.json({ success: true, data: inserted });
