@@ -244,8 +244,6 @@ const CardBase = memo(
 				);
 			}
 
-			const CommonComponent = (enableTilt ? motion.div : Component) as any;
-
 			const motionProps = enableTilt
 				? {
 						style: {
@@ -318,7 +316,9 @@ const CardStatsBase = memo(function CardStats({
 	variant = "default",
 	...props
 }: CardStatsProps) {
-	// Calculate these for aria-label or usage, but if unused, prefix with _
+	const labelText = title || label || "stat";
+	const valueText = typeof value === "string" || typeof value === "number" ? String(value) : "value";
+	const ariaLabel = `${labelText}: ${valueText}`;
 
 	// Determine top accent color based on variant
 	const accentGradient: Record<CardVariant, string> = {

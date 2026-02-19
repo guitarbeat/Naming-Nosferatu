@@ -28,22 +28,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Internal Utilities
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Simple debounce utility for internal use.
- */
-function debounce<T extends (...args: any[]) => void>(func: T, wait: number): T {
-	let timeout: ReturnType<typeof setTimeout> | null = null;
-	return function(this: any, ...args: Parameters<T>) {
-		if (timeout) clearTimeout(timeout);
-		timeout = setTimeout(() => func.apply(this, args), wait);
-	} as T;
-}
-
-
 const IS_BROWSER = typeof window !== "undefined";
 
 /** useLayoutEffect in the browser, useEffect on the server (avoids SSR warnings). */
