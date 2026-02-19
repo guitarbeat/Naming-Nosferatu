@@ -263,7 +263,12 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 		setSuccessMessage("");
 
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const result = await coreAPI.addName(values.name, values.description);
+
+			if (!result.success) {
+				throw new Error(result.error || "Failed to submit suggestion");
+			}
+
 			setSuccessMessage("Name suggestion submitted successfully!");
 			setValues({ name: "", description: "" });
 			setTouched({});
