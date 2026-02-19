@@ -15,6 +15,12 @@ import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/shared/lib/icons";
 import type { NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
+const ADMIN_TABS = ["overview", "names", "users", "analytics"] as const;
+type AdminTab = (typeof ADMIN_TABS)[number];
+
+const FILTER_STATUSES = ["all", "active", "hidden", "locked"] as const;
+type FilterStatus = (typeof FILTER_STATUSES)[number];
+
 interface AdminStats {
 	totalNames: number;
 	activeNames: number;
@@ -43,14 +49,12 @@ function isRpcSignatureError(message: string): boolean {
 
 export function AdminDashboard() {
 	const { user } = useAppStore();
-	const [activeTab, setActiveTab] = useState<"overview" | "names" | "users" | "analytics">(
-		"overview",
-	);
+	const [activeTab, setActiveTab] = useState<AdminTab>("overview");
 	const [stats, setStats] = useState<AdminStats | null>(null);
 	const [names, setNames] = useState<NameWithStats[]>([]);
 	const [filteredNames, setFilteredNames] = useState<NameWithStats[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [filterStatus, setFilterStatus] = useState<"all" | "active" | "hidden" | "locked">("all");
+	const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 
@@ -270,10 +274,10 @@ export function AdminDashboard() {
 
 			{/* Tab Navigation */}
 			<div className="flex gap-2 mb-6 border-b border-white/10">
-				{["overview", "names", "users", "analytics"].map((tab) => (
+				{ADMIN_TABS.map((tab) => (
 					<button
 						key={tab}
-						onClick={() => setActiveTab(tab as any)}
+						onClick={() => setActiveTab(tab)}
 						className={`px-4 py-2 font-medium transition-colors ${
 							activeTab === tab
 								? "text-white border-b-2 border-purple-500"
@@ -309,7 +313,7 @@ export function AdminDashboard() {
 							<div className="flex gap-2">
 								<select
 									value={filterStatus}
-									onChange={(e) => setFilterStatus(e.target.value as any)}
+									onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
 									className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
 								>
 									<option value="all">All Names</option>

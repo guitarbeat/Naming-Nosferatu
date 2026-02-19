@@ -239,6 +239,8 @@ const CardBase = memo(
 				);
 			}
 
+			const CommonComponent = (enableTilt ? motion.div : Component) as any;
+
 			const motionProps = enableTilt
 				? {
 						style: {
@@ -249,8 +251,6 @@ const CardBase = memo(
 						},
 					}
 				: { style };
-
-			const CommonComponent = (enableTilt ? motion.div : Component) as any;
 
 			return (
 				<CommonComponent
@@ -311,11 +311,11 @@ const CardStatsBase = memo(function CardStats({
 	variant = "default",
 	...props
 }: CardStatsProps) {
-	const labelText = title || label || "Statistic";
-	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
-	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
+	// Calculate these for aria-label or usage, but if unused, prefix with _
+	// const _labelText = title || label || "Statistic";
+	// const _valueText = typeof value === "string" || typeof value === "number" ? value : "";
 
-	const accentGradient: Record<CardVariant, string> = {
+	const accentGradientVariant: Record<CardVariant, string> = {
 		default: "from-white/20 to-white/5",
 		primary: "from-purple-500 to-purple-700",
 		success: "from-green-500 to-green-700",
@@ -342,7 +342,7 @@ const CardStatsBase = memo(function CardStats({
 	};
 
 	// Accent line gradient based on variant
-	const accentGradient: Record<string, string> = {
+	const accentGradientColor: Record<string, string> = {
 		default: "from-white/20 to-transparent",
 		primary: "from-purple-500 to-purple-500/0",
 		success: "from-green-500 to-green-500/0",
@@ -370,7 +370,7 @@ const CardStatsBase = memo(function CardStats({
 			{...props}
 		>
 			<div
-				className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accentGradient[variant] || accentGradient.default}`}
+				className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accentGradientVariant[variant] || accentGradientColor.default}`}
 			/>
 
 			{(title || label) && (
