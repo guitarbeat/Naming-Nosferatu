@@ -239,7 +239,6 @@ const CardBase = memo(
 				);
 			}
 
-			// biome-ignore lint/suspicious/noExplicitAny: Component prop type is flexible
 			const CommonComponent = (enableTilt ? motion.div : Component) as any;
 
 			const motionProps = enableTilt
