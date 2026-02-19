@@ -1,6 +1,7 @@
 import "dotenv/config";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import compression from "compression";
 import cors from "cors";
 import express from "express";
 import { router } from "./routes";
