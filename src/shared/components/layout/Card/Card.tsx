@@ -317,7 +317,8 @@ const CardStatsBase = memo(function CardStats({
 	...props
 }: CardStatsProps) {
 	const labelText = title || label || "stat";
-	const valueText = typeof value === "string" || typeof value === "number" ? String(value) : "value";
+	const valueText =
+		typeof value === "string" || typeof value === "number" ? String(value) : "value";
 	const ariaLabel = `${labelText}: ${valueText}`;
 
 	// Determine top accent color based on variant
