@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { Router } from "express";
 import { ZodError } from "zod";
 import {
@@ -177,6 +177,9 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
 		const { nameIds, isHidden } = req.body;
+		if (!Array.isArray(nameIds) || nameIds.length === 0) {
+			return res.json({ results: [] });
+		}
 		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const results: { nameId: any; success: boolean; error?: string }[] = [];
 
@@ -186,11 +189,13 @@ router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 			return res.json({ results: nameIds.map((id: any) => ({ nameId: id, success: true })) });
 		}
 
-		for (const nameId of nameIds) {
-			try {
-				await db.update(catNameOptions).set({ isHidden }).where(eq(catNameOptions.id, nameId));
+		try {
+			await db.update(catNameOptions).set({ isHidden }).where(inArray(catNameOptions.id, nameIds));
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: true });
-			} catch (error) {
+			}
+		} catch (error) {
+			for (const nameId of nameIds) {
 				results.push({ nameId, success: false, error: String(error) });
 			}
 		}
