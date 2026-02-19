@@ -1,0 +1,22 @@
+types:
+  - feat
+  - fix
+  - perf
+  - refactor
+  - test
+  - docs
+  - build
+  - ci
+  - chore
+  - revert
+
+scopes: []
+
+subjectPattern: '^[a-z].+'
+subjectPatternError: "Use lower-case imperative subject, e.g. 'fix(auth): handle expired token'."
+
+headerPattern: '^([a-z]+)(\(([^)]+)\))?!?: (.+)$'
+headerPatternCorrespondence:
+  - type
+  - scope
+  - subject

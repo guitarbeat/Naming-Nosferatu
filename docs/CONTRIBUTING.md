@@ -1,6 +1,6 @@
 # Contributing Guide
 
-**Last Updated:** January 30, 2026
+**Last Updated:** February 19, 2026
 **Status:** Primary Reference for Developers
 
 This document provides a comprehensive guide for setting up, developing, maintaining, and optimizing the Naming Nosferatu application.
@@ -196,6 +196,28 @@ Working with AI agents works best in small, verifiable cycles:
 - [ ] File size limits are not exceeded.
 - [ ] `pnpm run check` passes with zero errors.
 - [ ] Documentation (if applicable) is updated in `docs/`.
+
+### 3. Administrative Operating Model (February 19, 2026)
+
+To reduce cycle time and merge friction, use these process rules:
+
+- **Issue intake is structured**: Open bugs/features through GitHub issue forms to capture severity, acceptance criteria, and reproducible steps.
+- **PRs must include rollout/revert**: Every pull request uses the repository PR template and includes validation and rollback notes.
+- **Ownership is explicit**: `CODEOWNERS` controls review routing for frontend, backend, DB, tooling, and docs changes.
+- **PRs are auto-labeled**: Labels are applied from file paths (`frontend`, `backend`, `database`, `ci-cd`, `docs`) to speed triage and batching.
+- **PR titles are enforced**: Pull requests must follow conventional format like `fix(auth): handle token refresh`.
+- **PR size is visible by label**: Automatic `size/xs` ... `size/xl` labels improve batching and review planning.
+- **Dependency hygiene is scheduled**: Dependabot runs weekly for npm and GitHub Actions with grouped update categories to reduce PR noise.
+- **Stale work is surfaced and closed**: Inactive issues/PRs are marked stale and closed on a schedule unless exempt labels are present.
+- **Merge order for stacked work**: Merge in this order to minimize conflict churn: `infra/tooling` -> `database` -> `backend` -> `frontend` -> `docs`.
+- **Jules for branch-heavy cloud work**: For large branch stacks or conflict-heavy rebases, use Jules to perform cloud agentic updates, then finalize merges with GitHub controls.
+
+Recommended daily cadence:
+
+1. Triage new issues and PRs once per day.
+2. Merge low-risk green PRs in small batches.
+3. Resolve conflicts in active stacks before opening new feature branches.
+4. Keep `main` releasable at all times.
 
 ---
 
