@@ -147,7 +147,7 @@ export function Dashboard({
 	};
 
 	return (
-		<div className="dashboard-container space-y-8">
+		<div className="dashboard-container space-y-2">
 			{/* Personal Results with Ranking Adjustment */}
 			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
 				<PersonalResults
@@ -165,7 +165,7 @@ export function Dashboard({
 			)}
 
 			{/* Random Name Generator */}
-			<Card className="p-6">
+			<Card padding="small">
 				<Suspense fallback={<div className="p-4">Loading...</div>}>
 					<RandomGenerator fetchNames={() => coreAPI.getTrendingNames(false)} />
 				</Suspense>
@@ -173,7 +173,7 @@ export function Dashboard({
 
 			{/* User Stats */}
 			{userName && userStats && (
-				<Card className="p-6">
+				<Card padding="small">
 					<div className="flex items-center gap-3 mb-4">
 						<BarChart3 className="text-purple-400" size={24} />
 						<h3 className="text-xl font-semibold text-white">Your Stats</h3>
@@ -200,7 +200,7 @@ export function Dashboard({
 			)}
 
 			{/* Global Leaderboard */}
-			<Card className="p-6">
+			<Card padding="small">
 				<div className="flex items-center justify-between mb-4">
 					<div className="flex items-center gap-3">
 						<Trophy className="text-yellow-400" size={24} />
@@ -258,7 +258,7 @@ export function Dashboard({
 
 			{/* Site Statistics */}
 			{siteStats && (
-				<Card className="p-6">
+				<Card padding="small">
 					<h3 className="text-xl font-semibold text-white mb-4">Site Statistics</h3>
 					<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
 						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
@@ -289,7 +289,7 @@ export function Dashboard({
 
 			{/* Admin: Hidden Names Management */}
 			{isAdmin && (
-				<Card className="p-6 border-amber-500/30 bg-amber-900/10">
+				<Card padding="small" className="border-amber-500/30 bg-amber-900/10">
 					<div className="flex items-center justify-between mb-4">
 						<div className="flex items-center gap-3">
 							<EyeOff className="text-amber-400" size={24} />
