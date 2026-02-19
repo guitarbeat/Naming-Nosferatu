@@ -17,4 +17,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          config: .github/semantic.yml
+          # Configuration for amannn/action-semantic-pull-request@v5
+          # It uses 'types' and other inputs instead of 'config' file path
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            test
+            docs
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+          subjectPattern: ^[a-z].+
+          subjectPatternError: "Use lower-case imperative subject, e.g. 'fix(auth): handle expired token'."
+          headerPattern: '^([a-z]+)(\(([^)]+)\))?!?: (.+)$'
+          headerPatternCorrespondence: type, scope, subject
