@@ -1,7 +1,6 @@
 import "dotenv/config";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import compression from "compression";
 import cors from "cors";
 import express from "express";
 import { router } from "./routes";
@@ -11,7 +10,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use(compression());
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
