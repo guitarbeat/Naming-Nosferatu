@@ -15,6 +15,7 @@ interface ApiNameRow {
 	isActive?: boolean | null;
 	is_active?: boolean | null;
 	lockedIn?: boolean;
+	locked_in?: boolean;
 	status?: string | null;
 	provenance?: unknown;
 }
@@ -28,7 +29,7 @@ function mapNameRow(item: ApiNameRow): NameItem {
 		createdAt: item.createdAt ?? item.created_at ?? null,
 		isHidden: item.isHidden ?? item.is_hidden ?? false,
 		isActive: item.isActive ?? item.is_active ?? true,
-		lockedIn: item.lockedIn ?? false,
+		lockedIn: item.lockedIn ?? item.locked_in ?? false,
 		status: (item.status as NameItem["status"]) ?? "candidate",
 		provenance: item.provenance as NameItem["provenance"],
 		has_user_rating: false,
@@ -44,7 +45,7 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 
 		let query = client
 			.from("cat_name_options")
-			.select("id, name, description, avg_rating, created_at, is_hidden, is_active")
+			.select("id, name, description, avg_rating, created_at, is_hidden, is_active, locked_in")
 			.eq("is_active", true);
 
 		if (!includeHidden) {
@@ -56,7 +57,7 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 			return [];
 		}
 
-		return (data ?? []).map((item) => mapNameRow(item as unknown as ApiNameRow));
+		return (data ?? []).map((item) => mapNameRow(item as ApiNameRow));
 	} catch {
 		return [];
 	}

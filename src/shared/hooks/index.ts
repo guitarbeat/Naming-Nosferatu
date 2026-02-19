@@ -26,8 +26,7 @@
  * - {@link useValidatedForm}  — Lightweight form state + validation
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { debounce } from "../lib/debounce";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Internal Utilities
@@ -203,7 +202,6 @@ type SetStateAction<T> = T | ((prev: T) => T);
 export function useLocalStorage<T>(
 	key: string,
 	initialValue: T,
-	options: { debounceWait?: number } = {},
 ): [T, (value: SetStateAction<T>) => void, () => void] {
 	// Ref the initial value so an unstable object reference doesn't cause loops
 	const initialRef = useRef(initialValue);
@@ -226,55 +224,20 @@ export function useLocalStorage<T>(
 	const valueRef = useRef(stored);
 	valueRef.current = stored;
 
-	// Create a ref for the debounce function so it persists
-	const debouncedSetItemRef = useRef<ReturnType<typeof debounce> | null>(null);
-
-	// Initialize or update the debounced function only when wait time changes
-	useEffect(() => {
-		if (options.debounceWait && options.debounceWait > 0) {
-			debouncedSetItemRef.current = debounce((val: T) => {
-				if (IS_BROWSER) {
-					localStorage.setItem(key, JSON.stringify(val));
-				}
-			}, options.debounceWait);
-		} else {
-			debouncedSetItemRef.current = null;
-		}
-	}, [options.debounceWait, key]);
-
 	const setValue = useCallback(
 		(next: SetStateAction<T>) => {
 			try {
 				const resolved = next instanceof Function ? next(valueRef.current) : next;
 				setStored(resolved);
 				valueRef.current = resolved;
-				if (debouncedSetItemRef.current) {
-					debouncedSetItemRef.current(resolved);
-				} else {
-					if (IS_BROWSER) {
-						localStorage.setItem(key, JSON.stringify(resolved));
-					}
+				if (IS_BROWSER) {
+					localStorage.setItem(key, JSON.stringify(resolved));
 				}
+			} catch (err) {
+				console.warn(`[useLocalStorage] write "${key}" failed:`, err);
 			}
 		},
 		[key],
-	);
-
-	const debouncedSave = useMemo(() => {
-		if (options?.debounceDelay) {
-			return debounce(saveToStorage, options.debounceDelay);
-		}
-		return saveToStorage;
-	}, [saveToStorage, options?.debounceDelay]);
-
-	const setValue = useCallback(
-		(next: SetStateAction<T>) => {
-			const resolved = next instanceof Function ? next(valueRef.current) : next;
-			setStored(resolved);
-			valueRef.current = resolved;
-			debouncedSave(resolved);
-		},
-		[debouncedSave],
 	);
 
 	const removeValue = useCallback(() => {

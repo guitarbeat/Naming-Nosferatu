@@ -400,8 +400,6 @@ $$;
 CREATE OR REPLACE FUNCTION audit_trigger_function()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
 AS $$
 BEGIN
   IF TG_OP = 'DELETE' THEN
@@ -484,90 +482,3 @@ DROP TRIGGER IF EXISTS site_settings_updated_at ON site_settings;
 CREATE TRIGGER site_settings_updated_at
   BEFORE UPDATE ON site_settings
   FOR EACH ROW EXECUTE FUNCTION update_site_settings_timestamp();
-
--- ============================================================================
--- SECTION 7: RLS POLICIES
--- ============================================================================
-
--- Enable RLS on all tables
-ALTER TABLE cat_app_users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE cat_name_options ENABLE ROW LEVEL SECURITY;
-ALTER TABLE cat_name_ratings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tournament_selections ENABLE ROW LEVEL SECURITY;
-ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
-
--- cat_app_users policies
-CREATE POLICY "Users can view their own profile"
-  ON cat_app_users FOR SELECT
-  USING (user_name = get_current_user_name());
-
-CREATE POLICY "Users can update their own profile"
-  ON cat_app_users FOR UPDATE
-  USING (user_name = get_current_user_name());
-
-CREATE POLICY "Users can insert their own profile"
-  ON cat_app_users FOR INSERT
-  WITH CHECK (user_name = get_current_user_name());
-
-CREATE POLICY "Admins can view all profiles"
-  ON cat_app_users FOR SELECT
-  USING (is_admin());
-
--- user_roles policies
-CREATE POLICY "Users can view their own roles"
-  ON user_roles FOR SELECT
-  USING (user_name = get_current_user_name());
-
-CREATE POLICY "Admins can manage all roles"
-  ON user_roles FOR ALL
-  USING (is_admin());
-
--- cat_name_options policies
--- Public can only see active, non-hidden names
-CREATE POLICY "Public view active names"
-  ON cat_name_options FOR SELECT
-  USING (is_hidden = false AND is_active = true);
-
-CREATE POLICY "Admins can manage name options"
-  ON cat_name_options FOR ALL
-  USING (is_admin());
-
--- cat_name_ratings policies
--- Public can see non-hidden ratings
-CREATE POLICY "Public view ratings"
-  ON cat_name_ratings FOR SELECT
-  USING (is_hidden = false);
-
--- Users can manage (insert/update) and view their own ratings (even hidden)
-CREATE POLICY "Users manage own ratings"
-  ON cat_name_ratings FOR ALL
-  USING (user_name = get_current_user_name());
-
-CREATE POLICY "Admins view all ratings"
-  ON cat_name_ratings FOR SELECT
-  USING (is_admin());
-
--- tournament_selections policies
-CREATE POLICY "Users manage own selections"
-  ON tournament_selections FOR ALL
-  USING (user_name = get_current_user_name());
-
-CREATE POLICY "Admins view all selections"
-  ON tournament_selections FOR SELECT
-  USING (is_admin());
-
--- site_settings policies
-CREATE POLICY "Public view settings"
-  ON site_settings FOR SELECT
-  USING (true);
-
-CREATE POLICY "Admins manage settings"
-  ON site_settings FOR ALL
-  USING (is_admin());
-
--- audit_log policies
-CREATE POLICY "Admins view audit logs"
-  ON audit_log FOR SELECT
-  USING (is_admin());
