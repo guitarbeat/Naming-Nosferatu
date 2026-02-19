@@ -57,7 +57,7 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 			return [];
 		}
 
-		return (data ?? []).map((item) => mapNameRow(item as ApiNameRow));
+		return (data ?? []).map((item) => mapNameRow(item as unknown as ApiNameRow));
 	} catch {
 		return [];
 	}
