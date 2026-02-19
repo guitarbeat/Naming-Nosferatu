@@ -62,10 +62,14 @@ describe("Server Routes", () => {
 			expect(Array.isArray(res.body)).toBe(true);
 		});
 
-		it("should return leaderboard (mock)", async () => {
+		it("should return leaderboard (mock) with correct structure", async () => {
 			const res = await request(app).get("/api/analytics/leaderboard");
 			expect(res.status).toBe(200);
 			expect(Array.isArray(res.body)).toBe(true);
+			expect(res.body.length).toBeGreaterThan(0);
+			expect(res.body[0]).toHaveProperty("name_id");
+			expect(res.body[0]).toHaveProperty("name");
+			expect(res.body[0]).toHaveProperty("avg_rating");
 		});
 
 		it("should return site stats (mock)", async () => {
