@@ -389,27 +389,19 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 		if (!db) {
 			return res.json(
 				mockNames.slice(0, limit).map((n) => ({
-					nameId: n.id,
-					avgRating: n.avgRating,
-					totalWins: Math.floor(Math.random() * 50),
-					totalLosses: Math.floor(Math.random() * 50),
+					name_id: n.id,
+					name: n.name,
+					avg_rating: n.avgRating,
+					wins: Math.floor(Math.random() * 50),
+					losses: Math.floor(Math.random() * 50),
+					total_ratings: 0,
 				})),
 			);
 		}
 
-		const ratings = await db
-			.select({
-				nameId: catNameRatings.nameId,
-				avgRating: sql<number>`avg(rating)`,
-				totalWins: sql<number>`sum(wins)`,
-				totalLosses: sql<number>`sum(losses)`,
-			})
-			.from(catNameRatings)
-			.groupBy(catNameRatings.nameId)
-			.orderBy((_r) => desc(sql<number>`avg(rating)`))
-			.limit(limit);
-
-		res.json(ratings);
+		// Use optimized RPC function for better performance and correct data (names, filtering)
+		const result = await db.execute(sql`SELECT * FROM get_leaderboard_stats(${limit})`);
+		res.json(result.rows);
 	} catch (error) {
 		console.error("Error fetching leaderboard:", error);
 		res.status(500).json({ error: "Failed to fetch leaderboard" });
