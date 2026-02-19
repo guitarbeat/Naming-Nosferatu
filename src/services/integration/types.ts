@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Core types for the Reference File Integration System
  */
@@ -174,7 +173,7 @@ export class IntegrationError extends Error {
 		message: string,
 		public readonly code: string,
 		public readonly filePath?: string,
-		public readonly cause?: Error,
+		public override readonly cause?: Error,
 	) {
 		super(message);
 		this.name = "IntegrationError";
