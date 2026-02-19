@@ -303,15 +303,15 @@ router.post("/api/ratings", async (req, res) => {
 		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const records = ratings.map((r: any) => ({
 			userName,
-			nameId: r.nameId,
+			nameId: r.name, // Schema validates 'name', mapping to 'nameId' for DB
 			rating: r.rating || 1500,
 			wins: r.wins || 0,
 			losses: r.losses || 0,
 		}));
 
-		// Upsert logic - simple insert for now
-		for (const record of records) {
-			await db.insert(catNameRatings).values(record);
+		// Optimization: Batch insert to prevent N+1 queries
+		if (records.length > 0) {
+			await db.insert(catNameRatings).values(records);
 		}
 
 		res.json({ success: true, count: records.length });
