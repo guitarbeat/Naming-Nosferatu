@@ -312,8 +312,8 @@ const CardStatsBase = memo(function CardStats({
 	...props
 }: CardStatsProps) {
 	// Calculate these for aria-label or usage, but if unused, prefix with _
-	const _labelText = title || label || "Statistic";
-	const _valueText = typeof value === "string" || typeof value === "number" ? value : "";
+	// const _labelText = title || label || "Statistic";
+	// const _valueText = typeof value === "string" || typeof value === "number" ? value : "";
 
 	const accentGradientVariant: Record<CardVariant, string> = {
 		default: "from-white/20 to-white/5",
