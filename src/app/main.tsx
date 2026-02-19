@@ -1,4 +1,3 @@
-import "@/web-components/LightBoxImage";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import React from "react";
