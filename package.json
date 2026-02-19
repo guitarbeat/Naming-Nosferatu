@@ -63,6 +63,7 @@
 		"@vercel/analytics": "^1.6.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "2.1.1",
+		"compression": "^1.8.1",
 		"cors": "^2.8.6",
 		"drizzle-kit": "^0.31.9",
 		"drizzle-orm": "^0.45.1",
