@@ -1,0 +1,15 @@
+# Default ownership
+* @guitarbeat
+
+# Frontend
+/src/ @guitarbeat
+/public/ @guitarbeat
+
+# Backend and DB
+/server/ @guitarbeat
+/supabase/ @guitarbeat
+
+# Tooling and process
+/.github/ @guitarbeat
+/scripts/ @guitarbeat
+/docs/ @guitarbeat
