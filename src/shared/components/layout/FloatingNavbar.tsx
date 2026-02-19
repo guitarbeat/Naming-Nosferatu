@@ -84,6 +84,8 @@ export function FloatingNavbar() {
 	const [isSuggestExpanded, setIsSuggestExpanded] = useState(false);
 	const [editedName, setEditedName] = useState("");
 	const [isSaving, setIsSaving] = useState(false);
+	const [isNavVisible, setIsNavVisible] = useState(true);
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
 	const isAnalysisRoute = location.pathname === "/analysis";
 	const isTournamentRoute = location.pathname === "/tournament";
@@ -193,9 +195,68 @@ export function FloatingNavbar() {
 		};
 	}, [location.pathname, isAnalysisRoute]);
 
+	useEffect(() => {
+		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+		updatePreference();
+		mediaQuery.addEventListener("change", updatePreference);
+		return () => mediaQuery.removeEventListener("change", updatePreference);
+	}, []);
+
+	useEffect(() => {
+		let lastScrollY = window.scrollY;
+		let ticking = false;
+		const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
+
+		const onScroll = () => {
+			if (!mobileMediaQuery.matches) {
+				setIsNavVisible(true);
+				lastScrollY = window.scrollY;
+				return;
+			}
+
+			if (ticking) {
+				return;
+			}
+
+			ticking = true;
+			requestAnimationFrame(() => {
+				const currentScrollY = window.scrollY;
+				const delta = currentScrollY - lastScrollY;
+
+				if (currentScrollY <= 80) {
+					setIsNavVisible(true);
+				} else if (delta > 12) {
+					setIsNavVisible(false);
+				} else if (delta < -12) {
+					setIsNavVisible(true);
+				}
+
+				lastScrollY = currentScrollY;
+				ticking = false;
+			});
+		};
+
+		const onViewportChange = () => {
+			if (!mobileMediaQuery.matches) {
+				setIsNavVisible(true);
+			}
+		};
+
+		window.addEventListener("scroll", onScroll, { passive: true });
+		mobileMediaQuery.addEventListener("change", onViewportChange);
+
+		return () => {
+			window.removeEventListener("scroll", onScroll);
+			mobileMediaQuery.removeEventListener("change", onViewportChange);
+		};
+	}, []);
+
 	if (isTournamentRoute) {
 		return null;
 	}
+
+	const shouldShowNav = isNavVisible || isLoginExpanded || isSuggestExpanded;
 
 	return (
 		<>
@@ -204,6 +265,11 @@ export function FloatingNavbar() {
 					"fixed bottom-5 left-1/2 -translate-x-1/2 z-[100]",
 					"bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-1.5 flex gap-1.5 transition-all duration-300",
 					"shadow-[0_8px_32px_rgba(0,0,0,0.3)]",
+					!prefersReducedMotion && "transition-transform transition-opacity duration-300",
+					prefersReducedMotion && "transition-none",
+					shouldShowNav
+						? "translate-y-0 opacity-100"
+						: "translate-y-[calc(100%+1.25rem)] opacity-0 pointer-events-none",
 				)}
 			>
 				{/* Tournament Controller */}

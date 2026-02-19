@@ -146,6 +146,12 @@
 	--mobile-touch-target: 44px;
 	--mobile-text-scale: 1.1;
 	--mobile-spacing-scale: 1.2;
+	--mobile-nav-height: 4.5rem;
+	--mobile-nav-safe-offset: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 1.25rem);
+}
+
+.mobile-nav-safe-bottom {
+	padding-bottom: max(6rem, var(--mobile-nav-safe-offset));
 }
 
 /* ==========================================================================
@@ -341,6 +347,19 @@
 		right: var(--mobile-safe-spacing-small);
 		bottom: var(--mobile-safe-spacing-small);
 	}
+
+	/* Small-screen readability guardrails for dense card overlays */
+	.mobile-readable-card .mobile-readable-title {
+		line-height: 1.15;
+	}
+
+	.mobile-readable-card .mobile-readable-meta {
+		line-height: 1.2;
+	}
+
+	.mobile-readable-card .mobile-readable-description {
+		line-height: 1.3;
+	}
 }
 
 /* ==========================================================================
@@ -378,6 +397,12 @@
 	.scroll-to-top {
 		right: var(--mobile-safe-spacing-small);
 		bottom: max(5rem, calc(80px + env(safe-area-inset-bottom) + var(--mobile-safe-spacing-small)));
+	}
+}
+
+@media (min-width: 769px) {
+	.mobile-nav-safe-bottom {
+		padding-bottom: 0;
 	}
 }
 

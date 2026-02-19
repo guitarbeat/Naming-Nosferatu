@@ -564,7 +564,7 @@ export function NameSelector() {
 
 	if (isLoading) {
 		return (
-			<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto">
+			<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto p-4 sm:p-6 md:p-10">
 				<div className="flex items-center justify-center py-20">
 					<Loading variant="spinner" text="Loading cat names..." />
 				</div>
@@ -574,7 +574,7 @@ export function NameSelector() {
 
 	if (error) {
 		return (
-			<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto">
+			<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto p-4 sm:p-6 md:p-10">
 				<div className="flex flex-col items-center justify-center py-20 space-y-4">
 					<div className="text-red-400 text-center">
 						<p className="text-lg font-medium">Failed to load names</p>
@@ -589,8 +589,8 @@ export function NameSelector() {
 	}
 
 	return (
-		<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto">
-			<div className="space-y-6">
+		<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto p-4 sm:p-6 md:p-10">
+			<div className="space-y-6 mobile-nav-safe-bottom">
 				{(() => {
 					const lockedInNames = names.filter((name) => name.lockedIn || name.locked_in);
 					if (lockedInNames.length === 0) {
@@ -635,16 +635,16 @@ export function NameSelector() {
 					);
 				})()}
 
-				<div className="text-center space-y-2">
-					<h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+				<div className="text-center space-y-3">
+					<h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter leading-tight">
 						Choose Your Contenders
 					</h2>
-					<p className="text-slate-300">
+					<p className="text-slate-200 text-base leading-relaxed">
 						{isSwipeMode
 							? "Swipe right to select, left to skip • Use arrow keys or A/D • Ctrl+Z to undo • Select at least 2 names"
 							: "Click to select names • Select at least 2 names"}
 					</p>
-					<div className="flex items-center justify-center gap-4 text-sm text-slate-400">
+					<div className="flex items-center justify-center gap-4 text-sm text-slate-300">
 						<span>
 							Selected: {selectedAvailableCount} / {availableNames.length}
 						</span>
@@ -908,7 +908,7 @@ export function NameSelector() {
 							);
 							return (
 								activeNames.length > 0 && (
-									<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+									<div className="grid grid-cols-2 min-[390px]:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
 										{activeNames.map((nameItem) => {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage =
@@ -928,7 +928,7 @@ export function NameSelector() {
 													whileHover={{ scale: 1.02 }}
 													whileTap={{ scale: 0.98 }}
 													transition={{ type: "spring", stiffness: 400, damping: 25 }}
-													className={`relative rounded-xl border-2 overflow-hidden cursor-pointer ${
+													className={`mobile-readable-card relative rounded-xl border-2 overflow-hidden cursor-pointer ${
 														isSelected
 															? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
 															: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
@@ -944,10 +944,10 @@ export function NameSelector() {
 														/>
 
 														{/* Grid Name Overlay */}
-														<div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end pointer-events-none">
+														<div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
 															<div className="flex flex-col gap-0.5">
 																<div className="flex items-center justify-between gap-2">
-																	<span className="font-bold text-white text-sm drop-shadow-md truncate">
+																	<span className="mobile-readable-title font-bold text-white text-sm sm:text-base leading-tight drop-shadow-md truncate">
 																		{nameItem.name}
 																	</span>
 																	{isSelected && (
@@ -961,12 +961,12 @@ export function NameSelector() {
 																	)}
 																</div>
 																{nameItem.pronunciation && (
-																	<span className="text-amber-400 text-[10px] font-bold italic opacity-90 drop-shadow-md truncate">
+																	<span className="mobile-readable-meta text-amber-300 text-xs sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
 																		[{nameItem.pronunciation}]
 																	</span>
 																)}
 																{nameItem.description && (
-																	<p className="text-white/80 text-[10px] leading-tight line-clamp-2 mt-1 drop-shadow-sm italic">
+																	<p className="mobile-readable-description text-white/95 text-xs sm:text-sm leading-snug line-clamp-3 mt-1 drop-shadow-sm italic">
 																		{nameItem.description}
 																	</p>
 																)}
@@ -979,10 +979,10 @@ export function NameSelector() {
 																e.stopPropagation();
 																handleOpenLightbox(nameItem.id);
 															}}
-															className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-10"
+															className="absolute top-2 right-2 p-2 rounded-full bg-black/60 backdrop-blur-sm text-white opacity-100 md:opacity-0 md:group-hover/img:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/80 z-10"
 															aria-label="View full size"
 														>
-															<ZoomIn size={14} />
+															<ZoomIn size={16} />
 														</button>
 													</div>
 													{isAdmin && !isSwipeMode && (
@@ -1201,7 +1201,7 @@ export function NameSelector() {
 												</div>
 											</div>
 
-											<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+											<div className="grid grid-cols-2 min-[390px]:grid-cols-3 md:grid-cols-4 gap-3">
 												{renderItems.map((nameItem) => {
 													const isSelected = selectedNames.has(nameItem.id);
 													const catImage =
@@ -1219,7 +1219,7 @@ export function NameSelector() {
 															}}
 															role="button"
 															tabIndex={0}
-															className={`relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+															className={`mobile-readable-card relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
 																isSelected
 																	? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
 																	: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
@@ -1235,10 +1235,10 @@ export function NameSelector() {
 																/>
 
 																{/* Hidden Grid Name Overlay */}
-																<div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end pointer-events-none">
+																<div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
 																	<div className="flex flex-col gap-0.5">
 																		<div className="flex items-center justify-between gap-2">
-																			<span className="font-bold text-white text-[10px] sm:text-xs drop-shadow-md truncate">
+																			<span className="mobile-readable-title font-bold text-white text-sm sm:text-base leading-tight drop-shadow-md truncate">
 																				{nameItem.name}
 																			</span>
 																			{isSelected && (
@@ -1252,12 +1252,12 @@ export function NameSelector() {
 																			)}
 																		</div>
 																		{nameItem.pronunciation && (
-																			<span className="text-amber-400 text-[9px] font-bold italic opacity-90 drop-shadow-md truncate">
+																			<span className="mobile-readable-meta text-amber-300 text-xs sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
 																				[{nameItem.pronunciation}]
 																			</span>
 																		)}
 																		{nameItem.description && (
-																			<p className="text-white/80 text-[9px] leading-tight line-clamp-1 mt-0.5 drop-shadow-sm italic">
+																			<p className="mobile-readable-description text-white/95 text-xs sm:text-sm leading-snug line-clamp-3 mt-1 drop-shadow-sm italic">
 																				{nameItem.description}
 																			</p>
 																		)}
@@ -1270,10 +1270,10 @@ export function NameSelector() {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-2 right-2 p-1 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/70 z-10"
+																	className="absolute top-2 right-2 p-2 rounded-full bg-black/60 backdrop-blur-sm text-white opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/80 z-10"
 																	aria-label="View full size"
 																>
-																	<ZoomIn size={12} />
+																	<ZoomIn size={16} />
 																</button>
 															</div>
 															{isAdmin && (
