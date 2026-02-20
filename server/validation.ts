@@ -1,13 +1,22 @@
 import { z } from "zod";
 
+const provenanceSchema = z.object({
+	action: z.string(),
+	timestamp: z.string(),
+	userId: z.string().optional(),
+	details: z.record(z.string(), z.unknown()).optional(),
+});
+
 export const createNameSchema = z.object({
 	name: z.string().min(1).max(100),
 	description: z.string().max(500).optional(),
+	status: z.string().optional(),
+	provenance: z.array(provenanceSchema).optional(),
 });
 
 export const createUserSchema = z.object({
 	userName: z.string().min(1).max(100),
-	preferences: z.record(z.any()).optional(),
+	preferences: z.record(z.string(), z.any()).optional(),
 });
 
 export const saveRatingsSchema = z.object({
