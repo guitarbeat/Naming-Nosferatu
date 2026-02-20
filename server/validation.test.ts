@@ -17,13 +17,13 @@ describe("Validation Schemas", () => {
 		expect(result).not.toHaveProperty("provenance");
 	});
 
-	it("createNameSchema should allow valid inputs", () => {
-		const input = {
-			name: "Valid Cat",
-			description: "Just a cat",
-		};
-		const result = createNameSchema.parse(input);
-		expect(result.name).toBe("Valid Cat");
-		expect(result.description).toBe("Just a cat");
-	});
+    it("createNameSchema should allow valid inputs", () => {
+        const input = {
+            name: "Valid Cat",
+            description: "Just a cat",
+        };
+        const result = createNameSchema.parse(input);
+        expect(result.name).toBe("Valid Cat");
+        expect(result.description).toBe("Just a cat");
+    });
 });

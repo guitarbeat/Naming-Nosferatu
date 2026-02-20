@@ -1,13 +1,13 @@
 // @vitest-environment node
 import express from "express";
 import request from "supertest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 
 // Hoist mocks to be available in vi.mock
 const { insertMock, valuesMock } = vi.hoisted(() => {
-	const valuesMock = vi.fn().mockResolvedValue([]);
-	const insertMock = vi.fn().mockReturnValue({ values: valuesMock });
-	return { insertMock, valuesMock };
+    const valuesMock = vi.fn().mockResolvedValue([]);
+    const insertMock = vi.fn().mockReturnValue({ values: valuesMock });
+    return { insertMock, valuesMock };
 });
 
 vi.mock("./db", () => ({
@@ -24,9 +24,9 @@ app.use(express.json());
 app.use(router);
 
 describe("POST /api/ratings with DB", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
 	it("should insert ratings in a single batch (optimization verified)", async () => {
 		const ratings = [
@@ -41,14 +41,14 @@ describe("POST /api/ratings with DB", () => {
 
 		expect(res.status).toBe(200);
 
-		// Optimization: insert should be called exactly once
+        // Optimization: insert should be called exactly once
 		expect(insertMock).toHaveBeenCalledTimes(1);
 
-		// Bug fix: nameId should be correctly mapped from input
-		const firstCallArg = valuesMock.mock.calls[0][0];
-		expect(Array.isArray(firstCallArg)).toBe(true);
-		expect(firstCallArg.length).toBe(ratings.length);
-		expect(firstCallArg[0].nameId).toBe("id1");
-		expect(firstCallArg[1].nameId).toBe("id2");
+        // Bug fix: nameId should be correctly mapped from input
+        const firstCallArg = valuesMock.mock.calls[0][0];
+        expect(Array.isArray(firstCallArg)).toBe(true);
+        expect(firstCallArg.length).toBe(ratings.length);
+        expect(firstCallArg[0].nameId).toBe("id1");
+        expect(firstCallArg[1].nameId).toBe("id2");
 	});
 });
