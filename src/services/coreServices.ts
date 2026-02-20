@@ -48,9 +48,9 @@ export const tournamentsAPI = {
 	},
 
 	async saveTournamentRatings(
-		userName: string,
+		userId: string,
 		ratings: Array<{
-			name: string;
+			nameId: string | number;
 			rating: number;
 			wins?: number;
 			losses?: number;
@@ -58,17 +58,17 @@ export const tournamentsAPI = {
 		skipQueue = false,
 	): Promise<RatingSaveResult> {
 		if (!skipQueue && typeof navigator !== "undefined" && !navigator.onLine) {
-			syncQueue.enqueue("SAVE_RATINGS", { userName, ratings });
+			syncQueue.enqueue("SAVE_RATINGS", { userId, ratings });
 			devLog("[TournamentAPI] Offline: queued ratings save");
 			return { success: true, savedCount: ratings.length, offline: true };
 		}
 
 		try {
-			if (!userName || !ratings?.length) {
+			if (!userId || !ratings?.length) {
 				return { success: false, error: "Missing data" };
 			}
-			return await api.post<RatingSaveResult>("/ratings/save", {
-				userName,
+			return await api.post<RatingSaveResult>("/ratings", {
+				userId,
 				ratings,
 			});
 		} catch (error: any) {

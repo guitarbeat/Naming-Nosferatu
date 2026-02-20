@@ -1,9 +1,9 @@
 import { devError } from "@/shared/lib/basic";
 
 interface SyncPayload {
-	userName: string;
+	userId: string;
 	ratings: Array<{
-		name: string;
+		nameId: string | number;
 		rating: number;
 		wins?: number;
 		losses?: number;
