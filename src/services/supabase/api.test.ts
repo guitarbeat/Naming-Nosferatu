@@ -1,5 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/services/apiClient";
-import { describe, expect, it, vi, beforeEach } from "vitest";
 import { coreAPI } from "./api";
 import { resolveSupabaseClient } from "./runtime";
 
@@ -66,7 +66,7 @@ describe("Supabase Service API", () => {
 
 			expect(api.get).toHaveBeenCalledWith("/names?includeHidden=false");
 			expect(result).toHaveLength(1);
-			expect(result[0].name).toBe("Cat 1");
+			expect(result[0]?.name).toBe("Cat 1");
 		});
 
 		it("should fallback to Supabase client on API error", async () => {
@@ -89,28 +89,29 @@ describe("Supabase Service API", () => {
 
 			expect(resolveSupabaseClient).toHaveBeenCalled();
 			expect(result).toHaveLength(1);
-			expect(result[0].name).toBe("Cat 2");
+			expect(result[0]?.name).toBe("Cat 2");
 		});
 
-        it("should return empty array if both API and Supabase fail", async () => {
-            (api.get as any).mockRejectedValue(new Error("API Down"));
-            (resolveSupabaseClient as any).mockResolvedValue(null);
+		it("should return empty array if both API and Supabase fail", async () => {
+			(api.get as any).mockRejectedValue(new Error("API Down"));
+			(resolveSupabaseClient as any).mockResolvedValue(null);
 
-            const result = await coreAPI.getTrendingNames();
-            expect(result).toEqual([]);
-        });
+			const result = await coreAPI.getTrendingNames();
+			expect(result).toEqual([]);
+		});
 	});
 
 	describe("coreAPI.hideName", () => {
-        // This function tries RPC first, then API patch, then direct DB update.
-        // We'll test the primary RPC path.
+		// This function tries RPC first, then API patch, then direct DB update.
+		// We'll test the primary RPC path.
 
 		it("should hide name using Supabase RPC (primary path)", async () => {
 			const mockRpc = vi.fn();
-            // First call: set_user_context -> void
-            // Second call: toggle_name_visibility -> data: true
-            mockRpc.mockResolvedValueOnce({ data: null, error: null })
-                   .mockResolvedValueOnce({ data: true, error: null });
+			// First call: set_user_context -> void
+			// Second call: toggle_name_visibility -> data: true
+			mockRpc
+				.mockResolvedValueOnce({ data: null, error: null })
+				.mockResolvedValueOnce({ data: true, error: null });
 
 			const mockClient = {
 				rpc: mockRpc,
@@ -122,33 +123,37 @@ describe("Supabase Service API", () => {
 			expect(resolveSupabaseClient).toHaveBeenCalled();
 			expect(mockRpc).toHaveBeenCalledTimes(2);
 			expect(mockRpc).toHaveBeenNthCalledWith(1, "set_user_context", { user_name_param: "admin" });
-            // The second call args are tricky because of "as any" inside the implementation
-            // expecting toggle_name_visibility params
-            expect(mockRpc).toHaveBeenNthCalledWith(2, "toggle_name_visibility", expect.objectContaining({
-                p_name_id: "123",
-                p_hide: true,
-                p_user_name: "admin"
-            }));
+			// The second call args are tricky because of "as any" inside the implementation
+			// expecting toggle_name_visibility params
+			expect(mockRpc).toHaveBeenNthCalledWith(
+				2,
+				"toggle_name_visibility",
+				expect.objectContaining({
+					p_name_id: "123",
+					p_hide: true,
+					p_user_name: "admin",
+				}),
+			);
 
 			expect(result.success).toBe(true);
 		});
 
-        it("should fallback to API patch if RPC fails", async () => {
-            // Mock resolveSupabaseClient to fail or return null to trigger fallback?
-            // Actually implementation calls resolveSupabaseClient first.
-            // If we make rpc fail, it pushes to failures array and continues to API fallback.
+		it("should fallback to API patch if RPC fails", async () => {
+			// Mock resolveSupabaseClient to fail or return null to trigger fallback?
+			// Actually implementation calls resolveSupabaseClient first.
+			// If we make rpc fail, it pushes to failures array and continues to API fallback.
 
-            const mockRpc = vi.fn().mockResolvedValue({ error: { message: "RPC failed" } });
-            const mockClient = { rpc: mockRpc };
-            (resolveSupabaseClient as any).mockResolvedValue(mockClient);
+			const mockRpc = vi.fn().mockResolvedValue({ error: { message: "RPC failed" } });
+			const mockClient = { rpc: mockRpc };
+			(resolveSupabaseClient as any).mockResolvedValue(mockClient);
 
-            (api.patch as any).mockResolvedValue({ success: true });
+			(api.patch as any).mockResolvedValue({ success: true });
 
-            const result = await coreAPI.hideName("admin", "123", true);
+			const result = await coreAPI.hideName("admin", "123", true);
 
-            expect(mockRpc).toHaveBeenCalled();
-            expect(api.patch).toHaveBeenCalledWith("/names/123/hide", { isHidden: true });
-            expect(result.success).toBe(true);
-        });
+			expect(mockRpc).toHaveBeenCalled();
+			expect(api.patch).toHaveBeenCalledWith("/names/123/hide", { isHidden: true });
+			expect(result.success).toBe(true);
+		});
 	});
 });

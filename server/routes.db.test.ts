@@ -172,10 +172,8 @@ describe("Server Routes (DB Mode)", () => {
 			// Simpler approach: Make `valuesMock` return an object that has a `then` method (Promise-like)
 			// AND a `returning` method.
 
-			const mockQuery = {
-				returning: dbMocks.returning,
-				then: (resolve: any) => resolve([]), // Make it awaitable
-			};
+			const mockQuery = Promise.resolve([]) as any;
+			mockQuery.returning = dbMocks.returning;
 			dbMocks.values.mockReturnValue(mockQuery);
 
 			const res = await request(app).post("/api/ratings").send({
