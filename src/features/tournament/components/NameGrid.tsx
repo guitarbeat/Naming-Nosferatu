@@ -4,7 +4,7 @@
  * Simplified from masonry layout for stability and performance.
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import { EmptyState, Lightbox, Loading } from "@/shared/components/layout";
 import {
@@ -69,12 +69,6 @@ export function NameGrid({
 		[finalImageList],
 	);
 
-	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
-		useMasonryLayout<HTMLDivElement>(names.length, {
-			minColumnWidth: 280,
-			gap: 16,
-		});
-
 	const selectedSet = useMemo(
 		() => selectedNamesToSet(selectedNames as NameItem[] | Set<string | number>),
 		[selectedNames],
@@ -97,6 +91,19 @@ export function NameGrid({
 
 		return result;
 	}, [names, filters.filterStatus, isAdmin, showSelectedOnly, selectedSet]);
+
+	const { containerRef, setItemRef, positions, totalHeight, columnWidth, recalculate } =
+		useMasonryLayout<HTMLDivElement>(processedNames.length, {
+			minColumnWidth: 280,
+			gap: 16,
+		});
+
+	// Manually trigger layout recalculation when processedNames changes
+	// to ensure correct positioning after filtering or sorting
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We want to trigger when processedNames changes
+	useEffect(() => {
+		recalculate();
+	}, [processedNames, recalculate]);
 
 	if (isLoading) {
 		return (

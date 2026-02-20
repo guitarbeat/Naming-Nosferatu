@@ -134,26 +134,38 @@ export function useMasonryLayout<T extends HTMLElement>(
 	// Batch layout updates to prevent thrashing
 	const layoutTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-	// Set item ref callback
-	const setItemRef = useCallback(
-		(index: number) => (el: HTMLDivElement | null) => {
-			if (itemRefs.current[index] !== el) {
-				itemRefs.current[index] = el;
+	// Cache for stable ref callbacks to prevent unnecessary re-renders
+	const refCallbacks = useRef<Map<number, (el: HTMLDivElement | null) => void>>(new Map());
 
-				// Batch recalculations
-				if (layoutTimeoutRef.current) {
-					clearTimeout(layoutTimeoutRef.current);
+	// Store calculateLayout in a ref to break dependency cycles in setItemRef
+	const calculateLayoutRef = useRef(calculateLayout);
+	useEffect(() => {
+		calculateLayoutRef.current = calculateLayout;
+	}, [calculateLayout]);
+
+	// Set item ref callback - returns a stable function reference for each index
+	const setItemRef = useCallback((index: number) => {
+		if (!refCallbacks.current.has(index)) {
+			refCallbacks.current.set(index, (el: HTMLDivElement | null) => {
+				if (itemRefs.current[index] !== el) {
+					itemRefs.current[index] = el;
+
+					// Batch recalculations
+					if (layoutTimeoutRef.current) {
+						clearTimeout(layoutTimeoutRef.current);
+					}
+
+					// Small delay (10ms) allows capturing multiple ref updates in a single layout pass
+					layoutTimeoutRef.current = setTimeout(() => {
+						calculateLayoutRef.current();
+						layoutTimeoutRef.current = null;
+					}, 10);
 				}
-
-				// Small delay (10ms) allows capturing multiple ref updates in a single layout pass
-				layoutTimeoutRef.current = setTimeout(() => {
-					calculateLayout();
-					layoutTimeoutRef.current = null;
-				}, 10);
-			}
-		},
-		[calculateLayout],
-	);
+			});
+		}
+		// biome-ignore lint/style/noNonNullAssertion: Guaranteed to exist by check above
+		return refCallbacks.current.get(index)!;
+	}, []);
 
 	// Cleanup timeout on unmount
 	useEffect(() => {
