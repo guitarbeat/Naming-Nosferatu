@@ -65,6 +65,7 @@ For more detailed information, please refer to the [docs](./docs) directory:
 -   [Contributing Guide](./docs/CONTRIBUTING.md): Setup, coding standards, and workflow.
 -   [Architecture](./docs/ARCHITECTURE.md): System design and component architecture.
 -   [API Reference](./docs/API.md): API endpoints and database schema.
+-   [Testing Strategy](./docs/TESTING.md): How to run tests and understand the testing approach.
 
 ## 🛠️ Tech Stack
 
