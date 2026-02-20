@@ -564,7 +564,7 @@ export function NameSelector() {
 
 	if (isLoading) {
 		return (
-			<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto p-4 sm:p-6 md:p-10">
+			<Card padding="small" shadow="xl" className="max-w-full mx-auto ">
 				<div className="flex items-center justify-center py-20">
 					<Loading variant="spinner" text="Loading cat names..." />
 				</div>
@@ -574,7 +574,7 @@ export function NameSelector() {
 
 	if (error) {
 		return (
-			<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto p-4 sm:p-6 md:p-10">
+			<Card padding="small" shadow="xl" className="max-w-full mx-auto ">
 				<div className="flex flex-col items-center justify-center py-20 space-y-4">
 					<div className="text-red-400 text-center">
 						<p className="text-lg font-medium">Failed to load names</p>
@@ -589,7 +589,7 @@ export function NameSelector() {
 	}
 
 	return (
-		<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto p-4 sm:p-6 md:p-10">
+		<Card padding="small" shadow="xl" className="max-w-full mx-auto ">
 			<div className="space-y-6 mobile-nav-safe-bottom">
 				{(() => {
 					const lockedInNames = names.filter((name) => name.lockedIn || name.locked_in);

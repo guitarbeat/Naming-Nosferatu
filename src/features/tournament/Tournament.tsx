@@ -575,7 +575,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
 						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.32 }}
-						className="relative grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-7xl mx-auto z-10 items-center"
+						className="relative grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-full mx-auto z-10 items-center"
 					>
 						{/* Left Card */}
 						<Card

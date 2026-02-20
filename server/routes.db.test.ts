@@ -1,7 +1,7 @@
 // @vitest-environment node
 import express from "express";
 import request from "supertest";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Hoist mocks to be available in vi.mock
 const { insertMock, valuesMock, onConflictMock } = vi.hoisted(() => {
@@ -25,9 +25,9 @@ app.use(express.json());
 app.use(router);
 
 describe("POST /api/ratings with DB", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
 	it("should insert ratings in a single batch (optimization verified)", async () => {
 		const ratings = [
@@ -42,7 +42,7 @@ describe("POST /api/ratings with DB", () => {
 
 		expect(res.status).toBe(200);
 
-        // Optimization: insert should be called exactly once
+		// Optimization: insert should be called exactly once
 		expect(insertMock).toHaveBeenCalledTimes(1);
 
         // Bug fix: nameId should be correctly mapped from input
