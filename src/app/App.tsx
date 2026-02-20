@@ -68,7 +68,7 @@ function App() {
 					<Route
 						path="/"
 						element={
-							<div className="flex flex-col gap-8">
+							<div className="flex flex-col gap-0">
 								<ErrorBoundary context={errorContexts.tournamentFlow}>
 									<HomeContent />
 								</ErrorBoundary>
@@ -78,7 +78,7 @@ function App() {
 					<Route
 						path="/tournament"
 						element={
-							<div className="flex flex-col gap-8">
+							<div className="flex flex-col gap-0">
 								<ErrorBoundary context={errorContexts.tournamentFlow}>
 									<TournamentContent />
 								</ErrorBoundary>
@@ -88,7 +88,7 @@ function App() {
 					<Route
 						path="/analysis"
 						element={
-							<div className="flex flex-col gap-8">
+							<div className="flex flex-col gap-0">
 								<AnalysisContent />
 							</div>
 						}
@@ -97,7 +97,7 @@ function App() {
 					<Route
 						path="/admin"
 						element={
-							<div className="flex flex-col gap-8">
+							<div className="flex flex-col gap-0">
 								<AdminContent />
 							</div>
 						}
@@ -110,7 +110,7 @@ function App() {
 
 function HomeContent() {
 	return (
-		<Section id="pick" variant="minimal" padding="comfortable" maxWidth="full">
+		<Section id="pick" variant="minimal" padding="none" maxWidth="full">
 			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 				<TournamentFlow />
 			</Suspense>
@@ -126,7 +126,7 @@ function TournamentContent() {
 	});
 
 	return (
-		<Section id="tournament" variant="minimal" padding="comfortable" maxWidth="full">
+		<Section id="tournament" variant="minimal" padding="none" maxWidth="full">
 			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 				{tournament.names && tournament.names.length > 0 ? (
 					<Tournament
@@ -155,7 +155,7 @@ function AnalysisContent() {
 	});
 
 	return (
-		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="full">
+		<Section id="analysis" variant="minimal" padding="none" maxWidth="full">
 			<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
 				The Victors Emerge
 			</h2>
@@ -180,7 +180,7 @@ function AdminContent() {
 	// Only allow admin users
 	if (!user.isAdmin) {
 		return (
-			<Section id="admin" variant="minimal" padding="comfortable" maxWidth="full">
+			<Section id="admin" variant="minimal" padding="none" maxWidth="full">
 				<div className="text-center py-20">
 					<h2 className="text-3xl font-bold mb-4 text-red-400">Access Denied</h2>
 					<p className="text-white/60">Admin access required to view this page.</p>

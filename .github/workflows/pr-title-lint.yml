@@ -1,7 +1,7 @@
 name: PR Title Lint
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, edited, synchronize, reopened]
 
 permissions:
@@ -17,4 +17,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          config: .github/semantic.yml
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            test
+            docs
+            build
+            ci
+            chore
+            revert
+          subjectPattern: ^[a-z].+
+          subjectPatternError: "Use lower-case imperative subject, e.g. 'fix(auth): handle expired token'."

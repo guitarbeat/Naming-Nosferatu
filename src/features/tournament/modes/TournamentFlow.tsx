@@ -21,11 +21,11 @@ export default function TournamentFlow() {
 	});
 
 	return (
-		<div className="w-full flex flex-col gap-8">
+		<div className="w-full flex flex-col gap-2">
 			<Section
 				id="tournament-area"
 				variant="minimal"
-				padding="compact"
+				padding="none"
 				maxWidth="full"
 				scrollMargin={false}
 			>
@@ -36,7 +36,7 @@ export default function TournamentFlow() {
 							initial={{ opacity: 0, scale: 0.95 }}
 							animate={{ opacity: 1, scale: 1 }}
 							exit={{ opacity: 0, scale: 0.95 }}
-							className="w-full flex justify-center py-10"
+							className="w-full flex justify-center py-0"
 						>
 							<Card padding="xl" shadow="xl" className="text-center max-w-2xl">
 								<h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
@@ -74,7 +74,7 @@ export default function TournamentFlow() {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="w-full flex justify-center py-10"
+							className="w-full flex justify-center py-0"
 						>
 							<NameSelector />
 						</motion.div>
