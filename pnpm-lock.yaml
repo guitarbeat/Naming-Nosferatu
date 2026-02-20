@@ -17,17 +17,10 @@ importers:
         specifier: ^18.0.1
         version: 18.0.1(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@heroui/react':
-<<<<<<< HEAD
         specifier: ^2.8.9
         version: 2.8.9(@types/react@19.2.14)(framer-motion@12.34.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
       '@supabase/supabase-js':
         specifier: ^2.97.0
-=======
-        specifier: ^2.8.8
-        version: 2.8.9(@types/react@19.2.14)(framer-motion@12.34.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
-      '@supabase/supabase-js':
-        specifier: ^2.95.3
->>>>>>> origin/fix/use-names-submission-9622460757441444568
         version: 2.97.0
       '@tanstack/react-query':
         specifier: ^5.90.21
@@ -63,11 +56,7 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1
       framer-motion:
-<<<<<<< HEAD
         specifier: ^12.34.2
-=======
-        specifier: ^12.33.0
->>>>>>> origin/fix/use-names-submission-9622460757441444568
         version: 12.34.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       lucide-react:
         specifier: ^0.563.0
@@ -98,11 +87,7 @@ importers:
         specifier: 2.3.15
         version: 2.3.15
       '@tailwindcss/postcss':
-<<<<<<< HEAD
         specifier: ^4.2.0
-=======
-        specifier: ^4.1.18
->>>>>>> origin/fix/use-names-submission-9622460757441444568
         version: 4.2.0
       '@tailwindcss/vite':
         specifier: 4.1.18
@@ -117,11 +102,7 @@ importers:
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@types/node':
-<<<<<<< HEAD
         specifier: ^25.3.0
-=======
-        specifier: ^25.2.2
->>>>>>> origin/fix/use-names-submission-9622460757441444568
         version: 25.3.0
       '@types/react':
         specifier: ^19.2.14
@@ -136,11 +117,7 @@ importers:
         specifier: ^0.182.0
         version: 0.182.0
       '@vitejs/plugin-react':
-<<<<<<< HEAD
         specifier: ^5.1.4
-=======
-        specifier: ^5.1.3
->>>>>>> origin/fix/use-names-submission-9622460757441444568
         version: 5.1.4(vite@7.3.1(@types/node@25.3.0)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0))
       '@vitest/coverage-v8':
         specifier: ^4.0.18
@@ -158,11 +135,7 @@ importers:
         specifier: ^28.1.0
         version: 28.1.0(@noble/hashes@1.8.0)
       knip:
-<<<<<<< HEAD
         specifier: ^5.84.1
-=======
-        specifier: ^5.83.1
->>>>>>> origin/fix/use-names-submission-9622460757441444568
         version: 5.84.1(@types/node@25.3.0)(typescript@5.9.3)
       postcss:
         specifier: ^8.5.6
@@ -6092,7 +6065,7 @@ snapshots:
       '@internationalized/number': 3.6.5
       '@internationalized/string': 3.2.7
       '@react-aria/ssr': 3.9.10(react@19.2.4)
-      '@react-aria/utils': 3.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@react-aria/utils': 3.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-types/shared': 3.33.0(react@19.2.4)
       '@swc/helpers': 0.5.18
       react: 19.2.4
@@ -6133,11 +6106,7 @@ snapshots:
 
   '@react-aria/label@3.7.23(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-<<<<<<< HEAD
       '@react-aria/utils': 3.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-=======
-      '@react-aria/utils': 3.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
->>>>>>> origin/fix/use-names-submission-9622460757441444568
       '@react-types/shared': 3.33.0(react@19.2.4)
       '@swc/helpers': 0.5.18
       react: 19.2.4
@@ -6173,15 +6142,9 @@ snapshots:
   '@react-aria/listbox@3.15.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@react-aria/interactions': 3.27.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-<<<<<<< HEAD
       '@react-aria/label': 3.7.24(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-aria/selection': 3.27.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-aria/utils': 3.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-=======
-      '@react-aria/label': 3.7.23(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@react-aria/selection': 3.27.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@react-aria/utils': 3.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
->>>>>>> origin/fix/use-names-submission-9622460757441444568
       '@react-stately/collections': 3.12.9(react@19.2.4)
       '@react-stately/list': 3.13.3(react@19.2.4)
       '@react-types/listbox': 3.7.5(react@19.2.4)
@@ -6211,24 +6174,16 @@ snapshots:
   '@react-aria/menu@3.19.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@react-aria/focus': 3.21.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-<<<<<<< HEAD
       '@react-aria/i18n': 3.12.15(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-=======
-      '@react-aria/i18n': 3.12.14(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
->>>>>>> origin/fix/use-names-submission-9622460757441444568
       '@react-aria/interactions': 3.27.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-aria/overlays': 3.31.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@react-aria/selection': 3.27.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@react-aria/utils': 3.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@react-aria/selection': 3.27.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@react-aria/utils': 3.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-stately/collections': 3.12.9(react@19.2.4)
-      '@react-stately/menu': 3.9.9(react@19.2.4)
+      '@react-stately/menu': 3.9.10(react@19.2.4)
       '@react-stately/selection': 3.20.8(react@19.2.4)
       '@react-stately/tree': 3.9.5(react@19.2.4)
-<<<<<<< HEAD
       '@react-types/button': 3.15.0(react@19.2.4)
-=======
-      '@react-types/button': 3.14.1(react@19.2.4)
->>>>>>> origin/fix/use-names-submission-9622460757441444568
       '@react-types/menu': 3.10.6(react@19.2.4)
       '@react-types/shared': 3.33.0(react@19.2.4)
       '@swc/helpers': 0.5.18
@@ -6274,14 +6229,14 @@ snapshots:
     dependencies:
       '@react-aria/focus': 3.21.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-aria/i18n': 3.12.15(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@react-aria/interactions': 3.26.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@react-aria/interactions': 3.27.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-aria/ssr': 3.9.10(react@19.2.4)
       '@react-aria/utils': 3.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-aria/visually-hidden': 3.8.30(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-stately/overlays': 3.6.22(react@19.2.4)
       '@react-types/button': 3.15.0(react@19.2.4)
       '@react-types/overlays': 3.9.3(react@19.2.4)
-      '@react-types/shared': 3.32.1(react@19.2.4)
+      '@react-types/shared': 3.33.0(react@19.2.4)
       '@swc/helpers': 0.5.18
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
@@ -6517,7 +6472,7 @@ snapshots:
 
   '@react-aria/visually-hidden@3.8.29(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@react-aria/interactions': 3.26.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@react-aria/interactions': 3.27.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-aria/utils': 3.33.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@react-types/shared': 3.33.0(react@19.2.4)
       '@swc/helpers': 0.5.18

@@ -26,29 +26,23 @@ describe("Validation Schemas", () => {
 		expect(result.provenance?.[0].action).toBe("created");
 	});
 
-<<<<<<< HEAD
 	it("createNameSchema should reject invalid provenance", () => {
 		const input = {
 			name: "Test Cat",
-			provenance: { source: "hacker" }, // Invalid: not an array
+			provenance: { source: "hacker" },
 		};
-
 		expect(() => createNameSchema.parse(input)).toThrow();
 	});
 
 	it("createNameSchema should reject invalid provenance entries", () => {
 		const input = {
 			name: "Test Cat",
-			provenance: [{ source: "hacker" }], // Invalid entry: missing action, timestamp
+			provenance: [{ source: "hacker" }],
 		};
-
 		expect(() => createNameSchema.parse(input)).toThrow();
 	});
 
 	it("createNameSchema should allow valid inputs without optional fields", () => {
-=======
-	it("createNameSchema should allow valid inputs", () => {
->>>>>>> origin/improve-repo-deps-tests-docs-7817015276857999243
 		const input = {
 			name: "Valid Cat",
 			description: "Just a cat",
@@ -56,10 +50,7 @@ describe("Validation Schemas", () => {
 		const result = createNameSchema.parse(input);
 		expect(result.name).toBe("Valid Cat");
 		expect(result.description).toBe("Just a cat");
-<<<<<<< HEAD
 		expect(result.status).toBeUndefined();
 		expect(result.provenance).toBeUndefined();
-=======
->>>>>>> origin/improve-repo-deps-tests-docs-7817015276857999243
 	});
 });

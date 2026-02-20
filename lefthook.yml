@@ -1,6 +1,10 @@
 pre-commit:
   parallel: true
   commands:
+    architecture:
+      run: pnpm run check:arch
+    copy-artifacts:
+      run: pnpm run check:copy-artifacts
     case-collisions:
       run: pnpm run check:case-collisions
     biome:

@@ -11,7 +11,7 @@ This document provides a comprehensive guide for setting up, developing, maintai
 
 ### Code Quality Improvements
 
-- **Fixed Critical Bug**: Unhandled promise rejection in `source/hooks/useUserSession.ts`
+- **Fixed Critical Bug**: Unhandled promise rejection in `src/hooks/useUserSession.ts`
   - Added `.catch()` handler to prevent "An unexpected error occurred" global error message
   - Added fallback login mechanism for import failures
 - **Modernized Routing**: Migrated from custom `useRouting` to React Router DOM v6
@@ -48,6 +48,8 @@ This document provides a comprehensive guide for setting up, developing, maintai
 | `pnpm run lint`  | Run Biome linter and TypeScript checks     |
 | `pnpm run fix`   | Auto-fix linting issues                    |
 | `pnpm run check` | Run all checks (lint, types, limits, deps) |
+| `pnpm run check:copy-artifacts` | Detect accidental `file 2.ts` / `file 3.ts` copies |
+| `pnpm run check:arch` | Enforce architecture import boundaries |
 
 ---
 
@@ -234,25 +236,19 @@ Use these tools to keep the codebase clean:
 ## 📂 Directory Structure
 
 ```
-source/
-├── features/           # All application features (domain + UI)
-│   ├── analytics/      # Charts, leaderboards, insights
-│   ├── auth/           # Session, identity, admin checks (consolidated)
-│   ├── layout/         # App shell, navigation, backgrounds
-│   ├── tournament/     # Competition logic, name management, profiles
-│   └── ui/             # Design system primitives (Button, Card, Toast, etc.)
+src/
+├── app/                # App entry, providers, deployment/config
+├── features/           # Domain features (admin, analytics, tournament)
 ├── hooks/              # Reusable React hooks
-├── providers/          # Context providers (Auth, Theme, Toast)
-├── services/           # Backend integration
-│   ├── errorManager.ts # Centralized error handling
-│   ├── SyncQueue.ts    # Offline-first queue
-│   └── supabase/       # Consolidated client and domain services
-├── store/              # Zustand store (consolidated appSlice.ts)
-├── styles/             # CSS (tokens, components, animations, responsive)
-├── types/              # TypeScript interfaces
-└── utils/              # Helper functions (cn, formatters, etc.)
+├── services/           # API and Supabase runtime/api wrappers
+├── shared/             # Shared components, hooks, utils, types
+├── store/              # Zustand app store
+├── styles/             # CSS layers/tokens/effects
+├── types/              # App-level types
+└── routes.tsx          # Route definitions
 
+server/                 # Express API routes/auth/validation
+shared/                 # Cross-runtime shared schema
+supabase/               # DB migrations and generated DB types
 docs/                   # Project documentation
-config/                 # Tool configuration files
-supabase/               # Database migrations and types
 ```

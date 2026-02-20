@@ -76,36 +76,23 @@ updateRating(r, expected, actual, games) = r + k * (actual - expected)
 ## Project Structure
 
 ```
-source/
-├── App.tsx               # Root application component
-├── constants.ts          # Application constants
-├── main.tsx              # Entry point
-├── navigation.ts         # Route definitions
-├── store.ts              # Zustand store (consolidated)
-├── types.ts              # TypeScript interfaces
-├── shims.d.ts            # Module declarations
-├── features/             # All application features (domain + UI)
-│   ├── analytics/        # Charts, leaderboards, insights
-│   ├── auth.ts           # Session, identity, admin checks (consolidated)
-│   ├── layout/           # App shell, navigation, backgrounds
-│   ├── tournament/       # Competition logic, components, name management
-│   │   ├── components/   # Extracted UI components (SwipeableCards, RankingAdjustment)
-│   │   ├── context/      # Tournament-specific context
-│   │   ├── hooks/        # Tournament-specific hooks
-│   │   └── types.ts      # Tournament-specific types
-│   └── ui/               # Design system primitives (Button, Card, Toast, etc.)
+src/
+├── app/                  # App entry, providers, deployment/config
+├── features/             # Domain features (admin, analytics, tournament)
 ├── hooks/                # Reusable React hooks
-├── providers/            # Context providers (Auth, Theme, Toast)
-├── services/             # Backend integration
-│   ├── errorManager.ts   # Centralized error handling
-│   ├── SyncQueue.ts      # Offline-first queue
-│   └── supabase/         # Supabase client and domain services
-├── styles/               # CSS (tokens, components, animations, responsive)
-└── utils/                # Helper functions (cn, formatters, etc.)
+├── services/             # API, integration orchestration, supabase runtime
+├── shared/               # Shared UI, hooks, libs, types, service re-exports
+├── store/                # Zustand store slices and actions
+├── styles/               # CSS layers and visual effects
+├── types/                # App-level type definitions
+└── routes.tsx            # Route definitions
 
 supabase/                 # Database
 ├── migrations/           # SQL migrations
 └── types.ts              # Generated types
+
+server/                   # Express API, auth, validation, DB wiring
+shared/                   # Cross-runtime schema shared by server and app
 
 docs/                     # Documentation
 config/                   # Tool configuration
@@ -115,16 +102,15 @@ config/                   # Tool configuration
 
 | Directory | Purpose |
 |-----------|---------|
-| `features/ui/` | Design system: Button, Card, Toast, Error, StatusIndicators, etc. |
-| `features/layout/` | App shell: AppLayout, AdaptiveNav, CatBackground, FloatingBubbles |
+| `shared/components/layout/` | Design system + layout primitives (Button, Card, Feedback, AppLayout, Lightbox) |
 | `features/tournament/` | Tournament logic, name management, profiles, Elo ratings |
 | `features/analytics/` | Analysis dashboard, charts, leaderboards |
-| `features/auth.ts` | Authentication, authorization, admin checks (single file) |
+| `features/admin/` | Administrative dashboards and controls |
 | `hooks/` | Shared React hooks for browser state, forms, data fetching |
 | `services/` | API clients, error handling, offline sync |
-| `store.ts` | Global state management with Zustand |
-| `types.ts` | TypeScript type definitions |
-| `utils/` | Pure functions: array ops, formatting, metrics |
+| `store/appStore.ts` | Global state management with Zustand |
+| `types/appTypes.ts` | App type definitions |
+| `shared/lib/` | Pure utilities, constants, cache, metrics, formatting |
 
 ---
 
@@ -134,15 +120,15 @@ config/                   # Tool configuration
 
 | Category | Location |
 |----------|----------|
-| **UI Primitives** | `source/features/ui/` |
-| **Layout** | `source/features/layout/` |
-| **Tournament** | `source/features/tournament/` |
-| **Analytics** | `source/features/analytics/` |
-| **Auth** | `source/features/auth.ts` |
+| **UI Primitives** | `src/shared/components/layout/` |
+| **Layout** | `src/shared/components/layout/` |
+| **Tournament** | `src/features/tournament/` |
+| **Analytics** | `src/features/analytics/` |
+| **Admin** | `src/features/admin/` |
 
 ### Key Components
 
-#### UI Primitives (`features/ui/`)
+#### UI Primitives (`shared/components/layout/`)
 
 | Component | Description |
 |-----------|-------------|
@@ -155,7 +141,7 @@ config/                   # Tool configuration
 | `Toast` | Notification system |
 | `Charts` | Data visualization components |
 
-#### Layout Components (`features/layout/`)
+#### Layout Components (`shared/components/layout/`)
 
 | Component | Description |
 |-----------|-------------|
@@ -170,8 +156,8 @@ config/                   # Tool configuration
 | Feature | Key Components |
 |---------|----------------|
 | **Tournament** | `Tournament` (setup/mode/flow), `SwipeableCards`, `RankingAdjustment`, `NameGrid`, `NameManagementView` |
-| **Analytics** | `AnalysisDashboard` (with `analyticsHooks`, `analyticsService`) |
-| **Auth** | Consolidated in `features/auth.ts` |
+| **Analytics** | `Dashboard` and analytics components/services |
+| **Admin** | `AdminDashboard` |
 
 ---
 
@@ -179,7 +165,7 @@ config/                   # Tool configuration
 
 ### Zustand Store
 
-All state is consolidated in `store.ts`, which includes slice definitions, store creation, and the initialization hook:
+State is managed in `src/store/appStore.ts` with typed slices and actions:
 
 | Slice | Purpose |
 |-------|---------|
@@ -189,10 +175,9 @@ All state is consolidated in `store.ts`, which includes slice definitions, store
 | `siteSettings` | Global site configuration |
 | `errors` | Error handling and history |
 
-Key exports from `store.ts`:
+Key exports from `src/store/appStore.ts`:
 - `useAppStore` - Main store hook (default export)
-- `useAppStoreInitialization` - Hook to initialize store from localStorage
-- `updateSlice` - Helper for nested state updates
+- store actions and selectors used by feature hooks/components
 
 ### Data Flow
 
@@ -206,35 +191,35 @@ User Action → Component → Zustand Store ←→ TanStack Query → Supabase
 
 ## Service Layer
 
-Services are located in `source/services/`:
+Services are located in `src/services/`:
 
 | Service | Purpose |
 |---------|---------|
 | `errorManager.ts` | Centralized error handling with retry logic |
 | `SyncQueue.ts` | Offline-first queue for failed operations |
-| `supabase/client.ts` | Consolidated Supabase client, TanStack Query client, `withSupabase` wrapper, and service re-exports |
-| `supabase/nameService.ts` | Name CRUD operations |
-| `supabase/imageService.ts` | Image upload and management |
-| `supabase/siteSettingsService.ts` | Global configuration |
+| `supabase/client.ts` | Re-exports runtime/api modules |
+| `supabase/runtime.ts` | Supabase runtime and wrappers (`withSupabase`) |
+| `supabase/api.ts` | Domain APIs (`coreAPI`, `hiddenNamesAPI`, `imagesAPI`, `siteSettingsAPI`) |
+| `apiClient.ts` | Shared HTTP client utilities |
 
 All Supabase calls use `withSupabase()` for consistent error handling and offline support.
 
-The `supabase/client.ts` module consolidates:
-- Supabase client configuration and initialization
-- TanStack Query client setup (`queryClient`)
-- Re-exports from all service modules for convenient imports
+The Supabase integration is split across:
+- `src/integrations/supabase/client.ts` for the generated client
+- `src/services/supabase/runtime.ts` for execution wrappers and runtime behavior
+- `src/services/supabase/api.ts` for domain-specific operations
 
 ---
 
 ## Key Patterns
 
-1. **Feature-First Organization** - All code organized under `source/features/` by domain
+1. **Feature-First Organization** - Domain behavior organized under `src/features/`
 2. **CVA Variants** - Component variants via Class Variance Authority
 3. **Error Boundaries** - Graceful error handling at feature boundaries
 4. **Lazy Loading** - Dynamic imports for heavy components (Dashboard, Tournament)
-5. **Path Aliases** - `@/features/ui`, `@utils`, `@services`, `@store`, `@types`, `@supabase/client` for clean imports
-6. **Consolidated Modules** - Related code merged into single files:
-   - `store.ts` - All Zustand slices + store creation + initialization
-   - `types.ts` - All TypeScript type definitions
-   - `features/auth.ts` - All auth logic consolidated
-   - `services/supabase/client.ts` - Supabase client + query client + service re-exports
+5. **Path Aliases** - `@/features/*`, `@/shared/*`, `@/services/*` for clean imports
+6. **Layered Modules** - Shared utilities/components separated from domain features:
+   - `src/store/appStore.ts` - Global Zustand state
+   - `src/types/appTypes.ts` + `src/shared/types/` - Type definitions
+   - `src/shared/components/layout/` - reusable UI and layout primitives
+   - `src/services/supabase/*` + `src/integrations/supabase/*` - runtime + generated client split

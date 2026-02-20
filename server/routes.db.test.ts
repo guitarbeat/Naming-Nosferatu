@@ -2,14 +2,6 @@
 import express from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-<<<<<<< HEAD
-
-// Hoist mocks to be available in vi.mock
-const { insertMock, valuesMock } = vi.hoisted(() => {
-	const valuesMock = vi.fn().mockResolvedValue([]);
-	const insertMock = vi.fn().mockReturnValue({ values: valuesMock });
-	return { insertMock, valuesMock };
-=======
 
 // Mock requireAdmin to allow access
 vi.mock("./auth", () => ({
@@ -21,7 +13,7 @@ const { dbMocks } = vi.hoisted(() => {
 	// Chainable mocks for SELECT
 	const limitMock = vi.fn().mockResolvedValue([]);
 	const orderByMock = vi.fn().mockReturnValue({ limit: limitMock });
-	const whereMock = vi.fn().mockReturnValue({ orderBy: orderByMock, limit: limitMock }); // where() can be followed by orderBy() or just await
+	const whereMock = vi.fn().mockReturnValue({ orderBy: orderByMock, limit: limitMock });
 	const fromMock = vi
 		.fn()
 		.mockReturnValue({ where: whereMock, orderBy: orderByMock, limit: limitMock });
@@ -58,7 +50,6 @@ const { dbMocks } = vi.hoisted(() => {
 			updateWhere: updateWhereMock,
 		},
 	};
->>>>>>> origin/improve-repo-deps-tests-docs-7817015276857999243
 });
 
 vi.mock("./db", () => ({
@@ -77,20 +68,13 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
-<<<<<<< HEAD
-describe("POST /api/ratings with DB", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-=======
 describe("Server Routes (DB Mode)", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		// Reset default behaviors
 		dbMocks.limit.mockResolvedValue([]);
 		dbMocks.returning.mockResolvedValue([]);
 		dbMocks.deleteWhere.mockResolvedValue([]);
 		dbMocks.updateWhere.mockResolvedValue([]);
->>>>>>> origin/improve-repo-deps-tests-docs-7817015276857999243
 	});
 
 	describe("GET /api/names", () => {
@@ -105,7 +89,6 @@ describe("Server Routes (DB Mode)", () => {
 
 			expect(res.status).toBe(200);
 			expect(res.body).toEqual(mockNames);
-
 			expect(dbMocks.select).toHaveBeenCalled();
 			expect(dbMocks.from).toHaveBeenCalled();
 			expect(dbMocks.where).toHaveBeenCalled();
@@ -125,42 +108,25 @@ describe("Server Routes (DB Mode)", () => {
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 			expect(res.body.data).toEqual(insertedCat);
-
 			expect(dbMocks.insert).toHaveBeenCalled();
 			expect(dbMocks.values).toHaveBeenCalledWith(
-				expect.objectContaining({
-					name: "New Cat",
-					description: "Desc",
-				}),
+				expect.objectContaining({ name: "New Cat", description: "Desc" }),
 			);
 			expect(dbMocks.returning).toHaveBeenCalled();
 		});
 
 		it("should handle validation errors", async () => {
-			const res = await request(app).post("/api/names").send({}); // Missing name
+			const res = await request(app).post("/api/names").send({});
 			expect(res.status).toBe(400);
 			expect(dbMocks.insert).not.toHaveBeenCalled();
 		});
 	});
 
-<<<<<<< HEAD
-		// Optimization: insert should be called exactly once
-		expect(insertMock).toHaveBeenCalledTimes(1);
-
-		// Bug fix: nameId should be correctly mapped from input
-		const firstCallArg = valuesMock.mock.calls[0][0];
-		expect(Array.isArray(firstCallArg)).toBe(true);
-		expect(firstCallArg.length).toBe(ratings.length);
-		expect(firstCallArg[0].nameId).toBe("id1");
-		expect(firstCallArg[1].nameId).toBe("id2");
-=======
 	describe("DELETE /api/names/:id", () => {
 		it("should delete name from DB", async () => {
 			const res = await request(app).delete("/api/names/123");
-
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-
 			expect(dbMocks.delete).toHaveBeenCalled();
 			expect(dbMocks.deleteWhere).toHaveBeenCalled();
 		});
@@ -173,31 +139,6 @@ describe("Server Routes (DB Mode)", () => {
 				{ name: "id2", rating: 1600, wins: 0 },
 			];
 
-			// We need to mock values() to return a promise-like or void for this case because
-			// in routes.ts: await db.insert(catNameRatings).values(records);
-			// It doesn't use .returning() or anything else.
-			// But wait, my mock setup has `values()` returning an object with `returning()`.
-			// And `values()` itself is not a promise.
-			// Drizzle's `.values()` returns a QueryBuilder that is also a Promise (thenable).
-			// So I need `valuesMock` to be awaitable OR return something awaitable.
-			// In the previous test, it was:
-			// const valuesMock = vi.fn().mockResolvedValue([]);
-			// This means `await values(...)` works.
-			// But if I want to support `.returning()`, I need it to return an object that HAS `.returning`.
-			// AND is also awaitable?
-			// Drizzle's types are complex.
-			// Let's adjust the mock to handle both.
-
-			// Actually, in `server/routes.ts`: `await db.insert(catNameRatings).values(records);`
-			// It awaits the result of `values()`.
-			// So `valuesMock` must return a Promise (or be a Promise).
-			// BUT `POST /api/names` uses `.values(...).returning()`.
-			// So `valuesMock` must return an object that has `.returning()` AND is awaitable?
-			// Or I can make `.returning` a property of the Promise?
-
-			// Simpler approach: Make `valuesMock` return an object that has a `then` method (Promise-like)
-			// AND a `returning` method.
-
 			const mockQuery = Promise.resolve([]) as any;
 			mockQuery.returning = dbMocks.returning;
 			dbMocks.values.mockReturnValue(mockQuery);
@@ -209,11 +150,9 @@ describe("Server Routes (DB Mode)", () => {
 
 			expect(res.status).toBe(200);
 			expect(dbMocks.insert).toHaveBeenCalledTimes(1);
-
 			const firstCallArg = dbMocks.values.mock.calls[0][0];
 			expect(Array.isArray(firstCallArg)).toBe(true);
 			expect(firstCallArg.length).toBe(ratings.length);
 		});
->>>>>>> origin/improve-repo-deps-tests-docs-7817015276857999243
 	});
 });

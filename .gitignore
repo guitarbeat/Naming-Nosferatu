@@ -112,6 +112,10 @@ stats.html
 stats.json
 jscpd-report.html
 
+# Accidental local copy artifacts (for example: "file 2.ts")
+* 2.*
+* 3.*
+
 # Large media files (prevent accidental commits)
 *.mp3
 *.wav
