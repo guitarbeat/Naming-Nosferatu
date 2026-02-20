@@ -334,7 +334,6 @@ const CardStatsBase = memo(function CardStats({
 		outlined: "from-transparent to-transparent",
 		filled: "from-transparent to-transparent",
 	};
-
 	const valueColor: Record<CardVariant, string> = {
 		default: "text-white",
 		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
