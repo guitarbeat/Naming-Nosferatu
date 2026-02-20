@@ -8,6 +8,7 @@
  */
 
 import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
+import { api } from "@/services/apiClient";
 import { resolveSupabaseClient } from "@/services/supabase/runtime";
 
 // Simple admin usernames - can be expanded as needed
@@ -51,6 +52,8 @@ export const authAdapter: AuthAdapter = {
 		}
 
 		const userName = localStorage.getItem("userName");
+		const userId = localStorage.getItem("userId");
+
 		if (!userName) {
 			return null;
 		}
@@ -60,7 +63,7 @@ export const authAdapter: AuthAdapter = {
 		console.log(`[AuthAdapter] User: ${userName}, IsAdmin: ${isAdmin}`);
 
 		return {
-			id: userName,
+			id: userId || userName,
 			name: userName,
 			email: undefined,
 			isAdmin: isAdmin,
@@ -77,6 +80,18 @@ export const authAdapter: AuthAdapter = {
 			return false;
 		}
 
+		try {
+			// Upsert user and get ID
+			const response = await api.post<{ success: boolean; data: any }>("/users", {
+				userName,
+			});
+			if (response.success && response.data?.userId) {
+				localStorage.setItem("userId", response.data.userId);
+			}
+		} catch (e) {
+			console.error("Failed to register user", e);
+		}
+
 		// Store username in localStorage
 		localStorage.setItem("userName", userName);
 		return true;
@@ -88,6 +103,7 @@ export const authAdapter: AuthAdapter = {
 	async logout(): Promise<void> {
 		if (typeof window !== "undefined") {
 			localStorage.removeItem("userName");
+			localStorage.removeItem("userId");
 		}
 	},
 

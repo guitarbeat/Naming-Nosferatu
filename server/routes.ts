@@ -24,6 +24,7 @@ const mockNames = [
 		isActive: true,
 		isHidden: false,
 		status: "approved",
+		pronunciation: "WHIS-kerz",
 	},
 	{
 		id: "2",
@@ -33,6 +34,7 @@ const mockNames = [
 		isActive: true,
 		isHidden: false,
 		status: "approved",
+		pronunciation: "SHAD-oh",
 	},
 	{
 		id: "3",
@@ -42,6 +44,7 @@ const mockNames = [
 		isActive: true,
 		isHidden: false,
 		status: "approved",
+		pronunciation: "LOO-nah",
 	},
 	{
 		id: "4",
@@ -51,6 +54,7 @@ const mockNames = [
 		isActive: true,
 		isHidden: false,
 		status: "approved",
+		pronunciation: "MUF-in",
 	},
 	{
 		id: "5",
@@ -60,6 +64,7 @@ const mockNames = [
 		isActive: true,
 		isHidden: false,
 		status: "candidate",
+		pronunciation: "MIT-enz",
 	},
 ];
 
@@ -72,7 +77,10 @@ router.get("/api/names", async (req, res) => {
 		}
 
 		const includeHidden = req.query.includeHidden === "true";
-		const conditions = [eq(catNameOptions.isActive, true)];
+		const conditions = [
+			eq(catNameOptions.isActive, true),
+			eq(catNameOptions.isDeleted, false),
+		];
 		if (!includeHidden) {
 			conditions.push(eq(catNameOptions.isHidden, false));
 		}
@@ -130,13 +138,16 @@ router.post("/api/names", async (req, res) => {
 	}
 });
 
-// Delete a name by ID
+// Delete a name by ID (Soft Delete)
 router.delete("/api/names/:id", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
 		}
-		await db.delete(catNameOptions).where(eq(catNameOptions.id, req.params.id));
+		await db
+			.update(catNameOptions)
+			.set({ isDeleted: true, deletedAt: new Date() })
+			.where(eq(catNameOptions.id, Number(req.params.id)));
 		res.json({ success: true });
 	} catch (error) {
 		console.error("Error deleting name:", error);
@@ -144,13 +155,16 @@ router.delete("/api/names/:id", requireAdmin, async (req, res) => {
 	}
 });
 
-// Delete a name by name string
+// Delete a name by name string (Soft Delete)
 router.delete("/api/names-by-name/:name", requireAdmin, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json({ success: true });
 		}
-		await db.delete(catNameOptions).where(eq(catNameOptions.name, req.params.name));
+		await db
+			.update(catNameOptions)
+			.set({ isDeleted: true, deletedAt: new Date() })
+			.where(eq(catNameOptions.name, req.params.name));
 		res.json({ success: true });
 	} catch (error) {
 		console.error("Error deleting name:", error);
@@ -165,7 +179,10 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 			return res.json({ success: true });
 		}
 		const { isHidden } = req.body;
-		await db.update(catNameOptions).set({ isHidden }).where(eq(catNameOptions.id, req.params.id));
+		await db
+			.update(catNameOptions)
+			.set({ isHidden })
+			.where(eq(catNameOptions.id, Number(req.params.id)));
 		res.json({ success: true });
 	} catch (error) {
 		console.error("Error updating name:", error);
@@ -218,7 +235,15 @@ router.get("/api/hidden-names", requireAdmin, async (_req, res) => {
 		if (!db) {
 			return res.json([]);
 		}
-		const hidden = await db.select().from(catNameOptions).where(eq(catNameOptions.isHidden, true));
+		const hidden = await db
+			.select()
+			.from(catNameOptions)
+			.where(
+				and(
+					eq(catNameOptions.isHidden, true),
+					eq(catNameOptions.isDeleted, false)
+				)
+			);
 		res.json(hidden);
 	} catch (error) {
 		console.error("Error fetching hidden names:", error);
@@ -233,7 +258,10 @@ router.patch("/api/names/:id/lock", requireAdmin, async (req, res) => {
 			return res.json({ success: true });
 		}
 		const { lockedIn } = req.body;
-		await db.update(catNameOptions).set({ lockedIn }).where(eq(catNameOptions.id, req.params.id));
+		await db
+			.update(catNameOptions)
+			.set({ lockedIn })
+			.where(eq(catNameOptions.id, Number(req.params.id)));
 		res.json({ success: true });
 	} catch (error) {
 		console.error("Error locking name:", error);
@@ -250,18 +278,23 @@ router.post("/api/users", async (req, res) => {
 			return res.json({
 				success: true,
 				data: {
-					id: String(Date.now()),
+					userId: "mock-uuid",
 					userName,
 					preferences: preferences || {},
 				},
 			});
 		}
 
+		// Upsert user based on userName (assuming unique) to get userId
 		const [inserted] = await db
 			.insert(catAppUsers)
 			.values({
 				userName,
 				preferences: preferences || {},
+			})
+			.onConflictDoUpdate({
+				target: catAppUsers.userName,
+				set: { preferences: sql`COALESCE(excluded.preferences, cat_app_users.preferences)` },
 			})
 			.returning();
 		res.json({ success: true, data: inserted });
@@ -275,7 +308,7 @@ router.post("/api/users", async (req, res) => {
 });
 
 // Get user roles
-router.get("/api/users/:userName/roles", async (req, res) => {
+router.get("/api/users/:userId/roles", async (req, res) => {
 	try {
 		if (!db) {
 			return res.json([]);
@@ -283,7 +316,7 @@ router.get("/api/users/:userName/roles", async (req, res) => {
 		const roles = await db
 			.select()
 			.from(userRoles)
-			.where(eq(userRoles.userName, req.params.userName));
+			.where(eq(userRoles.userId, req.params.userId));
 		res.json(roles);
 	} catch (error) {
 		console.error("Error fetching user roles:", error);
@@ -294,7 +327,7 @@ router.get("/api/users/:userName/roles", async (req, res) => {
 // Save ratings
 router.post("/api/ratings", async (req, res) => {
 	try {
-		const { userName, ratings } = saveRatingsSchema.parse(req.body);
+		const { userId, ratings } = saveRatingsSchema.parse(req.body);
 
 		if (!db) {
 			return res.json({ success: true, count: ratings.length });
@@ -302,8 +335,8 @@ router.post("/api/ratings", async (req, res) => {
 
 		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const records = ratings.map((r: any) => ({
-			userName,
-			nameId: r.name, // Schema validates 'name', mapping to 'nameId' for DB
+			userId,
+			nameId: r.nameId,
 			rating: r.rating || 1500,
 			wins: r.wins || 0,
 			losses: r.losses || 0,
@@ -311,7 +344,15 @@ router.post("/api/ratings", async (req, res) => {
 
 		// Optimization: Batch insert to prevent N+1 queries
 		if (records.length > 0) {
-			await db.insert(catNameRatings).values(records);
+			await db.insert(catNameRatings).values(records)
+				.onConflictDoUpdate({
+					target: [catNameRatings.userId, catNameRatings.nameId],
+					set: {
+						rating: sql`excluded.rating`,
+						wins: sql`cat_name_ratings.wins + excluded.wins`,
+						losses: sql`cat_name_ratings.losses + excluded.losses`
+					}
+				});
 		}
 
 		res.json({ success: true, count: records.length });
@@ -342,11 +383,12 @@ router.get("/api/analytics/popularity", async (req, res) => {
 		const results = await db
 			.select({
 				nameId: catTournamentSelections.nameId,
-				name: catTournamentSelections.name,
+				name: catNameOptions.name,
 				count: sql<number>`count(*)`,
 			})
 			.from(catTournamentSelections)
-			.groupBy(catTournamentSelections.nameId, catTournamentSelections.name)
+			.innerJoin(catNameOptions, eq(catTournamentSelections.nameId, catNameOptions.id))
+			.groupBy(catTournamentSelections.nameId, catNameOptions.name)
 			.orderBy((_t) => desc(sql<number>`count(*)`))
 			.limit(limit);
 		res.json(results);
@@ -372,11 +414,12 @@ router.get("/api/analytics/ranking-history", async (_req, res) => {
 		const ratings = await db
 			.select({
 				nameId: catNameRatings.nameId,
-				name: sql<string>`''`,
-				avgRating: sql<number>`avg(rating)`,
+				name: catNameOptions.name,
+				avgRating: sql<number>`avg(cat_name_ratings.rating)`,
 			})
 			.from(catNameRatings)
-			.groupBy(catNameRatings.nameId)
+			.innerJoin(catNameOptions, eq(catNameRatings.nameId, catNameOptions.id))
+			.groupBy(catNameRatings.nameId, catNameOptions.name)
 			.limit(100);
 
 		res.json(ratings);
@@ -405,13 +448,15 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 		const ratings = await db
 			.select({
 				nameId: catNameRatings.nameId,
-				avgRating: sql<number>`avg(rating)`,
-				totalWins: sql<number>`sum(wins)`,
-				totalLosses: sql<number>`sum(losses)`,
+				name: catNameOptions.name,
+				avgRating: sql<number>`avg(cat_name_ratings.rating)`,
+				totalWins: sql<number>`sum(cat_name_ratings.wins)`,
+				totalLosses: sql<number>`sum(cat_name_ratings.losses)`,
 			})
 			.from(catNameRatings)
-			.groupBy(catNameRatings.nameId)
-			.orderBy((_r) => desc(sql<number>`avg(rating)`))
+			.innerJoin(catNameOptions, eq(catNameRatings.nameId, catNameOptions.id))
+			.groupBy(catNameRatings.nameId, catNameOptions.name)
+			.orderBy((_r) => desc(sql<number>`avg(cat_name_ratings.rating)`))
 			.limit(limit);
 
 		res.json(ratings);
@@ -432,10 +477,10 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 			});
 		}
 
-		const totalNames = await db.select({ count: sql<number>`count(*)` }).from(catNameOptions);
+		const totalNames = await db.select({ count: sql<number>`count(*)` }).from(catNameOptions).where(eq(catNameOptions.isDeleted, false));
 		const totalRatings = await db.select({ count: sql<number>`count(*)` }).from(catNameRatings);
 		const totalUsers = await db
-			.select({ count: sql<number>`count(distinct user_name)` })
+			.select({ count: sql<number>`count(distinct user_id)` })
 			.from(catNameRatings);
 
 		res.json({

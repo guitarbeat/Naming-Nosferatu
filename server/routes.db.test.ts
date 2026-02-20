@@ -4,10 +4,11 @@ import request from "supertest";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 // Hoist mocks to be available in vi.mock
-const { insertMock, valuesMock } = vi.hoisted(() => {
-    const valuesMock = vi.fn().mockResolvedValue([]);
+const { insertMock, valuesMock, onConflictMock } = vi.hoisted(() => {
+    const onConflictMock = vi.fn().mockResolvedValue([]);
+    const valuesMock = vi.fn().mockReturnValue({ onConflictDoUpdate: onConflictMock });
     const insertMock = vi.fn().mockReturnValue({ values: valuesMock });
-    return { insertMock, valuesMock };
+    return { insertMock, valuesMock, onConflictMock };
 });
 
 vi.mock("./db", () => ({
@@ -30,12 +31,12 @@ describe("POST /api/ratings with DB", () => {
 
 	it("should insert ratings in a single batch (optimization verified)", async () => {
 		const ratings = [
-			{ name: "id1", rating: 1500, wins: 1 },
-			{ name: "id2", rating: 1600, wins: 0 },
+			{ nameId: "id1", rating: 1500, wins: 1 },
+			{ nameId: "id2", rating: 1600, wins: 0 },
 		];
 
 		const res = await request(app).post("/api/ratings").send({
-			userName: "testuser",
+			userId: "123e4567-e89b-12d3-a456-426614174000", // Valid UUID
 			ratings,
 		});
 
@@ -50,5 +51,6 @@ describe("POST /api/ratings with DB", () => {
         expect(firstCallArg.length).toBe(ratings.length);
         expect(firstCallArg[0].nameId).toBe("id1");
         expect(firstCallArg[1].nameId).toBe("id2");
+        expect(firstCallArg[0].userId).toBe("123e4567-e89b-12d3-a456-426614174000");
 	});
 });

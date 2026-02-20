@@ -11,11 +11,11 @@ export const createUserSchema = z.object({
 });
 
 export const saveRatingsSchema = z.object({
-	userName: z.string().min(1).max(100),
+	userId: z.string().uuid(),
 	ratings: z
 		.array(
 			z.object({
-				name: z.string().min(1),
+				nameId: z.union([z.string(), z.number()]),
 				rating: z.number(),
 				wins: z.number().optional(),
 				losses: z.number().optional(),
