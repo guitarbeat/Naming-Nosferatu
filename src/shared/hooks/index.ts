@@ -28,6 +28,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// Internal Utilities
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Simple debounce utility for internal use.
+ */
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number): T {
+	let timeout: ReturnType<typeof setTimeout> | null = null;
+	return function(this: any, ...args: Parameters<T>) {
+		if (timeout) clearTimeout(timeout);
+		timeout = setTimeout(() => func.apply(this, args), wait);
+	} as T;
+}
+
+
 const IS_BROWSER = typeof window !== "undefined";
 
 /** useLayoutEffect in the browser, useEffect on the server (avoids SSR warnings). */
@@ -186,6 +202,7 @@ type SetStateAction<T> = T | ((prev: T) => T);
 export function useLocalStorage<T>(
 	key: string,
 	initialValue: T,
+	options: { debounceWait?: number } = {},
 ): [T, (value: SetStateAction<T>) => void, () => void] {
 	// Ref the initial value so an unstable object reference doesn't cause loops
 	const initialRef = useRef(initialValue);
@@ -208,14 +225,34 @@ export function useLocalStorage<T>(
 	const valueRef = useRef(stored);
 	valueRef.current = stored;
 
+	// Create a ref for the debounce function so it persists
+	const debouncedSetItemRef = useRef<ReturnType<typeof debounce> | null>(null);
+
+	// Initialize or update the debounced function only when wait time changes
+	useEffect(() => {
+		if (options.debounceWait && options.debounceWait > 0) {
+			debouncedSetItemRef.current = debounce((val: T) => {
+				if (IS_BROWSER) {
+					localStorage.setItem(key, JSON.stringify(val));
+				}
+			}, options.debounceWait);
+		} else {
+			debouncedSetItemRef.current = null;
+		}
+	}, [options.debounceWait, key]);
+
 	const setValue = useCallback(
 		(next: SetStateAction<T>) => {
 			try {
 				const resolved = next instanceof Function ? next(valueRef.current) : next;
 				setStored(resolved);
 				valueRef.current = resolved;
-				if (IS_BROWSER) {
-					localStorage.setItem(key, JSON.stringify(resolved));
+				if (debouncedSetItemRef.current) {
+					debouncedSetItemRef.current(resolved);
+				} else {
+					if (IS_BROWSER) {
+						localStorage.setItem(key, JSON.stringify(resolved));
+					}
 				}
 			} catch (err) {
 				console.warn(`[useLocalStorage] write "${key}" failed:`, err);
@@ -261,6 +298,7 @@ export function useLocalStorage<T>(
 
 	return [stored, setValue, removeValue];
 }
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // useCollapsible
