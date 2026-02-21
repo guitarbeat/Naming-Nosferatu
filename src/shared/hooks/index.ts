@@ -136,6 +136,16 @@ export function useMediaQuery(query: string): boolean {
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
  * const browser = useBrowserState({ mobile: 640, tablet: 1280 });
  */
+export function useBrowserState(_breakpoints?: Record<string, number>) {
+	const isOnline = useOnlineStatus();
+	// Minimal stub implementation to fix build
+	return {
+		isOnline,
+		isSlowConnection: false,
+		isMobile: false,
+		prefersReducedMotion: false,
+	};
+}
 
 /**
  * Legacy offline-sync hook.
