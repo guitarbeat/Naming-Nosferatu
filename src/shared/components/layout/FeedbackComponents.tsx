@@ -18,7 +18,7 @@ import React, {
 	useMemo,
 	useState,
 } from "react";
-import { useBrowserState } from "@/hooks/useBrowserState";
+import { useBrowserState } from "@/shared/hooks";
 import { ErrorManager } from "@/services/errorManager";
 import { cn } from "@/shared/lib/basic";
 import { Cat, Copy, Heart, PawPrint } from "@/shared/lib/icons";
