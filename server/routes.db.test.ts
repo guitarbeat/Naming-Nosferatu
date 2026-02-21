@@ -123,28 +123,30 @@ describe("Server Routes (DB Mode)", () => {
 	});
 
 	describe("DELETE /api/names/:id", () => {
-		it("should delete name from DB", async () => {
+		it("should delete name from DB (soft delete)", async () => {
 			const res = await request(app).delete("/api/names/123");
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(dbMocks.delete).toHaveBeenCalled();
-			expect(dbMocks.deleteWhere).toHaveBeenCalled();
+			// Soft delete uses update, not delete
+			expect(dbMocks.update).toHaveBeenCalled();
+			expect(dbMocks.updateSet).toHaveBeenCalled();
 		});
 	});
 
 	describe("POST /api/ratings", () => {
 		it("should insert ratings in a single batch", async () => {
 			const ratings = [
-				{ name: "id1", rating: 1500, wins: 1 },
-				{ name: "id2", rating: 1600, wins: 0 },
+				{ nameId: "id1", rating: 1500, wins: 1 },
+				{ nameId: "id2", rating: 1600, wins: 0 },
 			];
 
 			const mockQuery = Promise.resolve([]) as any;
 			mockQuery.returning = dbMocks.returning;
+			mockQuery.onConflictDoUpdate = vi.fn().mockResolvedValue([]);
 			dbMocks.values.mockReturnValue(mockQuery);
 
 			const res = await request(app).post("/api/ratings").send({
-				userName: "testuser",
+				userId: "00000000-0000-0000-0000-000000000000",
 				ratings,
 			});
 
