@@ -77,10 +77,7 @@ router.get("/api/names", async (req, res) => {
 		}
 
 		const includeHidden = req.query.includeHidden === "true";
-		const conditions = [
-			eq(catNameOptions.isActive, true),
-			eq(catNameOptions.isDeleted, false),
-		];
+		const conditions = [eq(catNameOptions.isActive, true), eq(catNameOptions.isDeleted, false)];
 		if (!includeHidden) {
 			conditions.push(eq(catNameOptions.isHidden, false));
 		}
@@ -238,12 +235,7 @@ router.get("/api/hidden-names", requireAdmin, async (_req, res) => {
 		const hidden = await db
 			.select()
 			.from(catNameOptions)
-			.where(
-				and(
-					eq(catNameOptions.isHidden, true),
-					eq(catNameOptions.isDeleted, false)
-				)
-			);
+			.where(and(eq(catNameOptions.isHidden, true), eq(catNameOptions.isDeleted, false)));
 		res.json(hidden);
 	} catch (error) {
 		console.error("Error fetching hidden names:", error);
@@ -313,10 +305,7 @@ router.get("/api/users/:userId/roles", async (req, res) => {
 		if (!db) {
 			return res.json([]);
 		}
-		const roles = await db
-			.select()
-			.from(userRoles)
-			.where(eq(userRoles.userId, req.params.userId));
+		const roles = await db.select().from(userRoles).where(eq(userRoles.userId, req.params.userId));
 		res.json(roles);
 	} catch (error) {
 		console.error("Error fetching user roles:", error);
@@ -344,14 +333,16 @@ router.post("/api/ratings", async (req, res) => {
 
 		// Optimization: Batch insert to prevent N+1 queries
 		if (records.length > 0) {
-			await db.insert(catNameRatings).values(records)
+			await db
+				.insert(catNameRatings)
+				.values(records)
 				.onConflictDoUpdate({
 					target: [catNameRatings.userId, catNameRatings.nameId],
 					set: {
 						rating: sql`excluded.rating`,
 						wins: sql`cat_name_ratings.wins + excluded.wins`,
-						losses: sql`cat_name_ratings.losses + excluded.losses`
-					}
+						losses: sql`cat_name_ratings.losses + excluded.losses`,
+					},
 				});
 		}
 
@@ -477,7 +468,10 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 			});
 		}
 
-		const totalNames = await db.select({ count: sql<number>`count(*)` }).from(catNameOptions).where(eq(catNameOptions.isDeleted, false));
+		const totalNames = await db
+			.select({ count: sql<number>`count(*)` })
+			.from(catNameOptions)
+			.where(eq(catNameOptions.isDeleted, false));
 		const totalRatings = await db.select({ count: sql<number>`count(*)` }).from(catNameRatings);
 		const totalUsers = await db
 			.select({ count: sql<number>`count(distinct user_id)` })

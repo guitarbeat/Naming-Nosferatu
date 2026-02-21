@@ -280,7 +280,7 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 		} finally {
 			setIsSubmitting(false);
 		}
-		}, [props, validate, values.name, values.description]);
+	}, [props, validate, values.name, values.description]);
 
 	const reset = useCallback(() => {
 		setValues({ name: "", description: "" });
