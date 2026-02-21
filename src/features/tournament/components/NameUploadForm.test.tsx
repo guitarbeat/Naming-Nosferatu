@@ -56,7 +56,7 @@ describe("NameUploadForm", () => {
 	it("shows success message after upload", async () => {
 		vi.mocked(imagesAPI.upload).mockResolvedValue({
 			path: "some/path.jpg",
-			fullPath: "some/path.jpg",
+			// removed fullPath as it is not part of the return type
 		});
 		const onImagesUploaded = vi.fn();
 

@@ -127,6 +127,10 @@ export function useMediaQuery(query: string): boolean {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** Customizable responsive breakpoints (in pixels). */
+interface Breakpoints {
+	mobile: number;
+	tablet: number;
+}
 
 /**
  * All-in-one hook for responsive design, network status, and accessibility prefs.
@@ -136,6 +140,26 @@ export function useMediaQuery(query: string): boolean {
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
  * const browser = useBrowserState({ mobile: 640, tablet: 1280 });
  */
+export function useBrowserState(breakpoints: Breakpoints = { mobile: 768, tablet: 1024 }) {
+	const isMobile = useMediaQuery(`(max-width: ${breakpoints.mobile}px)`);
+	const isTablet = useMediaQuery(
+		`(min-width: ${breakpoints.mobile + 1}px) and (max-width: ${breakpoints.tablet}px)`,
+	);
+	const isDesktop = useMediaQuery(`(min-width: ${breakpoints.tablet + 1}px)`);
+	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+	const isOnline = useOnlineStatus();
+	// Stub for connection speed - in a real app this would check navigator.connection
+	const isSlowConnection = false;
+
+	return {
+		isMobile,
+		isTablet,
+		isDesktop,
+		prefersReducedMotion,
+		isOnline,
+		isSlowConnection,
+	};
+}
 
 /**
  * Legacy offline-sync hook.

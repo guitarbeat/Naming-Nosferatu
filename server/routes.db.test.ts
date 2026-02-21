@@ -21,7 +21,15 @@ const { dbMocks } = vi.hoisted(() => {
 
 	// Chainable mocks for INSERT
 	const returningMock = vi.fn().mockResolvedValue([{ id: "123", name: "Test Cat" }]);
-	const valuesMock = vi.fn().mockReturnValue({ returning: returningMock });
+	// onConflictDoUpdate needs to be chainable to returning, or just awaitable
+	// To make it awaitable (Promise-like) AND chainable, we can return the promise which has .returning attached?
+	// Or just verify the chain structure. Drizzle usually returns a query builder.
+	const onConflictDoUpdateMock = vi.fn().mockReturnValue({ returning: returningMock });
+	// valuesMock returns object with both returning and onConflictDoUpdate
+	const valuesMock = vi.fn().mockReturnValue({
+		returning: returningMock,
+		onConflictDoUpdate: onConflictDoUpdateMock,
+	});
 	const insertMock = vi.fn().mockReturnValue({ values: valuesMock });
 
 	// Chainable mocks for DELETE
@@ -127,24 +135,26 @@ describe("Server Routes (DB Mode)", () => {
 			const res = await request(app).delete("/api/names/123");
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(dbMocks.delete).toHaveBeenCalled();
-			expect(dbMocks.deleteWhere).toHaveBeenCalled();
+			// Soft delete uses update, not delete
+			expect(dbMocks.update).toHaveBeenCalled();
+			expect(dbMocks.updateWhere).toHaveBeenCalled();
 		});
 	});
 
 	describe("POST /api/ratings", () => {
 		it("should insert ratings in a single batch", async () => {
 			const ratings = [
-				{ name: "id1", rating: 1500, wins: 1 },
-				{ name: "id2", rating: 1600, wins: 0 },
+				{ nameId: "id1", rating: 1500, wins: 1 },
+				{ nameId: "id2", rating: 1600, wins: 0 },
 			];
 
 			const mockQuery = Promise.resolve([]) as any;
 			mockQuery.returning = dbMocks.returning;
+			mockQuery.onConflictDoUpdate = vi.fn().mockResolvedValue([]);
 			dbMocks.values.mockReturnValue(mockQuery);
 
 			const res = await request(app).post("/api/ratings").send({
-				userName: "testuser",
+				userId: "123e4567-e89b-12d3-a456-426614174000",
 				ratings,
 			});
 

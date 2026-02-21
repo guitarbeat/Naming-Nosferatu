@@ -1,7 +1,8 @@
 // Legacy compatibility layer.
 // Canonical RandomGenerator now lives under features/tournament/components.
-import { coreAPI } from "@/services/supabase/client";
+
 import { RandomGenerator as TournamentRandomGenerator } from "@/features/tournament/components/RandomGenerator";
+import { coreAPI } from "@/services/supabase/client";
 
 interface RandomGeneratorProps {
 	userName: string;
