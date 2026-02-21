@@ -4,7 +4,7 @@
  * Extracted from NameGrid to improve maintainability.
  */
 
-import { imagesAPI } from "@supabase/client";
+import { imagesAPI } from "@/services/supabase/client";
 import { useCallback } from "react";
 import { Upload } from "@/icons";
 import { compressImageFile, devError } from "@/shared/lib/basic";

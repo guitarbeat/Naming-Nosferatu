@@ -1,4 +1,4 @@
-import { coreAPI } from "@supabase/client";
+import { coreAPI } from "@/services/supabase/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { NameItem } from "@/shared/types";
 

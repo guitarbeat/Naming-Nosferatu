@@ -3,7 +3,7 @@
  * @description React hooks for analytics data fetching and display processing
  */
 
-import { analyticsAPI, leaderboardAPI, statsAPI } from "@supabase/client";
+import { analyticsAPI, leaderboardAPI, statsAPI } from "@/services/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { calculatePercentile } from "@/shared/lib/basic";

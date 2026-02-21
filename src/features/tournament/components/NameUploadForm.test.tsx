@@ -4,7 +4,7 @@ import "@testing-library/jest-dom/vitest";
 import { NameUploadForm } from "./NameUploadForm";
 
 // Mock dependencies
-vi.mock("@supabase/client", () => ({
+vi.mock("@/services/supabase/client", () => ({
 	imagesAPI: {
 		upload: vi.fn(),
 	},
