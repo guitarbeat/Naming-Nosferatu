@@ -1,4 +1,5 @@
 import { coreAPI } from "@supabase/client";
+import { useLocalStorage } from "@/shared/hooks";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { NameItem } from "@/shared/types";
 
@@ -87,39 +88,16 @@ export function useNameSelection({
 		() => `name_selection_${mode}_${userName ?? "anonymous"}`,
 		[mode, userName],
 	);
-	const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
 
-	useEffect(() => {
-		if (typeof window === "undefined") {
-			return;
-		}
-		try {
-			const raw = window.localStorage.getItem(storageKey);
-			if (!raw) {
-				setSelectedIds(new Set());
-				return;
-			}
-			const parsed = JSON.parse(raw);
-			if (Array.isArray(parsed)) {
-				setSelectedIds(new Set(parsed as Array<string | number>));
-				return;
-			}
-			setSelectedIds(new Set());
-		} catch {
-			setSelectedIds(new Set());
-		}
-	}, [storageKey]);
+	// Use debounced localStorage hook to prevent main thread blocking on frequent updates
+	const [selectedIdsArray, setSelectedIdsArray] = useLocalStorage<(string | number)[]>(
+		storageKey,
+		[],
+		{ debounceWait: 500 },
+	);
 
-	useEffect(() => {
-		if (typeof window === "undefined") {
-			return;
-		}
-		try {
-			window.localStorage.setItem(storageKey, JSON.stringify(Array.from(selectedIds)));
-		} catch {
-			/* ignore storage errors */
-		}
-	}, [selectedIds, storageKey]);
+	// Memoize Set for O(1) lookups
+	const selectedIds = useMemo(() => new Set(selectedIdsArray), [selectedIdsArray]);
 
 	const selectedNames = useMemo(
 		() => names.filter((name) => selectedIds.has(name.id)),
@@ -134,17 +112,20 @@ export function useNameSelection({
 		[selectedIds],
 	);
 
-	const toggleNameById = useCallback((id: string | number) => {
-		setSelectedIds((previous) => {
-			const next = new Set(previous);
-			if (next.has(id)) {
-				next.delete(id);
-			} else {
-				next.add(id);
-			}
-			return next;
-		});
-	}, []);
+	const toggleNameById = useCallback(
+		(id: string | number) => {
+			setSelectedIdsArray((prevArray) => {
+				const next = new Set(prevArray);
+				if (next.has(id)) {
+					next.delete(id);
+				} else {
+					next.add(id);
+				}
+				return Array.from(next);
+			});
+		},
+		[setSelectedIdsArray],
+	);
 
 	const toggleName = useCallback(
 		(name: NameItem) => {
@@ -153,27 +134,30 @@ export function useNameSelection({
 		[toggleNameById],
 	);
 
-	const toggleNamesByIds = useCallback((ids: Array<string | number>) => {
-		setSelectedIds((previous) => {
-			const next = new Set(previous);
-			for (const id of ids) {
-				if (next.has(id)) {
-					next.delete(id);
-				} else {
-					next.add(id);
+	const toggleNamesByIds = useCallback(
+		(ids: Array<string | number>) => {
+			setSelectedIdsArray((prevArray) => {
+				const next = new Set(prevArray);
+				for (const id of ids) {
+					if (next.has(id)) {
+						next.delete(id);
+					} else {
+						next.add(id);
+					}
 				}
-			}
-			return next;
-		});
-	}, []);
+				return Array.from(next);
+			});
+		},
+		[setSelectedIdsArray],
+	);
 
 	const clearSelection = useCallback(() => {
-		setSelectedIds(new Set());
-	}, []);
+		setSelectedIdsArray([]);
+	}, [setSelectedIdsArray]);
 
 	const selectAll = useCallback(() => {
-		setSelectedIds(new Set(names.map((name) => name.id)));
-	}, [names]);
+		setSelectedIdsArray(names.map((name) => name.id));
+	}, [names, setSelectedIdsArray]);
 
 	return {
 		selectedNames,
