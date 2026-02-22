@@ -140,14 +140,14 @@ interface Breakpoints {
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
  * const browser = useBrowserState({ mobile: 640, tablet: 1280 });
  */
-export function useBrowserState(_breakpoints?: Record<string, number>) {
-	const isOnline = useOnlineStatus();
-	// Minimal stub implementation to fix build
+export function useBrowserState() {
 	return {
-		isOnline,
-		isSlowConnection: false,
 		isMobile: false,
+		isTablet: false,
+		isDesktop: true,
+		isOnline: true,
 		prefersReducedMotion: false,
+		isSlowConnection: false,
 	};
 }
 

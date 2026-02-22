@@ -135,13 +135,16 @@ describe("Server Routes (DB Mode)", () => {
 			const res = await request(app).delete("/api/names/123");
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
+			// Soft delete uses update, not delete
 			expect(dbMocks.update).toHaveBeenCalled();
+			expect(dbMocks.updateSet).toHaveBeenCalled();
 			expect(dbMocks.updateWhere).toHaveBeenCalled();
 		});
 	});
 
 	describe("POST /api/ratings", () => {
 		it("should insert ratings in a single batch", async () => {
+			// Schema expects 'nameId', not 'name' in ratings array
 			const ratings = [
 				{ nameId: "id1", rating: 1500, wins: 1 },
 				{ nameId: "id2", rating: 1600, wins: 0 },
@@ -149,9 +152,11 @@ describe("Server Routes (DB Mode)", () => {
 
 			const mockQuery = Promise.resolve([]) as any;
 			mockQuery.returning = dbMocks.returning;
-			mockQuery.onConflictDoUpdate = vi.fn().mockReturnThis();
+			// Mock onConflictDoUpdate to return a thenable
+			mockQuery.onConflictDoUpdate = vi.fn().mockResolvedValue([]);
 			dbMocks.values.mockReturnValue(mockQuery);
 
+			// Note: validation schema requires userId to be a valid UUID
 			const res = await request(app).post("/api/ratings").send({
 				userId: "00000000-0000-0000-0000-000000000000",
 				ratings,

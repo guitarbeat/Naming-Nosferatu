@@ -5,7 +5,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { analyticsAPI, leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
+import { analyticsAPI, leaderboardAPI, statsAPI } from "@/features/analytics/analyticsService";
 import { calculatePercentile } from "@/shared/lib/basic";
 import type {
 	AnalyticsDataItem,
