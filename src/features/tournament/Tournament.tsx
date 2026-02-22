@@ -342,8 +342,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	} = matchData;
 
 	return (
-		<div className="relative min-h-screen w-full overflow-x-hidden flex flex-col overflow-hidden font-display text-white selection:bg-primary/30">
-			<header className="pt-4 px-3 sm:px-6 space-y-3 flex-shrink-0">
+		<div className="relative h-screen w-full overflow-hidden flex flex-col font-display text-white selection:bg-primary/30">
+			<header className="pt-2 px-3 sm:px-4 space-y-2 flex-shrink-0">
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex flex-wrap items-center gap-2 sm:gap-4">
 						<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
@@ -397,7 +397,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</div>
 			</header>
 
-			<section className="px-3 sm:px-6 py-3 flex-shrink-0">
+			<section className="px-3 sm:px-4 py-1.5 flex-shrink-0">
 				<Card
 					className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
 					padding="small"
@@ -490,7 +490,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</Card>
 			</section>
 
-			<main className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6 relative py-3 sm:py-4">
+			<main className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 relative py-2 min-h-0">
 				{/* Animated blob backgrounds */}
 				<div className="absolute inset-0 overflow-hidden pointer-events-none">
 					<div className="absolute top-0 left-0 w-32 h-32 bg-primary/20 rounded-full animate-blob animation-delay-2000" />
@@ -575,13 +575,13 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
 						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.32 }}
-						className="relative grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-full mx-auto z-10 items-center"
+						className="relative grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4 w-full max-w-5xl mx-auto z-10 items-stretch h-full"
 					>
 						{/* Left Card */}
 						<Card
 							interactive={true}
 							padding="none"
-							className={`relative overflow-hidden group cursor-pointer h-full min-h-[280px] sm:min-h-[340px] md:min-h-[400px] animate-float transition-all duration-300 ${
+							className={`relative overflow-hidden group cursor-pointer h-full animate-float transition-all duration-300 ${
 								isVoting ? "pointer-events-none" : ""
 							} ${
 								leftSelected
@@ -598,7 +598,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							onKeyDown={(e) => handleKeyDown(e, "left")}
 							onClick={() => handleVoteForSide("left")}
 						>
-							<div className="relative w-full aspect-[4/5] sm:aspect-square flex items-center justify-center bg-white/10">
+							<div className="relative w-full h-full flex items-center justify-center bg-white/10">
 								{leftImg ? (
 									<CatImage
 										src={leftImg}
@@ -633,44 +633,36 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						</Card>
 
 						{/* VS Indicator */}
-						<div className="flex flex-col items-center justify-center py-2">
-							<div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg mb-3 sm:mb-4">
-								<span className="font-bold text-2xl italic tracking-tighter">VS</span>
+						<div className="flex flex-col items-center justify-center gap-2 py-1 w-14 sm:w-20">
+							<div className="w-11 h-11 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg flex-shrink-0">
+								<span className="font-bold text-base sm:text-2xl italic tracking-tighter">VS</span>
 							</div>
-							<div className="text-center space-y-3 w-full max-w-xs">
-								<div
-									className={`text-[11px] sm:text-xs uppercase tracking-wider transition-colors ${
-										isVoting && selectedName ? "text-emerald-300" : "text-white/60"
-									}`}
+							<div
+								className={`text-[8px] sm:text-[10px] uppercase tracking-wider transition-colors text-center leading-tight ${
+									isVoting && selectedName ? "text-emerald-300" : "text-white/60"
+								}`}
+							>
+								{isVoting && selectedName ? selectedName : "Choose"}
+							</div>
+							<div className="flex flex-col gap-1.5 w-full">
+								<button
+									type="button"
+									onClick={() => handleUndo()}
+									className="glass-panel py-1.5 px-2 rounded-full flex items-center justify-center border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors w-full"
+									title="Undo last vote"
 								>
-									{isVoting && selectedName ? `${selectedName} selected` : "Choose Your Fighter"}
-								</div>
-								<div className="flex flex-col gap-2">
+									<span className="material-symbols-outlined text-sm text-primary">undo</span>
+								</button>
+								{handleQuit && (
 									<button
 										type="button"
-										onClick={() => handleUndo()}
-										className="glass-panel min-h-11 py-2 px-6 rounded-full flex items-center justify-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
+										onClick={handleQuit}
+										className="glass-panel py-1.5 px-2 rounded-full flex items-center justify-center border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors w-full"
+										title="Quit tournament"
 									>
-										<span className="material-symbols-outlined text-sm text-primary">undo</span>
-										<span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">
-											Undo
-										</span>
+										<span className="material-symbols-outlined text-sm text-red-400">exit_to_app</span>
 									</button>
-									{handleQuit && (
-										<button
-											type="button"
-											onClick={handleQuit}
-											className="glass-panel min-h-11 py-2 px-6 rounded-full flex items-center justify-center gap-3 border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors"
-										>
-											<span className="material-symbols-outlined text-sm text-red-400">
-												exit_to_app
-											</span>
-											<span className="text-[10px] font-bold text-red-400 tracking-widest uppercase">
-												Quit Tournament
-											</span>
-										</button>
-									)}
-								</div>
+								)}
 							</div>
 						</div>
 
@@ -678,7 +670,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<Card
 							interactive={true}
 							padding="none"
-							className={`relative overflow-hidden group cursor-pointer h-full min-h-[280px] sm:min-h-[340px] md:min-h-[400px] animate-float transition-all duration-300 ${
+							className={`relative overflow-hidden group cursor-pointer h-full animate-float transition-all duration-300 ${
 								isVoting ? "pointer-events-none" : ""
 							} ${
 								rightSelected
@@ -696,7 +688,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							onKeyDown={(e) => handleKeyDown(e, "right")}
 							onClick={() => handleVoteForSide("right")}
 						>
-							<div className="relative w-full aspect-[4/5] sm:aspect-square flex items-center justify-center bg-white/10">
+							<div className="relative w-full h-full flex items-center justify-center bg-white/10">
 								{rightImg ? (
 									<CatImage
 										src={rightImg}
