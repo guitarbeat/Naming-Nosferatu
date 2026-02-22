@@ -127,8 +127,8 @@ describe("Server Routes (DB Mode)", () => {
 			const res = await request(app).delete("/api/names/123");
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			expect(dbMocks.delete).toHaveBeenCalled();
-			expect(dbMocks.deleteWhere).toHaveBeenCalled();
+			expect(dbMocks.update).toHaveBeenCalled();
+			expect(dbMocks.updateWhere).toHaveBeenCalled();
 		});
 	});
 
@@ -141,10 +141,11 @@ describe("Server Routes (DB Mode)", () => {
 
 			const mockQuery = Promise.resolve([]) as any;
 			mockQuery.returning = dbMocks.returning;
+			mockQuery.onConflictDoUpdate = vi.fn().mockReturnThis();
 			dbMocks.values.mockReturnValue(mockQuery);
 
 			const res = await request(app).post("/api/ratings").send({
-				userName: "testuser",
+				userId: "00000000-0000-0000-0000-000000000000",
 				ratings,
 			});
 
