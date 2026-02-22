@@ -359,7 +359,9 @@ router.post("/api/ratings", async (req, res) => {
 // Get analytics - popularity
 router.get("/api/analytics/popularity", async (req, res) => {
 	try {
-		const limit = parseInt(req.query.limit as string, 10) || 20;
+		// Limit to max 100 to prevent DoS
+		const rawLimit = parseInt(req.query.limit as string, 10) || 20;
+		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
 			return res.json(
@@ -423,12 +425,15 @@ router.get("/api/analytics/ranking-history", async (_req, res) => {
 // Get analytics - leaderboard
 router.get("/api/analytics/leaderboard", async (req, res) => {
 	try {
-		const limit = parseInt(req.query.limit as string, 10) || 50;
+		// Limit to max 100 to prevent DoS
+		const rawLimit = parseInt(req.query.limit as string, 10) || 50;
+		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
 			return res.json(
 				mockNames.slice(0, limit).map((n) => ({
 					nameId: n.id,
+					name: n.name,
 					avgRating: n.avgRating,
 					totalWins: Math.floor(Math.random() * 50),
 					totalLosses: Math.floor(Math.random() * 50),
@@ -468,14 +473,14 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 			});
 		}
 
-		const totalNames = await db
-			.select({ count: sql<number>`count(*)` })
-			.from(catNameOptions)
-			.where(eq(catNameOptions.isDeleted, false));
-		const totalRatings = await db.select({ count: sql<number>`count(*)` }).from(catNameRatings);
-		const totalUsers = await db
-			.select({ count: sql<number>`count(distinct user_id)` })
-			.from(catNameRatings);
+		const [totalNames, totalRatings, totalUsers] = await Promise.all([
+			db
+				.select({ count: sql<number>`count(*)` })
+				.from(catNameOptions)
+				.where(eq(catNameOptions.isDeleted, false)),
+			db.select({ count: sql<number>`count(*)` }).from(catNameRatings),
+			db.select({ count: sql<number>`count(distinct user_id)` }).from(catNameRatings),
+		]);
 
 		res.json({
 			totalNames: totalNames[0]?.count || 0,
