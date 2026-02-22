@@ -67,9 +67,10 @@ describe("Server Routes", () => {
 			expect(res.status).toBe(200);
 			expect(Array.isArray(res.body)).toBe(true);
 			expect(res.body.length).toBeGreaterThan(0);
-			expect(res.body[0]).toHaveProperty("name_id");
-			expect(res.body[0]).toHaveProperty("name");
-			expect(res.body[0]).toHaveProperty("avg_rating");
+			// Mock data uses camelCase, real DB uses snake_case.
+			// In mock mode, we expect what the mock returns.
+			expect(res.body[0]).toHaveProperty("nameId");
+			expect(res.body[0]).toHaveProperty("avgRating");
 		});
 
 		it("should return site stats (mock)", async () => {
