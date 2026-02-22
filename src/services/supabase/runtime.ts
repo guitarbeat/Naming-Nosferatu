@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@supabase/types";
+import type { Database } from "../../../supabase/types";
 import { QueryClient } from "@tanstack/react-query";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 
