@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useBrowserState } from "@/hooks/useBrowserState";
+import { useBrowserState } from "@/shared/hooks";
 
 interface OfflineIndicatorProps {
 	showWhenOnline?: boolean;
