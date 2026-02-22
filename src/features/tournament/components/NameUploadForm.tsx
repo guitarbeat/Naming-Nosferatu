@@ -4,8 +4,8 @@
  * Extracted from NameGrid to improve maintainability.
  */
 
-import { useCallback, useState } from "react";
-import { AlertCircle, CheckCircle, Loader2, Upload } from "@/icons";
+import { useCallback } from "react";
+import { Upload } from "@/icons";
 import { imagesAPI } from "@/services/supabase/client";
 import { compressImageFile, devError } from "@/shared/lib/basic";
 

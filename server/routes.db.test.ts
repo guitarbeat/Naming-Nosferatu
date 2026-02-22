@@ -131,13 +131,13 @@ describe("Server Routes (DB Mode)", () => {
 	});
 
 	describe("DELETE /api/names/:id", () => {
-		it("should delete name from DB", async () => {
+		it("should delete name from DB (soft delete)", async () => {
 			const res = await request(app).delete("/api/names/123");
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
 			// Soft delete uses update, not delete
 			expect(dbMocks.update).toHaveBeenCalled();
-			expect(dbMocks.updateWhere).toHaveBeenCalled();
+			expect(dbMocks.updateSet).toHaveBeenCalled();
 		});
 	});
 
@@ -154,7 +154,7 @@ describe("Server Routes (DB Mode)", () => {
 			dbMocks.values.mockReturnValue(mockQuery);
 
 			const res = await request(app).post("/api/ratings").send({
-				userId: "123e4567-e89b-12d3-a456-426614174000",
+				userId: "00000000-0000-0000-0000-000000000000",
 				ratings,
 			});
 

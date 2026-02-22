@@ -359,8 +359,9 @@ router.post("/api/ratings", async (req, res) => {
 // Get analytics - popularity
 router.get("/api/analytics/popularity", async (req, res) => {
 	try {
-		const parsedLimit = parseInt(req.query.limit as string, 10) || 20;
-		const limit = Math.min(Math.max(parsedLimit, 1), 100);
+		// Limit to max 100 to prevent DoS
+		const rawLimit = parseInt(req.query.limit as string, 10) || 20;
+		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
 			return res.json(
@@ -424,8 +425,9 @@ router.get("/api/analytics/ranking-history", async (_req, res) => {
 // Get analytics - leaderboard
 router.get("/api/analytics/leaderboard", async (req, res) => {
 	try {
-		const parsedLimit = parseInt(req.query.limit as string, 10) || 50;
-		const limit = Math.min(Math.max(parsedLimit, 1), 100);
+		// Limit to max 100 to prevent DoS
+		const rawLimit = parseInt(req.query.limit as string, 10) || 50;
+		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
 			return res.json(
