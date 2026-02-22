@@ -5,6 +5,7 @@
  */
 
 export {
+	AlertCircle,
 	BarChart3,
 	Cat,
 	Check,
