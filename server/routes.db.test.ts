@@ -21,7 +21,15 @@ const { dbMocks } = vi.hoisted(() => {
 
 	// Chainable mocks for INSERT
 	const returningMock = vi.fn().mockResolvedValue([{ id: "123", name: "Test Cat" }]);
-	const valuesMock = vi.fn().mockReturnValue({ returning: returningMock });
+	// onConflictDoUpdate needs to be chainable to returning, or just awaitable
+	// To make it awaitable (Promise-like) AND chainable, we can return the promise which has .returning attached?
+	// Or just verify the chain structure. Drizzle usually returns a query builder.
+	const onConflictDoUpdateMock = vi.fn().mockReturnValue({ returning: returningMock });
+	// valuesMock returns object with both returning and onConflictDoUpdate
+	const valuesMock = vi.fn().mockReturnValue({
+		returning: returningMock,
+		onConflictDoUpdate: onConflictDoUpdateMock,
+	});
 	const insertMock = vi.fn().mockReturnValue({ values: valuesMock });
 
 	// Chainable mocks for DELETE
