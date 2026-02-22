@@ -4,9 +4,9 @@
  * Extracted from NameGrid to improve maintainability.
  */
 
-import { imagesAPI } from "@/services/supabase/client";
 import { useCallback } from "react";
 import { Upload } from "@/icons";
+import { imagesAPI } from "@/services/supabase/client";
 import { compressImageFile, devError } from "@/shared/lib/basic";
 
 interface NameUploadFormProps {

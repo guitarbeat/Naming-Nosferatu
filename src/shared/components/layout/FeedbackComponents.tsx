@@ -18,8 +18,8 @@ import React, {
 	useMemo,
 	useState,
 } from "react";
-import { useBrowserState } from "@/shared/hooks";
 import { ErrorManager } from "@/services/errorManager";
+import { useBrowserState } from "@/shared/hooks";
 import { cn } from "@/shared/lib/basic";
 import { Cat, Copy, Heart, PawPrint } from "@/shared/lib/icons";
 import { GLASS_PRESETS } from "./GlassPresets";

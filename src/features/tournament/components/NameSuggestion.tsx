@@ -89,6 +89,8 @@ function InlineNameSuggestion() {
 							rows={3}
 							className="w-full px-4 py-3 font-medium backdrop-blur-sm resize-none"
 							disabled={isSubmitting}
+							maxLength={500}
+							showCount={true}
 						/>
 					</div>
 				</div>
@@ -290,6 +292,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 								maxLength={500}
 								rows={4}
 								error={touched.description ? errors.description : null}
+								showCount={true}
 							/>
 
 							{globalError && (

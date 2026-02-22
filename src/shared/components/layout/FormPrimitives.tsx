@@ -286,7 +286,9 @@ Input.displayName = "Input";
 interface TextareaProps
 	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "className">,
 		BaseFieldProps,
-		ValidationProps {}
+		ValidationProps {
+	showCount?: boolean;
+}
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 	(
@@ -299,6 +301,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			onValidationChange,
 			debounceMs = 300,
 			showSuccess = false,
+			showCount = false,
 			externalError,
 			externalTouched,
 			className = "",
@@ -336,6 +339,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			!isValidating &&
 			String(value || "").length > 0;
 
+		const currentLength = String(value || "").length;
+		const maxLength = props.maxLength;
+		const countId = `${id}-count`;
+
+		const describedBy = [
+			hasError ? `${id}-error` : undefined,
+			showCount && maxLength ? countId : undefined,
+		]
+			.filter(Boolean)
+			.join(" ");
+
 		return (
 			<FormField id={id} label={label} error={hasError ? currentError : null} required={required}>
 				<textarea
@@ -353,8 +367,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 						className,
 					)}
 					aria-invalid={hasError || undefined}
-					aria-describedby={hasError ? `${id}-error` : undefined}
+					aria-describedby={describedBy || undefined}
 				/>
+				{showCount && maxLength && (
+					<div
+						id={countId}
+						className="text-xs text-white/50 text-right font-medium tabular-nums px-1"
+					>
+						{currentLength}/{maxLength}
+					</div>
+				)}
 			</FormField>
 		);
 	},
