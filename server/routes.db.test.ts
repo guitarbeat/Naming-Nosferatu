@@ -135,9 +135,8 @@ describe("Server Routes (DB Mode)", () => {
 			const res = await request(app).delete("/api/names/123");
 			expect(res.status).toBe(200);
 			expect(res.body.success).toBe(true);
-			// Soft delete uses update, not delete
 			expect(dbMocks.update).toHaveBeenCalled();
-			expect(dbMocks.updateSet).toHaveBeenCalled();
+			expect(dbMocks.updateWhere).toHaveBeenCalled();
 		});
 	});
 
@@ -150,7 +149,7 @@ describe("Server Routes (DB Mode)", () => {
 
 			const mockQuery = Promise.resolve([]) as any;
 			mockQuery.returning = dbMocks.returning;
-			mockQuery.onConflictDoUpdate = vi.fn().mockResolvedValue([]);
+			mockQuery.onConflictDoUpdate = vi.fn().mockReturnThis();
 			dbMocks.values.mockReturnValue(mockQuery);
 
 			const res = await request(app).post("/api/ratings").send({

@@ -473,14 +473,14 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 			});
 		}
 
-		const totalNames = await db
-			.select({ count: sql<number>`count(*)` })
-			.from(catNameOptions)
-			.where(eq(catNameOptions.isDeleted, false));
-		const totalRatings = await db.select({ count: sql<number>`count(*)` }).from(catNameRatings);
-		const totalUsers = await db
-			.select({ count: sql<number>`count(distinct user_id)` })
-			.from(catNameRatings);
+		const [totalNames, totalRatings, totalUsers] = await Promise.all([
+			db
+				.select({ count: sql<number>`count(*)` })
+				.from(catNameOptions)
+				.where(eq(catNameOptions.isDeleted, false)),
+			db.select({ count: sql<number>`count(*)` }).from(catNameRatings),
+			db.select({ count: sql<number>`count(distinct user_id)` }).from(catNameRatings),
+		]);
 
 		res.json({
 			totalNames: totalNames[0]?.count || 0,
