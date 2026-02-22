@@ -10,7 +10,13 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use(cors());
+const corsOrigin = process.env.CORS_ORIGIN || process.env.VITE_APP_URL || "http://localhost:5173";
+app.use(
+	cors({
+		origin: corsOrigin,
+		credentials: true,
+	}),
+);
 app.use(express.json({ limit: "10mb" }));
 
 app.use(router);

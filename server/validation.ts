@@ -19,6 +19,19 @@ export const createUserSchema = z.object({
 	preferences: z.record(z.string(), z.any()).optional(),
 });
 
+export const updateHideSchema = z.object({
+	isHidden: z.boolean(),
+});
+
+export const updateLockSchema = z.object({
+	lockedIn: z.boolean(),
+});
+
+export const batchHideSchema = z.object({
+	nameIds: z.array(z.union([z.string(), z.number()])),
+	isHidden: z.boolean(),
+});
+
 export const saveRatingsSchema = z.object({
 	userId: z.string().uuid(),
 	ratings: z

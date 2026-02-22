@@ -10,7 +10,14 @@ import {
 } from "../shared/schema";
 import { requireAdmin } from "./auth";
 import { db } from "./db";
-import { createNameSchema, createUserSchema, saveRatingsSchema } from "./validation";
+import {
+	batchHideSchema,
+	createNameSchema,
+	createUserSchema,
+	saveRatingsSchema,
+	updateHideSchema,
+	updateLockSchema,
+} from "./validation";
 
 export const router = Router();
 
@@ -172,16 +179,19 @@ router.delete("/api/names-by-name/:name", requireAdmin, async (req, res) => {
 // Update hidden status
 router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 	try {
+		const { isHidden } = updateHideSchema.parse(req.body);
 		if (!db) {
 			return res.json({ success: true });
 		}
-		const { isHidden } = req.body;
 		await db
 			.update(catNameOptions)
 			.set({ isHidden })
 			.where(eq(catNameOptions.id, Number(req.params.id)));
 		res.json({ success: true });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		console.error("Error updating name:", error);
 		res.status(500).json({ success: false, error: "Failed to update name" });
 	}
@@ -190,7 +200,7 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 // Batch update hidden status
 router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
-		const { nameIds, isHidden } = req.body;
+		const { nameIds, isHidden } = batchHideSchema.parse(req.body);
 		// biome-ignore lint/suspicious/noExplicitAny: simple object type
 		const results: { nameId: any; success: boolean; error?: string }[] = [];
 
@@ -246,16 +256,19 @@ router.get("/api/hidden-names", requireAdmin, async (_req, res) => {
 // Update locked in status
 router.patch("/api/names/:id/lock", requireAdmin, async (req, res) => {
 	try {
+		const { lockedIn } = updateLockSchema.parse(req.body);
 		if (!db) {
 			return res.json({ success: true });
 		}
-		const { lockedIn } = req.body;
 		await db
 			.update(catNameOptions)
 			.set({ lockedIn })
 			.where(eq(catNameOptions.id, Number(req.params.id)));
 		res.json({ success: true });
 	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ success: false, error: error.errors });
+		}
 		console.error("Error locking name:", error);
 		res.status(500).json({ error: "Failed to lock name" });
 	}
@@ -490,6 +503,158 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 	} catch (error) {
 		console.error("Error fetching site stats:", error);
 		res.status(500).json({ error: "Failed to fetch site stats" });
+	}
+});
+
+// Get analytics - top-selected names (alias for popularity endpoint)
+router.get("/api/analytics/top-selected", async (req, res) => {
+	try {
+		const rawLimit = parseInt(req.query.limit as string, 10) || 50;
+		const limit = Math.min(Math.max(rawLimit, 1), 100);
+
+		if (!db) {
+			return res.json(
+				mockNames.slice(0, limit).map((n) => ({
+					nameId: n.id,
+					name: n.name,
+					times_selected: Math.floor(Math.random() * 100),
+				})),
+			);
+		}
+
+		const results = await db
+			.select({
+				nameId: catTournamentSelections.nameId,
+				name: catNameOptions.name,
+				times_selected: sql<number>`count(*)`,
+			})
+			.from(catTournamentSelections)
+			.innerJoin(catNameOptions, eq(catTournamentSelections.nameId, catNameOptions.id))
+			.groupBy(catTournamentSelections.nameId, catNameOptions.name)
+			.orderBy((_t) => desc(sql<number>`count(*)`))
+			.limit(limit);
+		res.json(results);
+	} catch (error) {
+		console.error("Error fetching top-selected names:", error);
+		res.status(500).json({ error: "Failed to fetch top-selected names" });
+	}
+});
+
+// Get analytics - popularity scores (combined popularity + rating data)
+router.get("/api/analytics/popularity-scores", async (req, res) => {
+	try {
+		const rawLimit = parseInt(req.query.limit as string, 10) || 50;
+		const limit = Math.min(Math.max(rawLimit, 1), 100);
+
+		if (!db) {
+			return res.json(
+				mockNames.slice(0, limit).map((n) => ({
+					nameId: n.id,
+					name: n.name,
+					avg_rating: n.avgRating,
+					total_wins: Math.floor(Math.random() * 50),
+					times_selected: Math.floor(Math.random() * 100),
+				})),
+			);
+		}
+
+		const results = await db
+			.select({
+				nameId: catNameRatings.nameId,
+				name: catNameOptions.name,
+				avg_rating: sql<number>`avg(cat_name_ratings.rating)`,
+				total_wins: sql<number>`sum(cat_name_ratings.wins)`,
+				times_selected: sql<number>`count(*)`,
+			})
+			.from(catNameRatings)
+			.innerJoin(catNameOptions, eq(catNameRatings.nameId, catNameOptions.id))
+			.groupBy(catNameRatings.nameId, catNameOptions.name)
+			.orderBy((_r) => desc(sql<number>`avg(cat_name_ratings.rating)`))
+			.limit(limit);
+		res.json(results);
+	} catch (error) {
+		console.error("Error fetching popularity scores:", error);
+		res.status(500).json({ error: "Failed to fetch popularity scores" });
+	}
+});
+
+// Get raw ratings for a user (used by personal analytics)
+router.get("/api/analytics/ratings-raw", async (req, res) => {
+	try {
+		const userName = req.query.userName as string | undefined;
+
+		if (!db) {
+			return res.json([]);
+		}
+
+		if (!userName) {
+			return res.status(400).json({ error: "userName query parameter is required" });
+		}
+
+		// Look up userId from userName
+		const [user] = await db
+			.select({ userId: catAppUsers.userId })
+			.from(catAppUsers)
+			.where(eq(catAppUsers.userName, userName))
+			.limit(1);
+
+		if (!user) {
+			return res.json([]);
+		}
+
+		const ratings = await db
+			.select({
+				nameId: catNameRatings.nameId,
+				rating: catNameRatings.rating,
+				wins: catNameRatings.wins,
+				losses: catNameRatings.losses,
+			})
+			.from(catNameRatings)
+			.where(eq(catNameRatings.userId, user.userId));
+
+		res.json(ratings);
+	} catch (error) {
+		console.error("Error fetching raw ratings:", error);
+		res.status(500).json({ error: "Failed to fetch raw ratings" });
+	}
+});
+
+// Get aggregated user stats
+router.get("/api/analytics/user-stats", async (req, res) => {
+	try {
+		const userName = req.query.userName as string | undefined;
+
+		if (!db) {
+			return res.json({ totalRatings: 0, totalWins: 0, totalLosses: 0 });
+		}
+
+		if (!userName) {
+			return res.status(400).json({ error: "userName query parameter is required" });
+		}
+
+		const [user] = await db
+			.select({ userId: catAppUsers.userId })
+			.from(catAppUsers)
+			.where(eq(catAppUsers.userName, userName))
+			.limit(1);
+
+		if (!user) {
+			return res.json({ totalRatings: 0, totalWins: 0, totalLosses: 0 });
+		}
+
+		const [stats] = await db
+			.select({
+				totalRatings: sql<number>`count(*)`,
+				totalWins: sql<number>`sum(cat_name_ratings.wins)`,
+				totalLosses: sql<number>`sum(cat_name_ratings.losses)`,
+			})
+			.from(catNameRatings)
+			.where(eq(catNameRatings.userId, user.userId));
+
+		res.json(stats ?? { totalRatings: 0, totalWins: 0, totalLosses: 0 });
+	} catch (error) {
+		console.error("Error fetching user stats:", error);
+		res.status(500).json({ error: "Failed to fetch user stats" });
 	}
 });
 

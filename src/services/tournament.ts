@@ -18,7 +18,8 @@ export class EloRating {
 	}
 	updateRating(r: number, exp: number, act: number, games = 0) {
 		const k = games < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD ? this.kFactor * 2 : this.kFactor;
-		return Math.round(r + k * (act - exp));
+		const updated = Math.round(r + k * (act - exp));
+		return Math.max(ELO_RATING.MIN_RATING, Math.min(ELO_RATING.MAX_RATING, updated));
 	}
 	calculateNewRatings(
 		ra: number,
@@ -90,7 +91,9 @@ export class PreferenceSorter {
 			return;
 		}
 		this.preferences.delete(lastMatch);
-		this.currentIndex = Math.max(0, this.currentIndex - 1);
+		// Reset currentIndex to the number of remaining preferences so that
+		// getNextMatch() re-scans from the correct position after an undo.
+		this.currentIndex = this.matchHistory.length;
 	}
 
 	getNextMatch() {
