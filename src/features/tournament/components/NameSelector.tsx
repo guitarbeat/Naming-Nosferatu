@@ -605,9 +605,9 @@ export function NameSelector() {
 									<motion.div
 										key={nameItem.id}
 										whileHover={{ y: -4, scale: 1.02 }}
-										className="group relative shrink-0 px-2 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] rounded-sm"
+										className="group relative shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] rounded-sm"
 									>
-										<div className="text-white font-bold text-[10px] xs:text-xs sm:text-sm md:text-base lg:text-lg">
+										<div className="text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg">
 											{nameItem.name}
 										</div>
 
@@ -638,12 +638,12 @@ export function NameSelector() {
 					<h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter leading-tight">
 						Choose Your Contenders
 					</h2>
-					<p className="text-slate-200 text-base leading-relaxed">
+					<p className="text-slate-200 text-sm sm:text-base leading-relaxed">
 						{isSwipeMode
 							? "Swipe right to select, left to skip • Use arrow keys or A/D • Ctrl+Z to undo • Select at least 2 names"
 							: "Click to select names • Select at least 2 names"}
 					</p>
-					<div className="flex items-center justify-center gap-4 text-sm text-slate-300">
+					<div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-300">
 						<span>
 							Selected: {selectedAvailableCount} / {availableNames.length}
 						</span>
@@ -907,7 +907,7 @@ export function NameSelector() {
 							);
 							return (
 								activeNames.length > 0 && (
-									<div className="grid grid-cols-2 min-[390px]:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
 										{activeNames.map((nameItem) => {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage =
@@ -927,13 +927,13 @@ export function NameSelector() {
 													whileHover={{ scale: 1.02 }}
 													whileTap={{ scale: 0.98 }}
 													transition={{ type: "spring", stiffness: 400, damping: 25 }}
-													className={`mobile-readable-card relative rounded-xl border-2 overflow-hidden cursor-pointer ${
+													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 overflow-hidden cursor-pointer ${
 														isSelected
 															? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
 															: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
 													} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
 												>
-													<div className="w-full relative aspect-[4/3] group/img">
+													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img">
 														<CatImage
 															src={catImage}
 															alt={nameItem.name}
@@ -943,10 +943,10 @@ export function NameSelector() {
 														/>
 
 														{/* Grid Name Overlay */}
-														<div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
+														<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
 															<div className="flex flex-col gap-0.5">
 																<div className="flex items-center justify-between gap-2">
-																	<span className="mobile-readable-title font-bold text-white text-sm sm:text-base leading-tight drop-shadow-md truncate">
+																	<span className="mobile-readable-title font-bold text-white text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
 																		{nameItem.name}
 																	</span>
 																	{isSelected && (
@@ -960,12 +960,12 @@ export function NameSelector() {
 																	)}
 																</div>
 																{nameItem.pronunciation && (
-																	<span className="mobile-readable-meta text-amber-300 text-xs sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+																	<span className="mobile-readable-meta text-amber-300 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
 																		[{nameItem.pronunciation}]
 																	</span>
 																)}
 																{nameItem.description && (
-																	<p className="mobile-readable-description text-white/95 text-xs sm:text-sm leading-snug line-clamp-3 mt-1 drop-shadow-sm italic">
+																	<p className="mobile-readable-description text-white/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
 																		{nameItem.description}
 																	</p>
 																)}
@@ -978,10 +978,10 @@ export function NameSelector() {
 																e.stopPropagation();
 																handleOpenLightbox(nameItem.id);
 															}}
-															className="absolute top-2 right-2 p-2 rounded-full bg-black/60 backdrop-blur-sm text-white opacity-100 md:opacity-0 md:group-hover/img:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/80 z-10"
+															className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-black/60 backdrop-blur-sm text-white opacity-100 md:opacity-0 md:group-hover/img:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/80 z-10"
 															aria-label="View full size"
 														>
-															<ZoomIn size={16} />
+															<ZoomIn size={14} />
 														</button>
 													</div>
 													{isAdmin && !isSwipeMode && (
@@ -1116,8 +1116,8 @@ export function NameSelector() {
 										tabIndex={0}
 										className="select-none"
 									>
-										<button
-											type="button"
+											<button
+												type="button"
 											onClick={() => {
 												if (!hiddenPanel.isCollapsed) {
 													hiddenPanel.collapse();
@@ -1128,9 +1128,9 @@ export function NameSelector() {
 											}}
 											aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
 											aria-controls="hidden-names-panel"
-											className="w-full flex items-center justify-between gap-3"
-										>
-											<div className="flex items-center gap-2">
+												className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
+											>
+												<div className="flex items-center gap-2">
 												<span className="text-white/60">
 													{hiddenPanel.isCollapsed ? (
 														<ChevronRight size={20} />
@@ -1138,15 +1138,15 @@ export function NameSelector() {
 														<ChevronDown size={20} />
 													)}
 												</span>
-												<span className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
-													Hidden Names ({hiddenNamesAll.length})
-												</span>
-											</div>
-											<span className="text-xs text-white/60">Hold to expand</span>
-										</button>
+													<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+														Hidden Names ({hiddenNamesAll.length})
+													</span>
+												</div>
+												<span className="text-[11px] sm:text-xs text-white/60">Hold to expand</span>
+											</button>
 
-										{hiddenPanel.isCollapsed && (
-											<div className="mt-3 grid grid-cols-6 gap-2">
+											{hiddenPanel.isCollapsed && (
+												<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
 												{previewItems.map((n) => {
 													const img = catImageById.get(n.id) ?? getRandomCatImage(n.id, CAT_IMAGES);
 													return (
@@ -1200,8 +1200,8 @@ export function NameSelector() {
 												</div>
 											</div>
 
-											<div className="grid grid-cols-2 min-[390px]:grid-cols-3 md:grid-cols-4 gap-3">
-												{renderItems.map((nameItem) => {
+												<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
+													{renderItems.map((nameItem) => {
 													const isSelected = selectedNames.has(nameItem.id);
 													const catImage =
 														catImageById.get(nameItem.id) ??
@@ -1218,13 +1218,13 @@ export function NameSelector() {
 															}}
 															role="button"
 															tabIndex={0}
-															className={`mobile-readable-card relative rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+															className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
 																isSelected
 																	? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
 																	: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
 															}`}
 														>
-															<div className="aspect-[4/3] w-full relative group/hidden">
+															<div className="aspect-[5/4] sm:aspect-[4/3] w-full relative group/hidden">
 																<CatImage
 																	src={catImage}
 																	alt={nameItem.name}
@@ -1234,10 +1234,10 @@ export function NameSelector() {
 																/>
 
 																{/* Hidden Grid Name Overlay */}
-																<div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
+																<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
 																	<div className="flex flex-col gap-0.5">
 																		<div className="flex items-center justify-between gap-2">
-																			<span className="mobile-readable-title font-bold text-white text-sm sm:text-base leading-tight drop-shadow-md truncate">
+																			<span className="mobile-readable-title font-bold text-white text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
 																				{nameItem.name}
 																			</span>
 																			{isSelected && (
@@ -1251,12 +1251,12 @@ export function NameSelector() {
 																			)}
 																		</div>
 																		{nameItem.pronunciation && (
-																			<span className="mobile-readable-meta text-amber-300 text-xs sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+																			<span className="mobile-readable-meta text-amber-300 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
 																				[{nameItem.pronunciation}]
 																			</span>
 																		)}
 																		{nameItem.description && (
-																			<p className="mobile-readable-description text-white/95 text-xs sm:text-sm leading-snug line-clamp-3 mt-1 drop-shadow-sm italic">
+																			<p className="mobile-readable-description text-white/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
 																				{nameItem.description}
 																			</p>
 																		)}
@@ -1269,10 +1269,10 @@ export function NameSelector() {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-2 right-2 p-2 rounded-full bg-black/60 backdrop-blur-sm text-white opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/80 z-10"
+																	className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-black/60 backdrop-blur-sm text-white opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none transition-opacity hover:bg-black/80 z-10"
 																	aria-label="View full size"
 																>
-																	<ZoomIn size={16} />
+																	<ZoomIn size={14} />
 																</button>
 															</div>
 															{isAdmin && (

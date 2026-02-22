@@ -33,6 +33,5 @@ export {
 	default as LiquidGlass,
 	resolveGlassConfig,
 } from "./LiquidGlass";
-export { default as LiquidGradientBackground } from "./LiquidGradientBackground";
 export { AnimatedNavButton, NavButton } from "./NavButton";
 export { Section } from "./Section";

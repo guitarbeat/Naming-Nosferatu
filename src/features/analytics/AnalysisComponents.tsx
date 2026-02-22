@@ -13,9 +13,13 @@ import {
 } from "@heroui/react";
 import type React from "react";
 import { useCallback, useMemo } from "react";
+import type {
+	ConsolidatedName,
+	NameWithInsight,
+	SummaryStats,
+} from "@/services/analytics/analyticsService";
 import { Card, CollapsibleHeader, PerformanceBadges } from "@/shared/components/layout";
 import { devError, formatDate, getMetricLabel, getRankDisplay } from "@/shared/lib/basic";
-import type { ConsolidatedName, NameWithInsight, SummaryStats } from "./analyticsService";
 
 // --- AnalysisPanel ---
 

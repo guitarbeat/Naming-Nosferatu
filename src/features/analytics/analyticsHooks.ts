@@ -5,15 +5,17 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { analyticsAPI, leaderboardAPI, statsAPI } from "@/features/analytics/analyticsService";
+import {
+	type AnalyticsDataItem,
+	analyticsAPI,
+	type ConsolidatedName,
+	type HighlightItem,
+	type LeaderboardItem,
+	leaderboardAPI,
+	type SelectionPopularityItem,
+	statsAPI,
+} from "@/services/analytics/analyticsService";
 import { calculatePercentile } from "@/shared/lib/basic";
-import type {
-	AnalyticsDataItem,
-	ConsolidatedName,
-	HighlightItem,
-	LeaderboardItem,
-	SelectionPopularityItem,
-} from "./analyticsService";
 
 /* ==========================================================================
    DATA FETCHING HOOK

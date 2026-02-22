@@ -24,7 +24,7 @@
 	animation: float 15s ease-in-out infinite;
 }
 
-/* Cat Background with Sparkles - Commented out to allow LiquidGradientBackground to show through */
+/* Legacy cat background snippet (currently unused) */
 /* 
 .cat-background {
 	position: fixed;

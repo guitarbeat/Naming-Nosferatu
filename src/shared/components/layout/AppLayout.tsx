@@ -1,6 +1,6 @@
 /**
  * @module AppLayout
- * @description Main application layout component with FluidNav and background effects
+ * @description Main application layout component with FluidNav
  */
 
 import { useMemo } from "react";
@@ -12,8 +12,6 @@ import {
 	OfflineIndicator,
 } from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
-// import CatBackground from "@/shared/components/layout/LayoutEffects"; // Replaced with LiquidGradientBackground
-import LiquidGradientBackground from "@/shared/components/layout/LiquidGradientBackground";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
@@ -43,9 +41,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 				>
 					Skip to main content
 				</a>
-
-				{/* <CatBackground /> */}
-				<LiquidGradientBackground />
 
 				<FloatingNavbar />
 

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { coreAPI } from "@/services/supabase/client";
+import { useLocalStorage } from "@/shared/hooks";
 import type { NameItem } from "@/shared/types";
 
 /* =========================================================================

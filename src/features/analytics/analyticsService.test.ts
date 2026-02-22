@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { leaderboardAPI } from "@/services/analytics/analyticsService";
 import { api } from "@/services/apiClient";
-import { leaderboardAPI } from "./analyticsService";
 
 vi.mock("@/services/apiClient", () => ({
 	api: {

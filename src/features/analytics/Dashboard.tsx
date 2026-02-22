@@ -334,4 +334,3 @@ export function Dashboard({
 		</div>
 	);
 }
-// Alias for compatibility

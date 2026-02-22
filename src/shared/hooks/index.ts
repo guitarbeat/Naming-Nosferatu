@@ -126,12 +126,6 @@ export function useMediaQuery(query: string): boolean {
 // useBrowserState
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/** Customizable responsive breakpoints (in pixels). */
-interface Breakpoints {
-	mobile: number;
-	tablet: number;
-}
-
 /**
  * All-in-one hook for responsive design, network status, and accessibility prefs.
  * Internally coalesces updates via `requestAnimationFrame`.
