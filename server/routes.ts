@@ -431,6 +431,7 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 			return res.json(
 				mockNames.slice(0, limit).map((n) => ({
 					nameId: n.id,
+					name: n.name,
 					avgRating: n.avgRating,
 					totalWins: Math.floor(Math.random() * 50),
 					totalLosses: Math.floor(Math.random() * 50),
