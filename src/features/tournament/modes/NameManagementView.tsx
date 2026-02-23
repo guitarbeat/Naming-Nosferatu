@@ -14,7 +14,7 @@ import type {
 	NameItem,
 	NameManagementViewExtensions,
 	UseNameManagementViewProps,
-} from "@/types/appTypes";
+} from "@/shared/types";
 import { ManagementMode } from "./ManagementMode";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {

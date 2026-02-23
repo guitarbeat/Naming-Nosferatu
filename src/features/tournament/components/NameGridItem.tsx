@@ -9,7 +9,7 @@ import { memo, useCallback, useMemo } from "react";
 import { getRandomCatImage } from "@/services/tournament";
 import { CardName } from "@/shared/components/layout/Card";
 import { cn, isNameHidden } from "@/shared/lib/basic";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 
 interface NameGridItemProps {
 	nameObj: NameItem;

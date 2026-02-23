@@ -20,7 +20,7 @@
  *
  * - **No external service imports.** API calls are injected via action
  *   parameters or called by the consumer — keeps the store testable.
- * - **Domain types imported from `@/types/appTypes`.** The types file is
+ * - **Domain types imported from `@/shared/types`.** The types file is
  *   the single source of truth; this file only adds action interfaces.
  * - **Theme listener is properly scoped.** `setTheme` tears down the
  *   previous `matchMedia` listener before attaching a new one (no leak).

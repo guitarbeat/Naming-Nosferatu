@@ -19,9 +19,6 @@
  * - {@link useLocalStorage}   — localStorage with cross-tab sync & functional updates
  * - {@link useCollapsible}    — Collapsible state with optional persistence
  *
- * **Layout**
- * - {@link useMasonryLayout}  — Dynamic masonry grid positioning
- *
  * **Forms**
  * - {@link useValidatedForm}  — Lightweight form state + validation
  */
@@ -366,9 +363,3 @@ export function useCollapsible(defaultValue = false, storageKey?: string): Colla
 
 	return { isCollapsed: value, toggle, collapse, expand, set };
 }
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// useMasonryLayout
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════════════════════════

@@ -10,6 +10,7 @@ import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
+import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
@@ -29,7 +30,6 @@ import {
 } from "@/shared/lib/icons";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import CatImage from "./CatImage";
 
 const SWIPE_OFFSET_THRESHOLD = 100;
 const SWIPE_VELOCITY_THRESHOLD = 500;
@@ -1116,8 +1116,8 @@ export function NameSelector() {
 										tabIndex={0}
 										className="select-none"
 									>
-											<button
-												type="button"
+										<button
+											type="button"
 											onClick={() => {
 												if (!hiddenPanel.isCollapsed) {
 													hiddenPanel.collapse();
@@ -1128,9 +1128,9 @@ export function NameSelector() {
 											}}
 											aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
 											aria-controls="hidden-names-panel"
-												className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
-											>
-												<div className="flex items-center gap-2">
+											className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
+										>
+											<div className="flex items-center gap-2">
 												<span className="text-white/60">
 													{hiddenPanel.isCollapsed ? (
 														<ChevronRight size={20} />
@@ -1138,15 +1138,15 @@ export function NameSelector() {
 														<ChevronDown size={20} />
 													)}
 												</span>
-													<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
-														Hidden Names ({hiddenNamesAll.length})
-													</span>
-												</div>
-												<span className="text-[11px] sm:text-xs text-white/60">Hold to expand</span>
-											</button>
+												<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+													Hidden Names ({hiddenNamesAll.length})
+												</span>
+											</div>
+											<span className="text-[11px] sm:text-xs text-white/60">Hold to expand</span>
+										</button>
 
-											{hiddenPanel.isCollapsed && (
-												<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
+										{hiddenPanel.isCollapsed && (
+											<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
 												{previewItems.map((n) => {
 													const img = catImageById.get(n.id) ?? getRandomCatImage(n.id, CAT_IMAGES);
 													return (
@@ -1200,8 +1200,8 @@ export function NameSelector() {
 												</div>
 											</div>
 
-												<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
-													{renderItems.map((nameItem) => {
+											<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
+												{renderItems.map((nameItem) => {
 													const isSelected = selectedNames.has(nameItem.id);
 													const catImage =
 														catImageById.get(nameItem.id) ??

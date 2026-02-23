@@ -5,10 +5,10 @@
  */
 
 import { useEffect, useState } from "react";
-import { LogOut, Pencil, User } from "@/icons";
 import { Button, Input, LiquidGlass, Section } from "@/shared/components/layout";
 import { getGlassPreset } from "@/shared/components/layout/GlassPresets";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { LogOut, Pencil, User } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
 
 interface ProfileSectionProps {

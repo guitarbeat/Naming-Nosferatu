@@ -9,6 +9,7 @@ export {
 	type CardStatsProps,
 	type GlassConfig,
 } from "./Card/index";
+export { default as CatImage } from "./CatImage";
 export { BumpChart } from "./Charts";
 export { CollapsibleContent, CollapsibleHeader } from "./CollapsibleHeader";
 export { EmptyState } from "./EmptyState";
@@ -25,8 +26,6 @@ export {
 } from "./Feedback";
 export { FluidNav } from "./FluidNav";
 export { Input, Textarea } from "./FormPrimitives";
-// LayoutEffects.tsx is missing in HEAD, so these are removed:
-// export { BongoCat, default as CatBackground, FloatingBubblesContainer } from "./LayoutEffects";
 export { Lightbox } from "./Lightbox";
 export {
 	DEFAULT_GLASS_CONFIG,

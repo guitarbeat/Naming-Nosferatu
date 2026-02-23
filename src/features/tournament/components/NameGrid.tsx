@@ -13,7 +13,7 @@ import {
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
 } from "@/shared/lib/basic";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/shared/types";
 import { NameGridItem } from "./NameGridItem";
 import { NameUploadForm } from "./NameUploadForm";
 

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/shared/components/layout/Card";
+import CatImage from "@/shared/components/layout/CatImage";
 import { ErrorComponent } from "@/shared/components/layout/Feedback";
 import {
 	exportTournamentResultsToCSV,
@@ -10,7 +11,6 @@ import {
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import CatImage from "./components/CatImage";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
@@ -660,7 +660,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 										className="glass-panel py-1.5 px-2 rounded-full flex items-center justify-center border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors w-full"
 										title="Quit tournament"
 									>
-										<span className="material-symbols-outlined text-sm text-red-400">exit_to_app</span>
+										<span className="material-symbols-outlined text-sm text-red-400">
+											exit_to_app
+										</span>
 									</button>
 								)}
 							</div>

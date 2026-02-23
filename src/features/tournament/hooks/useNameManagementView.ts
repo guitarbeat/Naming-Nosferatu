@@ -4,13 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useNameData, useNameSelection } from "@/hooks/useNames";
 import { applyNameFilters, mapFilterStatusToVisibility } from "@/shared/lib/basic";
 import { FILTER_OPTIONS } from "@/shared/lib/constants";
-import useAppStore from "@/store/appStore";
 import type {
 	NameItem,
 	TournamentFilters,
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
-} from "@/types/appTypes";
+} from "@/shared/types";
+import useAppStore from "@/store/appStore";
 
 export function useNameManagementView({
 	mode,

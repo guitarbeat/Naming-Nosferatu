@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { memo, useCallback } from "react";
-import { Layers, LayoutGrid } from "@/icons";
 import { Button, CardStats, EmptyState } from "@/shared/components/layout";
+import { Layers, LayoutGrid } from "@/shared/lib/icons";
+import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
 import { NameGrid } from "../components/NameGrid";
 import { ProfileSection } from "../components/ProfileSection";
 import { SwipeableCards } from "../components/SwipeableCards";

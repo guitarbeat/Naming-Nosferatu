@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { UseNameManagementViewResult } from "@/types/appTypes";
+import type { UseNameManagementViewResult } from "@/shared/types";
 
 const NameManagementContext = createContext<UseNameManagementViewResult | null>(null);
 

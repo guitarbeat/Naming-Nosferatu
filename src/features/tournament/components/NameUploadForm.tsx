@@ -5,9 +5,9 @@
  */
 
 import { useCallback, useState } from "react";
-import { AlertCircle, CheckCircle, Loader2, Upload } from "@/icons";
 import { imagesAPI } from "@/services/supabase/client";
 import { compressImageFile, devError } from "@/shared/lib/basic";
+import { AlertCircle, CheckCircle, Loader2, Upload } from "@/shared/lib/icons";
 
 interface NameUploadFormProps {
 	onImagesUploaded: (uploadedPaths: string[]) => void;

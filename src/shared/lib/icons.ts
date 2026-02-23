@@ -9,6 +9,7 @@
 
 export type { LucideIcon } from "lucide-react";
 export {
+	AlertCircle,
 	BarChart3,
 	Cat,
 	Check,
@@ -30,10 +31,12 @@ export {
 	Lock,
 	LogOut,
 	PawPrint,
+	Pencil,
 	Plus,
 	Save,
 	Shuffle,
 	Trophy,
+	Upload,
 	User,
 	X,
 	ZoomIn,

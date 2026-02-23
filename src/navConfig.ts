@@ -4,7 +4,15 @@
  * Extracted from FluidNav.tsx to consolidate nav configuration.
  */
 
-import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/icons";
+import {
+	BarChart3,
+	CheckCircle,
+	Layers,
+	LayoutGrid,
+	Lightbulb,
+	Trophy,
+	User,
+} from "@/shared/lib/icons";
 
 /** Map navigation keys to section IDs (for scroll targeting) */
 export const keyToSectionId: Record<string, string> = {

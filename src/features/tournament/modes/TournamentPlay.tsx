@@ -1,5 +1,5 @@
 import Tournament from "@/features/tournament/Tournament";
-import type { TournamentProps } from "@/types/appTypes";
+import type { TournamentProps } from "@/shared/types";
 
 export default function TournamentPlay({
 	names,

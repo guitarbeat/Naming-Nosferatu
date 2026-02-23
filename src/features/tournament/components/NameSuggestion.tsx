@@ -6,9 +6,9 @@
 
 import { useCallback, useEffect, useId, useRef } from "react";
 import { useNameSuggestion } from "@/hooks/useNames";
-import { X } from "@/icons";
 import { Button, Input, LiquidGlass, Textarea } from "@/shared/components/layout";
 import { getGlassPreset } from "@/shared/components/layout/GlassPresets";
+import { X } from "@/shared/lib/icons";
 
 // ============================================================================
 // TYPES
