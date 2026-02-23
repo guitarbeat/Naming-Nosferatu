@@ -54,4 +54,3 @@ export {
 	ZoomIn,
 	ZoomOut,
 } from "lucide-react";
-// All icons exported from here to ensure consistency across the application
