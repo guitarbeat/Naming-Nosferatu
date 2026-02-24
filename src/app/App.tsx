@@ -88,7 +88,6 @@ function App() {
                                                 }
                                         />
                                         <Route path="/analysis" element={<AnalysisContent />} />
-                                        <Route path="/analaysis" element={<Navigate to="/analysis" replace={true} />} />
                                         <Route path="/admin" element={<AdminContent />} />
                                 </Routes>
                         </AppLayout>
