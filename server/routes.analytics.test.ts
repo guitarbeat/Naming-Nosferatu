@@ -24,7 +24,7 @@ vi.mock("./db", () => ({
 	},
 }));
 
-import { router } from "./routes";
+import { analyticsCache, router } from "./routes";
 
 const app = express();
 app.use(express.json());
@@ -33,6 +33,7 @@ app.use(router);
 describe("Analytics Routes", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		analyticsCache.clear();
 	});
 
 	describe("GET /api/analytics/site-stats", () => {

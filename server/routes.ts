@@ -9,6 +9,7 @@ import {
 	userRoles,
 } from "../shared/schema";
 import { requireAdmin } from "./auth";
+import { SimpleCache } from "./cache";
 import { db } from "./db";
 import {
 	batchHideSchema,
@@ -20,6 +21,8 @@ import {
 } from "./validation";
 
 export const router = Router();
+// biome-ignore lint/suspicious/noExplicitAny: Cache can hold various response types
+export const analyticsCache = new SimpleCache<any>(60); // Cache for 60 seconds
 
 // Mock data for when database is unavailable
 const mockNames = [
@@ -371,19 +374,25 @@ router.post("/api/ratings", async (req, res) => {
 
 // Get analytics - popularity
 router.get("/api/analytics/popularity", async (req, res) => {
+	const cacheKey = req.originalUrl;
+	const cached = analyticsCache.get(cacheKey);
+	if (cached) {
+		return res.json(cached);
+	}
+
 	try {
 		// Limit to max 100 to prevent DoS
 		const rawLimit = parseInt(req.query.limit as string, 10) || 20;
 		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
-			return res.json(
-				mockNames.slice(0, limit).map((n) => ({
-					nameId: n.id,
-					name: n.name,
-					count: Math.floor(Math.random() * 100),
-				})),
-			);
+			const mock = mockNames.slice(0, limit).map((n) => ({
+				nameId: n.id,
+				name: n.name,
+				count: Math.floor(Math.random() * 100),
+			}));
+			analyticsCache.set(cacheKey, mock);
+			return res.json(mock);
 		}
 
 		const results = await db
@@ -397,6 +406,8 @@ router.get("/api/analytics/popularity", async (req, res) => {
 			.groupBy(catTournamentSelections.nameId, catNameOptions.name)
 			.orderBy((_t) => desc(sql<number>`count(*)`))
 			.limit(limit);
+
+		analyticsCache.set(cacheKey, results);
 		res.json(results);
 	} catch (error) {
 		console.error("Error fetching popularity:", error);
@@ -405,16 +416,22 @@ router.get("/api/analytics/popularity", async (req, res) => {
 });
 
 // Get analytics - ranking history
-router.get("/api/analytics/ranking-history", async (_req, res) => {
+router.get("/api/analytics/ranking-history", async (req, res) => {
+	const cacheKey = req.originalUrl;
+	const cached = analyticsCache.get(cacheKey);
+	if (cached) {
+		return res.json(cached);
+	}
+
 	try {
 		if (!db) {
-			return res.json(
-				mockNames.map((n) => ({
-					nameId: n.id,
-					name: n.name,
-					avgRating: n.avgRating,
-				})),
-			);
+			const mock = mockNames.map((n) => ({
+				nameId: n.id,
+				name: n.name,
+				avgRating: n.avgRating,
+			}));
+			analyticsCache.set(cacheKey, mock);
+			return res.json(mock);
 		}
 
 		const ratings = await db
@@ -428,6 +445,7 @@ router.get("/api/analytics/ranking-history", async (_req, res) => {
 			.groupBy(catNameRatings.nameId, catNameOptions.name)
 			.limit(100);
 
+		analyticsCache.set(cacheKey, ratings);
 		res.json(ratings);
 	} catch (error) {
 		console.error("Error fetching ranking history:", error);
@@ -437,21 +455,27 @@ router.get("/api/analytics/ranking-history", async (_req, res) => {
 
 // Get analytics - leaderboard
 router.get("/api/analytics/leaderboard", async (req, res) => {
+	const cacheKey = req.originalUrl;
+	const cached = analyticsCache.get(cacheKey);
+	if (cached) {
+		return res.json(cached);
+	}
+
 	try {
 		// Limit to max 100 to prevent DoS
 		const rawLimit = parseInt(req.query.limit as string, 10) || 50;
 		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
-			return res.json(
-				mockNames.slice(0, limit).map((n) => ({
-					nameId: n.id,
-					name: n.name,
-					avgRating: n.avgRating,
-					totalWins: Math.floor(Math.random() * 50),
-					totalLosses: Math.floor(Math.random() * 50),
-				})),
-			);
+			const mock = mockNames.slice(0, limit).map((n) => ({
+				nameId: n.id,
+				name: n.name,
+				avgRating: n.avgRating,
+				totalWins: Math.floor(Math.random() * 50),
+				totalLosses: Math.floor(Math.random() * 50),
+			}));
+			analyticsCache.set(cacheKey, mock);
+			return res.json(mock);
 		}
 
 		const ratings = await db
@@ -468,6 +492,7 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 			.orderBy((_r) => desc(sql<number>`avg(cat_name_ratings.rating)`))
 			.limit(limit);
 
+		analyticsCache.set(cacheKey, ratings);
 		res.json(ratings);
 	} catch (error) {
 		console.error("Error fetching leaderboard:", error);
@@ -476,14 +501,22 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 });
 
 // Site stats
-router.get("/api/analytics/site-stats", async (_req, res) => {
+router.get("/api/analytics/site-stats", async (req, res) => {
+	const cacheKey = req.originalUrl;
+	const cached = analyticsCache.get(cacheKey);
+	if (cached) {
+		return res.json(cached);
+	}
+
 	try {
 		if (!db) {
-			return res.json({
+			const mock = {
 				totalNames: mockNames.length,
 				totalRatings: Math.floor(Math.random() * 500),
 				totalUsers: Math.floor(Math.random() * 50),
-			});
+			};
+			analyticsCache.set(cacheKey, mock);
+			return res.json(mock);
 		}
 
 		const [totalNames, totalRatings, totalUsers] = await Promise.all([
@@ -495,11 +528,13 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 			db.select({ count: sql<number>`count(distinct user_id)` }).from(catNameRatings),
 		]);
 
-		res.json({
+		const results = {
 			totalNames: totalNames[0]?.count || 0,
 			totalRatings: totalRatings[0]?.count || 0,
 			totalUsers: totalUsers[0]?.count || 0,
-		});
+		};
+		analyticsCache.set(cacheKey, results);
+		res.json(results);
 	} catch (error) {
 		console.error("Error fetching site stats:", error);
 		res.status(500).json({ error: "Failed to fetch site stats" });
@@ -508,18 +543,24 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 
 // Get analytics - top-selected names (alias for popularity endpoint)
 router.get("/api/analytics/top-selected", async (req, res) => {
+	const cacheKey = req.originalUrl;
+	const cached = analyticsCache.get(cacheKey);
+	if (cached) {
+		return res.json(cached);
+	}
+
 	try {
 		const rawLimit = parseInt(req.query.limit as string, 10) || 50;
 		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
-			return res.json(
-				mockNames.slice(0, limit).map((n) => ({
-					nameId: n.id,
-					name: n.name,
-					times_selected: Math.floor(Math.random() * 100),
-				})),
-			);
+			const mock = mockNames.slice(0, limit).map((n) => ({
+				nameId: n.id,
+				name: n.name,
+				times_selected: Math.floor(Math.random() * 100),
+			}));
+			analyticsCache.set(cacheKey, mock);
+			return res.json(mock);
 		}
 
 		const results = await db
@@ -533,6 +574,8 @@ router.get("/api/analytics/top-selected", async (req, res) => {
 			.groupBy(catTournamentSelections.nameId, catNameOptions.name)
 			.orderBy((_t) => desc(sql<number>`count(*)`))
 			.limit(limit);
+
+		analyticsCache.set(cacheKey, results);
 		res.json(results);
 	} catch (error) {
 		console.error("Error fetching top-selected names:", error);
@@ -542,20 +585,26 @@ router.get("/api/analytics/top-selected", async (req, res) => {
 
 // Get analytics - popularity scores (combined popularity + rating data)
 router.get("/api/analytics/popularity-scores", async (req, res) => {
+	const cacheKey = req.originalUrl;
+	const cached = analyticsCache.get(cacheKey);
+	if (cached) {
+		return res.json(cached);
+	}
+
 	try {
 		const rawLimit = parseInt(req.query.limit as string, 10) || 50;
 		const limit = Math.min(Math.max(rawLimit, 1), 100);
 
 		if (!db) {
-			return res.json(
-				mockNames.slice(0, limit).map((n) => ({
-					nameId: n.id,
-					name: n.name,
-					avg_rating: n.avgRating,
-					total_wins: Math.floor(Math.random() * 50),
-					times_selected: Math.floor(Math.random() * 100),
-				})),
-			);
+			const mock = mockNames.slice(0, limit).map((n) => ({
+				nameId: n.id,
+				name: n.name,
+				avg_rating: n.avgRating,
+				total_wins: Math.floor(Math.random() * 50),
+				times_selected: Math.floor(Math.random() * 100),
+			}));
+			analyticsCache.set(cacheKey, mock);
+			return res.json(mock);
 		}
 
 		const results = await db
@@ -571,6 +620,8 @@ router.get("/api/analytics/popularity-scores", async (req, res) => {
 			.groupBy(catNameRatings.nameId, catNameOptions.name)
 			.orderBy((_r) => desc(sql<number>`avg(cat_name_ratings.rating)`))
 			.limit(limit);
+
+		analyticsCache.set(cacheKey, results);
 		res.json(results);
 	} catch (error) {
 		console.error("Error fetching popularity scores:", error);
