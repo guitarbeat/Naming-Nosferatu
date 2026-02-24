@@ -34,7 +34,9 @@ function App() {
 
         // Sync auth user with store
         useEffect(() => {
-                userActions.setAdminStatus(Boolean(authUser?.isAdmin));
+                if (authUser) {
+                        userActions.setAdminStatus(Boolean(authUser.isAdmin));
+                }
         }, [authUser, userActions]);
 
         useEffect(() => {
