@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createNameSchema } from "./validation";
+import { batchHideSchema, createNameSchema, saveRatingsSchema } from "./validation";
 
 describe("Validation Schemas", () => {
-	it("createNameSchema should validate status and provenance", () => {
+	// createNameSchema tests
+	it("createNameSchema should strip status and provenance", () => {
 		const input = {
 			name: "Test Cat",
 			description: "A secure cat",
@@ -17,29 +18,11 @@ describe("Validation Schemas", () => {
 			],
 		};
 
-		const result = createNameSchema.parse(input);
+		const result = createNameSchema.parse(input) as any;
 
 		expect(result).toHaveProperty("name", "Test Cat");
-		expect(result).toHaveProperty("status", "approved");
-		expect(result).toHaveProperty("provenance");
-		expect(result.provenance).toHaveLength(1);
-		expect(result.provenance?.[0].action).toBe("created");
-	});
-
-	it("createNameSchema should reject invalid provenance", () => {
-		const input = {
-			name: "Test Cat",
-			provenance: { source: "hacker" },
-		};
-		expect(() => createNameSchema.parse(input)).toThrow();
-	});
-
-	it("createNameSchema should reject invalid provenance entries", () => {
-		const input = {
-			name: "Test Cat",
-			provenance: [{ source: "hacker" }],
-		};
-		expect(() => createNameSchema.parse(input)).toThrow();
+		expect(result).not.toHaveProperty("status");
+		expect(result).not.toHaveProperty("provenance");
 	});
 
 	it("createNameSchema should allow valid inputs without optional fields", () => {
@@ -47,10 +30,50 @@ describe("Validation Schemas", () => {
 			name: "Valid Cat",
 			description: "Just a cat",
 		};
-		const result = createNameSchema.parse(input);
+		const result = createNameSchema.parse(input) as any;
 		expect(result.name).toBe("Valid Cat");
 		expect(result.description).toBe("Just a cat");
 		expect(result.status).toBeUndefined();
 		expect(result.provenance).toBeUndefined();
+	});
+
+	// batchHideSchema tests
+	it("batchHideSchema should enforce max array length", () => {
+		const input = {
+			isHidden: true,
+			nameIds: Array.from({ length: 101 }, (_, i) => i),
+		};
+		expect(() => batchHideSchema.parse(input)).toThrow();
+	});
+
+	it("batchHideSchema should allow valid array length", () => {
+		const input = {
+			isHidden: true,
+			nameIds: Array.from({ length: 100 }, (_, i) => i),
+		};
+		expect(() => batchHideSchema.parse(input)).not.toThrow();
+	});
+
+	// saveRatingsSchema tests
+	it("saveRatingsSchema should enforce max array length", () => {
+		const input = {
+			userId: "00000000-0000-0000-0000-000000000000",
+			ratings: Array.from({ length: 101 }, (_, i) => ({
+				nameId: i,
+				rating: 1500,
+			})),
+		};
+		expect(() => saveRatingsSchema.parse(input)).toThrow();
+	});
+
+	it("saveRatingsSchema should allow valid array length", () => {
+		const input = {
+			userId: "00000000-0000-0000-0000-000000000000",
+			ratings: Array.from({ length: 100 }, (_, i) => ({
+				nameId: i,
+				rating: 1500,
+			})),
+		};
+		expect(() => saveRatingsSchema.parse(input)).not.toThrow();
 	});
 });

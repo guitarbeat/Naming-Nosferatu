@@ -1,17 +1,8 @@
 import { z } from "zod";
 
-const provenanceSchema = z.object({
-	action: z.string(),
-	timestamp: z.string(),
-	userId: z.string().optional(),
-	details: z.record(z.string(), z.unknown()).optional(),
-});
-
 export const createNameSchema = z.object({
 	name: z.string().min(1).max(100),
 	description: z.string().max(500).optional(),
-	status: z.string().optional(),
-	provenance: z.array(provenanceSchema).optional(),
 });
 
 export const createUserSchema = z.object({
@@ -28,7 +19,7 @@ export const updateLockSchema = z.object({
 });
 
 export const batchHideSchema = z.object({
-	nameIds: z.array(z.union([z.string(), z.number()])),
+	nameIds: z.array(z.union([z.string(), z.number()])).max(100),
 	isHidden: z.boolean(),
 });
 
@@ -43,5 +34,6 @@ export const saveRatingsSchema = z.object({
 				losses: z.number().optional(),
 			}),
 		)
-		.min(1),
+		.min(1)
+		.max(100),
 });
