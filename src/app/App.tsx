@@ -8,7 +8,7 @@
  */
 
 import { Suspense, useEffect } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
