@@ -3,4 +3,32 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    groups:
+      frontend:
+        patterns:
+          - "react*"
+          - "@vitejs/*"
+          - "vite"
+          - "tailwind*"
+      testing:
+        patterns:
+          - "vitest"
+          - "@testing-library/*"
+          - "supertest"
+      types:
+        patterns:
+          - "typescript"
+          - "@types/*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:30"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 5

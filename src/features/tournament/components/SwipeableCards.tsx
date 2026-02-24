@@ -1,316 +1,353 @@
+import { Button, Chip, cn, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { useCallback, useMemo, useRef, useState } from "react";
-import Button from "../../../shared/components/Button/Button";
-import CatImage from "../../../shared/components/CatImage/CatImage";
-import { playSound } from "../../../shared/utils/soundManager";
-import type { NameItem } from "../../../types/components";
-import styles from "../styles/SetupSwipe.module.css";
-import { getRandomCatImage } from "../tournamentUtils";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getRandomCatImage } from "@/services/tournament";
+import { Card } from "@/shared/components/layout/Card";
+import { playSound } from "@/shared/lib/basic";
+import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/shared/lib/icons";
+import type { NameItem } from "@/shared/types";
 
-interface SwipeableCardsProps {
-	names: NameItem[];
-	selectedNames: NameItem[];
-	onToggleName: (name: NameItem) => void;
-	onRateName: (name: NameItem, rating: number) => void;
-	isAdmin: boolean;
-	isSelectionMode: boolean;
-	showCatPictures: boolean;
-	imageList?: string[];
-	onStartTournament?: (selectedNames: NameItem[]) => void;
-}
+export const SwipeableCards = memo(
+	({
+		names,
+		selectedNames,
+		onToggleName,
+		showCatPictures,
+		imageList = [],
+		onStartTournament,
+	}: {
+		names: NameItem[];
+		selectedNames: NameItem[];
+		onToggleName: (name: NameItem) => void;
+		showCatPictures: boolean;
+		imageList?: string[];
+		onStartTournament: (names: NameItem[]) => void;
+	}) => {
+		const [swipedIds, setSwipedIds] = useState<Set<string>>(new Set());
+		const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
+		const [dragOffset, setDragOffset] = useState(0);
+		const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-export function SwipeableCards({
-	names,
-	selectedNames,
-	onToggleName,
-	onRateName: _onRateName,
-	isAdmin: _isAdmin,
-	isSelectionMode: _isSelectionMode,
-	showCatPictures,
-	imageList = [],
-	onStartTournament,
-}: SwipeableCardsProps) {
-	const [swipedIds, setSwipedIds] = useState<Set<string>>(new Set());
-	const [draggedId, setDraggedId] = useState<string | null>(null);
-	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
-	const [isProcessing, setIsProcessing] = useState(false);
-	const undoStackRef = useRef<NameItem[]>([]);
-
-	const SwipeThreshold = 100;
-
-	// Get visible cards (not yet swiped)
-	const visibleCards = useMemo(() => {
-		return names.filter((name) => !swipedIds.has(String(name.id)));
-	}, [names, swipedIds]);
-
-	const isSelected = useCallback(
-		(name: NameItem) => selectedNames.some((s) => s.id === name.id),
-		[selectedNames],
-	);
-
-	const handleDragEnd = useCallback(
-		async (cardId: string, info: PanInfo) => {
-			if (isProcessing) return;
-
-			const offset = info.offset.x;
-			const card = names.find((n) => String(n.id) === cardId);
-
-			if (!card) return;
-
-			// Check if swipe exceeds threshold
-			if (Math.abs(offset) < SwipeThreshold) {
-				setDraggedId(null);
-				setDragDirection(null);
-				return;
+		const visibleCards = useMemo(
+			() => names.filter((n: NameItem) => !swipedIds.has(String(n.id))),
+			[names, swipedIds],
+		);
+		const cardsToRender = visibleCards.slice(0, 3);
+		const currentCard = cardsToRender[0];
+		const isSelected = useCallback(
+			(n: NameItem) => selectedNames.some((s: NameItem) => s.id === n.id),
+			[selectedNames],
+		);
+		const resetDragState = useCallback(() => {
+			if (resetTimerRef.current) {
+				clearTimeout(resetTimerRef.current);
 			}
+			resetTimerRef.current = setTimeout(() => {
+				setDragDirection(null);
+				setDragOffset(0);
+			}, 300);
+		}, []);
 
-			setIsProcessing(true);
+		const applySwipe = useCallback(
+			(card: NameItem, direction: "left" | "right") => {
+				setDragDirection(direction);
+				setDragOffset(0);
 
-			try {
-				// Save to undo stack
-				undoStackRef.current = [...undoStackRef.current, card];
-
-				// Right swipe: select card
-				if (offset > SwipeThreshold) {
-					setDragDirection("right");
+				if (direction === "right") {
 					playSound("gameboy-pluck");
-
-					// Only select if not already selected
 					if (!isSelected(card)) {
 						onToggleName(card);
 					}
-				}
-				// Left swipe: skip card (just mark as swiped, no selection change)
-				else if (offset < -SwipeThreshold) {
-					setDragDirection("left");
+				} else {
 					playSound("wow");
+					if (isSelected(card)) {
+						onToggleName(card);
+					}
 				}
 
-				// Mark card as swiped and animate it out
-				setTimeout(() => {
-					setSwipedIds((prev) => new Set([...prev, String(card.id)]));
-					setDraggedId(null);
-					setDragDirection(null);
-					setIsProcessing(false);
-				}, 300);
-			} catch (error) {
-				console.error("Error handling swipe:", error);
-				setIsProcessing(false);
-				setDraggedId(null);
-				setDragDirection(null);
-			}
-		},
-		[names, isProcessing, isSelected, onToggleName],
-	);
-
-	const handleCardClick = useCallback(
-		(card: NameItem) => {
-			playSound("gameboy-pluck");
-			onToggleName(card);
-		},
-		[onToggleName],
-	);
-
-	const handleUndo = useCallback(() => {
-		if (undoStackRef.current.length === 0) return;
-
-		const cardToRestore = undoStackRef.current.pop();
-		if (cardToRestore) {
-			setSwipedIds((prev) => {
-				const newSet = new Set(prev);
-				newSet.delete(String(cardToRestore.id));
-				return newSet;
-			});
-			playSound("wow");
-		}
-	}, []);
-
-	const progressPercentage = names.length > 0 ? (swipedIds.size / names.length) * 100 : 0;
-
-	if (names.length === 0) {
-		return (
-			<div className={styles.swipeContainer}>
-				<div className={styles.swipeCompletion}>
-					<p>No names available to swipe.</p>
-				</div>
-			</div>
+				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+				resetDragState();
+			},
+			[isSelected, onToggleName, resetDragState],
 		);
-	}
 
-	return (
-		<div className={styles.swipeContainer}>
-			{/* Instructions */}
-			<div className={styles.swipeModeInstructions}>
-				<p>
-					👉 <strong>Drag right to select</strong> • <strong>Drag left to skip</strong>
-				</p>
-			</div>
+		useEffect(() => {
+			return () => {
+				if (resetTimerRef.current) {
+					clearTimeout(resetTimerRef.current);
+				}
+			};
+		}, []);
 
-			{/* Progress Bar */}
-			<div className={styles.cardProgress}>
-				<div
-					style={{
-						width: "100%",
-						height: "4px",
-						backgroundColor: "var(--surface-muted)",
-						borderRadius: "2px",
-						overflow: "hidden",
-						marginBottom: "8px",
-					}}
-				>
-					<div
-						style={{
-							width: `${progressPercentage}%`,
-							height: "100%",
-							backgroundColor: "var(--color-warning)",
-							transition: "width 0.3s ease-out",
-						}}
-					/>
-				</div>
-				<span>
-					{swipedIds.size} of {names.length} reviewed • {selectedNames.length} selected
-				</span>
-			</div>
+		const handleDragEnd = useCallback(
+			(card: NameItem, info: PanInfo) => {
+				const offset = info.offset.x;
+				const velocity = info.velocity.x;
+				const threshold = 100;
+				const velocityThreshold = 500;
 
-			{/* Card Stack */}
-			<div className={styles.swipeStack}>
-				<AnimatePresence mode="wait">
-					{visibleCards.length > 0 ? (
-						visibleCards.map((card, index) => {
-							const cardId = String(card.id);
-							const isCardSelected = isSelected(card);
-							const isDragging = draggedId === cardId;
+				if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
+					setDragOffset(0);
+					return;
+				}
 
-							return (
-								<div key={cardId} className={styles.swipeCardWrapper}>
+				if (offset > threshold || velocity > velocityThreshold) {
+					applySwipe(card, "right");
+				} else {
+					applySwipe(card, "left");
+				}
+			},
+			[applySwipe],
+		);
+
+		const progressValue = names.length > 0 ? (swipedIds.size / names.length) * 100 : 0;
+
+		return (
+			<div className="flex flex-col gap-6 w-full">
+				<Card padding="small" variant="default">
+					<div className="gap-3 flex flex-col">
+						<div className="flex justify-between items-center">
+							<span className="text-sm font-bold text-default-500 uppercase tracking-wider">
+								Progress
+							</span>
+							<Chip size="sm" variant="flat" color="primary" className="font-bold">
+								{swipedIds.size} / {names.length}
+							</Chip>
+						</div>
+						<Progress
+							value={progressValue}
+							color="primary"
+							className="h-2"
+							classNames={{
+								indicator: "bg-gradient-to-r from-primary to-secondary",
+							}}
+						/>
+					</div>
+				</Card>
+
+				{/* Swipe Stack */}
+				<div className="relative w-full" style={{ minHeight: "500px" }}>
+					<AnimatePresence mode="popLayout">
+						{visibleCards.length > 0 ? (
+							cardsToRender.map((card: NameItem, index: number) => (
+								<motion.div
+									key={card.id}
+									layout={true}
+									layoutId={String(card.id)}
+									className="absolute inset-0 flex items-center justify-center"
+									style={{ zIndex: 10 - index }}
+									exit={{
+										opacity: 0,
+										x: dragDirection === "right" ? 400 : -400,
+										rotate: dragDirection === "right" ? 20 : -20,
+										transition: { duration: 0.3 },
+									}}
+								>
 									<motion.div
-										className={`${styles.swipeCard} ${isCardSelected ? styles.selected : ""} ${isDragging ? styles.longPressing : ""}`}
-										data-direction={isDragging ? dragDirection : undefined}
-										drag="x"
-										dragConstraints={{ left: 0, right: 0 }}
-										dragElastic={0.2}
-										onDragStart={() => setDraggedId(cardId)}
-										onDragEnd={(_, info) => handleDragEnd(cardId, info)}
-										initial={{ opacity: 1, scale: 1 }}
-										animate={{
-											opacity: isDragging ? 0.9 : 1,
-											scale: isDragging ? 1.02 : index === 0 ? 1 : 0.95,
-											y: index === 0 ? 0 : index * 8,
-											zIndex: visibleCards.length - index,
+										drag={index === 0 ? "x" : false}
+										dragConstraints={{ left: -200, right: 200 }}
+										style={{ touchAction: "pan-y" }}
+										onDrag={(_, info) => {
+											if (index === 0) {
+												setDragOffset(info.offset.x);
+											}
 										}}
-										exit={{
-											opacity: 0,
-											scale: 0.8,
-											x: dragDirection === "right" ? 300 : -300,
-											transition: { duration: 0.3 },
+										onDragEnd={(_, info) => {
+											if (index === 0) {
+												handleDragEnd(card, info);
+											}
+										}}
+										animate={{
+											y: index * 12,
+											scale: 1 - index * 0.04,
+											opacity: 1 - index * 0.2,
+											rotate: index === 0 ? dragOffset / 20 : 0,
 										}}
 										transition={{ type: "spring", stiffness: 300, damping: 30 }}
-										style={{
-											position: "absolute",
-											inset: 0,
-											width: "100%",
-											height: "100%",
-										}}
+										className="w-full max-w-md"
 									>
-										{/* Card Content */}
-										<div className={styles.swipeCardContent}>
-											{/* Image */}
-											{showCatPictures && card.id && (
-												<div className={styles.swipeCardImageContainer}>
-													<CatImage
-														src={getRandomCatImage(String(card.id), imageList)}
-														containerClassName={styles.swipeCardImageContainer}
-														imageClassName={styles.swipeCardImage}
-													/>
-												</div>
+										<Card
+											className={cn(
+												"relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full",
+												isSelected(card) ? "shadow-[0_0_30px_rgba(34,197,94,0.3)]" : "",
+												index === 0 &&
+													"cursor-grab active:cursor-grabbing shadow-2xl active:scale-95",
+												index > 0 && "pointer-events-none",
 											)}
-
-											{/* Name */}
-											<h2 className={styles.swipeCardName}>{card.name}</h2>
-
-											{/* Description */}
-											{card.description && (
-												<p className={styles.swipeCardDescription}>{card.description}</p>
-											)}
-
-											{/* Metadata */}
-											{card.category && (
-												<div className={styles.swipeCardMetadata}>
-													<span className={styles.metadataItem}>{card.category}</span>
-												</div>
-											)}
-										</div>
-
-										{/* Swipe Direction Overlay */}
-										{isDragging && (
-											<div
-												className={`${styles.swipeOverlay} ${dragDirection ? styles.active : ""} ${dragDirection === "right" ? styles.swipeRight : dragDirection === "left" ? styles.swipeLeft : ""}`}
-											>
-												<span className={styles.swipeText}>
-													{dragDirection === "right" ? "SELECT ✓" : "SKIP ✕"}
-												</span>
-											</div>
-										)}
-
-										{/* Selection Indicator */}
-										<div
-											className={`${styles.selectionIndicator} ${isCardSelected ? styles.selected : ""}`}
-											aria-hidden="true"
+											variant="default"
+											padding="medium"
 										>
-											✓ Selected
-										</div>
-									</motion.div>
-								</div>
-							);
-						})
-					) : (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className={styles.swipeCompletion}
-						>
-							<h2>All names reviewed!</h2>
-							<p>
-								You selected <strong>{selectedNames.length}</strong> name
-								{selectedNames.length !== 1 ? "s" : ""}
-							</p>
-							{selectedNames.length >= 2 && onStartTournament && (
-								<Button
-									onClick={() => onStartTournament(selectedNames)}
-									className={styles.startTournamentButton}
-								>
-									Start Tournament
-								</Button>
-							)}
-						</motion.div>
-					)}
-				</AnimatePresence>
-			</div>
+											{/* Swipe Indicators */}
+											{index === 0 && (
+												<>
+													<motion.div
+														className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
+														initial={{ opacity: 0, scale: 0.8 }}
+														animate={{
+															opacity: dragOffset < -50 ? 1 : 0,
+															scale: dragOffset < -50 ? 1 : 0.8,
+														}}
+													>
+														<div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
+															<X size={24} className="text-white" />
+															<span className="text-white font-black text-lg uppercase">Nope</span>
+														</div>
+													</motion.div>
 
-			{/* Action Buttons */}
-			{visibleCards.length > 0 && (
-				<div className={styles.swipeButtons}>
-					<button
-						type="button"
-						onClick={handleUndo}
-						disabled={undoStackRef.current.length === 0}
-						className={styles.swipeUndoButton}
-						aria-label="Undo last swipe"
-					>
-						↶ Undo
-					</button>
-					{selectedNames.length >= 2 && onStartTournament && (
-						<button
-							type="button"
-							onClick={() => onStartTournament(selectedNames)}
-							className={styles.swipeButton}
-							aria-label={`Start tournament with ${selectedNames.length} names`}
-						>
-							Start Tournament
-						</button>
-					)}
+													<motion.div
+														className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
+														initial={{ opacity: 0, scale: 0.8 }}
+														animate={{
+															opacity: dragOffset > 50 ? 1 : 0,
+															scale: dragOffset > 50 ? 1 : 0.8,
+														}}
+													>
+														<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
+															<Heart size={24} className="text-white fill-white" />
+															<span className="text-white font-black text-lg uppercase">Like</span>
+														</div>
+													</motion.div>
+												</>
+											)}
+
+											{/* Image Container */}
+											<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center">
+												{showCatPictures && card.id && imageList.length > 0 ? (
+													<div
+														className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
+														style={{
+															backgroundImage: `url('${getRandomCatImage(card.id, imageList)}')`,
+														}}
+													/>
+												) : (
+													<span className="text-white/20 text-6xl font-bold select-none">
+														{card.name[0]?.toUpperCase() || "?"}
+													</span>
+												)}
+											</div>
+
+											{/* Text Content */}
+											<div className="text-center pb-4 z-10 w-full">
+												<h3 className="font-whimsical text-2xl lg:text-3xl text-white tracking-wide drop-shadow-lg break-words w-full">
+													{card.name}
+												</h3>
+												{typeof card.pronunciation === "string" && card.pronunciation && (
+													<p className="text-white/80 text-sm leading-relaxed max-w-md mt-1 mx-auto font-medium">
+														[{card.pronunciation}]
+													</p>
+												)}
+												{card.description && (
+													<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto">
+														{card.description}
+													</p>
+												)}
+												{isSelected(card) && (
+													<div className="flex justify-center mt-3">
+														<div className="px-3 py-1 bg-success/20 backdrop-blur-md border border-success/30 rounded-full flex items-center gap-2">
+															<Check size={14} className="text-success" />
+															<span className="text-success font-bold text-xs tracking-widest uppercase">
+																Selected
+															</span>
+														</div>
+													</div>
+												)}
+											</div>
+										</Card>
+									</motion.div>
+								</motion.div>
+							))
+						) : (
+							<motion.div
+								initial={{ opacity: 0, scale: 0.9 }}
+								animate={{ opacity: 1, scale: 1 }}
+								className="flex flex-col items-center justify-center gap-6 p-12"
+							>
+								<Card variant="default" className="flex flex-col items-center text-center gap-6">
+									<div className="text-6xl">🎉</div>
+									<h2 className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+										All Clear!
+									</h2>
+									<p className="text-white/60 max-w-md">
+										You've reviewed all {names.length} names. Ready to start the tournament?
+									</p>
+									{selectedNames.length >= 2 && (
+										<Button
+											size="lg"
+											color="primary"
+											variant="shadow"
+											onClick={() => onStartTournament(selectedNames)}
+											className="font-bold text-lg px-8 shadow-primary/40"
+										>
+											Start Tournament ({selectedNames.length} names)
+										</Button>
+									)}
+								</Card>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</div>
-			)}
-		</div>
-	);
-}
+
+				{/* Action Buttons */}
+				{visibleCards.length > 0 && (
+					<div className="flex gap-4 justify-center items-center">
+						<Button
+							isIconOnly={true}
+							size="lg"
+							variant="flat"
+							className="w-16 h-16 bg-danger/10 hover:bg-danger/20 border-2 border-danger/30 text-danger"
+							aria-label={currentCard ? `Discard ${currentCard.name}` : "Discard"}
+							onClick={() => {
+								if (currentCard) {
+									applySwipe(currentCard, "left");
+								}
+							}}
+						>
+							<X size={28} />
+						</Button>
+
+						<Button
+							size="lg"
+							color="primary"
+							variant="shadow"
+							onClick={() => onStartTournament(selectedNames)}
+							disabled={selectedNames.length < 2}
+							className="font-bold px-8 shadow-primary/40"
+						>
+							Start Tournament ({selectedNames.length})
+						</Button>
+
+						<Button
+							isIconOnly={true}
+							size="lg"
+							variant="flat"
+							className="w-16 h-16 bg-success/10 hover:bg-success/20 border-2 border-success/30 text-success"
+							aria-label={currentCard ? `Keep ${currentCard.name}` : "Keep"}
+							onClick={() => {
+								if (currentCard) {
+									applySwipe(currentCard, "right");
+								}
+							}}
+						>
+							<Heart size={28} className="fill-success" />
+						</Button>
+					</div>
+				)}
+
+				{/* Swipe Hint */}
+				{visibleCards.length > 0 && swipedIds.size === 0 && (
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.5 }}
+						className="flex items-center justify-center gap-3 text-default-400 text-sm"
+					>
+						<ChevronLeft size={16} className="animate-pulse" />
+						<span className="font-medium">Swipe or tap buttons to review names</span>
+						<ChevronRight size={16} className="animate-pulse" />
+					</motion.div>
+				)}
+			</div>
+		);
+	},
+);
+SwipeableCards.displayName = "SwipeableCards";

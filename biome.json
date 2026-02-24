@@ -1,12 +1,12 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist", "!!**/node_modules/**", "!!**/build/**"]
+		"includes": ["**", "!!**/dist", "!!**/node_modules", "!!**/build"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -27,7 +27,7 @@
 				"noStaticOnlyClass": "off",
 				"noUselessConstructor": "error",
 				"noUselessEmptyExport": "error",
-				"noUselessFragments": "warn",
+				"noUselessFragments": "error",
 				"noUselessLabel": "error",
 				"noUselessRename": "error",
 				"noUselessTypeConstraint": "error"
@@ -73,12 +73,8 @@
 				"useDefaultParameterLast": "warn",
 				"useExponentiationOperator": "warn",
 				"useFragmentSyntax": "warn",
-				"useNamingConvention": {
-					"level": "warn",
-					"options": {
-						"strictCase": false
-					}
-				}
+				"useNamingConvention": "off",
+				"noNamespace": "error"
 			},
 			"a11y": {
 				"recommended": false
@@ -87,7 +83,8 @@
 				"useExhaustiveDependencies": "warn",
 				"noUnusedVariables": "warn",
 				"noUnusedImports": "error",
-				"noUnusedPrivateClassMembers": "warn"
+				"noUnusedPrivateClassMembers": "warn",
+				"noUndeclaredVariables": "error"
 			},
 			"performance": {
 				"noAccumulatingSpread": "warn",
@@ -100,30 +97,7 @@
 	},
 	"overrides": [
 		{
-			"includes": [
-				"src/core/hooks/useUserSession.ts",
-				"src/features/tournament/RankingAdjustment.tsx",
-				"src/features/tournament/Tournament.tsx",
-				"src/features/tournament/components/AnalysisWrappers.tsx",
-				"src/features/tournament/components/AnalysisBulkActionsWrapper.tsx",
-				"src/features/tournament/TournamentSetup.tsx",
-				"src/features/tournament/Dashboard.tsx",
-				"src/features/tournament/components/TournamentFooter/TournamentFooter.tsx",
-				"src/shared/components/ViewRouter/ViewRouter.tsx",
-				"src/features/tournament/components/PersonalResults.tsx",
-				"src/features/tournament/components/TournamentHeader/TournamentHeader.tsx",
-				"src/features/tournament/hooks/useTournamentSetupHooks.ts",
-				"src/shared/utils/coreUtils.ts",
-				"src/shared/components/Bracket/Bracket.tsx",
-				"src/shared/components/AnalysisDashboard/AnalysisDashboard.tsx",
-				"src/shared/components/Card/components/CardName.tsx",
-				"src/features/tournament/components/TournamentSidebar/PhotoComponents.tsx",
-				"src/shared/components/NameManagementView/NameManagementView.tsx",
-				"src/shared/components/NameGrid/NameGrid.tsx",
-				"src/shared/propTypes.ts",
-				"src/shared/services/errorManager/index.ts",
-				"src/shared/services/supabase/supabaseClient.ts"
-			],
+			"includes": ["src/**/*.ts", "src/**/*.tsx"],
 			"linter": {
 				"rules": {
 					"suspicious": {
@@ -133,39 +107,12 @@
 			}
 		},
 		{
-			"includes": [
-				"src/features/tournament/components/TournamentMatch/FerrofluidMatch.module.css",
-				"src/features/tournament/TournamentSetup.module.css",
-				"src/shared/styles/animations.css"
-			],
+			"includes": ["**/*.test.{js,jsx,ts,tsx}", "**/*.spec.{js,jsx,ts,tsx}"],
 			"linter": {
 				"rules": {
-					"complexity": {
-						"noImportantStyles": "off"
-					}
-				}
-			}
-		},
-		{
-			"includes": ["scripts/**/*.js"],
-			"linter": {
-				"rules": {
-					"style": {
-						"useConst": "warn"
-					},
 					"suspicious": {
 						"noExplicitAny": "off"
 					},
-					"correctness": {
-						"noUnusedVariables": "off"
-					}
-				}
-			}
-		},
-		{
-			"includes": ["src/core/constants/**/*.ts", "src/**/constants.ts"],
-			"linter": {
-				"rules": {
 					"style": {
 						"useNamingConvention": "off"
 					}
@@ -173,22 +120,13 @@
 			}
 		},
 		{
-			"includes": ["src/integrations/supabase/types.ts", "src/shared/services/supabase/types.ts"],
+			"includes": ["vite.config.ts", "tailwind.config.js", "vitest.config.mjs"],
 			"linter": {
 				"rules": {
 					"style": {
 						"useNamingConvention": "off"
 					}
 				}
-			},
-			"formatter": {
-				"enabled": false
-			}
-		},
-		{
-			"includes": ["src/shared/styles/analysis-mode-misc.css"],
-			"formatter": {
-				"enabled": false
 			}
 		},
 		{
@@ -205,7 +143,18 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
-		}
+		},
+		"globals": [
+			"vi",
+			"describe",
+			"it",
+			"test",
+			"expect",
+			"beforeEach",
+			"afterEach",
+			"beforeAll",
+			"afterAll"
+		]
 	},
 	"assist": {
 		"enabled": true,

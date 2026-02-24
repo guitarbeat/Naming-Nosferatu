@@ -1,0 +1,35 @@
+name: PR Title Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint:
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title format
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            test
+            docs
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+          subjectPattern: ^[a-z].+
+          subjectPatternError: "Use lower-case imperative subject, e.g. 'fix(auth): handle expired token'."
+          headerPattern: '^([a-z]+)(\(([^)]+)\))?!?: (.+)$'
+          headerPatternCorrespondence: type, scope, subject

@@ -35,7 +35,7 @@ REQUIRED MARKDOWN FILES
 
 2. `01-problems-and-friction.md`
    Purpose:
-   - Identify what is *not working well*.
+   - Identify what is _not working well_.
 
    Include:
    - 3–7 concrete problems
@@ -81,6 +81,7 @@ REQUIRED MARKDOWN FILES
 ━━━━━━━━━━━━━━━━━━━━━━
 PROCESS RULES (NON-NEGOTIABLE)
 ━━━━━━━━━━━━━━━━━━━━━━
+
 - Treat the current app as production software.
 - Do not invent requirements.
 - Do not guess when context is missing—ask focused questions.
@@ -91,6 +92,7 @@ PROCESS RULES (NON-NEGOTIABLE)
 QUALITY BAR
 ━━━━━━━━━━━━━━━━━━━━━━
 Your output is successful ONLY if:
+
 - The Markdown files make the reasoning legible to a human reviewer.
 - A new contributor could understand how and why decisions were made.
 - The UI feels more intentional and less generic.

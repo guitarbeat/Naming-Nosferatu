@@ -1,0 +1,16 @@
+pre-commit:
+  parallel: true
+  commands:
+    architecture:
+      run: pnpm run check:arch
+    copy-artifacts:
+      run: pnpm run check:copy-artifacts
+    case-collisions:
+      run: pnpm run check:case-collisions
+    biome:
+      glob: "*.{js,jsx,ts,tsx,css}"
+      run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+    types:
+      glob: "*.{ts,tsx}"
+      run: pnpm run lint:types

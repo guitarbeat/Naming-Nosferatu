@@ -55,6 +55,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 .enforcer/Enforcer_last_check.log
 .enforcer/Enforcer_stats.log
+biome_output.txt
 
 # Cache
 .cache/
@@ -111,6 +112,10 @@ stats.html
 stats.json
 jscpd-report.html
 
+# Accidental local copy artifacts (for example: "file 2.ts")
+* 2.*
+* 3.*
+
 # Large media files (prevent accidental commits)
 *.mp3
 *.wav
@@ -137,3 +142,13 @@ jscpd-report.html
 *.mkv
 *.webm
 *.m4v
+.smart-coding-cache/
+
+# Avoid case-collision with tracked .Jules directory
+.jules/
+!.Jules/
+!.Jules/**
+
+# Supabase
+supabase/.temp/
+supabase/.branches/
