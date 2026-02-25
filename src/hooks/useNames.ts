@@ -4,6 +4,54 @@ import { useLocalStorage } from "@/shared/hooks";
 import type { NameItem } from "@/shared/types";
 
 /* =========================================================================
+   Cache Logic
+   ========================================================================= */
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_KEY_PREFIX = "names_cache_v3";
+
+interface CacheEntry {
+	data: NameItem[];
+	timestamp: number;
+}
+
+// Module-level cache to share data between hook instances
+const nameCache = new Map<string, CacheEntry>();
+
+let isCacheLoaded = false;
+
+const loadCache = () => {
+	if (isCacheLoaded) return;
+	try {
+		const stored = localStorage.getItem(CACHE_KEY_PREFIX);
+		if (stored) {
+			const parsed = JSON.parse(stored);
+			const now = Date.now();
+			Object.entries(parsed).forEach(([key, value]: [string, any]) => {
+				if (now - value.timestamp < CACHE_TTL) {
+					nameCache.set(key, value);
+				}
+			});
+		}
+		isCacheLoaded = true;
+	} catch (e) {
+		console.warn("Failed to load names cache", e);
+	}
+};
+
+const saveCache = () => {
+	try {
+		const obj = Object.fromEntries(nameCache.entries());
+		localStorage.setItem(CACHE_KEY_PREFIX, JSON.stringify(obj));
+	} catch (e) {
+		console.warn("Failed to save names cache", e);
+	}
+};
+
+// Initialize cache immediately
+loadCache();
+
+/* =========================================================================
    useNameData - Fetch and manage name data
    ========================================================================= */
 
@@ -22,8 +70,11 @@ interface UseNameDataResult {
 
 export function useNameData({ mode = "tournament" }: UseNameDataProps = {}): UseNameDataResult {
 	const [names, setNamesState] = useState<NameItem[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true); // Start loading true to check cache first
 	const [error, setError] = useState<Error | null>(null);
+
+	const includeHidden = mode !== "tournament";
+	const cacheKey = `${CACHE_KEY_PREFIX}_${includeHidden}`;
 
 	const setNames = useCallback((updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
 		setNamesState((previous) => (typeof updater === "function" ? updater(previous) : updater));
@@ -33,20 +84,43 @@ export function useNameData({ mode = "tournament" }: UseNameDataProps = {}): Use
 		setIsLoading(true);
 		setError(null);
 		try {
-			const includeHidden = mode !== "tournament";
 			const result = await coreAPI.getTrendingNames(includeHidden);
-			setNamesState(Array.isArray(result) ? result : []);
+			const data = Array.isArray(result) ? result : [];
+
+			// Update state
+			setNamesState(data);
+
+			// Update cache
+			nameCache.set(cacheKey, {
+				data,
+				timestamp: Date.now(),
+			});
+			saveCache();
 		} catch (fetchError) {
 			setError(fetchError instanceof Error ? fetchError : new Error(String(fetchError)));
+			// Keep old data if available? For now, clear it to reflect error state or keep previous state?
+			// Usually better to keep previous state if it exists, but here we set to empty in original code.
+			// Let's stick to original behavior but maybe we can fallback to cache if fetch fails?
+			// For now, consistent with original behavior:
 			setNamesState([]);
 		} finally {
 			setIsLoading(false);
 		}
-	}, [mode]);
+	}, [includeHidden, cacheKey]);
 
 	useEffect(() => {
-		void refetch();
-	}, [refetch]);
+		// Check cache first
+		const cached = nameCache.get(cacheKey);
+		const now = Date.now();
+
+		if (cached && now - cached.timestamp < CACHE_TTL) {
+			setNamesState(cached.data);
+			setIsLoading(false);
+			// Optional: Background refresh?
+		} else {
+			void refetch();
+		}
+	}, [cacheKey, refetch]);
 
 	return {
 		names,
