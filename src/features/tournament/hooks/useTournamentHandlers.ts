@@ -1,10 +1,3 @@
-/**
- * Stub: replace with your real useTournamentHandlers hook.
- *
- * Provides callbacks for tournament lifecycle events (complete, start new,
- * update ratings) that coordinate between the store and the API layer.
- */
-
 import { useCallback } from "react";
 import type { RatingData } from "@/shared/types";
 import type { TournamentActions } from "@/store/appStore";
