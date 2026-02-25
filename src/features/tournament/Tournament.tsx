@@ -29,6 +29,7 @@ import {
 } from "@/shared/lib/icons";
 import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
+import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks";
 import { useAudioManager, useTournamentState } from "./hooks";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
