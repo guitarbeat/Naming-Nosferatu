@@ -347,11 +347,13 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		setRefreshKey((k) => k + 1);
 
 		// Update persistent state
-		const newHistory = persistentState.matchHistory.slice(0, -1);
-		updatePersistentState({
-			matchHistory: newHistory,
-			currentMatch: Math.max(1, persistentState.currentMatch - 1),
-			ratings: lastEntry.ratings, // Revert persisted ratings too
+  updatePersistentState((prev) => {
+      const newHistory = (prev.matchHistory || []).slice(0, -1);
+      return {
+          matchHistory: newHistory,
+          currentMatch: Math.max(1, prev.currentMatch - 1),
+          ratings: lastEntry.ratings, // Revert persisted ratings too
+      };
 		});
 	}, [history, sorter, persistentState, updatePersistentState]);
 
