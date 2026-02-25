@@ -31,5 +31,5 @@ jobs:
           requireScope: false
           subjectPattern: ^[a-z].+
           subjectPatternError: "Use lower-case imperative subject, e.g. 'fix(auth): handle expired token'."
-          headerPattern: '^([a-z]+)(\(([^)]+)\))?!?: (.+)$'
+          headerPattern: '^([a-z]+)(?:\(([^)]+)\))?!?: (.+)$'
           headerPatternCorrespondence: type, scope, subject
