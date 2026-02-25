@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EloRating, PreferenceSorter } from "@/services/tournament";
 import { useLocalStorage } from "@/shared/hooks";
 import type { Match, MatchRecord, NameItem } from "@/shared/types";
+import { useToast } from "@/app/providers/Providers";
+import { useAudioManager } from "./useHelpers";
 
 export interface UseTournamentStateResult {
         currentMatch: Match | null;
@@ -16,7 +18,11 @@ export interface UseTournamentStateResult {
         handleQuit?: () => void;
         progress?: number;
         etaMinutes?: number;
+        isVoting: boolean;
+        handleVoteWithAnimation: (winnerId: string, loserId: string) => void;
 }
+
+const VOTE_COOLDOWN = 300;
 
 interface HistoryEntry {
         match: Match;
@@ -48,6 +54,10 @@ function createDefaultPersistentState(userName: string): PersistentTournamentSta
 }
 
 export function useTournamentState(names: NameItem[], userName?: string): UseTournamentStateResult {
+        const toast = useToast();
+        const audioManager = useAudioManager();
+        const [isVoting, setIsVoting] = useState(false);
+
         // --- Persistence setup ---
         const tournamentId = useMemo(() => {
                 const sortedNames = names
@@ -273,8 +283,24 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                 ],
         );
 
+        const handleVoteWithAnimation = useCallback(
+                (winnerId: string, loserId: string) => {
+                        if (isVoting) return;
+
+                        setIsVoting(true);
+                        audioManager.playVoteSound();
+
+                        setTimeout(() => {
+                                handleVote(winnerId, loserId);
+                                setIsVoting(false);
+                        }, VOTE_COOLDOWN);
+                },
+                [handleVote, isVoting, audioManager],
+        );
+
         const handleUndo = useCallback(() => {
                 if (history.length === 0) {
+                        toast.showWarning("No more moves to undo");
                         return;
                 }
 
@@ -283,6 +309,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                         return;
                 }
 
+                audioManager.playUndoSound();
                 setRatings(lastEntry.ratings);
                 setHistory((prev) => prev.slice(0, -1));
                 sorter.undoLastPreference();
@@ -294,7 +321,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                         matchHistory: newHistory,
                         currentMatch: Math.max(1, persistentState.currentMatch - 1),
                 });
-        }, [history, sorter, persistentState, updatePersistentState]);
+        }, [history, sorter, persistentState, updatePersistentState, toast, audioManager]);
 
         const handleQuit = useCallback(() => {
                 // Clear tournament state and navigate back
@@ -321,5 +348,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                 handleQuit,
                 progress,
                 etaMinutes,
+                isVoting,
+                handleVoteWithAnimation,
         };
 }
