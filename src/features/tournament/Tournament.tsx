@@ -29,7 +29,6 @@ import {
 } from "@/shared/lib/icons";
 import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks";
 import { useAudioManager, useTournamentState } from "./hooks";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
@@ -257,16 +256,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                         }
                 },
                 [isVoting, matchData, triggerVoteFeedback, handleVoteWithAnimation, onVote, handleVoteAdapter],
-        );
-
-        const handleKeyDown = useCallback(
-                (e: React.KeyboardEvent, side: "left" | "right") => {
-                        if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                handleVoteForSide(side);
-                        }
-                },
-                [handleVoteForSide],
         );
 
         const leftImg =
