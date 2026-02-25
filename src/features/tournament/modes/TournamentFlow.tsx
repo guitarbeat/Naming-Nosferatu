@@ -9,14 +9,17 @@ import { Card } from "@/shared/components/layout/Card";
 import { Section } from "@/shared/components/layout/Section";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
+import { useTournamentHandlers } from "../hooks/useTournamentHandlers";
+import Tournament from "../Tournament";
 
 export default function TournamentFlow() {
-	const { tournament, tournamentActions } = useAppStore();
+	const { user, tournament, tournamentActions } = useAppStore();
 	const navigate = useNavigate();
 
-	const handleStartNewTournament = () => {
-		tournamentActions.resetTournament();
-	};
+	const { handleStartNewTournament, handleTournamentComplete } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
 
 	return (
 		<div className="w-full flex flex-col gap-2">
@@ -65,6 +68,21 @@ export default function TournamentFlow() {
 									</button>
 								</div>
 							</Card>
+						</motion.div>
+					) : tournament.names !== null ? (
+						<motion.div
+							key="tournament"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							className="w-full h-full"
+						>
+							<Tournament
+								names={tournament.names}
+								existingRatings={tournament.ratings}
+								onComplete={handleTournamentComplete}
+								userName={user.name}
+							/>
 						</motion.div>
 					) : (
 						<motion.div
