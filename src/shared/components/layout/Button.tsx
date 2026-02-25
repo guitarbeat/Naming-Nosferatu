@@ -6,7 +6,7 @@
 import { cva } from "class-variance-authority";
 import React, { memo } from "react";
 import { cn } from "@/shared/lib/basic";
-import { Loader2 } from "@/shared/lib/icons";
+import { ArrowUp, Loader2 } from "@/shared/lib/icons";
 
 /**
  * Unified button variants - single source of truth
@@ -166,12 +166,15 @@ const ScrollToTopButton = ({
 	return (
 		<button
 			type="button"
-			className={`scroll-to-top visible ${className}`.trim()}
+			className={cn(
+				"scroll-to-top visible focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+				className,
+			)}
 			onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 			aria-label="Scroll to top"
-			tabIndex={0}
+			title="Scroll to top"
 		>
-			↑
+			<ArrowUp size={24} strokeWidth={3} />
 		</button>
 	);
 };

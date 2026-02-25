@@ -10,6 +10,7 @@
 export type { LucideIcon } from "lucide-react";
 export {
 	AlertCircle,
+	ArrowUp,
 	BarChart3,
 	Cat,
 	Check,

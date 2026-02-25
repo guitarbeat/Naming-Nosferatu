@@ -277,9 +277,12 @@
 		transform var(--duration-normal) var(--ease-out),
 		opacity var(--duration-normal) var(--ease-out),
 		box-shadow var(--duration-normal) var(--ease-out);
-	color: var(--white-rgb);
+	/* Local fallbacks for these variables */
+	--neon-cyan: #06b6d4;
+	--hot-pink: #db2777;
+	color: white;
 	background: linear-gradient(45deg, var(--neon-cyan), var(--hot-pink));
-	border: var(--button-border-width) solid transparent;
+	border: 0 solid transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1217,4 +1220,11 @@ a,
 		transition-duration: 0.01ms;
 		scroll-behavior: auto;
 	}
+}
+
+.scroll-to-top.visible {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transform: translate3d(0, 0, 0) scale(1);
 }

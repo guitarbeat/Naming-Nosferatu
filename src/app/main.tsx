@@ -7,6 +7,7 @@ import { authAdapter } from "@/services/authAdapter";
 import { queryClient } from "@/services/supabase/client";
 import App from "./App";
 import { Providers } from "./providers/Providers";
+import "@/styles/index.css";
 import "../index.css";
 
 const rootElement = document.getElementById("root");
