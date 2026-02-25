@@ -302,11 +302,11 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			]);
 
 			// Update persistent state
-			updatePersistentState({
-				matchHistory: [...(persistentState.matchHistory || []), matchRecord],
-				currentMatch: matchNumber + 1,
-				ratings: newRatings, // Persist new ratings
-			});
+   updatePersistentState((prev) => ({
+       matchHistory: [...(prev.matchHistory || []), matchRecord],
+       currentMatch: matchNumber + 1,
+       ratings: newRatings, // Persist new ratings
+   }));
 
 			// Record preference in sorter
 			sorter.addPreference(winnerId, loserId, 1);
