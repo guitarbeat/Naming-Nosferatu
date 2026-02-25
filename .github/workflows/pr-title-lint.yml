@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   lint:
-    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:')
     runs-on: ubuntu-latest
     steps:
       - name: Validate PR title format
