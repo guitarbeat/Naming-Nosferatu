@@ -33,6 +33,7 @@ interface PersistentTournamentState {
 	userName: string;
 	lastUpdated: number;
 	namesKey: string;
+	ratings: Record<string, number>;
 }
 
 function createDefaultPersistentState(userName: string): PersistentTournamentState {
@@ -44,6 +45,7 @@ function createDefaultPersistentState(userName: string): PersistentTournamentSta
 		userName: userName || "anonymous",
 		lastUpdated: Date.now(),
 		namesKey: "",
+		ratings: {},
 	};
 }
 
@@ -105,20 +107,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		[setPersistentState, userName],
 	);
 
-	// --- State initialization ---
-	const [ratings, setRatings] = useState<Record<string, number>>(() => {
-		const initial: Record<string, number> = {};
-		names.forEach((name) => {
-			initial[name.id] = name.rating || 1500;
-		});
-		return initial;
-	});
-
-	const ratingsRef = useRef(ratings);
-	useEffect(() => {
-		ratingsRef.current = ratings;
-	}, [ratings]);
-
 	// Memoize names key to prevent unnecessary re-initializations
 	const namesKey = useMemo(
 		() =>
@@ -130,34 +118,87 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		[names],
 	);
 
+	// --- State initialization ---
+	const [ratings, setRatings] = useState<Record<string, number>>({});
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
 	const sorter = useMemo(() => new PreferenceSorter(names.map((n) => String(n.id))), [names]);
 	const [elo] = useState(() => new EloRating());
 	const [_refreshKey, setRefreshKey] = useState(0);
 
-	// Initialize tournament when names change
+	// Initialization & Restoration Effect
+	const initializedRef = useRef(false);
+	const lastNamesKeyRef = useRef("");
+
 	useEffect(() => {
+		const isNewNames = lastNamesKeyRef.current !== namesKey;
+
+		if (isNewNames) {
+			initializedRef.current = false;
+			lastNamesKeyRef.current = namesKey;
+		}
+
+		if (initializedRef.current) {
+			return;
+		}
+
 		if (!Array.isArray(names) || names.length < 2) {
 			return;
 		}
 
-		if (persistentState.namesKey === namesKey) {
-			return;
+		// Check if we have valid persistent state for this tournament
+		const hasValidPersistence = persistentState.namesKey === namesKey;
+
+		if (hasValidPersistence) {
+			// 1. Restore Sorter History
+			if (sorter.currentIndex === 0 && persistentState.matchHistory.length > 0) {
+				persistentState.matchHistory.forEach((record) => {
+					if (record.winner && record.loser) {
+						sorter.addPreference(record.winner, record.loser, 1);
+					}
+				});
+			}
+
+			// 2. Restore Ratings
+			if (persistentState.ratings && Object.keys(persistentState.ratings).length > 0) {
+				setRatings(persistentState.ratings);
+			} else {
+				// Fallback if ratings missing in persistence but history exists (shouldn't happen with new logic, but for safety)
+				const initial: Record<string, number> = {};
+				names.forEach((name) => {
+					initial[name.id] = name.rating || 1500;
+				});
+				setRatings(initial);
+			}
+		} else {
+			// New tournament or mismatch
+			const estimatedMatches = (names.length * (names.length - 1)) / 2;
+
+			// Reset persistent state for new tournament
+			updatePersistentState({
+				matchHistory: [],
+				currentRound: 1,
+				currentMatch: 1,
+				totalMatches: estimatedMatches,
+				namesKey,
+				ratings: {},
+			});
+
+			// Initialize ratings from names
+			const initial: Record<string, number> = {};
+			names.forEach((name) => {
+				initial[name.id] = name.rating || 1500;
+			});
+			setRatings(initial);
 		}
 
-		const estimatedMatches = (names.length * (names.length - 1)) / 2;
-
-		updatePersistentState({
-			matchHistory: [],
-			currentRound: 1,
-			currentMatch: 1,
-			totalMatches: estimatedMatches,
-			namesKey,
-		});
-
-		// Force re-render to reset sorter state
+		initializedRef.current = true;
 		setRefreshKey((k) => k + 1);
-	}, [namesKey, persistentState.namesKey, updatePersistentState, names]);
+	}, [namesKey, persistentState, sorter, names, updatePersistentState]);
+
+	const ratingsRef = useRef(ratings);
+	useEffect(() => {
+		ratingsRef.current = ratings;
+	}, [ratings]);
 
 	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
 	const currentMatch = useMemo(() => {
@@ -182,9 +223,10 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
 	const completedMatches = persistentState.matchHistory.length;
-	const matchNumber =
-		totalPairs > 0 ? Math.min(totalPairs, completedMatches + (isComplete ? 0 : 1)) : 0;
-	const roundMatchIndex = isComplete ? Math.max(1, completedMatches) : Math.max(1, matchNumber);
+	// Calculated matchNumber based on completed + 1 (if not complete)
+	const matchNumber = isComplete ? completedMatches : completedMatches + 1;
+
+	const roundMatchIndex = Math.max(1, matchNumber);
 	const round = Math.floor((roundMatchIndex - 1) / Math.max(1, names.length)) + 1;
 
 	// Progress and ETA
@@ -212,7 +254,27 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 			const ratingsSnapshot = ratingsRef.current;
 
-			// Save to history
+			// Update ratings using ELO
+			const winnerRating = ratingsSnapshot[winnerId] || 1500;
+			const loserRating = ratingsSnapshot[loserId] || 1500;
+
+			// Determine winner side for ELO calculation
+			const leftId = String(
+				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+			);
+			const outcome = winnerId === leftId ? "left" : "right";
+
+			const result = elo.calculateNewRatings(winnerRating, loserRating, outcome);
+
+			const newRatings = {
+				...ratingsSnapshot,
+				[winnerId]: result.newRatingA,
+				[loserId]: result.newRatingB,
+			};
+
+			setRatings(newRatings);
+
+			// Save to history (Local state for Undo)
 			const matchRecord: MatchRecord = {
 				match: currentMatch,
 				winner: winnerId,
@@ -233,28 +295,12 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				},
 			]);
 
+			// Update persistent state
 			updatePersistentState({
 				matchHistory: [...(persistentState.matchHistory || []), matchRecord],
 				currentMatch: matchNumber + 1,
+				ratings: newRatings, // Persist new ratings
 			});
-
-			// Update ratings using ELO
-			const winnerRating = ratingsSnapshot[winnerId] || 1500;
-			const loserRating = ratingsSnapshot[loserId] || 1500;
-
-			// Determine winner side for ELO calculation
-			const leftId = String(
-				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-			);
-			const outcome = winnerId === leftId ? "left" : "right";
-
-			const result = elo.calculateNewRatings(winnerRating, loserRating, outcome);
-
-			setRatings((prev) => ({
-				...prev,
-				[winnerId]: result.newRatingA,
-				[loserId]: result.newRatingB,
-			}));
 
 			// Record preference in sorter
 			sorter.addPreference(winnerId, loserId, 1);
@@ -283,9 +329,15 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			return;
 		}
 
+		// Restore ratings from snapshot
 		setRatings(lastEntry.ratings);
+
+		// Remove last history entry
 		setHistory((prev) => prev.slice(0, -1));
+
+		// Revert sorter
 		sorter.undoLastPreference();
+
 		setRefreshKey((k) => k + 1);
 
 		// Update persistent state
@@ -293,6 +345,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		updatePersistentState({
 			matchHistory: newHistory,
 			currentMatch: Math.max(1, persistentState.currentMatch - 1),
+			ratings: lastEntry.ratings, // Revert persisted ratings too
 		});
 	}, [history, sorter, persistentState, updatePersistentState]);
 
@@ -303,6 +356,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			currentRound: 1,
 			currentMatch: 1,
 			totalMatches: 0,
+			ratings: {},
 		});
 		// Navigate back to name selection
 		window.history.back();
