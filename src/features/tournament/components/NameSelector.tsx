@@ -5,7 +5,7 @@
 
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNamesCache } from "@/hooks/useNamesCache";
+import { useNamesCache } from "@/hooks/useNamesCache.ts";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
@@ -17,6 +17,7 @@ import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { useCollapsible } from "@/shared/hooks";
 import { getRandomCatImage } from "@/shared/lib/basic";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+
 import {
 	Check,
 	CheckCircle,
