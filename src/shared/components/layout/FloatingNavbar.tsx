@@ -75,7 +75,7 @@ export function FloatingNavbar() {
 	const location = useLocation();
 	const { login, logout } = useAuth();
 	const { tournament, tournamentActions, user, ui, uiActions, userActions } = appStore;
-	const { selectedNames } = tournament;
+	const selectedNames = tournament?.selectedNames;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
 	const { isSwipeMode } = ui;
 	const { setSwipeMode } = uiActions;
