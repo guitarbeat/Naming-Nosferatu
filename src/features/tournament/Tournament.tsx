@@ -9,24 +9,6 @@ import {
 	getVisibleNames,
 } from "@/shared/lib/basic";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import {
-	Clock,
-	Gamepad2,
-	Home,
-	LogOut,
-	Medal,
-	Music,
-	PartyPopper,
-	PawPrint,
-	RefreshCcw,
-	SkipBack,
-	SkipForward,
-	Trophy,
-	Undo2,
-	Volume2,
-	VolumeX,
-	X,
-} from "@/shared/lib/icons";
 import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
@@ -292,8 +274,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 				<div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
 					<Card className="max-w-2xl w-full text-center p-8" variant="default">
-						<div className="mb-6 flex justify-center">
-							<Trophy className="size-16 text-green-400" />
+						<div className="mb-6">
+							<span className="material-symbols-outlined text-6xl text-green-400">
+								emoji_events
+							</span>
 						</div>
 						<h1 className="font-whimsical text-4xl text-white tracking-wide mb-4">
 							Tournament Complete!
@@ -319,7 +303,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									onClick={() => window.location.reload()}
 									className="w-full glass-panel py-3 px-6 rounded-full flex items-center justify-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
 								>
-									<RefreshCcw className="text-primary" />
+									<span className="material-symbols-outlined text-primary">refresh</span>
 									<span className="font-bold text-white">Start New Tournament</span>
 								</button>
 
@@ -328,7 +312,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 										onClick={() => onComplete({})}
 										className="w-full glass-panel py-3 px-6 rounded-full flex items-center justify-center gap-3 border border-white/20 cursor-pointer hover:bg-white/5 transition-colors"
 									>
-										<Home className="text-white" />
+										<span className="material-symbols-outlined text-white">home</span>
 										<span className="font-bold text-white">Back to Main Menu</span>
 									</button>
 								)}
@@ -363,14 +347,16 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex flex-wrap items-center gap-2 sm:gap-4">
 						<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
-							<Gamepad2 className="text-primary size-3.5" />
+							<span className="material-symbols-outlined text-primary text-sm">sports_esports</span>
 							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-white/90">
 								{isComplete ? "Tournament Complete!" : `Round ${roundNumber}`}
 							</span>
 						</div>
 						{isComplete && (
 							<div className="px-3 py-1 rounded-full flex items-center gap-2 bg-green-500/20 border border-green-500/30">
-								<PartyPopper className="text-green-400 size-3.5" />
+								<span className="material-symbols-outlined text-green-400 text-sm">
+									celebration
+								</span>
 								<span className="text-[11px] sm:text-xs font-bold text-green-400">
 									Results Downloaded
 								</span>
@@ -379,14 +365,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					</div>
 					<div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
 						<div className="flex items-center gap-2">
-							<Medal className="text-stardust" />
+							<span className="material-symbols-outlined text-stardust">workspace_premium</span>
 							<span className="text-[11px] sm:text-xs font-bold">
 								{currentMatchNumber} / {totalMatches}
 							</span>
 						</div>
 						{etaMinutes > 0 && !isComplete && (
 							<div className="flex items-center gap-1 text-[11px] sm:text-xs text-white/60">
-								<Clock className="size-3.5" />
+								<span className="material-symbols-outlined text-sm">schedule</span>
 								<span>~{etaMinutes}m</span>
 							</div>
 						)}
@@ -426,7 +412,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							aria-pressed={!audioManager.isMuted}
 							title={audioManager.isMuted ? "Unmute audio" : "Mute audio"}
 						>
-							{audioManager.isMuted ? <VolumeX /> : <Volume2 />}
+							<span className="material-symbols-outlined">
+								{audioManager.isMuted ? "volume_off" : "volume_up"}
+							</span>
 						</button>
 						<input
 							type="range"
@@ -446,7 +434,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							aria-label="Previous track"
 							title="Previous track"
 						>
-							<SkipBack className="size-3.5" />
+							<span className="material-symbols-outlined text-sm">skip_previous</span>
 						</button>
 						<button
 							type="button"
@@ -464,7 +452,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							aria-pressed={audioManager.backgroundMusicEnabled}
 							title={`${audioManager.backgroundMusicEnabled ? "Stop" : "Play"} background music: ${audioManager.currentTrack}`}
 						>
-							<Music className="size-3.5" />
+							<span className="material-symbols-outlined text-sm">
+								{audioManager.backgroundMusicEnabled ? "music_note" : "music_off"}
+							</span>
 						</button>
 						<button
 							type="button"
@@ -473,7 +463,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							aria-label="Next track"
 							title="Next track"
 						>
-							<SkipForward className="size-3.5" />
+							<span className="material-symbols-outlined text-sm">skip_next</span>
 						</button>
 						{handleQuit && (
 							<button
@@ -483,7 +473,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								aria-label="Quit tournament"
 								title="Quit tournament"
 							>
-								<X />
+								<span className="material-symbols-outlined">close</span>
 							</button>
 						)}
 					</div>
@@ -494,7 +484,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						aria-pressed={showCatPictures}
 						title={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
 					>
-						<PawPrint className="size-3.5" />
+						<span className="material-symbols-outlined text-sm">pets</span>
 						<span>{showCatPictures ? "Names Only" : "Show Cats"}</span>
 					</button>
 				</Card>
@@ -526,7 +516,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						>
 							<div className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-3 sm:px-4 py-2 backdrop-blur-md shadow-[0_0_40px_rgba(16,185,129,0.35)]">
 								<div className="flex items-center gap-2 text-emerald-100">
-									<Trophy className="text-emerald-300 size-4" />
+									<span className="material-symbols-outlined text-base text-emerald-300">
+										emoji_events
+									</span>
 									<span className="text-xs sm:text-sm font-bold tracking-wide truncate">
 										{voteAnnouncement} advances
 									</span>
@@ -659,7 +651,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									className="glass-panel py-1.5 px-2 rounded-full flex items-center justify-center border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors w-full"
 									title="Undo last vote"
 								>
-									<Undo2 className="size-3.5 text-primary" />
+									<span className="material-symbols-outlined text-sm text-primary">undo</span>
 								</button>
 								{handleQuit && (
 									<button
@@ -668,7 +660,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 										className="glass-panel py-1.5 px-2 rounded-full flex items-center justify-center border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors w-full"
 										title="Quit tournament"
 									>
-										<LogOut className="size-3.5 text-red-400" />
+										<span className="material-symbols-outlined text-sm text-red-400">
+											exit_to_app
+										</span>
 									</button>
 								)}
 							</div>
