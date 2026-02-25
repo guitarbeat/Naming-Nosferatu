@@ -5,7 +5,7 @@
 
 import { lazy, Suspense } from "react";
 import { ProfileSection } from "@/features/tournament/components/ProfileSection";
-import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
+import { useTournamentHandlers } from "@/features/tournament/hooks";
 import { Loading, Section } from "@/shared/components/layout";
 import useAppStore from "@/store/appStore";
 

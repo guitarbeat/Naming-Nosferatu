@@ -29,7 +29,7 @@ import {
 } from "@/shared/lib/icons";
 import type { NameItem, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { useAudioManager, useTournamentState, useTournamentVote } from "./hooks/useTournament";
+import { useAudioManager, useTournamentState } from "./hooks";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
 	// Optimization: Only select user.name to avoid re-renders on other store changes
@@ -50,6 +50,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		handleQuit,
 		progress,
 		etaMinutes = 0,
+		handleVoteWithAnimation,
+		isVoting,
 	} = tournament;
 	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(null);
 	const [voteAnnouncement, setVoteAnnouncement] = useState<string | null>(null);
@@ -156,12 +158,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		}
 	}, [isComplete, ratings, onComplete, idToName, audioManager]);
 
-	const { handleVoteWithAnimation, isVoting } = useTournamentVote({
-		tournamentState: tournament,
-		audioManager,
-		onVote: handleVoteAdapter,
-	});
-
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
 	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
 	const matchData = useMemo(() => {
@@ -254,8 +250,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 			triggerVoteFeedback(winnerName, side);
 			handleVoteWithAnimation(winnerId, loserId);
+
+			if (onVote) {
+				handleVoteAdapter(winnerId, loserId);
+			}
 		},
-		[isVoting, matchData, triggerVoteFeedback, handleVoteWithAnimation],
+		[isVoting, matchData, triggerVoteFeedback, handleVoteWithAnimation, onVote, handleVoteAdapter],
 	);
 
 	const handleKeyDown = useCallback(

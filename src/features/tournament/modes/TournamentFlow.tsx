@@ -9,7 +9,7 @@ import { Card } from "@/shared/components/layout/Card";
 import { Section } from "@/shared/components/layout/Section";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
-import { useTournamentHandlers } from "../hooks/useTournamentHandlers";
+import { useTournamentHandlers } from "../hooks";
 
 export default function TournamentFlow() {
 	const { user, tournament, tournamentActions } = useAppStore();
