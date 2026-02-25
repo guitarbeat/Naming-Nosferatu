@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { ErrorComponent } from "@/shared/components/layout/Feedback";
@@ -256,6 +256,16 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                         }
                 },
                 [isVoting, matchData, triggerVoteFeedback, handleVoteWithAnimation, onVote, handleVoteAdapter],
+        );
+
+        const handleKeyDown = useCallback(
+                (e: KeyboardEvent<HTMLElement>, side: "left" | "right") => {
+                        if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                handleVoteForSide(side);
+                        }
+                },
+                [handleVoteForSide],
         );
 
         const leftImg =
