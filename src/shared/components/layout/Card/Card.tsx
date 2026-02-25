@@ -10,6 +10,7 @@ import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
 import { cn } from "@/shared/lib/basic";
 import { TIMING } from "@/shared/lib/constants";
+import { ZoomIn } from "@/shared/lib/icons";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 export type CardVariant =
@@ -602,9 +603,7 @@ const CardNameBase = memo(function CardName({
 						/>
 						{onImageClick && (
 							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 group-focus-visible/image:opacity-100 transition-opacity flex items-center justify-center">
-								<span className="material-symbols-outlined text-white text-3xl drop-shadow-md">
-									zoom_in
-								</span>
+								<ZoomIn className="text-white w-8 h-8 drop-shadow-md" />
 							</div>
 						)}
 					</div>
