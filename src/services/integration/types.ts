@@ -168,6 +168,9 @@ export interface ErrorRecoveryStrategy {
 	retryable: boolean;
 }
 
+/**
+ * Custom error class for integration-related failures.
+ */
 export class IntegrationError extends Error {
 	constructor(
 		message: string,
