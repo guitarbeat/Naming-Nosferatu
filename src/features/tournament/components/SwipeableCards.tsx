@@ -193,6 +193,75 @@ export const SwipeableCards = memo(
 															<span className="text-white font-black text-lg uppercase">Nope</span>
 														</div>
 													</motion.div>
+                                {/* Swipe Stack */}
+                                <div className="relative w-full" style={{ minHeight: "500px" }}>
+                                        <AnimatePresence mode="popLayout">
+                                                {visibleCards.length > 0 ? (
+                                                        cardsToRender.map((card: NameItem, index: number) => (
+                                                                <motion.div
+                                                                        key={card.id}
+                                                                        layout={true}
+                                                                        layoutId={String(card.id)}
+                                                                        className="absolute inset-0 flex items-center justify-center"
+                                                                        style={{ zIndex: 10 - index }}
+                                                                        exit={{
+                                                                                opacity: 0,
+                                                                                x: dragDirection === "right" ? 500 : -500,
+                                                                                rotate: dragDirection === "right" ? 45 : -45,
+                                                                                scale: 0.5,
+                                                                                transition: { duration: 0.4, ease: "easeOut" },
+                                                                        }}
+                                                                >
+                                                                        <motion.div
+                                                                                drag={index === 0 ? "x" : false}
+                                                                                dragConstraints={{ left: -200, right: 200 }}
+                                                                                style={{ touchAction: "pan-y" }}
+                                                                                onDrag={(_, info) => {
+                                                                                        if (index === 0) {
+                                                                                                setDragOffset(info.offset.x);
+                                                                                        }
+                                                                                }}
+                                                                                onDragEnd={(_, info) => {
+                                                                                        if (index === 0) {
+                                                                                                handleDragEnd(card, info);
+                                                                                        }
+                                                                                }}
+                                                                                animate={{
+                                                                                        y: index * 12,
+                                                                                        scale: 1 - index * 0.04,
+                                                                                        opacity: 1 - index * 0.2,
+                                                                                        rotate: index === 0 ? dragOffset / 20 : 0,
+                                                                                }}
+                                                                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                                                                className="w-full max-w-md"
+                                                                        >
+                                                                                <Card
+                                                                                        className={cn(
+                                                                                                "relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full",
+                                                                                                isSelected(card) ? "shadow-[0_0_30px_rgba(34,197,94,0.3)]" : "",
+                                                                                                index === 0 &&
+                                                                                                        "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95",
+                                                                                                index > 0 && "pointer-events-none",
+                                                                                        )}
+                                                                                        variant="default"
+                                                                                        padding="medium"
+                                                                                >
+                                                                                        {/* Swipe Indicators */}
+                                                                                        {index === 0 && (
+                                                                                                <>
+                                                                                                        <motion.div
+                                                                                                                className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
+                                                                                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                                                                                animate={{
+                                                                                                                        opacity: dragOffset < -50 ? 1 : 0,
+                                                                                                                        scale: dragOffset < -50 ? 1 : 0.8,
+                                                                                                                }}
+                                                                                                        >
+                                                                                                                <div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
+                                                                                                                        <X size={24} className="text-white" />
+                                                                                                                        <span className="text-white font-black text-lg uppercase">Nope</span>
+                                                                                                                </div>
+                                                                                                        </motion.div>
 
 													<motion.div
 														className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
