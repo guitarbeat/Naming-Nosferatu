@@ -138,9 +138,10 @@ export const SwipeableCards = memo(
                                                                         style={{ zIndex: 10 - index }}
                                                                         exit={{
                                                                                 opacity: 0,
-                                                                                x: dragDirection === "right" ? 400 : -400,
-                                                                                rotate: dragDirection === "right" ? 20 : -20,
-                                                                                transition: { duration: 0.3 },
+                                                                                x: dragDirection === "right" ? 500 : -500,
+                                                                                rotate: dragDirection === "right" ? 45 : -45,
+                                                                                scale: 0.5,
+                                                                                transition: { duration: 0.4, ease: "easeOut" },
                                                                         }}
                                                                 >
                                                                         <motion.div
