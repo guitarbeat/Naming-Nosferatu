@@ -583,80 +583,75 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                         prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
                                                 }
                                                 transition={{ duration: prefersReducedMotion ? 0.01 : 0.32 }}
-                                                className="relative grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4 w-full max-w-5xl mx-auto z-10 items-stretch h-full"
+                                                className="relative flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] gap-4 sm:gap-4 w-full max-w-5xl mx-auto z-10 items-stretch h-full min-h-0"
                                         >
                                                 {/* Left Card */}
-                                                <Card
-                                                        interactive={true}
-                                                        padding="none"
-                                                        className={`relative overflow-hidden group cursor-pointer h-full animate-float transition-all duration-300 ${
-                                                                isVoting ? "pointer-events-none" : ""
-                                                        } ${
-                                                                leftSelected
-                                                                        ? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
-                                                                        : hasSelectionFeedback
-                                                                                ? "opacity-[0.55] scale-[0.98]"
-                                                                                : ""
-                                                        }`}
-                                                        variant="default"
-                                                        role="button"
-                                                        tabIndex={isVoting ? -1 : 0}
-                                                        aria-label={`Vote for ${leftName}`}
-                                                        aria-disabled={isVoting}
-                                                        onKeyDown={(e) => handleKeyDown(e, "left")}
-                                                        onClick={() => handleVoteForSide("left")}
-                                                >
-                                                        <div className="relative w-full h-full flex items-center justify-center bg-white/10">
-                                                                {leftImg ? (
-                                                                        <CatImage
-                                                                                src={leftImg}
-                                                                                alt={leftName}
-                                                                                objectFit="cover"
-                                                                                containerClassName="w-full h-full"
-                                                                                imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                                        />
-                                                                ) : (
-                                                                        <span className="text-white/20 text-6xl font-bold select-none">
-                                                                                {leftName[0]?.toUpperCase() || "?"}
-                                                                        </span>
-                                                                )}
-
-                                                                {/* Name Overlay */}
-                                                                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
-                                                                        <h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight">
-                                                                                {leftName}
-                                                                                {leftPronunciation && (
-                                                                                        <span className="ml-2 text-amber-400 text-lg sm:text-xl font-bold italic opacity-90">
-                                                                                                [{leftPronunciation}]
-                                                                                        </span>
-                                                                                )}
-                                                                        </h3>
-                                                                        {leftDescription && (
-                                                                                <p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm">
-                                                                                        {leftDescription}
-                                                                                </p>
+                                                <div className="flex-1 flex flex-col min-h-[250px] sm:min-h-0">
+                                                        <Card
+                                                                interactive={true}
+                                                                padding="none"
+                                                                className={`relative overflow-hidden group cursor-pointer flex-1 animate-float transition-all duration-300 ${
+                                                                        isVoting ? "pointer-events-none" : ""
+                                                                } ${
+                                                                        leftSelected
+                                                                                ? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
+                                                                                : hasSelectionFeedback
+                                                                                        ? "opacity-[0.55] scale-[0.98]"
+                                                                                        : ""
+                                                                }`}
+                                                                variant="default"
+                                                                role="button"
+                                                                tabIndex={isVoting ? -1 : 0}
+                                                                aria-label={`Vote for ${leftName}`}
+                                                                aria-disabled={isVoting}
+                                                                onKeyDown={(e) => handleKeyDown(e, "left")}
+                                                                onClick={() => handleVoteForSide("left")}
+                                                        >
+                                                                <div className="relative w-full h-full flex items-center justify-center bg-white/10">
+                                                                        {leftImg ? (
+                                                                                <CatImage
+                                                                                        src={leftImg}
+                                                                                        alt={leftName}
+                                                                                        objectFit="cover"
+                                                                                        containerClassName="w-full h-full"
+                                                                                        imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                                                />
+                                                                        ) : (
+                                                                                <span className="text-white/20 text-6xl font-bold select-none">
+                                                                                        {leftName[0]?.toUpperCase() || "?"}
+                                                                                </span>
                                                                         )}
+
+                                                                        {/* Name Overlay */}
+                                                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+                                                                                <h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight">
+                                                                                        {leftName}
+                                                                                        {leftPronunciation && (
+                                                                                                <span className="ml-2 text-amber-400 text-lg sm:text-xl font-bold italic opacity-90">
+                                                                                                        [{leftPronunciation}]
+                                                                                                </span>
+                                                                                        )}
+                                                                                </h3>
+                                                                                {leftDescription && (
+                                                                                        <p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm">
+                                                                                                {leftDescription}
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
                                                                 </div>
-                                                        </div>
-                                                </Card>
+                                                        </Card>
+                                                </div>
 
                                                 {/* VS Indicator */}
-                                                <div className="flex flex-col items-center justify-center gap-2 py-1 w-14 sm:w-20">
-                                                        <div className="w-11 h-11 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg flex-shrink-0">
-                                                                <span className="font-bold text-base sm:text-2xl italic tracking-tighter">VS</span>
+                                                <div className="flex flex-row sm:flex-col items-center justify-center gap-3 sm:gap-2 py-1 w-full sm:w-20">
+                                                        <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg flex-shrink-0">
+                                                                <span className="font-bold text-sm sm:text-2xl italic tracking-tighter">VS</span>
                                                         </div>
-                                                        <div
-                                                                className={`text-[8px] sm:text-[10px] uppercase tracking-wider transition-colors text-center leading-tight ${
-                                                                        isVoting && selectedName ? "text-emerald-300" : "text-white/60"
-                                                                }`}
-                                                        >
-                                                                {isVoting && selectedName ? selectedName : "Choose"}
-                                                        </div>
-                                                        <div className="flex flex-col gap-1.5 w-full">
+                                                        <div className="flex flex-row sm:flex-col gap-1.5 w-auto sm:w-full">
                                                                 <button
                                                                         type="button"
                                                                         onClick={() => handleUndo()}
-                                                                        className="glass-panel py-1.5 px-2 rounded-full flex items-center justify-center border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors w-full"
+                                                                        className="glass-panel py-1.5 px-3 sm:px-2 rounded-full flex items-center justify-center border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
                                                                         title="Undo last vote"
                                                                 >
                                                                         <Undo2 className="size-3.5 text-primary" />
@@ -665,7 +660,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                                         <button
                                                                                 type="button"
                                                                                 onClick={handleQuit}
-                                                                                className="glass-panel py-1.5 px-2 rounded-full flex items-center justify-center border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors w-full"
+                                                                                className="glass-panel py-1.5 px-3 sm:px-2 rounded-full flex items-center justify-center border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors"
                                                                                 title="Quit tournament"
                                                                         >
                                                                                 <LogOut className="size-3.5 text-red-400" />
@@ -675,60 +670,62 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                 </div>
 
                                                 {/* Right Card */}
-                                                <Card
-                                                        interactive={true}
-                                                        padding="none"
-                                                        className={`relative overflow-hidden group cursor-pointer h-full animate-float transition-all duration-300 ${
-                                                                isVoting ? "pointer-events-none" : ""
-                                                        } ${
-                                                                rightSelected
-                                                                        ? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
-                                                                        : hasSelectionFeedback
-                                                                                ? "opacity-[0.55] scale-[0.98]"
-                                                                                : ""
-                                                        }`}
-                                                        style={{ animationDelay: "2s" }}
-                                                        variant="default"
-                                                        role="button"
-                                                        tabIndex={isVoting ? -1 : 0}
-                                                        aria-label={`Vote for ${rightName}`}
-                                                        aria-disabled={isVoting}
-                                                        onKeyDown={(e) => handleKeyDown(e, "right")}
-                                                        onClick={() => handleVoteForSide("right")}
-                                                >
-                                                        <div className="relative w-full h-full flex items-center justify-center bg-white/10">
-                                                                {rightImg ? (
-                                                                        <CatImage
-                                                                                src={rightImg}
-                                                                                alt={rightName}
-                                                                                objectFit="cover"
-                                                                                containerClassName="w-full h-full"
-                                                                                imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                                        />
-                                                                ) : (
-                                                                        <span className="text-white/20 text-6xl font-bold select-none">
-                                                                                {rightName[0]?.toUpperCase() || "?"}
-                                                                        </span>
-                                                                )}
-
-                                                                {/* Name Overlay */}
-                                                                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
-                                                                        <h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight text-left sm:text-right">
-                                                                                {rightPronunciation && (
-                                                                                        <span className="mr-2 text-amber-400 text-lg sm:text-xl font-bold italic opacity-90">
-                                                                                                [{rightPronunciation}]
-                                                                                        </span>
-                                                                                )}
-                                                                                {rightName}
-                                                                        </h3>
-                                                                        {rightDescription && (
-                                                                                <p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm text-left sm:text-right">
-                                                                                        {rightDescription}
-                                                                                </p>
+                                                <div className="flex-1 flex flex-col min-h-[250px] sm:min-h-0">
+                                                        <Card
+                                                                interactive={true}
+                                                                padding="none"
+                                                                className={`relative overflow-hidden group cursor-pointer flex-1 animate-float transition-all duration-300 ${
+                                                                        isVoting ? "pointer-events-none" : ""
+                                                                } ${
+                                                                        rightSelected
+                                                                                ? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
+                                                                                : hasSelectionFeedback
+                                                                                        ? "opacity-[0.55] scale-[0.98]"
+                                                                                        : ""
+                                                                }`}
+                                                                style={{ animationDelay: "2s" }}
+                                                                variant="default"
+                                                                role="button"
+                                                                tabIndex={isVoting ? -1 : 0}
+                                                                aria-label={`Vote for ${rightName}`}
+                                                                aria-disabled={isVoting}
+                                                                onKeyDown={(e) => handleKeyDown(e, "right")}
+                                                                onClick={() => handleVoteForSide("right")}
+                                                        >
+                                                                <div className="relative w-full h-full flex items-center justify-center bg-white/10">
+                                                                        {rightImg ? (
+                                                                                <CatImage
+                                                                                        src={rightImg}
+                                                                                        alt={rightName}
+                                                                                        objectFit="cover"
+                                                                                        containerClassName="w-full h-full"
+                                                                                        imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                                                />
+                                                                        ) : (
+                                                                                <span className="text-white/20 text-6xl font-bold select-none">
+                                                                                        {rightName[0]?.toUpperCase() || "?"}
+                                                                                </span>
                                                                         )}
+
+                                                                        {/* Name Overlay */}
+                                                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+                                                                                <h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight text-left sm:text-right">
+                                                                                        {rightPronunciation && (
+                                                                                                <span className="mr-2 text-amber-400 text-lg sm:text-xl font-bold italic opacity-90">
+                                                                                                        [{rightPronunciation}]
+                                                                                                </span>
+                                                                                        )}
+                                                                                        {rightName}
+                                                                                </h3>
+                                                                                {rightDescription && (
+                                                                                        <p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm text-left sm:text-right">
+                                                                                                {rightDescription}
+                                                                                        </p>
+                                                                                )}
+                                                                        </div>
                                                                 </div>
-                                                        </div>
-                                                </Card>
+                                                        </Card>
+                                                </div>
                                         </motion.div>
                                 </AnimatePresence>
                         </main>
