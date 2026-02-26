@@ -623,7 +623,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                                         )}
 
                                                                         {/* Name Overlay */}
-                                                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+                                                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-20 flex flex-col justify-end pointer-events-none">
                                                                                 <h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight">
                                                                                         {leftName}
                                                                                         {leftPronunciation && (
@@ -708,7 +708,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                                         )}
 
                                                                         {/* Name Overlay */}
-                                                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 flex flex-col justify-end">
+                                                                        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-20 flex flex-col justify-end pointer-events-none">
                                                                                 <h3 className="font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words w-full drop-shadow-md leading-tight text-left sm:text-right">
                                                                                         {rightPronunciation && (
                                                                                                 <span className="mr-2 text-amber-400 text-lg sm:text-xl font-bold italic opacity-90">
