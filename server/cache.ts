@@ -23,15 +23,12 @@ export class SimpleCache<T> {
 	}
 
 	set(key: string, value: T): void {
-		const isUpdate = this.cache.has(key);
-
-		if (!isUpdate && this.cache.size >= this.maxSize) {
+		if (this.cache.size >= this.maxSize) {
 			const oldestKey = this.cache.keys().next().value;
 			if (oldestKey) {
 				this.cache.delete(oldestKey);
 			}
 		}
-
 		this.cache.set(key, {
 			value,
 			expires: Date.now() + this.ttl,
