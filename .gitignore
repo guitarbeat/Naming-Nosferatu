@@ -152,3 +152,4 @@ jscpd-report.html
 # Supabase
 supabase/.temp/
 supabase/.branches/
+.dyad/
