@@ -169,13 +169,11 @@ export function NameSelector() {
                 }
         }, [names]);
 
-        const syncSelectionToStore = useCallback(
-                (nextSelectedIds: Set<IdType>) => {
-                        const selectedNameItems = names.filter((n) => nextSelectedIds.has(n.id));
-                        tournamentActions.setSelection(selectedNameItems);
-                },
-                [names, tournamentActions],
-        );
+        // Sync selectedNames to store whenever it changes (after render)
+        useEffect(() => {
+                const selectedNameItems = names.filter((n) => selectedNames.has(n.id));
+                tournamentActions.setSelection(selectedNameItems);
+        }, [selectedNames, names, tournamentActions]);
 
         const toggleName = useCallback(
                 (nameId: IdType) => {
@@ -186,13 +184,10 @@ export function NameSelector() {
                                 } else {
                                         next.add(nameId);
                                 }
-
-                                syncSelectionToStore(next);
-
                                 return next;
                         });
                 },
-                [syncSelectionToStore],
+                [],
         );
 
         // Trigger haptic feedback if available
@@ -240,7 +235,6 @@ export function NameSelector() {
                                 setSelectedNames((prev) => {
                                         const next = new Set(prev);
                                         next.add(nameId);
-                                        syncSelectionToStore(next);
                                         return next;
                                 });
                         }
@@ -262,7 +256,7 @@ export function NameSelector() {
                                 }, resetDelay);
                         });
                 },
-                [markSwiped, syncSelectionToStore, triggerHaptic],
+                [markSwiped, triggerHaptic],
         );
 
         const handleDragEnd = useCallback(
@@ -307,18 +301,17 @@ export function NameSelector() {
                         return next;
                 });
 
-                // If it was a right swipe, remove from selected names and sync with store
+                // If it was a right swipe, remove from selected names
                 if (lastSwipe.direction === "right") {
                         setSelectedNames((prev) => {
                                 const next = new Set(prev);
                                 next.delete(lastSwipe.id);
-                                syncSelectionToStore(next);
                                 return next;
                         });
                 }
 
                 triggerHaptic();
-        }, [swipeHistory, syncSelectionToStore, triggerHaptic]);
+        }, [swipeHistory, triggerHaptic]);
 
         // Admin handlers for toggling hidden/locked status
         const handleToggleHidden = useCallback(
