@@ -188,7 +188,7 @@ const CardBase = memo(
                                 interactive && onClick && "active:translate-y-0",
                                 // Glow effect helper
                                 "before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
-                                "before:bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(168,85,247,0.15),transparent_50%)]",
+                                "before:bg-[radial-gradient(circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(168,85,247,0.15),transparent_50%)]",
                         );
 
                         // * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
@@ -219,6 +219,16 @@ const CardBase = memo(
                                         bordered: border,
                                 });
 
+                                const motionProps = enableTilt
+                                        ? {
+                                                        style: {
+                                                                rotateX,
+                                                                rotateY,
+                                                                transformStyle: "preserve-3d" as const,
+                                                        },
+                                                }
+                                        : {};
+
                                 return (
                                         <LiquidGlass
                                                 id={id || `card-glass-${glassId.replace(/:/g, "-")}`}
@@ -238,7 +248,15 @@ const CardBase = memo(
                                                 }}
                                                 {...glassProps}
                                         >
-                                                <Component ref={ref} className={contentClasses} onClick={onClick} {...props}>
+                                                <Component
+                                                        ref={ref}
+                                                        className={contentClasses}
+                                                        onClick={onClick}
+                                                        onMouseMove={handleMouseMove}
+                                                        onMouseLeave={handleMouseLeave}
+                                                        {...motionProps}
+                                                        {...props}
+                                        >
                                                         {children}
                                                 </Component>
                                         </LiquidGlass>
@@ -537,7 +555,7 @@ const CardNameBase = memo(function CardName({
                                                 : "border-white/10 bg-gradient-to-br from-white/10 to-white/5 shadow-lg hover:border-white/20 hover:bg-white/10",
                                         disabled && "opacity-50 cursor-not-allowed filter grayscale",
                                         isHidden && "opacity-75 bg-amber-900/20 border-amber-500/50 grayscale-[0.4]",
-                                        image && "min-h-[220px]",
+                                        image && "aspect-square",
                                         className,
                                 )}
                                 onClick={
