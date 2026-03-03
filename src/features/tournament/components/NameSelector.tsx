@@ -28,6 +28,7 @@ import {
 	Eye,
 	EyeOff,
 	Heart,
+	Shuffle,
 	X,
 	ZoomIn,
 } from "@/shared/lib/icons";
@@ -92,7 +93,6 @@ export function NameSelector() {
 	const [hiddenQuery, setHiddenQuery] = useState("");
 	const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
 	const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
-	const [hiddenExpandTimer, setHiddenExpandTimer] = useState<number | null>(null);
 	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
 	const [swipeHistory, setSwipeHistory] = useState<
 		Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
@@ -506,6 +506,30 @@ export function NameSelector() {
 		() => names.filter((name) => !(name.lockedIn || name.locked_in) && !name.isHidden),
 		[names],
 	);
+	const hiddenNamesAll = useMemo(() => names.filter((name) => name.isHidden), [names]);
+	const hiddenFiltered = useMemo(() => {
+		const q = hiddenQuery.trim().toLowerCase();
+		return hiddenNamesAll.filter((name) => {
+			if (hiddenShowSelectedOnly && !selectedNames.has(name.id)) {
+				return false;
+			}
+			if (!q) {
+				return true;
+			}
+			return (
+				name.name.toLowerCase().includes(q) || (name.description ?? "").toLowerCase().includes(q)
+			);
+		});
+	}, [hiddenNamesAll, hiddenQuery, hiddenShowSelectedOnly, selectedNames]);
+	const previewItems = useMemo(() => hiddenNamesAll.slice(0, 6), [hiddenNamesAll]);
+	const renderItems = useMemo(
+		() => hiddenFiltered.slice(0, hiddenRenderCount),
+		[hiddenFiltered, hiddenRenderCount],
+	);
+	const selectedIdsSet = useMemo(() => {
+		const ids = new Set(selectedNames);
+		return ids;
+	}, [selectedNames]);
 	const selectedAvailableCount = useMemo(() => {
 		const availableIds = new Set(availableNames.map((n) => n.id));
 		let count = 0;
@@ -516,6 +540,20 @@ export function NameSelector() {
 		});
 		return count;
 	}, [availableNames, selectedNames]);
+	const selectedHiddenCount = useMemo(() => {
+		let count = 0;
+		hiddenNamesAll.forEach((name) => {
+			if (selectedIdsSet.has(name.id)) {
+				count += 1;
+			}
+		});
+		return count;
+	}, [hiddenNamesAll, selectedIdsSet]);
+	const canSelectAllAvailable = useMemo(
+		() => availableNames.some((name) => !selectedIdsSet.has(name.id)),
+		[availableNames, selectedIdsSet],
+	);
+	const hasAnySelection = selectedIdsSet.size > 0;
 
 	// Keyboard navigation for swipe mode
 	useEffect(() => {
@@ -574,37 +612,51 @@ export function NameSelector() {
 		[names],
 	);
 
-	const clearHiddenExpandTimer = useCallback(() => {
-		if (hiddenExpandTimer) {
-			window.clearTimeout(hiddenExpandTimer);
-			setHiddenExpandTimer(null);
-		}
-	}, [hiddenExpandTimer]);
+	const handleSelectAllAvailable = useCallback(() => {
+		setSelectedNames((prev) => {
+			const next = new Set(prev);
+			availableNames.forEach((name) => {
+				next.add(name.id);
+			});
+			syncSelectionToStore(next);
+			return next;
+		});
+		triggerHaptic();
+	}, [availableNames, syncSelectionToStore, triggerHaptic]);
 
-	const startHiddenExpandTimer = useCallback(() => {
-		if (!hiddenPanel.isCollapsed) {
+	const handleClearSelection = useCallback(() => {
+		const lockedIds = new Set(
+			names.filter((name) => name.lockedIn || name.locked_in).map((name) => name.id),
+		);
+		setSelectedNames(lockedIds);
+		syncSelectionToStore(lockedIds);
+		triggerHaptic();
+	}, [names, syncSelectionToStore, triggerHaptic]);
+
+	const handleSelectRandomAvailable = useCallback(() => {
+		if (availableNames.length === 0) {
 			return;
 		}
-		clearHiddenExpandTimer();
-		const t = window.setTimeout(() => {
-			hiddenPanel.expand();
-			setHiddenRenderCount(24);
-		}, 800);
-		setHiddenExpandTimer(t);
-	}, [clearHiddenExpandTimer, hiddenPanel]);
 
-	console.log(
-		"[v0] NameSelector render: isLoading=",
-		isLoading,
-		"error=",
-		error,
-		"names.length=",
-		names.length,
-		"isSwipeMode=",
-		isSwipeMode,
-		"isAdmin=",
-		isAdmin,
-	);
+		const targetCount = Math.min(8, availableNames.length);
+		const pool = [...availableNames];
+		for (let i = pool.length - 1; i > 0; i -= 1) {
+			const j = Math.floor(Math.random() * (i + 1));
+			const temp = pool[i];
+			pool[i] = pool[j] as NameItem;
+			pool[j] = temp as NameItem;
+		}
+
+		const randomIds = new Set(pool.slice(0, targetCount).map((name) => name.id));
+		setSelectedNames((prev) => {
+			const next = new Set(prev);
+			randomIds.forEach((id) => next.add(id));
+			syncSelectionToStore(next);
+			return next;
+		});
+		triggerHaptic();
+		toast.showSuccess(`Added ${targetCount} random names.`);
+	}, [availableNames, syncSelectionToStore, toast, triggerHaptic]);
 
 	if (isLoading) {
 		return (
