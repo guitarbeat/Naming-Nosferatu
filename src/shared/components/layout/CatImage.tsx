@@ -170,7 +170,7 @@ function CatImage({
 			}
 			container.dataset.loaded = "true";
 		},
-		[objectFit],
+		[],
 	);
 
 	const handleLoad = useCallback(
@@ -227,7 +227,7 @@ function CatImage({
 	const renderImage = () => {
 		const imageStyle: React.CSSProperties = {
 			objectPosition: "center var(--image-pos-y, 50%)",
-			objectFit: "var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"],
+			objectFit: objectFit ?? ("var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"]),
 		};
 
 		const commonProps = {
