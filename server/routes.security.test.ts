@@ -81,4 +81,22 @@ describe("Security: Analytics Endpoints Limit", () => {
 			expect(dbMocks.limit).toHaveBeenCalledWith(100);
 		});
 	});
+
+	describe("POST /api/names", () => {
+		it("should block requests after rate limit threshold is exceeded", async () => {
+			for (let i = 0; i < 10; i++) {
+				await request(app)
+					.post("/api/names")
+					.send({ name: `Test Rate Limit ${i}`, description: "Test" });
+			}
+
+			const res = await request(app)
+				.post("/api/names")
+				.send({ name: "Blocked Name", description: "This should fail" });
+
+			expect(res.status).toBe(429);
+			expect(res.body.success).toBe(false);
+			expect(res.body.error).toContain("Too many names created");
+		});
+	});
 });
