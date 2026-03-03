@@ -328,7 +328,6 @@ router.post("/api/users", async (req, res) => {
 });
 
 // Get user roles
-router.get("/api/users/:userId/roles", async (req, res) => {
 router.get("/api/users/:userId/roles", authRateLimiter, async (req, res) => {
 	try {
 		if (!db) {
