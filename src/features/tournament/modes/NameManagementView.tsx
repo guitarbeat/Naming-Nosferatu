@@ -6,7 +6,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { NameManagementProvider } from "@/features/tournament/context/NameManagementContext";
 import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
 import { ErrorComponent } from "@/shared/components/layout";
 import { cn } from "@/shared/lib/basic";
@@ -114,15 +113,13 @@ export function NameManagementView({
 				/>
 			)}
 
-			<NameManagementProvider value={state}>
-				{/* Context Logic Extension */}
-				{extensions.contextLogic &&
-					(typeof extensions.contextLogic === "function"
-						? extensions.contextLogic()
-						: extensions.contextLogic)}
+			{/* Context Logic Extension */}
+			{extensions.contextLogic &&
+				(typeof extensions.contextLogic === "function"
+					? extensions.contextLogic()
+					: extensions.contextLogic)}
 
-				{renderContent()}
-			</NameManagementProvider>
+			{renderContent()}
 		</>
 	);
 }
