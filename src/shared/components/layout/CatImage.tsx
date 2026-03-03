@@ -99,7 +99,10 @@ function analyseImage(imgEl: HTMLImageElement): {
 
 		return { focal: pct, accent, orientation };
 	} catch (error) {
-		console.error("Failed to analyse cat image metadata", error);
+		// Silently fail for CORS or canvas issues - focal analysis is optional enhancement
+		if (process.env.NODE_ENV === "development") {
+			console.debug("Could not analyze image (CORS or canvas issue):", (error as Error).message);
+		}
 		return {};
 	}
 }
@@ -227,6 +230,8 @@ function CatImage({
 			objectFit: objectFit ?? ("var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"]),
 		};
 
+		// Only set CORS for external images; local assets don't need it
+		const isLocalAsset = currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/");
 		const commonProps = {
 			ref: imageRef,
 			src: currentSrc || fallbackUrl,
@@ -237,7 +242,7 @@ function CatImage({
 			decoding,
 			onLoad: handleLoad,
 			onError: handleError,
-			crossOrigin: "anonymous" as const,
+			...(isLocalAsset ? {} : { crossOrigin: "anonymous" as const }),
 		};
 
 		if (currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/assets/images/")) {
