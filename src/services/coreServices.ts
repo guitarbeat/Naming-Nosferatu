@@ -76,11 +76,3 @@ export const tournamentsAPI = {
 		}
 	},
 };
-
-export function calculateBracketRound(totalNames: number, currentMatch: number): number {
-	if (totalNames <= 2) {
-		return 1;
-	}
-	const matchesPerRound = Math.ceil(totalNames / 2);
-	return Math.ceil(currentMatch / matchesPerRound);
-}
