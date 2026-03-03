@@ -47,7 +47,7 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
                                         title={title || ""}
                                         actions={actions}
                                         variant="compact"
-                                        className="relative z-50"
+
                                 />
                         )}
                         {toolbar && <div className="analysis-panel-toolbar flex gap-2">{toolbar}</div>}
