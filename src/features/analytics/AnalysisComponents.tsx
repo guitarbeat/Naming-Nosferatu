@@ -42,7 +42,13 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
 }) => {
 	return (
 		<div className={cn("analysis-panel flex flex-col gap-4", className)}>
-			{showHeader && <CollapsibleHeader title={title || ""} actions={actions} variant="compact" />}
+			{showHeader && (
+				<CollapsibleHeader
+					title={title || ""}
+					actions={actions}
+					variant="compact"
+				/>
+			)}
 			{toolbar && <div className="analysis-panel-toolbar flex gap-2">{toolbar}</div>}
 			{children}
 		</div>
@@ -357,11 +363,38 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 		);
 	};
 
-	const renderActionableInsights = () => {
+	const lowPerformers = useMemo(() => {
 		const highPriorityTags = ["worst_rated", "never_selected", "inactive", "poor_performer"];
-		const lowPerformers = namesWithInsights.filter((n) =>
+		const filtered = namesWithInsights.filter((n) =>
 			n.insights.some((i: string) => highPriorityTags.includes(i)),
 		);
+
+		return filtered
+			.sort((a, b) => {
+				const priority: Record<string, number> = {
+					inactive: 0,
+					never_selected: 1,
+					worst_rated: 2,
+					poor_performer: 3,
+				};
+				const getP = (item: NameWithInsight) =>
+					Math.min(
+						...item.insights
+							.filter((i: string) => highPriorityTags.includes(i))
+							.map((i: string) => priority[i] ?? 99),
+					);
+				const pA = getP(a);
+				const pB = getP(b);
+				if (pA !== pB) {
+					return pA - pB;
+				}
+				return a.rating - b.rating;
+			})
+			.slice(0, 12);
+	}, [namesWithInsights]);
+
+	const renderActionableInsights = () => {
+		const highPriorityTags = ["worst_rated", "never_selected", "inactive", "poor_performer"];
 
 		if (lowPerformers.length === 0) {
 			return null;
@@ -371,84 +404,66 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 			<div className="mb-6">
 				<h3 className="text-lg font-bold text-white mb-3">⚠️ Names to Consider Hiding</h3>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-					{lowPerformers
-						.sort((a, b) => {
-							const priority: Record<string, number> = {
-								inactive: 0,
-								never_selected: 1,
-								worst_rated: 2,
-								poor_performer: 3,
-							};
-							const getP = (item: NameWithInsight) =>
-								Math.min(
-									...item.insights
+					{lowPerformers.map((n) => (
+						<Card key={n.id} variant="danger">
+							<CardBody className="p-3 gap-2">
+								<div className="flex justify-between items-start">
+									<div className="font-bold text-white truncate pr-2">{n.name}</div>
+									{canHideNames && (
+										<HeroButton
+											size="sm"
+											color="danger"
+											variant="flat"
+											className="min-w-0 h-6 px-2 text-xs"
+											onPress={async () => {
+												try {
+													await onHideName(n.id, n.name);
+												} catch (error) {
+													devError("[AnalysisDashboard] Failed to hide name:", error);
+												}
+											}}
+										>
+											Hide
+										</HeroButton>
+									)}
+								</div>
+								<div className="flex gap-3 text-xs text-white/60">
+									<span>Rating {Math.round(n.rating)}</span>
+									<span>{n.selected} sel</span>
+									{n.wins > 0 && <span>{n.wins} wins</span>}
+								</div>
+								<div className="flex flex-wrap gap-1 mt-1">
+									{n.insights
 										.filter((i: string) => highPriorityTags.includes(i))
-										.map((i: string) => priority[i] ?? 99),
-								);
-							const pA = getP(a);
-							const pB = getP(b);
-							if (pA !== pB) {
-								return pA - pB;
-							}
-							return a.rating - b.rating;
-						})
-						.slice(0, 12)
-						.map((n) => (
-							<Card key={n.id} variant="danger">
-								<CardBody className="p-3 gap-2">
-									<div className="flex justify-between items-start">
-										<div className="font-bold text-white truncate pr-2">{n.name}</div>
-										{canHideNames && (
-											<HeroButton
+										.map((tag: string) => (
+											<Chip
+												key={tag}
 												size="sm"
-												color="danger"
+												color="warning"
 												variant="flat"
-												className="min-w-0 h-6 px-2 text-xs"
-												onPress={async () => {
-													try {
-														await onHideName(n.id, n.name);
-													} catch (error) {
-														devError("[AnalysisDashboard] Failed to hide name:", error);
-													}
-												}}
+												className="h-5 text-[10px]"
 											>
-												Hide
-											</HeroButton>
-										)}
-									</div>
-									<div className="flex gap-3 text-xs text-white/60">
-										<span>Rating {Math.round(n.rating)}</span>
-										<span>{n.selected} sel</span>
-										{n.wins > 0 && <span>{n.wins} wins</span>}
-									</div>
-									<div className="flex flex-wrap gap-1 mt-1">
-										{n.insights
-											.filter((i: string) => highPriorityTags.includes(i))
-											.map((tag: string) => (
-												<Chip
-													key={tag}
-													size="sm"
-													color="warning"
-													variant="flat"
-													className="h-5 text-[10px]"
-												>
-													{tag.replace("_", " ")}
-												</Chip>
-											))}
-									</div>
-								</CardBody>
-							</Card>
-						))}
+												{tag.replace("_", " ")}
+											</Chip>
+										))}
+								</div>
+							</CardBody>
+						</Card>
+					))}
 				</div>
 			</div>
 		);
 	};
 
+	const topPerformers = useMemo(() => {
+		const positiveTags = ["top_rated", "most_selected", "underrated", "undefeated"];
+		return namesWithInsights
+			.filter((n) => n.insights.some((i: string) => positiveTags.includes(i)))
+			.slice(0, 6);
+	}, [namesWithInsights]);
+
 	const renderPositiveInsights = () => {
 		const positiveTags = ["top_rated", "most_selected", "underrated", "undefeated"];
-		const topPerformers = namesWithInsights.filter((n) =>
-			n.insights.some((i: string) => positiveTags.includes(i)),
-		);
 
 		if (topPerformers.length === 0) {
 			return null;
@@ -458,7 +473,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 			<div className="mb-6">
 				<h3 className="text-lg font-bold text-white mb-3">✨ Top Performers (Keep)</h3>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-					{topPerformers.slice(0, 6).map((n) => (
+					{topPerformers.map((n) => (
 						<Card key={n.id} variant="primary">
 							<CardBody className="p-3 gap-2">
 								<div className="font-bold text-white">{n.name}</div>
