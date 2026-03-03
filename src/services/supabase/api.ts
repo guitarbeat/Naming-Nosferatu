@@ -116,7 +116,10 @@ export const coreAPI = {
 			return (data ?? []).map((item) => mapNameRow(item));
 		} catch (apiErr) {
 			// Fallback when /api is not available (static-only deployments).
-			console.log("[v0] getTrendingNames: Express API failed, falling back to Supabase. Error:", apiErr);
+			console.log(
+				"[v0] getTrendingNames: Express API failed, falling back to Supabase. Error:",
+				apiErr,
+			);
 			return await getNamesFromSupabase(includeHidden);
 		}
 	},

@@ -64,7 +64,9 @@ export const authAdapter: AuthAdapter = {
 		// Previously used ?? which only fell through on null, meaning a Supabase
 		// "false" (user_roles row missing) would override the local admin list.
 		const isAdmin = supabaseIsAdmin === true || isKnownAdminUser(userName);
-		console.log(`[AuthAdapter] User: ${userName}, SupabaseAdmin: ${supabaseIsAdmin}, LocalAdmin: ${isKnownAdminUser(userName)}, Final: ${isAdmin}`);
+		console.log(
+			`[AuthAdapter] User: ${userName}, SupabaseAdmin: ${supabaseIsAdmin}, LocalAdmin: ${isKnownAdminUser(userName)}, Final: ${isAdmin}`,
+		);
 
 		return {
 			id: userId || userName,
