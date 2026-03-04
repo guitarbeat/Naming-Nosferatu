@@ -225,62 +225,62 @@ export function AdminDashboard() {
 	}
 
 	return (
-		<div className="min-h-screen bg-black text-white p-6">
+		<div className="min-h-screen bg-background text-foreground p-6">
 			{/* Header */}
 			<div className="mb-8">
-				<h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+				<h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-white/60">Manage names and monitor site activity</p>
+				<p className="text-muted-foreground">Manage names and monitor site activity</p>
 			</div>
 
 			{/* Stats Overview */}
 			{stats && (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-					<Card className="p-6 border-purple-500/30 bg-purple-900/20">
+					<Card className="p-6 border-primary/30 bg-primary/10">
 						<div className="flex items-center gap-3 mb-2">
-							<BarChart3 className="text-purple-400" size={24} />
-							<h3 className="text-lg font-semibold text-purple-400">Total Names</h3>
+							<BarChart3 className="text-primary" size={24} />
+							<h3 className="text-lg font-semibold text-primary">Total Names</h3>
 						</div>
-						<p className="text-3xl font-bold text-white">{stats.totalNames}</p>
+						<p className="text-3xl font-bold text-foreground">{stats.totalNames}</p>
 					</Card>
 
-					<Card className="p-6 border-green-500/30 bg-green-900/20">
+					<Card className="p-6 border-chart-2/30 bg-chart-2/10">
 						<div className="flex items-center gap-3 mb-2">
-							<Eye className="text-green-400" size={24} />
-							<h3 className="text-lg font-semibold text-green-400">Active</h3>
+							<Eye className="text-chart-2" size={24} />
+							<h3 className="text-lg font-semibold text-chart-2">Active</h3>
 						</div>
-						<p className="text-3xl font-bold text-white">{stats.activeNames}</p>
+						<p className="text-3xl font-bold text-foreground">{stats.activeNames}</p>
 					</Card>
 
-					<Card className="p-6 border-amber-500/30 bg-amber-900/20">
+					<Card className="p-6 border-chart-4/30 bg-chart-4/10">
 						<div className="flex items-center gap-3 mb-2">
-							<Lock className="text-amber-400" size={24} />
-							<h3 className="text-lg font-semibold text-amber-400">Locked In</h3>
+							<Lock className="text-chart-4" size={24} />
+							<h3 className="text-lg font-semibold text-chart-4">Locked In</h3>
 						</div>
-						<p className="text-3xl font-bold text-white">{stats.lockedInNames}</p>
+						<p className="text-3xl font-bold text-foreground">{stats.lockedInNames}</p>
 					</Card>
 
-					<Card className="p-6 border-red-500/30 bg-red-900/20">
+					<Card className="p-6 border-destructive/30 bg-destructive/10">
 						<div className="flex items-center gap-3 mb-2">
-							<EyeOff className="text-red-400" size={24} />
-							<h3 className="text-lg font-semibold text-red-400">Hidden</h3>
+							<EyeOff className="text-destructive" size={24} />
+							<h3 className="text-lg font-semibold text-destructive">Hidden</h3>
 						</div>
-						<p className="text-3xl font-bold text-white">{stats.hiddenNames}</p>
+						<p className="text-3xl font-bold text-foreground">{stats.hiddenNames}</p>
 					</Card>
 				</div>
 			)}
 
 			{/* Tab Navigation */}
-			<div className="flex gap-2 mb-6 border-b border-white/10">
+			<div className="flex gap-2 mb-6 border-b border-border/10">
 				{["overview", "names", "users", "analytics"].map((tab) => (
 					<button
 						key={tab}
 						onClick={() => setActiveTab(tab as any)}
 						className={`px-4 py-2 font-medium transition-colors ${
 							activeTab === tab
-								? "text-white border-b-2 border-purple-500"
-								: "text-white/60 hover:text-white"
+								? "text-foreground border-b-2 border-primary"
+								: "text-muted-foreground hover:text-foreground"
 						}`}
 					>
 						{tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -310,10 +310,10 @@ export function AdminDashboard() {
 							</div>
 
 							<div className="flex gap-2">
-								<select
+					<select
 									value={filterStatus}
 									onChange={(e) => setFilterStatus(e.target.value as any)}
-									className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white"
+									className="px-4 py-2 bg-foreground/10 border border-border/20 rounded-lg text-foreground"
 								>
 									<option value="all">All Names</option>
 									<option value="active">Active</option>
@@ -329,8 +329,8 @@ export function AdminDashboard() {
 
 						{/* Bulk Actions */}
 						{selectedNames.size > 0 && (
-							<div className="mb-4 p-4 bg-purple-900/20 border border-purple-500/30 rounded-lg">
-								<p className="text-sm text-purple-400 mb-2">{selectedNames.size} names selected</p>
+							<div className="mb-4 p-4 bg-primary/10 border border-primary/30 rounded-lg">
+								<p className="text-sm text-primary mb-2">{selectedNames.size} names selected</p>
 								<div className="flex gap-2">
 									<Button onClick={() => handleBulkAction("hide")} size="small">
 										<EyeOff size={14} /> Hide
@@ -374,11 +374,11 @@ export function AdminDashboard() {
 											/>
 
 											<div>
-												<h3 className="font-semibold text-white">{name.name}</h3>
+									<h3 className="font-semibold text-foreground">{name.name}</h3>
 												{name.description && (
-													<p className="text-sm text-white/60">{name.description}</p>
+													<p className="text-sm text-muted-foreground">{name.description}</p>
 												)}
-												<div className="flex gap-4 mt-1 text-xs text-white/40">
+												<div className="flex gap-4 mt-1 text-xs text-muted-foreground/60">
 													<span>Votes: {name.votes}</span>
 													<span>Score: {name.popularityScore?.toFixed(1)}</span>
 													{name.lastVoted && (
@@ -391,12 +391,12 @@ export function AdminDashboard() {
 										<div className="flex items-center gap-2">
 											{/* Status indicators */}
 											{(name.lockedIn || name.locked_in) && (
-												<div className="px-2 py-1 bg-amber-500/20 border border-amber-500/30 rounded text-xs text-amber-400">
+												<div className="px-2 py-1 bg-chart-4/20 border border-chart-4/30 rounded text-xs text-chart-4">
 													<Lock size={12} /> Locked
 												</div>
 											)}
 											{name.isHidden && (
-												<div className="px-2 py-1 bg-red-500/20 border border-red-500/30 rounded text-xs text-red-400">
+												<div className="px-2 py-1 bg-destructive/20 border border-destructive/30 rounded text-xs text-destructive">
 													<EyeOff size={12} /> Hidden
 												</div>
 											)}
@@ -444,16 +444,16 @@ export function AdminDashboard() {
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div>
 									<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
-									<input
-										type="file"
-										accept="image/*"
-										onChange={handleImageUpload}
-										className="w-full p-2 bg-white/10 border border-white/20 rounded"
-									/>
+								<input
+									type="file"
+									accept="image/*"
+									onChange={handleImageUpload}
+									className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+								/>
 								</div>
 								<div>
 									<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
-									<p className="text-white/60">Activity tracking coming soon...</p>
+									<p className="text-muted-foreground">Activity tracking coming soon...</p>
 								</div>
 							</div>
 						</Card>
@@ -469,7 +469,7 @@ export function AdminDashboard() {
 					>
 						<Card className="p-6">
 							<h2 className="text-2xl font-bold mb-4">User Analytics</h2>
-							<p className="text-white/60">User tracking and analytics coming soon...</p>
+							<p className="text-muted-foreground">User tracking and analytics coming soon...</p>
 						</Card>
 					</motion.div>
 				)}
@@ -483,7 +483,7 @@ export function AdminDashboard() {
 					>
 						<Card className="p-6">
 							<h2 className="text-2xl font-bold mb-4">Site Analytics</h2>
-							<p className="text-white/60">Advanced analytics coming soon...</p>
+							<p className="text-muted-foreground">Advanced analytics coming soon...</p>
 						</Card>
 					</motion.div>
 				)}

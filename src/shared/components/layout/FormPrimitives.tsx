@@ -110,10 +110,10 @@ const useFormValidation = (
 // ============================================================================
 
 const inputBaseStyles =
-	"flex h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-white backdrop-blur-sm";
+	"flex h-12 w-full rounded-xl border border-border/10 bg-background/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-foreground backdrop-blur-sm";
 
-const errorStyles = "border-red-500/50 focus-visible:ring-red-500/50 animate-pulse";
-const successStyles = "border-green-500/50 focus-visible:ring-green-500/50";
+const errorStyles = "border-destructive/50 focus-visible:ring-destructive/50 animate-pulse";
+const successStyles = "border-chart-2/50 focus-visible:ring-chart-2/50";
 
 // ============================================================================
 // FORM FIELD WRAPPER
@@ -144,10 +144,10 @@ const FormField: React.FC<FormFieldProps> = ({
 				{label && (
 					<label
 						htmlFor={fieldId}
-						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white/80 ml-1"
+						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground/80 ml-1"
 					>
 						{label}
-						{required && <span className="text-red-400 ml-1">*</span>}
+						{required && <span className="text-destructive ml-1">*</span>}
 					</label>
 				)}
 				{children}
@@ -159,7 +159,7 @@ const FormField: React.FC<FormFieldProps> = ({
 							initial={{ opacity: 0, y: -5 }}
 							animate={{ opacity: 1, y: 0 }}
 							exit={{ opacity: 0, y: -5 }}
-							className="text-xs font-medium text-red-400 ml-1"
+							className="text-xs font-medium text-destructive ml-1"
 							role="alert"
 						>
 							{error}
@@ -255,7 +255,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 								initial={{ scale: 0, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0, opacity: 0 }}
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-green-400 pointer-events-none"
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-chart-2 pointer-events-none"
 							>
 								✅
 							</motion.span>
@@ -265,7 +265,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 								initial={{ scale: 0, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0, opacity: 0 }}
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 pointer-events-none"
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive pointer-events-none"
 							>
 								❌
 							</motion.span>
@@ -372,7 +372,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 				{showCount && maxLength && (
 					<div
 						id={countId}
-						className="text-xs text-white/50 text-right font-medium tabular-nums px-1"
+						className="text-xs text-muted-foreground/50 text-right font-medium tabular-nums px-1"
 					>
 						{currentLength}/{maxLength}
 					</div>
