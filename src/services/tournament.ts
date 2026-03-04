@@ -1,4 +1,5 @@
 import { CAT_IMAGES, ELO_RATING } from "@/shared/lib/constants";
+import type { Team, TeamMatch, TournamentMode } from "@/shared/types";
 /* =========================================================================
    SERVICE
    ========================================================================= */
@@ -46,6 +47,94 @@ export class EloRating {
 			lossesB,
 		};
 	}
+}
+
+const clampRating = (rating: number): number =>
+	Math.max(ELO_RATING.MIN_RATING, Math.min(ELO_RATING.MAX_RATING, rating));
+
+export function resolveTournamentMode(selectedCount: number): TournamentMode {
+	return selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2" : "1v1";
+}
+
+function shuffleArray<T>(items: T[]): T[] {
+	const shuffled = [...items];
+	for (let i = shuffled.length - 1; i > 0; i -= 1) {
+		const j = Math.floor(Math.random() * (i + 1));
+		const temp = shuffled[i];
+		shuffled[i] = shuffled[j] as T;
+		shuffled[j] = temp as T;
+	}
+	return shuffled;
+}
+
+export function generateRandomTeams(participants: Array<{ id: string; name: string }>): Team[] {
+	const shuffled = shuffleArray(participants);
+	const teams: Team[] = [];
+
+	for (let i = 0; i + 1 < shuffled.length; i += 2) {
+		const first = shuffled[i];
+		const second = shuffled[i + 1];
+		if (!first || !second) {
+			continue;
+		}
+		teams.push({
+			id: `team-${teams.length + 1}`,
+			memberIds: [first.id, second.id],
+			memberNames: [first.name, second.name],
+		});
+	}
+
+	return teams;
+}
+
+export function buildTeamMatches(teams: Team[]): TeamMatch[] {
+	const matches: TeamMatch[] = [];
+	for (let i = 0; i < teams.length - 1; i += 1) {
+		for (let j = i + 1; j < teams.length; j += 1) {
+			const left = teams[i];
+			const right = teams[j];
+			if (!left || !right) {
+				continue;
+			}
+			matches.push({ leftTeamId: left.id, rightTeamId: right.id });
+		}
+	}
+	return matches;
+}
+
+export function applyTeamMatchElo({
+	elo,
+	ratings,
+	leftTeam,
+	rightTeam,
+	winnerSide,
+}: {
+	elo: EloRating;
+	ratings: Record<string, number>;
+	leftTeam: Team;
+	rightTeam: Team;
+	winnerSide: "left" | "right";
+}): Record<string, number> {
+	const leftRatings = leftTeam.memberIds.map((id) => ratings[id] ?? ELO_RATING.DEFAULT_RATING);
+	const rightRatings = rightTeam.memberIds.map((id) => ratings[id] ?? ELO_RATING.DEFAULT_RATING);
+	const leftAverage = leftRatings.reduce((sum, value) => sum + value, 0) / leftRatings.length;
+	const rightAverage = rightRatings.reduce((sum, value) => sum + value, 0) / rightRatings.length;
+
+	const teamResult = elo.calculateNewRatings(leftAverage, rightAverage, winnerSide);
+	const leftDeltaPerMember = (teamResult.newRatingA - leftAverage) / leftTeam.memberIds.length;
+	const rightDeltaPerMember = (teamResult.newRatingB - rightAverage) / rightTeam.memberIds.length;
+
+	const nextRatings = { ...ratings };
+	for (const memberId of leftTeam.memberIds) {
+		const current = ratings[memberId] ?? ELO_RATING.DEFAULT_RATING;
+		nextRatings[memberId] = clampRating(Math.round(current + leftDeltaPerMember));
+	}
+	for (const memberId of rightTeam.memberIds) {
+		const current = ratings[memberId] ?? ELO_RATING.DEFAULT_RATING;
+		nextRatings[memberId] = clampRating(Math.round(current + rightDeltaPerMember));
+	}
+
+	return nextRatings;
 }
 
 /* =========================================================================

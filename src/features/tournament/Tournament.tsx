@@ -97,6 +97,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		currentMatch,
 		ratings,
 		isComplete,
+		tournamentMode,
 		round: roundNumber,
 		matchNumber: currentMatchNumber,
 		totalMatches,
@@ -212,16 +213,26 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const handleVoteAdapter = useCallback(
 		(winnerId: string, _loserId: string) => {
 			if (onVote && currentMatch) {
-				const leftId = String(
-					typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-				);
-				const rightId = String(
-					typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
-				);
+				const leftId =
+					typeof currentMatch.left === "object"
+						? String(currentMatch.left.id)
+						: String(currentMatch.left);
+				const rightId =
+					typeof currentMatch.right === "object"
+						? String(currentMatch.right.id)
+						: String(currentMatch.right);
 				const leftName =
-					typeof currentMatch.left === "object" ? currentMatch.left.name : currentMatch.left;
+					currentMatch.mode === "2v2"
+						? currentMatch.left.memberNames.join(" + ")
+						: typeof currentMatch.left === "object"
+							? currentMatch.left.name
+							: String(currentMatch.left);
 				const rightName =
-					typeof currentMatch.right === "object" ? currentMatch.right.name : currentMatch.right;
+					currentMatch.mode === "2v2"
+						? currentMatch.right.memberNames.join(" + ")
+						: typeof currentMatch.right === "object"
+							? currentMatch.right.name
+							: String(currentMatch.right);
 
 				const voteData = {
 					match: {
@@ -278,6 +289,25 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			return null;
 		}
 
+		if (currentMatch.mode === "2v2") {
+			const leftMembers = currentMatch.left.memberNames;
+			const rightMembers = currentMatch.right.memberNames;
+			return {
+				leftId: currentMatch.left.id,
+				rightId: currentMatch.right.id,
+				leftName: leftMembers.join(" + "),
+				rightName: rightMembers.join(" + "),
+				leftMembers,
+				rightMembers,
+				leftIsTeam: true,
+				rightIsTeam: true,
+				leftDescription: undefined,
+				rightDescription: undefined,
+				leftPronunciation: undefined,
+				rightPronunciation: undefined,
+			};
+		}
+
 		return {
 			leftId: String(
 				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
@@ -291,6 +321,16 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			rightName: String(
 				typeof currentMatch.right === "object" ? currentMatch.right.name : currentMatch.right,
 			),
+			leftMembers: [
+				String(typeof currentMatch.left === "object" ? currentMatch.left.name : currentMatch.left),
+			],
+			rightMembers: [
+				String(
+					typeof currentMatch.right === "object" ? currentMatch.right.name : currentMatch.right,
+				),
+			],
+			leftIsTeam: false,
+			rightIsTeam: false,
 			leftDescription:
 				typeof currentMatch.left === "object" ? currentMatch.left.description : undefined,
 			rightDescription:
@@ -497,6 +537,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const {
 		leftName,
 		rightName,
+		leftMembers,
+		rightMembers,
+		leftIsTeam,
+		rightIsTeam,
 		leftDescription,
 		rightDescription,
 		leftPronunciation,
@@ -521,6 +565,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							<Gamepad2 className="text-primary size-3.5" />
 							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-white/90">
 								{isComplete ? "Tournament Complete!" : `Round ${roundNumber}`}
+							</span>
+						</div>
+						<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
+							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-white/90">
+								Mode: {tournamentMode === "2v2" ? "2v2 Teams" : "1v1"}
 							</span>
 						</div>
 						{isComplete && (
@@ -808,7 +857,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								variant="default"
 								role="button"
 								tabIndex={isVoting ? -1 : 0}
-								aria-label={`Vote for ${leftName}`}
+								aria-label={`Vote for ${leftIsTeam ? "team" : "name"} ${leftName}`}
 								aria-disabled={isVoting}
 								onKeyDown={(e) => handleKeyDown(e, "left")}
 								onClick={() => handleVoteForSide("left")}
@@ -874,7 +923,18 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 												[{leftPronunciation}]
 											</span>
 										)}
-										{leftDescription && (
+										{leftIsTeam ? (
+											<div className="mt-2 flex flex-wrap gap-1.5">
+												{leftMembers.map((member) => (
+													<span
+														key={`left-member-${member}`}
+														className="rounded-full border border-white/30 bg-black/35 px-2 py-0.5 text-[10px] sm:text-xs font-bold tracking-wide"
+													>
+														{member}
+													</span>
+												))}
+											</div>
+										) : leftDescription && (
 											<p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm">
 												{leftDescription}
 											</p>
@@ -939,7 +999,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								variant="default"
 								role="button"
 								tabIndex={isVoting ? -1 : 0}
-								aria-label={`Vote for ${rightName}`}
+								aria-label={`Vote for ${rightIsTeam ? "team" : "name"} ${rightName}`}
 								aria-disabled={isVoting}
 								onKeyDown={(e) => handleKeyDown(e, "right")}
 								onClick={() => handleVoteForSide("right")}
@@ -1005,7 +1065,18 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 												[{rightPronunciation}]
 											</span>
 										)}
-										{rightDescription && (
+										{rightIsTeam ? (
+											<div className="mt-2 flex flex-wrap gap-1.5 justify-start sm:justify-end">
+												{rightMembers.map((member) => (
+													<span
+														key={`right-member-${member}`}
+														className="rounded-full border border-white/30 bg-black/35 px-2 py-0.5 text-[10px] sm:text-xs font-bold tracking-wide"
+													>
+														{member}
+													</span>
+												))}
+											</div>
+										) : rightDescription && (
 											<p className="text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm text-left sm:text-right">
 												{rightDescription}
 											</p>

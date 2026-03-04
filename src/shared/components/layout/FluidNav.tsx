@@ -412,6 +412,11 @@ export function FluidNav() {
 							</AnimatePresence>
 						}
 					/>
+					{(isActive("pick") || isActive("play")) && !isTournamentActive && (
+						<div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-white/60 whitespace-nowrap">
+							2v2 auto-on at 4+ selections when count is divisible by 4
+						</div>
+					)}
 
 					{/* View Mode Toggle - Shows when on pick/play section and no tournament is active */}
 					{(isActive("pick") || isActive("play")) && !isTournamentActive && (

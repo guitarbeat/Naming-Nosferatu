@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { ELO_RATING } from "@/shared/lib/constants";
-import { EloRating } from "./tournament";
+import {
+	EloRating,
+	applyTeamMatchElo,
+	buildTeamMatches,
+	generateRandomTeams,
+	resolveTournamentMode,
+} from "./tournament";
 
 describe("EloRating", () => {
 	describe("constructor", () => {
@@ -207,5 +213,106 @@ describe("EloRating", () => {
 			expect(result.winsB).toBe(0);
 			expect(result.lossesB).toBe(1);
 		});
+	});
+});
+
+describe("resolveTournamentMode", () => {
+	it("returns 1v1 for counts that do not satisfy auto-2v2 rules", () => {
+		expect(resolveTournamentMode(2)).toBe("1v1");
+		expect(resolveTournamentMode(3)).toBe("1v1");
+		expect(resolveTournamentMode(6)).toBe("1v1");
+	});
+
+	it("returns 2v2 for counts >= 4 divisible by 4", () => {
+		expect(resolveTournamentMode(4)).toBe("2v2");
+		expect(resolveTournamentMode(8)).toBe("2v2");
+	});
+});
+
+describe("team utilities", () => {
+	it("generateRandomTeams creates teams of two without duplicates", () => {
+		const participants = [
+			{ id: "1", name: "A" },
+			{ id: "2", name: "B" },
+			{ id: "3", name: "C" },
+			{ id: "4", name: "D" },
+			{ id: "5", name: "E" },
+			{ id: "6", name: "F" },
+			{ id: "7", name: "G" },
+			{ id: "8", name: "H" },
+		];
+
+		const teams = generateRandomTeams(participants);
+		expect(teams).toHaveLength(participants.length / 2);
+
+		const allIds = teams.flatMap((team) => team.memberIds);
+		expect(new Set(allIds).size).toBe(participants.length);
+		expect(allIds).toHaveLength(participants.length);
+	});
+
+	it("buildTeamMatches creates round-robin pairings", () => {
+		const teams = [
+			{ id: "team-1", memberIds: ["1", "2"], memberNames: ["A", "B"] },
+			{ id: "team-2", memberIds: ["3", "4"], memberNames: ["C", "D"] },
+			{ id: "team-3", memberIds: ["5", "6"], memberNames: ["E", "F"] },
+			{ id: "team-4", memberIds: ["7", "8"], memberNames: ["G", "H"] },
+		];
+
+		const matches = buildTeamMatches(teams);
+		expect(matches).toHaveLength(6);
+		const firstMatch = matches[0];
+		expect(firstMatch).toBeDefined();
+		expect(firstMatch).toEqual({ leftTeamId: "team-1", rightTeamId: "team-2" });
+	});
+
+	it("applyTeamMatchElo updates individual ratings for both members", () => {
+		const elo = new EloRating();
+		const leftTeam = { id: "team-1", memberIds: ["1", "2"], memberNames: ["A", "B"] };
+		const rightTeam = { id: "team-2", memberIds: ["3", "4"], memberNames: ["C", "D"] };
+		const initialRatings = { 1: 1500, 2: 1500, 3: 1500, 4: 1500 };
+
+		const updated = applyTeamMatchElo({
+			elo,
+			ratings: initialRatings,
+			leftTeam,
+			rightTeam,
+			winnerSide: "left",
+		});
+
+		expect(updated["1"] ?? 0).toBeGreaterThan(initialRatings["1"] ?? 0);
+		expect(updated["2"] ?? 0).toBeGreaterThan(initialRatings["2"] ?? 0);
+		expect(updated["3"] ?? 0).toBeLessThan(initialRatings["3"] ?? 0);
+		expect(updated["4"] ?? 0).toBeLessThan(initialRatings["4"] ?? 0);
+		expect((updated["1"] ?? 0) - (initialRatings["1"] ?? 0)).toBe(
+			(updated["2"] ?? 0) - (initialRatings["2"] ?? 0),
+		);
+		expect((initialRatings["3"] ?? 0) - (updated["3"] ?? 0)).toBe(
+			(initialRatings["4"] ?? 0) - (updated["4"] ?? 0),
+		);
+	});
+
+	it("applyTeamMatchElo respects rating clamps", () => {
+		const elo = new EloRating();
+		const leftTeam = { id: "team-1", memberIds: ["1", "2"], memberNames: ["A", "B"] };
+		const rightTeam = { id: "team-2", memberIds: ["3", "4"], memberNames: ["C", "D"] };
+		const initialRatings = {
+			1: ELO_RATING.MAX_RATING - 1,
+			2: ELO_RATING.MAX_RATING - 1,
+			3: ELO_RATING.MIN_RATING + 1,
+			4: ELO_RATING.MIN_RATING + 1,
+		};
+
+		const updated = applyTeamMatchElo({
+			elo,
+			ratings: initialRatings,
+			leftTeam,
+			rightTeam,
+			winnerSide: "left",
+		});
+
+		expect(updated["1"]).toBeLessThanOrEqual(ELO_RATING.MAX_RATING);
+		expect(updated["2"]).toBeLessThanOrEqual(ELO_RATING.MAX_RATING);
+		expect(updated["3"]).toBeGreaterThanOrEqual(ELO_RATING.MIN_RATING);
+		expect(updated["4"]).toBeGreaterThanOrEqual(ELO_RATING.MIN_RATING);
 	});
 });

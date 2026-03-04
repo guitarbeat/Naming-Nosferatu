@@ -771,7 +771,7 @@ export function NameSelector() {
 					<p className="text-slate-200 text-sm sm:text-base leading-relaxed">
 						{isSwipeMode
 							? "Swipe right to select, left to skip. You can also use arrow keys (or A/D) and Ctrl+Z to undo."
-							: "Click to select names • Select at least 2 names"}
+							: "Click to select names • Select at least 2 names • 2v2 auto-enables when selected count is divisible by 4 (and >=4), otherwise 1v1"}
 					</p>
 					<div
 						className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-300"

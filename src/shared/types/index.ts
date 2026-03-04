@@ -100,10 +100,32 @@ export type RatingInput = RatingData | number;
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** A single match pairing. */
-export interface Match {
+export type TournamentMode = "1v1" | "2v2";
+
+export interface Team {
+	id: string;
+	memberIds: string[];
+	memberNames: string[];
+}
+
+export interface TeamMatch {
+	leftTeamId: string;
+	rightTeamId: string;
+}
+
+export interface HeadToHeadMatch {
+	mode: "1v1";
 	left: NameItem | string;
 	right: NameItem | string;
 }
+
+export interface TeamVersusMatch {
+	mode: "2v2";
+	left: Team;
+	right: Team;
+}
+
+export type Match = HeadToHeadMatch | TeamVersusMatch;
 
 /** Serialized record of a completed match. */
 export interface MatchRecord {
@@ -174,6 +196,10 @@ export interface PersistentTournamentState {
 	userName: string;
 	lastUpdated: number;
 	namesKey: string;
+	mode: TournamentMode;
+	teams: Team[];
+	teamMatches: TeamMatch[];
+	teamMatchIndex: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
