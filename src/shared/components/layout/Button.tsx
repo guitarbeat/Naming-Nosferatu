@@ -7,6 +7,7 @@ import { cva } from "class-variance-authority";
 import React, { memo } from "react";
 import { cn } from "@/shared/lib/basic";
 import { Loader2 } from "@/shared/lib/icons";
+import "./FancyButton.css";
 
 /**
  * Unified button variants - single source of truth
@@ -27,6 +28,7 @@ const buttonVariants = cva(
 					"rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 active:scale-95 disabled:active:scale-100",
 				secondaryGradient:
 					"rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-900/20 active:scale-95 disabled:active:scale-100",
+				glass: "",
 			},
 			size: {
 				small: "h-8 rounded-md px-3 text-xs",
@@ -51,7 +53,8 @@ type ButtonVariant =
 	| "outline"
 	| "link"
 	| "gradient"
-	| "secondaryGradient";
+	| "secondaryGradient"
+	| "glass";
 type ButtonSize = "small" | "medium" | "large" | "xl" | "icon";
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
@@ -83,6 +86,16 @@ const Button = ({
 	...rest
 }: ButtonProps) => {
 	const finalSize = iconOnly ? "icon" : size;
+	const glassSizeClass =
+		finalSize === "small"
+			? "fancy-button--small"
+			: finalSize === "large"
+				? "fancy-button--large"
+				: finalSize === "xl"
+					? "fancy-button--xl"
+					: finalSize === "icon"
+						? "fancy-button--icon"
+						: "fancy-button--medium";
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		if (disabled || loading) {
@@ -91,6 +104,33 @@ const Button = ({
 		}
 		onClick?.(event);
 	};
+
+	const content = (
+		<>
+			{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+			{startIcon && !loading && startIcon}
+			{!iconOnly && children}
+			{iconOnly && !startIcon && !loading && children}
+			{endIcon && !loading && endIcon}
+		</>
+	);
+
+	if (variant === "glass") {
+		return (
+			<div className={cn("fancy-button-wrap", className)}>
+				<button
+					type={type}
+					disabled={disabled || loading}
+					className={cn("fancy-button", glassSizeClass)}
+					onClick={handleClick}
+					{...rest}
+				>
+					<span className="fancy-button-content">{content}</span>
+				</button>
+				<div className="fancy-button-shadow" aria-hidden={true} />
+			</div>
+		);
+	}
 
 	return (
 		<button

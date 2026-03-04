@@ -143,10 +143,10 @@ function TournamentContent() {
 							Choose at least two names in the picker to start your tournament bracket.
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button variant="gradient" onClick={() => navigate("/")}>
+							<Button variant="glass" onClick={() => navigate("/")}>
 								Go to Name Picker
 							</Button>
-							<Button variant="outline" onClick={() => navigate("/analysis")}>
+							<Button variant="glass" onClick={() => navigate("/analysis")}>
 								View Analysis
 							</Button>
 						</div>

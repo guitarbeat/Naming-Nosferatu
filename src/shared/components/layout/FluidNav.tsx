@@ -563,7 +563,7 @@ export function FluidNav() {
 										autoFocus={true}
 									/>
 									<Button
-										variant="gradient"
+										variant="glass"
 										size="xl"
 										onClick={handleLoginSave}
 										disabled={!editedName.trim() || isSaving}
@@ -629,7 +629,7 @@ export function FluidNav() {
 								)}
 								<Button
 									type="submit"
-									variant="gradient"
+									variant="glass"
 									size="xl"
 									disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 									loading={isSubmitting}

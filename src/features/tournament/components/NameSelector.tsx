@@ -703,7 +703,7 @@ export function NameSelector() {
 						<p className="text-lg font-medium">Failed to load names</p>
 						<p className="text-sm opacity-75 mt-1">{error}</p>
 					</div>
-					<Button onClick={() => setRetryCount((prev) => prev + 1)} variant="outline" size="small">
+					<Button onClick={() => setRetryCount((prev) => prev + 1)} variant="glass" size="small">
 						Try Again
 					</Button>
 				</div>
@@ -792,7 +792,7 @@ export function NameSelector() {
 						{isSwipeMode && swipeHistory.length > 0 && (
 							<Button
 								onClick={handleUndo}
-								variant="outline"
+								variant="glass"
 								size="small"
 								className="px-3 py-1 text-xs"
 							>
@@ -803,19 +803,19 @@ export function NameSelector() {
 					{!isSwipeMode && (
 						<div className="flex flex-wrap items-center justify-center gap-2">
 							<Button
-								variant="outline"
+								variant="glass"
 								size="small"
 								onClick={handleSelectAllAvailable}
 								disabled={!canSelectAllAvailable}
 							>
 								Select all visible
 							</Button>
-							<Button variant="outline" size="small" onClick={handleSelectRandomAvailable}>
+							<Button variant="glass" size="small" onClick={handleSelectRandomAvailable}>
 								<Shuffle size={14} />
 								Pick 8 random
 							</Button>
 							<Button
-								variant="outline"
+								variant="glass"
 								size="small"
 								onClick={handleClearSelection}
 								disabled={!hasAnySelection}
@@ -1485,7 +1485,7 @@ export function NameSelector() {
 												<div className="mt-4 flex justify-center">
 													<Button
 														onClick={() => setHiddenRenderCount((c) => c + 24)}
-														variant="outline"
+														variant="glass"
 														size="small"
 													>
 														Load more

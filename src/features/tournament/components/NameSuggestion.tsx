@@ -68,7 +68,7 @@ function InlineNameSuggestion() {
 						</div>
 						<Button
 							type="submit"
-							variant="gradient"
+							variant="glass"
 							size="xl"
 							disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 							loading={isSubmitting}
@@ -312,7 +312,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 								</Button>
 								<Button
 									type="submit"
-									variant="gradient"
+									variant="glass"
 									disabled={isSubmitting || !isValid}
 									loading={isSubmitting}
 									className="px-6"

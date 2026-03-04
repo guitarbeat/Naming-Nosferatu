@@ -115,7 +115,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 										)}
 										<Button
 											type="submit"
-											variant="gradient"
+											variant="glass"
 											size="xl"
 											onClick={handleSave}
 											disabled={!editedName.trim() || isSaving}
