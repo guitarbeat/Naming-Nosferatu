@@ -39,7 +39,7 @@ export function Section({
 	separator = false,
 	scrollMargin = true,
 }: SectionProps) {
-	const separatorClass = separator ? "border-t border-white/10 mt-8" : "";
+	const separatorClass = separator ? "border-t border-border mt-8" : "";
 	const scrollMarginClass = scrollMargin ? "scroll-mt-20" : "";
 
 	return (

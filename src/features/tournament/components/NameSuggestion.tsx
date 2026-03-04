@@ -43,20 +43,20 @@ function InlineNameSuggestion() {
 			{...getGlassPreset("card")}
 		>
 			<form onSubmit={handleLocalSubmit} className="w-full max-w-3xl mx-auto">
-				<div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-slate-950/50 p-6 sm:p-8 shadow-2xl shadow-black/40">
-					<div className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-cyan-400/15 blur-3xl" />
-					<div className="pointer-events-none absolute -left-14 bottom-0 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
+				<div className="relative overflow-hidden rounded-[28px] border border-border bg-background/50 p-6 sm:p-8 shadow-2xl shadow-background/40">
+				<div className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-accent-color/15 blur-3xl" />
+				<div className="pointer-events-none absolute -left-14 bottom-0 h-48 w-48 rounded-full bg-chart-4/10 blur-3xl" />
 
 					<div className="relative flex flex-col gap-6">
 						<div className="text-center flex flex-col gap-3">
-							<div className="inline-flex mx-auto items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100/90">
+							<div className="inline-flex mx-auto items-center gap-2 rounded-full border border-border bg-foreground/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent-foreground/90">
 								<Lightbulb size={14} />
 								Submit A Name
 							</div>
-							<h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+							<h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
 								Drop your best cat name idea
 							</h3>
-							<p className="text-sm sm:text-base text-slate-200/85 max-w-2xl mx-auto">
+							<p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
 								Add a name and a quick reason. Great suggestions help everyone discover fun new
 								options.
 							</p>
@@ -64,8 +64,8 @@ function InlineNameSuggestion() {
 
 						<div className="grid gap-5">
 							<div className="flex flex-col gap-2">
-								<label htmlFor="suggest-name" className="text-sm font-semibold text-white/90">
-									Name suggestion <span className="text-rose-300">*</span>
+							<label htmlFor="suggest-name" className="text-sm font-semibold text-foreground/90">
+								Name suggestion <span className="text-destructive">*</span>
 								</label>
 								<Input
 									id="suggest-name"
@@ -73,7 +73,7 @@ function InlineNameSuggestion() {
 									value={values.name}
 									onChange={(e) => handleChange("name", e.target.value)}
 									placeholder="e.g. Count Whiskula"
-									className="w-full h-14 px-4 text-base font-semibold bg-white/5 border-white/20 focus-visible:ring-cyan-300/45"
+									className="w-full h-14 px-4 text-base font-semibold bg-foreground/5 border-border focus-visible:ring-accent-color/45"
 									disabled={isSubmitting}
 									maxLength={50}
 								/>
@@ -81,10 +81,10 @@ function InlineNameSuggestion() {
 
 							<div className="flex flex-col gap-2">
 								<div className="flex items-center justify-between gap-3">
-									<label htmlFor="suggest-description" className="text-sm font-semibold text-white/90">
-										Why this name? <span className="text-rose-300">*</span>
+								<label htmlFor="suggest-description" className="text-sm font-semibold text-foreground/90">
+									Why this name? <span className="text-destructive">*</span>
 									</label>
-									<span className="text-xs text-white/55">Help voters understand the vibe</span>
+									<span className="text-xs text-muted-foreground">Help voters understand the vibe</span>
 								</div>
 								<Textarea
 									id="suggest-description"
@@ -92,7 +92,7 @@ function InlineNameSuggestion() {
 									onChange={(e) => handleChange("description", e.target.value)}
 									placeholder="Share the meaning, story, or personality fit..."
 									rows={4}
-									className="w-full px-4 py-3 font-medium bg-white/5 border-white/20 focus-visible:ring-cyan-300/45 resize-none"
+									className="w-full px-4 py-3 font-medium bg-foreground/5 border-border focus-visible:ring-accent-color/45 resize-none"
 									disabled={isSubmitting}
 									maxLength={500}
 									showCount={true}
@@ -100,7 +100,7 @@ function InlineNameSuggestion() {
 							</div>
 
 							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
-								<p className="text-xs sm:text-sm text-slate-300/80">
+								<p className="text-xs sm:text-sm text-muted-foreground">
 									Your suggestion is added to the shared discovery pool.
 								</p>
 								<Button
@@ -119,12 +119,12 @@ function InlineNameSuggestion() {
 				</div>
 
 				{globalError && (
-					<div className="mt-4 p-3 bg-red-500/10 border border-red-500/25 rounded-xl text-red-100 text-sm font-medium text-center animate-in fade-in slide-in-from-top-2">
+					<div className="mt-4 p-3 bg-destructive/10 border border-destructive/25 rounded-xl text-destructive-foreground text-sm font-medium text-center animate-in fade-in slide-in-from-top-2">
 						{globalError}
 					</div>
 				)}
 				{successMessage && (
-					<div className="mt-4 flex items-center justify-center gap-2 p-3 bg-emerald-500/10 border border-emerald-400/25 rounded-xl text-emerald-100 text-sm font-semibold text-center animate-in fade-in slide-in-from-top-2">
+					<div className="mt-4 flex items-center justify-center gap-2 p-3 bg-chart-2/10 border border-chart-2/25 rounded-xl text-chart-2 text-sm font-semibold text-center animate-in fade-in slide-in-from-top-2">
 						<CheckCircle size={16} />
 						{successMessage}
 					</div>
@@ -249,16 +249,16 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 					aria-describedby="suggest-name-description"
 					aria-modal="true"
 				>
-					<div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+					<div className="flex items-center justify-between p-6 border-b border-border bg-foreground/5">
 						<h2
 							id="suggest-name-title"
-							className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400"
+							className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent"
 						>
 							💡 Suggest a Name
 						</h2>
 						<button
 							type="button"
-							className="flex items-center justify-center w-8 h-8 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+							className="flex items-center justify-center w-8 h-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/10 transition-colors"
 							onClick={handleClose}
 							aria-label="Close modal"
 							disabled={isSubmitting}
@@ -268,7 +268,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 					</div>
 
 					<div className="p-6">
-						<p id="suggest-name-description" className="text-sm text-white/70 mb-6">
+						<p id="suggest-name-description" className="text-sm text-muted-foreground mb-6">
 							Help us expand the list by suggesting new cat names!
 						</p>
 
@@ -318,17 +318,17 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 							/>
 
 							{globalError && (
-								<div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+								<div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive-foreground text-sm font-medium animate-in fade-in slide-in-from-top-2">
 									{globalError}
 								</div>
 							)}
 							{success && (
-								<div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-200 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+								<div className="p-3 bg-chart-2/10 border border-chart-2/20 rounded-lg text-chart-2 text-sm font-medium animate-in fade-in slide-in-from-top-2">
 									{success}
 								</div>
 							)}
 
-							<div className="flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
+							<div className="flex justify-end gap-3 mt-4 pt-4 border-t border-border">
 								<Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
 									Cancel
 								</Button>

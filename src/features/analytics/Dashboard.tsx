@@ -175,25 +175,25 @@ export function Dashboard({
 			{userName && userStats && (
 				<Card padding="small">
 					<div className="flex items-center gap-3 mb-4">
-						<BarChart3 className="text-purple-400" size={24} />
-						<h3 className="text-xl font-semibold text-white">Your Stats</h3>
+						<BarChart3 className="text-primary" size={24} />
+						<h3 className="text-xl font-semibold text-foreground">Your Stats</h3>
 					</div>
 					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Ratings Given</p>
-							<p className="text-2xl font-bold text-white">{userStats.totalRatings}</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Ratings Given</p>
+							<p className="text-2xl font-bold text-foreground">{userStats.totalRatings}</p>
 						</div>
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Names Selected</p>
-							<p className="text-2xl font-bold text-white">{userStats.totalSelections}</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Names Selected</p>
+							<p className="text-2xl font-bold text-foreground">{userStats.totalSelections}</p>
 						</div>
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Total Wins</p>
-							<p className="text-2xl font-bold text-white">{userStats.totalWins}</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Total Wins</p>
+							<p className="text-2xl font-bold text-foreground">{userStats.totalWins}</p>
 						</div>
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Win Rate</p>
-							<p className="text-2xl font-bold text-white">{userStats.winRate}%</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Win Rate</p>
+							<p className="text-2xl font-bold text-foreground">{userStats.winRate}%</p>
 						</div>
 					</div>
 				</Card>
@@ -203,8 +203,8 @@ export function Dashboard({
 			<Card padding="small">
 				<div className="flex items-center justify-between mb-4">
 					<div className="flex items-center gap-3">
-						<Trophy className="text-yellow-400" size={24} />
-						<h3 className="text-xl font-semibold text-white">Top Names</h3>
+						<Trophy className="text-chart-4" size={24} />
+						<h3 className="text-xl font-semibold text-foreground">Top Names</h3>
 					</div>
 					{onStartNew && (
 						<Button variant="ghost" size="small" onClick={onStartNew}>
@@ -220,67 +220,67 @@ export function Dashboard({
 						{leaderboard.map((entry, index) => (
 							<div
 								key={entry.name}
-								className="flex items-center gap-4 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+								className="flex items-center gap-4 p-3 rounded-lg bg-foreground/5 border border-border hover:bg-foreground/10 transition-colors"
 							>
 								<div
 									className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold ${
 										index === 0
-											? "bg-yellow-500 text-black"
+											? "bg-chart-4 text-background"
 											: index === 1
-												? "bg-gray-300 text-black"
+												? "bg-secondary text-secondary-foreground"
 												: index === 2
-													? "bg-amber-600 text-white"
-													: "bg-white/10 text-white/60"
+													? "bg-chart-1 text-primary-foreground"
+													: "bg-foreground/10 text-muted-foreground"
 									}`}
 								>
 									{index + 1}
 								</div>
 								<div className="flex-1 min-w-0">
-									<p className="font-semibold text-white truncate">{entry.name}</p>
-									<p className="text-xs text-white/60">
+									<p className="font-semibold text-foreground truncate">{entry.name}</p>
+									<p className="text-xs text-muted-foreground">
 										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} •{" "}
 										{entry.wins} win{entry.wins !== 1 ? "s" : ""}
 									</p>
 								</div>
 								<div className="text-right">
-									<p className="text-lg font-bold text-purple-400">
+									<p className="text-lg font-bold text-primary">
 										{Math.round(entry.avg_rating)}
 									</p>
-									<p className="text-xs text-white/60">rating</p>
+									<p className="text-xs text-muted-foreground">rating</p>
 								</div>
 							</div>
 						))}
 					</div>
 				) : (
-					<p className="text-center text-white/60 py-8">No ratings yet. Start a tournament!</p>
+					<p className="text-center text-muted-foreground py-8">No ratings yet. Start a tournament!</p>
 				)}
 			</Card>
 
 			{/* Site Statistics */}
 			{siteStats && (
 				<Card padding="small">
-					<h3 className="text-xl font-semibold text-white mb-4">Site Statistics</h3>
+					<h3 className="text-xl font-semibold text-foreground mb-4">Site Statistics</h3>
 					<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Total Names</p>
-							<p className="text-2xl font-bold text-white">{siteStats.totalNames}</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Total Names</p>
+							<p className="text-2xl font-bold text-foreground">{siteStats.totalNames}</p>
 						</div>
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Active Names</p>
-							<p className="text-2xl font-bold text-white">{siteStats.activeNames}</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Active Names</p>
+							<p className="text-2xl font-bold text-foreground">{siteStats.activeNames}</p>
 						</div>
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Total Users</p>
-							<p className="text-2xl font-bold text-white">{siteStats.totalUsers}</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Total Users</p>
+							<p className="text-2xl font-bold text-foreground">{siteStats.totalUsers}</p>
 						</div>
-						<div className="bg-white/5 rounded-lg p-4 border border-white/10">
-							<p className="text-sm text-white/60 mb-1">Avg Rating</p>
-							<p className="text-2xl font-bold text-white">{Math.round(siteStats.avgRating)}</p>
+						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
+							<p className="text-sm text-muted-foreground mb-1">Avg Rating</p>
+							<p className="text-2xl font-bold text-foreground">{Math.round(siteStats.avgRating)}</p>
 						</div>
 						{isAdmin && (
-							<div className="bg-amber-900/20 rounded-lg p-4 border border-amber-500/30">
-								<p className="text-sm text-amber-400/80 mb-1">Hidden Names</p>
-								<p className="text-2xl font-bold text-amber-400">{siteStats.hiddenNames}</p>
+							<div className="bg-chart-4/20 rounded-lg p-4 border border-chart-4/30">
+								<p className="text-sm text-chart-4/80 mb-1">Hidden Names</p>
+								<p className="text-2xl font-bold text-chart-4">{siteStats.hiddenNames}</p>
 							</div>
 						)}
 					</div>
@@ -289,11 +289,11 @@ export function Dashboard({
 
 			{/* Admin: Hidden Names Management */}
 			{isAdmin && (
-				<Card padding="small" className="border-amber-500/30 bg-amber-900/10">
+				<Card padding="small" className="border-chart-4/30 bg-chart-4/10">
 					<div className="flex items-center justify-between mb-4">
 						<div className="flex items-center gap-3">
-							<EyeOff className="text-amber-400" size={24} />
-							<h3 className="text-xl font-semibold text-amber-400">Admin: Hidden Names</h3>
+							<EyeOff className="text-chart-4" size={24} />
+							<h3 className="text-xl font-semibold text-chart-4">Admin: Hidden Names</h3>
 						</div>
 						<Button
 							variant="ghost"
@@ -310,14 +310,14 @@ export function Dashboard({
 								hiddenNames.map((name) => (
 									<div
 										key={name.id}
-										className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-amber-500/20"
+										className="flex items-center justify-between p-3 rounded-lg bg-foreground/5 border border-chart-4/20"
 									>
-										<span className="text-white font-medium">{name.name}</span>
+										<span className="text-foreground font-medium">{name.name}</span>
 										<Button
 											variant="ghost"
 											size="small"
 											onClick={() => handleUnhideName(name.id)}
-											className="text-green-400 hover:text-green-300"
+											className="text-chart-2 hover:text-chart-2/80"
 										>
 											<Eye size={16} className="mr-1" />
 											Unhide
@@ -325,7 +325,7 @@ export function Dashboard({
 									</div>
 								))
 							) : (
-								<p className="text-center text-white/60 py-4">No hidden names</p>
+								<p className="text-center text-muted-foreground py-4">No hidden names</p>
 							)}
 						</div>
 					)}

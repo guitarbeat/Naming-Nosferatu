@@ -46,8 +46,8 @@ function FloatingNavItem({
 			type="button"
 			whileTap={{ scale: 0.97 }}
 			className={cn(
-				"group flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-transparent p-2.5 text-white/75 transition-all duration-200 ease-in-out hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
-				isActive && "bg-white/15 text-white",
+			"group flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-transparent p-2.5 text-foreground/75 transition-all duration-200 ease-in-out hover:bg-foreground/20 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
+			isActive && "bg-foreground/15 text-foreground",
 				className,
 			)}
 			onClick={onClick}
@@ -232,7 +232,7 @@ export function FloatingNavbar() {
 		<nav
 			aria-label="Primary"
 			className={cn(
-				"fixed bottom-5 left-1/2 z-[100] flex max-w-[95vw] -translate-x-1/2 items-center gap-1 rounded-full border border-white/20 bg-white/10 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-md sm:gap-1.5",
+				"fixed bottom-5 left-1/2 z-[100] flex max-w-[95vw] -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-foreground/10 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-md sm:gap-1.5",
 				!prefersReducedMotion && "transition-transform transition-opacity duration-300",
 				prefersReducedMotion && "transition-none",
 				isNavVisible
@@ -246,7 +246,7 @@ export function FloatingNavbar() {
 					label={selectedCount >= 2 ? `Start (${selectedCount})` : "Pick Names"}
 					isActive={isHomeRoute && activeSection === "pick"}
 					onClick={() => (selectedCount >= 2 ? handleStartTournament() : handleNavClick("pick"))}
-					className={cn(selectedCount >= 2 && "text-amber-300 hover:text-amber-200")}
+					className={cn(selectedCount >= 2 && "text-chart-4 hover:text-chart-4/80")}
 				/>
 			)}
 
@@ -282,14 +282,14 @@ export function FloatingNavbar() {
 						<img
 							src={avatarUrl}
 							alt={profileLabel}
-							className="h-6 w-6 rounded-full border border-white/20 object-cover"
+							className="h-6 w-6 rounded-full border border-border object-cover"
 						/>
 					) : (
 						<User
 							className={cn(
 								"h-6 w-6",
-								isLoggedIn && isAdmin && "text-amber-300",
-								isLoggedIn && !isAdmin && "text-purple-300",
+							isLoggedIn && isAdmin && "text-chart-4",
+							isLoggedIn && !isAdmin && "text-primary",
 							)}
 						/>
 					)
