@@ -20,6 +20,7 @@ export interface UseTournamentStateResult {
 	etaMinutes: number;
 	isVoting: boolean;
 	handleVoteWithAnimation: (winnerId: string, loserId: string) => void;
+	matchHistory: MatchRecord[];
 }
 
 const VOTE_COOLDOWN = 300;
@@ -374,5 +375,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		etaMinutes,
 		isVoting,
 		handleVoteWithAnimation,
+		matchHistory: persistentState.matchHistory,
 	};
 }
