@@ -262,7 +262,7 @@ describe("EloRating", () => {
 			// Pass a stats object missing some keys
 			const result = elo.calculateNewRatings(1500, 1500, "right", {
 				winsA: 5,
-			} as any);
+			} as { winsA: number; lossesA: number; winsB: number; lossesB: number });
 
 			expect(result.winsA).toBe(5); // 5 + 0
 			expect(result.lossesA).toBe(1); // 0 + 1
