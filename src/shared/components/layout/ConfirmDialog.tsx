@@ -80,7 +80,7 @@ export function ConfirmDialog({
 								{title}
 							</h3>
 							{description && (
-								<p id="confirm-dialog-description" className="mt-2 text-sm text-white/70">
+								<p id="confirm-dialog-description" className="mt-2 text-sm text-muted-foreground">
 									{description}
 								</p>
 							)}

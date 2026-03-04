@@ -55,7 +55,7 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 
 	if (hasError) {
 		return (
-			<div className={`flex items-center justify-center text-white/60 ${className}`}>
+			<div className={`flex items-center justify-center text-muted-foreground ${className}`}>
 				<div className="text-center">
 					<div className="text-6xl mb-4">🐱</div>
 					<p className="text-sm mb-2">Image failed to load</p>
@@ -67,7 +67,7 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 								setHasError(false);
 								setIsLoading(true);
 							}}
-							className="px-3 py-1 text-xs bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+							className="px-3 py-1 text-xs bg-foreground/10 hover:bg-foreground/20 rounded-full transition-colors"
 						>
 							Retry
 						</button>
@@ -81,7 +81,7 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 		<div className="relative">
 			{isLoading && (
 				<div className={`absolute inset-0 flex items-center justify-center ${className}`}>
-					<div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-white" />
+					<div className="animate-spin rounded-full h-12 w-12 border-4 border-foreground/20 border-t-foreground" />
 				</div>
 			)}
 			<motion.img

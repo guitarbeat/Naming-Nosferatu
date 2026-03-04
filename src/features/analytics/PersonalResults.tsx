@@ -36,8 +36,8 @@ export const PersonalResults = ({
 				<Card variant="warning" className="backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">🏆</span>
-						<h3 className="text-sm font-medium text-white/60">Champion</h3>
-						<p className="text-xl font-bold text-white truncate max-w-full">
+						<h3 className="text-sm font-medium text-muted-foreground">Champion</h3>
+						<p className="text-xl font-bold text-foreground truncate max-w-full">
 							{rankings[0]?.name || "-"}
 						</p>
 					</CardBody>
@@ -46,16 +46,16 @@ export const PersonalResults = ({
 				<Card variant="primary" className="backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">⭐</span>
-						<h3 className="text-sm font-medium text-white/60">Highest Rated</h3>
-						<p className="text-xl font-bold text-white">{String(rankings[0]?.rating || 1500)}</p>
+					<h3 className="text-sm font-medium text-muted-foreground">Highest Rated</h3>
+					<p className="text-xl font-bold text-foreground">{String(rankings[0]?.rating || 1500)}</p>
 					</CardBody>
 				</Card>
 
 				<Card variant="info" className="backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">📝</span>
-						<h3 className="text-sm font-medium text-white/60">Names Ranked</h3>
-						<p className="text-xl font-bold text-white">{rankings.length}</p>
+					<h3 className="text-sm font-medium text-muted-foreground">Names Ranked</h3>
+					<p className="text-xl font-bold text-foreground">{rankings.length}</p>
 					</CardBody>
 				</Card>
 			</div>
@@ -83,7 +83,7 @@ export const PersonalResults = ({
 				<HeroButton
 					onClick={onStartNew}
 					variant="flat"
-					className="bg-purple-500/20 hover:bg-purple-500/30 text-white"
+					className="bg-primary/20 hover:bg-primary/30 text-foreground"
 					startContent={<Plus size={18} />}
 				>
 					New Tournament
