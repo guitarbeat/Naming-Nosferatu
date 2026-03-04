@@ -162,7 +162,7 @@ function MatchSideCard({
 				onKeyDown={onKeyDown}
 				onClick={onVote}
 			>
-				<div className="relative w-full h-full flex items-center justify-center bg-white/10">
+				<div className="relative w-full h-full flex items-center justify-center bg-foreground/10">
 					{img ? (
 						<CatImage
 							src={img}
@@ -172,7 +172,7 @@ function MatchSideCard({
 							imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 						/>
 					) : (
-						<span className="text-white/20 text-6xl font-bold select-none">
+						<span className="text-foreground/20 text-6xl font-bold select-none">
 							{name[0]?.toUpperCase() || "?"}
 						</span>
 					)}
@@ -202,8 +202,8 @@ function MatchSideCard({
 						</div>
 					)}
 
-					<div
-						className={`absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-20 flex flex-col justify-end pointer-events-none ${overlayTextAlign}`}
+				<div
+						className={`absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-background/90 via-background/40 to-transparent z-20 flex flex-col justify-end pointer-events-none ${overlayTextAlign}`}
 					>
 						<div className={`flex items-center gap-2 flex-wrap ${headingWrapClass}`}>
 							{isRight && streak >= STREAK_THRESHOLDS.warm && (
@@ -218,8 +218,8 @@ function MatchSideCard({
 									))}
 								</div>
 							)}
-							<h3
-								className={`font-whimsical text-2xl sm:text-3xl text-white tracking-wide break-words drop-shadow-md leading-tight ${headingTextClass}`}
+						<h3
+								className={`font-whimsical text-2xl sm:text-3xl text-foreground tracking-wide break-words drop-shadow-md leading-tight ${headingTextClass}`}
 							>
 								{name}
 							</h3>
@@ -248,7 +248,7 @@ function MatchSideCard({
 								{members.map((member) => (
 									<span
 										key={`${side}-member-${member}`}
-										className="rounded-full border border-white/30 bg-black/35 px-2 py-0.5 text-[10px] sm:text-xs font-bold tracking-wide"
+										className="rounded-full border border-border/30 bg-background/35 px-2 py-0.5 text-[10px] sm:text-xs font-bold tracking-wide"
 									>
 										{member}
 									</span>
@@ -256,7 +256,7 @@ function MatchSideCard({
 							</div>
 						) : description ? (
 							<p
-								className={`text-xs sm:text-sm text-white/90 italic line-clamp-2 mt-1 drop-shadow-sm ${overlayTextAlign}`}
+								className={`text-xs sm:text-sm text-foreground/90 italic line-clamp-2 mt-1 drop-shadow-sm ${overlayTextAlign}`}
 							>
 								{description}
 							</p>
@@ -287,8 +287,8 @@ function BracketTree({ round, totalRounds }: { round: number; totalRounds: numbe
 	}, [round, totalRounds]);
 
 	return (
-		<div className="rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2">
-			<div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-white/60">
+		<div className="rounded-xl border border-border/15 bg-foreground/[0.03] px-3 py-2">
+			<div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
 				<span>Bracket Path</span>
 				<span>{stageFlavor}</span>
 			</div>
@@ -299,8 +299,8 @@ function BracketTree({ round, totalRounds }: { round: number; totalRounds: numbe
 					const tone = isActive
 						? "border-primary/70 bg-primary/20 text-primary shadow-[0_0_18px_rgba(166,94,237,0.45)]"
 						: isDone
-							? "border-emerald-400/45 bg-emerald-500/10 text-emerald-300"
-							: "border-white/20 bg-white/5 text-white/65";
+							? "border-chart-2/45 bg-chart-2/10 text-chart-2"
+							: "border-border/20 bg-foreground/5 text-foreground/65";
 					const caption =
 						stageRound === totalRounds
 							? "Final"
@@ -321,7 +321,7 @@ function BracketTree({ round, totalRounds }: { round: number; totalRounds: numbe
 							{index < rounds.length - 1 && (
 								<div
 									className={`h-[1px] w-4 sm:w-6 ${
-										isDone ? "bg-emerald-300/70" : isActive ? "bg-primary/70" : "bg-white/20"
+										isDone ? "bg-chart-2/70" : isActive ? "bg-primary/70" : "bg-border/20"
 									}`}
 								/>
 							)}
@@ -708,22 +708,22 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<div className="mb-6 flex justify-center">
 							<Trophy className="size-16 text-green-400" />
 						</div>
-						<h1 className="font-whimsical text-4xl text-white tracking-wide mb-4">
+			<h1 className="font-whimsical text-4xl text-foreground tracking-wide mb-4">
 							Tournament Complete!
 						</h1>
-						<p className="text-white/80 mb-6">
+						<p className="text-foreground/80 mb-6">
 							Congratulations! Your tournament results are ready to review.
 						</p>
 
 						<div className="space-y-4">
 							<div className="grid grid-cols-2 gap-4 text-left">
-								<div className="bg-white/5 rounded-lg p-4">
-									<div className="text-sm text-white/60 mb-1">Total Matches</div>
-									<div className="text-xl font-bold text-white">{totalMatches}</div>
+								<div className="bg-foreground/5 rounded-lg p-4">
+									<div className="text-sm text-muted-foreground mb-1">Total Matches</div>
+									<div className="text-xl font-bold text-foreground">{totalMatches}</div>
 								</div>
-								<div className="bg-white/5 rounded-lg p-4">
-									<div className="text-sm text-white/60 mb-1">Participants</div>
-									<div className="text-xl font-bold text-white">{visibleNames.length}</div>
+								<div className="bg-foreground/5 rounded-lg p-4">
+									<div className="text-sm text-muted-foreground mb-1">Participants</div>
+									<div className="text-xl font-bold text-foreground">{visibleNames.length}</div>
 								</div>
 							</div>
 
@@ -731,19 +731,19 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								<button
 									type="button"
 									onClick={quitTournament}
-									className="w-full glass-panel py-3 px-6 rounded-full flex items-center justify-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
+									className="w-full glass-panel py-3 px-6 rounded-full flex items-center justify-center gap-3 border border-primary/20 cursor-pointer hover:bg-foreground/5 transition-colors"
 								>
 									<LogOut className="text-primary" />
-									<span className="font-bold text-white">Start New Tournament</span>
+									<span className="font-bold text-foreground">Start New Tournament</span>
 								</button>
 
 								<button
 									type="button"
 									onClick={() => navigate("/analysis")}
-									className="w-full glass-panel py-3 px-6 rounded-full flex items-center justify-center gap-3 border border-white/20 cursor-pointer hover:bg-white/5 transition-colors"
+									className="w-full glass-panel py-3 px-6 rounded-full flex items-center justify-center gap-3 border border-border/20 cursor-pointer hover:bg-foreground/5 transition-colors"
 								>
-									<Trophy className="text-white" />
-									<span className="font-bold text-white">View Analysis</span>
+									<Trophy className="text-foreground" />
+									<span className="font-bold text-foreground">View Analysis</span>
 								</button>
 							</div>
 						</div>
@@ -756,7 +756,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	if (!matchData) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-white/60">Loading tournament...</div>
+				<div className="text-muted-foreground">Loading tournament...</div>
 			</div>
 		);
 	}
@@ -783,20 +783,20 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				? { name: rightName, streak: rightStreak, heatLevel: rightHeatLevel ?? "warm" }
 				: null;
 	return (
-		<div className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col font-display text-white selection:bg-primary/30">
+		<div className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col font-display text-foreground selection:bg-primary/30">
 			<header className="pt-2 px-3 sm:px-4 space-y-2 flex-shrink-0">
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex flex-wrap items-center gap-2 sm:gap-4">
-						<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
+					<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-foreground/10 backdrop-blur-md border border-border/20">
 							<Gamepad2 className="text-primary size-3.5" />
-							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-white/90">
+							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-foreground/90">
 								{isComplete
 									? "Tournament Complete!"
 									: `Round ${roundNumber} / ${totalRounds} · ${bracketStage}`}
 							</span>
 						</div>
-						<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
-							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-white/90">
+					<div className="px-3 py-1.5 sm:px-4 rounded-full flex items-center gap-2 bg-foreground/10 backdrop-blur-md border border-border/20">
+							<span className="text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-foreground/90">
 								Mode: {tournamentMode === "2v2" ? "2v2 Teams" : "1v1"}
 							</span>
 						</div>
@@ -810,14 +810,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						)}
 					</div>
 					<div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
-						<div className="flex items-center gap-2">
-							<Medal className="text-stardust" />
-							<span className="text-[11px] sm:text-xs font-bold">
+					<div className="flex items-center gap-2">
+						<Medal className="text-accent" />
+						<span className="text-[11px] sm:text-xs font-bold">
 								{currentMatchNumber} / {totalMatches}
 							</span>
 						</div>
 						{etaMinutes > 0 && !isComplete && (
-							<div className="flex items-center gap-1 text-[11px] sm:text-xs text-white/60">
+							<div className="flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground">
 								<Clock className="size-3.5" />
 								<span>~{etaMinutes}m</span>
 							</div>
@@ -825,7 +825,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					</div>
 				</div>
 				<div className="flex flex-col gap-2">
-					<div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+					<div className="h-1.5 w-full bg-foreground/5 rounded-full overflow-hidden">
 						<div
 							className={`h-full rounded-full shadow-[0_0_10px_#a65eed] transition-all duration-500 ${
 								isComplete ? "bg-green-500" : "bg-primary"
@@ -833,7 +833,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							style={{ width: `${progress || (currentMatchNumber / totalMatches) * 100}%` }}
 						/>
 					</div>
-					<div className="text-center text-[11px] sm:text-xs text-white/60">
+					<div className="text-center text-[11px] sm:text-xs text-muted-foreground">
 						{isComplete ? (
 							<span className="text-green-400 font-bold">🎉 Tournament Complete! 🎉</span>
 						) : (
@@ -868,7 +868,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<button
 							type="button"
 							onClick={audioManager.handleToggleMute}
-							className="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							className="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors"
 							aria-label={audioManager.isMuted ? "Unmute audio" : "Mute audio"}
 							aria-pressed={!audioManager.isMuted}
 							title={audioManager.isMuted ? "Unmute audio" : "Mute audio"}
@@ -882,14 +882,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							step="0.1"
 							value={audioManager.volume}
 							onChange={(e) => audioManager.handleVolumeChange(null, parseFloat(e.target.value))}
-							className="w-full max-w-[180px] sm:w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+							className="w-full max-w-[180px] sm:w-20 h-1 bg-foreground/20 rounded-lg appearance-none cursor-pointer slider"
 							aria-label="Volume control"
 							title={`Volume: ${Math.round(audioManager.volume * 100)}%`}
 						/>
 						<button
 							type="button"
 							onClick={audioManager.handlePreviousTrack}
-							className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors"
 							aria-label="Previous track"
 							title="Previous track"
 						>
@@ -901,7 +901,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							className={`w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg transition-colors ${
 								audioManager.backgroundMusicEnabled
 									? "bg-primary/20 text-primary"
-									: "bg-white/5 text-white/60 hover:text-white"
+									: "bg-foreground/5 text-muted-foreground hover:text-foreground"
 							}`}
 							aria-label={
 								audioManager.backgroundMusicEnabled
@@ -916,7 +916,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						<button
 							type="button"
 							onClick={audioManager.handleNextTrack}
-							className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors"
 							aria-label="Next track"
 							title="Next track"
 						>
@@ -926,7 +926,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							<button
 								type="button"
 								onClick={handleQuit}
-								className="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-red-500/20 text-red-400 hover:text-red-300 transition-colors"
+								className="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg bg-destructive/20 text-destructive hover:text-destructive/80 transition-colors"
 								aria-label="Quit tournament"
 								title="Quit tournament"
 							>
@@ -937,7 +937,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					<button
 						type="button"
 						onClick={() => setCatPictures(!showCatPictures)}
-						className={`w-full sm:w-auto justify-center flex items-center gap-2 px-4 h-11 sm:h-10 rounded-lg font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
+						className={`w-full sm:w-auto justify-center flex items-center gap-2 px-4 h-11 sm:h-10 rounded-lg font-bold text-[11px] sm:text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-foreground/10"}`}
 						aria-pressed={showCatPictures}
 						title={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
 					>
@@ -1091,7 +1091,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 						{/* VS Indicator */}
 						<div className="flex flex-row sm:flex-col items-center justify-center gap-3 sm:gap-2 py-1 w-full sm:w-20">
-							<div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg flex-shrink-0">
+							<div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 border-border/30 bg-primary/20 backdrop-blur-md shadow-lg flex-shrink-0">
 								<span className="font-bold text-sm sm:text-2xl italic tracking-tighter">VS</span>
 							</div>
 							{dominantStreak && (
@@ -1117,11 +1117,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								<button
 									type="button"
 									onClick={quitTournament}
-									className="glass-panel py-1.5 px-3 sm:px-2 rounded-full flex items-center justify-center border border-red-500/20 cursor-pointer hover:bg-red-500/10 transition-colors"
+									className="glass-panel py-1.5 px-3 sm:px-2 rounded-full flex items-center justify-center border border-destructive/20 cursor-pointer hover:bg-destructive/10 transition-colors"
 									aria-label="Quit tournament"
 									title="Quit tournament"
 								>
-									<LogOut className="size-3.5 text-red-400" />
+									<LogOut className="size-3.5 text-destructive" />
 								</button>
 							</div>
 						</div>

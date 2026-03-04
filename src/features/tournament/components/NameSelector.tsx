@@ -699,7 +699,7 @@ export function NameSelector() {
 		return (
 			<Card padding="small" shadow="xl" className="max-w-full mx-auto ">
 				<div className="flex flex-col items-center justify-center py-20 space-y-4">
-					<div className="text-red-400 text-center">
+					<div className="text-destructive text-center">
 						<p className="text-lg font-medium">Failed to load names</p>
 						<p className="text-sm opacity-75 mt-1">{error}</p>
 					</div>
@@ -721,7 +721,7 @@ export function NameSelector() {
 					}
 					return (
 						<div className="text-center space-y-4">
-							<h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+							<h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
 								My cat's name is
 							</h3>
 							<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 w-full px-2 relative z-[60]">
@@ -731,7 +731,7 @@ export function NameSelector() {
 										whileHover={{ y: -4, scale: 1.02 }}
 										className="group relative shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] rounded-sm"
 									>
-										<div className="text-white font-bold text-xs sm:text-sm md:text-base lg:text-lg">
+										<div className="text-foreground font-bold text-xs sm:text-sm md:text-base lg:text-lg">
 											{nameItem.name}
 										</div>
 
@@ -765,16 +765,16 @@ export function NameSelector() {
 				})()}
 
 				<div className="text-center space-y-3">
-					<h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter leading-tight">
+					<h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter leading-tight">
 						Choose Your Contenders
 					</h2>
-					<p className="text-slate-200 text-sm sm:text-base leading-relaxed">
+					<p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
 						{isSwipeMode
 							? "Swipe right to select, left to skip. You can also use arrow keys (or A/D) and Ctrl+Z to undo."
 							: "Click to select names • Select at least 2 names • 2v2 auto-enables when selected count is divisible by 4 (and >=4), otherwise 1v1"}
 					</p>
 					<div
-						className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-300"
+						className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground"
 						aria-live="polite"
 					>
 						<span>
@@ -920,7 +920,7 @@ export function NameSelector() {
 															</>
 														)}
 
-														<div className="relative w-full h-full flex flex-col justify-end bg-white/10">
+														<div className="relative w-full h-full flex flex-col justify-end bg-foreground/10">
 															<CatImage
 																src={catImage}
 																alt={nameItem.name}
@@ -945,8 +945,8 @@ export function NameSelector() {
 															)}
 
 															{/* Name and Info Overlay */}
-															<div className="relative z-10 p-8 bg-gradient-to-t from-black/95 via-black/40 to-transparent flex flex-col justify-end pointer-events-none">
-																<h3 className="font-whimsical text-4xl lg:text-5xl text-white tracking-wide drop-shadow-2xl break-words w-full">
+														<div className="relative z-10 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent flex flex-col justify-end pointer-events-none">
+																<h3 className="font-whimsical text-4xl lg:text-5xl text-foreground tracking-wide drop-shadow-2xl break-words w-full">
 																	{nameItem.name}
 																	{nameItem.pronunciation && (
 																		<span className="ml-3 text-amber-400 text-2xl lg:text-3xl font-bold italic opacity-90">
@@ -955,7 +955,7 @@ export function NameSelector() {
 																	)}
 																</h3>
 																{nameItem.description && (
-																	<p className="text-white/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3">
+																	<p className="text-foreground/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3">
 																		{nameItem.description}
 																	</p>
 																)}
@@ -1017,8 +1017,8 @@ export function NameSelector() {
 								) : (
 									<div className="absolute inset-0 flex items-center justify-center">
 										<div className="text-center space-y-4">
-											<p className="text-2xl font-bold text-white">All done!</p>
-											<p className="text-slate-400">You've reviewed all names. Ready to start?</p>
+										<p className="text-2xl font-bold text-foreground">All done!</p>
+											<p className="text-muted-foreground">You've reviewed all names. Ready to start?</p>
 										</div>
 									</div>
 								)}
@@ -1089,10 +1089,10 @@ export function NameSelector() {
 													whileHover={{ scale: 1.02 }}
 													whileTap={{ scale: 0.98 }}
 													transition={{ type: "spring", stiffness: 400, damping: 25 }}
-													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 overflow-hidden cursor-pointer ${
+												className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 overflow-hidden cursor-pointer ${
 														isSelected
-															? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
-															: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
+															? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
+															: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
 													} ${nameItem.lockedIn || nameItem.locked_in ? "opacity-75" : ""}`}
 												>
 													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img">
@@ -1105,17 +1105,17 @@ export function NameSelector() {
 														/>
 
 														{/* Grid Name Overlay */}
-														<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
+													<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
 															<div className="flex flex-col gap-0.5">
 																<div className="flex items-center justify-between gap-2">
-																	<span className="mobile-readable-title font-bold text-white text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
+																	<span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
 																		{nameItem.name}
 																	</span>
 																	{isSelected && (
 																		<motion.div
 																			initial={{ scale: 0, opacity: 0 }}
 																			animate={{ scale: 1, opacity: 1 }}
-																			className="shrink-0 size-5 bg-purple-500 rounded-full flex items-center justify-center shadow-lg"
+																			className="shrink-0 size-5 bg-primary rounded-full flex items-center justify-center shadow-lg"
 																		>
 																			<Check size={12} className="text-white" />
 																		</motion.div>
@@ -1127,7 +1127,7 @@ export function NameSelector() {
 																	</span>
 																)}
 																{nameItem.description && (
-																	<p className="mobile-readable-description text-white/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
+																<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
 																		{nameItem.description}
 																	</p>
 																)}
@@ -1248,7 +1248,7 @@ export function NameSelector() {
 
 							if (isSwipeMode) {
 								return (
-									<div className="mt-6 text-center text-white/60 text-sm">
+									<div className="mt-6 text-center text-muted-foreground text-sm">
 										Hidden names available in Grid mode
 									</div>
 								);
@@ -1272,18 +1272,18 @@ export function NameSelector() {
 											className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
 										>
 											<div className="flex items-center gap-2">
-												<span className="text-white/60">
+												<span className="text-muted-foreground">
 													{hiddenPanel.isCollapsed ? (
 														<ChevronRight size={20} />
 													) : (
 														<ChevronDown size={20} />
 													)}
 												</span>
-												<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+												<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
 													Hidden Names ({hiddenNamesAll.length})
 												</span>
 											</div>
-											<span className="text-[11px] sm:text-xs text-white/60">
+											<span className="text-[11px] sm:text-xs text-muted-foreground">
 												{hiddenPanel.isCollapsed ? "Click to expand" : "Click to collapse"}
 											</span>
 										</button>
@@ -1295,7 +1295,7 @@ export function NameSelector() {
 													return (
 														<div
 															key={n.id}
-															className="relative aspect-square overflow-hidden border border-white/10"
+															className="relative aspect-square overflow-hidden border border-border/10"
 														>
 															<CatImage
 																src={img}
@@ -1304,7 +1304,7 @@ export function NameSelector() {
 																imageClassName="w-full h-full object-cover opacity-20"
 															/>
 															<div className="absolute inset-0 flex items-center justify-center">
-																<span className="text-white/50 text-sm font-bold">?</span>
+																<span className="text-muted-foreground/50 text-sm font-bold">?</span>
 															</div>
 														</div>
 													);
@@ -1323,7 +1323,7 @@ export function NameSelector() {
 														setHiddenRenderCount(24);
 													}}
 													placeholder="Search hidden names"
-													className="w-full sm:max-w-sm px-3 py-2 bg-white/5 border border-white/10 text-white text-sm"
+													className="w-full sm:max-w-sm px-3 py-2 bg-foreground/5 border border-border/10 text-foreground text-sm"
 												/>
 												<div className="flex items-center justify-between sm:justify-end gap-3">
 													{hiddenQuery.trim().length > 0 && (
@@ -1333,7 +1333,7 @@ export function NameSelector() {
 																setHiddenQuery("");
 																setHiddenRenderCount(24);
 															}}
-															className="px-3 py-2 border border-white/10 bg-white/5 text-xs text-white/80 hover:bg-white/10"
+															className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
 														>
 															Clear search
 														</button>
@@ -1341,15 +1341,15 @@ export function NameSelector() {
 													<button
 														type="button"
 														onClick={() => setHiddenShowSelectedOnly((v) => !v)}
-														className={`px-3 py-2 border text-xs font-medium ${
-															hiddenShowSelectedOnly
-																? "bg-purple-500/20 border-purple-500/40 text-white"
-																: "bg-white/5 border-white/10 text-white/80"
-														}`}
+													className={`px-3 py-2 border text-xs font-medium ${
+														hiddenShowSelectedOnly
+															? "bg-primary/20 border-primary/40 text-foreground"
+															: "bg-foreground/5 border-border/10 text-foreground/80"
+													}`}
 													>
 														Selected only
 													</button>
-													<span className="text-xs text-white/60">
+													<span className="text-xs text-muted-foreground">
 														{hiddenFiltered.length} / {hiddenNamesAll.length}
 													</span>
 												</div>
@@ -1373,10 +1373,10 @@ export function NameSelector() {
 															}}
 															role="button"
 															tabIndex={0}
-															className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+														className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
 																isSelected
-																	? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20 ring-2 ring-purple-500/50"
-																	: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
+																	? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
+																	: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
 															}`}
 														>
 															<div className="aspect-[5/4] sm:aspect-[4/3] w-full relative group/hidden">
@@ -1389,17 +1389,17 @@ export function NameSelector() {
 																/>
 
 																{/* Hidden Grid Name Overlay */}
-																<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-black/95 via-black/65 to-transparent flex flex-col justify-end pointer-events-none">
+																<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
 																	<div className="flex flex-col gap-0.5">
 																		<div className="flex items-center justify-between gap-2">
-																			<span className="mobile-readable-title font-bold text-white text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
+																			<span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
 																				{nameItem.name}
 																			</span>
 																			{isSelected && (
 																				<motion.div
 																					initial={{ scale: 0, opacity: 0 }}
 																					animate={{ scale: 1, opacity: 1 }}
-																					className="shrink-0 size-4 bg-purple-500 rounded-full flex items-center justify-center shadow-md"
+																					className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
 																				>
 																					<Check size={10} className="text-white" />
 																				</motion.div>
@@ -1411,7 +1411,7 @@ export function NameSelector() {
 																			</span>
 																		)}
 																		{nameItem.description && (
-																			<p className="mobile-readable-description text-white/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
+																			<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
 																				{nameItem.description}
 																			</p>
 																		)}
@@ -1468,7 +1468,7 @@ export function NameSelector() {
 												})}
 											</div>
 											{hiddenFiltered.length === 0 && (
-												<div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-white/70">
+												<div className="mt-4 rounded-xl border border-border/10 bg-foreground/5 px-4 py-6 text-center text-sm text-foreground/70">
 													No hidden names match this filter.
 												</div>
 											)}
