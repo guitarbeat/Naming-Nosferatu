@@ -809,6 +809,98 @@
 	pointer-events: none;
 }
 
+/* LOCKED NAME TOOLTIP */
+.name-lock-tooltip {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%) scale(0.96);
+	width: min(19rem, calc(100vw - 2rem));
+	padding: 0.72rem 0.8rem;
+	border-radius: 0.9rem;
+	border: 1px solid rgb(251 191 36 / 45%);
+	background:
+		linear-gradient(160deg, rgb(9 19 46 / 92%), rgb(8 28 58 / 90%)),
+		radial-gradient(circle at top right, rgb(251 191 36 / 12%), transparent 54%);
+	color: rgb(241 245 249 / 95%);
+	font-size: 0.78rem;
+	line-height: 1.45;
+	letter-spacing: 0.01em;
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 20%),
+		0 22px 48px rgb(2 8 24 / 52%);
+	opacity: 0;
+	transition:
+		opacity 220ms ease,
+		transform 220ms ease;
+	pointer-events: none;
+	z-index: 110;
+}
+
+.group:hover .name-lock-tooltip {
+	opacity: 1;
+	transform: translateX(-50%) scale(1);
+}
+
+.name-lock-tooltip--top {
+	bottom: calc(100% + 0.7rem);
+	transform-origin: bottom center;
+}
+
+.name-lock-tooltip--bottom {
+	top: calc(100% + 0.7rem);
+	transform-origin: top center;
+}
+
+.name-lock-tooltip__header {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	margin-bottom: 0.42rem;
+	padding-bottom: 0.42rem;
+	border-bottom: 1px solid rgb(255 255 255 / 14%);
+}
+
+.name-lock-tooltip__label {
+	font-size: 0.6rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.11em;
+	color: rgb(253 224 71 / 78%);
+}
+
+.name-lock-tooltip__pronunciation {
+	font-size: 0.75rem;
+	font-style: italic;
+	font-weight: 700;
+	color: rgb(252 211 77 / 95%);
+}
+
+.name-lock-tooltip__body {
+	color: rgb(226 232 240 / 94%);
+}
+
+.name-lock-tooltip__arrow {
+	position: absolute;
+	left: 50%;
+	width: 0.72rem;
+	height: 0.72rem;
+	transform: translateX(-50%) rotate(45deg);
+	background: rgb(9 21 49 / 95%);
+	border-left: 1px solid rgb(251 191 36 / 45%);
+	border-top: 1px solid rgb(251 191 36 / 45%);
+}
+
+.name-lock-tooltip--top .name-lock-tooltip__arrow {
+	top: calc(100% - 0.36rem);
+}
+
+.name-lock-tooltip--bottom .name-lock-tooltip__arrow {
+	bottom: calc(100% - 0.36rem);
+	transform: translateX(-50%) rotate(225deg);
+}
+
 .tournament-toolbar-unified-container {
 	display: flex;
 	align-items: center;

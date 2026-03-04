@@ -739,30 +739,22 @@ export function NameSelector() {
 											<div
 												ref={tooltipRef}
 												onMouseEnter={measureTooltip}
-												className={`absolute left-1/2 -translate-x-1/2 w-56 p-3 bg-slate-900 border border-amber-500/30 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-[100] text-xs text-slate-200 leading-relaxed shadow-2xl scale-95 group-hover:scale-100 ${
+												className={`name-lock-tooltip ${
 													tooltipPosition === "top"
-														? "bottom-full mb-3 origin-bottom"
-														: "top-full mt-3 origin-top"
+														? "name-lock-tooltip--top"
+														: "name-lock-tooltip--bottom"
 												}`}
 											>
 												{nameItem.pronunciation && (
-													<div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/10">
-														<div className="text-[10px] font-black uppercase tracking-widest text-amber-500/70">
-															Pronunciation
-														</div>
-														<div className="font-bold text-amber-400 italic">
+													<div className="name-lock-tooltip__header">
+														<div className="name-lock-tooltip__label">Pronunciation</div>
+														<div className="name-lock-tooltip__pronunciation">
 															{nameItem.pronunciation}
 														</div>
 													</div>
 												)}
-												<div className="opacity-90">{nameItem.description}</div>
-												<div
-													className={`absolute left-1/2 -translate-x-1/2 border-8 border-transparent ${
-														tooltipPosition === "top"
-															? "top-[calc(100%-1px)] border-t-slate-900"
-															: "bottom-[calc(100%-1px)] border-b-slate-900"
-													}`}
-												/>
+												<div className="name-lock-tooltip__body">{nameItem.description}</div>
+												<div className="name-lock-tooltip__arrow" />
 											</div>
 										)}
 									</motion.div>
