@@ -135,11 +135,21 @@ function TournamentContent() {
 						onComplete={handleTournamentComplete as any}
 					/>
 				) : (
-					<div className="text-center py-20">
-						<p className="text-xl text-white/70 mb-4">No names selected for tournament</p>
-						<Button variant="gradient" onClick={() => navigate("/")}>
-							Back To Name Picker
-						</Button>
+					<div className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-black/30 px-6 py-10 text-center">
+						<h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+							No contenders yet
+						</h2>
+						<p className="text-white/75 mb-6">
+							Choose at least two names in the picker to start your tournament bracket.
+						</p>
+						<div className="flex flex-wrap items-center justify-center gap-3">
+							<Button variant="gradient" onClick={() => navigate("/")}>
+								Go to Name Picker
+							</Button>
+							<Button variant="outline" onClick={() => navigate("/analysis")}>
+								View Analysis
+							</Button>
+						</div>
 					</div>
 				)}
 			</Suspense>

@@ -685,7 +685,9 @@ export function NameSelector() {
 		const randomIds = new Set(pool.slice(0, targetCount).map((name) => name.id));
 		setSelectedNames((prev) => {
 			const next = new Set(prev);
-			randomIds.forEach((id) => next.add(id));
+			randomIds.forEach((id) => {
+				next.add(id);
+			});
 			syncSelectionToStore(next);
 			return next;
 		});
@@ -786,13 +788,17 @@ export function NameSelector() {
 					</h2>
 					<p className="text-slate-200 text-sm sm:text-base leading-relaxed">
 						{isSwipeMode
-							? "Swipe right to select, left to skip • Use arrow keys or A/D • Ctrl+Z to undo • Select at least 2 names"
+							? "Swipe right to select, left to skip. You can also use arrow keys (or A/D) and Ctrl+Z to undo."
 							: "Click to select names • Select at least 2 names"}
 					</p>
-					<div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-300">
+					<div
+						className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-300"
+						aria-live="polite"
+					>
 						<span>
 							Selected: {selectedAvailableCount} / {availableNames.length}
 						</span>
+						{selectedHiddenCount > 0 && <span>Hidden selected: {selectedHiddenCount}</span>}
 						{isSwipeMode && swipeHistory.length > 0 && (
 							<Button
 								onClick={handleUndo}
@@ -804,6 +810,30 @@ export function NameSelector() {
 							</Button>
 						)}
 					</div>
+					{!isSwipeMode && (
+						<div className="flex flex-wrap items-center justify-center gap-2">
+							<Button
+								variant="outline"
+								size="small"
+								onClick={handleSelectAllAvailable}
+								disabled={!canSelectAllAvailable}
+							>
+								Select all visible
+							</Button>
+							<Button variant="outline" size="small" onClick={handleSelectRandomAvailable}>
+								<Shuffle size={14} />
+								Pick 8 random
+							</Button>
+							<Button
+								variant="outline"
+								size="small"
+								onClick={handleClearSelection}
+								disabled={!hasAnySelection}
+							>
+								Clear selection
+							</Button>
+						</div>
+					)}
 				</div>
 
 				{isSwipeMode ? (
@@ -1230,7 +1260,6 @@ export function NameSelector() {
 						})()}
 
 						{(() => {
-							const hiddenNamesAll = names.filter((n) => n.isHidden);
 							if (hiddenNamesAll.length === 0) {
 								return null;
 							}
@@ -1243,33 +1272,9 @@ export function NameSelector() {
 								);
 							}
 
-							const q = hiddenQuery.trim().toLowerCase();
-							const hiddenFiltered = hiddenNamesAll.filter((n) => {
-								if (hiddenShowSelectedOnly && !selectedNames.has(n.id)) {
-									return false;
-								}
-								if (!q) {
-									return true;
-								}
-								return (
-									n.name.toLowerCase().includes(q) ||
-									(n.description ?? "").toLowerCase().includes(q)
-								);
-							});
-
-							const previewItems = hiddenNamesAll.slice(0, 6);
-							const renderItems = hiddenFiltered.slice(0, hiddenRenderCount);
-
 							return (
 								<div className="mt-6">
-									<div
-										onMouseDown={startHiddenExpandTimer}
-										onMouseUp={clearHiddenExpandTimer}
-										onMouseLeave={clearHiddenExpandTimer}
-										onTouchStart={startHiddenExpandTimer}
-										onTouchEnd={clearHiddenExpandTimer}
-										className="select-none"
-									>
+									<div className="select-none">
 										<button
 											type="button"
 											onClick={() => {
@@ -1296,7 +1301,9 @@ export function NameSelector() {
 													Hidden Names ({hiddenNamesAll.length})
 												</span>
 											</div>
-											<span className="text-[11px] sm:text-xs text-white/60">Hold to expand</span>
+											<span className="text-[11px] sm:text-xs text-white/60">
+												{hiddenPanel.isCollapsed ? "Click to expand" : "Click to collapse"}
+											</span>
 										</button>
 
 										{hiddenPanel.isCollapsed && (
@@ -1337,6 +1344,18 @@ export function NameSelector() {
 													className="w-full sm:max-w-sm px-3 py-2 bg-white/5 border border-white/10 text-white text-sm"
 												/>
 												<div className="flex items-center justify-between sm:justify-end gap-3">
+													{hiddenQuery.trim().length > 0 && (
+														<button
+															type="button"
+															onClick={() => {
+																setHiddenQuery("");
+																setHiddenRenderCount(24);
+															}}
+															className="px-3 py-2 border border-white/10 bg-white/5 text-xs text-white/80 hover:bg-white/10"
+														>
+															Clear search
+														</button>
+													)}
 													<button
 														type="button"
 														onClick={() => setHiddenShowSelectedOnly((v) => !v)}
@@ -1466,6 +1485,11 @@ export function NameSelector() {
 													);
 												})}
 											</div>
+											{hiddenFiltered.length === 0 && (
+												<div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-white/70">
+													No hidden names match this filter.
+												</div>
+											)}
 
 											{hiddenFiltered.length > hiddenRenderCount && (
 												<div className="mt-4 flex justify-center">

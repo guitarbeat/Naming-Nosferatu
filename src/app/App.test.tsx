@@ -95,8 +95,9 @@ describe("App Component", () => {
 		);
 
 		await waitFor(() => {
-			// Since names are empty in mock, it should show "No names selected"
-			expect(screen.getByText("No names selected for tournament")).toBeInTheDocument();
+			// Since names are empty in mock, it should show the empty-state guidance
+			expect(screen.getByText("No contenders yet")).toBeInTheDocument();
+			expect(screen.getByText("Go to Name Picker")).toBeInTheDocument();
 		});
 	});
 });
