@@ -1,17 +1,13 @@
 /**
  * @file components.css
- * @description Consolidated UI Component Styles
- *
- * Merged from:
- * - components-primitives.css
- * Form controls moved to forms.css
+ * @description UI component styles only. Tokens extracted to tokens.css,
+ * animations/transitions extracted to motion.css.
  */
 
 /* ==========================================================================
-   COMPONENT PRIMITIVES
+   PERFORMANCE BADGES
    ========================================================================== */
 
-/* PERFORMANCE BADGES */
 .performance-badge {
 	display: inline-flex;
 	align-items: center;
@@ -48,8 +44,6 @@
 	text-transform: none;
 }
 
-/* Size variants */
-
 .badge-icon {
 	display: inline-flex;
 	font-size: 0.9em;
@@ -61,8 +55,6 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* Badge type colors */
-
 .performance-badges {
 	display: flex;
 	flex-wrap: wrap;
@@ -70,7 +62,7 @@
 	align-items: center;
 }
 
-/* Light theme adjustments */
+/* Light theme badge adjustments */
 :root[data-theme="light"] .performance-badge.performance-badge-top_rated {
 	background-color: color-mix(in srgb, var(--color-warning) 10%, transparent);
 	color: color-mix(in srgb, var(--color-warning) 75%, var(--color-neutral-900));
@@ -111,7 +103,10 @@
 	color: var(--color-neutral-700);
 }
 
-/* TREND INDICATORS */
+/* ==========================================================================
+   TREND INDICATORS
+   ========================================================================== */
+
 .trend-indicator {
 	display: inline-flex;
 	align-items: center;
@@ -122,19 +117,6 @@
 	border-radius: var(--radius-sm);
 	transition: var(--transition-base);
 	white-space: nowrap;
-}
-
-@keyframes trend-pulse {
-	0%,
-	100% {
-		opacity: 1;
-		transform: scale(1);
-	}
-
-	50% {
-		opacity: 0.8;
-		transform: scale(0.95);
-	}
 }
 
 .trend-icon {
@@ -154,16 +136,14 @@
 		padding: var(--space-1);
 	}
 
-	.trend-icon {
-		font-size: 0.9em;
-	}
-
-	.trend-value {
-		font-size: 0.75em;
-	}
+	.trend-icon { font-size: 0.9em; }
+	.trend-value { font-size: 0.75em; }
 }
 
-/* OFFLINE INDICATOR */
+/* ==========================================================================
+   OFFLINE INDICATOR
+   ========================================================================== */
+
 .indicator {
 	position: fixed;
 	left: 50%;
@@ -191,21 +171,10 @@
 	flex-shrink: 0;
 }
 
-.indicator-message {
-	white-space: nowrap;
-}
-
-.indicator.offline .indicator-dot {
-	background: var(--color-error);
-}
-
-.indicator.online .indicator-dot {
-	background: var(--color-success);
-}
-
-.indicator.slow .indicator-dot {
-	background: var(--color-warning);
-}
+.indicator-message { white-space: nowrap; }
+.indicator.offline .indicator-dot { background: var(--color-error); }
+.indicator.online .indicator-dot { background: var(--color-success); }
+.indicator.slow .indicator-dot { background: var(--color-warning); }
 
 @media (max-width: 640px) {
 	.indicator {
@@ -214,7 +183,10 @@
 	}
 }
 
-/* EMPTY STATE */
+/* ==========================================================================
+   EMPTY STATE
+   ========================================================================== */
+
 .empty-state {
 	background: var(--glass-bg-light);
 	backdrop-filter: blur(var(--glass-blur));
@@ -258,19 +230,8 @@
 	gap: var(--space-4);
 }
 
-@keyframes float {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-
-	50% {
-		transform: translateY(-8px);
-	}
-}
-
 /* ==========================================================================
-   BUTTON COMPONENTS (merged from buttons.css)
+   BUTTON COMPONENTS
    ========================================================================== */
 
 .btn:disabled {
@@ -303,20 +264,8 @@
 	border: var(--button-border-width) solid transparent;
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.btn,
-	.btn--glow,
-	.btn:hover,
-	.btn:active,
-	.btn--fab:hover,
-	.btn--fab:active {
-		transition: none;
-		transform: none;
-	}
-}
-
 /* ==========================================================================
-   CARD COMPONENTS (merged from cards.css)
+   CARD COMPONENTS
    ========================================================================== */
 
 .card {
@@ -342,37 +291,16 @@
 }
 
 @media (width <= 640px) {
-	.card {
-		padding: var(--card-padding-sm);
-	}
-
-	.card__header {
-		padding: var(--space-2);
-	}
+	.card { padding: var(--card-padding-sm); }
+	.card__header { padding: var(--space-2); }
 }
 
 @media (width <= 480px) {
-	.card--xs,
-	.card--sm,
-	.card--md,
-	.card--lg {
-		padding: var(--space-2);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.card,
-	.card--elevated,
-	.card--elevated:hover,
-	.card--interactive:hover,
-	.card--interactive:active {
-		transition: none;
-		transform: none;
-	}
+	.card--xs, .card--sm, .card--md, .card--lg { padding: var(--space-2); }
 }
 
 /* ==========================================================================
-   FORM COMPONENTS (merged from forms.css)
+   FORM COMPONENTS
    ========================================================================== */
 
 .form {
@@ -389,135 +317,19 @@
 	align-items: center;
 }
 
-.form-file input[type="file"] {
-	display: none;
-}
-
-@keyframes input-shake {
-	0%,
-	100% {
-		transform: translateX(0);
-	}
-
-	10%,
-	30%,
-	50% {
-		transform: translateX(-4px);
-	}
-
-	20%,
-	40% {
-		transform: translateX(4px);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.form-input,
-	.input-shake {
-		animation: none;
-		transition: none;
-	}
-}
-/**
- * @file analysis-mode.css
- * @description Consolidated Analysis Mode Design System
- *
- * Merged from:
- * - analysis-mode-tokens.css
- * - analysis-mode-global.css
- * - analysis-mode-components.css
- */
+.form-file input[type="file"] { display: none; }
 
 /* ==========================================================================
-   1. TOKENS
+   ANALYSIS MODE COMPONENTS
    ========================================================================== */
-:root {
-	/* * Accent color - singular, confident choice */
-	--analysis-accent: var(--color-neon-cyan);
-	--analysis-accent-rgb: 47, 243, 224;
-	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 15%, transparent);
-	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 8%, transparent);
-	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 25%, transparent);
-
-	/* * Surface hierarchy - layered depth (references main design tokens) */
-	--analysis-surface-0: var(--background-color);
-	--analysis-surface-1: #0b1220;
-	--analysis-surface-2: var(--surface-elevated, #0b1120);
-	--analysis-surface-elevated: color-mix(in srgb, var(--color-neutral-50) 3%, transparent);
-
-	/* * Border system - subtle definition */
-	--analysis-border: color-mix(in srgb, var(--color-neutral-50) 8%, transparent);
-	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 30%, transparent);
-	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 50%, transparent);
-
-	/* * Typography - restrained scale (references main design tokens) */
-	--analysis-text-headline: 1.5rem;
-	--analysis-text-title: 1.125rem;
-	--analysis-text-body: 0.875rem;
-	--analysis-text-caption: 0.75rem;
-	--analysis-text-mono: var(--font-mono);
-
-	/* * Spacing - tight, rhythmic (references main design tokens) */
-	--analysis-gap-xs: var(--space-1);
-	--analysis-gap-sm: var(--space-2);
-	--analysis-gap-md: var(--space-3);
-	--analysis-gap-lg: var(--space-4);
-	--analysis-gap-xl: var(--space-6);
-
-	/* * Motion - purposeful, quick (references main design tokens) */
-	--analysis-ease: cubic-bezier(0.22, 1, 0.36, 1);
-	--analysis-duration-fast: var(--duration-fast);
-	--analysis-duration-normal: var(--duration-normal);
-	--analysis-duration-slow: 350ms;
-
-	/* * Shadows - depth without heaviness (references main design tokens) */
-	--analysis-shadow-sm: var(--shadow-sm);
-	--analysis-shadow-md: var(--shadow-md);
-	--analysis-shadow-lg: var(--shadow-xl), 0 0 0 1px var(--analysis-border);
-	--analysis-shadow-glow: var(--shadow-cyan), 0 0 0 1px var(--analysis-border-accent);
-
-	/* * Border radius (references main design tokens) */
-	--analysis-radius-sm: 0.375rem;
-	--analysis-radius-md: var(--radius-md);
-	--analysis-radius-lg: var(--radius-lg);
-	--analysis-radius-xl: var(--radius-xl);
-	--analysis-radius-full: var(--radius-full);
-}
-
-/* * Light theme adjustments */
-:root[data-theme="light"] {
-	--analysis-accent: #0891b2;
-	--analysis-accent-rgb: 8, 145, 178;
-	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 12%, transparent);
-	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 6%, transparent);
-	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 15%, transparent);
-	--analysis-surface-elevated: color-mix(in srgb, var(--color-neutral-900) 2%, transparent);
-	--analysis-border: color-mix(in srgb, var(--color-neutral-900) 8%, transparent);
-	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 25%, transparent);
-	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 40%, transparent);
-}
-
-/* ==========================================================================
-   2. GLOBAL EFFECTS
-   ========================================================================== */
-/* * Subtle grid background when analysis mode is active */
-
-/* ==========================================================================
-   3. COMPONENTS
-   ========================================================================== */
-/* ANALYSIS PANEL - Primary Container */
 
 .analysis-panel-toolbar .filtersContainer {
 	padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
 	padding-bottom: var(--analysis-gap-sm, 8px);
 	margin: 0;
-	background: var(
-		--analysis-surface-elevated,
-		color-mix(in srgb, var(--color-neutral-50) 3%, transparent)
-	);
+	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 3%, transparent));
 	border: none;
-	border-bottom: var(--card-border-width) solid
-		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
+	border-bottom: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
 	border-radius: 0;
 	backdrop-filter: none;
 }
@@ -530,94 +342,38 @@
 	margin-bottom: var(--analysis-gap-sm, 8px);
 }
 
-.analysis-panel-toolbar .filtersContainer .filterRow {
-	margin-bottom: 0;
-}
+.analysis-panel-toolbar .filtersContainer .filterRow { margin-bottom: 0; }
 
-.analysis-panel > .collapsible-content {
-	padding: 0;
-	margin: 0;
-}
+.analysis-panel > .collapsible-content { padding: 0; margin: 0; }
 
 .analysis-panel > .analysis-dashboard-content,
 .analysis-panel > .top-names-list,
-.analysis-panel
-	> *:not(
-		.collapsible-header,
-		.analysis-header,
-		.collapsible-content,
-		.analysis-dashboard-content,
-		.top-names-list,
-		.admin-analytics-table-container,
-		.collapsible-content-inner
-	) {
+.analysis-panel > *:not(
+	.collapsible-header,
+	.analysis-header,
+	.collapsible-content,
+	.analysis-dashboard-content,
+	.top-names-list,
+	.admin-analytics-table-container,
+	.collapsible-content-inner
+) {
 	opacity: 1;
 }
-
-@keyframes analysis-panel-fade-in {
-	from {
-		opacity: 0;
-		transform: translateY(10px);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-/* ANALYSIS HEADER - Mode Indicator */
-
-@keyframes analysis-pulse {
-	0%,
-	100% {
-		opacity: 1;
-	}
-
-	50% {
-		opacity: 0.7;
-	}
-}
-
-/* ANALYSIS STATS - Dashboard Metrics */
-
-/* ANALYSIS CHARTS - Visualizations */
-
-/* ANALYSIS TOOLBAR - Standardized Controls */
-
-@keyframes analysis-selection-pulse {
-	0% {
-		box-shadow: 0 0 0 0 var(--analysis-accent-muted);
-	}
-
-	70% {
-		box-shadow: 0 0 0 10px transparent;
-	}
-
-	100% {
-		box-shadow: 0 0 0 0 transparent;
-	}
-}
-
-/* ANALYSIS BUTTONS - Intentional Actions */
 
 .analysis-btn span[aria-hidden="true"] {
 	font-size: 1em;
 	line-height: 1;
 }
 
-/* ANALYSIS FILTERS - Compact Controls */
-
 .analysis-input,
 .analysis-input:focus {
 	border-color: var(--analysis-border-accent);
 }
 
-/* ANALYSIS HIGHLIGHTS - Top Items Display */
+/* ==========================================================================
+   CAT BACKGROUND
+   ========================================================================== */
 
-/* ANALYSIS PROGRESS - Visual Feedback */
-
-/* ANALYSIS TOGGLE - Navbar Mode Switch */
 .cat-background {
 	position: fixed;
 	inset: 0;
@@ -658,9 +414,7 @@
 }
 
 @media (width <= 768px) {
-	.cat-background__gradient {
-		background-attachment: scroll;
-	}
+	.cat-background__gradient { background-attachment: scroll; }
 }
 
 .cat-background__sky,
@@ -687,28 +441,10 @@
 	animation-delay: var(--twinkle-delay, 0s);
 }
 
-/* ! Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-	.cat-background__star {
-		animation: none;
-		transition: none;
-	}
-}
+/* ==========================================================================
+   RANDOM GENERATOR
+   ========================================================================== */
 
-@keyframes twinkle {
-	0%,
-	100% {
-		opacity: 0;
-		transform: scale(calc(var(--twinkle-scale, 1) * 0.6));
-	}
-
-	45% {
-		opacity: var(--twinkle-alpha, 0.85);
-		transform: scale(var(--twinkle-scale, 1));
-	}
-}
-
-/* RANDOM GENERATOR */
 .random-generator-card {
 	box-shadow:
 		inset 0 1px 0 rgb(255 255 255 / 35%),
@@ -733,31 +469,11 @@
 	pointer-events: none;
 }
 
-.random-generator-bubble--one {
-	top: 1.2rem;
-	left: 1.4rem;
-	width: 3.25rem;
-	height: 3.25rem;
-}
+.random-generator-bubble--one { top: 1.2rem; left: 1.4rem; width: 3.25rem; height: 3.25rem; }
+.random-generator-bubble--two { right: 2.2rem; top: 2.1rem; width: 2.4rem; height: 2.4rem; }
+.random-generator-bubble--three { right: 1rem; bottom: 1rem; width: 4.1rem; height: 4.1rem; }
 
-.random-generator-bubble--two {
-	right: 2.2rem;
-	top: 2.1rem;
-	width: 2.4rem;
-	height: 2.4rem;
-}
-
-.random-generator-bubble--three {
-	right: 1rem;
-	bottom: 1rem;
-	width: 4.1rem;
-	height: 4.1rem;
-}
-
-.random-generator-button-wrap {
-	position: relative;
-	z-index: 10;
-}
+.random-generator-button-wrap { position: relative; z-index: 10; }
 
 .random-generator-button {
 	position: relative;
@@ -789,14 +505,8 @@
 		0 14px 26px rgb(3 8 20 / 36%);
 }
 
-.random-generator-button:active:not(:disabled) {
-	transform: translateY(0);
-}
-
-.random-generator-button:disabled {
-	cursor: not-allowed;
-	opacity: 0.65;
-}
+.random-generator-button:active:not(:disabled) { transform: translateY(0); }
+.random-generator-button:disabled { cursor: not-allowed; opacity: 0.65; }
 
 .random-generator-button-shadow {
 	position: absolute;
@@ -809,7 +519,10 @@
 	pointer-events: none;
 }
 
-/* LOCKED NAME TOOLTIP */
+/* ==========================================================================
+   LOCKED NAME TOOLTIP
+   ========================================================================== */
+
 .name-lock-tooltip {
 	position: absolute;
 	left: 50%;
@@ -831,27 +544,14 @@
 		inset 0 1px 0 rgb(255 255 255 / 20%),
 		0 22px 48px rgb(2 8 24 / 52%);
 	opacity: 0;
-	transition:
-		opacity 220ms ease,
-		transform 220ms ease;
+	transition: opacity 220ms ease, transform 220ms ease;
 	pointer-events: none;
 	z-index: 110;
 }
 
-.group:hover .name-lock-tooltip {
-	opacity: 1;
-	transform: translateX(-50%) scale(1);
-}
-
-.name-lock-tooltip--top {
-	bottom: calc(100% + 0.7rem);
-	transform-origin: bottom center;
-}
-
-.name-lock-tooltip--bottom {
-	top: calc(100% + 0.7rem);
-	transform-origin: top center;
-}
+.group:hover .name-lock-tooltip { opacity: 1; transform: translateX(-50%) scale(1); }
+.name-lock-tooltip--top { bottom: calc(100% + 0.7rem); transform-origin: bottom center; }
+.name-lock-tooltip--bottom { top: calc(100% + 0.7rem); transform-origin: top center; }
 
 .name-lock-tooltip__header {
 	display: flex;
@@ -877,9 +577,7 @@
 	color: rgb(252 211 77 / 95%);
 }
 
-.name-lock-tooltip__body {
-	color: rgb(226 232 240 / 94%);
-}
+.name-lock-tooltip__body { color: rgb(226 232 240 / 94%); }
 
 .name-lock-tooltip__arrow {
 	position: absolute;
@@ -892,14 +590,12 @@
 	border-top: 1px solid rgb(251 191 36 / 45%);
 }
 
-.name-lock-tooltip--top .name-lock-tooltip__arrow {
-	top: calc(100% - 0.36rem);
-}
+.name-lock-tooltip--top .name-lock-tooltip__arrow { top: calc(100% - 0.36rem); }
+.name-lock-tooltip--bottom .name-lock-tooltip__arrow { bottom: calc(100% - 0.36rem); transform: translateX(-50%) rotate(225deg); }
 
-.name-lock-tooltip--bottom .name-lock-tooltip__arrow {
-	bottom: calc(100% - 0.36rem);
-	transform: translateX(-50%) rotate(225deg);
-}
+/* ==========================================================================
+   TOURNAMENT TOOLBAR
+   ========================================================================== */
 
 .tournament-toolbar-unified-container {
 	display: flex;
@@ -984,9 +680,7 @@
 	font-weight: 600;
 }
 
-.tournament-toolbar-filter-select {
-	width: 100%;
-}
+.tournament-toolbar-filter-select { width: 100%; }
 
 .tournament-toolbar-sort-group {
 	display: flex;
@@ -1015,16 +709,13 @@
 	transition: all 0.2s;
 }
 
-.tournament-toolbar-sort-order-button:hover {
-	background: rgba(255, 255, 255, 0.1);
-}
+.tournament-toolbar-sort-order-button:hover { background: rgba(255, 255, 255, 0.1); }
 
-.tournament-toolbar-sort-icon {
-	width: 20px;
-	height: 20px;
-}
+.tournament-toolbar-sort-icon { width: 20px; height: 20px; }
 
-/* Consolidated Toolbar Styles */
+/* ==========================================================================
+   TOOLBAR UTILITIES
+   ========================================================================== */
 
 .toolbar-toggle {
 	display: flex;
@@ -1041,20 +732,12 @@
 	cursor: pointer;
 }
 
-.toolbar-toggle:hover {
-	color: rgba(255, 255, 255, 0.6);
-	background: rgba(255, 255, 255, 0.05);
-}
-
-.toolbar-toggle--active {
-	color: white;
-	background: rgba(255, 255, 255, 0.1);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
+.toolbar-toggle:hover { color: rgba(255, 255, 255, 0.6); background: rgba(255, 255, 255, 0.05); }
+.toolbar-toggle--active { color: white; background: rgba(255, 255, 255, 0.1); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
 
 .toolbar-toggle--accent.toolbar-toggle--active {
-	color: rgb(251, 207, 232); /* pink-200 */
-	background: rgba(236, 72, 153, 0.1); /* pink-500/10 */
+	color: rgb(251, 207, 232);
+	background: rgba(236, 72, 153, 0.1);
 	border-color: rgba(236, 72, 153, 0.2);
 }
 
@@ -1072,364 +755,4 @@
 	height: 1.5rem;
 	background: rgba(255, 255, 255, 0.1);
 	margin: 0 0.5rem;
-}
-/**
- * @file motion.css
- * @description Consolidated motion system: animations, transitions, and interactions
- */
-
-/* ==========================================================================
-   INTERACTION VARIABLES
-   ========================================================================== */
-
-:root {
-	/* Timing curves */
-	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-	--ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
-	--ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-	--ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-	/* Durations */
-	--duration-micro: 80ms;
-	--duration-quick: 120ms;
-	--duration-base: 180ms;
-	--duration-moderate: 250ms;
-	--duration-gentle: 350ms;
-
-	/* Transform scales */
-	--scale-press: 0.97;
-	--scale-hover: 1.02;
-	--scale-subtle: 1.005;
-
-	/* Lift distances */
-	--lift-micro: -1px;
-	--lift-small: -2px;
-	--lift-medium: -3px;
-
-	/* Focus ring */
-	--focus-ring-color: hsl(var(--primary) / 40%);
-	--focus-ring-spread: 3px;
-
-	/* Glow intensities */
-	--glow-subtle: 0 0 12px hsl(var(--primary) / 15%);
-	--glow-medium: 0 0 20px hsl(var(--primary) / 25%);
-	--glow-strong: 0 0 30px hsl(var(--primary) / 35%);
-}
-
-/* ==========================================================================
-   CORE KEYFRAME ANIMATIONS
-   ========================================================================== */
-
-/* Bounce Animations */
-@keyframes bounce {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-
-	50% {
-		transform: translateY(-10px);
-	}
-}
-
-@keyframes bounce-subtle {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-
-	50% {
-		transform: translateY(-4px);
-	}
-}
-
-/* Float Animation */
-@keyframes float {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-
-	50% {
-		transform: translateY(-6px);
-	}
-}
-
-/* Pulse Animations */
-@keyframes pulse-glow {
-	0%,
-	100% {
-		box-shadow: 0 0 5px var(--color-primary);
-	}
-
-	50% {
-		box-shadow: 0 0 20px var(--color-primary);
-	}
-}
-
-@keyframes pulse-opacity {
-	0%,
-	100% {
-		opacity: 1;
-	}
-
-	50% {
-		opacity: 0.7;
-	}
-}
-
-/* Shake Animation */
-@keyframes shake {
-	0%,
-	100% {
-		transform: translateX(0);
-	}
-
-	10%,
-	30%,
-	50% {
-		transform: translateX(-4px);
-	}
-
-	20%,
-	40% {
-		transform: translateX(4px);
-	}
-}
-
-/* Gradient Shift */
-@keyframes gradient-shift {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
-}
-
-/* Twinkle Effect */
-@keyframes twinkle {
-	0%,
-	100% {
-		opacity: 0.3;
-	}
-	50% {
-		opacity: 1;
-	}
-}
-
-/* Cosmic Float */
-@keyframes cosmic-float {
-	0%,
-	100% {
-		transform: translateY(0) rotate(0);
-	}
-	50% {
-		transform: translateY(-8px) rotate(1deg);
-	}
-}
-
-/* Cat-themed Animations */
-@keyframes cat-bounce {
-	0%,
-	100% {
-		transform: translateY(0) scaleY(1);
-	}
-	50% {
-		transform: translateY(-15px) scaleY(0.9);
-	}
-}
-
-/* Fade Animations */
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-
-@keyframes fadeOut {
-	from {
-		opacity: 1;
-	}
-	to {
-		opacity: 0;
-	}
-}
-
-/* Glow Pulse */
-@keyframes glowPulse {
-	0%,
-	100% {
-		box-shadow: 0 0 5px var(--color-primary);
-	}
-	50% {
-		box-shadow: 0 0 20px var(--color-primary);
-	}
-}
-
-@keyframes cosmicFloat {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(-10px);
-	}
-}
-
-/* Spin Animation */
-@keyframes spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-/* ==========================================================================
-   ANIMATION UTILITY CLASSES
-   ========================================================================== */
-
-.animate-spin {
-	animation: spin 1s linear infinite;
-}
-
-/* ==========================================================================
-   TRANSITION UTILITIES
-   ========================================================================== */
-
-.transition-all {
-	transition: var(--transition-all);
-}
-
-/* ==========================================================================
-   INTERACTIVE ELEMENT TRANSITIONS
-   ========================================================================== */
-
-/* Base interactive transitions */
-.interactive,
-button,
-[role="button"],
-a,
-input,
-select,
-textarea {
-	transition: all var(--duration-base) var(--ease-in-out-smooth);
-}
-
-/* Button interactions */
-button:not(:disabled):hover,
-[role="button"]:not([aria-disabled="true"]):hover {
-	transform: translateY(var(--lift-small));
-	box-shadow: var(--glow-subtle);
-}
-
-button:not(:disabled):active,
-[role="button"]:not([aria-disabled="true"]):active {
-	transform: scale(var(--scale-press));
-}
-
-.icon-btn:not(:disabled):hover {
-	background-color: var(--overlay-light);
-}
-
-/* Input interactions */
-input:focus,
-textarea:focus,
-select:focus {
-	outline: none;
-	border-color: hsl(var(--primary));
-	box-shadow: 0 0 0 var(--focus-ring-spread) var(--focus-ring-color);
-	transform: scale(var(--scale-subtle));
-}
-
-/* Range inputs */
-input[type="range"] {
-	cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-	transition:
-		transform var(--duration-base) var(--ease-spring),
-		box-shadow var(--duration-base) var(--ease-out-expo);
-}
-
-input[type="range"]:hover::-webkit-slider-thumb {
-	transform: scale(1.15);
-	box-shadow: var(--glow-medium);
-}
-
-input[type="range"]:active::-webkit-slider-thumb {
-	transform: scale(1.05);
-	box-shadow: var(--glow-strong);
-}
-
-/* ==========================================================================
-   ACCESSIBILITY
-   ========================================================================== */
-
-*:focus-visible {
-	outline: 2px solid hsl(var(--primary));
-	outline-offset: 2px;
-}
-
-/* Disabled states */
-button:disabled,
-[role="button"][aria-disabled="true"],
-input:disabled,
-select:disabled,
-textarea:disabled,
-.disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
-	pointer-events: none;
-	transform: none;
-	box-shadow: none;
-}
-
-/* ==========================================================================
-   CURSORS
-   ========================================================================== */
-
-button,
-a,
-[role="button"],
-.draggable,
-[draggable="true"] {
-	cursor: pointer;
-}
-
-.draggable:active,
-[draggable="true"]:active {
-	cursor: grabbing;
-}
-
-/* ==========================================================================
-   TOUCH & MOTION PREFERENCES
-   ========================================================================== */
-
-/* Touch optimizations */
-@media (hover: none) {
-	button:hover,
-	a:hover {
-		transform: none;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	*,
-	::before,
-	::after {
-		animation-duration: 0.01ms;
-		animation-iteration-count: 1;
-		transition-duration: 0.01ms;
-		scroll-behavior: auto;
-	}
 }
