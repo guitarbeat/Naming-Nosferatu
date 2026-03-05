@@ -1,0 +1,294 @@
+/**
+ * @file motion.css
+ * @description All keyframe animations, animation utility classes, transition utilities,
+ * interactive element transitions, and accessibility (reduced motion).
+ *
+ * Extracted from components.css for single-responsibility.
+ */
+
+/* ==========================================================================
+   CORE KEYFRAME ANIMATIONS
+   ========================================================================== */
+
+@keyframes bounce {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-10px); }
+}
+
+@keyframes bounce-subtle {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4px); }
+}
+
+@keyframes float {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-glow {
+	0%, 100% { box-shadow: 0 0 5px var(--color-primary); }
+	50% { box-shadow: 0 0 20px var(--color-primary); }
+}
+
+@keyframes pulse-opacity {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.7; }
+}
+
+@keyframes shake {
+	0%, 100% { transform: translateX(0); }
+	10%, 30%, 50% { transform: translateX(-4px); }
+	20%, 40% { transform: translateX(4px); }
+}
+
+@keyframes gradient-shift {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+
+@keyframes twinkle {
+	0%, 100% { opacity: 0.3; }
+	50% { opacity: 1; }
+}
+
+@keyframes cosmic-float {
+	0%, 100% { transform: translateY(0) rotate(0); }
+	50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes cat-bounce {
+	0%, 100% { transform: translateY(0) scaleY(1); }
+	50% { transform: translateY(-15px) scaleY(0.9); }
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+	from { opacity: 1; }
+	to { opacity: 0; }
+}
+
+@keyframes glowPulse {
+	0%, 100% { box-shadow: 0 0 5px var(--color-primary); }
+	50% { box-shadow: 0 0 20px var(--color-primary); }
+}
+
+@keyframes cosmicFloat {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-10px); }
+}
+
+@keyframes spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+@keyframes input-shake {
+	0%, 100% { transform: translateX(0); }
+	10%, 30%, 50% { transform: translateX(-4px); }
+	20%, 40% { transform: translateX(4px); }
+}
+
+@keyframes trend-pulse {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.8; transform: scale(0.95); }
+}
+
+@keyframes analysis-panel-fade-in {
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes analysis-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.7; }
+}
+
+@keyframes analysis-selection-pulse {
+	0% { box-shadow: 0 0 0 0 var(--analysis-accent-muted); }
+	70% { box-shadow: 0 0 0 10px transparent; }
+	100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ==========================================================================
+   ANIMATION UTILITY CLASSES
+   ========================================================================== */
+
+.animate-spin {
+	animation: spin 1s linear infinite;
+}
+
+/* ==========================================================================
+   TRANSITION UTILITIES
+   ========================================================================== */
+
+.transition-all {
+	transition: var(--transition-all);
+}
+
+/* ==========================================================================
+   INTERACTIVE ELEMENT TRANSITIONS
+   ========================================================================== */
+
+.interactive,
+button,
+[role="button"],
+a,
+input,
+select,
+textarea {
+	transition: all var(--duration-base) var(--ease-in-out-smooth);
+}
+
+/* Button interactions */
+button:not(:disabled):hover,
+[role="button"]:not([aria-disabled="true"]):hover {
+	transform: translateY(var(--lift-small));
+	box-shadow: var(--glow-subtle);
+}
+
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+	transform: scale(var(--scale-press));
+}
+
+.icon-btn:not(:disabled):hover {
+	background-color: var(--overlay-light);
+}
+
+/* Input interactions */
+input:focus,
+textarea:focus,
+select:focus {
+	outline: none;
+	border-color: hsl(var(--primary));
+	box-shadow: 0 0 0 var(--focus-ring-spread) var(--focus-ring-color);
+	transform: scale(var(--scale-subtle));
+}
+
+/* Range inputs */
+input[type="range"] {
+	cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+	transition:
+		transform var(--duration-base) var(--ease-spring),
+		box-shadow var(--duration-base) var(--ease-out-expo);
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+	transform: scale(1.15);
+	box-shadow: var(--glow-medium);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+	transform: scale(1.05);
+	box-shadow: var(--glow-strong);
+}
+
+/* ==========================================================================
+   FOCUS VISIBLE (GLOBAL)
+   ========================================================================== */
+
+*:focus-visible {
+	outline: 2px solid hsl(var(--primary));
+	outline-offset: 2px;
+}
+
+/* ==========================================================================
+   DISABLED STATES
+   ========================================================================== */
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled,
+select:disabled,
+textarea:disabled,
+.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;
+	transform: none;
+	box-shadow: none;
+}
+
+/* ==========================================================================
+   CURSORS
+   ========================================================================== */
+
+button,
+a,
+[role="button"],
+.draggable,
+[draggable="true"] {
+	cursor: pointer;
+}
+
+.draggable:active,
+[draggable="true"]:active {
+	cursor: grabbing;
+}
+
+/* ==========================================================================
+   TOUCH & REDUCED MOTION PREFERENCES
+   ========================================================================== */
+
+@media (hover: none) {
+	button:hover,
+	a:hover {
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	::before,
+	::after {
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+		transition-duration: 0.01ms;
+		scroll-behavior: auto;
+	}
+
+	.form-input,
+	.input-shake {
+		animation: none;
+		transition: none;
+	}
+
+	.btn,
+	.btn--glow,
+	.btn:hover,
+	.btn:active,
+	.btn--fab:hover,
+	.btn--fab:active {
+		transition: none;
+		transform: none;
+	}
+
+	.card,
+	.card--elevated,
+	.card--elevated:hover,
+	.card--interactive:hover,
+	.card--interactive:active {
+		transition: none;
+		transform: none;
+	}
+
+	@media (width <= 768px) {
+		.name-card,
+		.nav-menu button {
+			transition: none;
+		}
+
+		.name-card:hover,
+		.nav-menu button:hover {
+			transform: none;
+		}
+	}
+}
