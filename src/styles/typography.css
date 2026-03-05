@@ -1,0 +1,61 @@
+/**
+ * @file typography.css
+ * @description Typography utility classes built on design tokens.
+ *
+ * Extracted from base.css for single-responsibility.
+ */
+
+/* ==========================================================================
+   FONT SIZE UTILITIES
+   ========================================================================== */
+
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+
+/* ==========================================================================
+   FONT WEIGHT UTILITIES
+   ========================================================================== */
+
+.font-bold { font-weight: var(--font-weight-bold); }
+
+/* ==========================================================================
+   LETTER SPACING UTILITIES
+   ========================================================================== */
+
+.tracking-wide { letter-spacing: var(--tracking-wide); }
+.tracking-wider { letter-spacing: var(--tracking-wider); }
+
+/* ==========================================================================
+   TEXT ALIGNMENT & TRANSFORM
+   ========================================================================== */
+
+.text-center { text-align: center; }
+.uppercase { text-transform: uppercase; }
+
+/* ==========================================================================
+   TEXT COLOR UTILITIES
+   ========================================================================== */
+
+.text-primary { color: var(--text-primary); }
+
+/* ==========================================================================
+   WORD BREAK
+   ========================================================================== */
+
+.break-words { overflow-wrap: break-word; }
+
+/* ==========================================================================
+   LABEL PATTERN
+   ========================================================================== */
+
+.label {
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	line-height: var(--leading-normal);
+	letter-spacing: var(--tracking-wide);
+}
