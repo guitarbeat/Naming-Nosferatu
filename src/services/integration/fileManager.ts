@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * File Manager - Handles file operations including backups, restoration, and safe file operations
  */
