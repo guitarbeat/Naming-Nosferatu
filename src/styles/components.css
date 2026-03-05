@@ -484,9 +484,128 @@ nav[aria-label="Primary"] button[aria-pressed="true"] {
 	color: var(--color-neutral-50);
 }
 
+.cat-background__moire {
+	position: absolute;
+	inset: -12%;
+	background-image:
+		repeating-radial-gradient(
+			circle at 50% 50%,
+			color-mix(in srgb, var(--color-neon-cyan) 32%, transparent) 0 1px,
+			transparent 1px 14px
+		),
+		repeating-linear-gradient(
+			115deg,
+			color-mix(in srgb, var(--color-hot-pink) 22%, transparent) 0 1px,
+			transparent 1px 18px
+		);
+	mix-blend-mode: soft-light;
+	opacity: 0.22;
+	transform: translate3d(0, 0, 0) scale(1.06);
+	animation: moire-drift 24s linear infinite alternate;
+	will-change: transform, opacity;
+}
+
+.cat-background__soft-blur {
+	position: absolute;
+	inset: -16%;
+	background:
+		radial-gradient(
+			circle at 30% 18%,
+			color-mix(in srgb, hsl(var(--pw-sage-hsl)) 34%, transparent) 0%,
+			transparent 52%
+		),
+		radial-gradient(
+			circle at 76% 14%,
+			color-mix(in srgb, hsl(var(--pw-coral-hsl)) 30%, transparent) 0%,
+			transparent 56%
+		),
+		radial-gradient(
+			circle at 56% 104%,
+			color-mix(in srgb, hsl(var(--pw-info-hsl)) 24%, transparent) 0%,
+			transparent 56%
+		);
+	filter: blur(54px) saturate(1.08);
+	opacity: 0.48;
+	mix-blend-mode: screen;
+	animation: soft-blur-float 21s ease-in-out infinite;
+	will-change: transform, opacity;
+}
+
+.cat-background__vignette {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(
+		circle at center,
+		transparent 36%,
+		rgb(0 0 0 / 22%) 68%,
+		rgb(0 0 0 / 46%) 100%
+	);
+}
+
+@keyframes moire-drift {
+	0% {
+		transform: translate3d(-2%, -1%, 0) scale(1.04) rotate(-0.2deg);
+	}
+	50% {
+		transform: translate3d(1%, 2%, 0) scale(1.08) rotate(0.2deg);
+	}
+	100% {
+		transform: translate3d(2%, -1%, 0) scale(1.05) rotate(-0.1deg);
+	}
+}
+
+@keyframes soft-blur-float {
+	0%,
+	100% {
+		transform: translate3d(-1.5%, -1%, 0) scale(1);
+		opacity: 0.45;
+	}
+	50% {
+		transform: translate3d(1.5%, 2%, 0) scale(1.04);
+		opacity: 0.58;
+	}
+}
+
 @media (width <= 768px) {
 	.cat-background__gradient {
 		background-attachment: scroll;
+	}
+
+	.cat-background__moire {
+		opacity: 0.16;
+	}
+
+	.cat-background__soft-blur {
+		opacity: 0.38;
+		filter: blur(42px) saturate(1.04);
+	}
+}
+
+:root[data-theme="light"] .cat-background__moire {
+	opacity: 0.12;
+	mix-blend-mode: multiply;
+}
+
+:root[data-theme="light"] .cat-background__soft-blur {
+	opacity: 0.26;
+	mix-blend-mode: multiply;
+	filter: blur(46px) saturate(0.95);
+}
+
+:root[data-theme="light"] .cat-background__vignette {
+	background: radial-gradient(
+		circle at center,
+		transparent 42%,
+		rgb(148 163 184 / 9%) 72%,
+		rgb(15 23 42 / 18%) 100%
+	);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cat-background__moire,
+	.cat-background__soft-blur {
+		animation: none;
+		transform: none;
 	}
 }
 

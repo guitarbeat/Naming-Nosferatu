@@ -42,6 +42,13 @@ export function AppLayout({ children }: AppLayoutProps) {
 					Skip to main content
 				</a>
 
+				<div className="cat-background" aria-hidden="true">
+					<div className="cat-background__gradient" />
+					<div className="cat-background__moire" />
+					<div className="cat-background__soft-blur" />
+					<div className="cat-background__vignette" />
+				</div>
+
 				<FloatingNavbar />
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
