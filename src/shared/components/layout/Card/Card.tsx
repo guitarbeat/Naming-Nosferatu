@@ -35,21 +35,21 @@ const cardVariants = cva(
 	{
 		variants: {
 			variant: {
-				default: "bg-white/5 border border-white/10",
-				elevated: "bg-white/5 border-none shadow-md",
-				outlined: "bg-transparent border border-white/20",
-				filled: "bg-white/10 border-none",
+				default: "bg-foreground/5 border border-border/10",
+				elevated: "bg-foreground/5 border-none shadow-md",
+				outlined: "bg-transparent border border-border/20",
+				filled: "bg-foreground/10 border-none",
 				primary:
-					"bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 hover:border-purple-500/30",
+					"bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:border-primary/30",
 				success:
-					"bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 hover:border-green-500/30",
+					"bg-gradient-to-br from-chart-2/10 to-chart-2/5 border border-chart-2/20 hover:border-chart-2/30",
 				warning:
-					"bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-500/20 hover:border-yellow-500/30",
-				info: "bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 hover:border-cyan-500/30",
+					"bg-gradient-to-br from-chart-4/10 to-chart-4/5 border border-chart-4/20 hover:border-chart-4/30",
+				info: "bg-gradient-to-br from-chart-5/10 to-chart-5/5 border border-chart-5/20 hover:border-chart-5/30",
 				danger:
-					"bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 hover:border-red-500/30",
+					"bg-gradient-to-br from-destructive/10 to-destructive/5 border border-destructive/20 hover:border-destructive/30",
 				secondary:
-					"bg-gradient-to-br from-gray-500/10 to-gray-500/5 border border-gray-500/20 hover:border-gray-500/30",
+					"bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/20 hover:border-secondary/30",
 			},
 			padding: {
 				none: "p-0",
@@ -66,13 +66,13 @@ const cardVariants = cva(
 				xl: "shadow-xl",
 			},
 			bordered: {
-				true: "border border-white/10",
+				true: "border border-border/10",
 				false: "",
 			},
 			background: {
-				solid: "bg-black/40",
-				glass: "backdrop-blur-xl bg-white/5",
-				gradient: "bg-gradient-to-br from-white/10 to-white/5",
+				solid: "bg-background/40",
+				glass: "backdrop-blur-xl bg-foreground/5",
+				gradient: "bg-gradient-to-br from-foreground/10 to-foreground/5",
 				transparent: "bg-transparent",
 			},
 		},
@@ -184,7 +184,7 @@ const CardBase = memo(
 				cardRefClasses,
 				className,
 				interactive &&
-					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-purple-500",
+					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-primary",
 				interactive && onClick && "active:translate-y-0",
 				// Glow effect helper
 				"before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
@@ -324,28 +324,28 @@ const CardStatsBase = memo(function CardStats({
 
 	// Determine top accent color based on variant
 	const accentGradient: Record<CardVariant, string> = {
-		default: "from-white/20 to-white/5",
-		primary: "from-purple-500 to-purple-700",
-		success: "from-green-500 to-green-700",
-		warning: "from-yellow-500 to-yellow-700",
-		info: "from-cyan-500 to-cyan-700",
-		danger: "from-red-500 to-red-700",
-		secondary: "from-gray-500 to-gray-700",
-		elevated: "from-white/20 to-white/5",
+		default: "from-foreground/20 to-foreground/5",
+		primary: "from-primary to-primary/70",
+		success: "from-chart-2 to-chart-2/70",
+		warning: "from-chart-4 to-chart-4/70",
+		info: "from-chart-5 to-chart-5/70",
+		danger: "from-destructive to-destructive/70",
+		secondary: "from-secondary to-secondary/70",
+		elevated: "from-foreground/20 to-foreground/5",
 		outlined: "from-transparent to-transparent",
 		filled: "from-transparent to-transparent",
 	};
 	const valueColor: Record<CardVariant, string> = {
-		default: "text-white",
-		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
-		success: "text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
-		warning: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200",
-		info: "text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-200",
-		danger: "text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-200",
-		secondary: "text-gray-400",
-		elevated: "text-white",
-		outlined: "text-white",
-		filled: "text-white",
+		default: "text-foreground",
+		primary: "text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60",
+		success: "text-transparent bg-clip-text bg-gradient-to-r from-chart-2 to-chart-2/60",
+		warning: "text-transparent bg-clip-text bg-gradient-to-r from-chart-4 to-chart-4/60",
+		info: "text-transparent bg-clip-text bg-gradient-to-r from-chart-5 to-chart-5/60",
+		danger: "text-transparent bg-clip-text bg-gradient-to-r from-destructive to-destructive/60",
+		secondary: "text-secondary-foreground",
+		elevated: "text-foreground",
+		outlined: "text-foreground",
+		filled: "text-foreground",
 	};
 
 	return (
@@ -367,7 +367,7 @@ const CardStatsBase = memo(function CardStats({
 			{(title || label) && (
 				<span
 					className={cn(
-						"text-xs font-semibold uppercase tracking-wider text-white/50 mb-2",
+						"text-xs font-semibold uppercase tracking-wider text-muted-foreground/50 mb-2",
 						labelClassName,
 					)}
 				>
@@ -532,11 +532,11 @@ const CardNameBase = memo(function CardName({
 					"w-full h-full relative flex flex-col items-center gap-1 text-center font-inherit cursor-pointer overflow-visible transition-all duration-300",
 					"backdrop-blur-md rounded-xl border",
 					size === "small" ? "p-2 min-h-24" : "p-4 min-h-32",
-					isSelected
-						? "border-purple-500 bg-gradient-to-br from-purple-900/40 to-purple-800/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]"
-						: "border-white/10 bg-gradient-to-br from-white/10 to-white/5 shadow-lg hover:border-white/20 hover:bg-white/10",
+				isSelected
+					? "border-primary bg-gradient-to-br from-primary/20 to-primary/10 shadow-[0_0_30px_rgba(168,85,247,0.2)]"
+					: "border-border/10 bg-gradient-to-br from-foreground/10 to-foreground/5 shadow-lg hover:border-border/20 hover:bg-foreground/10",
 					disabled && "opacity-50 cursor-not-allowed filter grayscale",
-					isHidden && "opacity-75 bg-amber-900/20 border-amber-500/50 grayscale-[0.4]",
+					isHidden && "opacity-75 bg-chart-4/10 border-chart-4/50 grayscale-[0.4]",
 					image && "min-h-[220px]",
 					className,
 				)}
@@ -568,7 +568,7 @@ const CardNameBase = memo(function CardName({
 			>
 				{/* Hidden Badge */}
 				{isHidden && (
-					<div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 text-[10px] font-bold text-black bg-amber-500 rounded-full shadow-sm animate-in slide-in-from-top-2 fade-in duration-300">
+					<div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 text-[10px] font-bold text-background bg-chart-4 rounded-full shadow-sm animate-in slide-in-from-top-2 fade-in duration-300">
 						🔒 HIDDEN
 					</div>
 				)}
@@ -576,7 +576,7 @@ const CardNameBase = memo(function CardName({
 				{image && (
 					<div
 						className={cn(
-							"relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner group/image outline-none focus-visible:ring-2 focus-visible:ring-purple-500",
+							"relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-border/10 shadow-inner group/image outline-none focus-visible:ring-2 focus-visible:ring-primary",
 							onImageClick && "cursor-pointer",
 						)}
 						onClick={(e) => {
@@ -611,9 +611,9 @@ const CardNameBase = memo(function CardName({
 
 				<h3
 					className={cn(
-						"font-bold leading-tight text-white m-0 z-10 tracking-tight",
+						"font-bold leading-tight text-foreground m-0 z-10 tracking-tight",
 						size === "small" ? "text-sm" : "text-lg md:text-xl",
-						isHidden && "text-amber-500/80",
+						isHidden && "text-chart-4/80",
 					)}
 					id={`${getSafeId(name)}-title`}
 				>
@@ -624,9 +624,9 @@ const CardNameBase = memo(function CardName({
 					<p
 						id={`${getSafeId(name)}-pronunciation`}
 						className={cn(
-							"m-0 text-white/80 font-medium z-10",
+							"m-0 text-foreground/80 font-medium z-10",
 							size === "small" ? "text-[10px]" : "text-xs",
-							isHidden && "text-amber-500/70",
+							isHidden && "text-chart-4/70",
 						)}
 					>
 						[{pronunciation}]
@@ -637,9 +637,9 @@ const CardNameBase = memo(function CardName({
 					<p
 						id={`${getSafeId(name)}-description`}
 						className={cn(
-							"flex-1 m-0 text-white/70 font-normal leading-tight z-10",
+							"flex-1 m-0 text-foreground/70 font-normal leading-tight z-10",
 							size === "small" ? "text-[10px] min-h-[2.5em]" : "text-xs",
-							isHidden && "text-amber-500/60",
+							isHidden && "text-chart-4/60",
 						)}
 					>
 						{description}
@@ -651,7 +651,7 @@ const CardNameBase = memo(function CardName({
 						<div className="flex flex-wrap gap-1 justify-center mt-1">
 							{metadata.rating && (
 								<span
-									className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full"
+									className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/60 bg-foreground/5 border border-foreground/5 rounded-full"
 									title="Average Rating"
 								>
 									⭐ {metadata.rating}
@@ -659,7 +659,7 @@ const CardNameBase = memo(function CardName({
 							)}
 							{metadata.popularity && (
 								<span
-									className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full"
+									className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/60 bg-foreground/5 border border-foreground/5 rounded-full"
 									title="Popularity Score"
 								>
 									🔥 {metadata.popularity}
@@ -672,13 +672,13 @@ const CardNameBase = memo(function CardName({
 								{metadata.categories.slice(0, 2).map((category, index) => (
 									<span
 										key={index}
-										className="px-1.5 py-0.5 text-[10px] font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-full"
+										className="px-1.5 py-0.5 text-[10px] font-medium text-primary bg-primary/10 border border-primary/20 rounded-full"
 									>
 										{category}
 									</span>
 								))}
 								{metadata.categories.length > 2 && (
-									<span className="px-1.5 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 border border-white/5 rounded-full">
+									<span className="px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/40 bg-foreground/5 border border-foreground/5 rounded-full">
 										+{metadata.categories.length - 2}
 									</span>
 								)}
@@ -689,7 +689,7 @@ const CardNameBase = memo(function CardName({
 
 				{shortcutHint && (
 					<span
-						className="absolute top-2 right-2 text-[10px] font-mono text-white/30 border border-white/10 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+						className="absolute top-2 right-2 text-[10px] font-mono text-muted-foreground/30 border border-border/10 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
 						aria-hidden="true"
 					>
 						{shortcutHint}
@@ -698,7 +698,7 @@ const CardNameBase = memo(function CardName({
 
 				{isSelected && (
 					<span
-						className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-purple-500 text-white rounded-full text-xs font-bold shadow-lg animate-in zoom-in spin-in-12 duration-300 z-20"
+						className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-primary text-primary-foreground rounded-full text-xs font-bold shadow-lg animate-in zoom-in spin-in-12 duration-300 z-20"
 						aria-hidden="true"
 					>
 						✓
@@ -707,7 +707,7 @@ const CardNameBase = memo(function CardName({
 
 				{isRippling && isInteractive && (
 					<span
-						className="absolute rounded-full bg-white/20 pointer-events-none animate-ping"
+						className="absolute rounded-full bg-foreground/20 pointer-events-none animate-ping"
 						style={{
 							...rippleStyle,
 							width: "100px",

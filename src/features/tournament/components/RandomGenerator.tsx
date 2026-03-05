@@ -45,7 +45,7 @@ const FALLBACK_NAMES = [
 function Spinner() {
 	return (
 		<div className="flex flex-col items-center gap-4">
-			<div className="h-10 w-10 animate-spin rounded-full border-3 border-purple-500/30 border-t-purple-400" />
+			<div className="h-10 w-10 animate-spin rounded-full border-3 border-primary/30 border-t-primary" />
 		</div>
 	);
 }
@@ -64,7 +64,7 @@ function IconButton({
 			type="button"
 			onClick={onClick}
 			aria-label={label}
-			className="rounded-lg bg-white/5 p-2 text-white transition-colors hover:bg-white/10"
+			className="rounded-lg bg-foreground/5 p-2 text-foreground transition-colors hover:bg-foreground/10"
 		>
 			{children}
 		</button>
@@ -73,12 +73,12 @@ function IconButton({
 
 function FavoriteChip({ name, onRemove }: { name: string; onRemove: () => void }) {
 	return (
-		<div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 py-1 pl-3 pr-1">
-			<span className="text-sm text-white/80">{name}</span>
+	<div className="flex items-center gap-1 rounded-full border border-border bg-foreground/5 py-1 pl-3 pr-1">
+		<span className="text-sm text-foreground/80">{name}</span>
 			<button
 				type="button"
 				onClick={onRemove}
-				className="rounded-full p-1 text-white/40 transition-colors hover:bg-white/10 hover:text-white/80"
+				className="rounded-full p-1 text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground/80"
 				aria-label={`Remove ${name} from favorites`}
 			>
 				<span className="text-xs">✕</span>
@@ -151,11 +151,11 @@ export function RandomGenerator({
 	return (
 		<div className="mx-auto flex w-full max-w-2xl flex-col">
 			{/* Header */}
-			<h2 className="mb-2 text-center text-2xl font-bold text-white">Random Name Generator</h2>
-			<p className="mb-8 text-center text-white/60">Can&apos;t decide? Let fate decide for you.</p>
+		<h2 className="mb-2 text-center text-2xl font-bold text-foreground">Random Name Generator</h2>
+		<p className="mb-8 text-center text-muted-foreground">Can&apos;t decide? Let fate decide for you.</p>
 
 			{/* Generator Card */}
-			<div className="random-generator-card relative flex min-h-[240px] w-full flex-col items-center justify-center gap-8 overflow-hidden rounded-2xl border border-white/20 bg-white/10 px-6 py-12 backdrop-blur-sm">
+			<div className="random-generator-card relative flex min-h-[240px] w-full flex-col items-center justify-center gap-8 overflow-hidden rounded-2xl border border-border bg-foreground/10 px-6 py-12 backdrop-blur-sm">
 				<svg
 					className="absolute inset-0 h-full w-full pointer-events-none z-0"
 					width="100%"
@@ -183,7 +183,7 @@ export function RandomGenerator({
 						<Spinner />
 					) : generatedName ? (
 						<div className="flex flex-col items-center gap-6 leading-none">
-							<h3 className="text-5xl font-black tracking-tight text-white/90 drop-shadow-2xl md:text-6xl">
+							<h3 className="text-5xl font-black tracking-tight text-foreground/90 drop-shadow-2xl md:text-6xl">
 								{generatedName}
 							</h3>
 							<div className="flex gap-2">
@@ -207,7 +207,7 @@ export function RandomGenerator({
 							</div>
 						</div>
 					) : (
-						<div className="flex flex-col items-center gap-2 text-white/20">
+						<div className="flex flex-col items-center gap-2 text-foreground/20">
 							<Shuffle size={48} />
 							<p>Tap to generate</p>
 						</div>
@@ -231,7 +231,7 @@ export function RandomGenerator({
 			{/* Favorites */}
 			{favorites.size > 0 && (
 				<div className="mt-6 flex flex-col gap-4">
-					<h3 className="flex items-center gap-2 text-lg font-semibold text-white/80">
+					<h3 className="flex items-center gap-2 text-lg font-semibold text-foreground/80">
 						<Heart size={16} className="fill-pink-500 text-pink-500" />
 						Favorites
 					</h3>

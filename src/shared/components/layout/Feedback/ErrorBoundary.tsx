@@ -55,15 +55,15 @@ Timestamp: ${new Date().toISOString()}
 	};
 
 	return (
-		<div className="flex flex-col items-center justify-center p-8 bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-white/10 text-center min-h-[50vh] w-full max-w-2xl mx-auto my-8 shadow-2xl">
-			<div className="flex flex-col gap-6 w-full text-white items-center">
+		<div className="flex flex-col items-center justify-center p-8 bg-muted/50 backdrop-blur-md rounded-2xl border border-border text-center min-h-[50vh] w-full max-w-2xl mx-auto my-8 shadow-2xl">
+			<div className="flex flex-col gap-6 w-full text-foreground items-center">
 				<div className="space-y-2">
-					<h2 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+					<h2 className="text-3xl font-bold bg-gradient-to-r from-destructive to-accent bg-clip-text text-transparent uppercase tracking-tighter">
 						The names demand another comparison
 					</h2>
-					<p className="text-white/60">
+					<p className="text-muted-foreground">
 						We encountered an unexpected error in{" "}
-						<span className="font-mono text-white/80">{context}</span>.
+						<span className="font-mono text-foreground/80">{context}</span>.
 					</p>
 				</div>
 
@@ -75,7 +75,7 @@ Timestamp: ${new Date().toISOString()}
 								e.stopPropagation();
 								copyErrorToClipboard();
 							}}
-							className="flex items-center gap-1.5 text-white/40 hover:text-white px-2 py-1 rounded transition-colors group-open:text-white/60"
+							className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground px-2 py-1 rounded transition-colors group-open:text-foreground/60"
 							aria-label="Copy error details"
 							type="button"
 						>
@@ -109,7 +109,7 @@ Timestamp: ${new Date().toISOString()}
 
 				<button
 					onClick={resetError}
-					className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-purple-500/25 active:scale-95 transition-all duration-200"
+					className="px-8 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold rounded-xl shadow-lg hover:shadow-primary/25 active:scale-95 transition-all duration-200"
 				>
 					Try Again
 				</button>

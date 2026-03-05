@@ -28,13 +28,13 @@ function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boo
 const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => (
 	<div className="flex items-center gap-4 w-full">
 		{/* Drag Handle */}
-		<div className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors cursor-grab active:cursor-grabbing">
+		<div className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors cursor-grab active:cursor-grabbing">
 			<GripVertical size={20} />
 		</div>
 
 		{/* Rank Badge */}
 		<Chip
-			className="flex-shrink-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-white font-bold min-w-[3rem]"
+			className="flex-shrink-0 bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 text-foreground font-bold min-w-[3rem]"
 			size="lg"
 			variant="flat"
 		>
@@ -43,11 +43,11 @@ const RankingItemContent = memo(({ item, index }: { item: NameItem; index: numbe
 
 		{/* Name and Stats */}
 		<div className="flex-1 min-w-0">
-			<h3 className="text-lg font-semibold text-white truncate mb-1">{item.name}</h3>
+			<h3 className="text-lg font-semibold text-foreground truncate mb-1">{item.name}</h3>
 			<div className="flex items-center gap-3 text-sm">
-				<span className="text-white/60">
+				<span className="text-muted-foreground">
 					Rating:{" "}
-					<span className="text-white/90 font-medium">{Math.round(item.rating as number)}</span>
+					<span className="text-foreground/90 font-medium">{Math.round(item.rating as number)}</span>
 				</span>
 			</div>
 		</div>
@@ -139,12 +139,12 @@ export const RankingAdjustment = memo(
 
 		return (
 			<Card
-				className={cn("w-full max-w-4xl mx-auto", isDragging && "ring-2 ring-purple-500/50")}
+				className={cn("w-full max-w-4xl mx-auto", isDragging && "ring-2 ring-primary/50")}
 				variant="primary"
 			>
 				<CardHeader className="flex flex-col gap-3 pb-4">
 					<div className="flex items-center justify-between w-full">
-						<h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+						<h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 							Your Cat Name Rankings
 						</h2>
 						{saveStatus && (
@@ -152,9 +152,9 @@ export const RankingAdjustment = memo(
 								className={cn(
 									"transition-all duration-300",
 									saveStatus === "saving" &&
-										"bg-blue-500/20 border-blue-500/30 text-blue-300 animate-pulse",
-									saveStatus === "success" && "bg-green-500/20 border-green-500/30 text-green-300",
-									saveStatus === "error" && "bg-red-500/20 border-red-500/30 text-red-300",
+										"bg-chart-5/20 border-chart-5/30 text-chart-5 animate-pulse",
+									saveStatus === "success" && "bg-chart-2/20 border-chart-2/30 text-chart-2",
+									saveStatus === "error" && "bg-destructive/20 border-destructive/30 text-destructive",
 								)}
 								variant="flat"
 								startContent={
@@ -173,10 +173,10 @@ export const RankingAdjustment = memo(
 							</Chip>
 						)}
 					</div>
-					<p className="text-white/60 text-sm">Drag and drop to reorder your favorite cat names</p>
+					<p className="text-muted-foreground text-sm">Drag and drop to reorder your favorite cat names</p>
 				</CardHeader>
 
-				<Divider className="bg-white/10" />
+				<Divider className="bg-border/10" />
 
 				<CardBody className="gap-3 p-6">
 					<DragDropContext onDragStart={() => setIsDragging(true)} onDragEnd={handleDragEnd}>
@@ -203,14 +203,14 @@ export const RankingAdjustment = memo(
 														initial={{ opacity: 0, y: 10 }}
 														animate={{ opacity: 1, y: 0 }}
 														exit={{ opacity: 0, scale: 0.95 }}
-														className={cn(
-															"p-4 rounded-xl transition-all duration-200",
-															"bg-gradient-to-br from-white/5 to-white/[0.02]",
-															"border border-white/10",
-															"hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10",
-															snapshot.isDragging &&
-																"shadow-2xl shadow-purple-500/30 border-purple-500/50 scale-105 rotate-2",
-														)}
+													className={cn(
+														"p-4 rounded-xl transition-all duration-200",
+														"bg-gradient-to-br from-foreground/5 to-foreground/[0.02]",
+														"border border-border/10",
+														"hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10",
+														snapshot.isDragging &&
+															"shadow-2xl shadow-primary/30 border-primary/50 scale-105 rotate-2",
+													)}
 													>
 														<RankingItemContent item={item} index={index} />
 													</motion.div>
@@ -225,13 +225,13 @@ export const RankingAdjustment = memo(
 					</DragDropContext>
 				</CardBody>
 
-				<Divider className="bg-white/10" />
+				<Divider className="bg-border/10" />
 
 				<div className="p-6 flex justify-end">
 					<Button
 						onClick={onCancel}
 						variant="flat"
-						className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+						className="bg-foreground/5 hover:bg-foreground/10 text-foreground border border-border/10"
 					>
 						Back to Tournament
 					</Button>

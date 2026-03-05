@@ -226,10 +226,10 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
 };
 
 const TYPE_STYLES: Record<ToastType, { bg: string; icon: string }> = {
-	success: { bg: "bg-emerald-600", icon: "✓" },
-	error: { bg: "bg-red-600", icon: "✕" },
-	warning: { bg: "bg-amber-500 text-black", icon: "⚠" },
-	info: { bg: "bg-blue-600", icon: "ℹ" },
+	success: { bg: "bg-chart-2", icon: "✓" },
+	error: { bg: "bg-destructive", icon: "✕" },
+	warning: { bg: "bg-chart-4 text-foreground", icon: "⚠" },
+	info: { bg: "bg-primary", icon: "ℹ" },
 };
 
 function ToastContainer({
@@ -256,7 +256,7 @@ function ToastContainer({
 				return (
 					<div
 						key={toast.id}
-						className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-2 ${style.bg}`}
+						className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-2 ${style.bg}`}
 						role="alert"
 					>
 						<span className="text-base leading-none" aria-hidden={true}>
