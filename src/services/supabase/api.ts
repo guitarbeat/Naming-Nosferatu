@@ -23,6 +23,22 @@ interface ApiNameRow {
 	is_deleted?: boolean;
 }
 
+interface SupabaseNamesQueryResult {
+	data: unknown[] | null;
+	error: { message?: string } | null;
+}
+
+interface SupabaseNamesQuery {
+	select(columns: string): SupabaseNamesQuery;
+	eq(column: string, value: boolean | string | number): SupabaseNamesQuery;
+	order(column: string, options: { ascending: boolean }): SupabaseNamesQuery;
+	limit(count: number): Promise<SupabaseNamesQueryResult>;
+}
+
+interface SupabaseNamesClient {
+	from(table: string): SupabaseNamesQuery;
+}
+
 function toErrorMessage(error: unknown): string {
 	if (error instanceof Error && error.message) {
 		return error.message;
@@ -48,11 +64,9 @@ function mapNameRow(item: ApiNameRow): NameItem {
 }
 
 async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]> {
-	const client = await resolveSupabaseClient();
+	const client = (await resolveSupabaseClient()) as unknown as SupabaseNamesClient | null;
 	if (!client) {
-		throw new Error(
-			"Supabase fallback is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
-		);
+		return [];
 	}
 
 	const selectColumns =
@@ -70,7 +84,8 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 	}
 	const result = await query.order("avg_rating", { ascending: false }).limit(1000);
 	if (result.error) {
-		throw new Error(result.error.message || "Supabase query failed.");
+		console.warn("[coreAPI.getTrendingNames] Supabase fallback failed:", result.error.message);
+		return [];
 	}
 
 	return (result.data ?? []).map((item) => mapNameRow(item as unknown as ApiNameRow));
@@ -113,16 +128,12 @@ export const coreAPI = {
 			const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
 			return (data ?? []).map((item) => mapNameRow(item));
 		} catch (apiErr) {
-			try {
-				// Fallback when /api is not available (static-only deployments).
-				return await getNamesFromSupabase(includeHidden);
-			} catch (supabaseErr) {
-				const apiError = toErrorMessage(apiErr);
-				const supabaseError = toErrorMessage(supabaseErr);
-				throw new Error(
-					`Unable to load names from API or Supabase fallback. API: ${apiError} | Supabase: ${supabaseError}`,
-				);
-			}
+			console.warn(
+				"[coreAPI.getTrendingNames] API failed, trying Supabase fallback:",
+				toErrorMessage(apiErr),
+			);
+			// Fallback when /api is not available (static-only deployments).
+			return await getNamesFromSupabase(includeHidden);
 		}
 	},
 

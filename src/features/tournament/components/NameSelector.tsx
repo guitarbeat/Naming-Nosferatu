@@ -7,6 +7,7 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { useNamesCache } from "@/hooks/useNamesCache.ts";
+import { api } from "@/services/apiClient";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
@@ -156,6 +157,23 @@ export function NameSelector() {
 				}
 
 				const fetchedNames = await coreAPI.getTrendingNames(true); // Include hidden names for everyone
+				if (fetchedNames.length === 0) {
+					try {
+						await api.get<unknown[]>("/names?includeHidden=true");
+					} catch (probeError) {
+						const hasSupabaseFallback =
+							Boolean(import.meta.env.VITE_SUPABASE_URL) &&
+							Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY);
+
+						if (!hasSupabaseFallback) {
+							throw new Error(
+								"Could not load cards from backend. `/api/names` is unreachable and Supabase fallback is not configured.",
+							);
+						}
+
+						console.warn("Backend probe failed but Supabase fallback is configured:", probeError);
+					}
+				}
 				setNames(fetchedNames);
 				setCachedData(fetchedNames, true);
 				setRetryCount(0); // Reset retry count on success
