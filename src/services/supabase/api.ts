@@ -23,6 +23,13 @@ interface ApiNameRow {
 	is_deleted?: boolean;
 }
 
+function toErrorMessage(error: unknown): string {
+	if (error instanceof Error && error.message) {
+		return error.message;
+	}
+	return String(error);
+}
+
 function mapNameRow(item: ApiNameRow): NameItem {
 	return {
 		id: String(item.id),
@@ -41,51 +48,30 @@ function mapNameRow(item: ApiNameRow): NameItem {
 }
 
 async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]> {
-	try {
-		console.log("[v0] getNamesFromSupabase called, includeHidden:", includeHidden);
-		const client = await resolveSupabaseClient();
-		if (!client) {
-			console.log("[v0] getNamesFromSupabase: no Supabase client available");
-			return [];
-		}
-		console.log("[v0] getNamesFromSupabase: Supabase client obtained, querying...");
-
-		const selectColumns =
-			"id, name, description, pronunciation, avg_rating, created_at, is_hidden, is_active, locked_in, is_deleted";
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		let result: { data: any; error: any };
-		if (includeHidden) {
-			result = await (client as any)
-				.from("cat_name_options")
-				.select(selectColumns)
-				.eq("is_active", true)
-				.eq("is_deleted", false)
-				.order("avg_rating", { ascending: false })
-				.limit(1000);
-		} else {
-			result = await (client as any)
-				.from("cat_name_options")
-				.select(selectColumns)
-				.eq("is_active", true)
-				.eq("is_deleted", false)
-				.eq("is_hidden", false)
-				.order("avg_rating", { ascending: false })
-				.limit(1000);
-		}
-
-		const { data, error } = result;
-		if (error) {
-			console.log("[v0] getNamesFromSupabase: Supabase query error:", error.message);
-			return [];
-		}
-
-		console.log("[v0] getNamesFromSupabase: Got", data?.length ?? 0, "names from Supabase");
-		return (data ?? []).map((item) => mapNameRow(item as unknown as ApiNameRow));
-	} catch (err) {
-		console.log("[v0] getNamesFromSupabase: caught exception:", err);
-		return [];
+	const client = await resolveSupabaseClient();
+	if (!client) {
+		throw new Error(
+			"Supabase fallback is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
+		);
 	}
+
+	const selectColumns =
+		"id, name, description, pronunciation, avg_rating, created_at, is_hidden, is_active, locked_in, is_deleted";
+
+	const baseQuery = client
+		.from("cat_name_options")
+		.select(selectColumns)
+		.eq("is_active", true)
+		.eq("is_deleted", false)
+		.order("avg_rating", { ascending: false })
+		.limit(1000);
+
+	const result = includeHidden ? await baseQuery : await baseQuery.eq("is_hidden", false);
+	if (result.error) {
+		throw new Error(result.error.message || "Supabase query failed.");
+	}
+
+	return (result.data ?? []).map((item) => mapNameRow(item as unknown as ApiNameRow));
 }
 
 export const imagesAPI = {
@@ -122,17 +108,19 @@ export const coreAPI = {
 
 	getTrendingNames: async (includeHidden: boolean = false) => {
 		try {
-			console.log("[v0] getTrendingNames: trying Express API...");
 			const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
-			console.log("[v0] getTrendingNames: Express API returned", data?.length ?? 0, "names");
 			return (data ?? []).map((item) => mapNameRow(item));
 		} catch (apiErr) {
-			// Fallback when /api is not available (static-only deployments).
-			console.log(
-				"[v0] getTrendingNames: Express API failed, falling back to Supabase. Error:",
-				apiErr,
-			);
-			return await getNamesFromSupabase(includeHidden);
+			try {
+				// Fallback when /api is not available (static-only deployments).
+				return await getNamesFromSupabase(includeHidden);
+			} catch (supabaseErr) {
+				const apiError = toErrorMessage(apiErr);
+				const supabaseError = toErrorMessage(supabaseErr);
+				throw new Error(
+					`Unable to load names from API or Supabase fallback. API: ${apiError} | Supabase: ${supabaseError}`,
+				);
+			}
 		}
 	},
 

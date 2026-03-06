@@ -145,12 +145,14 @@ export function NameSelector() {
 				setIsLoading(true);
 				setError(null);
 
-				// Try to get cached data first
+				// Try cache first, but don't short-circuit on empty cache entries.
 				const cachedData = getCachedData(true);
 				if (cachedData && retryCount === 0) {
 					setNames(cachedData);
 					setIsLoading(false);
-					return;
+					if (cachedData.length > 0) {
+						return;
+					}
 				}
 
 				const fetchedNames = await coreAPI.getTrendingNames(true); // Include hidden names for everyone
