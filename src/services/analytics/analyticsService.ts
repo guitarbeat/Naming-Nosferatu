@@ -1,6 +1,7 @@
 import { api } from "@/services/apiClient";
+import type { IdType, NameItem } from "@/shared/types";
 
-interface LeaderboardItem {
+export interface LeaderboardItem {
 	name_id: string | number;
 	name: string;
 	avg_rating: number;
@@ -11,21 +12,65 @@ interface LeaderboardItem {
 	[key: string]: unknown;
 }
 
+export interface SiteStats {
+	totalNames: number;
+	activeNames: number;
+	hiddenNames: number;
+	totalUsers: number;
+	totalRatings: number;
+	totalSelections: number;
+	avgRating: number;
+	[key: string]: unknown;
+}
+
+export interface UserStats {
+	totalRatings: number;
+	totalSelections: number;
+	totalWins: number;
+	totalLosses?: number;
+	winRate: number;
+	[key: string]: unknown;
+}
+
+interface UserRatingRow {
+	nameId: IdType;
+	rating: number;
+	wins?: number;
+	losses?: number;
+}
+
+export type UserRatedName = NameItem & {
+	user_rating: number | null;
+	user_wins: number;
+	user_losses: number;
+	has_user_rating: boolean;
+	isHidden: boolean;
+};
+
+function toNumber(value: unknown, fallback = 0): number {
+	const numeric = Number(value);
+	return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function mapLeaderboardRow(row: Record<string, unknown>): LeaderboardItem {
+	return {
+		name_id: String(row.name_id ?? row.id ?? ""),
+		name: String(row.name ?? ""),
+		avg_rating: toNumber(row.avg_rating),
+		wins: toNumber(row.wins),
+		total_ratings: toNumber(row.total_ratings),
+		created_at: (row.created_at as string | null | undefined) ?? null,
+		date_submitted: (row.date_submitted as string | null | undefined) ?? null,
+	};
+}
+
 export const leaderboardAPI = {
 	getLeaderboard: async (limit: number | null = 50): Promise<LeaderboardItem[]> => {
 		try {
 			const rows = await api.get<Array<Record<string, unknown>>>(
 				`/analytics/leaderboard?limit=${limit || 50}`,
 			);
-			return (rows ?? []).map((row) => ({
-				name_id: String(row.name_id ?? row.id ?? ""),
-				name: String(row.name ?? ""),
-				avg_rating: Number(row.avg_rating ?? 0),
-				wins: Number(row.wins ?? 0),
-				total_ratings: Number(row.total_ratings ?? 0),
-				created_at: (row.created_at as string | null | undefined) ?? null,
-				date_submitted: (row.date_submitted as string | null | undefined) ?? null,
-			}));
+			return (rows ?? []).map(mapLeaderboardRow);
 		} catch {
 			return [];
 		}
@@ -33,35 +78,47 @@ export const leaderboardAPI = {
 };
 
 export const statsAPI = {
-	getSiteStats: async () => {
+	getSiteStats: async (): Promise<SiteStats | null> => {
 		try {
-			return await api.get<any>("/analytics/site-stats");
+			const stats = await api.get<Partial<SiteStats>>("/analytics/site-stats");
+			if (!stats) {
+				return null;
+			}
+			return {
+				totalNames: toNumber(stats.totalNames),
+				activeNames: toNumber(stats.activeNames),
+				hiddenNames: toNumber(stats.hiddenNames),
+				totalUsers: toNumber(stats.totalUsers),
+				totalRatings: toNumber(stats.totalRatings),
+				totalSelections: toNumber(stats.totalSelections),
+				avgRating: toNumber(stats.avgRating),
+			};
 		} catch {
 			return null;
 		}
 	},
 
-	getUserRatedNames: async (userName: string) => {
+	getUserRatedNames: async (userName: string): Promise<UserRatedName[]> => {
 		try {
 			const [names, ratings] = await Promise.all([
-				api.get<any[]>("/names?includeHidden=false"),
-				api.get<any[]>(`/analytics/ratings-raw?userName=${encodeURIComponent(userName)}`),
+				api.get<NameItem[]>("/names?includeHidden=false"),
+				api.get<UserRatingRow[]>(`/analytics/ratings-raw?userName=${encodeURIComponent(userName)}`),
 			]);
 
-			const ratingMap = new Map<string, any>();
-			for (const rating of ratings) {
+			const ratingMap = new Map<string, UserRatingRow>();
+			for (const rating of ratings ?? []) {
 				ratingMap.set(String(rating.nameId), rating);
 			}
 
-			return (names || []).map((item: any) => {
+			return (names ?? []).map((item) => {
 				const userRating = ratingMap.get(String(item.id));
 				return {
 					...item,
-					user_rating: userRating ? Number(userRating.rating) : null,
-					user_wins: userRating?.wins || 0,
-					user_losses: userRating?.losses || 0,
-					has_user_rating: !!userRating,
-					isHidden: item.is_hidden || false,
+					user_rating: userRating ? toNumber(userRating.rating) : null,
+					user_wins: toNumber(userRating?.wins),
+					user_losses: toNumber(userRating?.losses),
+					has_user_rating: Boolean(userRating),
+					isHidden: Boolean(item.isHidden ?? item.is_hidden),
 				};
 			});
 		} catch {
@@ -69,9 +126,21 @@ export const statsAPI = {
 		}
 	},
 
-	getUserStats: async (userName: string) => {
+	getUserStats: async (userName: string): Promise<UserStats | null> => {
 		try {
-			return await api.get<any>(`/analytics/user-stats?userName=${encodeURIComponent(userName)}`);
+			const stats = await api.get<Partial<UserStats>>(
+				`/analytics/user-stats?userName=${encodeURIComponent(userName)}`,
+			);
+			if (!stats) {
+				return null;
+			}
+			return {
+				totalRatings: toNumber(stats.totalRatings),
+				totalSelections: toNumber(stats.totalSelections),
+				totalWins: toNumber(stats.totalWins),
+				totalLosses: toNumber(stats.totalLosses),
+				winRate: toNumber(stats.winRate),
+			};
 		} catch {
 			return null;
 		}

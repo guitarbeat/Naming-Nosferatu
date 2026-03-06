@@ -1,5 +1,5 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
-import { Router } from "express";
+import { type NextFunction, type Request, type Response, Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import jwt from "jsonwebtoken";
 import { ZodError } from "zod";
@@ -214,13 +214,11 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
 		const { nameIds, isHidden } = batchHideSchema.parse(req.body);
-		// biome-ignore lint/suspicious/noExplicitAny: simple object type
-		const results: { nameId: any; success: boolean; error?: string }[] = [];
+		const results: Array<{ nameId: string | number; success: boolean; error?: string }> = [];
 
 		if (!db) {
 			// Return mock results when database is unavailable
-			// biome-ignore lint/suspicious/noExplicitAny: mocking simple object
-			return res.json({ results: nameIds.map((id: any) => ({ nameId: id, success: true })) });
+			return res.json({ results: nameIds.map((id) => ({ nameId: id, success: true })) });
 		}
 
 		try {
@@ -366,8 +364,7 @@ router.post("/api/ratings", authRateLimiter, async (req, res) => {
 			return res.json({ success: true, count: ratings.length });
 		}
 
-		// biome-ignore lint/suspicious/noExplicitAny: simple object type
-		const records = ratings.map((r: any) => ({
+		const records = ratings.map((r) => ({
 			userId: realUserId,
 			nameId: r.nameId,
 			rating: r.rating || 1500,
@@ -691,8 +688,7 @@ router.get("/api/analytics/user-stats", async (req, res) => {
 });
 
 // Default error handler
-// biome-ignore lint/suspicious/noExplicitAny: error handler middleware has specific signature
-router.use((err: any, _req: any, res: any, _next: any) => {
+router.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 	console.error("Route error:", err);
 	res.status(500).json({ error: "Internal server error" });
 });

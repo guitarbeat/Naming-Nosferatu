@@ -14,6 +14,18 @@ interface CacheEntry {
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const CACHE_KEY = "names_cache_v2";
 
+function isNameItemArray(value: unknown): value is NameItem[] {
+	return Array.isArray(value);
+}
+
+function isCacheEntry(value: unknown): value is CacheEntry {
+	if (!value || typeof value !== "object") {
+		return false;
+	}
+	const candidate = value as Partial<CacheEntry>;
+	return typeof candidate.timestamp === "number" && isNameItemArray(candidate.data);
+}
+
 export function useNamesCache() {
 	const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
 
@@ -59,15 +71,18 @@ export function useNamesCache() {
 		try {
 			const stored = localStorage.getItem("names_cache_map");
 			if (stored) {
-				const parsed = JSON.parse(stored);
+				const parsed: unknown = JSON.parse(stored);
 				const now = Date.now();
+				if (!parsed || typeof parsed !== "object") {
+					return;
+				}
 
 				// Filter out expired entries
-				Object.entries(parsed).forEach(([key, entry]: [string, any]) => {
-					if (now - entry.timestamp <= CACHE_TTL) {
+				for (const [key, entry] of Object.entries(parsed as Record<string, unknown>)) {
+					if (isCacheEntry(entry) && now - entry.timestamp <= CACHE_TTL) {
 						cacheRef.current.set(key, entry);
 					}
-				});
+				}
 			}
 		} catch (error) {
 			console.warn("Failed to load names cache from localStorage:", error);
