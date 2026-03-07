@@ -76,11 +76,7 @@
 	}
 }
 
-.app .cat-background {
-	position: fixed;
-	inset: 0;
-	z-index: var(--z-0);
-}
+/* cat-background styles live in components.css */
 
 .app-header {
 	position: relative;
