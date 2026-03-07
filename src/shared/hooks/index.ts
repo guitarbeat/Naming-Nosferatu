@@ -1,48 +1,6 @@
 /**
  * @module useHooks
- * @description Self-contained, zero-dependency (beyond React) collection of reusable hooks.
- *
- * **Primitives**
- * - {@link useEventListener}  — Type-safe, auto-cleaning event listeners
- * - {@link useMediaQuery}     — Subscribe to CSS media queries
- * - {@link useDebounce}       — Debounce a rapidly-changing value
- * - {@link useThrottle}       — Throttle a rapidly-changing value
- * - {@link useToggle}         — Boolean toggle with setter
- * - {@link usePrevious}       — Access the previous render's value
- * - {@link useClickOutside}   — Detect clicks outside a ref'd element
- *
- * **Browser & Environment**
- * - {@link useBrowserState}   — Responsive breakpoints, network, accessibility
- * - {@link useOnlineStatus}   — Online/offline with transition callbacks
- *
- * **Persistence**
- * - {@link useLocalStorage}   — localStorage with cross-tab sync & functional updates
- * - {@link useCollapsible}    — Collapsible state with optional persistence
- *
- * **Forms**
- * - {@link useValidatedForm}  — Lightweight form state + validation
- * - {@link useNameSuggestion} — Name suggestion form hook
- */
- *
- * **Primitives**
- * - {@link useEventListener}  — Type-safe, auto-cleaning event listeners
- * - {@link useMediaQuery}     — Subscribe to CSS media queries
- * - {@link useDebounce}       — Debounce a rapidly-changing value
- * - {@link useThrottle}       — Throttle a rapidly-changing value
- * - {@link useToggle}         — Boolean toggle with setter
- * - {@link usePrevious}       — Access the previous render's value
- * - {@link useClickOutside}   — Detect clicks outside a ref'd element
- *
- * **Browser & Environment**
- * - {@link useBrowserState}   — Responsive breakpoints, network, accessibility
- * - {@link useOnlineStatus}   — Online/offline with transition callbacks
- *
- * **Persistence**
- * - {@link useLocalStorage}   — localStorage with cross-tab sync & functional updates
- * - {@link useCollapsible}    — Collapsible state with optional persistence
- *
- * **Forms**
- * - {@link useValidatedForm}  — Lightweight form state + validation
+ * @description Reusable hooks collection.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
