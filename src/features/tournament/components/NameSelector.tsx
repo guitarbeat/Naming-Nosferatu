@@ -6,7 +6,7 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { useNamesCache } from "@/hooks/useNamesCache.ts";
+import { useNamesCache } from "@/shared/hooks";
 import { api } from "@/services/apiClient";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import { withSupabase } from "@/services/supabase/runtime";
