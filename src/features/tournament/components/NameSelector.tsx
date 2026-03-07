@@ -1110,7 +1110,7 @@ export function NameSelector() {
 													whileHover={{ scale: 1.02 }}
 													whileTap={{ scale: 0.98 }}
 													transition={{ type: "spring", stiffness: 400, damping: 25 }}
-													className={`mobile-readable-card name-grid-card relative rounded-lg sm:rounded-xl border-2 overflow-hidden cursor-pointer transition-all duration-300 ${
+													className={`mobile-readable-card name-grid-card relative rounded-xl sm:rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-300 ${
 														isSelected
 															? "name-grid-card--selected border-primary/70 bg-primary/15 shadow-[0_18px_40px_rgba(34,197,94,0.26)] ring-2 ring-primary/45"
 															: "border-white/15 bg-slate-950/45 hover:border-white/35 hover:bg-slate-900/55 shadow-[0_12px_28px_rgba(2,6,23,0.5)]"
@@ -1129,7 +1129,7 @@ export function NameSelector() {
 														<div className="name-grid-card__overlay absolute inset-x-0 bottom-0 p-2 sm:p-3 flex flex-col justify-end pointer-events-none">
 															<div className="flex flex-col gap-0.5">
 																<div className="flex items-center justify-between gap-2">
-																	<span className="mobile-readable-title font-bold text-white text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
+																	<span className="mobile-readable-title font-whimsical font-black text-white text-[13px] sm:text-base leading-tight tracking-[0.01em] drop-shadow-md truncate">
 																		{nameItem.name}
 																	</span>
 																	{isSelected && (
@@ -1143,12 +1143,12 @@ export function NameSelector() {
 																	)}
 																</div>
 																{nameItem.pronunciation && (
-																	<span className="mobile-readable-meta text-amber-300 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+																	<span className="mobile-readable-meta text-amber-200 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
 																		[{nameItem.pronunciation}]
 																	</span>
 																)}
 																{nameItem.description && (
-																	<p className="mobile-readable-description text-white/90 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
+																	<p className="mobile-readable-description text-white/90 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm">
 																		{nameItem.description}
 																	</p>
 																)}
@@ -1396,7 +1396,7 @@ export function NameSelector() {
 															}}
 															role="button"
 															tabIndex={0}
-															className={`mobile-readable-card name-grid-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+															className={`mobile-readable-card name-grid-card relative rounded-xl sm:rounded-2xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
 																isSelected
 																	? "name-grid-card--selected border-primary/70 bg-primary/15 shadow-[0_18px_40px_rgba(34,197,94,0.26)] ring-2 ring-primary/45"
 																	: "border-white/15 bg-slate-950/45 hover:border-white/35 hover:bg-slate-900/55 shadow-[0_12px_28px_rgba(2,6,23,0.5)]"
@@ -1415,7 +1415,7 @@ export function NameSelector() {
 																<div className="name-grid-card__overlay absolute inset-x-0 bottom-0 p-2 sm:p-3 flex flex-col justify-end pointer-events-none">
 																	<div className="flex flex-col gap-0.5">
 																		<div className="flex items-center justify-between gap-2">
-																			<span className="mobile-readable-title font-bold text-white text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
+																			<span className="mobile-readable-title font-whimsical font-black text-white text-[13px] sm:text-base leading-tight tracking-[0.01em] drop-shadow-md truncate">
 																				{nameItem.name}
 																			</span>
 																			{isSelected && (
@@ -1429,12 +1429,12 @@ export function NameSelector() {
 																			)}
 																		</div>
 																		{nameItem.pronunciation && (
-																			<span className="mobile-readable-meta text-amber-300 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+																			<span className="mobile-readable-meta text-amber-200 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
 																				[{nameItem.pronunciation}]
 																			</span>
 																		)}
 																		{nameItem.description && (
-																			<p className="mobile-readable-description text-white/90 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
+																			<p className="mobile-readable-description text-white/90 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm">
 																				{nameItem.description}
 																			</p>
 																		)}

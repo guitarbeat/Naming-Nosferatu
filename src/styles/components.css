@@ -283,12 +283,31 @@
 .card {
 	display: block;
 	padding: var(--card-padding-md);
-	background: var(--surface-color);
-	border: var(--card-border-width) solid var(--border-color);
+	background: linear-gradient(
+		165deg,
+		color-mix(in srgb, var(--surface-color) 92%, rgb(255 255 255 / 10%)) 0%,
+		color-mix(in srgb, var(--surface-color) 96%, rgb(15 23 42 / 72%)) 60%,
+		color-mix(in srgb, var(--surface-muted) 95%, rgb(2 6 23 / 78%)) 100%
+	);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--border-color) 78%, rgb(255 255 255 / 20%));
 	border-radius: var(--card-border-radius);
-	transition: all var(--duration-normal) var(--ease-standard);
+	box-shadow:
+		0 14px 30px rgb(2 6 23 / 42%),
+		inset 0 1px 0 rgb(255 255 255 / 10%);
+	transition:
+		border-color var(--duration-normal) var(--ease-standard),
+		box-shadow var(--duration-normal) var(--ease-standard),
+		background var(--duration-normal) var(--ease-standard);
 	position: relative;
 	overflow: hidden;
+}
+
+.card:hover {
+	border-color: color-mix(in srgb, var(--border-color) 58%, rgb(255 255 255 / 40%));
+	box-shadow:
+		0 18px 34px rgb(2 6 23 / 52%),
+		inset 0 1px 0 rgb(255 255 255 / 14%);
 }
 
 .card:focus-visible {
@@ -308,9 +327,14 @@
 	isolation: isolate;
 	backdrop-filter: blur(4px) saturate(1.08);
 	-webkit-backdrop-filter: blur(4px) saturate(1.08);
+	border-radius: 1rem;
 	box-shadow:
 		0 18px 36px rgb(2 6 23 / 54%),
 		inset 0 1px 0 rgb(255 255 255 / 14%);
+	transition:
+		box-shadow var(--duration-normal) ease,
+		border-color var(--duration-normal) ease,
+		filter var(--duration-normal) ease;
 }
 
 .name-grid-card::before {
@@ -346,6 +370,13 @@
 	opacity: 0.9;
 }
 
+.name-grid-card:hover,
+.name-grid-card:focus-visible {
+	box-shadow:
+		0 24px 48px rgb(2 6 23 / 62%),
+		inset 0 1px 0 rgb(255 255 255 / 20%);
+}
+
 .name-grid-card--selected::before {
 	background: linear-gradient(
 		145deg,
@@ -354,6 +385,13 @@
 		rgb(16 185 129 / 22%) 100%
 	);
 	opacity: 0.95;
+}
+
+.name-grid-card--selected {
+	box-shadow:
+		0 26px 52px rgb(21 128 61 / 34%),
+		0 10px 24px rgb(2 6 23 / 54%),
+		inset 0 1px 0 rgb(167 243 208 / 20%);
 }
 
 .name-grid-card__media {
@@ -377,6 +415,7 @@
 		rgb(2 6 23 / 66%) 56%,
 		rgb(2 6 23 / 0%) 100%
 	);
+	padding-top: 2.75rem;
 	z-index: 3;
 }
 
@@ -398,6 +437,16 @@
 	box-shadow:
 		0 28px 65px rgb(2 6 23 / 58%),
 		inset 0 1px 0 rgb(255 255 255 / 14%);
+	transition:
+		box-shadow var(--duration-normal) ease,
+		border-color var(--duration-normal) ease;
+}
+
+.name-swipe-card:hover {
+	border-color: rgb(255 255 255 / 28%);
+	box-shadow:
+		0 32px 70px rgb(2 6 23 / 66%),
+		inset 0 1px 0 rgb(255 255 255 / 18%);
 }
 
 .name-swipe-card::before {
@@ -425,6 +474,7 @@
 		rgb(2 6 23 / 58%) 56%,
 		rgb(2 6 23 / 0%) 100%
 	);
+	padding-top: 6rem;
 }
 
 @media (width <= 640px) {
