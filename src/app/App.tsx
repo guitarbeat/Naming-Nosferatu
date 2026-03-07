@@ -19,7 +19,7 @@ import { ErrorManager } from "@/services/errorManager";
 import { updateSupabaseUserContext } from "@/services/supabase/runtime";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { useOfflineSync } from "@/shared/hooks";
-import { cn } from "@/shared/lib/basic";
+
 import {
 	cleanupPerformanceMonitoring,
 	initializePerformanceMonitoring,
@@ -67,38 +67,28 @@ function App() {
 	}
 
 	return (
-		<div
-			className={cn(
-				"min-h-screen w-full bg-transparent text-foreground font-sans selection:bg-primary/30",
-			)}
-		>
-			<AppLayout>
-				<Routes>
-					<Route
-						path="/"
-						element={
-							<div className="flex flex-col gap-0">
-								<ErrorBoundary context={errorContexts.tournamentFlow}>
-									<HomeContent />
-								</ErrorBoundary>
-							</div>
-						}
-					/>
-					<Route
-						path="/tournament"
-						element={
-							<div className="flex flex-col gap-0">
-								<ErrorBoundary context={errorContexts.tournamentFlow}>
-									<TournamentContent />
-								</ErrorBoundary>
-							</div>
-						}
-					/>
-					<Route path="/analysis" element={<AnalysisContent />} />
-					<Route path="/admin" element={<AdminContent />} />
-				</Routes>
-			</AppLayout>
-		</div>
+		<AppLayout>
+			<Routes>
+				<Route
+					path="/"
+					element={
+						<ErrorBoundary context={errorContexts.tournamentFlow}>
+							<HomeContent />
+						</ErrorBoundary>
+					}
+				/>
+				<Route
+					path="/tournament"
+					element={
+						<ErrorBoundary context={errorContexts.tournamentFlow}>
+							<TournamentContent />
+						</ErrorBoundary>
+					}
+				/>
+				<Route path="/analysis" element={<AnalysisContent />} />
+				<Route path="/admin" element={<AdminContent />} />
+			</Routes>
+		</AppLayout>
 	);
 }
 

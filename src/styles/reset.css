@@ -132,10 +132,7 @@ a:focus-visible {
 	background-attachment: fixed;
 }
 
-body {
-	background-color: var(--background-color);
-	color: var(--text-primary);
-}
+/* body base styles already in reset block above */
 
 /* ==========================================================================
    VIEW TRANSITIONS
