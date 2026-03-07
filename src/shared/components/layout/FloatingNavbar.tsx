@@ -231,8 +231,11 @@ export function FloatingNavbar() {
 	return (
 		<nav
 			aria-label="Primary"
+			style={{
+				bottom: "max(0.75rem, calc(env(safe-area-inset-bottom) + 0.5rem))",
+			}}
 			className={cn(
-				"fixed bottom-5 left-1/2 z-[100] flex max-w-[95vw] -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-foreground/10 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-md sm:gap-1.5",
+				"fixed left-1/2 z-[100] flex min-h-[var(--mobile-nav-height)] max-w-[96vw] -translate-x-1/2 items-center gap-1 rounded-full border border-border bg-foreground/10 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-md sm:gap-1.5",
 				!prefersReducedMotion && "transition-transform transition-opacity duration-300",
 				prefersReducedMotion && "transition-none",
 				isNavVisible
