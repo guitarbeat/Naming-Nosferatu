@@ -6,8 +6,8 @@ Thank you for contributing! For our full, detailed guidelines, please read the c
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/guitarbeat/name-nosferatu.git
-   cd name-nosferatu
+   git clone https://github.com/guitarbeat/Naming-Nosferatu.git
+   cd Naming-Nosferatu
    ```
 
 2. **Install dependencies**

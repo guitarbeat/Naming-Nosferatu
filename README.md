@@ -13,8 +13,8 @@ A React application for managing cat names and related data, featuring tournamen
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/guitarbeat/name-nosferatu.git
-    cd name-nosferatu
+    git clone https://github.com/guitarbeat/Naming-Nosferatu.git
+    cd Naming-Nosferatu
     ```
 
 2.  Install dependencies:
