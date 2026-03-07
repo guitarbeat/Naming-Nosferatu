@@ -508,9 +508,18 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 	const isValid = !errors.name && !errors.description && values.name.trim() !== "";
 
 	return {
-		values, errors, touched, isSubmitting, isValid,
-		handleChange, handleBlur, handleSubmit, reset,
-		globalError, successMessage, setGlobalError,
+		values,
+		errors,
+		touched,
+		isSubmitting,
+		isValid,
+		handleChange,
+		handleBlur,
+		handleSubmit,
+		reset,
+		globalError,
+		successMessage,
+		setGlobalError,
 	};
 }
 
