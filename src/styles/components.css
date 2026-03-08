@@ -432,42 +432,153 @@
 	z-index: var(--z-negative);
 	overflow: hidden;
 	pointer-events: none;
-	background: var(--color-neutral-900);
+	background: var(--background-color);
+	--bg-neon-cyan: color-mix(in srgb, var(--color-neon-cyan) 22%, transparent);
+	--bg-neon-pink: color-mix(in srgb, var(--color-hot-pink) 24%, transparent);
+	--bg-neon-warm: color-mix(in srgb, var(--color-warning) 16%, transparent);
+	--bg-moire-opacity: 0.1;
+	--bg-blur-opacity: 0.24;
 }
 
 .cat-background__gradient {
 	position: absolute;
 	inset: 0;
 	background:
-		radial-gradient(
-			circle at 50% 120%,
-			color-mix(in srgb, var(--color-neutral-50) 5%, transparent) 0%,
-			transparent 60%
-		),
-		radial-gradient(
-			circle at 80% 0%,
-			color-mix(in srgb, var(--color-info) 25%, transparent) 0%,
-			transparent 50%
-		),
-		radial-gradient(
-			circle at 20% -10%,
-			color-mix(in srgb, var(--color-hot-pink) 25%, transparent) 0%,
-			transparent 45%
-		),
+		radial-gradient(circle at 18% 12%, var(--bg-neon-cyan) 0%, transparent 46%),
+		radial-gradient(circle at 84% 10%, var(--bg-neon-pink) 0%, transparent 48%),
+		radial-gradient(circle at 56% 118%, var(--bg-neon-warm) 0%, transparent 54%),
 		linear-gradient(
 			to bottom,
-			var(--color-neutral-900) 0%,
-			var(--color-neutral-900) 30%,
-			var(--color-neutral-900) 60%,
-			var(--color-neutral-900) 100%
+			color-mix(in srgb, var(--background-color) 96%, #020617) 0%,
+			color-mix(in srgb, var(--background-color) 92%, #020617) 45%,
+			color-mix(in srgb, var(--background-color) 96%, #020617) 100%
 		);
 	background-attachment: fixed;
 	color: var(--color-neutral-50);
 }
 
+.cat-background__moire {
+	position: absolute;
+	inset: -12%;
+	background-image:
+		repeating-radial-gradient(
+			circle at 50% 50%,
+			color-mix(in srgb, var(--color-neon-cyan) 28%, transparent) 0 1px,
+			transparent 1px 22px
+		),
+		repeating-linear-gradient(
+			115deg,
+			color-mix(in srgb, var(--color-hot-pink) 20%, transparent) 0 1px,
+			transparent 1px 28px
+		);
+	mix-blend-mode: soft-light;
+	opacity: var(--bg-moire-opacity);
+	transform: translate3d(0, 0, 0) scale(1.06);
+	animation: moire-drift 34s linear infinite alternate;
+	will-change: transform, opacity;
+}
+
+.cat-background__soft-blur {
+	position: absolute;
+	inset: -16%;
+	background:
+		radial-gradient(
+			circle at 30% 18%,
+			color-mix(in srgb, var(--color-neon-cyan) 22%, transparent) 0%,
+			transparent 52%
+		),
+		radial-gradient(
+			circle at 76% 14%,
+			color-mix(in srgb, var(--color-hot-pink) 20%, transparent) 0%,
+			transparent 56%
+		),
+		radial-gradient(
+			circle at 56% 104%,
+			color-mix(in srgb, var(--color-warning) 16%, transparent) 0%,
+			transparent 56%
+		);
+	filter: blur(64px) saturate(1.02);
+	opacity: var(--bg-blur-opacity);
+	mix-blend-mode: screen;
+	animation: soft-blur-float 28s ease-in-out infinite;
+	will-change: transform, opacity;
+}
+
+.cat-background__vignette {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(
+		circle at center,
+		transparent 42%,
+		rgb(0 0 0 / 18%) 72%,
+		rgb(0 0 0 / 38%) 100%
+	);
+}
+
+@keyframes moire-drift {
+	0% {
+		transform: translate3d(-2%, -1%, 0) scale(1.04) rotate(-0.2deg);
+	}
+	50% {
+		transform: translate3d(1%, 2%, 0) scale(1.08) rotate(0.2deg);
+	}
+	100% {
+		transform: translate3d(2%, -1%, 0) scale(1.05) rotate(-0.1deg);
+	}
+}
+
+@keyframes soft-blur-float {
+	0%,
+	100% {
+		transform: translate3d(-1.5%, -1%, 0) scale(1);
+		opacity: 0.45;
+	}
+	50% {
+		transform: translate3d(1.5%, 2%, 0) scale(1.04);
+		opacity: 0.58;
+	}
+}
+
 @media (width <= 768px) {
 	.cat-background__gradient {
 		background-attachment: scroll;
+	}
+
+	.cat-background__moire {
+		opacity: 0.06;
+	}
+
+	.cat-background__soft-blur {
+		opacity: 0.16;
+		filter: blur(44px) saturate(1);
+	}
+}
+
+:root[data-theme="light"] .cat-background__moire {
+	opacity: 0.05;
+	mix-blend-mode: multiply;
+}
+
+:root[data-theme="light"] .cat-background__soft-blur {
+	opacity: 0.12;
+	mix-blend-mode: multiply;
+	filter: blur(44px) saturate(0.9);
+}
+
+:root[data-theme="light"] .cat-background__vignette {
+	background: radial-gradient(
+		circle at center,
+		transparent 46%,
+		rgb(148 163 184 / 6%) 74%,
+		rgb(15 23 42 / 14%) 100%
+	);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cat-background__moire,
+	.cat-background__soft-blur {
+		animation: none;
+		transform: none;
 	}
 }
 

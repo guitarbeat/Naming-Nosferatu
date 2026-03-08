@@ -44,6 +44,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
 				<div className="cat-background" aria-hidden="true">
 					<div className="cat-background__gradient" />
+					<div className="cat-background__moire" />
+					<div className="cat-background__soft-blur" />
+					<div className="cat-background__vignette" />
 				</div>
 
 				<FloatingNavbar />
