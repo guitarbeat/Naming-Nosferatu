@@ -25,4 +25,4 @@ if (process.env.DATABASE_URL) {
 	console.log("ℹ DATABASE_URL not set - running in mock mode without database");
 }
 
-export { pool, db };
+export { db };

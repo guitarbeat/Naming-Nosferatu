@@ -4,6 +4,45 @@ Date: 2026-03-09
 Scope: `src/`, `server/`, `scripts/`  
 Method: `knip` (project-wide + src-only), `rg` reference tracing, manual file-level verification
 
+## Resolution Status (Implemented)
+
+Completed in codebase:
+- Removed unused hook/module files:
+  - `src/features/tournament/hooks/useTournamentSelectionSaver.ts`
+  - `src/features/tournament/hooks/useTournamentSelectionSaver.bench.ts`
+  - `src/shared/components/layout/LiquidGradient.css`
+- Removed manual one-off scripts with no wiring:
+  - `scripts/benchmark_insert.ts`
+  - `scripts/benchmark_leaderboard.ts`
+  - `scripts/benchmark_popularity.ts`
+  - `scripts/benchmark-stats.ts`
+  - `scripts/test-admin-functions.js`
+- Removed unused runtime assets and duplicates:
+  - `public/sw.js`
+  - `public/assets/images/gallery.json`
+  - unreferenced `.webp` duplicates and orphaned `.png` image artifacts
+- Removed orphaned top-level attached assets:
+  - `attached_assets/image_1772067120839.png`
+  - `attached_assets/image_1771898153808.png`
+  - `attached_assets/Pasted--Role-Objective-You-are-an-expert-full-stack-developer-_1771979042541.txt`
+- Removed unused exports/types:
+  - `pool` export from `server/db.ts`
+  - exported validation input aliases from `server/validation.ts`
+  - exported `ConsoleForwardOptions` from `scripts/vite-console-forward-plugin.ts`
+  - unused helper generic exports from `src/integrations/supabase/types.ts`
+- Pruned unused motion keyframes listed in this audit from `src/styles/motion.css`.
+- Moved type-only runtime-unneeded packages to `devDependencies`:
+  - `@types/cors`
+  - `@types/express`
+- Updated docs and image component behavior to match removals:
+  - removed stale mention in `docs/DESIGN.md`
+  - removed `webp` `<source>` fallback in `src/shared/components/layout/CatImage.tsx`
+
+Post-fix verification:
+- `pnpm lint` passes
+- targeted tests + build pass
+- `knip` (default and expanded config) returns no findings
+
 ## How This Audit Was Performed
 
 1. Ran default `knip` against configured app entry (`src/app/main.tsx`).

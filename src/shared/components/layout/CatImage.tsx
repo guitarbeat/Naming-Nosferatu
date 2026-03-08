@@ -254,7 +254,6 @@ function CatImage({
 			return (
 				<picture className="block h-full w-full">
 					<source type="image/avif" srcSet={`${base}.avif`} />
-					<source type="image/webp" srcSet={`${base}.webp`} />
 					<img {...commonProps} />
 				</picture>
 			);
