@@ -17,9 +17,7 @@ import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { ErrorManager } from "@/services/errorManager";
 import { updateSupabaseUserContext } from "@/services/supabase/runtime";
-import { AppLayout, Button, Section } from "@/shared/components/layout";
-import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { useOfflineSync } from "@/shared/hooks";
 
 import {

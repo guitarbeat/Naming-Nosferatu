@@ -5,9 +5,12 @@
 
 import { useMemo } from "react";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
-import { ErrorBoundary, ErrorComponent } from "@/shared/components/layout/Feedback/ErrorBoundary";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
-import { OfflineIndicator } from "@/shared/components/layout/Feedback/OfflineIndicator";
+import {
+	ErrorBoundary,
+	ErrorComponent,
+	Loading,
+	OfflineIndicator,
+} from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
 import useAppStore from "@/store/appStore";
 

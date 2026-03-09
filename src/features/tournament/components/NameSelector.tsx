@@ -15,7 +15,7 @@ import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
 import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { Loading } from "@/shared/components/layout/Feedback";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { useCollapsible } from "@/shared/hooks";
 import { getRandomCatImage } from "@/shared/lib/basic";

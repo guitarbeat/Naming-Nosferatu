@@ -29,22 +29,16 @@ vi.mock("@/features/tournament/hooks", () => ({
 	}),
 }));
 
-vi.mock("@/shared/components/layout", () => ({
+vi.mock("@/shared/components", () => ({
 	AppLayout: ({ children }: { children: React.ReactNode }) => (
 		<div data-testid="app-layout">{children}</div>
 	),
 	Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
+	ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+	Loading: ({ text }: { text: string }) => <div>Loading: {text}</div>,
 	Section: ({ children, id }: { children: React.ReactNode; id: string }) => (
 		<section id={id}>{children}</section>
 	),
-}));
-
-vi.mock("@/shared/components/layout/Feedback/ErrorBoundary", () => ({
-	ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
-
-vi.mock("@/shared/components/layout/Feedback/Loading", () => ({
-	Loading: ({ text }: { text: string }) => <div>Loading: {text}</div>,
 }));
 
 vi.mock("@/features/tournament/Tournament", () => ({

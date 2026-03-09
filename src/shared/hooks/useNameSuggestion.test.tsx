@@ -1,10 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { coreAPI } from "@/services/supabase/api";
+import { coreAPI } from "@/services/supabase/client";
 import { useNameSuggestion } from "@/shared/hooks";
 
 // Mock the dependencies
-vi.mock("@/services/supabase/api", () => ({
+vi.mock("@/services/supabase/client", () => ({
 	coreAPI: {
 		addName: vi.fn(),
 	},
