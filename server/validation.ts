@@ -37,3 +37,10 @@ export const saveRatingsSchema = z.object({
 		.min(1)
 		.max(100),
 });
+
+export type CreateNameInput = z.infer<typeof createNameSchema>;
+export type CreateUserInput = z.infer<typeof createUserSchema>;
+export type UpdateHideInput = z.infer<typeof updateHideSchema>;
+export type UpdateLockInput = z.infer<typeof updateLockSchema>;
+export type BatchHideInput = z.infer<typeof batchHideSchema>;
+export type SaveRatingsInput = z.infer<typeof saveRatingsSchema>;

@@ -4,7 +4,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 import { consoleForwardPlugin } from "./scripts/vite-console-forward-plugin";
-import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,7 +25,7 @@ export default defineConfig({
 			},
 		},
 	},
-	plugins: [dyadComponentTagger(), 
+	plugins: [
 		react(),
 		tailwindcss(),
 		consoleForwardPlugin({
@@ -38,9 +37,6 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "src"),
-			"@supabase/client": path.resolve(__dirname, "src/services/supabase/client.ts"),
-			"@supabase/types": path.resolve(__dirname, "supabase/types.ts"),
-			"@db": path.resolve(__dirname, "supabase"),
 		},
 	},
 });

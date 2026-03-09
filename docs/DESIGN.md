@@ -251,6 +251,7 @@ Entry bridge files:
 
 Component-level stylesheet imports:
 - `src/shared/components/layout/Button.tsx` imports `./FancyButton.css`
+- `src/shared/components/layout/LiquidGradient.css` exists, but is not part of the current runtime import chain
 
 ### Canonical Import Chain
 

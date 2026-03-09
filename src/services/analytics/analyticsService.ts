@@ -1,7 +1,7 @@
 import { api } from "@/services/apiClient";
 import type { IdType, NameItem } from "@/shared/types";
 
-interface LeaderboardItem {
+export interface LeaderboardItem {
 	name_id: string | number;
 	name: string;
 	avg_rating: number;
@@ -12,7 +12,7 @@ interface LeaderboardItem {
 	[key: string]: unknown;
 }
 
-interface SiteStats {
+export interface SiteStats {
 	totalNames: number;
 	activeNames: number;
 	hiddenNames: number;
@@ -23,7 +23,7 @@ interface SiteStats {
 	[key: string]: unknown;
 }
 
-interface UserStats {
+export interface UserStats {
 	totalRatings: number;
 	totalSelections: number;
 	totalWins: number;
@@ -39,7 +39,7 @@ interface UserRatingRow {
 	losses?: number;
 }
 
-type UserRatedName = NameItem & {
+export type UserRatedName = NameItem & {
 	user_rating: number | null;
 	user_wins: number;
 	user_losses: number;

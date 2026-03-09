@@ -16,7 +16,7 @@ interface ClientLogRequest {
 	logs: LogEntry[];
 }
 
-interface ConsoleForwardOptions {
+export interface ConsoleForwardOptions {
 	/**
 	 * Whether to enable console forwarding (default: true in dev mode)
 	 */

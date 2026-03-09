@@ -4,7 +4,9 @@
 	"project": ["src/**/*.{js,jsx,ts,tsx}"],
 	"ignore": [
 		"**/*.md",
-		"**/README.md"
+		"**/README.md",
+		"src/features/tournament/hooks/useTournamentSelectionSaver.ts",
+		"src/features/tournament/hooks/useTournamentSelectionSaver.bench.ts"
 	],
 	"typescript": true
 }

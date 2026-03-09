@@ -1,28 +1,10 @@
 /**
  * @module useHooks
- * @description Self-contained, zero-dependency (beyond React) collection of reusable hooks.
- *
- * **Primitives**
- * - {@link useEventListener}  — Type-safe, auto-cleaning event listeners
- * - {@link useDebounce}       — Debounce a rapidly-changing value
- * - {@link useThrottle}       — Throttle a rapidly-changing value
- * - {@link useToggle}         — Boolean toggle with setter
- * - {@link usePrevious}       — Access the previous render's value
- * - {@link useClickOutside}   — Detect clicks outside a ref'd element
- *
- * **Browser & Environment**
- * - {@link useBrowserState}   — Responsive breakpoints, network, accessibility
- * - {@link useOnlineStatus}   — Online/offline with transition callbacks
- *
- * **Persistence**
- * - {@link useLocalStorage}   — localStorage with cross-tab sync & functional updates
- * - {@link useCollapsible}    — Collapsible state with optional persistence
- *
- * **Forms**
- * - {@link useValidatedForm}  — Lightweight form state + validation
+ * @description Reusable hooks collection.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { coreAPI } from "@/services/supabase/client";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Internal Utilities
@@ -50,6 +32,18 @@ const IS_BROWSER = typeof window !== "undefined";
  * Defined here once to avoid `any` casts scattered throughout the file.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation
  */
+interface NetworkInformation extends EventTarget {
+	effectiveType?: string;
+	rtt?: number;
+	downlink?: number;
+	saveData?: boolean;
+}
+
+type NavigatorWithConnection = Navigator & {
+	connection?: NetworkInformation;
+	mozConnection?: NetworkInformation;
+	webkitConnection?: NetworkInformation;
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // useEventListener
@@ -90,6 +84,31 @@ function useEventListener<K extends keyof WindowEventMap>(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// useMediaQuery
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Subscribe to a CSS media query. */
+export function useMediaQuery(query: string): boolean {
+	const [matches, setMatches] = useState(false);
+
+	useEffect(() => {
+		if (!IS_BROWSER) {
+			return;
+		}
+
+		const media = window.matchMedia(query);
+		setMatches(media.matches);
+
+		const listener = () => setMatches(media.matches);
+		media.addEventListener("change", listener);
+
+		return () => media.removeEventListener("change", listener);
+	}, [query]);
+
+	return matches;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // useBrowserState
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -101,14 +120,89 @@ function useEventListener<K extends keyof WindowEventMap>(
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
  * const browser = useBrowserState({ mobile: 640, tablet: 1280 });
  */
+function getConnectionInfo(): NetworkInformation | null {
+	if (!IS_BROWSER) {
+		return null;
+	}
+	const nav = navigator as NavigatorWithConnection;
+	return nav.connection ?? nav.mozConnection ?? nav.webkitConnection ?? null;
+}
+
+function isSlowNetwork(connection: NetworkInformation | null): boolean {
+	if (!connection) {
+		return false;
+	}
+	const type = connection.effectiveType ?? "";
+	const saveData = Boolean(connection.saveData);
+	const rtt = connection.rtt ?? 0;
+	const downlink = connection.downlink ?? 10;
+	return type === "slow-2g" || type === "2g" || saveData || rtt > 300 || downlink < 1.5;
+}
+
 export function useBrowserState() {
+	const isOnline = useOnlineStatus();
+	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+	const readViewport = useCallback(() => {
+		if (!IS_BROWSER) {
+			return {
+				isMobile: false,
+				isTablet: false,
+				isDesktop: true,
+			};
+		}
+		const width = window.innerWidth;
+		return {
+			isMobile: width < 768,
+			isTablet: width >= 768 && width < 1024,
+			isDesktop: width >= 1024,
+		};
+	}, []);
+	const [viewport, setViewport] = useState(readViewport);
+	const [isSlowConnection, setIsSlowConnection] = useState(() =>
+		isSlowNetwork(getConnectionInfo()),
+	);
+
+	useEffect(() => {
+		if (!IS_BROWSER) {
+			return;
+		}
+		let rafId = 0;
+		const handleResize = () => {
+			if (rafId) {
+				return;
+			}
+			rafId = window.requestAnimationFrame(() => {
+				rafId = 0;
+				setViewport(readViewport());
+			});
+		};
+		window.addEventListener("resize", handleResize, { passive: true });
+		window.addEventListener("orientationchange", handleResize, { passive: true });
+		return () => {
+			if (rafId) {
+				window.cancelAnimationFrame(rafId);
+			}
+			window.removeEventListener("resize", handleResize);
+			window.removeEventListener("orientationchange", handleResize);
+		};
+	}, [readViewport]);
+
+	useEffect(() => {
+		const connection = getConnectionInfo();
+		if (!connection) {
+			return;
+		}
+		const onChange = () => setIsSlowConnection(isSlowNetwork(connection));
+		onChange();
+		connection.addEventListener("change", onChange);
+		return () => connection.removeEventListener("change", onChange);
+	}, []);
+
 	return {
-		isMobile: false,
-		isTablet: false,
-		isDesktop: true,
-		isOnline: true,
-		prefersReducedMotion: false,
-		isSlowConnection: false,
+		...viewport,
+		isOnline,
+		prefersReducedMotion,
+		isSlowConnection,
 	};
 }
 
@@ -333,5 +427,92 @@ export function useCollapsible(defaultValue = false, storageKey?: string): Colla
 	return { isCollapsed: value, toggle, collapse, expand, set };
 }
 
-export { useNameSuggestion } from "./useNameSuggestion";
+// ═══════════════════════════════════════════════════════════════════════════════
+// useNameSuggestion
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface UseNameSuggestionProps {
+	onSuccess?: () => void;
+}
+
+interface UseNameSuggestionResult {
+	values: { name: string; description: string };
+	errors: { name?: string; description?: string };
+	touched: { name?: boolean; description?: boolean };
+	isSubmitting: boolean;
+	isValid: boolean;
+	handleChange: (field: "name" | "description", value: string) => void;
+	handleBlur: (field: "name" | "description") => void;
+	handleSubmit: () => Promise<void>;
+	reset: () => void;
+	globalError: string;
+	successMessage: string;
+	setGlobalError: (error: string) => void;
+}
+
+export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
+	const [values, setValues] = useState({ name: "", description: "" });
+	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
+	const [touched, setTouched] = useState<{ name?: boolean; description?: boolean }>({});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [globalError, setGlobalError] = useState("");
+	const [successMessage, setSuccessMessage] = useState("");
+
+	const handleChange = useCallback((field: "name" | "description", value: string) => {
+		setValues((prev) => ({ ...prev, [field]: value }));
+		setErrors((prev) => ({ ...prev, [field]: undefined }));
+		setGlobalError("");
+	}, []);
+
+	const handleBlur = useCallback((field: "name" | "description") => {
+		setTouched((prev) => ({ ...prev, [field]: true }));
+	}, []);
+
+	const validate = useCallback(() => {
+		const nextErrors: { name?: string; description?: string } = {};
+		if (!values.name.trim()) nextErrors.name = "Name is required";
+		if (!values.description.trim()) nextErrors.description = "Description is required";
+		setErrors(nextErrors);
+		return Object.keys(nextErrors).length === 0;
+	}, [values]);
+
+	const handleSubmit = useCallback(async () => {
+		if (!validate()) return;
+		setIsSubmitting(true);
+		setGlobalError("");
+		setSuccessMessage("");
+		try {
+			const result = await coreAPI.addName(values.name, values.description);
+			if (!result.success) throw new Error(result.error || "Failed to submit suggestion");
+			setSuccessMessage("Name suggestion submitted successfully!");
+			setValues({ name: "", description: "" });
+			setTouched({});
+			props.onSuccess?.();
+		} catch (submitError) {
+			setGlobalError(
+				submitError instanceof Error ? submitError.message : "Failed to submit suggestion",
+			);
+		} finally {
+			setIsSubmitting(false);
+		}
+	}, [props, validate, values.name, values.description]);
+
+	const reset = useCallback(() => {
+		setValues({ name: "", description: "" });
+		setErrors({});
+		setTouched({});
+		setGlobalError("");
+		setSuccessMessage("");
+	}, []);
+
+	const isValid = !errors.name && !errors.description && values.name.trim() !== "";
+
+	return {
+		values, errors, touched, isSubmitting, isValid,
+		handleChange, handleBlur, handleSubmit, reset,
+		globalError, successMessage, setGlobalError,
+	};
+}
+
+// Re-export useNamesCache from its own file
 export { useNamesCache } from "./useNamesCache";

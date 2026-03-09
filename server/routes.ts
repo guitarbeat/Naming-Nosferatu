@@ -1,6 +1,7 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
-import { Router } from "express";
+import { type NextFunction, type Request, type Response, Router } from "express";
 import { rateLimit } from "express-rate-limit";
+import jwt from "jsonwebtoken";
 import { ZodError } from "zod";
 import {
 	catAppUsers,
@@ -12,6 +13,13 @@ import {
 import { requireAdmin } from "./auth";
 import { db } from "./db";
 
+const JWT_SECRET = process.env.JWT_SECRET || "default-dev-secret";
+const authRateLimiter = rateLimit({
+	windowMs: 15 * 60 * 1000,
+	max: 100,
+	message: { error: "Too many requests, please try again later." },
+});
+
 import {
 	batchHideSchema,
 	createNameSchema,
@@ -22,18 +30,6 @@ import {
 } from "./validation";
 
 export const router = Router();
-
-// Rate limit for creating names to prevent spam
-const createNameLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	limit: 10, // Limit each IP to 10 create requests per windowMs
-	standardHeaders: "draft-7", // draft-6: RateLimit-* headers; draft-7: combined RateLimit header
-	legacyHeaders: false, // Disable the X-RateLimit-* headers
-	message: {
-		success: false,
-		error: "Too many names created from this IP, please try again after 15 minutes.",
-	},
-});
 
 // Mock data for when database is unavailable
 const mockNames = [
@@ -116,7 +112,7 @@ router.get("/api/names", async (req, res) => {
 });
 
 // Create a new name
-router.post("/api/names", createNameLimiter, async (req, res) => {
+router.post("/api/names", async (req, res) => {
 	try {
 		const { name, description } = createNameSchema.parse(req.body);
 
@@ -146,7 +142,10 @@ router.post("/api/names", createNameLimiter, async (req, res) => {
 				provenance: null,
 			})
 			.returning();
-		res.json({ success: true, data: inserted });
+		res.json({
+			success: true,
+			data: inserted,
+		});
 	} catch (error) {
 		if (error instanceof ZodError) {
 			return res.status(400).json({ success: false, error: error.errors });
@@ -215,13 +214,11 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 router.post("/api/names/batch-hide", requireAdmin, async (req, res) => {
 	try {
 		const { nameIds, isHidden } = batchHideSchema.parse(req.body);
-		// biome-ignore lint/suspicious/noExplicitAny: simple object type
-		const results: { nameId: any; success: boolean; error?: string }[] = [];
+		const results: Array<{ nameId: string | number; success: boolean; error?: string }> = [];
 
 		if (!db) {
 			// Return mock results when database is unavailable
-			// biome-ignore lint/suspicious/noExplicitAny: mocking simple object
-			return res.json({ results: nameIds.map((id: any) => ({ nameId: id, success: true })) });
+			return res.json({ results: nameIds.map((id) => ({ nameId: id, success: true })) });
 		}
 
 		try {
@@ -297,7 +294,7 @@ router.post("/api/users", async (req, res) => {
 			return res.json({
 				success: true,
 				data: {
-					userId: "mock-uuid",
+					userId: jwt.sign({ userId: "mock-uuid" }, JWT_SECRET),
 					userName,
 					preferences: preferences || {},
 				},
@@ -316,7 +313,10 @@ router.post("/api/users", async (req, res) => {
 				set: { preferences: sql`COALESCE(excluded.preferences, cat_app_users.preferences)` },
 			})
 			.returning();
-		res.json({ success: true, data: inserted });
+		res.json({
+			success: true,
+			data: { ...inserted, userId: jwt.sign({ userId: inserted.userId }, JWT_SECRET) },
+		});
 	} catch (error) {
 		if (error instanceof ZodError) {
 			return res.status(400).json({ success: false, error: error.errors });
@@ -327,13 +327,19 @@ router.post("/api/users", async (req, res) => {
 });
 
 // Get user roles
-router.get("/api/users/:userId/roles", async (req, res) => {
+router.get("/api/users/:userId/roles", authRateLimiter, async (req, res) => {
 	try {
 		if (!db) {
 			return res.json([]);
 		}
-		const roles = await db.select().from(userRoles).where(eq(userRoles.userId, req.params.userId));
-		res.json(roles);
+		try {
+			const decoded = jwt.verify(req.params.userId, JWT_SECRET) as { userId: string };
+			const roles = await db.select().from(userRoles).where(eq(userRoles.userId, decoded.userId));
+			res.json(roles);
+		} catch (verifyError) {
+			console.error("JWT verification failed:", verifyError);
+			res.json([]);
+		}
 	} catch (error) {
 		console.error("Error fetching user roles:", error);
 		res.status(500).json({ error: "Failed to fetch user roles" });
@@ -341,17 +347,25 @@ router.get("/api/users/:userId/roles", async (req, res) => {
 });
 
 // Save ratings
-router.post("/api/ratings", async (req, res) => {
+router.post("/api/ratings", authRateLimiter, async (req, res) => {
 	try {
 		const { userId, ratings } = saveRatingsSchema.parse(req.body);
+
+		let realUserId: string;
+		try {
+			const decoded = jwt.verify(userId, JWT_SECRET) as { userId: string };
+			realUserId = decoded.userId;
+		} catch (verifyError) {
+			console.error("JWT verification failed for ratings:", verifyError);
+			return res.status(401).json({ error: "Unauthorized" });
+		}
 
 		if (!db) {
 			return res.json({ success: true, count: ratings.length });
 		}
 
-		// biome-ignore lint/suspicious/noExplicitAny: simple object type
-		const records = ratings.map((r: any) => ({
-			userId,
+		const records = ratings.map((r) => ({
+			userId: realUserId,
 			nameId: r.nameId,
 			rating: r.rating || 1500,
 			wins: r.wins || 0,
@@ -372,7 +386,6 @@ router.post("/api/ratings", async (req, res) => {
 					},
 				});
 		}
-
 		res.json({ success: true, count: records.length });
 	} catch (error) {
 		if (error instanceof ZodError) {
@@ -675,8 +688,7 @@ router.get("/api/analytics/user-stats", async (req, res) => {
 });
 
 // Default error handler
-// biome-ignore lint/suspicious/noExplicitAny: error handler middleware has specific signature
-router.use((err: any, _req: any, res: any, _next: any) => {
+router.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 	console.error("Route error:", err);
 	res.status(500).json({ error: "Internal server error" });
 });
