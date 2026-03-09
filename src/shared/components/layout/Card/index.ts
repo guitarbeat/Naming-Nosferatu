@@ -1,3 +1,3 @@
-export { Card } from "./CardBase";
-export { CardName } from "./CardName";
-export { CardStats } from "./CardStats";
+import { Card } from "./Card";
+
+export { Card };

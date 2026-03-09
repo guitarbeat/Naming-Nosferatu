@@ -123,21 +123,18 @@ export const coreAPI = {
 	},
 
 	getTrendingNames: async (includeHidden: boolean = false) => {
-		// Prefer direct Supabase reads so the app works without /api.
-		const supabaseNames = await getNamesFromSupabase(includeHidden);
-		if (supabaseNames.length > 0) {
-			return supabaseNames;
+		// Primary path: query Supabase directly (no Express backend needed)
+		const supabaseResult = await getNamesFromSupabase(includeHidden);
+		if (supabaseResult.length > 0) {
+			return supabaseResult;
 		}
 
+		// Fallback: try API server if Supabase returned nothing
 		try {
 			const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
 			return (data ?? []).map((item) => mapNameRow(item));
-		} catch (apiErr) {
-			console.warn(
-				"[coreAPI.getTrendingNames] API failed after Supabase lookup:",
-				toErrorMessage(apiErr),
-			);
-			return supabaseNames;
+		} catch {
+			return [];
 		}
 	},
 

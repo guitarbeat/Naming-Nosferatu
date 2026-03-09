@@ -52,11 +52,13 @@
 }
 .app {
 	min-height: 100dvh;
+	width: 100%;
+	color: var(--foreground);
+	font-family: var(--font-sans);
 }
 
 .app-main-wrapper {
 	position: relative;
-	z-index: var(--z-10);
 	min-height: 100dvh;
 	padding-top: max(calc(var(--space-6) + 0.75rem), env(safe-area-inset-top));
 	padding-right: var(--space-4);
@@ -72,16 +74,12 @@
 	.app-main-wrapper {
 		padding-top: calc(var(--space-10) + 0.75rem);
 		padding-right: var(--space-6);
-		padding-bottom: max(calc(var(--mobile-nav-safe-offset) + var(--space-4)), var(--space-28));
+		padding-bottom: var(--space-24);
 		padding-left: var(--space-6);
 	}
 }
 
-.app .cat-background {
-	position: fixed;
-	inset: 0;
-	z-index: var(--z-0);
-}
+/* cat-background styles live in components.css */
 
 .app-header {
 	position: relative;
@@ -234,8 +232,7 @@
 		min-height: var(--mobile-input-height);
 	}
 
-	.form button + button,
-	.button-group button + button,
+	button + button,
 	.btn + .btn,
 	input + input {
 		margin-left: var(--space-3);

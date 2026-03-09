@@ -1,0 +1,35 @@
+# Role & Objective
+You are an expert full-stack developer. We are working on my application, "Naming Nosferatu." My ultimate goal is to clean up the codebase, fix the broken tournament logic, and pivot the gameplay loop to be a multiplayer party game inspired by Jackbox's "Tee K.O." 
+
+Please read this entire master plan, but **ONLY execute Phase 1 first**. Wait for my approval before moving on to Phase 2.
+
+## Phase 1: Stabilization, Defragmentation, & Bug Fixing
+Before adding new features, we need a solid foundation. 
+1. **Audit & Merge**: Review the project for file fragmentation. Identify components, hooks, or utility files that serve similar purposes and merge them into unified, cohesive files. Reduce the total number of files where it makes sense to improve maintainability.
+2. **Bug Hunt**: Check the current implementation for bugs, specifically focusing on the existing tournament logic, which is currently not fully functional.
+3. **Refactor Report**: Fix the broken tournament state, and provide a brief summary of what files you merged and what bugs you fixed.
+
+## Phase 2: The "Tee K.O." Gameplay Pivot
+Once the codebase is stable, we will refactor the tournament into a multi-round party game. Here is how the new mechanics should work:
+
+**Round 1: Idea Generation**
+* Players join the session on their devices.
+* Instead of drawing shirts, players submit **Name Ideas** for Nosferatu.
+* Then, players submit **Slogans/Taglines** (e.g., "Because he bites," "A true creature of the night").
+* Everyone must submit at least 3 names and 4 slogans. If they submit fewer, a random leftover is chosen.
+
+**Round 2: Mix & Match**
+* The names and slogans are randomly scrambled and dealt out to the players (each player gets a mix of other people's submissions).
+* Each player must combine one Name and one Slogan to create the funniest/best combo possible.
+
+**Round 3: The Gauntlet & Streaks**
+* The combined Name+Slogan cards go head-to-head in a 1v1 gauntlet match.
+* Every player votes for their favorite (self-voting is allowed). The winner stays on screen to battle the next card.
+* **Gamification**: The app must track "Win Streaks". At the end of the round, declare two winners: the Gauntlet Winner (the last card standing) and the Streak Winner (the card that won the most consecutive match-ups). If the same card does both, they take the sole crown for the round.
+
+**Round 4+: Escalation & Finale**
+* Repeat the process for a second round (fewer inputs required, recycle unused names/slogans from Round 1).
+* The Final Round puts the ultimate winners from the previous gauntlets against each other for one last vote to determine the supreme champion.
+
+**Execution Instructions:**
+Acknowledge these instructions and begin by executing **Phase 1**. Ask me any clarifying questions you need about the current file structure before you start merging files.
