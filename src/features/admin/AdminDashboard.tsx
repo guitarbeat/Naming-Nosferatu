@@ -5,7 +5,15 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { coreAPI, hiddenNamesAPI, imagesAPI, statsAPI } from "@/services/supabase/api";
+import {
+	analyticsAPI,
+	statsAPI as analyticsStatsAPI,
+	type LeaderboardItem,
+	leaderboardAPI,
+	type PopularityScoreItem,
+	type UserStats,
+} from "@/services/analytics/analyticsService";
+import { coreAPI, hiddenNamesAPI, statsAPI as siteStatsAPI } from "@/services/supabase/api";
 import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
@@ -21,8 +29,7 @@ interface AdminStats {
 	hiddenNames: number;
 	lockedInNames: number;
 	totalUsers: number;
-	activeTournaments: number;
-	recentVotes: number;
+	totalRatings: number;
 }
 
 interface NameWithStats extends NameItem {
@@ -41,6 +48,14 @@ function isRpcSignatureError(message: string): boolean {
 	);
 }
 
+function toTimestamp(value: unknown): number {
+	if (typeof value !== "string") {
+		return 0;
+	}
+	const timestamp = Date.parse(value);
+	return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
 export function AdminDashboard() {
 	const { user } = useAppStore();
 	const [activeTab, setActiveTab] = useState<"overview" | "names" | "users" | "analytics">(
@@ -49,16 +64,20 @@ export function AdminDashboard() {
 	const [stats, setStats] = useState<AdminStats | null>(null);
 	const [names, setNames] = useState<NameWithStats[]>([]);
 	const [filteredNames, setFilteredNames] = useState<NameWithStats[]>([]);
+	const [leaderboard, setLeaderboard] = useState<LeaderboardItem[]>([]);
+	const [popularityScores, setPopularityScores] = useState<PopularityScoreItem[]>([]);
+	const [currentUserStats, setCurrentUserStats] = useState<UserStats | null>(null);
+	const [lastUpdatedAt, setLastUpdatedAt] = useState<string | null>(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterStatus, setFilterStatus] = useState<"all" | "active" | "hidden" | "locked">("all");
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 
-	// Load admin stats and names
-	// biome-ignore lint/correctness/useExhaustiveDependencies: loadAdminData is stable
+	// Load admin stats and names for the active admin identity.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: loadAdminData is intentionally invoked from user.name changes
 	useEffect(() => {
 		loadAdminData();
-	}, []);
+	}, [user.name]);
 
 	// Filter names based on search and status
 	useEffect(() => {
@@ -88,24 +107,23 @@ export function AdminDashboard() {
 	const loadAdminData = async () => {
 		setIsLoading(true);
 		try {
-			// Load all names with admin visibility
-			const [allNames, siteStats] = await Promise.all([
+			const [allNames, siteStats, leaderboardRows, popularityRows, userStats] = await Promise.all([
 				coreAPI.getTrendingNames(true),
-				statsAPI.getSiteStats(),
+				siteStatsAPI.getSiteStats(),
+				leaderboardAPI.getLeaderboard(6),
+				analyticsAPI.getPopularityScores(6),
+				user.name ? analyticsStatsAPI.getUserStats(user.name) : Promise.resolve(null),
 			]);
 
-			// Load stats (we'll simulate some for now)
 			const adminStats: AdminStats = {
 				totalNames: allNames.length,
 				activeNames: allNames.filter((n) => !n.isHidden && !(n.lockedIn || n.locked_in)).length,
 				hiddenNames: allNames.filter((n) => n.isHidden).length,
 				lockedInNames: allNames.filter((n) => n.lockedIn || n.locked_in).length,
 				totalUsers: siteStats?.totalUsers || 0,
-				activeTournaments: 0, // TODO: Implement tournament count
-				recentVotes: siteStats?.totalRatings || 0,
+				totalRatings: siteStats?.totalRatings || 0,
 			};
 
-			// Derive stats from real name data instead of mock/random placeholders
 			const namesWithStats: NameWithStats[] = allNames.map((name) => ({
 				...name,
 				votes: Number((name.wins || 0) + (name.losses || 0)),
@@ -115,6 +133,10 @@ export function AdminDashboard() {
 
 			setStats(adminStats);
 			setNames(namesWithStats);
+			setLeaderboard(leaderboardRows);
+			setPopularityScores(popularityRows);
+			setCurrentUserStats(userStats);
+			setLastUpdatedAt(new Date().toISOString());
 		} catch (error) {
 			console.error("Failed to load admin data:", error);
 		} finally {
@@ -122,20 +144,44 @@ export function AdminDashboard() {
 		}
 	};
 
+	const setNameHiddenState = async (nameId: string | number, shouldHide: boolean) => {
+		const idStr = String(nameId);
+		const result = shouldHide
+			? await hiddenNamesAPI.hideName(user.name, idStr)
+			: await hiddenNamesAPI.unhideName(user.name, idStr);
+
+		if (!result.success) {
+			throw new Error(result.error || `Failed to ${shouldHide ? "hide" : "unhide"} name`);
+		}
+	};
+
+	const setNameLockedState = async (nameId: string | number, shouldLock: boolean) => {
+		const idStr = String(nameId);
+		await withSupabase(async (client) => {
+			await client.rpc("set_user_context", { user_name_param: user.name });
+			const canonicalArgs = {
+				p_name_id: idStr,
+				p_locked_in: shouldLock,
+			};
+			let result = await client.rpc("toggle_name_locked_in" as any, canonicalArgs);
+
+			if (result.error && isRpcSignatureError(result.error.message || "")) {
+				result = await client.rpc("toggle_name_locked_in" as any, {
+					...canonicalArgs,
+					p_user_name: user.name,
+				});
+			}
+
+			if (result.error) {
+				throw new Error(result.error.message || "Failed to toggle locked status");
+			}
+			return result.data;
+		}, null);
+	};
+
 	const handleToggleHidden = async (nameId: string | number, isHidden: boolean) => {
 		try {
-			const idStr = String(nameId);
-			if (isHidden) {
-				const result = await hiddenNamesAPI.unhideName(user.name, idStr);
-				if (!result.success) {
-					throw new Error(result.error || "Failed to unhide name");
-				}
-			} else {
-				const result = await hiddenNamesAPI.hideName(user.name, idStr);
-				if (!result.success) {
-					throw new Error(result.error || "Failed to hide name");
-				}
-			}
+			await setNameHiddenState(nameId, !isHidden);
 			await loadAdminData();
 		} catch (error) {
 			console.error("Failed to toggle hidden status:", error);
@@ -144,29 +190,7 @@ export function AdminDashboard() {
 
 	const handleToggleLocked = async (nameId: string | number, isLocked: boolean) => {
 		try {
-			const idStr = String(nameId);
-			// Call the admin function to toggle locked_in status
-			await withSupabase(async (client) => {
-				await client.rpc("set_user_context", { user_name_param: user.name });
-				const canonicalArgs = {
-					p_name_id: idStr,
-					p_locked_in: !isLocked,
-				};
-				let result = await client.rpc("toggle_name_locked_in" as any, canonicalArgs);
-
-				if (result.error && isRpcSignatureError(result.error.message || "")) {
-					result = await client.rpc("toggle_name_locked_in" as any, {
-						...canonicalArgs,
-						p_user_name: user.name,
-					});
-				}
-
-				if (result.error) {
-					throw new Error(result.error.message || "Failed to toggle locked status");
-				}
-				return result.data;
-			}, null);
-
+			await setNameLockedState(nameId, !isLocked);
 			await loadAdminData();
 		} catch (error) {
 			console.error("Failed to toggle locked status:", error);
@@ -179,42 +203,60 @@ export function AdminDashboard() {
 		}
 
 		try {
+			const operations: Promise<unknown>[] = [];
+
 			for (const nameId of selectedNames) {
-				if (action === "hide" || action === "unhide") {
-					const name = names.find((n) => n.id === nameId);
-					if (name) {
-						await handleToggleHidden(nameId, name.isHidden || false);
-					}
-				} else if (action === "lock" || action === "unlock") {
-					const name = names.find((n) => n.id === nameId);
-					if (name) {
-						await handleToggleLocked(nameId, name.lockedIn || name.locked_in || false);
-					}
+				const name = names.find((entry) => String(entry.id) === String(nameId));
+				if (!name) {
+					continue;
+				}
+
+				if (action === "hide" && !name.isHidden) {
+					operations.push(setNameHiddenState(nameId, true));
+				}
+
+				if (action === "unhide" && name.isHidden) {
+					operations.push(setNameHiddenState(nameId, false));
+				}
+
+				if (action === "lock" && !(name.lockedIn || name.locked_in)) {
+					operations.push(setNameLockedState(nameId, true));
+				}
+
+				if (action === "unlock" && (name.lockedIn || name.locked_in)) {
+					operations.push(setNameLockedState(nameId, false));
 				}
 			}
+
+			await Promise.all(operations);
 			setSelectedNames(new Set());
+			await loadAdminData();
 		} catch (error) {
 			console.error("Failed to perform bulk action:", error);
 		}
 	};
 
-	const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0];
-		if (!file) {
-			return;
-		}
+	const recentlyAddedNames = [...names]
+		.sort((left, right) => toTimestamp(right.createdAt) - toTimestamp(left.createdAt))
+		.slice(0, 5);
 
-		try {
-			const result = await imagesAPI.upload(file, user.name);
-			if (result.success) {
-				console.log("Image uploaded successfully:", result.path);
-			} else {
-				console.error("Upload failed:", result.error);
-			}
-		} catch (error) {
-			console.error("Upload error:", error);
-		}
-	};
+	const namesNeedingAttention = names
+		.filter((name) => name.isHidden || name.lockedIn || name.locked_in)
+		.sort((left, right) => Number(right.votes || 0) - Number(left.votes || 0))
+		.slice(0, 5);
+
+	const mostSelectedNames = [...popularityScores]
+		.sort((left, right) => right.times_selected - left.times_selected)
+		.slice(0, 5);
+
+	const ratingsPerUser = stats?.totalUsers ? stats.totalRatings / stats.totalUsers : 0;
+	const ratingsPerName = stats?.totalNames ? stats.totalRatings / stats.totalNames : 0;
+	const hiddenShare = stats?.totalNames ? (stats.hiddenNames / stats.totalNames) * 100 : 0;
+	const lockedShare = stats?.totalNames ? (stats.lockedInNames / stats.totalNames) * 100 : 0;
+	const userRatingsShare =
+		currentUserStats && stats?.totalRatings
+			? (currentUserStats.totalRatings / stats.totalRatings) * 100
+			: 0;
 
 	if (isLoading) {
 		return (
@@ -232,6 +274,11 @@ export function AdminDashboard() {
 					Admin Dashboard
 				</h1>
 				<p className="text-muted-foreground">Manage names and monitor site activity</p>
+				{lastUpdatedAt && (
+					<p className="mt-2 text-xs text-muted-foreground/70">
+						Last refreshed {new Date(lastUpdatedAt).toLocaleString()}
+					</p>
+				)}
 			</div>
 
 			{/* Stats Overview */}
@@ -276,6 +323,7 @@ export function AdminDashboard() {
 				{["overview", "names", "users", "analytics"].map((tab) => (
 					<button
 						key={tab}
+						type="button"
 						onClick={() => setActiveTab(tab as any)}
 						className={`px-4 py-2 font-medium transition-colors ${
 							activeTab === tab
@@ -438,24 +486,151 @@ export function AdminDashboard() {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -20 }}
+						className="grid grid-cols-1 xl:grid-cols-2 gap-6"
 					>
 						<Card className="p-6">
 							<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
-									<input
-										type="file"
-										accept="image/*"
-										onChange={handleImageUpload}
-										className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
-									/>
+							<div className="flex flex-wrap gap-3">
+								<Button onClick={loadAdminData} size="small">
+									<Loader2 size={14} /> Refresh Snapshot
+								</Button>
+								<Button
+									onClick={() => {
+										setFilterStatus("hidden");
+										setActiveTab("names");
+									}}
+									variant="ghost"
+									size="small"
+								>
+									<EyeOff size={14} /> Review Hidden Names
+								</Button>
+								<Button
+									onClick={() => {
+										setFilterStatus("locked");
+										setActiveTab("names");
+									}}
+									variant="ghost"
+									size="small"
+								>
+									<Lock size={14} /> Review Locked Names
+								</Button>
+								<Button onClick={() => setActiveTab("analytics")} variant="ghost" size="small">
+									<BarChart3 size={14} /> Open Analytics
+								</Button>
+							</div>
+
+							<div className="mt-6 grid grid-cols-2 gap-4">
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Ratings Per User</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{ratingsPerUser.toFixed(1)}
+									</p>
 								</div>
-								<div>
-									<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
-									<p className="text-muted-foreground">Activity tracking coming soon...</p>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Ratings Per Name</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{ratingsPerName.toFixed(1)}
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Hidden Share</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{hiddenShare.toFixed(1)}%
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Locked Share</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{lockedShare.toFixed(1)}%
+									</p>
 								</div>
 							</div>
+						</Card>
+
+						<Card className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Attention Queue</h2>
+							{namesNeedingAttention.length > 0 ? (
+								<div className="space-y-3">
+									{namesNeedingAttention.map((name) => (
+										<div
+											key={name.id}
+											className="flex items-center justify-between rounded-lg border border-border/10 bg-foreground/5 p-4"
+										>
+											<div>
+												<p className="font-semibold text-foreground">{name.name}</p>
+												<p className="text-sm text-muted-foreground">{name.votes || 0} votes</p>
+											</div>
+											<div className="flex gap-2 text-xs">
+												{name.isHidden && (
+													<span className="rounded border border-destructive/30 bg-destructive/10 px-2 py-1 text-destructive">
+														Hidden
+													</span>
+												)}
+												{(name.lockedIn || name.locked_in) && (
+													<span className="rounded border border-chart-4/30 bg-chart-4/10 px-2 py-1 text-chart-4">
+														Locked
+													</span>
+												)}
+											</div>
+										</div>
+									))}
+								</div>
+							) : (
+								<p className="text-muted-foreground">No names currently need admin attention.</p>
+							)}
+						</Card>
+
+						<Card className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Recently Added</h2>
+							{recentlyAddedNames.length > 0 ? (
+								<div className="space-y-3">
+									{recentlyAddedNames.map((name) => (
+										<div
+											key={name.id}
+											className="rounded-lg border border-border/10 bg-foreground/5 p-4"
+										>
+											<p className="font-semibold text-foreground">{name.name}</p>
+											<p className="text-sm text-muted-foreground">
+												{typeof name.description === "string" && name.description
+													? name.description
+													: "No description provided"}
+											</p>
+										</div>
+									))}
+								</div>
+							) : (
+								<p className="text-muted-foreground">No recently created names were found.</p>
+							)}
+						</Card>
+
+						<Card className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Momentum Snapshot</h2>
+							{mostSelectedNames.length > 0 ? (
+								<div className="space-y-3">
+									{mostSelectedNames.map((entry, index) => (
+										<div
+											key={String(entry.name_id)}
+											className="flex items-center justify-between rounded-lg border border-border/10 bg-foreground/5 p-4"
+										>
+											<div>
+												<p className="font-semibold text-foreground">
+													{index + 1}. {entry.name}
+												</p>
+												<p className="text-sm text-muted-foreground">
+													{entry.times_selected} selections
+												</p>
+											</div>
+											<p className="text-lg font-bold text-primary">
+												{Math.round(entry.avg_rating)}
+											</p>
+										</div>
+									))}
+								</div>
+							) : (
+								<p className="text-muted-foreground">
+									Selection analytics will appear after ratings are recorded.
+								</p>
+							)}
 						</Card>
 					</motion.div>
 				)}
@@ -466,10 +641,76 @@ export function AdminDashboard() {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -20 }}
+						className="grid grid-cols-1 xl:grid-cols-2 gap-6"
 					>
 						<Card className="p-6">
-							<h2 className="text-2xl font-bold mb-4">User Analytics</h2>
-							<p className="text-muted-foreground">User tracking and analytics coming soon...</p>
+							<h2 className="text-2xl font-bold mb-4">Signed-in Admin Activity</h2>
+							{currentUserStats ? (
+								<div className="grid grid-cols-2 gap-4">
+									<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+										<p className="text-sm text-muted-foreground">Ratings Submitted</p>
+										<p className="mt-1 text-2xl font-bold text-foreground">
+											{currentUserStats.totalRatings}
+										</p>
+									</div>
+									<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+										<p className="text-sm text-muted-foreground">Selections Made</p>
+										<p className="mt-1 text-2xl font-bold text-foreground">
+											{currentUserStats.totalSelections}
+										</p>
+									</div>
+									<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+										<p className="text-sm text-muted-foreground">Wins Logged</p>
+										<p className="mt-1 text-2xl font-bold text-foreground">
+											{currentUserStats.totalWins}
+										</p>
+									</div>
+									<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+										<p className="text-sm text-muted-foreground">Win Rate</p>
+										<p className="mt-1 text-2xl font-bold text-foreground">
+											{currentUserStats.winRate.toFixed(1)}%
+										</p>
+									</div>
+								</div>
+							) : (
+								<p className="text-muted-foreground">
+									Current-user analytics will appear after this account records activity.
+								</p>
+							)}
+						</Card>
+
+						<Card className="p-6">
+							<h2 className="text-2xl font-bold mb-4">User Base Snapshot</h2>
+							<div className="grid grid-cols-2 gap-4">
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Total Users</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{stats?.totalUsers || 0}
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Total Ratings</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{stats?.totalRatings || 0}
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Ratings Per User</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{ratingsPerUser.toFixed(1)}
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Your Ratings Share</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{userRatingsShare.toFixed(1)}%
+									</p>
+								</div>
+							</div>
+							<p className="mt-4 text-sm text-muted-foreground">
+								The current API exposes aggregate user metrics and the signed-in admin’s activity.
+								Individual-user drilldowns still need a dedicated endpoint.
+							</p>
 						</Card>
 					</motion.div>
 				)}
@@ -480,10 +721,92 @@ export function AdminDashboard() {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -20 }}
+						className="grid grid-cols-1 xl:grid-cols-2 gap-6"
 					>
 						<Card className="p-6">
-							<h2 className="text-2xl font-bold mb-4">Site Analytics</h2>
-							<p className="text-muted-foreground">Advanced analytics coming soon...</p>
+							<h2 className="text-2xl font-bold mb-4">Top Rated Names</h2>
+							{leaderboard.length > 0 ? (
+								<div className="space-y-3">
+									{leaderboard.map((entry, index) => (
+										<div
+											key={String(entry.name_id)}
+											className="flex items-center justify-between rounded-lg border border-border/10 bg-foreground/5 p-4"
+										>
+											<div>
+												<p className="font-semibold text-foreground">
+													{index + 1}. {entry.name}
+												</p>
+												<p className="text-sm text-muted-foreground">
+													{entry.total_ratings} ratings • {entry.wins} wins
+												</p>
+											</div>
+											<p className="text-lg font-bold text-primary">
+												{Math.round(entry.avg_rating)}
+											</p>
+										</div>
+									))}
+								</div>
+							) : (
+								<p className="text-muted-foreground">No leaderboard data is available yet.</p>
+							)}
+						</Card>
+
+						<Card className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Most Selected Names</h2>
+							{mostSelectedNames.length > 0 ? (
+								<div className="space-y-3">
+									{mostSelectedNames.map((entry, index) => (
+										<div
+											key={String(entry.name_id)}
+											className="flex items-center justify-between rounded-lg border border-border/10 bg-foreground/5 p-4"
+										>
+											<div>
+												<p className="font-semibold text-foreground">
+													{index + 1}. {entry.name}
+												</p>
+												<p className="text-sm text-muted-foreground">
+													{entry.total_wins} wins • avg {Math.round(entry.avg_rating)}
+												</p>
+											</div>
+											<p className="text-lg font-bold text-chart-2">{entry.times_selected}</p>
+										</div>
+									))}
+								</div>
+							) : (
+								<p className="text-muted-foreground">
+									Selection analytics will appear once tournaments have activity.
+								</p>
+							)}
+						</Card>
+
+						<Card className="p-6 xl:col-span-2">
+							<h2 className="text-2xl font-bold mb-4">Status Distribution</h2>
+							<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Active Names</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{stats?.activeNames || 0}
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Hidden Names</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{stats?.hiddenNames || 0}
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Locked Names</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{stats?.lockedInNames || 0}
+									</p>
+								</div>
+								<div className="rounded-lg border border-border/10 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Total Ratings</p>
+									<p className="mt-1 text-2xl font-bold text-foreground">
+										{stats?.totalRatings || 0}
+									</p>
+								</div>
+							</div>
 						</Card>
 					</motion.div>
 				)}
