@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useTournamentSelectionSaver } from "./useTournamentSelectionSaver";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { NameItem } from "@/shared/types";
-
+import { useTournamentSelectionSaver } from "./useTournamentSelectionSaver";
 
 const mockNames: NameItem[] = [
 	{ id: 1, name: "Mittens", userId: 1, lastUsed: null, createdAt: new Date() },
@@ -22,9 +21,7 @@ describe("useTournamentSelectionSaver", () => {
 
 	describe("with SaverOptions (API signature)", () => {
 		it("returns scheduleSave and loadSavedSelection functions", () => {
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: "testuser" }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			// result.current is SaverApiResult | undefined.
 			// With options, it should be SaverApiResult.
@@ -35,9 +32,7 @@ describe("useTournamentSelectionSaver", () => {
 
 		it("scheduleSave correctly writes to localStorage after 1000ms delay", () => {
 			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: "testuser" }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			result.current?.scheduleSave(mockNames);
 
@@ -58,9 +53,7 @@ describe("useTournamentSelectionSaver", () => {
 
 		it("scheduleSave debounces multiple rapid calls", () => {
 			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: "testuser" }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			result.current?.scheduleSave([mockNames[0]]);
 			vi.advanceTimersByTime(500); // Wait 500ms
@@ -84,9 +77,7 @@ describe("useTournamentSelectionSaver", () => {
 
 		it("does not save if the selection hash has not changed", () => {
 			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: "testuser" }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			result.current?.scheduleSave(mockNames);
 			vi.advanceTimersByTime(1000);
@@ -116,9 +107,7 @@ describe("useTournamentSelectionSaver", () => {
 
 		it("does not save if userName is null", () => {
 			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: null }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: null }));
 
 			result.current?.scheduleSave(mockNames);
 			vi.advanceTimersByTime(1000);
@@ -127,9 +116,7 @@ describe("useTournamentSelectionSaver", () => {
 		});
 
 		it("loadSavedSelection returns empty array if no saved selection exists", () => {
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: "testuser" }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			const saved = result.current?.loadSavedSelection();
 			expect(saved).toEqual([]);
@@ -138,9 +125,7 @@ describe("useTournamentSelectionSaver", () => {
 		it("loadSavedSelection correctly loads and parses from localStorage", () => {
 			localStorage.setItem("tournament_selection_testuser", JSON.stringify([1, 2]));
 
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: "testuser" }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			const saved = result.current?.loadSavedSelection();
 			expect(saved).toEqual([1, 2]);
@@ -149,9 +134,7 @@ describe("useTournamentSelectionSaver", () => {
 		it("loadSavedSelection handles JSON parsing errors gracefully", () => {
 			localStorage.setItem("tournament_selection_testuser", "invalid json[}");
 
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: "testuser" }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			const saved = result.current?.loadSavedSelection();
 			expect(saved).toEqual([]); // Fallback to empty array
@@ -160,9 +143,7 @@ describe("useTournamentSelectionSaver", () => {
 		it("loadSavedSelection returns empty array if userName is null", () => {
 			localStorage.setItem("tournament_selection_testuser", JSON.stringify([1, 2]));
 
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver({ userName: null }),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: null }));
 
 			const saved = result.current?.loadSavedSelection();
 			expect(saved).toEqual([]);
@@ -172,9 +153,7 @@ describe("useTournamentSelectionSaver", () => {
 	describe("with NameItem[] (useEffect side-effect signature)", () => {
 		it("returns undefined but updates hash reference behind the scenes without setting localStorage", () => {
 			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
-			const { result } = renderHook(() =>
-				useTournamentSelectionSaver(mockNames),
-			);
+			const { result } = renderHook(() => useTournamentSelectionSaver(mockNames));
 
 			// Should return undefined when an array of NameItem is passed
 			expect(result.current).toBeUndefined();
