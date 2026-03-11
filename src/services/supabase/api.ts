@@ -39,7 +39,7 @@ interface SupabaseNamesClient {
 	from(table: string): SupabaseNamesQuery;
 }
 
-function toErrorMessage(error: unknown): string {
+function _toErrorMessage(error: unknown): string {
 	if (error instanceof Error && error.message) {
 		return error.message;
 	}
