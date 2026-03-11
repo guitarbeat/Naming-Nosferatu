@@ -1,46 +1,18 @@
 /**
  * @file layout.css
  * @description Layout primitives, app layout, responsive utilities, and accessibility.
- * Tokens extracted to tokens.css.
+ * Note: Tailwind utility classes (z-10, z-20, etc.) are NOT duplicated here.
  */
 
 /* ==========================================================================
    LAYOUT PRIMITIVES
    ========================================================================== */
 
-.z-10 {
-	z-index: var(--z-10);
-}
-.z-20 {
-	z-index: var(--z-20);
-}
-.z-toast {
-	z-index: var(--z-toast);
-}
-
-.stack {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	align-items: stretch;
-}
-
 .container {
 	width: 100%;
 	max-width: clamp(70rem, 95vw, 150rem);
 	padding: 0 var(--space-4);
 	margin: 0 auto;
-}
-
-.fullScreenCenter {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100vh;
-}
-
-.bg-primary {
-	background-color: var(--primary-color);
 }
 
 /* ==========================================================================
@@ -79,13 +51,6 @@
 	}
 }
 
-/* cat-background styles live in components.css */
-
-.app-header {
-	position: relative;
-	z-index: var(--z-1);
-}
-
 /* Global loading overlay */
 .global-loading-overlay {
 	position: fixed;
@@ -104,37 +69,6 @@
 
 .mobile-nav-safe-bottom {
 	padding-bottom: max(6rem, var(--mobile-nav-safe-offset));
-}
-
-@media (max-width: calc(768px - 1px)) {
-	.mobile-only {
-		display: block;
-	}
-	.desktop-only {
-		display: none;
-	}
-	.mobile-stack > * + * {
-		margin-top: var(--space-4);
-	}
-	.mobile-full-width {
-		width: 100%;
-		margin-left: 0;
-		margin-right: 0;
-	}
-}
-
-@media (min-width: 768px) {
-	.mobile-only {
-		display: none;
-	}
-	.desktop-only {
-		display: block;
-	}
-	.desktop-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: var(--space-6);
-	}
 }
 
 @media (min-width: 769px) {
@@ -208,14 +142,10 @@
 	input[type="reset"],
 	input[type="checkbox"],
 	input[type="radio"],
-	.btn,
 	a[role="button"],
-	.nav-menu button,
 	[role="button"],
-	.clickable,
 	.name-card,
-	.card[role="button"],
-	.actionButton {
+	.card[role="button"] {
 		min-height: var(--mobile-touch-target-min);
 		min-width: var(--mobile-touch-target-min);
 	}
@@ -233,15 +163,8 @@
 	}
 
 	button + button,
-	.btn + .btn,
 	input + input {
 		margin-left: var(--space-3);
-	}
-
-	.form-group label {
-		display: block;
-		margin-bottom: var(--space-2);
-		font-size: var(--text-base);
 	}
 
 	.card,
@@ -342,23 +265,8 @@
 
 @media (prefers-contrast: more) {
 	@media (width <= 768px) {
-		button,
-		.btn {
+		button {
 			border-width: 2px;
 		}
-	}
-}
-
-/* Print */
-@media print {
-	.no-print {
-		display: none;
-	}
-	.print-only {
-		display: block;
-	}
-	* {
-		color: black;
-		background: white;
 	}
 }
