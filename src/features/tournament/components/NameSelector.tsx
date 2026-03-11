@@ -6,7 +6,6 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { useNamesCache } from "@/shared/hooks";
 import { api } from "@/services/apiClient";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import { withSupabase } from "@/services/supabase/runtime";
@@ -17,7 +16,7 @@ import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader
 import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
-import { useCollapsible } from "@/shared/hooks";
+import { useCollapsible, useNamesCache } from "@/shared/hooks";
 import { getRandomCatImage } from "@/shared/lib/basic";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import {
