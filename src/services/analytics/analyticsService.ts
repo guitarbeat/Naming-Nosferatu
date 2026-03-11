@@ -23,14 +23,6 @@ export interface SiteStats {
 	[key: string]: unknown;
 }
 
-export interface PopularityScoreItem {
-	name_id: string | number;
-	name: string;
-	avg_rating: number;
-	total_wins: number;
-	times_selected: number;
-}
-
 export interface UserStats {
 	totalRatings: number;
 	totalSelections: number;
@@ -60,35 +52,15 @@ function toNumber(value: unknown, fallback = 0): number {
 	return Number.isFinite(numeric) ? numeric : fallback;
 }
 
-function toId(row: Record<string, unknown>): string {
-	return String(row.name_id ?? row.nameId ?? row.id ?? "");
-}
-
 function mapLeaderboardRow(row: Record<string, unknown>): LeaderboardItem {
 	return {
-		name_id: toId(row),
+		name_id: String(row.name_id ?? row.id ?? ""),
 		name: String(row.name ?? ""),
-		avg_rating: toNumber(row.avg_rating ?? row.avgRating),
-		wins: toNumber(row.wins ?? row.totalWins),
-		total_ratings: toNumber(row.total_ratings ?? row.totalVotes ?? row.totalRatings),
-		created_at:
-			(row.created_at as string | null | undefined) ??
-			(row.createdAt as string | null | undefined) ??
-			null,
-		date_submitted:
-			(row.date_submitted as string | null | undefined) ??
-			(row.dateSubmitted as string | null | undefined) ??
-			null,
-	};
-}
-
-function mapPopularityScoreRow(row: Record<string, unknown>): PopularityScoreItem {
-	return {
-		name_id: toId(row),
-		name: String(row.name ?? ""),
-		avg_rating: toNumber(row.avg_rating ?? row.avgRating),
-		total_wins: toNumber(row.total_wins ?? row.totalWins),
-		times_selected: toNumber(row.times_selected ?? row.timesSelected),
+		avg_rating: toNumber(row.avg_rating),
+		wins: toNumber(row.wins),
+		total_ratings: toNumber(row.total_ratings),
+		created_at: (row.created_at as string | null | undefined) ?? null,
+		date_submitted: (row.date_submitted as string | null | undefined) ?? null,
 	};
 }
 
@@ -99,19 +71,6 @@ export const leaderboardAPI = {
 				`/analytics/leaderboard?limit=${limit || 50}`,
 			);
 			return (rows ?? []).map(mapLeaderboardRow);
-		} catch {
-			return [];
-		}
-	},
-};
-
-export const analyticsAPI = {
-	getPopularityScores: async (limit: number | null = 50): Promise<PopularityScoreItem[]> => {
-		try {
-			const rows = await api.get<Array<Record<string, unknown>>>(
-				`/analytics/popularity-scores?limit=${limit || 50}`,
-			);
-			return (rows ?? []).map(mapPopularityScoreRow);
 		} catch {
 			return [];
 		}

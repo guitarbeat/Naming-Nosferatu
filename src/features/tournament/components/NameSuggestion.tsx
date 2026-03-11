@@ -5,9 +5,9 @@
  */
 
 import { useCallback, useEffect, useId, useRef } from "react";
+import { useNameSuggestion } from "@/shared/hooks";
 import { Button, Input, LiquidGlass, Textarea } from "@/shared/components/layout";
 import { getGlassPreset } from "@/shared/components/layout/GlassPresets";
-import { useNameSuggestion } from "@/shared/hooks";
 import { CheckCircle, Lightbulb, X } from "@/shared/lib/icons";
 
 // ============================================================================

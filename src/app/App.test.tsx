@@ -45,14 +45,6 @@ vi.mock("@/features/tournament/Tournament", () => ({
 	default: () => <div>Tournament Component</div>,
 }));
 
-vi.mock("@/features/tournament/components/NameSuggestion", () => ({
-	NameSuggestion: () => <div data-testid="name-suggestion">Name Suggestion</div>,
-}));
-
-vi.mock("@/features/tournament/components/ProfileSection", () => ({
-	ProfileSection: () => <div data-testid="profile-section">Profile Section</div>,
-}));
-
 vi.mock("@/shared/hooks", () => ({
 	useOfflineSync: vi.fn(),
 }));
