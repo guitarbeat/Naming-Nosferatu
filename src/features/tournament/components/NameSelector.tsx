@@ -698,17 +698,17 @@ export function NameSelector() {
 
 	if (isLoading) {
 		return (
-			<Card padding="small" shadow="xl" className="max-w-full mx-auto ">
+			<div className="mx-auto w-full">
 				<div className="flex items-center justify-center py-20">
 					<Loading variant="spinner" text="Loading cat names..." />
 				</div>
-			</Card>
+			</div>
 		);
 	}
 
 	if (error) {
 		return (
-			<Card padding="small" shadow="xl" className="max-w-full mx-auto ">
+			<div className="mx-auto w-full">
 				<div className="flex flex-col items-center justify-center py-20 space-y-4">
 					<div className="text-destructive text-center">
 						<p className="text-lg font-medium">Failed to load names</p>
@@ -718,12 +718,12 @@ export function NameSelector() {
 						Try Again
 					</Button>
 				</div>
-			</Card>
+			</div>
 		);
 	}
 
 	return (
-		<Card padding="small" shadow="xl" className="max-w-full mx-auto ">
+		<div className="mx-auto w-full">
 			<div className="space-y-6 mobile-nav-safe-bottom">
 				{(() => {
 					const lockedInNames = names.filter((name) => name.lockedIn || name.locked_in);
@@ -1547,6 +1547,6 @@ export function NameSelector() {
 				onCancel={() => setPendingAdminAction(null)}
 				onConfirm={handleConfirmAdminAction}
 			/>
-		</Card>
+		</div>
 	);
 }
