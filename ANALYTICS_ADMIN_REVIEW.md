@@ -46,13 +46,14 @@ This review reflects the current codebase after the admin role-detection, dashbo
 - Derived counts for total, active, hidden, and locked names
 - Single-name and bulk hide/unhide and lock/unlock actions
 - Backend-backed recent admin actions rendered in the overview tab
+- Basic filtering for visibility vs. locking history
 - Toast feedback for admin writes and partial data failures
 - Disabled/loading states during pending admin writes
 - Refresh controls and clearer empty/error-state handling
 
 **Current limits**
 - No user-management tools
-- No dedicated filtering/search for the audit history
+- No deeper search or drill-down for the audit history
 - No confirmation flow for destructive admin actions
 
 ### Admin Identity / Authorization (`src/services/authAdapter.ts`)
@@ -96,7 +97,7 @@ Add one genuinely new analytics surface instead of more summary cards:
 
 Build on the new feedback layer:
 - confirmation for destructive actions when appropriate
-- richer filtering and drill-down for audit history
+- richer audit-history drill-down and longer history windows
 - persistent result history beyond the recent-actions slice
 
 ### Priority 4: Admin Permissions Surface
@@ -106,5 +107,5 @@ Expose how a session was classified as admin and make role issues easier to diag
 ## Suggested Next Epochs
 
 1. Replace the old users placeholder with actual role or user activity data.
-2. Add audit-log filtering and deeper action details.
+2. Add deeper audit-log drill-down and longer history windows.
 3. Add one time-series analytics endpoint and consume it in the analytics surface.

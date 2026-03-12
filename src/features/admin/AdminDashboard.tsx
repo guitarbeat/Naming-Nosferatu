@@ -46,6 +46,7 @@ interface SiteStatsSnapshot {
 
 type AdminTab = "overview" | "names";
 type AdminBulkAction = "hide" | "unhide" | "lock" | "unlock";
+type AdminAuditFilter = "all" | "visibility" | "locking";
 
 const tabs: { id: AdminTab; label: string }[] = [
 	{ id: "overview", label: "Overview" },
@@ -160,6 +161,18 @@ function getAuditStateSummary(action: AdminAuditEntry): string | null {
 	return null;
 }
 
+function matchesAuditFilter(action: AdminAuditEntry, filter: AdminAuditFilter): boolean {
+	if (filter === "all") {
+		return true;
+	}
+
+	if (filter === "visibility") {
+		return action.operation === "HIDE" || action.operation === "UNHIDE";
+	}
+
+	return action.operation === "LOCK_IN" || action.operation === "UNLOCK_IN";
+}
+
 export function AdminDashboard() {
 	const { user } = useAppStore();
 	const toast = useToast();
@@ -172,6 +185,7 @@ export function AdminDashboard() {
 		recentVotes: 0,
 	});
 	const [auditActions, setAuditActions] = useState<AdminAuditEntry[]>([]);
+	const [auditFilter, setAuditFilter] = useState<AdminAuditFilter>("all");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterStatus, setFilterStatus] = useState<"all" | "active" | "hidden" | "locked">("all");
 	const [isLoading, setIsLoading] = useState(true);
@@ -231,6 +245,10 @@ export function AdminDashboard() {
 				.slice(0, 5),
 		[names],
 	);
+	const filteredAuditActions = useMemo(
+		() => auditActions.filter((action) => matchesAuditFilter(action, auditFilter)),
+		[auditActions, auditFilter],
+	);
 
 	const updateNameLocally = useCallback(
 		(nameId: string, updater: (name: NameWithStats) => NameWithStats) => {
@@ -253,7 +271,7 @@ export function AdminDashboard() {
 				const [namesResult, siteStatsResult, auditResult] = await Promise.all([
 					coreAPI.getTrendingNamesResult(true),
 					statsAPI.getSiteStatsResult(),
-					adminAuditAPI.getRecentActionsResult(8),
+					adminAuditAPI.getRecentActionsResult(12),
 				]);
 				const nextNames = namesResult.data.map((name) => mapAdminName(name));
 				const nextErrors = [namesResult.error, siteStatsResult.error].filter(
@@ -929,16 +947,35 @@ export function AdminDashboard() {
 							</div>
 
 							<div className="mt-4 rounded-lg border border-border/20 bg-foreground/5 p-5">
-								<div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+								<div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 									<div>
 										<h3 className="text-lg font-semibold text-foreground">Recent Admin Actions</h3>
 										<p className="text-sm text-muted-foreground">
 											Latest hide, unhide, lock, and unlock operations recorded by the backend.
 										</p>
 									</div>
-									<p className="text-xs text-muted-foreground">
-										Showing up to {auditActions.length || 8} recent events
-									</p>
+									<div className="flex flex-wrap gap-2">
+										{(
+											[
+												["all", "All"],
+												["visibility", "Visibility"],
+												["locking", "Locking"],
+											] as const
+										).map(([value, label]) => (
+											<button
+												key={value}
+												type="button"
+												onClick={() => setAuditFilter(value)}
+												className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+													auditFilter === value
+														? "border-primary bg-primary/15 text-primary"
+														: "border-border/20 bg-background/60 text-muted-foreground hover:text-foreground"
+												}`}
+											>
+												{label}
+											</button>
+										))}
+									</div>
 								</div>
 
 								{auditLoadError ? (
@@ -952,9 +989,19 @@ export function AdminDashboard() {
 											No admin actions have been recorded yet.
 										</p>
 									</div>
+								) : filteredAuditActions.length === 0 ? (
+									<div className="mt-4 rounded-lg border border-border/20 bg-background/70 p-4">
+										<p className="text-sm text-muted-foreground">
+											No recent {auditFilter === "locking" ? "locking" : "visibility"} actions in
+											the current slice.
+										</p>
+									</div>
 								) : (
 									<div className="mt-4 space-y-3">
-										{auditActions.map((action) => {
+										<p className="text-xs text-muted-foreground">
+											Showing {filteredAuditActions.length} of {auditActions.length} recent events
+										</p>
+										{filteredAuditActions.map((action) => {
 											const stateSummary = getAuditStateSummary(action);
 
 											return (
@@ -964,13 +1011,18 @@ export function AdminDashboard() {
 												>
 													<div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
 														<div>
-															<p className="font-medium text-foreground">
-																{action.userName || "Unknown admin"}{" "}
-																{formatAdminActionLabel(action.operation)}{" "}
-																{getAuditTargetName(action)}
-															</p>
+															<div className="flex flex-wrap items-center gap-2">
+																<p className="font-medium text-foreground">
+																	{action.userName || "Unknown admin"}{" "}
+																	{formatAdminActionLabel(action.operation)}{" "}
+																	{getAuditTargetName(action)}
+																</p>
+																<span className="rounded-full border border-border/20 bg-foreground/5 px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
+																	{action.operation.split("_").join(" ")}
+																</span>
+															</div>
 															<p className="text-xs text-muted-foreground">
-																{stateSummary || action.operation.split("_").join(" ")}
+																{stateSummary || "State change recorded"}
 															</p>
 														</div>
 														<p className="text-xs text-muted-foreground">
