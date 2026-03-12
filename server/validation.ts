@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const numericIdSchema = z.coerce.number().int().positive();
+
 export const createNameSchema = z.object({
 	name: z.string().min(1).max(100),
 	description: z.string().max(500).optional(),
@@ -19,7 +21,7 @@ export const updateLockSchema = z.object({
 });
 
 export const batchHideSchema = z.object({
-	nameIds: z.array(z.union([z.string(), z.number()])).max(100),
+	nameIds: z.array(numericIdSchema).max(100),
 	isHidden: z.boolean(),
 });
 
@@ -28,7 +30,7 @@ export const saveRatingsSchema = z.object({
 	ratings: z
 		.array(
 			z.object({
-				nameId: z.union([z.string(), z.number()]),
+				nameId: numericIdSchema,
 				rating: z.number(),
 				wins: z.number().optional(),
 				losses: z.number().optional(),

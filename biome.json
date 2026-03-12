@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -120,7 +120,7 @@
 			}
 		},
 		{
-			"includes": ["vite.config.ts", "tailwind.config.js", "vitest.config.mjs"],
+			"includes": ["vite.config.ts", "vitest.config.ts", "capacitor.config.ts", "tailwind.config.js"],
 			"linter": {
 				"rules": {
 					"style": {

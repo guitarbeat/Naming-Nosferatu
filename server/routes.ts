@@ -31,6 +31,29 @@ import {
 
 export const router = Router();
 
+const getRouteParam = (value: string | string[] | undefined, key: string) => {
+	if (typeof value === "string") {
+		return value;
+	}
+
+	throw new TypeError(`Expected route param "${key}" to be a string`);
+};
+
+const getJwtUserId = (token: string) => {
+	const decoded = jwt.verify(token, JWT_SECRET);
+
+	if (
+		typeof decoded !== "object" ||
+		decoded === null ||
+		!("userId" in decoded) ||
+		typeof decoded.userId !== "string"
+	) {
+		throw new TypeError("JWT payload is missing a string userId");
+	}
+
+	return decoded.userId;
+};
+
 // Mock data for when database is unavailable
 const mockNames = [
 	{
@@ -148,7 +171,7 @@ router.post("/api/names", async (req, res) => {
 		});
 	} catch (error) {
 		if (error instanceof ZodError) {
-			return res.status(400).json({ success: false, error: error.errors });
+			return res.status(400).json({ success: false, error: error.issues });
 		}
 		console.error("Error creating name:", error);
 		res.status(500).json({ success: false, error: "Failed to create name" });
@@ -178,10 +201,11 @@ router.delete("/api/names-by-name/:name", requireAdmin, async (req, res) => {
 		if (!db) {
 			return res.json({ success: true });
 		}
+		const name = getRouteParam(req.params.name, "name");
 		await db
 			.update(catNameOptions)
 			.set({ isDeleted: true, deletedAt: new Date() })
-			.where(eq(catNameOptions.name, req.params.name));
+			.where(eq(catNameOptions.name, name));
 		res.json({ success: true });
 	} catch (error) {
 		console.error("Error deleting name:", error);
@@ -203,7 +227,7 @@ router.patch("/api/names/:id/hide", requireAdmin, async (req, res) => {
 		res.json({ success: true });
 	} catch (error) {
 		if (error instanceof ZodError) {
-			return res.status(400).json({ success: false, error: error.errors });
+			return res.status(400).json({ success: false, error: error.issues });
 		}
 		console.error("Error updating name:", error);
 		res.status(500).json({ success: false, error: "Failed to update name" });
@@ -278,7 +302,7 @@ router.patch("/api/names/:id/lock", requireAdmin, async (req, res) => {
 		res.json({ success: true });
 	} catch (error) {
 		if (error instanceof ZodError) {
-			return res.status(400).json({ success: false, error: error.errors });
+			return res.status(400).json({ success: false, error: error.issues });
 		}
 		console.error("Error locking name:", error);
 		res.status(500).json({ error: "Failed to lock name" });
@@ -319,7 +343,7 @@ router.post("/api/users", async (req, res) => {
 		});
 	} catch (error) {
 		if (error instanceof ZodError) {
-			return res.status(400).json({ success: false, error: error.errors });
+			return res.status(400).json({ success: false, error: error.issues });
 		}
 		console.error("Error creating user:", error);
 		res.status(500).json({ error: "Failed to create user" });
@@ -333,8 +357,9 @@ router.get("/api/users/:userId/roles", authRateLimiter, async (req, res) => {
 			return res.json([]);
 		}
 		try {
-			const decoded = jwt.verify(req.params.userId, JWT_SECRET) as { userId: string };
-			const roles = await db.select().from(userRoles).where(eq(userRoles.userId, decoded.userId));
+			const userToken = getRouteParam(req.params.userId, "userId");
+			const decodedUserId = getJwtUserId(userToken);
+			const roles = await db.select().from(userRoles).where(eq(userRoles.userId, decodedUserId));
 			res.json(roles);
 		} catch (verifyError) {
 			console.error("JWT verification failed:", verifyError);
@@ -353,8 +378,7 @@ router.post("/api/ratings", authRateLimiter, async (req, res) => {
 
 		let realUserId: string;
 		try {
-			const decoded = jwt.verify(userId, JWT_SECRET) as { userId: string };
-			realUserId = decoded.userId;
+			realUserId = getJwtUserId(userId);
 		} catch (verifyError) {
 			console.error("JWT verification failed for ratings:", verifyError);
 			return res.status(401).json({ error: "Unauthorized" });
@@ -389,7 +413,7 @@ router.post("/api/ratings", authRateLimiter, async (req, res) => {
 		res.json({ success: true, count: records.length });
 	} catch (error) {
 		if (error instanceof ZodError) {
-			return res.status(400).json({ success: false, error: error.errors });
+			return res.status(400).json({ success: false, error: error.issues });
 		}
 		console.error("Error saving ratings:", error);
 		res.status(500).json({ error: "Failed to save ratings" });

@@ -145,10 +145,9 @@ describe("Server Routes (DB Mode)", () => {
 
 	describe("POST /api/ratings", () => {
 		it("should insert ratings in a single batch", async () => {
-			// Schema expects 'nameId', not 'name' in ratings array
 			const ratings = [
-				{ nameId: "id1", rating: 1500, wins: 1 },
-				{ nameId: "id2", rating: 1600, wins: 0 },
+				{ nameId: 1, rating: 1500, wins: 1 },
+				{ nameId: 2, rating: 1600, wins: 0 },
 			];
 
 			const mockQuery = Promise.resolve([]) as any;

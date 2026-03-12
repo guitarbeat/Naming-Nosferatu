@@ -49,7 +49,7 @@ describe("Validation Schemas", () => {
 	it("batchHideSchema should allow valid array length", () => {
 		const input = {
 			isHidden: true,
-			nameIds: Array.from({ length: 100 }, (_, i) => i),
+			nameIds: Array.from({ length: 100 }, (_, i) => i + 1),
 		};
 		expect(() => batchHideSchema.parse(input)).not.toThrow();
 	});
@@ -70,7 +70,7 @@ describe("Validation Schemas", () => {
 		const input = {
 			userId: "mocked-jwt-token",
 			ratings: Array.from({ length: 100 }, (_, i) => ({
-				nameId: i,
+				nameId: i + 1,
 				rating: 1500,
 			})),
 		};

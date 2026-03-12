@@ -41,16 +41,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
-          check-latest: true
+          node-version: "20.19.6"
           cache: "pnpm"
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint & Type Check
-        run: pnpm run lint
+      - name: Repo Check
+        run: pnpm run check
 
       - name: Build (Vite)
         run: pnpm run build
@@ -74,8 +73,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
-          check-latest: true
+          node-version: "20.19.6"
           cache: "pnpm"
           cache-dependency-path: pnpm-lock.yaml
 

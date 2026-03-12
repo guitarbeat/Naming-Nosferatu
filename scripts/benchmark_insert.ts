@@ -1,99 +1,88 @@
-import 'dotenv/config';
-import { db } from '../server/db';
-import { catNameOptions, catNameRatings } from '../shared/schema';
-import { eq } from 'drizzle-orm';
-import { performance } from 'perf_hooks';
+import "dotenv/config";
+import { eq, inArray } from "drizzle-orm";
+import { performance } from "perf_hooks";
+import { db } from "../server/db";
+import { catAppUsers, catNameOptions, catNameRatings } from "../shared/schema";
 
 async function runBenchmark() {
-    if (!db) {
-        console.error("No database connection available. Set DATABASE_URL env var.");
-        process.exit(1);
-    }
+	if (!db) {
+		console.error("No database connection available. Set DATABASE_URL env var.");
+		process.exit(1);
+	}
 
-    console.log("Starting benchmark...");
+	console.log("Starting benchmark...");
 
-    const N = 1000;
-    // Use a UUID that is valid but clearly for testing
-    const dummyNameId = '00000000-0000-0000-0000-000000000001';
-    const userNameBase = 'bench_user_';
+	const totalRatings = 1000;
+	const benchmarkPrefix = `bench_${Date.now()}`;
+	let dummyNameId: number | null = null;
+	let userIds: string[] = [];
 
-    try {
-        // Cleanup previous run artifacts if any
-        try {
-            await db.delete(catNameRatings).where(eq(catNameRatings.nameId, dummyNameId));
-            await db.delete(catNameOptions).where(eq(catNameOptions.id, dummyNameId));
-        } catch (e) {
-            // Ignore if tables don't exist or other errors during cleanup
-        }
+	try {
+		const [insertedName] = await db
+			.insert(catNameOptions)
+			.values({
+				name: `${benchmarkPrefix}_cat`,
+				description: "Temporary benchmark fixture",
+				isHidden: false,
+			})
+			.returning({ id: catNameOptions.id });
 
-        // Setup dummy name for foreign key constraint
-        await db.insert(catNameOptions).values({
-            id: dummyNameId,
-            name: 'Benchmark Cat',
-            isHidden: false
-        });
+		dummyNameId = insertedName.id;
 
-        console.log(`Benchmarking insert of ${N} records...`);
+		const insertedUsers = await db
+			.insert(catAppUsers)
+			.values(
+				Array.from({ length: totalRatings }, (_, index) => ({
+					userName: `${benchmarkPrefix}_user_${index}`,
+					preferences: {},
+				})),
+			)
+			.returning({ userId: catAppUsers.userId });
 
-        // 1. N+1 Inserts (Loop)
-        const recordsLoop = [];
-        for (let i = 0; i < N; i++) {
-            recordsLoop.push({
-                userName: `${userNameBase}loop_${i}`,
-                nameId: dummyNameId,
-                rating: "1500",
-                wins: 0,
-                losses: 0
-            });
-        }
+		userIds = insertedUsers.map(({ userId }) => userId);
 
-        const startLoop = performance.now();
-        for (const record of recordsLoop) {
-            await db.insert(catNameRatings).values(record);
-        }
-        const endLoop = performance.now();
-        const timeLoop = endLoop - startLoop;
-        console.log(`N+1 Insert Time: ${timeLoop.toFixed(2)}ms`);
+		const ratings = userIds.map((userId) => ({
+			userId,
+			nameId: dummyNameId,
+			rating: 1500,
+			wins: 0,
+			losses: 0,
+		}));
 
-        // Cleanup Loop Data
-        await db.delete(catNameRatings).where(eq(catNameRatings.nameId, dummyNameId));
+		console.log(`Benchmarking insert of ${totalRatings} records...`);
 
-        // 2. Batch Insert
-        const recordsBatch = [];
-        for (let i = 0; i < N; i++) {
-            recordsBatch.push({
-                userName: `${userNameBase}batch_${i}`,
-                nameId: dummyNameId,
-                rating: "1500",
-                wins: 0,
-                losses: 0
-            });
-        }
+		const startLoop = performance.now();
+		for (const rating of ratings) {
+			await db.insert(catNameRatings).values(rating);
+		}
+		const loopDuration = performance.now() - startLoop;
+		console.log(`N+1 Insert Time: ${loopDuration.toFixed(2)}ms`);
 
-        const startBatch = performance.now();
-        await db.insert(catNameRatings).values(recordsBatch);
-        const endBatch = performance.now();
-        const timeBatch = endBatch - startBatch;
-        console.log(`Batch Insert Time: ${timeBatch.toFixed(2)}ms`);
+		await db.delete(catNameRatings).where(eq(catNameRatings.nameId, dummyNameId));
 
-        // Calculate improvement
-        const improvement = timeLoop / timeBatch;
-        console.log(`Speedup: ${improvement.toFixed(2)}x`);
+		const startBatch = performance.now();
+		await db.insert(catNameRatings).values(ratings);
+		const batchDuration = performance.now() - startBatch;
+		console.log(`Batch Insert Time: ${batchDuration.toFixed(2)}ms`);
+		console.log(`Speedup: ${(loopDuration / batchDuration).toFixed(2)}x`);
+	} catch (error) {
+		console.error("Benchmark failed:", error);
+		process.exitCode = 1;
+	} finally {
+		try {
+			if (db && dummyNameId !== null) {
+				await db.delete(catNameRatings).where(eq(catNameRatings.nameId, dummyNameId));
+				await db.delete(catNameOptions).where(eq(catNameOptions.id, dummyNameId));
+			}
 
-    } catch (error) {
-        console.error("Benchmark failed:", error);
-    } finally {
-        // Cleanup
-        try {
-            if (db) {
-                await db.delete(catNameRatings).where(eq(catNameRatings.nameId, dummyNameId));
-                await db.delete(catNameOptions).where(eq(catNameOptions.id, dummyNameId));
-            }
-        } catch (e) {
-            console.error("Cleanup failed:", e);
-        }
-        process.exit(0);
-    }
+			if (db && userIds.length > 0) {
+				await db.delete(catAppUsers).where(inArray(catAppUsers.userId, userIds));
+			}
+		} catch (error) {
+			console.error("Cleanup failed:", error);
+			process.exitCode = 1;
+		}
+	}
 }
 
 runBenchmark();
