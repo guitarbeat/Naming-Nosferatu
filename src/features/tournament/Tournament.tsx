@@ -146,7 +146,7 @@ function MatchSideCard({
 			: "";
 
 	return (
-		<div className="flex-1 flex flex-col min-h-[250px] sm:min-h-0">
+		<div className="w-full flex flex-col min-h-[250px] sm:min-h-0">
 			<Card
 				interactive={true}
 				padding="none"
@@ -783,7 +783,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				? { name: rightName, streak: rightStreak, heatLevel: rightHeatLevel ?? "warm" }
 				: null;
 	return (
-		<div className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col font-display text-foreground selection:bg-primary/30">
+		<div className="relative min-h-[100dvh] w-full overflow-x-hidden overflow-y-auto sm:overflow-hidden flex flex-col font-display text-foreground selection:bg-primary/30">
 			<header className="pt-2 px-3 sm:px-4 space-y-2 flex-shrink-0">
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex flex-wrap items-center gap-2 sm:gap-4">
@@ -947,7 +947,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</Card>
 			</section>
 
-			<main className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 relative py-2 min-h-0">
+			<main className="relative flex flex-1 flex-col items-center justify-start px-2 py-3 min-h-0 sm:px-4 sm:py-2 sm:justify-center">
 				{/* Animated blob backgrounds */}
 				<div className="absolute inset-0 overflow-hidden pointer-events-none">
 					<div className="absolute top-0 left-0 w-32 h-32 bg-primary/20 rounded-full animate-blob animation-delay-2000" />
@@ -1069,7 +1069,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
 						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.32 }}
-						className="relative flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] gap-4 sm:gap-4 w-full max-w-5xl mx-auto z-10 items-stretch h-full min-h-0"
+						className="relative z-10 mx-auto flex h-auto min-h-fit w-full max-w-5xl flex-col items-center gap-4 sm:grid sm:h-full sm:min-h-0 sm:grid-cols-[1fr_auto_1fr] sm:items-stretch sm:gap-4"
 					>
 						{/* Left Card */}
 						<MatchSideCard
