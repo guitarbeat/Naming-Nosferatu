@@ -3,7 +3,7 @@
  * @description Dashboard component for analytics and results
  */
 
-import { Suspense, useEffect, useState } from "react";
+import { type ReactNode, Suspense, useEffect, useState } from "react";
 import {
 	type ActivityTrendPoint,
 	leaderboardAPI,
@@ -13,7 +13,17 @@ import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import { Loading } from "@/shared/components/layout/Feedback";
-import { BarChart3, Clock, Eye, EyeOff, Layers, Trophy, User } from "@/shared/lib/icons";
+import {
+	BarChart3,
+	Clock,
+	Eye,
+	EyeOff,
+	Layers,
+	Medal,
+	Shuffle,
+	Trophy,
+	User,
+} from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
 import { PersonalResults } from "./PersonalResults";
@@ -58,6 +68,72 @@ function getBarHeight(count: number, maxCount: number): string {
 	}
 
 	return `${Math.max((count / maxCount) * 100, count > 0 ? 18 : 12)}%`;
+}
+
+function getLeaderboardTone(index: number): {
+	rowClassName: string;
+	badgeClassName: string;
+	scoreClassName: string;
+	label: string;
+} {
+	if (index === 0) {
+		return {
+			rowClassName: "border-chart-4/35 bg-chart-4/12",
+			badgeClassName: "bg-chart-4 text-background shadow-sm shadow-chart-4/30",
+			scoreClassName: "text-chart-4",
+			label: "Front-runner",
+		};
+	}
+
+	if (index === 1) {
+		return {
+			rowClassName: "border-secondary/35 bg-secondary/20",
+			badgeClassName: "bg-secondary text-secondary-foreground shadow-sm shadow-secondary/30",
+			scoreClassName: "text-foreground",
+			label: "Close second",
+		};
+	}
+
+	if (index === 2) {
+		return {
+			rowClassName: "border-chart-1/35 bg-chart-1/12",
+			badgeClassName: "bg-chart-1 text-primary-foreground shadow-sm shadow-chart-1/30",
+			scoreClassName: "text-chart-1",
+			label: "Podium spot",
+		};
+	}
+
+	return {
+		rowClassName: "border-border/70 bg-background/70",
+		badgeClassName: "bg-foreground/10 text-muted-foreground",
+		scoreClassName: "text-primary",
+		label: "Climbing",
+	};
+}
+
+function renderMetricTiles(
+	metrics: Array<{
+		label: string;
+		value: number | string;
+		hint: string;
+		toneClassName: string;
+		icon: ReactNode;
+	}>,
+) {
+	return metrics.map((metric) => (
+		<div key={metric.label} className={`rounded-2xl border p-4 shadow-sm ${metric.toneClassName}`}>
+			<div className="mb-3 flex items-start justify-between gap-3">
+				<div>
+					<p className="text-sm text-muted-foreground">{metric.label}</p>
+					<p className="mt-1 text-2xl font-bold text-foreground">{metric.value}</p>
+				</div>
+				<div className="rounded-xl border border-background/80 bg-background/80 p-2 text-primary shadow-sm">
+					{metric.icon}
+				</div>
+			</div>
+			<p className="text-xs leading-5 text-muted-foreground">{metric.hint}</p>
+		</div>
+	));
 }
 
 export function Dashboard({
@@ -213,6 +289,95 @@ export function Dashboard({
 					activityTrend[activityTrend.length - 1]?.date ?? "",
 				)}`
 			: "Last 14 days";
+	const userMetricCards = userStats
+		? [
+				{
+					label: "Ratings Given",
+					value: userStats.totalRatings,
+					hint: "Total rating records you have logged.",
+					toneClassName: "border-primary/15 bg-primary/10",
+					icon: <BarChart3 size={18} />,
+				},
+				{
+					label: "Names Selected",
+					value: userStats.totalSelections,
+					hint: "Tournament winners picked across your sessions.",
+					toneClassName: "border-chart-5/20 bg-chart-5/10",
+					icon: <Shuffle size={18} />,
+				},
+				{
+					label: "Total Wins",
+					value: userStats.totalWins,
+					hint: "Head-to-head matchups your favorites have won.",
+					toneClassName: "border-chart-4/25 bg-chart-4/12",
+					icon: <Trophy size={18} />,
+				},
+				{
+					label: "Win Rate",
+					value: `${userStats.winRate}%`,
+					hint: "How often your choices come out ahead.",
+					toneClassName: "border-chart-2/20 bg-chart-2/10",
+					icon: <Medal size={18} />,
+				},
+			]
+		: [];
+	const siteMetricCards = siteStats
+		? [
+				{
+					label: "Total Names",
+					value: siteStats.totalNames,
+					hint: "All contenders currently tracked by the site.",
+					toneClassName: "border-primary/15 bg-primary/10",
+					icon: <Layers size={18} />,
+				},
+				{
+					label: "Active Names",
+					value: siteStats.activeNames,
+					hint: "Names available to appear in live tournaments.",
+					toneClassName: "border-chart-2/20 bg-chart-2/10",
+					icon: <Eye size={18} />,
+				},
+				{
+					label: "Total Users",
+					value: siteStats.totalUsers,
+					hint: "People who have contributed voting data.",
+					toneClassName: "border-secondary/25 bg-secondary/20",
+					icon: <User size={18} />,
+				},
+				{
+					label: "Selections Logged",
+					value: siteStats.totalSelections,
+					hint: "Winners recorded from tournament rounds.",
+					toneClassName: "border-chart-5/20 bg-chart-5/10",
+					icon: <Shuffle size={18} />,
+				},
+				{
+					label: "Ratings Logged",
+					value: siteStats.totalRatings,
+					hint: "Individual name ratings captured across sessions.",
+					toneClassName: "border-chart-1/25 bg-chart-1/10",
+					icon: <BarChart3 size={18} />,
+				},
+				{
+					label: "Avg Rating",
+					value: Math.round(siteStats.avgRating),
+					hint: "Current average score across the name pool.",
+					toneClassName: "border-chart-4/25 bg-chart-4/12",
+					icon: <Medal size={18} />,
+				},
+				...(isAdmin
+					? [
+							{
+								label: "Hidden Names",
+								value: siteStats.hiddenNames,
+								hint: "Entries removed from public tournament flows.",
+								toneClassName: "border-chart-4/25 bg-chart-4/12",
+								icon: <EyeOff size={18} />,
+							},
+						]
+					: []),
+			]
+		: [];
 
 	return (
 		<div className="dashboard-container space-y-4">
@@ -233,36 +398,57 @@ export function Dashboard({
 			)}
 
 			{/* Random Name Generator */}
-			<Card padding="small">
-				<Suspense fallback={<div className="p-4">Loading...</div>}>
-					<RandomGenerator fetchNames={() => coreAPI.getTrendingNames(false)} />
-				</Suspense>
+			<Card
+				padding="small"
+				className="overflow-hidden border border-chart-5/20 bg-gradient-to-br from-chart-5/10 via-background/80 to-primary/10"
+			>
+				<div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+					<div className="flex items-start gap-3">
+						<div className="rounded-2xl border border-chart-5/20 bg-background/75 p-3 shadow-sm">
+							<Shuffle className="text-chart-5" size={24} />
+						</div>
+						<div>
+							<h3 className="text-xl font-semibold text-foreground">Quick Pick</h3>
+							<p className="text-sm text-muted-foreground">
+								Pull a fresh contender whenever you want a fast name idea.
+							</p>
+						</div>
+					</div>
+					<div className="inline-flex items-center rounded-full border border-chart-5/20 bg-background/75 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+						Random generator
+					</div>
+				</div>
+				<div className="rounded-2xl border border-border/70 bg-background/75 p-2 shadow-sm">
+					<Suspense fallback={<div className="p-4">Loading...</div>}>
+						<RandomGenerator fetchNames={() => coreAPI.getTrendingNames(false)} />
+					</Suspense>
+				</div>
 			</Card>
 
 			{/* User Stats */}
 			{userName && userStats && (
-				<Card padding="small">
-					<div className="flex items-center gap-3 mb-4">
-						<BarChart3 className="text-primary" size={24} />
-						<h3 className="text-xl font-semibold text-foreground">Your Stats</h3>
+				<Card
+					padding="small"
+					className="overflow-hidden border border-chart-2/15 bg-gradient-to-br from-chart-2/10 via-background/85 to-primary/5"
+				>
+					<div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+						<div className="flex items-start gap-3">
+							<div className="rounded-2xl border border-chart-2/20 bg-background/75 p-3 shadow-sm">
+								<User className="text-chart-2" size={24} />
+							</div>
+							<div>
+								<h3 className="text-xl font-semibold text-foreground">Your Stats</h3>
+								<p className="text-sm text-muted-foreground">
+									Personal tournament snapshot for {userName}.
+								</p>
+							</div>
+						</div>
+						<div className="inline-flex items-center rounded-full border border-chart-2/20 bg-background/75 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+							Personal profile
+						</div>
 					</div>
-					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Ratings Given</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalRatings}</p>
-						</div>
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Names Selected</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalSelections}</p>
-						</div>
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Total Wins</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalWins}</p>
-						</div>
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Win Rate</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.winRate}%</p>
-						</div>
+					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+						{renderMetricTiles(userMetricCards)}
 					</div>
 				</Card>
 			)}
@@ -450,121 +636,158 @@ export function Dashboard({
 			</Card>
 
 			{/* Global Leaderboard */}
-			<Card padding="small">
-				<div className="flex items-center justify-between mb-4">
-					<div className="flex items-center gap-3">
-						<Trophy className="text-chart-4" size={24} />
-						<h3 className="text-xl font-semibold text-foreground">Top Names</h3>
+			<Card
+				padding="small"
+				className="overflow-hidden border border-chart-4/20 bg-gradient-to-br from-chart-4/10 via-background/85 to-primary/5"
+			>
+				<div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+					<div className="flex items-start gap-3">
+						<div className="rounded-2xl border border-chart-4/20 bg-background/75 p-3 shadow-sm">
+							<Trophy className="text-chart-4" size={24} />
+						</div>
+						<div>
+							<h3 className="text-xl font-semibold text-foreground">Top Names</h3>
+							<p className="text-sm text-muted-foreground">
+								Highest-rated contenders across the current voting pool.
+							</p>
+						</div>
 					</div>
-					{onStartNew && (
-						<Button variant="ghost" size="small" onClick={onStartNew}>
-							Start New Tournament
-						</Button>
-					)}
+					<div className="flex flex-wrap items-center gap-2">
+						<div className="inline-flex items-center rounded-full border border-chart-4/20 bg-background/75 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+							Top 10 snapshot
+						</div>
+						{onStartNew && (
+							<Button variant="ghost" size="small" onClick={onStartNew}>
+								Start New Tournament
+							</Button>
+						)}
+					</div>
 				</div>
 
 				{isLoadingLeaderboard ? (
 					<Loading variant="skeleton" height={300} />
 				) : leaderboard.length > 0 ? (
-					<div className="space-y-2">
-						{leaderboard.map((entry, index) => (
-							<div
-								key={entry.name}
-								className="flex items-center gap-4 p-3 rounded-lg bg-foreground/5 border border-border hover:bg-foreground/10 transition-colors"
-							>
+					<div className="space-y-3">
+						{leaderboard.map((entry, index) => {
+							const tone = getLeaderboardTone(index);
+
+							return (
 								<div
-									className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-										index === 0
-											? "bg-chart-4 text-background"
-											: index === 1
-												? "bg-secondary text-secondary-foreground"
-												: index === 2
-													? "bg-chart-1 text-primary-foreground"
-													: "bg-foreground/10 text-muted-foreground"
-									}`}
+									key={entry.name}
+									className={`flex items-center gap-4 rounded-2xl border p-4 shadow-sm transition-transform duration-200 hover:-translate-y-0.5 ${tone.rowClassName}`}
 								>
-									{index + 1}
+									<div
+										className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl font-bold ${tone.badgeClassName}`}
+									>
+										{index + 1}
+									</div>
+									<div className="min-w-0 flex-1">
+										<div className="flex items-center gap-2">
+											<p className="truncate font-semibold text-foreground">{entry.name}</p>
+											{index < 3 && <Medal className={tone.scoreClassName} size={15} />}
+										</div>
+										<p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+											{tone.label}
+										</p>
+										<p className="mt-2 text-xs text-muted-foreground">
+											{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} •{" "}
+											{entry.wins} win{entry.wins !== 1 ? "s" : ""}
+										</p>
+									</div>
+									<div className="text-right">
+										<p className={`text-xl font-bold ${tone.scoreClassName}`}>
+											{Math.round(entry.avg_rating)}
+										</p>
+										<p className="text-xs text-muted-foreground">rating</p>
+									</div>
 								</div>
-								<div className="flex-1 min-w-0">
-									<p className="font-semibold text-foreground truncate">{entry.name}</p>
-									<p className="text-xs text-muted-foreground">
-										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} •{" "}
-										{entry.wins} win{entry.wins !== 1 ? "s" : ""}
-									</p>
-								</div>
-								<div className="text-right">
-									<p className="text-lg font-bold text-primary">{Math.round(entry.avg_rating)}</p>
-									<p className="text-xs text-muted-foreground">rating</p>
-								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				) : (
-					<p className="text-center text-muted-foreground py-8">
-						No ratings yet. Start a tournament!
-					</p>
+					<div className="rounded-2xl border border-dashed border-chart-4/20 bg-background/70 p-8 text-center shadow-sm">
+						<p className="font-semibold text-foreground">No ratings yet. Start a tournament!</p>
+						<p className="mt-2 text-sm text-muted-foreground">
+							Once votes land, the live leaderboard will appear here.
+						</p>
+					</div>
 				)}
 			</Card>
 
 			{/* Site Statistics */}
 			{siteStats && (
-				<Card padding="small">
-					<h3 className="text-xl font-semibold text-foreground mb-4">Site Statistics</h3>
-					<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Total Names</p>
-							<p className="text-2xl font-bold text-foreground">{siteStats.totalNames}</p>
-						</div>
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Active Names</p>
-							<p className="text-2xl font-bold text-foreground">{siteStats.activeNames}</p>
-						</div>
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Total Users</p>
-							<p className="text-2xl font-bold text-foreground">{siteStats.totalUsers}</p>
-						</div>
-						<div className="bg-foreground/5 rounded-lg p-4 border border-border">
-							<p className="text-sm text-muted-foreground mb-1">Avg Rating</p>
-							<p className="text-2xl font-bold text-foreground">
-								{Math.round(siteStats.avgRating)}
-							</p>
-						</div>
-						{isAdmin && (
-							<div className="bg-chart-4/20 rounded-lg p-4 border border-chart-4/30">
-								<p className="text-sm text-chart-4/80 mb-1">Hidden Names</p>
-								<p className="text-2xl font-bold text-chart-4">{siteStats.hiddenNames}</p>
+				<Card
+					padding="small"
+					className="overflow-hidden border border-border/70 bg-gradient-to-br from-foreground/[0.06] via-background/85 to-chart-5/10"
+				>
+					<div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+						<div className="flex items-start gap-3">
+							<div className="rounded-2xl border border-border/70 bg-background/75 p-3 shadow-sm">
+								<Layers className="text-primary" size={24} />
 							</div>
-						)}
+							<div>
+								<h3 className="text-xl font-semibold text-foreground">Site Statistics</h3>
+								<p className="text-sm text-muted-foreground">
+									Operational readout of the current name pool and voting traffic.
+								</p>
+							</div>
+						</div>
+						<div className="inline-flex items-center rounded-full border border-border/70 bg-background/75 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+							Live platform snapshot
+						</div>
+					</div>
+					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+						{renderMetricTiles(siteMetricCards)}
 					</div>
 				</Card>
 			)}
 
 			{/* Admin: Hidden Names Management */}
 			{isAdmin && (
-				<Card padding="small" className="border-chart-4/30 bg-chart-4/10">
-					<div className="flex items-center justify-between mb-4">
-						<div className="flex items-center gap-3">
-							<EyeOff className="text-chart-4" size={24} />
-							<h3 className="text-xl font-semibold text-chart-4">Admin: Hidden Names</h3>
+				<Card
+					padding="small"
+					className="overflow-hidden border border-chart-4/30 bg-gradient-to-br from-chart-4/12 via-background/85 to-background"
+				>
+					<div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+						<div className="flex items-start gap-3">
+							<div className="rounded-2xl border border-chart-4/25 bg-background/75 p-3 shadow-sm">
+								<EyeOff className="text-chart-4" size={24} />
+							</div>
+							<div>
+								<h3 className="text-xl font-semibold text-chart-4">Admin: Hidden Names</h3>
+								<p className="text-sm text-muted-foreground">
+									Review the hidden list and restore entries back into circulation.
+								</p>
+							</div>
 						</div>
-						<Button
-							variant="ghost"
-							size="small"
-							onClick={() => setShowHiddenNames(!showHiddenNames)}
-						>
-							{showHiddenNames ? "Hide List" : "Show List"}
-						</Button>
+						<div className="flex flex-wrap items-center gap-2">
+							<div className="inline-flex items-center rounded-full border border-chart-4/20 bg-background/75 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+								{showHiddenNames ? `${hiddenNames.length} visible` : "List hidden"}
+							</div>
+							<Button
+								variant="ghost"
+								size="small"
+								onClick={() => setShowHiddenNames(!showHiddenNames)}
+							>
+								{showHiddenNames ? "Hide List" : "Show List"}
+							</Button>
+						</div>
 					</div>
 
 					{showHiddenNames && (
-						<div className="space-y-2">
+						<div className="space-y-3 rounded-2xl border border-chart-4/20 bg-background/70 p-3 shadow-sm">
 							{hiddenNames.length > 0 ? (
 								hiddenNames.map((name) => (
 									<div
 										key={name.id}
-										className="flex items-center justify-between p-3 rounded-lg bg-foreground/5 border border-chart-4/20"
+										className="flex items-center justify-between rounded-xl border border-chart-4/20 bg-chart-4/8 p-3 shadow-sm"
 									>
-										<span className="text-foreground font-medium">{name.name}</span>
+										<div>
+											<p className="font-medium text-foreground">{name.name}</p>
+											<p className="text-xs text-muted-foreground">
+												Hidden from public tournaments
+											</p>
+										</div>
 										<Button
 											variant="ghost"
 											size="small"
@@ -577,7 +800,12 @@ export function Dashboard({
 									</div>
 								))
 							) : (
-								<p className="text-center text-muted-foreground py-4">No hidden names</p>
+								<div className="rounded-xl border border-dashed border-chart-4/20 bg-background/75 p-6 text-center">
+									<p className="font-semibold text-foreground">No hidden names</p>
+									<p className="mt-2 text-sm text-muted-foreground">
+										Everything is currently visible to tournament users.
+									</p>
+								</div>
 							)}
 						</div>
 					)}
