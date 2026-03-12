@@ -28,9 +28,16 @@ export function verifyBuild(): BuildResult {
 			errors: [],
 			warnings: [],
 		};
-	} catch (error: any) {
+	} catch (error: unknown) {
 		// tsc exits with non-zero code when there are errors
-		const output = error.stdout || error.stderr || "";
+		let output = "";
+		if (error instanceof Error) {
+			const execError = error as Error & { stdout?: Buffer | string; stderr?: Buffer | string };
+			output =
+				execError.stdout?.toString() || execError.stderr?.toString() || execError.message || "";
+		} else {
+			output = String(error);
+		}
 		const { errors, warnings } = parseTscOutput(output);
 
 		return {
