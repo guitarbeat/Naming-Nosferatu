@@ -38,17 +38,26 @@ const trendLabelFormatter = new Intl.DateTimeFormat("en-US", {
 	day: "numeric",
 });
 
+const trendWeekdayFormatter = new Intl.DateTimeFormat("en-US", {
+	weekday: "short",
+});
+
 function formatTrendLabel(date: string): string {
 	const parsed = new Date(`${date}T00:00:00Z`);
 	return Number.isNaN(parsed.getTime()) ? date : trendLabelFormatter.format(parsed);
 }
 
+function formatTrendWeekday(date: string): string {
+	const parsed = new Date(`${date}T00:00:00Z`);
+	return Number.isNaN(parsed.getTime()) ? "" : trendWeekdayFormatter.format(parsed);
+}
+
 function getBarHeight(count: number, maxCount: number): string {
 	if (maxCount <= 0) {
-		return "10%";
+		return "12%";
 	}
 
-	return `${Math.max((count / maxCount) * 100, count > 0 ? 18 : 10)}%`;
+	return `${Math.max((count / maxCount) * 100, count > 0 ? 18 : 12)}%`;
 }
 
 export function Dashboard({
@@ -197,9 +206,16 @@ export function Dashboard({
 	const hasTrendActivity = activityTrend.some(
 		(point) => point.selectionCount > 0 || point.activeUsers > 0 || point.uniqueNames > 0,
 	);
+	const recentTrendPoints = activityTrend.slice(-5).reverse();
+	const trendRangeLabel =
+		activityTrend.length > 0
+			? `${formatTrendLabel(activityTrend[0]?.date ?? "")} - ${formatTrendLabel(
+					activityTrend[activityTrend.length - 1]?.date ?? "",
+				)}`
+			: "Last 14 days";
 
 	return (
-		<div className="dashboard-container space-y-2">
+		<div className="dashboard-container space-y-4">
 			{/* Personal Results with Ranking Adjustment */}
 			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
 				<PersonalResults
@@ -251,14 +267,25 @@ export function Dashboard({
 				</Card>
 			)}
 
-			<Card padding="small">
-				<div className="flex items-center gap-3 mb-2">
-					<BarChart3 className="text-primary" size={24} />
-					<div>
-						<h3 className="text-xl font-semibold text-foreground">Recent Activity</h3>
-						<p className="text-sm text-muted-foreground">
-							14-day view of tournament selections and engagement
-						</p>
+			<Card
+				padding="small"
+				className="overflow-hidden border border-primary/15 bg-gradient-to-br from-primary/10 via-background/80 to-chart-5/10"
+			>
+				<div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+					<div className="flex items-start gap-3">
+						<div className="rounded-2xl border border-primary/20 bg-background/70 p-3 shadow-sm">
+							<BarChart3 className="text-primary" size={24} />
+						</div>
+						<div>
+							<h3 className="text-xl font-semibold text-foreground">Recent Activity</h3>
+							<p className="text-sm text-muted-foreground">
+								14-day view of tournament selections and engagement
+							</p>
+						</div>
+					</div>
+					<div className="inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+						<Clock size={14} />
+						<span>{trendRangeLabel}</span>
 					</div>
 				</div>
 
@@ -267,11 +294,14 @@ export function Dashboard({
 				) : hasTrendActivity ? (
 					<div className="space-y-5">
 						<div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-							<div className="rounded-lg border border-border bg-foreground/5 p-4">
+							<div className="rounded-xl border border-primary/15 bg-primary/10 p-4 shadow-sm">
 								<p className="mb-1 text-sm text-muted-foreground">Selections (14d)</p>
 								<p className="text-2xl font-bold text-foreground">{totalTrendSelections}</p>
+								<p className="mt-2 text-xs text-muted-foreground">
+									All tournament winners saved this cycle
+								</p>
 							</div>
-							<div className="rounded-lg border border-border bg-foreground/5 p-4">
+							<div className="rounded-xl border border-chart-5/20 bg-chart-5/10 p-4 shadow-sm">
 								<p className="mb-1 text-sm text-muted-foreground">Busiest Day</p>
 								<p className="text-2xl font-bold text-foreground">
 									{peakTrendDay?.selectionCount ?? 0}
@@ -280,76 +310,135 @@ export function Dashboard({
 									{peakTrendDay ? formatTrendLabel(peakTrendDay.date) : "No activity"}
 								</p>
 							</div>
-							<div className="rounded-lg border border-border bg-foreground/5 p-4">
+							<div className="rounded-xl border border-chart-2/20 bg-chart-2/10 p-4 shadow-sm">
 								<p className="mb-1 text-sm text-muted-foreground">Avg Active Users</p>
 								<p className="text-2xl font-bold text-foreground">
 									{averageActiveUsers.toFixed(1)}
 								</p>
+								<p className="mt-2 text-xs text-muted-foreground">
+									Distinct users joining daily voting
+								</p>
 							</div>
-							<div className="rounded-lg border border-border bg-foreground/5 p-4">
+							<div className="rounded-xl border border-secondary/25 bg-secondary/20 p-4 shadow-sm">
 								<p className="mb-1 text-sm text-muted-foreground">Peak Names Touched</p>
 								<p className="text-2xl font-bold text-foreground">{peakUniqueNames}</p>
+								<p className="mt-2 text-xs text-muted-foreground">
+									Unique contenders selected in one day
+								</p>
 							</div>
 						</div>
 
-						<div className="rounded-xl border border-border bg-gradient-to-b from-foreground/5 to-transparent p-4">
-							<div
-								className="grid grid-cols-7 gap-2 md:grid-cols-14"
-								role="list"
-								aria-label="Daily tournament activity"
-							>
-								{activityTrend.map((point) => (
-									<div
-										key={point.date}
-										role="listitem"
-										aria-label={`${formatTrendLabel(point.date)}: ${point.selectionCount} selections, ${point.activeUsers} active users, ${point.uniqueNames} names touched`}
-										className="flex min-h-[11rem] flex-col justify-end rounded-lg border border-border/70 bg-background/60 p-2"
-									>
-										<div className="mb-3 flex min-h-28 items-end">
-											<div
-												className="flex w-full items-start justify-center rounded-md bg-primary/85 px-1 pt-2 text-center text-xs font-semibold text-primary-foreground shadow-sm transition-transform hover:scale-[1.02]"
-												style={{ height: getBarHeight(point.selectionCount, maxTrendSelections) }}
-											>
-												{point.selectionCount}
-											</div>
-										</div>
-										<p className="text-center text-xs font-semibold text-foreground">
-											{formatTrendLabel(point.date)}
+						<div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(18rem,0.9fr)]">
+							<div className="rounded-2xl border border-border/70 bg-background/75 p-4 shadow-sm">
+								<div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+									<div>
+										<p className="text-sm font-semibold text-foreground">Daily selections</p>
+										<p className="text-xs text-muted-foreground">
+											Scroll horizontally on smaller screens to inspect each day.
 										</p>
-										<div className="mt-2 space-y-1 text-[11px] text-muted-foreground">
-											<div className="flex items-center justify-between gap-1">
-												<span className="flex items-center gap-1">
-													<User size={12} />
-													Users
-												</span>
-												<span>{point.activeUsers}</span>
-											</div>
-											<div className="flex items-center justify-between gap-1">
-												<span className="flex items-center gap-1">
-													<Layers size={12} />
-													Names
-												</span>
-												<span>{point.uniqueNames}</span>
-											</div>
-										</div>
 									</div>
-								))}
+									<div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+										<span className="flex items-center gap-2">
+											<span
+												className="h-3 w-3 rounded-sm bg-gradient-to-t from-primary to-chart-5"
+												aria-hidden={true}
+											/>
+											Daily selections
+										</span>
+										<span className="flex items-center gap-2">
+											<Clock size={14} />
+											Updated from recorded tournament selections
+										</span>
+									</div>
+								</div>
+
+								<div className="overflow-x-auto pb-2">
+									<div
+										className="flex min-w-max items-end gap-3 rounded-2xl border border-border/60 bg-foreground/5 p-4"
+										role="list"
+										aria-label="Daily tournament activity"
+									>
+										{activityTrend.map((point) => (
+											<div
+												key={point.date}
+												role="listitem"
+												aria-label={`${formatTrendLabel(point.date)}: ${point.selectionCount} selections, ${point.activeUsers} active users, ${point.uniqueNames} names touched`}
+												className="flex w-14 shrink-0 flex-col items-center"
+											>
+												<span className="mb-2 text-[11px] font-semibold text-foreground/80">
+													{point.selectionCount}
+												</span>
+												<div className="flex h-36 w-full items-end rounded-xl border border-primary/15 bg-gradient-to-b from-primary/5 via-transparent to-background px-1 pb-1">
+													<div
+														className="w-full rounded-lg bg-gradient-to-t from-primary via-primary/90 to-chart-5 shadow-sm transition-transform duration-200 hover:scale-y-[1.03]"
+														style={{
+															height: getBarHeight(point.selectionCount, maxTrendSelections),
+														}}
+													/>
+												</div>
+												<span className="mt-3 text-[11px] font-semibold text-foreground">
+													{formatTrendLabel(point.date)}
+												</span>
+												<span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+													{formatTrendWeekday(point.date)}
+												</span>
+											</div>
+										))}
+									</div>
+								</div>
 							</div>
 
-							<div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-								<span className="flex items-center gap-2">
-									<span className="h-3 w-3 rounded-sm bg-primary/85" aria-hidden={true} />
-									Daily selections
-								</span>
-								<span className="flex items-center gap-2">
-									<Clock size={14} />
-									Updated from recorded tournament selections
-								</span>
+							<div className="rounded-2xl border border-border/70 bg-background/75 p-4 shadow-sm">
+								<div className="mb-4">
+									<p className="text-sm font-semibold text-foreground">Latest five days</p>
+									<p className="text-xs text-muted-foreground">
+										Quick breakdown of the most recent activity windows.
+									</p>
+								</div>
+								<div className="space-y-2.5">
+									{recentTrendPoints.map((point) => (
+										<div
+											key={point.date}
+											className="rounded-xl border border-border/60 bg-foreground/5 p-3"
+										>
+											<div className="flex items-start justify-between gap-3">
+												<div>
+													<p className="font-semibold text-foreground">
+														{formatTrendLabel(point.date)}
+													</p>
+													<p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+														{formatTrendWeekday(point.date)}
+													</p>
+												</div>
+												<div className="text-right">
+													<p className="text-xl font-bold text-primary">{point.selectionCount}</p>
+													<p className="text-[11px] text-muted-foreground">Selections</p>
+												</div>
+											</div>
+											<div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+												<div className="rounded-lg border border-border/60 bg-background/70 px-2 py-2 text-muted-foreground">
+													<span className="mb-1 flex items-center gap-1 font-medium text-foreground">
+														<User size={12} />
+														Users
+													</span>
+													<span>{point.activeUsers} active</span>
+												</div>
+												<div className="rounded-lg border border-border/60 bg-background/70 px-2 py-2 text-muted-foreground">
+													<span className="mb-1 flex items-center gap-1 font-medium text-foreground">
+														<Layers size={12} />
+														Names
+													</span>
+													<span>{point.uniqueNames} touched</span>
+												</div>
+											</div>
+										</div>
+									))}
+								</div>
 							</div>
 						</div>
 					</div>
 				) : (
-					<div className="rounded-xl border border-dashed border-border bg-foreground/5 p-6 text-center">
+					<div className="rounded-2xl border border-dashed border-primary/20 bg-background/65 p-6 text-center shadow-sm">
 						<p className="text-base font-semibold text-foreground">
 							No tournament selections recorded in the last 14 days.
 						</p>
