@@ -35,19 +35,20 @@ This document provides a comprehensive guide for setting up, developing, maintai
 
 ### 📦 Prerequisites
 
-- **Node.js**: >= 20.0.0
-- **pnpm**: >= 10.0.0
+- **Node.js**: >= 20.19.0
+- **pnpm**: >= 10.26.0
 - **Supabase CLI**: (Optional, for local development)
 
 ### 🛠️ Commands
 
 | Command          | Description                                |
 | ---------------- | ------------------------------------------ |
-| `pnpm run dev`   | Start Vite dev server with HMR             |
+| `pnpm run dev`   | Start the Vite frontend dev server         |
+| `pnpm run dev:server` | Start the backend API server          |
 | `pnpm run build` | Production build                           |
-| `pnpm run lint`  | Run Biome linter and TypeScript checks     |
+| `pnpm run lint`  | Run Biome linting and TypeScript checks    |
 | `pnpm run fix`   | Auto-fix linting issues                    |
-| `pnpm run check` | Run all checks (lint, types, limits, deps) |
+| `pnpm run check` | Run all checks (lint and dependency hygiene) |
 | `pnpm run check:copy-artifacts` | Detect accidental `file 2.ts` / `file 3.ts` copies |
 | `pnpm run check:arch` | Enforce architecture import boundaries |
 

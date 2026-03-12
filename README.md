@@ -30,13 +30,19 @@ A React application for managing cat names and related data, featuring tournamen
 
 ### Development
 
-To start the development server (client and server):
+To start the Vite frontend dev server:
 
 ```bash
 pnpm dev
 ```
 
-This will run the backend server on port 3001 and the Vite frontend on port 5000.
+To start the backend API server:
+
+```bash
+pnpm run dev:server
+```
+
+Run them in separate terminals for full-stack local development. The frontend uses the Vite default port (`5173`) and proxies `/api` requests to the backend on port `3001`.
 
 ### Testing
 

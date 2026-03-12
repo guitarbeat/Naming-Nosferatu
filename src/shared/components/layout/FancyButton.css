@@ -158,7 +158,6 @@
 	content: "";
 	display: block;
 	position: absolute;
-	z-index: 1;
 	width: calc(100% - var(--border-width)); /* Prevent overlapping border */
 	height: calc(100% - var(--border-width));
 	top: calc(0% + var(--border-width) / 2);

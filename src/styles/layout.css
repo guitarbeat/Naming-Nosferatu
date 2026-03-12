@@ -81,6 +81,38 @@
    ========================================================================== */
 
 @media (width <= 768px) {
+	/* Touch targets */
+	button,
+	input[type="button"],
+	input[type="submit"],
+	input[type="reset"],
+	input[type="checkbox"],
+	input[type="radio"],
+	a[role="button"],
+	[role="button"],
+	.name-card,
+	.card[role="button"] {
+		min-height: var(--mobile-touch-target-min);
+		min-width: var(--mobile-touch-target-min);
+	}
+
+	input[type="text"],
+	input[type="email"],
+	input[type="password"],
+	input[type="search"],
+	input[type="tel"],
+	input[type="url"],
+	input[type="number"],
+	textarea,
+	select {
+		min-height: var(--mobile-input-height);
+	}
+
+	button + button,
+	input + input {
+		margin-left: var(--space-3);
+	}
+
 	.nav-menu button {
 		min-width: var(--mobile-touch-target-min);
 		min-height: var(--mobile-touch-target-min);
@@ -129,38 +161,6 @@
 	.scroll-to-top {
 		right: var(--mobile-safe-spacing);
 		bottom: var(--mobile-safe-spacing);
-	}
-
-	/* Touch targets */
-	button,
-	input[type="button"],
-	input[type="submit"],
-	input[type="reset"],
-	input[type="checkbox"],
-	input[type="radio"],
-	a[role="button"],
-	[role="button"],
-	.name-card,
-	.card[role="button"] {
-		min-height: var(--mobile-touch-target-min);
-		min-width: var(--mobile-touch-target-min);
-	}
-
-	input[type="text"],
-	input[type="email"],
-	input[type="password"],
-	input[type="search"],
-	input[type="tel"],
-	input[type="url"],
-	input[type="number"],
-	textarea,
-	select {
-		min-height: var(--mobile-input-height);
-	}
-
-	button + button,
-	input + input {
-		margin-left: var(--space-3);
 	}
 
 	.card,
