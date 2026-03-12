@@ -1,7 +1,7 @@
 /**
  * @module ProfileSection
  * @description Dedicated page section for user profile management (Login, Name, Avatar)
- * Uses LiquidGlass for consistent styling with NameSuggestion component.
+ * Rendered as inline content so it sits directly on the page with the rest of the flow.
  */
 
 import { useEffect, useState } from "react";
