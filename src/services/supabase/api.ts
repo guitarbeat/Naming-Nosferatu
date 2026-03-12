@@ -67,6 +67,34 @@ export interface AdminAuditEntry {
 	newValues: Record<string, unknown> | null;
 }
 
+interface AdminUserActivityRow {
+	user_id: string;
+	user_name?: string | null;
+	role_label?: string | null;
+	created_at?: string | null;
+	total_ratings?: number | null;
+	total_selections?: number | null;
+	total_wins?: number | null;
+	total_losses?: number | null;
+	last_rating_at?: string | null;
+	last_selection_at?: string | null;
+	last_active_at?: string | null;
+}
+
+export interface AdminUserActivity {
+	userId: string;
+	userName: string;
+	roleLabel: string;
+	createdAt: string | null;
+	totalRatings: number;
+	totalSelections: number;
+	totalWins: number;
+	totalLosses: number;
+	lastRatingAt: string | null;
+	lastSelectionAt: string | null;
+	lastActiveAt: string | null;
+}
+
 function mapNameRow(item: ApiNameRow): NameItem {
 	return {
 		id: String(item.id),
@@ -91,6 +119,11 @@ function toErrorMessage(error: unknown, fallback: string): string {
 	return fallback;
 }
 
+function toFiniteNumber(value: unknown): number {
+	const numeric = typeof value === "number" ? value : Number(value);
+	return Number.isFinite(numeric) ? numeric : 0;
+}
+
 function toJsonRecord(value: unknown): Record<string, unknown> | null {
 	return value && typeof value === "object" && !Array.isArray(value)
 		? (value as Record<string, unknown>)
@@ -107,6 +140,22 @@ function mapAdminAuditRow(item: AdminAuditLogRow): AdminAuditEntry {
 		targetName: item.target_name ?? null,
 		oldValues: toJsonRecord(item.old_values),
 		newValues: toJsonRecord(item.new_values),
+	};
+}
+
+function mapAdminUserActivityRow(item: AdminUserActivityRow): AdminUserActivity {
+	return {
+		userId: item.user_id,
+		userName: item.user_name?.trim() || "Unknown user",
+		roleLabel: item.role_label?.trim() || "user",
+		createdAt: item.created_at ?? null,
+		totalRatings: toFiniteNumber(item.total_ratings),
+		totalSelections: toFiniteNumber(item.total_selections),
+		totalWins: toFiniteNumber(item.total_wins),
+		totalLosses: toFiniteNumber(item.total_losses),
+		lastRatingAt: item.last_rating_at ?? null,
+		lastSelectionAt: item.last_selection_at ?? null,
+		lastActiveAt: item.last_active_at ?? null,
 	};
 }
 
@@ -227,6 +276,49 @@ async function getRecentAdminActionsResult(limit: number): Promise<FetchResult<A
 		return {
 			data: [],
 			error: toErrorMessage(error, "Failed to fetch admin actions"),
+			source: "unavailable",
+		};
+	}
+}
+
+async function getAdminUserActivityResult(
+	limit: number,
+): Promise<FetchResult<AdminUserActivity[]>> {
+	const client = await resolveSupabaseClient();
+	if (!client) {
+		return {
+			data: [],
+			error: "Supabase client unavailable",
+			source: "unavailable",
+		};
+	}
+
+	const normalizedLimit = Math.min(Math.max(Math.trunc(limit) || 50, 1), 100);
+
+	try {
+		const rpcResult = await client.rpc("get_admin_user_activity" as any, {
+			p_limit: normalizedLimit,
+		});
+
+		if (rpcResult.error) {
+			return {
+				data: [],
+				error: rpcResult.error.message || "Failed to fetch user activity",
+				source: "supabase",
+			};
+		}
+
+		return {
+			data: (rpcResult.data ?? []).map((item) =>
+				mapAdminUserActivityRow(item as AdminUserActivityRow),
+			),
+			error: null,
+			source: "supabase",
+		};
+	} catch (error) {
+		return {
+			data: [],
+			error: toErrorMessage(error, "Failed to fetch user activity"),
 			source: "unavailable",
 		};
 	}
@@ -379,6 +471,16 @@ export const adminAuditAPI = {
 
 	getRecentActionsResult: async (limit: number = 10) => {
 		return getRecentAdminActionsResult(limit);
+	},
+};
+
+export const adminUsersAPI = {
+	getUserActivity: async (limit: number = 50) => {
+		return (await getAdminUserActivityResult(limit)).data;
+	},
+
+	getUserActivityResult: async (limit: number = 50) => {
+		return getAdminUserActivityResult(limit);
 	},
 };
 

@@ -42,17 +42,18 @@ This review reflects the current codebase after the admin role-detection, dashbo
 **Status**: Functional, but incomplete
 
 **What exists**
-- Overview and names views with data-backed admin controls
+- Overview, names, and users views with data-backed admin controls
 - Derived counts for total, active, hidden, and locked names
 - Single-name and bulk hide/unhide and lock/unlock actions
 - Backend-backed recent admin actions rendered in the overview tab
 - Basic filtering for visibility vs. locking history
+- User activity summaries with role labels and recent activity metadata
 - Toast feedback for admin writes and partial data failures
 - Disabled/loading states during pending admin writes
 - Refresh controls and clearer empty/error-state handling
 
 **Current limits**
-- No user-management tools
+- No grant/revoke role workflow
 - No deeper search or drill-down for the audit history
 - No confirmation flow for destructive admin actions
 
@@ -82,16 +83,19 @@ This review reflects the current codebase after the admin role-detection, dashbo
 
 ## Highest-Value Remaining Work
 
-### Priority 1: User Operations
-
-Replace the old users placeholder with real role or user-activity tooling.
-
-### Priority 2: Analytics Depth
+### Priority 1: Analytics Depth
 
 Add one genuinely new analytics surface instead of more summary cards:
 - ranking-history timeline
 - popularity trend chart
 - tournament activity history
+
+### Priority 2: User Operations
+
+Build on the new users view:
+- role grant/revoke workflow
+- richer per-user drill-down
+- user activity history beyond aggregate counters
 
 ### Priority 3: Admin UX Follow-Through
 
@@ -106,6 +110,6 @@ Expose how a session was classified as admin and make role issues easier to diag
 
 ## Suggested Next Epochs
 
-1. Replace the old users placeholder with actual role or user activity data.
-2. Add deeper audit-log drill-down and longer history windows.
-3. Add one time-series analytics endpoint and consume it in the analytics surface.
+1. Add one time-series analytics endpoint and consume it in the analytics surface.
+2. Add role management or per-user drill-down to the users view.
+3. Add deeper audit-log drill-down and longer history windows.

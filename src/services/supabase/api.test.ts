@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/services/apiClient";
-import { adminAuditAPI, coreAPI, statsAPI } from "./api";
+import { adminAuditAPI, adminUsersAPI, coreAPI, statsAPI } from "./api";
 import { resolveSupabaseClient } from "./runtime";
 
 // Mock dependencies
@@ -278,6 +278,69 @@ describe("Supabase Service API", () => {
 			expect(result).toEqual({
 				data: [],
 				error: "Function not found",
+				source: "supabase",
+			});
+		});
+	});
+
+	describe("adminUsersAPI.getUserActivityResult", () => {
+		it("should map admin user activity from the activity RPC", async () => {
+			const mockRpc = vi.fn().mockResolvedValue({
+				data: [
+					{
+						user_id: "user-1",
+						user_name: "alice",
+						role_label: "admin",
+						created_at: "2026-03-10T10:00:00.000Z",
+						total_ratings: 12,
+						total_selections: 5,
+						total_wins: 20,
+						total_losses: 8,
+						last_rating_at: "2026-03-12T08:00:00.000Z",
+						last_selection_at: "2026-03-11T07:00:00.000Z",
+						last_active_at: "2026-03-12T08:00:00.000Z",
+					},
+				],
+				error: null,
+			});
+			(resolveSupabaseClient as any).mockResolvedValue({ rpc: mockRpc });
+
+			const result = await adminUsersAPI.getUserActivityResult(25);
+
+			expect(mockRpc).toHaveBeenCalledWith("get_admin_user_activity", { p_limit: 25 });
+			expect(result).toEqual({
+				data: [
+					{
+						userId: "user-1",
+						userName: "alice",
+						roleLabel: "admin",
+						createdAt: "2026-03-10T10:00:00.000Z",
+						totalRatings: 12,
+						totalSelections: 5,
+						totalWins: 20,
+						totalLosses: 8,
+						lastRatingAt: "2026-03-12T08:00:00.000Z",
+						lastSelectionAt: "2026-03-11T07:00:00.000Z",
+						lastActiveAt: "2026-03-12T08:00:00.000Z",
+					},
+				],
+				error: null,
+				source: "supabase",
+			});
+		});
+
+		it("should expose activity RPC failures for the users view", async () => {
+			const mockRpc = vi.fn().mockResolvedValue({
+				data: null,
+				error: { message: "Permission denied" },
+			});
+			(resolveSupabaseClient as any).mockResolvedValue({ rpc: mockRpc });
+
+			const result = await adminUsersAPI.getUserActivityResult(50);
+
+			expect(result).toEqual({
+				data: [],
+				error: "Permission denied",
 				source: "supabase",
 			});
 		});

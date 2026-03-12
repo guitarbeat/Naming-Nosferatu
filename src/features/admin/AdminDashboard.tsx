@@ -8,7 +8,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import {
 	type AdminAuditEntry,
+	type AdminUserActivity,
 	adminAuditAPI,
+	adminUsersAPI,
 	coreAPI,
 	hiddenNamesAPI,
 	statsAPI,
@@ -44,13 +46,15 @@ interface SiteStatsSnapshot {
 	recentVotes: number;
 }
 
-type AdminTab = "overview" | "names";
+type AdminTab = "overview" | "names" | "users";
 type AdminBulkAction = "hide" | "unhide" | "lock" | "unlock";
 type AdminAuditFilter = "all" | "visibility" | "locking";
+type AdminUserFilter = "all" | "admins" | "recent";
 
 const tabs: { id: AdminTab; label: string }[] = [
 	{ id: "overview", label: "Overview" },
 	{ id: "names", label: "Names" },
+	{ id: "users", label: "Users" },
 ];
 
 function toFiniteNumber(value: unknown): number {
@@ -173,6 +177,39 @@ function matchesAuditFilter(action: AdminAuditEntry, filter: AdminAuditFilter): 
 	return action.operation === "LOCK_IN" || action.operation === "UNLOCK_IN";
 }
 
+function hasAdminRole(roleLabel: string): boolean {
+	return roleLabel
+		.split(",")
+		.map((role) => role.trim())
+		.includes("admin");
+}
+
+function isRecentlyActive(timestamp: string | null, withinDays: number): boolean {
+	if (!timestamp) {
+		return false;
+	}
+
+	const value = new Date(timestamp).getTime();
+	if (Number.isNaN(value)) {
+		return false;
+	}
+
+	return Date.now() - value <= withinDays * 24 * 60 * 60 * 1000;
+}
+
+function formatTimestamp(value: string | null, fallback: string): string {
+	if (!value) {
+		return fallback;
+	}
+
+	const date = new Date(value);
+	if (Number.isNaN(date.getTime())) {
+		return fallback;
+	}
+
+	return date.toLocaleString();
+}
+
 export function AdminDashboard() {
 	const { user } = useAppStore();
 	const toast = useToast();
@@ -186,12 +223,16 @@ export function AdminDashboard() {
 	});
 	const [auditActions, setAuditActions] = useState<AdminAuditEntry[]>([]);
 	const [auditFilter, setAuditFilter] = useState<AdminAuditFilter>("all");
+	const [userActivities, setUserActivities] = useState<AdminUserActivity[]>([]);
+	const [userFilter, setUserFilter] = useState<AdminUserFilter>("all");
+	const [userSearchTerm, setUserSearchTerm] = useState("");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterStatus, setFilterStatus] = useState<"all" | "active" | "hidden" | "locked">("all");
 	const [isLoading, setIsLoading] = useState(true);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [loadError, setLoadError] = useState<string | null>(null);
 	const [auditLoadError, setAuditLoadError] = useState<string | null>(null);
+	const [userLoadError, setUserLoadError] = useState<string | null>(null);
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
 	const [pendingHiddenIds, setPendingHiddenIds] = useState<Set<string>>(new Set());
 	const [pendingLockedIds, setPendingLockedIds] = useState<Set<string>>(new Set());
@@ -249,6 +290,40 @@ export function AdminDashboard() {
 		() => auditActions.filter((action) => matchesAuditFilter(action, auditFilter)),
 		[auditActions, auditFilter],
 	);
+	const filteredUserActivities = useMemo(() => {
+		const normalizedSearch = userSearchTerm.trim().toLowerCase();
+
+		return userActivities.filter((activity) => {
+			if (userFilter === "admins" && !hasAdminRole(activity.roleLabel)) {
+				return false;
+			}
+			if (userFilter === "recent" && !isRecentlyActive(activity.lastActiveAt, 7)) {
+				return false;
+			}
+			if (!normalizedSearch) {
+				return true;
+			}
+
+			return (
+				activity.userName.toLowerCase().includes(normalizedSearch) ||
+				activity.roleLabel.toLowerCase().includes(normalizedSearch)
+			);
+		});
+	}, [userActivities, userFilter, userSearchTerm]);
+	const adminUserCount = useMemo(
+		() => userActivities.filter((activity) => hasAdminRole(activity.roleLabel)).length,
+		[userActivities],
+	);
+	const recentActiveUserCount = useMemo(
+		() => userActivities.filter((activity) => isRecentlyActive(activity.lastActiveAt, 7)).length,
+		[userActivities],
+	);
+	const engagedUserCount = useMemo(
+		() =>
+			userActivities.filter((activity) => activity.totalRatings > 0 || activity.totalSelections > 0)
+				.length,
+		[userActivities],
+	);
 
 	const updateNameLocally = useCallback(
 		(nameId: string, updater: (name: NameWithStats) => NameWithStats) => {
@@ -268,19 +343,25 @@ export function AdminDashboard() {
 			}
 
 			try {
-				const [namesResult, siteStatsResult, auditResult] = await Promise.all([
+				const [namesResult, siteStatsResult, auditResult, userActivityResult] = await Promise.all([
 					coreAPI.getTrendingNamesResult(true),
 					statsAPI.getSiteStatsResult(),
 					adminAuditAPI.getRecentActionsResult(12),
+					adminUsersAPI.getUserActivityResult(60),
 				]);
 				const nextNames = namesResult.data.map((name) => mapAdminName(name));
 				const nextErrors = [namesResult.error, siteStatsResult.error].filter(
+					(message): message is string => Boolean(message),
+				);
+				const secondaryErrors = [auditResult.error, userActivityResult.error].filter(
 					(message): message is string => Boolean(message),
 				);
 
 				setNames(nextNames);
 				setAuditActions(auditResult.data);
 				setAuditLoadError(auditResult.error);
+				setUserActivities(userActivityResult.data);
+				setUserLoadError(userActivityResult.error);
 				setSelectedNames((current) => {
 					const nextIds = new Set(nextNames.map((name) => String(name.id)));
 					return new Set([...current].filter((id) => nextIds.has(id)));
@@ -295,6 +376,10 @@ export function AdminDashboard() {
 					} else {
 						toast.showWarning(`Admin data is partially unavailable: ${detail}`);
 					}
+				} else if (secondaryErrors.length > 0) {
+					toast.showWarning(
+						`Some admin panels are partially unavailable: ${secondaryErrors.join(" | ")}`,
+					);
 				}
 			} catch (error) {
 				const detail = getErrorMessage(error, "Failed to load admin dashboard data.");
@@ -491,6 +576,7 @@ export function AdminDashboard() {
 	const hasPendingWrites =
 		pendingBulkAction !== null || pendingHiddenIds.size > 0 || pendingLockedIds.size > 0;
 	const hasActiveFilters = searchTerm.trim().length > 0 || filterStatus !== "all";
+	const hasActiveUserFilters = userSearchTerm.trim().length > 0 || userFilter !== "all";
 	const hasHardLoadFailure = Boolean(loadError) && names.length === 0;
 
 	if (isLoading) {
@@ -821,6 +907,197 @@ export function AdminDashboard() {
 								})}
 							</div>
 						)}
+					</motion.div>
+				)}
+
+				{activeTab === "users" && (
+					<motion.div
+						key="users"
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -20 }}
+					>
+						<Card className="p-6">
+							<div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+								<div>
+									<h2 className="text-2xl font-bold text-foreground">User Activity</h2>
+									<p className="text-sm text-muted-foreground">
+										Recent activity, engagement, and admin-role coverage across the latest user
+										profiles.
+									</p>
+								</div>
+								<p className="text-sm text-muted-foreground">
+									Showing {filteredUserActivities.length} of {userActivities.length} loaded users
+								</p>
+							</div>
+
+							<div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+								<div className="rounded-lg border border-border/20 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Total users</p>
+									<p className="mt-2 text-3xl font-bold text-foreground">{stats.totalUsers}</p>
+								</div>
+								<div className="rounded-lg border border-border/20 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Engaged users</p>
+									<p className="mt-2 text-3xl font-bold text-foreground">{engagedUserCount}</p>
+								</div>
+								<div className="rounded-lg border border-border/20 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Admins in slice</p>
+									<p className="mt-2 text-3xl font-bold text-foreground">{adminUserCount}</p>
+								</div>
+								<div className="rounded-lg border border-border/20 bg-foreground/5 p-4">
+									<p className="text-sm text-muted-foreground">Active in last 7 days</p>
+									<p className="mt-2 text-3xl font-bold text-foreground">{recentActiveUserCount}</p>
+								</div>
+							</div>
+
+							<div className="mb-6 flex flex-col gap-4 lg:flex-row">
+								<div className="flex-1">
+									<Input
+										type="text"
+										placeholder="Search users or roles..."
+										value={userSearchTerm}
+										onChange={(event) => setUserSearchTerm(event.target.value)}
+										className="w-full"
+									/>
+								</div>
+
+								<div className="flex flex-wrap gap-2">
+									{(
+										[
+											["all", "All Users"],
+											["admins", "Admins"],
+											["recent", "Recent"],
+										] as const
+									).map(([value, label]) => (
+										<button
+											key={value}
+											type="button"
+											onClick={() => setUserFilter(value)}
+											className={`rounded-full border px-3 py-2 text-sm transition-colors ${
+												userFilter === value
+													? "border-primary bg-primary/15 text-primary"
+													: "border-border/20 bg-background/60 text-muted-foreground hover:text-foreground"
+											}`}
+										>
+											{label}
+										</button>
+									))}
+								</div>
+							</div>
+
+							{userLoadError ? (
+								<div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
+									<p className="text-sm font-medium text-destructive">
+										User activity is unavailable
+									</p>
+									<p className="mt-1 text-sm text-muted-foreground">{userLoadError}</p>
+									<div className="mt-4">
+										<Button
+											onClick={() => void loadAdminData("refresh")}
+											variant="outline"
+											size="small"
+											loading={isRefreshing}
+											disabled={isRefreshing || hasPendingWrites}
+										>
+											Try again
+										</Button>
+									</div>
+								</div>
+							) : filteredUserActivities.length === 0 ? (
+								<Card className="p-8 text-center">
+									<h3 className="text-lg font-semibold text-foreground">
+										{hasActiveUserFilters ? "No users match this filter" : "No user activity found"}
+									</h3>
+									<p className="mt-2 text-sm text-muted-foreground">
+										{hasActiveUserFilters
+											? "Try a different search or user filter."
+											: "User activity will appear here once profiles, ratings, or selections exist."}
+									</p>
+								</Card>
+							) : (
+								<div className="space-y-3">
+									{filteredUserActivities.map((activity) => {
+										const roleBadges = activity.roleLabel
+											.split(",")
+											.map((role) => role.trim())
+											.filter(Boolean);
+										const isSelf = adminName.length > 0 && activity.userName === adminName;
+
+										return (
+											<div
+												key={activity.userId}
+												className="rounded-lg border border-border/20 bg-foreground/5 p-4"
+											>
+												<div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+													<div>
+														<div className="flex flex-wrap items-center gap-2">
+															<h3 className="font-semibold text-foreground">{activity.userName}</h3>
+															{isSelf && (
+																<span className="rounded-full border border-primary/30 bg-primary/15 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-primary">
+																	You
+																</span>
+															)}
+															{isRecentlyActive(activity.lastActiveAt, 7) && (
+																<span className="rounded-full border border-chart-2/30 bg-chart-2/15 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-chart-2">
+																	Active 7d
+																</span>
+															)}
+															{roleBadges.map((role) => (
+																<span
+																	key={`${activity.userId}-${role}`}
+																	className={`rounded-full border px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide ${
+																		role === "admin"
+																			? "border-chart-4/30 bg-chart-4/15 text-chart-4"
+																			: "border-border/20 bg-background/70 text-muted-foreground"
+																	}`}
+																>
+																	{role}
+																</span>
+															))}
+														</div>
+														<p className="mt-2 text-xs text-muted-foreground">
+															Joined {formatTimestamp(activity.createdAt, "Unknown")} · Last active{" "}
+															{formatTimestamp(activity.lastActiveAt, "No activity yet")}
+														</p>
+														<p className="mt-1 text-xs text-muted-foreground">
+															Last rating {formatTimestamp(activity.lastRatingAt, "Never")} · Last
+															selection {formatTimestamp(activity.lastSelectionAt, "Never")}
+														</p>
+													</div>
+
+													<div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+														<div className="rounded-lg border border-border/20 bg-background/70 p-3">
+															<p className="text-muted-foreground">Ratings</p>
+															<p className="mt-1 text-xl font-semibold text-foreground">
+																{activity.totalRatings}
+															</p>
+														</div>
+														<div className="rounded-lg border border-border/20 bg-background/70 p-3">
+															<p className="text-muted-foreground">Selections</p>
+															<p className="mt-1 text-xl font-semibold text-foreground">
+																{activity.totalSelections}
+															</p>
+														</div>
+														<div className="rounded-lg border border-border/20 bg-background/70 p-3">
+															<p className="text-muted-foreground">Wins</p>
+															<p className="mt-1 text-xl font-semibold text-foreground">
+																{activity.totalWins}
+															</p>
+														</div>
+														<div className="rounded-lg border border-border/20 bg-background/70 p-3">
+															<p className="text-muted-foreground">Losses</p>
+															<p className="mt-1 text-xl font-semibold text-foreground">
+																{activity.totalLosses}
+															</p>
+														</div>
+													</div>
+												</div>
+											</div>
+										);
+									})}
+								</div>
+							)}
+						</Card>
 					</motion.div>
 				)}
 
