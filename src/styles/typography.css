@@ -4,6 +4,10 @@
  * Tailwind typography utilities still come from the shared theme tokens.
  */
 
+html {
+	font-size: 16px;
+}
+
 /* ==========================================================================
    BASE TYPOGRAPHY
    ========================================================================== */
