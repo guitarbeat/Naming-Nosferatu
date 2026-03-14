@@ -25,6 +25,7 @@ Notes:
 - [x] Concurrent startup fetches for cat names now share one in-flight request, so fallback mode does not double-hit `/api/names` during initial load.
 - [x] Production builds no longer emit the >500 kB main-chunk warning; stable vendor code is split into dedicated chunks.
 - [x] Local fallback mode no longer emits avoidable startup noise; missing `/api` proxies now fail quietly and local no-Supabase runs stop warning in the browser console.
+- [x] Production builds no longer warn about mixed dynamic/static Supabase client imports; the last lazy import was removed from the name picker flow.
 
 ## 2025
 

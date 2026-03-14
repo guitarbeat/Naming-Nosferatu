@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { api } from "@/services/apiClient";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
+import { resolveSupabaseClient } from "@/services/supabase/client";
 import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
@@ -406,9 +407,7 @@ export function NameSelector() {
 				// Ensure user context is set
 				await withSupabase(async (_client) => {
 					try {
-						const client = await (
-							await import("@/services/supabase/client")
-						).resolveSupabaseClient();
+						const client = await resolveSupabaseClient();
 						if (client) {
 							await client.rpc("set_user_context", { user_name_param: userName.trim() });
 						}
