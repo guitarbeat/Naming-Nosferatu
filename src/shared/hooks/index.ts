@@ -323,8 +323,8 @@ export function useLocalStorage<T>(
 						localStorage.setItem(key, JSON.stringify(resolved));
 					}
 				}
-			} catch (err) {
-				console.warn(`[useLocalStorage] write "${key}" failed:`, err);
+			} catch {
+				/* quota / security errors */
 			}
 		},
 		[key],
