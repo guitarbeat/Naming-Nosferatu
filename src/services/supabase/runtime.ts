@@ -23,6 +23,20 @@ declare global {
 	}
 }
 
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
+
+export function shouldWarnMissingSupabaseCredentials(hostname: string): boolean {
+	return !LOCAL_HOSTS.has(hostname);
+}
+
+function getCurrentHostname(): string {
+	try {
+		return typeof window !== "undefined" ? window.location.hostname : "";
+	} catch {
+		return "";
+	}
+}
+
 // Get Supabase credentials from environment variables (publishable/anon keys are safe to embed)
 const getSupabaseCredentials = (): { url: string; key: string } | null => {
 	const url = import.meta.env.VITE_SUPABASE_URL;
@@ -30,9 +44,11 @@ const getSupabaseCredentials = (): { url: string; key: string } | null => {
 		import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 	if (!url || !key) {
-		console.warn(
-			"[Supabase] Credentials not found. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY) to enable Supabase features.",
-		);
+		if (shouldWarnMissingSupabaseCredentials(getCurrentHostname())) {
+			console.warn(
+				"[Supabase] Credentials not found. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY) to enable Supabase features.",
+			);
+		}
 		return null;
 	}
 
