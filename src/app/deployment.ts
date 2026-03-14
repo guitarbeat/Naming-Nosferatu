@@ -8,6 +8,25 @@ interface ErrorInfo {
 const ErrorDisplayId = "deployment-error-display";
 const MaxWaitTime = 5000; // 5 seconds
 
+function clearDeploymentError(): void {
+	const existing = document.getElementById(ErrorDisplayId);
+	if (existing) {
+		existing.remove();
+	}
+}
+
+function getMainModuleScript(): HTMLScriptElement | null {
+	const moduleScripts = Array.from(
+		document.querySelectorAll<HTMLScriptElement>('script[type="module"][src]'),
+	);
+
+	if (moduleScripts.length > 0) {
+		return moduleScripts[moduleScripts.length - 1] ?? null;
+	}
+
+	return document.querySelector<HTMLScriptElement>('script[src*="index"]');
+}
+
 function renderDeploymentList(
 	title: string,
 	items: string[] | undefined,
@@ -32,11 +51,7 @@ function renderDeploymentList(
  * This runs before React loads to catch initialization failures.
  */
 function showDeploymentError(errorInfo: ErrorInfo): void {
-	// Remove existing error display if present
-	const existing = document.getElementById(ErrorDisplayId);
-	if (existing) {
-		existing.remove();
-	}
+	clearDeploymentError();
 
 	const errorDiv = document.createElement("div");
 	errorDiv.id = ErrorDisplayId;
@@ -75,13 +90,18 @@ export function initDeploymentCheck(): void {
 	}
 
 	// Monitor script loading
-	const mainScript =
-		document.querySelector('script[type="module"][src]') ||
-		document.querySelector('script[src*="index"]');
+	const mainScript = getMainModuleScript();
 
 	if (mainScript) {
-		let scriptLoaded = false;
+		let scriptLoaded = root.children.length > 0;
 		let scriptError = false;
+		const observer = new MutationObserver(() => {
+			if (root.children.length > 0) {
+				clearDeploymentError();
+			}
+		});
+
+		observer.observe(root, { childList: true });
 
 		mainScript.addEventListener("load", () => {
 			scriptLoaded = true;
@@ -110,29 +130,44 @@ export function initDeploymentCheck(): void {
 
 		// Check if app initialized after timeout
 		setTimeout(() => {
-			if (!scriptLoaded && !scriptError) {
-				// Script might have loaded but app didn't initialize
-				if (root.children.length === 0) {
-					showDeploymentError({
-						title: "Application Failed to Initialize",
-						message:
-							"The JavaScript loaded but the application failed to initialize. Possible causes:",
-						details: [
+			if (scriptError || root.children.length > 0) {
+				observer.disconnect();
+				return;
+			}
+
+			showDeploymentError({
+				title: scriptLoaded ? "Application Failed to Initialize" : "Application Startup Delayed",
+				message: scriptLoaded
+					? "The JavaScript loaded but the application failed to mount into the page. Possible causes:"
+					: "The application is taking longer than expected to download or initialize. Possible causes:",
+				details: scriptLoaded
+					? [
 							"JavaScript errors preventing React from mounting",
 							"Missing environment variables (VITE_SUPABASE_URL, etc.)",
 							"Build configuration issues",
 							"Runtime errors in the application code",
+						]
+					: [
+							"Slow script downloads or blocked JavaScript resources",
+							"Vite or CDN startup delays",
+							"Network issues preventing the main bundle from loading",
+							"Runtime initialization work taking too long",
 						],
-						suggestions: [
+				suggestions: scriptLoaded
+					? [
 							"Open browser console (F12) and check for JavaScript errors",
 							"Verify all required environment variables are set in Vercel",
 							"Check that the build completed without errors",
 							"Review the error boundary fallback for more details",
 							"Try rebuilding the application",
+						]
+					: [
+							"Wait a moment and reload if the page is still blank",
+							"Check the Network tab for a slow or blocked main bundle",
+							"Verify the deployed assets are reachable from the current origin",
+							"Review the hosting logs for slow startup or CDN failures",
 						],
-					});
-				}
-			}
+			});
 		}, MaxWaitTime);
 	}
 
