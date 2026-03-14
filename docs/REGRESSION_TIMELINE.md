@@ -22,6 +22,7 @@ Notes:
 - [x] Local/static previews no longer load the Vercel analytics script, avoiding `_vercel/insights` 404 noise outside real production hosts.
 - [x] Mobile picker control rows no longer collapse into cramped overlapping buttons; small screens now stack those actions cleanly.
 - [x] Deployment fallback no longer false-triggers while the real app bundle is still booting; it now watches the actual app entrypoint and clears once `#root` mounts.
+- [x] Concurrent startup fetches for cat names now share one in-flight request, so fallback mode does not double-hit `/api/names` during initial load.
 
 ## 2025
 

@@ -125,6 +125,29 @@ describe("Supabase Service API", () => {
 			expect(result).toHaveLength(FALLBACK_NAMES.length);
 			expect(result[0]?.name).toBe(FALLBACK_NAMES[0]?.name);
 		});
+
+		it("shares one in-flight request across concurrent callers", async () => {
+			let releaseRequest: (() => void) | null = null;
+			(resolveSupabaseClient as any).mockResolvedValue(null);
+			(api.get as any).mockImplementation(
+				() =>
+					new Promise((_resolve, reject) => {
+						releaseRequest = () => reject(new Error("API Down"));
+					}),
+			);
+
+			const firstRequest = coreAPI.getTrendingNames(true);
+			const secondRequest = coreAPI.getTrendingNames(true);
+			await Promise.resolve();
+			await Promise.resolve();
+			releaseRequest?.();
+
+			const [firstResult, secondResult] = await Promise.all([firstRequest, secondRequest]);
+
+			expect(api.get).toHaveBeenCalledTimes(1);
+			expect(firstResult).toEqual(secondResult);
+			expect(firstResult).toHaveLength(FALLBACK_NAMES.length);
+		});
 	});
 
 	describe("coreAPI.hideName", () => {

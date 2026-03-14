@@ -40,6 +40,8 @@ interface SupabaseNamesClient {
 	from(table: string): SupabaseNamesQuery;
 }
 
+const trendingNamesRequests = new Map<string, Promise<NameItem[]>>();
+
 function mapNameRow(item: ApiNameRow): NameItem {
 	return {
 		id: String(item.id),
@@ -117,18 +119,34 @@ export const coreAPI = {
 	},
 
 	getTrendingNames: async (includeHidden: boolean = false) => {
-		// Primary path: query Supabase directly (no Express backend needed)
-		const supabaseResult = await getNamesFromSupabase(includeHidden);
-		if (supabaseResult.length > 0) {
-			return supabaseResult;
+		const cacheKey = includeHidden ? "includeHidden" : "visibleOnly";
+		const existingRequest = trendingNamesRequests.get(cacheKey);
+		if (existingRequest) {
+			return existingRequest;
 		}
 
-		// Fallback: try API server if Supabase returned nothing
+		const request = (async () => {
+			// Primary path: query Supabase directly (no Express backend needed)
+			const supabaseResult = await getNamesFromSupabase(includeHidden);
+			if (supabaseResult.length > 0) {
+				return supabaseResult;
+			}
+
+			// Fallback: try API server if Supabase returned nothing
+			try {
+				const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
+				return (data ?? []).map((item) => mapNameRow(item));
+			} catch {
+				return getFallbackNames(includeHidden).map((item) => mapNameRow(item));
+			}
+		})();
+
+		trendingNamesRequests.set(cacheKey, request);
+
 		try {
-			const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
-			return (data ?? []).map((item) => mapNameRow(item));
-		} catch {
-			return getFallbackNames(includeHidden).map((item) => mapNameRow(item));
+			return await request;
+		} finally {
+			trendingNamesRequests.delete(cacheKey);
 		}
 	},
 
