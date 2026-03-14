@@ -5,7 +5,7 @@
  * for embedding in shared containers.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Input, Section } from "@/shared/components/layout";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { LogOut, Pencil, User } from "@/shared/lib/icons";
@@ -22,6 +22,7 @@ interface ProfileSectionProps {
 export function ProfileInner({ onLogin }: ProfileSectionProps) {
 	const { user, userActions } = useAppStore();
 	const defaultAvatar = CAT_IMAGES[0] ?? "";
+	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const [editedName, setEditedName] = useState(user.name || "");
 	const [isSaving, setIsSaving] = useState(false);
 	const [isEditing, setIsEditing] = useState(!user.isLoggedIn);
@@ -34,6 +35,12 @@ export function ProfileInner({ onLogin }: ProfileSectionProps) {
 			setIsEditing(true);
 		}
 	}, [defaultAvatar, user.name, user.isLoggedIn, user.avatarUrl]);
+
+	useEffect(() => {
+		if (isEditing && user.isLoggedIn) {
+			nameInputRef.current?.focus();
+		}
+	}, [isEditing, user.isLoggedIn]);
 
 	const handleSave = async () => {
 		if (!editedName.trim()) {
@@ -90,13 +97,13 @@ export function ProfileInner({ onLogin }: ProfileSectionProps) {
 								<div className="relative">
 									<User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
 									<Input
+										ref={nameInputRef}
 										type="text"
 										value={editedName}
 										onChange={(e) => setEditedName(e.target.value)}
 										placeholder="Who are you?"
 										onKeyDown={(e) => e.key === "Enter" && handleSave()}
 										className="w-full h-[50px] pl-12 pr-4 font-medium backdrop-blur-sm"
-										autoFocus={!user.isLoggedIn}
 									/>
 								</div>
 							</div>
