@@ -1,3 +1,4 @@
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "../shared/schema";
@@ -5,8 +6,7 @@ import * as schema from "../shared/schema";
 const { Pool } = pg;
 
 let pool: pg.Pool | null = null;
-// biome-ignore lint/suspicious/noExplicitAny: db instance type depends on drizzle config which is dynamic
-let db: any = null;
+let db: NodePgDatabase<typeof schema> | null = null;
 
 if (process.env.DATABASE_URL) {
 	try {
