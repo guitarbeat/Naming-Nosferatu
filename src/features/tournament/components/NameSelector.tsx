@@ -812,16 +812,22 @@ export function NameSelector() {
 						)}
 					</div>
 					{!isSwipeMode && (
-						<div className="flex flex-wrap items-center justify-center gap-2">
+						<div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 min-[420px]:max-w-xl min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:justify-center">
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleSelectAllAvailable}
 								disabled={!canSelectAllAvailable}
+								className="w-full min-[420px]:w-auto"
 							>
 								Select all visible
 							</Button>
-							<Button variant="glass" size="small" onClick={handleSelectRandomAvailable}>
+							<Button
+								variant="glass"
+								size="small"
+								onClick={handleSelectRandomAvailable}
+								className="w-full min-[420px]:w-auto"
+							>
 								<Shuffle size={14} />
 								Pick 8 random
 							</Button>
@@ -830,6 +836,7 @@ export function NameSelector() {
 								size="small"
 								onClick={handleClearSelection}
 								disabled={!hasAnySelection}
+								className="w-full min-[420px]:w-auto"
 							>
 								Clear selection
 							</Button>

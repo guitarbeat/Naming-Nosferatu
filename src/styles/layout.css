@@ -108,11 +108,6 @@
 		min-height: var(--mobile-input-height);
 	}
 
-	button + button,
-	input + input {
-		margin-left: var(--space-3);
-	}
-
 	.nav-menu button {
 		min-width: var(--mobile-touch-target-min);
 		min-height: var(--mobile-touch-target-min);
