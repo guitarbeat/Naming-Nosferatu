@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { coreAPI } from "@/services/supabase/client";
+import { coreAPI } from "@/shared/services/supabase/client";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Internal Utilities

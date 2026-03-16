@@ -188,22 +188,24 @@ User Action → Component → Zustand Store ←→ TanStack Query → Supabase
 
 ## Service Layer
 
-Services are located in `src/services/`:
+Shared runtime services are located in `src/shared/services/`, while feature-local services live under `src/features/*/services/`:
 
 | Service | Purpose |
 |---------|---------|
-| `errorManager.ts` | Centralized error handling with retry logic |
-| `supabase/client.ts` | Re-exports runtime/api modules |
-| `supabase/runtime.ts` | Supabase runtime and wrappers (`withSupabase`) |
-| `supabase/api.ts` | Domain APIs (`coreAPI`, `hiddenNamesAPI`, `imagesAPI`, `statsAPI`) |
-| `apiClient.ts` | Shared HTTP client utilities |
+| `shared/services/errorManager.ts` | Centralized error handling with retry logic |
+| `shared/services/apiClient.ts` | Shared HTTP client utilities |
+| `shared/services/supabase/client.ts` | Re-exports runtime/api modules |
+| `shared/services/supabase/runtime.ts` | Supabase runtime and wrappers (`withSupabase`) |
+| `shared/services/supabase/api.ts` | Domain APIs (`coreAPI`, `hiddenNamesAPI`, `imagesAPI`, `statsAPI`) |
+| `features/analytics/services/analyticsService.ts` | Analytics endpoint wrappers used by dashboard flows |
+| `features/tournament/services/tournament.ts` | Elo, team generation, and bracket helpers |
 
 All Supabase calls use `withSupabase()` for consistent error handling and offline support.
 
 The Supabase integration is split across:
 - `supabase/client.ts` for the generated client entrypoint
-- `src/services/supabase/runtime.ts` for execution wrappers and runtime behavior
-- `src/services/supabase/api.ts` for domain-specific operations
+- `src/shared/services/supabase/runtime.ts` for execution wrappers and runtime behavior
+- `src/shared/services/supabase/api.ts` for domain-specific operations
 
 ---
 
@@ -218,4 +220,4 @@ The Supabase integration is split across:
    - `src/store/appStore.ts` - Global Zustand state
    - `src/shared/types/index.ts` - Type definitions
    - `src/shared/components/layout/` - reusable UI and layout primitives
-   - `src/services/supabase/*` + `supabase/*` - runtime + generated client split
+   - `src/shared/services/supabase/*` + `supabase/*` - runtime + generated client split

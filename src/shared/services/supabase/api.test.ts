@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { api } from "@/services/apiClient";
-import { FALLBACK_NAMES } from "../../../shared/fallbackNames";
+import { api } from "@/shared/services/apiClient";
+import { FALLBACK_NAMES } from "../../../../shared/fallbackNames";
 import { coreAPI } from "./api";
 import { resolveSupabaseClient } from "./runtime";
 
 // Mock dependencies
-vi.mock("@/services/apiClient", () => ({
+vi.mock("@/shared/services/apiClient", () => ({
 	api: {
 		post: vi.fn(),
 		get: vi.fn(),

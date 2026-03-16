@@ -4,11 +4,11 @@
  */
 
 import { Suspense, useEffect, useState } from "react";
-import { leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
+import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/shared/lib/icons";
+import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase/api";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
 import { PersonalResults } from "./PersonalResults";

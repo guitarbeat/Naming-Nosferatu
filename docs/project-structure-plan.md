@@ -1,9 +1,19 @@
 # Project Structure Scalability Plan
 
+**Status Snapshot:** March 15, 2026
+
 ## Goals
 - Improve discoverability by grouping code by feature and shared domains.
 - Reduce coupling by enforcing a one-way dependency flow: `app -> features -> shared`.
 - Keep infrastructure and domain logic clearly separated.
+
+## Current Progress Snapshot
+- `src/app/`, `src/features/`, and `src/shared/` exist and are the primary homes for app shell, feature modules, and shared UI/utilities.
+- `pnpm run check:arch` already enforces that `src/shared/` and `src/services/` do not import from `@/features/*`.
+- Tooling now exposes explicit `@/app/*`, `@/features/*`, and `@/shared/*` aliases alongside the root `@/*` alias.
+- Feature-local service extraction has started: tournament Elo/match helpers and analytics API wrappers now live under `src/features/*/services/`.
+- Shared runtime infrastructure now lives under `src/shared/services/` (`apiClient`, `errorManager`, and Supabase runtime/api modules).
+- Root-level `src/services/` is now mostly app-specific (`authAdapter`) plus integration/tooling modules, and `src/store/` remains active pending store modularization.
 
 ## Proposed Structure (inside `src/`)
 ```
@@ -111,11 +121,13 @@ src/
 20. Add an automated dependency check (lint rule or script) once the structure stabilizes.
 21. Add import-boundary lint rules (e.g., ESLint boundaries) if available.
 
-## Migration Checklist (Per Batch)
-- [ ] Move one folder group (e.g., infra services) at a time.
-- [ ] Update imports and path aliases.
-- [ ] Run typecheck/build.
-- [ ] Ensure dependency direction rules still hold.
+## Current Migration Checklist
+- [x] Create the top-level `app`, `features`, and `shared` folders.
+- [x] Add automated import-boundary enforcement (`pnpm run check:arch`).
+- [ ] Move the remaining root-level `src/services/*` modules into `shared/` or feature-local service folders.
+- [ ] Split `src/store/appStore.ts` into an app entry plus feature-level slices/modules.
+- [x] Add explicit `@/app/*`, `@/features/*`, and `@/shared/*` alias entries in tooling.
+- [ ] Keep validating each migration batch with lint/typecheck/build.
 
 ## Notes
 - Migrate in small batches and keep the app building after each phase.

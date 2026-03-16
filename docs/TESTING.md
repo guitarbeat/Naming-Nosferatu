@@ -30,8 +30,8 @@ Frontend tests are located alongside the components they test (e.g., `src/app/Ap
 
 -   **Tools**: React Testing Library, Vitest.
 -   **Mocking**:
-    -   `@/services/supabase/client`: Mocked to prevent actual network calls.
-    -   `@/services/apiClient`: Mocked to simulate API responses.
+    -   `@/shared/services/supabase/client`: Mocked to prevent actual network calls.
+    -   `@/shared/services/apiClient`: Mocked to simulate API responses.
     -   Complex providers and hooks (e.g., `useAuth`, `useAppStore`) are often mocked to isolate component logic.
 
 ## Coverage

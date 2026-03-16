@@ -8,9 +8,9 @@
  */
 
 import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
-import { api } from "@/services/apiClient";
-import { resolveSupabaseClient } from "@/services/supabase/runtime";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
+import { api } from "@/shared/services/apiClient";
+import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
 async function getSupabaseAdminStatus(userName: string): Promise<boolean> {
 	try {

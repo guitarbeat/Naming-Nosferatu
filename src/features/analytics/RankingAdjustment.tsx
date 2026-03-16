@@ -10,8 +10,8 @@ import {
 import { Button, CardBody, CardHeader, Chip, cn, Divider } from "@heroui/react";
 import { motion } from "framer-motion";
 import { memo, useEffect, useRef, useState } from "react";
-import { ErrorManager } from "@/services/errorManager";
 import { GripVertical, Loader2, Save } from "@/shared/lib/icons";
+import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
@@ -72,6 +72,23 @@ export const RankingAdjustment = memo(
 		const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 		const isMountedRef = useRef(true);
 		const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+		const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+		useEffect(() => {
+			isMountedRef.current = true;
+
+			return () => {
+				isMountedRef.current = false;
+				if (saveTimerRef.current) {
+					clearTimeout(saveTimerRef.current);
+					saveTimerRef.current = null;
+				}
+				if (saveStatusTimerRef.current) {
+					clearTimeout(saveStatusTimerRef.current);
+					saveStatusTimerRef.current = null;
+				}
+			};
+		}, []);
 
 		useEffect(() => {
 			if (hasUnsavedChanges) {
@@ -84,11 +101,15 @@ export const RankingAdjustment = memo(
 		}, [rankings, hasUnsavedChanges, items]);
 
 		useEffect(() => {
-			isMountedRef.current = true;
 			if (items && rankings && haveRankingsChanged(items, rankings)) {
 				setSaveStatus("saving");
 				if (saveTimerRef.current) {
 					clearTimeout(saveTimerRef.current);
+					saveTimerRef.current = null;
+				}
+				if (saveStatusTimerRef.current) {
+					clearTimeout(saveStatusTimerRef.current);
+					saveStatusTimerRef.current = null;
 				}
 				saveTimerRef.current = setTimeout(() => {
 					onSave(items)
@@ -98,10 +119,11 @@ export const RankingAdjustment = memo(
 							}
 							setHasUnsavedChanges(false);
 							setSaveStatus("success");
-							setTimeout(() => {
+							saveStatusTimerRef.current = setTimeout(() => {
 								if (isMountedRef.current) {
 									setSaveStatus("");
 								}
+								saveStatusTimerRef.current = null;
 							}, 2000);
 						})
 						.catch((e: unknown) => {
@@ -116,6 +138,11 @@ export const RankingAdjustment = memo(
 			return () => {
 				if (saveTimerRef.current) {
 					clearTimeout(saveTimerRef.current);
+					saveTimerRef.current = null;
+				}
+				if (saveStatusTimerRef.current) {
+					clearTimeout(saveStatusTimerRef.current);
+					saveStatusTimerRef.current = null;
 				}
 			};
 		}, [items, rankings, onSave]);

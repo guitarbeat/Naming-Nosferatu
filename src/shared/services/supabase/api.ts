@@ -1,6 +1,6 @@
-import { api } from "@/services/apiClient";
+import { api } from "@/shared/services/apiClient";
 import type { NameItem } from "@/shared/types";
-import { getFallbackNames } from "../../../shared/fallbackNames";
+import { getFallbackNames } from "../../../../shared/fallbackNames";
 import { resolveSupabaseClient } from "./runtime";
 
 interface ApiNameRow {

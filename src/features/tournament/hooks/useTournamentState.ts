@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { EloRating, generateRandomTeams, resolveTournamentMode } from "@/services/tournament";
+import {
+	EloRating,
+	generateRandomTeams,
+	resolveTournamentMode,
+} from "@/features/tournament/services/tournament";
 import { useLocalStorage } from "@/shared/hooks";
 import type {
 	Match,

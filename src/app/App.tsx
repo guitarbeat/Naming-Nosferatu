@@ -15,15 +15,14 @@ import { NameSuggestionInner } from "@/features/tournament/components/NameSugges
 import { ProfileInner } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
-import { ErrorManager } from "@/services/errorManager";
-import { updateSupabaseUserContext } from "@/services/supabase/runtime";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { useOfflineSync } from "@/shared/hooks";
-
 import {
 	cleanupPerformanceMonitoring,
 	initializePerformanceMonitoring,
 } from "@/shared/lib/performance";
+import { ErrorManager } from "@/shared/services/errorManager";
+import { updateSupabaseUserContext } from "@/shared/services/supabase/runtime";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 
 const TournamentFlow = routeComponents.TournamentFlow;

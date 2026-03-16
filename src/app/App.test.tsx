@@ -62,7 +62,7 @@ vi.mock("@/shared/lib/performance", () => ({
 	cleanupPerformanceMonitoring: vi.fn(),
 }));
 
-vi.mock("@/services/errorManager", () => ({
+vi.mock("@/shared/services/errorManager", () => ({
 	ErrorManager: {
 		setupGlobalErrorHandling: () => vi.fn(),
 	},

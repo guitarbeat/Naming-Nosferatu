@@ -127,32 +127,54 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 	// Trap focus within lightbox when open with improved accessibility
 	useEffect(() => {
-		if (!lightboxRef.current) {
+		const lightboxElement = lightboxRef.current;
+		if (!lightboxElement) {
 			return;
 		}
+		const previouslyFocusedElement =
+			document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
-		const focusableElements = lightboxRef.current.querySelectorAll(
-			'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-		) as NodeListOf<HTMLElement>;
+		const getFocusableElements = () =>
+			Array.from(
+				lightboxElement.querySelectorAll<HTMLElement>(
+					'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+				),
+			);
 
-		const firstElement = focusableElements[0];
-		const lastElement = focusableElements[focusableElements.length - 1];
+		const focusFirstElement = () => {
+			const [firstElement] = getFocusableElements();
+			if (firstElement) {
+				firstElement.focus();
+				return;
+			}
+			lightboxElement.focus();
+		};
 
 		const handleTabKey = (e: KeyboardEvent) => {
 			if (e.key !== "Tab") {
 				return;
 			}
+			const focusableElements = getFocusableElements();
+			if (focusableElements.length === 0) {
+				e.preventDefault();
+				lightboxElement.focus();
+				return;
+			}
+
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
 
 			if (e.shiftKey) {
-				if (document.activeElement === firstElement) {
+				if (document.activeElement === firstElement || document.activeElement === lightboxElement) {
 					e.preventDefault();
 					lastElement?.focus();
 				}
-			} else {
-				if (document.activeElement === lastElement) {
-					e.preventDefault();
-					firstElement?.focus();
-				}
+				return;
+			}
+
+			if (document.activeElement === lastElement) {
+				e.preventDefault();
+				firstElement?.focus();
 			}
 		};
 
@@ -160,12 +182,15 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		document.addEventListener("keydown", handleTabKey);
 		// Use setTimeout to ensure focus is set after animation
 		const focusTimeout = setTimeout(() => {
-			firstElement?.focus();
+			focusFirstElement();
 		}, 100);
 
 		return () => {
 			document.removeEventListener("keydown", handleTabKey);
 			clearTimeout(focusTimeout);
+			if (previouslyFocusedElement?.isConnected) {
+				previouslyFocusedElement.focus();
+			}
 		};
 	}, []);
 
@@ -294,6 +319,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center"
 				onClick={onClose}
 				role="dialog"
+				tabIndex={-1}
 				aria-modal="true"
 				aria-labelledby={`lightbox-title-${currentIndex}`}
 				aria-describedby={`lightbox-description-${currentIndex}`}

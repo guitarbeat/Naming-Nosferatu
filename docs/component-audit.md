@@ -1,5 +1,7 @@
 # Component Audit
 
+**Last Reviewed:** March 15, 2026
+
 ## Scope
 
 Audited all React component files under `src/`, grouped by feature area (layout, analytics, tournament, app/providers). Hooks, store modules, and utility-only files were considered out of scope unless they render UI directly. This audit focuses on component responsibilities, accessibility, and potential follow-ups.
@@ -11,11 +13,15 @@ Audited all React component files under `src/`, grouped by feature area (layout,
 - Loading and error handling patterns are centralized (`Loading`, `ErrorBoundary`, `ErrorComponent`).
 - Navigation and analytics surfaces are decomposed into reusable subcomponents.
 
-**Follow-up Opportunities**
-- Add accessible labels to icon-only buttons (e.g., Lightbox controls, tournament audio toggle).
-- Ensure interactive non-button elements (e.g., `CollapsibleHeader` container) have keyboard support or are rendered as `<button>` elements.
-- Review setTimeout-based animation sequences in charts for cleanup on unmount.
-- Consider focus trapping for modal overlays (Lightbox) to improve keyboard navigation.
+**Resolved Since Initial Audit**
+- Icon-only controls called out in the audit now expose accessible labels, including Lightbox controls and the tournament audio controls.
+- The hidden-names disclosure trigger is a native `<button>` in `NameSelector`; `CollapsibleContent` is only the animated content wrapper.
+- `Lightbox` now traps focus while open and restores focus to the originating control on close.
+- Timer-based follow-ups in `RankingAdjustment` and `LightboxImage` now clear pending timers on unmount or source changes.
+- `ConfirmDialog` now traps focus and returns focus to the triggering control when dismissed.
+
+**Current Watchpoints**
+- Keep modal focus-management behavior covered by tests so future visual refactors do not regress keyboard navigation.
 
 ## Component Inventory
 

@@ -4,7 +4,7 @@
  */
 
 import { motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface LightboxImageProps {
 	src: string;
@@ -18,10 +18,15 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 	const [isLoading, setIsLoading] = useState(true);
 	const [hasError, setHasError] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
+	const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const maxRetries = 3;
 
 	const handleLoad = useCallback(() => {
+		if (retryTimeoutRef.current) {
+			clearTimeout(retryTimeoutRef.current);
+			retryTimeoutRef.current = null;
+		}
 		setIsLoading(false);
 		setHasError(false);
 		onLoad?.();
@@ -29,10 +34,14 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 
 	const handleError = useCallback(() => {
 		if (retryCount < maxRetries) {
+			if (retryTimeoutRef.current) {
+				clearTimeout(retryTimeoutRef.current);
+			}
 			// Retry with a slight delay
-			setTimeout(
+			retryTimeoutRef.current = setTimeout(
 				() => {
 					setRetryCount((prev) => prev + 1);
+					retryTimeoutRef.current = null;
 				},
 				1000 * (retryCount + 1),
 			);
@@ -45,13 +54,26 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 
 	// Reset state when src changes
 	useEffect(() => {
+		if (retryTimeoutRef.current) {
+			clearTimeout(retryTimeoutRef.current);
+			retryTimeoutRef.current = null;
+		}
 		setIsLoading(true);
 		setHasError(false);
 		setRetryCount(0);
 		if (!src) {
-			return;
+			setIsLoading(false);
 		}
 	}, [src]);
+
+	useEffect(() => {
+		return () => {
+			if (retryTimeoutRef.current) {
+				clearTimeout(retryTimeoutRef.current);
+				retryTimeoutRef.current = null;
+			}
+		};
+	}, []);
 
 	if (hasError) {
 		return (

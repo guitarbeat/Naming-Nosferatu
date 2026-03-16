@@ -1,4 +1,8 @@
-import { applyTeamMatchElo, type EloRating, getBracketStageLabel } from "@/services/tournament";
+import {
+	applyTeamMatchElo,
+	type EloRating,
+	getBracketStageLabel,
+} from "@/features/tournament/services/tournament";
 import { ELO_RATING } from "@/shared/lib/constants";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/shared/types";
 

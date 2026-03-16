@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/shared/lib/basic";
 import Button from "./Button";
 
@@ -26,21 +26,77 @@ export function ConfirmDialog({
 	onConfirm,
 	onCancel,
 }: ConfirmDialogProps) {
+	const dialogRef = useRef<HTMLDivElement>(null);
+
 	useEffect(() => {
 		if (!open) {
 			return;
 		}
+		const dialogElement = dialogRef.current;
+		if (!dialogElement) {
+			return;
+		}
+		const previouslyFocusedElement =
+			document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+		const getFocusableElements = () =>
+			Array.from(
+				dialogElement.querySelectorAll<HTMLElement>(
+					'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+				),
+			);
+
+		const focusFirstElement = () => {
+			const [firstElement] = getFocusableElements();
+			if (firstElement) {
+				firstElement.focus();
+				return;
+			}
+			dialogElement.focus();
+		};
 
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape" && !loading) {
 				event.preventDefault();
 				onCancel();
+				return;
+			}
+
+			if (event.key !== "Tab") {
+				return;
+			}
+
+			const focusableElements = getFocusableElements();
+			if (focusableElements.length === 0) {
+				event.preventDefault();
+				dialogElement.focus();
+				return;
+			}
+
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+
+			if (event.shiftKey) {
+				if (document.activeElement === firstElement || document.activeElement === dialogElement) {
+					event.preventDefault();
+					lastElement?.focus();
+				}
+				return;
+			}
+
+			if (document.activeElement === lastElement) {
+				event.preventDefault();
+				firstElement?.focus();
 			}
 		};
 
+		focusFirstElement();
 		window.addEventListener("keydown", onKeyDown);
 		return () => {
 			window.removeEventListener("keydown", onKeyDown);
+			if (previouslyFocusedElement?.isConnected) {
+				previouslyFocusedElement.focus();
+			}
 		};
 	}, [open, loading, onCancel]);
 
@@ -73,6 +129,8 @@ export function ConfirmDialog({
 						className="fixed inset-0 z-[1100] grid place-items-center p-4"
 					>
 						<div
+							ref={dialogRef}
+							tabIndex={-1}
 							className="w-full max-w-md rounded-2xl border border-white/15 bg-slate-950/95 p-6 text-white shadow-2xl"
 							onClick={(event) => event.stopPropagation()}
 						>

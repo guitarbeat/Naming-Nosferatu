@@ -6,10 +6,6 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { api } from "@/services/apiClient";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase/api";
-import { resolveSupabaseClient } from "@/services/supabase/client";
-import { withSupabase } from "@/services/supabase/runtime";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
@@ -32,6 +28,10 @@ import {
 	X,
 	ZoomIn,
 } from "@/shared/lib/icons";
+import { api } from "@/shared/services/apiClient";
+import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase/api";
+import { resolveSupabaseClient } from "@/shared/services/supabase/client";
+import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 

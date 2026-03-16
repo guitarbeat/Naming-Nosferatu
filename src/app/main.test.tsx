@@ -43,7 +43,7 @@ vi.mock("@/services/authAdapter", () => ({
 	authAdapter: { kind: "auth-adapter" },
 }));
 
-vi.mock("@/services/supabase/client", () => ({
+vi.mock("@/shared/services/supabase/client", () => ({
 	queryClient: { kind: "query-client" },
 }));
 

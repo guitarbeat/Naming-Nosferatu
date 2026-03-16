@@ -1,4 +1,4 @@
-import { api } from "@/services/apiClient";
+import { api } from "@/shared/services/apiClient";
 import type { IdType, NameItem } from "@/shared/types";
 
 export interface LeaderboardItem {

@@ -1,11 +1,14 @@
-import path from "path";
+import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "src"),
-			"@supabase/client": path.resolve(__dirname, "src/services/supabase/client.ts"),
+			"@/app": path.resolve(__dirname, "src/app"),
+			"@/features": path.resolve(__dirname, "src/features"),
+			"@/shared": path.resolve(__dirname, "src/shared"),
+			"@supabase/client": path.resolve(__dirname, "src/shared/services/supabase/client.ts"),
 			"@supabase/types": path.resolve(__dirname, "supabase/types.ts"),
 			"@db": path.resolve(__dirname, "supabase"),
 		},
