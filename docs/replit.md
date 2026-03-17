@@ -121,7 +121,7 @@ src/
 ### Code Quality
 
 - **Linter**: Biome (replaces ESLint + Prettier) — configured in `biome.json` with tab indentation, 100 char line width
-- **CSS Linting**: Stylelint with standard config (`.stylelintrc.json`)
+- **CSS Linting**: Stylelint with standard config (`config/.stylelintrc.json`)
 - **Type Checking**: Strict TypeScript config with `noImplicitAny`, `strictNullChecks`, etc.
 - **Dependency Checking**: Knip for detecting unused dependencies
 - **Architecture Checks**: Custom shell scripts for case collisions, copy artifacts, and architecture boundary enforcement

@@ -1,10 +1,11 @@
 import type { ServerResponse } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import autoprefixer from "autoprefixer";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { createLogger, defineConfig } from "vite";
-import { consoleForwardPlugin } from "./scripts/vite-console-forward-plugin";
+import { consoleForwardPlugin } from "../scripts/vite-console-forward-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -90,9 +91,14 @@ export default defineConfig(({ command }) => ({
 			},
 		},
 	},
+	css: {
+		postcss: {
+			plugins: [autoprefixer()],
+		},
+	},
 	plugins: [
 		react(),
-		tailwindcss(),
+		tailwindcss({ config: path.resolve(__dirname, "tailwind.config.js") }),
 		consoleForwardPlugin({
 			enabled: command === "serve",
 			endpoint: "/api/debug/client-logs",
@@ -101,10 +107,10 @@ export default defineConfig(({ command }) => ({
 	],
 	resolve: {
 		alias: {
-			"@": path.resolve(__dirname, "src"),
-			"@/app": path.resolve(__dirname, "src/app"),
-			"@/features": path.resolve(__dirname, "src/features"),
-			"@/shared": path.resolve(__dirname, "src/shared"),
+			"@": path.resolve(__dirname, "..", "src"),
+			"@/app": path.resolve(__dirname, "..", "src/app"),
+			"@/features": path.resolve(__dirname, "..", "src/features"),
+			"@/shared": path.resolve(__dirname, "..", "src/shared"),
 		},
 	},
 	build: {

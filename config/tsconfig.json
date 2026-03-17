@@ -29,9 +29,11 @@
 		"src",
 		"server",
 		"shared",
-		"scripts/*.ts",
+		"../scripts/*.ts",
 		"vite.config.ts",
 		"vitest.config.ts",
-		"capacitor.config.ts"
+		"../config/capacitor.config.ts",
+		"../public/**/*.ts",
+		"../public/**/*.tsx"
 	]
 }

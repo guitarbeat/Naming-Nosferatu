@@ -23,7 +23,7 @@ A React application for managing cat names and related data, featuring tournamen
     ```
 
 3.  Set up environment variables:
-    - Copy `.env.example` to `.env` (if available) or set up the required Supabase environment variables:
+- Copy `config/.env.example` to `.env` (if available) or set up the required Supabase environment variables:
         - `VITE_SUPABASE_URL`
         - `VITE_SUPABASE_ANON_KEY`
         - `DATABASE_URL` (for Drizzle/server operations)
