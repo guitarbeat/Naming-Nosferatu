@@ -29,6 +29,18 @@ A React application for managing cat names and related data, featuring tournamen
         - `DATABASE_URL` (for Drizzle/server operations)
         - `JWT_SECRET` (required for backend API auth)
 
+### Repository layout notes
+
+This repo keeps configuration files under `config/` now:
+
+- `config/biome.json`, `config/knip.json`, `config/tsconfig.json`
+- `config/vite.config.ts`, `config/vitest.config.ts`, `config/vitest.setup.ts`
+- `config/tailwind.config.js`, `config/lefthook.yml`
+- `config/capacitor.config.ts`
+- `config/.env.example`, `config/.npmrc`, `config/.stylelintrc.json`, `config/.replit`
+
+Root `package.json` scripts point to these files explicitly.
+
 ### Development
 
 To start the Vite frontend dev server:
