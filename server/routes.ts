@@ -1,7 +1,6 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { type NextFunction, type Request, type Response, Router } from "express";
 import rateLimit from "express-rate-limit";
-import jwt from "jsonwebtoken";
 import multer from "multer";
 import { ZodError } from "zod";
 import { getFallbackNames } from "../shared/fallbackNames";
@@ -12,13 +11,9 @@ import {
 	catTournamentSelections,
 	userRoles,
 } from "../shared/schema";
-import { requireAdmin } from "./auth";
 import { db } from "./db";
+import { requireSupabaseAuth, optionalSupabaseAuth, isSupabaseAdmin } from "./supabaseAuth";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-	throw new Error("JWT_SECRET environment variable is required");
-}
 const authRateLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
 	max: 100,
@@ -62,23 +57,12 @@ const getRouteParam = (value: string | string[] | undefined, key: string) => {
 		return value;
 	}
 
-	throw new TypeError(`Expected route param "${key}" to be a string`);
-};
-
-const getJwtUserId = (token: string) => {
-	const decoded = jwt.verify(token, JWT_SECRET);
-
-	if (
-		typeof decoded !== "object" ||
-		decoded === null ||
-		!("userId" in decoded) ||
-		typeof decoded.userId !== "string"
-	) {
-		throw new TypeError("JWT payload is missing a string userId");
+	if (Array.isArray(value)) {
+		return value[0];
 	}
 
-	return decoded.userId;
-};
+	throw new TypeError(`Expected route param "${key}" to be a string`);
+}
 
 // Mock data for when database is unavailable
 const mockNames = getFallbackNames(true);
@@ -325,21 +309,16 @@ router.post("/api/users", async (req, res) => {
 	}
 });
 
-// Get user roles
-router.get("/api/users/:userId/roles", authRateLimiter, async (req, res) => {
+// Get user roles (requires authentication)
+router.get("/api/users/:userId/roles", requireSupabaseAuth, async (req, res) => {
 	try {
-		if (!db) {
-			return res.json([]);
+		const { user } = req;
+		if (!user) {
+			return res.status(401).json({ error: "Unauthorized" });
 		}
-		try {
-			const userToken = getRouteParam(req.params.userId, "userId");
-			const decodedUserId = getJwtUserId(userToken);
-			const roles = await db.select().from(userRoles).where(eq(userRoles.userId, decodedUserId));
-			res.json(roles);
-		} catch (verifyError) {
-			console.error("JWT verification failed:", verifyError);
-			res.json([]);
-		}
+
+		const roles = await db.select().from(userRoles).where(eq(userRoles.userId, user.id));
+		res.json(roles);
 	} catch (error) {
 		console.error("Error fetching user roles:", error);
 		res.status(500).json({ error: "Failed to fetch user roles" });
@@ -347,7 +326,7 @@ router.get("/api/users/:userId/roles", authRateLimiter, async (req, res) => {
 });
 
 // Save ratings
-router.post("/api/ratings", ratingsRateLimiter, authRateLimiter, async (req, res) => {
+router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req, res) => {
 	try {
 		const { userId, ratings } = saveRatingsSchema.parse(req.body);
 
@@ -366,13 +345,13 @@ router.post("/api/ratings", ratingsRateLimiter, authRateLimiter, async (req, res
 			}
 		}
 
-		let realUserId: string;
-		try {
-			realUserId = getJwtUserId(userId);
-		} catch (verifyError) {
-			console.error("JWT verification failed for ratings:", verifyError);
+		const { user } = req;
+		if (!user) {
 			return res.status(401).json({ error: "Unauthorized" });
 		}
+
+		// Use the authenticated user's ID instead of the provided userId
+		const realUserId = user.id;
 
 		if (!db) {
 			return res.json({ success: true, count: ratings.length });
@@ -705,4 +684,47 @@ router.get("/api/analytics/user-stats", async (req, res) => {
 router.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 	console.error("Route error:", err);
 	res.status(500).json({ error: "Internal server error" });
+});
+
+// Image upload endpoint
+router.post("/api/images/upload", requireAdmin, upload.single("image"), async (req, res) => {
+	try {
+		const { userName } = imageUploadSchema.parse(req.body);
+		const file = req.file;
+
+		if (!file) {
+			return res.status(400).json({ error: "No image file provided" });
+		}
+
+		// Here you would integrate with your imagesAPI
+		// For now, return success response
+		res.json({ 
+			success: true,
+			message: "Image upload endpoint is ready",
+			fileName: file.originalname,
+			size: file.size,
+			userName
+		});
+	} catch (error) {
+		if (error instanceof ZodError) {
+			return res.status(400).json({ error: error.issues });
+		}
+		console.error("Error uploading image:", error);
+		res.status(500).json({ error: "Failed to upload image" });
+	}
+});
+
+// List images endpoint
+router.get("/api/images", requireAdmin, async (_req, res) => {
+	try {
+		// Here you would integrate with your imagesAPI.list()
+		res.json({ 
+			success: true,
+			images: [],
+			message: "Image listing endpoint is ready"
+		});
+	} catch (error) {
+		console.error("Error listing images:", error);
+		res.status(500).json({ error: "Failed to list images" });
+	}
 });

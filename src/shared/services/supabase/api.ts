@@ -109,7 +109,7 @@ export const imagesAPI = {
 				return [] as string[];
 			}
 
-			return (data || []).map((file: any) => file.name);
+			return (data || []).map((item: any) => item.name);
 		} catch (error) {
 			console.error('Error listing images:', error);
 			return [] as string[];
