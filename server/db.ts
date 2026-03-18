@@ -22,6 +22,9 @@ if (process.env.DATABASE_URL) {
 		pool = null;
 	}
 } else {
+	if (process.env.NODE_ENV === "production") {
+		throw new Error("DATABASE_URL must be set in production");
+	}
 	console.log("ℹ DATABASE_URL not set - running in mock mode without database");
 }
 
