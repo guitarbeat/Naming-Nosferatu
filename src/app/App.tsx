@@ -16,6 +16,8 @@ import { ProfileInner } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
+import { SectionHeading } from "@/shared/components/layout/SectionHeading";
+import { Lightbulb, User } from "@/shared/lib/icons";
 import { useOfflineSync } from "@/shared/hooks";
 import {
 	cleanupPerformanceMonitoring,
@@ -103,10 +105,20 @@ function HomeContent() {
 			</Section>
 
 			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered>
+				<SectionHeading
+					icon={Lightbulb}
+					title="Suggest a Name"
+					subtitle="Got a great cat name? Share it with the community"
+				/>
 				<NameSuggestionInner />
 			</Section>
 
 			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered>
+				<SectionHeading
+					icon={User}
+					title="Your Profile"
+					subtitle="Track your rankings and tournament history"
+				/>
 				<ProfileInner onLogin={(name) => login({ name })} />
 			</Section>
 		</>
