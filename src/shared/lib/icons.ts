@@ -8,6 +8,7 @@
  */
 
 export {
+	Activity,
 	BarChart3,
 	Cat,
 	Check,
@@ -38,9 +39,12 @@ export {
 	Shuffle,
 	SkipBack,
 	SkipForward,
+	Target,
+	TrendingUp,
 	Trophy,
 	Undo2,
 	User,
+	Users,
 	Volume2,
 	VolumeX,
 	X,
