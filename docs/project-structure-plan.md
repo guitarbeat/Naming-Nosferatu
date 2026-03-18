@@ -9,7 +9,7 @@
 
 ## Current Progress Snapshot
 - `src/app/`, `src/features/`, and `src/shared/` exist and are the primary homes for app shell, feature modules, and shared UI/utilities.
-- `pnpm run check:arch` already enforces that `src/shared/` and `src/services/` do not import from `@/features/*`.
+- `pnpm run check:maintenance` already enforces that `src/shared/` and `src/services/` do not import from `@/features/*`.
 - Tooling now exposes explicit `@/app/*`, `@/features/*`, and `@/shared/*` aliases alongside the root `@/*` alias.
 - Feature-local service extraction has started: tournament Elo/match helpers and analytics API wrappers now live under `src/features/*/services/`.
 - Shared runtime infrastructure now lives under `src/shared/services/` (`apiClient`, `errorManager`, and Supabase runtime/api modules).
@@ -123,7 +123,7 @@ src/
 
 ## Current Migration Checklist
 - [x] Create the top-level `app`, `features`, and `shared` folders.
-- [x] Add automated import-boundary enforcement (`pnpm run check:arch`).
+- [x] Add automated import-boundary enforcement (`pnpm run check:maintenance`).
 - [ ] Move the remaining root-level `src/services/*` modules into `shared/` or feature-local service folders.
 - [ ] Split `src/store/appStore.ts` into an app entry plus feature-level slices/modules.
 - [x] Add explicit `@/app/*`, `@/features/*`, and `@/shared/*` alias entries in tooling.

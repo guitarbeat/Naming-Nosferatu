@@ -49,8 +49,7 @@ This document provides a comprehensive guide for setting up, developing, maintai
 | `pnpm run lint`  | Run Biome linting and TypeScript checks    |
 | `pnpm run fix`   | Auto-fix linting issues                    |
 | `pnpm run check` | Run all checks (lint and dependency hygiene) |
-| `pnpm run check:copy-artifacts` | Detect accidental `file 2.ts` / `file 3.ts` copies |
-| `pnpm run check:arch` | Enforce architecture import boundaries |
+| `pnpm run check:maintenance` | Run case-collision, copy-artifact, env, architecture, and circular-dependency checks |
 
 ---
 

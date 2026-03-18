@@ -104,7 +104,7 @@ import { coreAPI } from '@/services/supabase/api';
 
 ## Architecture Boundaries
 
-The project enforces import boundaries via `check:arch` script:
+The project enforces import boundaries via `check:maintenance`:
 - Features should not import from other features
 - Shared code should not import from features
 - Services layer is independent of features

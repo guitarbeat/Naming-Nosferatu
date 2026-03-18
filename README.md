@@ -75,8 +75,7 @@ pnpm run test:coverage
 
 -   **Linting**: `pnpm run lint` (checks `src` and `server`)
 -   **Fix Linting**: `pnpm run fix` or `pnpm run lint:fix`
--   **Defragmentation Guard**: `pnpm run check:copy-artifacts` (detects accidental `file 2.ts` copies)
--   **Architecture Guard**: `pnpm run check:arch` (enforces import boundaries between layers)
+-   **Maintenance Suite**: `pnpm run check:maintenance` (runs case-collision, copy-artifact, env, architecture, and circular dependency checks)
 -   **Dependency Check**: `pnpm run check:deps` (using Knip)
 
 ## 📚 Documentation

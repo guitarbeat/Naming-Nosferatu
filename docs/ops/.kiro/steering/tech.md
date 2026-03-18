@@ -59,9 +59,12 @@ pnpm preview          # Preview production build
 - **Auto-organize imports**: Enabled via assist actions
 
 ### Architecture Guards
-- `check:case-collisions` - Detects case-sensitive filename issues
-- `check:copy-artifacts` - Detects accidental "file 2.ts" copies
-- `check:arch` - Enforces import boundaries between layers
+- `check:maintenance` - Runs maintenance checks:
+  - `case-collisions` (case-sensitive filename collisions)
+  - `copy-artifacts` (accidental `file 2.ts` copies)
+  - `env` (env variable presence logging)
+  - `arch` (import boundary enforcement)
+  - `cycles` (circular dependency detection)
 
 ## Build Configuration
 
