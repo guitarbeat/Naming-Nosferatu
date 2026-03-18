@@ -41,17 +41,19 @@ export default function TournamentFlow() {
 							</div>
 							<p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">
 								Your personal rankings have been updated. Head over to the{" "}
-								<strong className="text-primary">Analyze</strong> section to see the full breakdown
-								and compare results!
+								<strong className="text-primary">Analyze</strong> section to see
+								the full breakdown and compare results!
 							</p>
 							<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
 								<button
+									type="button"
 									onClick={() => navigate("/analysis")}
 									className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-colors"
 								>
 									Analyze Results
 								</button>
 								<button
+									type="button"
 									onClick={handleStartNewTournament}
 									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-colors"
 								>
