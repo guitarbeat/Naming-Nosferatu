@@ -1,7 +1,8 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { type NextFunction, type Request, type Response, Router } from "express";
-import { rateLimit } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
+import multer from "multer";
 import { ZodError } from "zod";
 import { getFallbackNames } from "../shared/fallbackNames";
 import {
@@ -24,10 +25,31 @@ const authRateLimiter = rateLimit({
 	message: { error: "Too many requests, please try again later." },
 });
 
+const ratingsRateLimiter = rateLimit({
+	windowMs: 60 * 1000, // 1 minute
+	max: 10, // Limit to 10 rating submissions per minute
+	message: { error: "Too many rating submissions, please try again later." },
+	skipSuccessfulRequests: false,
+	skipFailedRequests: false,
+});
+
+const upload = multer({
+	storage: multer.memoryStorage(),
+	limits: {
+		fileSize: 5 * 1024 * 1024, // 5MB
+		files: 1,
+	},
+	fileFilter: (req, file, cb) => {
+		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+		cb(null, allowedTypes.includes(file.mimetype));
+	},
+});
+
 import {
 	batchHideSchema,
 	createNameSchema,
 	createUserSchema,
+	imageUploadSchema,
 	saveRatingsSchema,
 	updateHideSchema,
 	updateLockSchema,
@@ -325,9 +347,24 @@ router.get("/api/users/:userId/roles", authRateLimiter, async (req, res) => {
 });
 
 // Save ratings
-router.post("/api/ratings", authRateLimiter, async (req, res) => {
+router.post("/api/ratings", ratingsRateLimiter, authRateLimiter, async (req, res) => {
 	try {
 		const { userId, ratings } = saveRatingsSchema.parse(req.body);
+
+		// Additional security checks
+		if (ratings.length > 50) {
+			return res.status(400).json({ error: "Too many ratings submitted at once" });
+		}
+
+		// Validate each rating has reasonable values
+		for (const rating of ratings) {
+			if (rating.rating < 1000 || rating.rating > 3000) {
+				return res.status(400).json({ error: "Invalid rating value" });
+			}
+			if ((rating.wins || 0) < 0 || (rating.losses || 0) < 0) {
+				return res.status(400).json({ error: "Invalid win/loss values" });
+			}
+		}
 
 		let realUserId: string;
 		try {

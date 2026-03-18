@@ -37,9 +37,16 @@ export default function TournamentFlow() {
                                 {} as Record<string, { rating: number; wins: number; losses: number }>
                         );
                         
-                        ratingsAPI.saveRatings(userId, ratingsWithStats).catch((error) => {
-                                console.error("Failed to persist tournament ratings:", error);
-                        });
+                        ratingsAPI.saveRatings(userId, ratingsWithStats)
+                                .then((result) => {
+                                        if (result?.success) {
+                                                console.log(`Successfully saved ${result.count} ratings to database`);
+                                        }
+                                })
+                                .catch((error) => {
+                                        // Error is already logged by ratingsAPI with context
+                                        console.warn("Tournament ratings save failed, but fallback may have been used");
+                                });
                 }
         }, [tournament.isComplete, tournament.ratings, user.name]);
 
