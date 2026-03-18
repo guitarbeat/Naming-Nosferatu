@@ -6,6 +6,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { queryClient } from "@/shared/services/supabase/client";
+import { supabaseAuthAdapter } from "@/services/supabaseAuthAdapter";
 import App from "./App";
 import { shouldEnableAnalytics } from "./analytics";
 import { Providers } from "./providers/Providers";
@@ -54,7 +55,7 @@ ReactDOM.createRoot(rootElement).render(
 			console.error("Application error:", error, errorInfo);
 		}}>
 			<QueryClientProvider client={queryClient}>
-				<Providers auth={{ adapter: authAdapter }}>
+				<Providers auth={{ adapter: supabaseAuthAdapter }}>
 					<BrowserRouter>
 						<App />
 						{analyticsEnabled ? <Analytics /> : null}
