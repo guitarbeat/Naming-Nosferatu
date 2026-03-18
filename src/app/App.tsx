@@ -99,6 +99,13 @@ function HomeContent() {
 	return (
 		<>
 			<Section id="pick" variant="minimal" padding="compact" maxWidth="full">
+				<div className="mx-auto max-w-4xl">
+					<SectionHeading
+						icon={Trophy}
+						title="Pick Names"
+						subtitle="Select your favorite cat names to battle it out"
+					/>
+				</div>
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 					<TournamentFlow />
 				</Suspense>
