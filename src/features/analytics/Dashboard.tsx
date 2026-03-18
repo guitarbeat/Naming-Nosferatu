@@ -351,77 +351,77 @@ export function Dashboard({
 							</Button>
 						</div>
 					</div>
-				</div>
 				
-				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-					<div className="p-4 border border-border rounded-lg bg-card">
-						<div className="flex items-center gap-2 mb-2">
-							<Users className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Total Tournaments</p>
-								<p className="text-2xl font-bold text-foreground">{engagementMetrics.totalTournaments}</p>
+					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+						<div className="p-4 border border-border rounded-lg bg-card">
+							<div className="flex items-center gap-2 mb-2">
+								<Users className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Total Tournaments</p>
+									<p className="text-2xl font-bold text-foreground">{engagementMetrics.totalTournaments}</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2 mb-2">
+								<Trophy className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Completed</p>
+									<p className="text-2xl font-bold text-chart-4">{engagementMetrics.completedTournaments}</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2 mb-2">
+								<Clock className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Avg Duration</p>
+									<p className="text-2xl font-bold text-foreground">{engagementMetrics.averageTournamentTime}m</p>
+								</div>
 							</div>
 						</div>
-						<div className="flex items-center gap-2 mb-2">
-							<Trophy className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Completed</p>
-								<p className="text-2xl font-bold text-chart-4">{engagementMetrics.completedTournaments}</p>
+						
+						<div className="p-4 border border-border rounded-lg bg-card">
+							<div className="flex items-center gap-2 mb-2">
+								<Target className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Peak Active Users</p>
+									<p className="text-2xl font-bold text-foreground">{engagementMetrics.peakActiveUsers}</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2 mb-2">
+								<Activity className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">User Retention</p>
+									<p className="text-2xl font-bold text-chart-4">{engagementMetrics.userRetentionRate}%</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2 mb-2">
+								<BarChart3 className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Bounce Rate</p>
+									<p className="text-2xl font-bold text-chart-4">{engagementMetrics.bounceRate}%</p>
+								</div>
 							</div>
 						</div>
-						<div className="flex items-center gap-2 mb-2">
-							<Clock className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Avg Duration</p>
-								<p className="text-2xl font-bold text-foreground">{engagementMetrics.averageTournamentTime}m</p>
+						
+						<div className="p-4 border border-border rounded-lg bg-card">
+							<div className="flex items-center gap-2 mb-2">
+								<Users className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Daily Active</p>
+									<p className="text-2xl font-bold text-foreground">{engagementMetrics.dailyActiveUsers}</p>
+								</div>
 							</div>
-						</div>
-					</div>
-					
-					<div className="p-4 border border-border rounded-lg bg-card">
-						<div className="flex items-center gap-2 mb-2">
-							<Target className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Peak Active Users</p>
-								<p className="text-2xl font-bold text-foreground">{engagementMetrics.peakActiveUsers}</p>
+							<div className="flex items-center gap-2 mb-2">
+								<Users className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Weekly Active</p>
+									<p className="text-2xl font-bold text-foreground">{engagementMetrics.weeklyActiveUsers}</p>
+								</div>
 							</div>
-						</div>
-						<div className="flex items-center gap-2 mb-2">
-							<Activity className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">User Retention</p>
-								<p className="text-2xl font-bold text-chart-4">{engagementMetrics.userRetentionRate}%</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-2 mb-2">
-							<BarChart3 className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Bounce Rate</p>
-								<p className="text-2xl font-bold text-chart-4">{engagementMetrics.bounceRate}%</p>
-							</div>
-						</div>
-					</div>
-					
-					<div className="p-4 border border-border rounded-lg bg-card">
-						<div className="flex items-center gap-2 mb-2">
-							<Users className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Daily Active</p>
-								<p className="text-2xl font-bold text-foreground">{engagementMetrics.dailyActiveUsers}</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-2 mb-2">
-							<Users className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Weekly Active</p>
-								<p className="text-2xl font-bold text-foreground">{engagementMetrics.weeklyActiveUsers}</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-2 mb-2">
-							<Users className="text-chart-4" size={20} />
-							<div>
-								<p className="text-sm text-muted-foreground">Monthly Active</p>
-								<p className="text-2xl font-bold text-foreground">{engagementMetrics.monthlyActiveUsers}</p>
+							<div className="flex items-center gap-2 mb-2">
+								<Users className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Monthly Active</p>
+									<p className="text-2xl font-bold text-foreground">{engagementMetrics.monthlyActiveUsers}</p>
+								</div>
 							</div>
 						</div>
 					</div>
