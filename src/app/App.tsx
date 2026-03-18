@@ -11,8 +11,8 @@ import { Suspense, useCallback, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
-import { NameSuggestionInner } from "@/features/tournament/components/NameSuggestion";
-import { ProfileInner } from "@/features/tournament/components/ProfileSection";
+import { NameSuggestion } from "@/features/tournament/components/NameSuggestion";
+import { ProfileSection } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
@@ -21,8 +21,8 @@ import {
 	cleanupPerformanceMonitoring,
 	initializePerformanceMonitoring,
 } from "@/shared/lib/performance";
-import { ErrorManager } from "@/shared/services/errorManager";
-import { updateSupabaseUserContext } from "@/shared/services/supabase/runtime";
+import { ErrorManager } from "@/services/errorManager";
+import { updateSupabaseUserContext } from "@/services/supabase/runtime";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 
 const TournamentFlow = routeComponents.TournamentFlow;
@@ -102,15 +102,11 @@ function HomeContent() {
 				</Suspense>
 			</Section>
 
-			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="full">
-				<NameSuggestionInner />
+			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" separator={true}>
+				<NameSuggestion variant="inline" />
 			</Section>
 
-			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="full">
-				<div className="mx-auto w-full max-w-3xl">
-					<ProfileInner onLogin={(name) => login({ name })} />
-				</div>
-			</Section>
+			<ProfileSection onLogin={(name) => login({ name })} />
 		</>
 	);
 }

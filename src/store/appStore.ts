@@ -28,7 +28,7 @@
  *   for optimal re-render granularity.
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { create, type StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import {
@@ -515,13 +515,20 @@ export default useAppStore;
  * }
  */
 export function useAppStoreInitialization(onUserContext?: (name: string) => void): void {
-	const initUser = useAppStore((s) => s.userActions.initializeFromStorage);
-	const initTheme = useAppStore((s) => s.uiActions.initializeTheme);
+	const hasInitialized = useRef(false);
 
 	useEffect(() => {
+		if (hasInitialized.current) {
+			return;
+		}
+		hasInitialized.current = true;
+
+		const initUser = useAppStore.getState().userActions.initializeFromStorage;
+		const initTheme = useAppStore.getState().uiActions.initializeTheme;
+
 		initUser(onUserContext);
 		initTheme();
-	}, [initUser, initTheme, onUserContext]);
+	}, [onUserContext]);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
