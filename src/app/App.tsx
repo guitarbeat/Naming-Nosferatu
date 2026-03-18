@@ -17,7 +17,7 @@ import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
-import { Lightbulb, User } from "@/shared/lib/icons";
+import { Lightbulb, Trophy, User } from "@/shared/lib/icons";
 import { useOfflineSync } from "@/shared/hooks";
 import {
 	cleanupPerformanceMonitoring,
@@ -99,6 +99,13 @@ function HomeContent() {
 	return (
 		<>
 			<Section id="pick" variant="minimal" padding="compact" maxWidth="full">
+				<div className="mx-auto max-w-4xl">
+					<SectionHeading
+						icon={Trophy}
+						title="Pick Names"
+						subtitle="Select your favorite cat names to battle it out"
+					/>
+				</div>
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 					<TournamentFlow />
 				</Suspense>
