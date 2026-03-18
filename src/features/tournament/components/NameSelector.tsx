@@ -14,6 +14,7 @@ import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { useCollapsible, useNamesCache } from "@/shared/hooks";
+import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
 import {
 	getActiveNames,
 	getHiddenNames,
@@ -88,12 +89,6 @@ const EXIT_SPRING_CONFIG = {
 	velocity: 50,
 };
 
-type PendingAdminAction = {
-	type: "toggle-hidden" | "toggle-locked";
-	nameId: IdType;
-	isCurrentlyEnabled: boolean;
-};
-
 export function NameSelector() {
 	const toast = useToast();
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
@@ -117,7 +112,6 @@ export function NameSelector() {
 	const [hiddenQuery, setHiddenQuery] = useState("");
 	const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
 	const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
-	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
 	const [swipeHistory, setSwipeHistory] = useState<
 		Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
 	>([]);
@@ -372,22 +366,6 @@ export function NameSelector() {
 		triggerHaptic();
 	}, [swipeHistory, syncSelectionToStore, triggerHaptic]);
 
-	// Admin handlers for toggling hidden/locked status
-	const requestAdminAction = useCallback(
-		(action: PendingAdminAction) => {
-			if (!isAdmin) {
-				toast.showWarning("Only admins can perform that action.");
-				return;
-			}
-			if (!userName?.trim()) {
-				toast.showError("Admin actions require a valid user session. Please log in again.");
-				return;
-			}
-			setPendingAdminAction(action);
-		},
-		[isAdmin, toast, userName],
-	);
-
 	const handleToggleHidden = useCallback(
 		async (nameId: IdType, isCurrentlyHidden: boolean) => {
 			if (!isAdmin || !userName?.trim()) {
@@ -505,37 +483,32 @@ export function NameSelector() {
 		[userName, isAdmin, toast],
 	);
 
-	const confirmActionName = useMemo(() => {
-		if (!pendingAdminAction) {
-			return "";
-		}
-		const target = names.find((name) => name.id === pendingAdminAction.nameId);
-		return target?.name ?? "this name";
-	}, [names, pendingAdminAction]);
-
-	const isPendingAdminActionBusy = useMemo(() => {
-		if (!pendingAdminAction) {
-			return false;
-		}
-		if (pendingAdminAction.type === "toggle-hidden") {
-			return togglingHidden.has(pendingAdminAction.nameId);
-		}
-		return togglingLocked.has(pendingAdminAction.nameId);
-	}, [pendingAdminAction, togglingHidden, togglingLocked]);
-
-	const handleConfirmAdminAction = useCallback(async () => {
-		if (!pendingAdminAction) {
-			return;
-		}
-
-		if (pendingAdminAction.type === "toggle-hidden") {
-			await handleToggleHidden(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
-		} else {
-			await handleToggleLocked(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
-		}
-
-		setPendingAdminAction(null);
-	}, [pendingAdminAction, handleToggleHidden, handleToggleLocked]);
+	const {
+		pendingAdminAction,
+		requestAdminAction,
+		confirmAdminAction,
+		cancelAdminAction,
+		confirmActionName,
+		isPendingActionBusy,
+	} = useAdminActionConfirmation({
+		isAdmin,
+		userName,
+		names,
+		toast,
+		isBusy: (action) => {
+			if (action.type === "toggle-hidden") {
+				return togglingHidden.has(action.nameId);
+			}
+			return togglingLocked.has(action.nameId);
+		},
+		executeAction: async (action) => {
+			if (action.type === "toggle-hidden") {
+				await handleToggleHidden(action.nameId, action.isCurrentlyEnabled);
+				return;
+			}
+			await handleToggleLocked(action.nameId, action.isCurrentlyEnabled);
+		},
+	});
 
 	const visibleCards = useMemo(() => {
 		const unlockedNames = names.filter((name) => !isNameLocked(name));
@@ -1544,9 +1517,9 @@ export function NameSelector() {
 							: "Lock"
 				}
 				confirmTone="danger"
-				loading={isPendingAdminActionBusy}
-				onCancel={() => setPendingAdminAction(null)}
-				onConfirm={handleConfirmAdminAction}
+				loading={isPendingActionBusy}
+				onCancel={cancelAdminAction}
+				onConfirm={confirmAdminAction}
 			/>
 		</div>
 	);
