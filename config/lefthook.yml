@@ -1,12 +1,8 @@
 pre-commit:
   parallel: true
   commands:
-    architecture:
-      run: pnpm run check:arch
-    copy-artifacts:
-      run: pnpm run check:copy-artifacts
-    case-collisions:
-      run: pnpm run check:case-collisions
+    maintenance:
+      run: pnpm run check:maintenance
     biome:
       glob: "*.{js,jsx,ts,tsx,css}"
       run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
