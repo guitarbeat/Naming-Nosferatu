@@ -87,7 +87,7 @@ const NameItem: React.FC<NameItemProps> = ({ index, style, data }) => {
 function getRandomCatImage(): string {
 	const images = [
 		"https://images.unsplash.com/photo-1514888286974-6c03e2ca4dba?w=64&h=64&fit=crop&crop=faces",
-		"https://images.unsplash.com/photo-1513245543132-31f50141621b?w=64&h=64&fit=crop&crop=faces", 
+		"https://images.unsplash.com/photo-1513245543132-31f50141621b?w=64&h=64&fit=crop&crop=faces",
 		"https://images.unsplash.com/photo-1574158622682-e40e69881006?w=64&h=64&fit=crop&crop=faces",
 		"https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=64&h=64&fit=crop&crop=faces",
 	];

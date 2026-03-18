@@ -107,9 +107,9 @@ export const requireSupabaseAuth = async (req: AuthenticatedRequest, res: Respon
 		const { data: { user }, error } = await supabase.auth.getUser(token);
 
 		if (error || !user) {
-			return res.status(401).json({ 
+			return res.status(401).json({
 				error: "Invalid or expired token",
-				details: error?.message 
+				details: error?.message
 			});
 		}
 
@@ -139,7 +139,7 @@ export const optionalSupabaseAuth = async (req: AuthenticatedRequest, res: Respo
 
 		const { authorization } = authHeaderSchema.parse({ authorization: authHeader });
 		const token = authorization.replace(/^Bearer\s+/, "");
-		
+
 		if (!token) {
 			return next();
 		}
@@ -169,7 +169,7 @@ export const optionalSupabaseAuth = async (req: AuthenticatedRequest, res: Respo
 export const getCurrentSupabaseUser = async (token: string) => {
 	try {
 		const { data: { user }, error } = await supabase.auth.getUser(token);
-		
+
 		if (error || !user) {
 			return null;
 		}

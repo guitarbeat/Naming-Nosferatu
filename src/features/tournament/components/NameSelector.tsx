@@ -78,10 +78,10 @@ function useSmartTooltip() {
 const VirtualizedNameRow = ({ index, style }: { index: number; style: React.CSSProperties }) => {
 	const nameItem = cardsToRender[index];
 	if (!nameItem) return null;
-	
+
 	const catImage = catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
 	const isSelected = selectedNames.has(nameItem.id);
-	
+
 	return (
 		<div style={style}>
 			<motion.div

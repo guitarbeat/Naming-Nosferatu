@@ -301,9 +301,9 @@ router.post("/api/users", async (req, res) => {
 			.returning();
 		res.json({
 			success: true,
-			data: { 
-				...inserted, 
-				message: "User preferences saved. Please use Supabase Auth for authentication." 
+			data: {
+				...inserted,
+				message: "User preferences saved. Please use Supabase Auth for authentication."
 			},
 		});
 	} catch (error) {
@@ -347,20 +347,20 @@ router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req,
 			if (rating.rating < 1000 || rating.rating > 3000) {
 				return res.status(400).json({ error: `Invalid rating value: ${rating.rating}. Must be between 1000-3000` });
 			}
-			
+
 			// Win/loss validation
 			const wins = rating.wins || 0;
 			const losses = rating.losses || 0;
 			if (wins < 0 || losses < 0) {
 				return res.status(400).json({ error: "Invalid win/loss values: cannot be negative" });
 			}
-			
+
 			// Reasonable total games check (prevent data corruption)
 			const totalGames = wins + losses;
 			if (totalGames > 1000) {
 				return res.status(400).json({ error: "Unrealistic game count detected" });
 			}
-			
+
 			// Check for duplicate nameIds in the same request
 			const duplicateCount = ratings.filter(r => r.nameId === rating.nameId).length;
 			if (duplicateCount > 1) {
@@ -405,9 +405,9 @@ router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req,
 		res.json({ success: true, count: records.length });
 	} catch (error) {
 		if (error instanceof ZodError) {
-			return res.status(400).json({ 
-				success: false, 
-				error: "Validation failed", 
+			return res.status(400).json({
+				success: false,
+				error: "Validation failed",
 				details: error.issues.map(issue => ({
 					field: issue.path.join('.'),
 					message: issue.message
@@ -728,7 +728,7 @@ router.post("/api/images/upload", requireAdmin, upload.single("image"), async (r
 
 		// Here you would integrate with your imagesAPI
 		// For now, return success response
-		res.json({ 
+		res.json({
 			success: true,
 			message: "Image upload endpoint is ready",
 			fileName: file.originalname,
@@ -748,7 +748,7 @@ router.post("/api/images/upload", requireAdmin, upload.single("image"), async (r
 router.get("/api/images", requireAdmin, async (_req, res) => {
 	try {
 		// Here you would integrate with your imagesAPI.list()
-		res.json({ 
+		res.json({
 			success: true,
 			images: [],
 			message: "Image listing endpoint is ready"

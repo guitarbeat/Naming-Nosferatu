@@ -19,28 +19,28 @@ function resolveRequestUrl(url: string): string {
 // Enhanced fetch with request deduplication
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
 	const requestUrl = resolveRequestUrl(url);
-	
+
 	// Check for existing request
 	const existingController = pendingRequests.get(requestUrl);
 	if (existingController) {
 		// Cancel existing request and wait for it to complete
 		existingController.abort();
 	}
-	
+
 	// Create new AbortController for this request
 	const abortController = new AbortController();
 	pendingRequests.set(requestUrl, abortController);
-	
+
 	try {
 		const res = await fetch(requestUrl, {
 			headers: { "Content-Type": "application/json", ...options?.headers },
 			signal: abortController.signal,
 			...options,
 		});
-		
+
 		// Clear the pending request when done
 		pendingRequests.delete(requestUrl);
-		
+
 		if (!res.ok) {
 			const error = await res.json().catch(() => ({ error: res.statusText }));
 			const message = error.error || error.message || `Request failed: ${res.status}`;

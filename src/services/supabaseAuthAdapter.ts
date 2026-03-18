@@ -48,7 +48,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 			}
 
 			const { data: { user } } = await client.auth.getUser();
-			
+
 			if (!user) {
 				return null;
 			}
