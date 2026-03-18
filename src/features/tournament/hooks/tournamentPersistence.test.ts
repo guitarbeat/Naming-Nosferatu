@@ -1,5 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { sanitizePersistentState, createDefaultPersistentState } from "./tournamentPersistence";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	createDefaultPersistentState,
+	sanitizePersistentState,
+} from "./tournamentPersistence";
 
 describe("sanitizePersistentState", () => {
 	const defaultUserName = "testUser";
@@ -70,7 +73,10 @@ describe("sanitizePersistentState", () => {
 	});
 
 	it("should default mode to 1v1 if mode is not '2v2'", () => {
-		const state1 = sanitizePersistentState({ mode: "invalid" }, defaultUserName);
+		const state1 = sanitizePersistentState(
+			{ mode: "invalid" },
+			defaultUserName,
+		);
 		expect(state1.mode).toBe("1v1");
 
 		const state2 = sanitizePersistentState({ mode: 123 }, defaultUserName);
@@ -84,18 +90,28 @@ describe("sanitizePersistentState", () => {
 			memberNames: ["One", "Two"],
 		};
 		const invalidTeam1 = { id: "t2" }; // Missing arrays
-		const invalidTeam2 = { id: "t3", memberIds: ["1"], memberNames: ["One", "Two"] }; // memberIds length not 2
+		const invalidTeam2 = {
+			id: "t3",
+			memberIds: ["1"],
+			memberNames: ["One", "Two"],
+		}; // memberIds length not 2
 		const invalidTeam3 = "not an object";
 
-		const state = sanitizePersistentState({
-			teams: [validTeam, invalidTeam1, invalidTeam2, invalidTeam3],
-		}, defaultUserName);
+		const state = sanitizePersistentState(
+			{
+				teams: [validTeam, invalidTeam1, invalidTeam2, invalidTeam3],
+			},
+			defaultUserName,
+		);
 
 		expect(state.teams).toEqual([validTeam]);
 	});
 
 	it("should default teams to empty array if teams is not an array", () => {
-		const state = sanitizePersistentState({ teams: "not an array" }, defaultUserName);
+		const state = sanitizePersistentState(
+			{ teams: "not an array" },
+			defaultUserName,
+		);
 		expect(state.teams).toEqual([]);
 	});
 
@@ -105,20 +121,29 @@ describe("sanitizePersistentState", () => {
 		const invalidMatch2 = { leftTeamId: 123, rightTeamId: "t2" }; // Invalid type
 		const invalidMatch3 = null;
 
-		const state = sanitizePersistentState({
-			teamMatches: [validMatch, invalidMatch1, invalidMatch2, invalidMatch3],
-		}, defaultUserName);
+		const state = sanitizePersistentState(
+			{
+				teamMatches: [validMatch, invalidMatch1, invalidMatch2, invalidMatch3],
+			},
+			defaultUserName,
+		);
 
 		expect(state.teamMatches).toEqual([validMatch]);
 	});
 
 	it("should default teamMatches to empty array if teamMatches is not an array", () => {
-		const state = sanitizePersistentState({ teamMatches: "not an array" }, defaultUserName);
+		const state = sanitizePersistentState(
+			{ teamMatches: "not an array" },
+			defaultUserName,
+		);
 		expect(state.teamMatches).toEqual([]);
 	});
 
 	it("should sanitize matchHistory to empty array if not an array", () => {
-		const state = sanitizePersistentState({ matchHistory: {} }, defaultUserName);
+		const state = sanitizePersistentState(
+			{ matchHistory: {} },
+			defaultUserName,
+		);
 		expect(state.matchHistory).toEqual([]);
 	});
 
@@ -126,13 +151,19 @@ describe("sanitizePersistentState", () => {
 		const state1 = sanitizePersistentState({ ratings: null }, defaultUserName);
 		expect(state1.ratings).toEqual({});
 
-		const state2 = sanitizePersistentState({ ratings: "not object" }, defaultUserName);
+		const state2 = sanitizePersistentState(
+			{ ratings: "not object" },
+			defaultUserName,
+		);
 		expect(state2.ratings).toEqual({});
 	});
 
 	it("should preserve valid ratings object", () => {
 		const validRatings = { "1": 1200, "2": 1500 };
-		const state = sanitizePersistentState({ ratings: validRatings }, defaultUserName);
+		const state = sanitizePersistentState(
+			{ ratings: validRatings },
+			defaultUserName,
+		);
 		expect(state.ratings).toEqual(validRatings);
 	});
 
@@ -142,25 +173,40 @@ describe("sanitizePersistentState", () => {
 	});
 
 	it("should sanitize teamMatchIndex to 0 if not a number or is negative", () => {
-		const state1 = sanitizePersistentState({ teamMatchIndex: "1" }, defaultUserName);
+		const state1 = sanitizePersistentState(
+			{ teamMatchIndex: "1" },
+			defaultUserName,
+		);
 		expect(state1.teamMatchIndex).toBe(0);
 
-		const state2 = sanitizePersistentState({ teamMatchIndex: -5 }, defaultUserName);
+		const state2 = sanitizePersistentState(
+			{ teamMatchIndex: -5 },
+			defaultUserName,
+		);
 		expect(state2.teamMatchIndex).toBe(0);
 	});
 
 	it("should preserve valid teamMatchIndex", () => {
-		const state = sanitizePersistentState({ teamMatchIndex: 5 }, defaultUserName);
+		const state = sanitizePersistentState(
+			{ teamMatchIndex: 5 },
+			defaultUserName,
+		);
 		expect(state.teamMatchIndex).toBe(5);
 	});
 
 	it("should sanitize bracketEntrants by converting elements to string if it is an array", () => {
-		const state = sanitizePersistentState({ bracketEntrants: [1, "2", true] }, defaultUserName);
+		const state = sanitizePersistentState(
+			{ bracketEntrants: [1, "2", true] },
+			defaultUserName,
+		);
 		expect(state.bracketEntrants).toEqual(["1", "2", "true"]);
 	});
 
 	it("should sanitize bracketEntrants to empty array if not an array", () => {
-		const state = sanitizePersistentState({ bracketEntrants: "not array" }, defaultUserName);
+		const state = sanitizePersistentState(
+			{ bracketEntrants: "not array" },
+			defaultUserName,
+		);
 		expect(state.bracketEntrants).toEqual([]);
 	});
 });
