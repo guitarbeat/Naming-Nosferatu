@@ -96,20 +96,18 @@ function HomeContent() {
 
 	return (
 		<>
-			<Section id="pick" variant="minimal" padding="none" maxWidth="full">
+			<Section id="pick" variant="minimal" padding="compact" maxWidth="full">
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 					<TournamentFlow />
 				</Suspense>
 			</Section>
 
-			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="full">
+			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered>
 				<NameSuggestionInner />
 			</Section>
 
-			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="full">
-				<div className="mx-auto w-full max-w-3xl">
-					<ProfileInner onLogin={(name) => login({ name })} />
-				</div>
+			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered>
+				<ProfileInner onLogin={(name) => login({ name })} />
 			</Section>
 		</>
 	);
@@ -124,7 +122,7 @@ function TournamentContent() {
 	});
 
 	return (
-		<Section id="tournament" variant="minimal" padding="none" maxWidth="full">
+		<Section id="tournament" variant="minimal" padding="compact" maxWidth="full">
 			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 				{tournament.names && tournament.names.length > 0 ? (
 					<Tournament
@@ -133,11 +131,11 @@ function TournamentContent() {
 						onComplete={handleTournamentComplete}
 					/>
 				) : (
-					<div className="mx-auto w-full max-w-xl px-6 py-10 text-center">
-						<h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
+					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-10 text-center">
+						<h2 className="text-2xl font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter sm:text-3xl">
 							No contenders yet
 						</h2>
-						<p className="text-muted-foreground mb-6">
+						<p className="text-muted-foreground text-pretty">
 							Choose at least two names in the picker to start your tournament bracket.
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-3">
@@ -163,8 +161,8 @@ function AnalysisContent() {
 	});
 
 	return (
-		<Section id="analysis" variant="minimal" padding="none" maxWidth="full">
-			<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
+		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered>
+			<h2 className="mb-8 text-center text-3xl font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter sm:mb-12 md:text-5xl">
 				The Victors Emerge
 			</h2>
 			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
@@ -187,9 +185,9 @@ function AdminContent() {
 
 	if (!user.isAdmin) {
 		return (
-			<Section id="admin" variant="minimal" padding="none" maxWidth="full">
-				<div className="text-center py-20">
-					<h2 className="text-3xl font-bold mb-4 text-destructive">Access Denied</h2>
+			<Section id="admin" variant="minimal" padding="comfortable" maxWidth="md" centered>
+				<div className="flex flex-col items-center gap-4 py-10 text-center">
+					<h2 className="text-3xl font-bold text-destructive">Access Denied</h2>
 					<p className="text-muted-foreground">Admin access required to view this page.</p>
 				</div>
 			</Section>
@@ -197,11 +195,13 @@ function AdminContent() {
 	}
 
 	return (
-		<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-			<ErrorBoundary context={errorContexts.analysisDashboard}>
-				<AdminDashboardLazy />
-			</ErrorBoundary>
-		</Suspense>
+		<Section id="admin" variant="minimal" padding="comfortable" maxWidth="2xl">
+			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+				<ErrorBoundary context={errorContexts.analysisDashboard}>
+					<AdminDashboardLazy />
+				</ErrorBoundary>
+			</Suspense>
+		</Section>
 	);
 }
 

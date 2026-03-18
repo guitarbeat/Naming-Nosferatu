@@ -3,7 +3,7 @@
  * @description Main application layout component with floating primary nav
  */
 
-import { useMemo } from "react";
+
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
 	ErrorBoundary,
@@ -22,17 +22,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
 
-	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
-
-	const mainWrapperClassName = useMemo(
-		() =>
-			["app-main-wrapper", isLoggedIn ? "" : "app-main-wrapper--login"].filter(Boolean).join(" "),
-		[isLoggedIn],
-	);
-
 	return (
 		<ErrorBoundary context="Main Application Layout">
-			<div className={appClassName}>
+			<div className="app relative min-h-dvh w-full text-foreground">
 				<OfflineIndicator />
 
 				<a
@@ -42,7 +34,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 					Skip to main content
 				</a>
 
-				<div className="cat-background" aria-hidden="true">
+				{/* Background effects layer */}
+				<div className="cat-background fixed inset-0 -z-10" aria-hidden="true">
 					<div className="cat-background__gradient" />
 					<div className="cat-background__moire" />
 					<div className="cat-background__soft-blur" />
@@ -51,9 +44,15 @@ export function AppLayout({ children }: AppLayoutProps) {
 
 				<FloatingNavbar />
 
-				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
+				{/* Main content area with proper spacing */}
+				<main
+					id="main-content"
+					className="relative flex min-h-dvh w-full flex-col px-4 pb-28 pt-6 sm:px-6 sm:pb-24 md:pt-10"
+					tabIndex={-1}
+				>
+					{/* Error banner */}
 					{Boolean(errors.current) && (
-						<div className="p-4">
+						<div className="mx-auto mb-4 w-full max-w-4xl">
 							<ErrorComponent
 								error={String(errors.current)}
 								onRetry={() => errorActions.clearError()}
@@ -61,11 +60,16 @@ export function AppLayout({ children }: AppLayoutProps) {
 							/>
 						</div>
 					)}
-					{children}
 
+					{/* Page content */}
+					<div className="flex w-full flex-1 flex-col gap-8 sm:gap-12">
+						{children}
+					</div>
+
+					{/* Loading overlay */}
 					{tournament.isLoading && (
 						<div
-							className="global-loading-overlay"
+							className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
 							role="status"
 							aria-live="polite"
 							aria-busy="true"
