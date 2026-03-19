@@ -1185,7 +1185,7 @@ export function NameSelector() {
                                                                                                                                         )}
                                                                                                                                 </div>
                                                                                                                                 {nameItem.pronunciation && (
-                                                                                                                                        <span className="mobile-readable-meta text-amber-300 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+                                                                                                                                        <span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
                                                                                                                                                 [{nameItem.pronunciation}]
                                                                                                                                         </span>
                                                                                                                                 )}
