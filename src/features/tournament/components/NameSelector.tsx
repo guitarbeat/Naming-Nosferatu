@@ -1233,8 +1233,8 @@ export function NameSelector() {
                                                                                                                                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                                                                                                                                 className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
                                                                                                                                         isNameHidden(nameItem)
-                                                                                                                                                ? "bg-green-600 hover:bg-green-700 text-white shadow-green-500/25"
-                                                                                                                                                : "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
+                                                                                                                                                ? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
+                                                                                                                                                : "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
                                                                                                                                 } ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
                                                                                                                         >
                                                                                                                                 {togglingHidden.has(nameItem.id) ? (
