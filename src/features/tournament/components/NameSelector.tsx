@@ -1465,7 +1465,7 @@ export function NameSelector() {
                                                                                                                                                                         animate={{ scale: 1, opacity: 1 }}
                                                                                                                                                                         className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
                                                                                                                                                                 >
-                                                                                                                                                                        <Check size={10} className="text-white" />
+                                                                                                                                                                        <Check size={10} className="text-primary-foreground" />
                                                                                                                                                                 </motion.div>
                                                                                                                                                         )}
                                                                                                                                                 </div>
