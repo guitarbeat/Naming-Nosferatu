@@ -1470,9 +1470,9 @@ export function NameSelector() {
                                                                                                                                                         )}
                                                                                                                                                 </div>
                                                                                                                                                 {nameItem.pronunciation && (
-                                                                                                                                                        <span className="mobile-readable-meta text-amber-300 text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
-                                                                                                                                                                [{nameItem.pronunciation}]
-                                                                                                                                                        </span>
+                                                                                                                                        <span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+                                                                                                                                                [{nameItem.pronunciation}]
+                                                                                                                                        </span>
                                                                                                                                                 )}
                                                                                                                                                 {nameItem.description && (
                                                                                                                                                         <p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
