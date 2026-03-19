@@ -27,6 +27,10 @@
 	--accent-foreground: hsl(0deg 0% 0%);
 	--destructive: hsl(0deg 84% 60%);
 	--destructive-foreground: hsl(0deg 0% 98%);
+	--success: hsl(142deg 71% 45%);
+	--success-foreground: hsl(0deg 0% 100%);
+	--warning: hsl(38deg 92% 50%);
+	--warning-foreground: hsl(0deg 0% 100%);
 	--border: hsl(0deg 0% 0%);
 	--input: hsl(0deg 0% 0%);
 	--ring: hsl(0deg 0% 0%);
