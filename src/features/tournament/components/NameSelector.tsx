@@ -788,7 +788,7 @@ export function NameSelector() {
                                                                         <motion.div
                                                                                 key={nameItem.id}
                                                                                 whileHover={{ y: -4, scale: 1.02 }}
-                                                                                className="group relative shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-amber-500/30 bg-amber-500/10 ring-1 md:ring-2 ring-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] rounded-sm"
+                                                                                className="group relative shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-warning/30 bg-warning/10 ring-1 md:ring-2 ring-warning/40 shadow-[0_0_15px_hsl(var(--warning)/0.15)] rounded-sm"
                                                                         >
                                                                                 <div className="text-foreground font-bold text-xs sm:text-sm md:text-base lg:text-lg">
                                                                                         {nameItem.name}
