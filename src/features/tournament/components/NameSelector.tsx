@@ -824,9 +824,6 @@ export function NameSelector() {
                                 })()}
 
                                 <div className="text-center space-y-3">
-                                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter leading-tight">
-                                                Choose Your Contenders
-                                        </h2>
                                         <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
                                                 {isSwipeMode
                                                         ? "Swipe right to select, left to skip. You can also use arrow keys (or A/D) and Ctrl+Z to undo."
