@@ -1272,8 +1272,8 @@ export function NameSelector() {
                                                                                                                                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                                                                                                                                 className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
                                                                                                                                         isNameLocked(nameItem)
-                                                                                                                                                ? "bg-gray-600 hover:bg-gray-700 text-white shadow-gray-500/25"
-                                                                                                                                                : "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/25"
+                                                                                                                                                ? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
+                                                                                                                                                : "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
                                                                                                                                 } ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`}
                                                                                                                         >
                                                                                                                                 {togglingLocked.has(nameItem.id) ? (
