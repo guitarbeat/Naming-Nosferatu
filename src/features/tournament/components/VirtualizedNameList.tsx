@@ -5,9 +5,9 @@
 
 import { useCallback, useMemo } from "react";
 import { FixedSizeList as List } from "react-window";
-import type { NameItem } from "@/shared/types";
 import CatImage from "@/shared/components/layout/CatImage";
-import { Check, Heart, Shuffle, X } from "@/shared/lib/icons";
+import { Check, Shuffle, X } from "@/shared/lib/icons";
+import type { NameItem } from "@/shared/types";
 
 interface VirtualizedNameListProps {
 	names: NameItem[];
@@ -40,7 +40,9 @@ const NameItem: React.FC<NameItemProps> = ({ index, style, data }) => {
 		onToggleName(String(name.id));
 	}, [name.id, onToggleName]);
 
-	if (!name) return null;
+	if (!name) {
+		return null;
+	}
 
 	return (
 		<div
@@ -87,7 +89,7 @@ const NameItem: React.FC<NameItemProps> = ({ index, style, data }) => {
 function getRandomCatImage(): string {
 	const images = [
 		"https://images.unsplash.com/photo-1514888286974-6c03e2ca4dba?w=64&h=64&fit=crop&crop=faces",
-		"https://images.unsplash.com/photo-1513245543132-31f50141621b?w=64&h=64&fit=crop&crop=faces", 
+		"https://images.unsplash.com/photo-1513245543132-31f50141621b?w=64&h=64&fit=crop&crop=faces",
 		"https://images.unsplash.com/photo-1574158622682-e40e69881006?w=64&h=64&fit=crop&crop=faces",
 		"https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=64&h=64&fit=crop&crop=faces",
 	];
@@ -111,7 +113,7 @@ export const VirtualizedNameList: React.FC<VirtualizedNameListProps> = ({
 			onToggleName,
 			searchTerm,
 		}),
-		[names, selectedNames, onToggleName, searchTerm]
+		[names, selectedNames, onToggleName, searchTerm],
 	);
 
 	const handleClearSelection = useCallback(() => {
@@ -128,10 +130,7 @@ export const VirtualizedNameList: React.FC<VirtualizedNameListProps> = ({
 			<div className="flex flex-col items-center justify-center h-96 text-center">
 				<p className="text-muted-foreground mb-4">No names found</p>
 				{searchTerm && (
-					<button
-						onClick={handleClearSelection}
-						className="text-primary hover:underline"
-					>
+					<button onClick={handleClearSelection} className="text-primary hover:underline">
 						Clear search
 					</button>
 				)}

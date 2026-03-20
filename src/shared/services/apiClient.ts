@@ -1,7 +1,4 @@
-const rawApiBase =
-	(import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-	(import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-	"/api";
+const rawApiBase = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "/api";
 
 const API_BASE = rawApiBase.replace(/\/+$/, "");
 
@@ -16,41 +13,79 @@ function resolveRequestUrl(url: string): string {
 	return `${API_BASE}${normalizedPath}`;
 }
 
+function buildRequestKey(url: string, options?: RequestInit): string {
+	const method = options?.method?.toUpperCase() ?? "GET";
+	const body = typeof options?.body === "string" ? options.body : "";
+	return `${method}:${url}:${body}`;
+}
+
+function mergeRequestSignal(
+	externalSignal: AbortSignal | null | undefined,
+	internalController: AbortController,
+): AbortSignal {
+	if (!externalSignal) {
+		return internalController.signal;
+	}
+
+	if (typeof AbortSignal.any === "function") {
+		return AbortSignal.any([externalSignal, internalController.signal]);
+	}
+
+	if (externalSignal.aborted) {
+		internalController.abort();
+		return internalController.signal;
+	}
+
+	externalSignal.addEventListener("abort", () => internalController.abort(), { once: true });
+	return internalController.signal;
+}
+
+function buildFetchOptions(
+	options: RequestInit | undefined,
+	abortController: AbortController,
+): RequestInit {
+	const { headers, signal, ...rest } = options ?? {};
+
+	return {
+		...rest,
+		headers: { "Content-Type": "application/json", ...headers },
+		signal: mergeRequestSignal(signal, abortController),
+	};
+}
+
+function releasePendingRequest(requestKey: string, abortController: AbortController): void {
+	if (pendingRequests.get(requestKey) === abortController) {
+		pendingRequests.delete(requestKey);
+	}
+}
+
 // Enhanced fetch with request deduplication
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
 	const requestUrl = resolveRequestUrl(url);
-	
+	const requestKey = buildRequestKey(requestUrl, options);
+
 	// Check for existing request
-	const existingController = pendingRequests.get(requestUrl);
+	const existingController = pendingRequests.get(requestKey);
 	if (existingController) {
 		// Cancel existing request and wait for it to complete
 		existingController.abort();
 	}
-	
+
 	// Create new AbortController for this request
 	const abortController = new AbortController();
-	pendingRequests.set(requestUrl, abortController);
-	
+	pendingRequests.set(requestKey, abortController);
+
 	try {
-		const res = await fetch(requestUrl, {
-			headers: { "Content-Type": "application/json", ...options?.headers },
-			signal: abortController.signal,
-			...options,
-		});
-		
-		// Clear the pending request when done
-		pendingRequests.delete(requestUrl);
-		
+		const res = await fetch(requestUrl, buildFetchOptions(options, abortController));
+
 		if (!res.ok) {
 			const error = await res.json().catch(() => ({ error: res.statusText }));
 			const message = error.error || error.message || `Request failed: ${res.status}`;
 			throw new Error(res.status === 404 ? `${message} (${requestUrl})` : message);
 		}
 		return res.json();
-	} catch (error) {
-		// Clear the pending request on error
-		pendingRequests.delete(requestUrl);
-		throw error;
+	} finally {
+		releasePendingRequest(requestKey, abortController);
 	}
 }
 

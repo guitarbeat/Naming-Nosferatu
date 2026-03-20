@@ -5,12 +5,12 @@ import { Analytics } from "@vercel/analytics/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { authAdapter } from "@/services/authAdapter";
+import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { queryClient } from "@/shared/services/supabase/client";
-import { supabaseAuthAdapter } from "@/services/supabaseAuthAdapter";
 import App from "./App";
 import { shouldEnableAnalytics } from "./analytics";
 import { Providers } from "./providers/Providers";
-import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import "../index.css";
 
 // Initialize Sentry in production
@@ -45,12 +45,15 @@ const analyticsEnabled = shouldEnableAnalytics({
 
 ReactDOM.createRoot(rootElement).render(
 	<React.StrictMode>
-		<ErrorBoundary context="Application Root" onError={(error: Error, errorInfo: React.ErrorInfo) => {
-			// Sentry will automatically capture this through ErrorManager
-			console.error("Application error:", error, errorInfo);
-		}}>
+		<ErrorBoundary
+			context="Application Root"
+			onError={(error: Error, errorInfo: React.ErrorInfo) => {
+				// Sentry will automatically capture this through ErrorManager
+				console.error("Application error:", error, errorInfo);
+			}}
+		>
 			<QueryClientProvider client={queryClient}>
-				<Providers auth={{ adapter: supabaseAuthAdapter }}>
+				<Providers auth={{ adapter: authAdapter }}>
 					<BrowserRouter>
 						<App />
 						{analyticsEnabled ? <Analytics /> : null}

@@ -14,12 +14,7 @@ interface SectionHeadingProps {
 	children?: ReactNode;
 }
 
-export function SectionHeading({
-	icon: Icon,
-	title,
-	subtitle,
-	className,
-}: SectionHeadingProps) {
+export function SectionHeading({ icon: Icon, title, subtitle, className }: SectionHeadingProps) {
 	return (
 		<div className={cn("flex flex-col items-center gap-3 py-2 mb-6 sm:mb-8", className)}>
 			{/* Decorative divider */}
@@ -35,12 +30,8 @@ export function SectionHeading({
 
 			{/* Text */}
 			<div className="text-center">
-				<h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-					{title}
-				</h2>
-				{subtitle && (
-					<p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
-				)}
+				<h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">{title}</h2>
+				{subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
 			</div>
 		</div>
 	);

@@ -4,7 +4,7 @@
  */
 
 export interface WebSocketMessage {
-	type: 'tournament_update' | 'match_result' | 'user_joined' | 'user_left';
+	type: "tournament_update" | "match_result" | "user_joined" | "user_left";
 	data: unknown;
 	timestamp: number;
 }
@@ -17,7 +17,7 @@ export interface TournamentUpdate {
 		leftId: string | null;
 		rightId: string | null;
 	};
-	status: 'in_progress' | 'completed';
+	status: "in_progress" | "completed";
 }
 
 export interface MatchResult {
@@ -30,7 +30,7 @@ export interface MatchResult {
 
 export interface UserActivity {
 	userId: string;
-	action: 'joined' | 'left';
+	action: "joined" | "left";
 	timestamp: number;
 }
 
@@ -52,12 +52,12 @@ class WebSocketService {
 			}
 
 			this.isConnecting = true;
-			
+
 			try {
 				this.ws = new WebSocket(this.url);
-				
+
 				this.ws.onopen = () => {
-					console.log('WebSocket connected');
+					console.log("WebSocket connected");
 					this.isConnecting = false;
 					this.reconnectAttempts = 0;
 					resolve();
@@ -68,29 +68,31 @@ class WebSocketService {
 						const message: WebSocketMessage = JSON.parse(event.data);
 						this.handleMessage(message);
 					} catch (error) {
-						console.error('Failed to parse WebSocket message:', error);
+						console.error("Failed to parse WebSocket message:", error);
 					}
 				};
 
 				this.ws.onclose = (event) => {
-					console.log('WebSocket disconnected:', event.code, event.reason);
+					console.log("WebSocket disconnected:", event.code, event.reason);
 					this.ws = null;
-					
+
 					// Attempt to reconnect if not a clean close
 					if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
-						setTimeout(() => {
-							this.reconnectAttempts++;
-							this.connect().catch(console.error);
-						}, this.reconnectDelay * Math.pow(2, this.reconnectAttempts));
+						setTimeout(
+							() => {
+								this.reconnectAttempts++;
+								this.connect().catch(console.error);
+							},
+							this.reconnectDelay * 2 ** this.reconnectAttempts,
+						);
 					}
 				};
 
 				this.ws.onerror = (error) => {
-					console.error('WebSocket error:', error);
+					console.error("WebSocket error:", error);
 					this.isConnecting = false;
 					reject(error);
 				};
-
 			} catch (error) {
 				this.isConnecting = false;
 				reject(error);
@@ -100,13 +102,13 @@ class WebSocketService {
 
 	disconnect(): void {
 		if (this.ws) {
-			this.ws.close(1000, 'Client disconnect');
+			this.ws.close(1000, "Client disconnect");
 			this.ws = null;
 		}
 		this.reconnectAttempts = this.maxReconnectAttempts; // Prevent reconnection
 	}
 
-	sendMessage(message: Omit<WebSocketMessage, 'timestamp'>): void {
+	sendMessage(message: Omit<WebSocketMessage, "timestamp">): void {
 		if (this.ws?.readyState === WebSocket.OPEN) {
 			const fullMessage: WebSocketMessage = {
 				...message,
@@ -114,7 +116,7 @@ class WebSocketService {
 			};
 			this.ws.send(JSON.stringify(fullMessage));
 		} else {
-			console.warn('WebSocket not connected, message not sent:', message);
+			console.warn("WebSocket not connected, message not sent:", message);
 		}
 	}
 
@@ -135,9 +137,12 @@ class WebSocketService {
 	}
 
 	// Public API methods
-	subscribeToTournament(tournamentId: string, callback: (update: TournamentUpdate) => void): () => void {
-		this.onMessage('tournament_update', (message) => {
-			if (message.data && typeof message.data === 'object' && 'tournamentId' in message.data) {
+	subscribeToTournament(
+		tournamentId: string,
+		callback: (update: TournamentUpdate) => void,
+	): () => void {
+		this.onMessage("tournament_update", (message) => {
+			if (message.data && typeof message.data === "object" && "tournamentId" in message.data) {
 				const update = message.data as TournamentUpdate;
 				if (update.tournamentId === tournamentId) {
 					callback(update);
@@ -146,45 +151,49 @@ class WebSocketService {
 		});
 
 		return () => {
-			this.offMessage('tournament_update');
+			this.offMessage("tournament_update");
 		};
 	}
 
 	subscribeToMatches(callback: (result: MatchResult) => void): () => void {
-		this.onMessage('match_result', (message) => {
-			if (message.data && typeof message.data === 'object') {
+		this.onMessage("match_result", (message) => {
+			if (message.data && typeof message.data === "object") {
 				callback(message.data as MatchResult);
 			}
 		});
 
 		return () => {
-			this.offMessage('match_result');
+			this.offMessage("match_result");
 		};
 	}
 
 	subscribeToUserActivity(callback: (activity: UserActivity) => void): () => void {
-		this.onMessage('user_joined', (message) => {
-			if (message.data && typeof message.data === 'object') {
+		this.onMessage("user_joined", (message) => {
+			if (message.data && typeof message.data === "object") {
 				callback(message.data as UserActivity);
 			}
 		});
 
-		this.onMessage('user_left', (message) => {
-			if (message.data && typeof message.data === 'object') {
+		this.onMessage("user_left", (message) => {
+			if (message.data && typeof message.data === "object") {
 				callback(message.data as UserActivity);
 			}
 		});
 
 		return () => {
-			this.offMessage('user_joined');
-			this.offMessage('user_left');
+			this.offMessage("user_joined");
+			this.offMessage("user_left");
 		};
 	}
 
-	getConnectionState(): 'connecting' | 'connected' | 'disconnected' {
-		if (this.isConnecting) return 'connecting';
-		if (this.ws?.readyState === WebSocket.OPEN) return 'connected';
-		return 'disconnected';
+	getConnectionState(): "connecting" | "connected" | "disconnected" {
+		if (this.isConnecting) {
+			return "connecting";
+		}
+		if (this.ws?.readyState === WebSocket.OPEN) {
+			return "connected";
+		}
+		return "disconnected";
 	}
 
 	isConnected(): boolean {

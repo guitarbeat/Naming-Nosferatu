@@ -3,9 +3,17 @@
  * @description Mobile-responsive tournament bracket visualization component
  */
 
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Trophy, Users, Clock, ZoomIn, ZoomOut, Download, Share2 } from "@/shared/lib/icons";
+import { useCallback, useMemo, useState } from "react";
 import Button from "@/shared/components/layout/Button";
+import {
+	ChevronLeft,
+	ChevronRight,
+	Download,
+	Share2,
+	Trophy,
+	ZoomIn,
+	ZoomOut,
+} from "@/shared/lib/icons";
 
 export interface BracketMatch {
 	id: string;
@@ -34,96 +42,109 @@ interface TournamentBracketProps {
 	onShare?: () => void;
 }
 
-export function TournamentBracket({ tournamentId, matches, onMatchClick, onExport, onShare }: TournamentBracketProps) {
+export function TournamentBracket({
+	tournamentId,
+	matches,
+	onMatchClick,
+	onExport,
+	onShare,
+}: TournamentBracketProps) {
 	const [selectedRound, setSelectedRound] = useState(1);
-	const [viewMode, setViewMode] = useState<'bracket' | 'tree' | 'compact'>('bracket');
+	const [viewMode, setViewMode] = useState<"bracket" | "tree" | "compact">("bracket");
 	const [zoomLevel, setZoomLevel] = useState(1);
 
 	// Organize matches into rounds
 	const bracketRounds = useMemo(() => {
 		const rounds = new Map<number, BracketRound>();
-		
-		matches.forEach(match => {
+
+		matches.forEach((match) => {
 			if (!rounds.has(match.round)) {
 				rounds.set(match.round, {
 					round: match.round,
 					matches: [],
-					startTime: match.startTime
+					startTime: match.startTime,
 				});
 			}
 			rounds.get(match.round)?.matches.push(match);
 		});
-		
+
 		// Set winners and end times
-		rounds.forEach((round, roundData) => {
+		rounds.forEach((_round, roundData) => {
 			if (roundData.matches.length > 0) {
 				const finalMatch = roundData.matches[roundData.matches.length - 1];
 				roundData.winner = finalMatch.winnerId;
 				roundData.endTime = finalMatch.startTime;
 			}
 		});
-		
+
 		return Array.from(rounds.values()).sort((a, b) => a.round - b.round);
 	}, [matches]);
 
 	// Get current round matches
 	const currentRoundMatches = useMemo(() => {
-		const round = bracketRounds.find(r => r.round === selectedRound);
+		const round = bracketRounds.find((r) => r.round === selectedRound);
 		return round?.matches || [];
 	}, [bracketRounds, selectedRound]);
 
 	// Calculate bracket statistics
 	const bracketStats = useMemo(() => {
 		const totalRounds = bracketRounds.length;
-		const completedRounds = bracketRounds.filter(r => r.endTime).length;
+		const completedRounds = bracketRounds.filter((r) => r.endTime).length;
 		const totalMatches = matches.length;
-		const completedMatches = matches.filter(m => m.winnerId).length;
-		
+		const completedMatches = matches.filter((m) => m.winnerId).length;
+
 		return {
 			totalRounds,
 			completedRounds,
 			totalMatches,
 			completedMatches,
 			completionRate: totalMatches > 0 ? (completedMatches / totalMatches) * 100 : 0,
-			averageMatchesPerRound: totalRounds > 0 ? (totalMatches / totalRounds) : 0
+			averageMatchesPerRound: totalRounds > 0 ? totalMatches / totalRounds : 0,
 		};
 	}, [bracketRounds, matches]);
 
 	// Responsive sizing
 	const getBracketSize = useCallback(() => {
 		const width = window.innerWidth;
-		if (width < 640) return 'small';
-		if (width < 1024) return 'medium';
-		return 'large';
+		if (width < 640) {
+			return "small";
+		}
+		if (width < 1024) {
+			return "medium";
+		}
+		return "large";
 	}, []);
 
 	const getMatchSize = useCallback(() => {
 		const size = getBracketSize();
 		switch (size) {
-			case 'small': return { width: 300, height: 200, fontSize: 12 };
-			case 'medium': return { width: 400, height: 250, fontSize: 14 };
-			case 'large': return { width: 600, height: 400, fontSize: 16 };
+			case "small":
+				return { width: 300, height: 200, fontSize: 12 };
+			case "medium":
+				return { width: 400, height: 250, fontSize: 14 };
+			case "large":
+				return { width: 600, height: 400, fontSize: 16 };
 		}
 	}, [getBracketSize]);
 
 	const handlePreviousRound = useCallback(() => {
-		setSelectedRound(prev => Math.max(1, prev - 1));
+		setSelectedRound((prev) => Math.max(1, prev - 1));
 	}, []);
 
 	const handleNextRound = useCallback(() => {
-		const maxRound = Math.max(...bracketRounds.map(r => r.round));
-		setSelectedRound(prev => Math.min(maxRound, prev + 1));
+		const maxRound = Math.max(...bracketRounds.map((r) => r.round));
+		setSelectedRound((prev) => Math.min(maxRound, prev + 1));
 	}, [bracketRounds]);
 
 	const handleZoomIn = useCallback(() => {
-		setZoomLevel(prev => Math.min(3, prev + 1));
+		setZoomLevel((prev) => Math.min(3, prev + 1));
 	}, []);
 
 	const handleZoomOut = useCallback(() => {
-		setZoomLevel(prev => Math.max(1, prev - 1));
+		setZoomLevel((prev) => Math.max(1, prev - 1));
 	}, []);
 
-	const handleViewModeChange = useCallback((mode: 'bracket' | 'tree' | 'compact') => {
+	const handleViewModeChange = useCallback((mode: "bracket" | "tree" | "compact") => {
 		setViewMode(mode);
 	}, []);
 
@@ -134,14 +155,14 @@ export function TournamentBracket({ tournamentId, matches, onMatchClick, onExpor
 				matches,
 				rounds: bracketRounds,
 				stats: bracketStats,
-				exportDate: new Date().toISOString()
+				exportDate: new Date().toISOString(),
 			};
-			
-			const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+
+			const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
 			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
+			const a = document.createElement("a");
 			a.href = url;
-			a.download = `tournament-bracket-${tournamentId || 'export'}.json`;
+			a.download = `tournament-bracket-${tournamentId || "export"}.json`;
 			a.click();
 			URL.revokeObjectURL(url);
 		}
@@ -150,11 +171,11 @@ export function TournamentBracket({ tournamentId, matches, onMatchClick, onExpor
 	const handleShare = useCallback(() => {
 		if (onShare && navigator.share) {
 			const shareData = {
-				title: 'Tournament Bracket',
+				title: "Tournament Bracket",
 				text: `Check out this tournament bracket! ${bracketStats.completedMatches}/${bracketStats.totalMatches} matches completed.`,
-				url: window.location.href
+				url: window.location.href,
 			};
-			
+
 			navigator.share(shareData);
 		}
 	}, [onShare, bracketStats]);
@@ -323,7 +344,7 @@ export function TournamentBracket({ tournamentId, matches, onMatchClick, onExpor
 			<div className="bg-card border border-border rounded-lg p-6 overflow-x-auto">
 				{viewMode === 'bracket' && (
 					<div className="space-y-4">
-						{bracketRounds.map((round, roundIndex) => (
+						{bracketRounds.map((round, _roundIndex) => (
 							<div key={round.round} className="space-y-4">
 								<div className="text-center font-semibold text-foreground mb-4">
 									Round {round.round}
@@ -381,9 +402,9 @@ export function TournamentBracket({ tournamentId, matches, onMatchClick, onExpor
 										</div>
 
 										{match.winnerId && (
-											<div className="absolute top-2 right-2 bg-chart-4 text-white text-xs font-bold px-2 py-1 rounded">
+											<_div _className="absolute top-2 right-2 bg-chart-4 text-white text-xs font-bold px-2 py-1 rounded">
 												Winner
-											</div>
+											</_div>
 										)}
 									</div>
 								</div>
@@ -428,9 +449,11 @@ export function TournamentBracket({ tournamentId, matches, onMatchClick, onExpor
 							</div>
 						))}
 					</div>
-				)}
+				)
+}
 
-				{viewMode === 'compact' && (
+{
+	viewMode === 'compact' && (
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						{bracketRounds.map((round) => (
 							<div key={round.round} className="bg-foreground/5 rounded-lg p-4">
@@ -460,8 +483,9 @@ export function TournamentBracket({ tournamentId, matches, onMatchClick, onExpor
 							</div>
 						))}
 					</div>
-				)}
-			</div>
+				)
+}
+</div>
 		</div>
-	);
+	)
 }

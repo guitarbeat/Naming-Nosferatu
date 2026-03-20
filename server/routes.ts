@@ -13,15 +13,7 @@ import {
 } from "../shared/schema";
 import { requireAdmin } from "./auth";
 import { db } from "./db";
-import { isSupabaseAdmin, optionalSupabaseAuth, requireSupabaseAuth } from "./supabaseAuth";
-// JWT authentication removed - now using Supabase Auth exclusively
-// import jwt from "jsonwebtoken";
-
-const authRateLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000,
-	max: 100,
-	message: { error: "Too many requests, please try again later." },
-});
+import { requireSupabaseAuth } from "./supabaseAuth";
 
 const ratingsRateLimiter = rateLimit({
 	windowMs: 60 * 1000, // 1 minute
@@ -37,8 +29,8 @@ const upload = multer({
 		fileSize: 5 * 1024 * 1024, // 5MB
 		files: 1,
 	},
-	fileFilter: (req, file, cb) => {
-		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+	fileFilter: (_req, file, cb) => {
+		const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 		cb(null, allowedTypes.includes(file.mimetype));
 	},
 });
@@ -46,7 +38,6 @@ const upload = multer({
 import {
 	batchHideSchema,
 	createNameSchema,
-	createUserSchema,
 	imageUploadSchema,
 	saveRatingsSchema,
 	updateHideSchema,
@@ -65,7 +56,7 @@ const getRouteParam = (value: string | string[] | undefined, key: string) => {
 	}
 
 	throw new TypeError(`Expected route param "${key}" to be a string`);
-}
+};
 
 // Mock data for when database is unavailable
 const mockNames = getFallbackNames(true);
@@ -290,7 +281,7 @@ router.get("/api/users/:userId/roles", requireSupabaseAuth, async (req, res) => 
 // Save ratings
 router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req, res) => {
 	try {
-		const { userId, ratings } = saveRatingsSchema.parse(req.body);
+		const { ratings } = saveRatingsSchema.parse(req.body);
 
 		// Additional security checks
 		if (ratings.length > 50) {
@@ -301,24 +292,26 @@ router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req,
 		for (const rating of ratings) {
 			// Rating bounds check (already in schema but double-check)
 			if (rating.rating < 1000 || rating.rating > 3000) {
-				return res.status(400).json({ error: `Invalid rating value: ${rating.rating}. Must be between 1000-3000` });
+				return res
+					.status(400)
+					.json({ error: `Invalid rating value: ${rating.rating}. Must be between 1000-3000` });
 			}
-			
+
 			// Win/loss validation
 			const wins = rating.wins || 0;
 			const losses = rating.losses || 0;
 			if (wins < 0 || losses < 0) {
 				return res.status(400).json({ error: "Invalid win/loss values: cannot be negative" });
 			}
-			
+
 			// Reasonable total games check (prevent data corruption)
 			const totalGames = wins + losses;
 			if (totalGames > 1000) {
 				return res.status(400).json({ error: "Unrealistic game count detected" });
 			}
-			
+
 			// Check for duplicate nameIds in the same request
-			const duplicateCount = ratings.filter(r => r.nameId === rating.nameId).length;
+			const duplicateCount = ratings.filter((r) => r.nameId === rating.nameId).length;
 			if (duplicateCount > 1) {
 				return res.status(400).json({ error: `Duplicate nameId ${rating.nameId} in request` });
 			}
@@ -361,13 +354,13 @@ router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req,
 		res.json({ success: true, count: records.length });
 	} catch (error) {
 		if (error instanceof ZodError) {
-			return res.status(400).json({ 
-				success: false, 
-				error: "Validation failed", 
-				details: error.issues.map(issue => ({
-					field: issue.path.join('.'),
-					message: issue.message
-				}))
+			return res.status(400).json({
+				success: false,
+				error: "Validation failed",
+				details: error.issues.map((issue) => ({
+					field: issue.path.join("."),
+					message: issue.message,
+				})),
 			});
 		}
 		console.error("Error saving ratings:", error);
@@ -684,12 +677,12 @@ router.post("/api/images/upload", requireAdmin, upload.single("image"), async (r
 
 		// Here you would integrate with your imagesAPI
 		// For now, return success response
-		res.json({ 
+		res.json({
 			success: true,
 			message: "Image upload endpoint is ready",
 			fileName: file.originalname,
 			size: file.size,
-			userName
+			userName,
 		});
 	} catch (error) {
 		if (error instanceof ZodError) {
@@ -704,10 +697,10 @@ router.post("/api/images/upload", requireAdmin, upload.single("image"), async (r
 router.get("/api/images", requireAdmin, async (_req, res) => {
 	try {
 		// Here you would integrate with your imagesAPI.list()
-		res.json({ 
+		res.json({
 			success: true,
 			images: [],
-			message: "Image listing endpoint is ready"
+			message: "Image listing endpoint is ready",
 		});
 	} catch (error) {
 		console.error("Error listing images:", error);

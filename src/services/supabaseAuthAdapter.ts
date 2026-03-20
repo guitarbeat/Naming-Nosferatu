@@ -15,7 +15,6 @@ import {
 	setStorageString,
 } from "@/shared/lib/storage";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
-import { api } from "@/shared/services/apiClient";
 
 export const supabaseAuthAdapter: AuthAdapter = {
 	/**
@@ -47,8 +46,10 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				};
 			}
 
-			const { data: { user } } = await client.auth.getUser();
-			
+			const {
+				data: { user },
+			} = await client.auth.getUser();
+
 			if (!user) {
 				return null;
 			}

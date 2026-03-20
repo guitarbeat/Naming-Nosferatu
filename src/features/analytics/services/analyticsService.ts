@@ -128,9 +128,13 @@ export const statsAPI = {
 		}
 	},
 
-	getEngagementMetrics: async (timeframe: 'day' | 'week' | 'month' | 'year'): Promise<EngagementMetrics | null> => {
+	getEngagementMetrics: async (
+		timeframe: "day" | "week" | "month" | "year",
+	): Promise<EngagementMetrics | null> => {
 		try {
-			const metrics = await api.get<Partial<EngagementMetrics>>(`/analytics/engagement?timeframe=${timeframe}`);
+			const metrics = await api.get<Partial<EngagementMetrics>>(
+				`/analytics/engagement?timeframe=${timeframe}`,
+			);
 			if (!metrics) {
 				return null;
 			}
@@ -173,8 +177,10 @@ export const statsAPI = {
 				totalTournaments: toNumber(stats.totalTournaments),
 				completedTournaments: toNumber(stats.completedTournaments),
 				averageTournamentTime: toNumber(stats.averageTournamentTime),
-				favoriteNames: stats.favoriteNames ? String(stats.favoriteNames).split(',') : [],
-				preferredCategories: stats.preferredCategories ? String(stats.preferredCategories).split(',') : [],
+				favoriteNames: stats.favoriteNames ? String(stats.favoriteNames).split(",") : [],
+				preferredCategories: stats.preferredCategories
+					? String(stats.preferredCategories).split(",")
+					: [],
 				engagementScore: toNumber(stats.engagementScore),
 			};
 		} catch {
