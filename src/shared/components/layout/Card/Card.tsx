@@ -5,9 +5,10 @@
  */
 
 import { cva } from "class-variance-authority";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
+import { useTilt } from "@/shared/hooks/useTilt";
 import { cn } from "@/shared/lib/basic";
 import { TIMING } from "@/shared/lib/constants";
 import { ZoomIn } from "@/shared/lib/icons";
@@ -135,17 +136,7 @@ const CardBase = memo(
 			},
 			ref,
 		) => {
-			const mouseX = useMotionValue(0);
-			const mouseY = useMotionValue(0);
-
-			// Snappy spring config for lively tilt response
-			const springConfig = { stiffness: 400, damping: 25, mass: 0.5 };
-			const mouseXSpring = useSpring(mouseX, springConfig);
-			const mouseYSpring = useSpring(mouseY, springConfig);
-
-			// Subtle tilt: max 6 degrees for smooth, refined effect
-			const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["6deg", "-6deg"]);
-			const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-6deg", "6deg"]);
+			const tilt = useTilt(enableTilt);
 
 			const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
 				const rect = e.currentTarget.getBoundingClientRect();
@@ -156,21 +147,12 @@ const CardBase = memo(
 				e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
 				e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
 
-				if (enableTilt) {
-					const xPct = x / rect.width - 0.5;
-					const yPct = y / rect.height - 0.5;
-					mouseX.set(xPct);
-					mouseY.set(yPct);
-				}
-
+				tilt.handleMouseMove(e);
 				onMouseMove?.(e);
 			};
 
 			const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-				if (enableTilt) {
-					mouseX.set(0);
-					mouseY.set(0);
-				}
+				tilt.handleMouseLeave();
 				onMouseLeave?.(e);
 			};
 
@@ -248,19 +230,18 @@ const CardBase = memo(
 				);
 			}
 
-			const motionProps = enableTilt
+			const motionProps = tilt.isEnabled
 				? {
 						style: {
-							rotateX,
-							rotateY,
+							rotateX: tilt.rotateX,
+							rotateY: tilt.rotateY,
 							transformStyle: "preserve-3d" as const,
-							willChange: "transform",
 							...style,
 						},
 					}
 				: { style };
 
-			const CommonComponent = (enableTilt ? motion.div : Component) as React.ElementType;
+			const CommonComponent = (tilt.isEnabled ? motion.div : Component) as React.ElementType;
 
 			return (
 				<CommonComponent
