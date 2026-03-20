@@ -717,132 +717,118 @@ export function NameSelector() {
 		<div className="mx-auto w-full">
 			<div className="space-y-8 mobile-nav-safe-bottom">
 				{/* Header Section - Current Names & Top Contenders */}
-				<div className="space-y-6">
-					{/* Current Names (Locked In) */}
-					{lockedInNames.length > 0 && (
-						<div className="text-center space-y-3">
-							<h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
-								Current Names
-							</h3>
-							<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 relative z-[60]">
-								{lockedInNames.map((nameItem) => (
-									<motion.div
-										key={nameItem.id}
-										whileHover={{ y: -2, scale: 1.02 }}
-										className="group relative px-4 py-2 sm:px-5 sm:py-2.5 bg-warning/15 border border-warning/40 rounded-lg shadow-sm"
-									>
-										<span className="text-foreground font-semibold text-sm sm:text-base">
-											{nameItem.name}
-										</span>
-										{(nameItem.description || nameItem.pronunciation) && (
-											<div
-												ref={tooltipRef}
-												onMouseEnter={measureTooltip}
-												className={`name-lock-tooltip ${
-													tooltipPosition === "top"
-														? "name-lock-tooltip--top"
-														: "name-lock-tooltip--bottom"
-												}`}
-											>
-												{nameItem.pronunciation && (
-													<div className="name-lock-tooltip__header">
-														<div className="name-lock-tooltip__label">Pronunciation</div>
-														<div className="name-lock-tooltip__pronunciation">
-															{nameItem.pronunciation}
+				{(lockedInNames.length > 0 || topContenders.length > 0) && (
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto px-4">
+						{/* Current Names (Locked In) */}
+						{lockedInNames.length > 0 && (
+							<div className="flex flex-col items-center p-4 sm:p-5 bg-card/50 border border-border/50 rounded-xl">
+								<h3 className="text-xs font-semibold text-warning uppercase tracking-wider mb-3">
+									Current Names
+								</h3>
+								<div className="flex flex-wrap justify-center items-center gap-2 relative z-[60]">
+									{lockedInNames.map((nameItem) => (
+										<motion.div
+											key={nameItem.id}
+											whileHover={{ y: -1, scale: 1.02 }}
+											className="group relative px-3 py-1.5 bg-warning/10 border border-warning/30 rounded-md"
+										>
+											<span className="text-foreground font-medium text-sm">
+												{nameItem.name}
+											</span>
+											{(nameItem.description || nameItem.pronunciation) && (
+												<div
+													ref={tooltipRef}
+													onMouseEnter={measureTooltip}
+													className={`name-lock-tooltip ${
+														tooltipPosition === "top"
+															? "name-lock-tooltip--top"
+															: "name-lock-tooltip--bottom"
+													}`}
+												>
+													{nameItem.pronunciation && (
+														<div className="name-lock-tooltip__header">
+															<div className="name-lock-tooltip__label">Pronunciation</div>
+															<div className="name-lock-tooltip__pronunciation">
+																{nameItem.pronunciation}
+															</div>
 														</div>
-													</div>
-												)}
-												<div className="name-lock-tooltip__body">{nameItem.description}</div>
-												<div className="name-lock-tooltip__arrow" />
-											</div>
-										)}
-									</motion.div>
-								))}
+													)}
+													<div className="name-lock-tooltip__body">{nameItem.description}</div>
+													<div className="name-lock-tooltip__arrow" />
+												</div>
+											)}
+										</motion.div>
+									))}
+								</div>
 							</div>
-						</div>
-					)}
-
-					{/* Top Contenders */}
-					{topContenders.length > 0 && (
-						<div className="text-center space-y-3">
-							<h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
-								Top Contenders
-							</h3>
-							<div className="flex flex-wrap justify-center items-center gap-2">
-								{topContenders.map((nameItem, index) => (
-									<motion.button
-										key={nameItem.id}
-										type="button"
-										onClick={() => handleToggleName(nameItem.id)}
-										whileHover={{ y: -2, scale: 1.02 }}
-										whileTap={{ scale: 0.98 }}
-										className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition-colors ${
-											selectedNames.has(nameItem.id)
-												? "bg-primary/20 border border-primary/50 text-primary"
-												: "bg-muted/50 border border-border/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-										}`}
-									>
-										<span className="opacity-50 mr-1.5">#{index + 1}</span>
-										{nameItem.name}
-									</motion.button>
-								))}
-							</div>
-						</div>
-					)}
-				</div>
-
-				{/* Selection Controls */}
-				<div className="flex flex-col items-center gap-3">
-					<div
-						className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground"
-						aria-live="polite"
-					>
-						<span className="px-3 py-1 bg-muted/30 rounded-full">
-							{selectedAvailableCount} of {availableNames.length} selected
-						</span>
-						{selectedHiddenCount > 0 && (
-							<span className="px-3 py-1 bg-muted/30 rounded-full">
-								+{selectedHiddenCount} hidden
-							</span>
 						)}
-						{isSwipeMode && swipeHistory.length > 0 && (
-							<Button
-								onClick={handleUndo}
-								variant="glass"
-								size="small"
-								className="px-3 py-1 text-xs"
-							>
-								Undo Last ({swipeHistory.length})
-							</Button>
+
+						{/* Top Contenders */}
+						{topContenders.length > 0 && (
+							<div className={`flex flex-col items-center p-4 sm:p-5 bg-card/50 border border-border/50 rounded-xl ${lockedInNames.length === 0 ? "sm:col-span-2" : ""}`}>
+								<h3 className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">
+									Top Contenders
+								</h3>
+								<div className="flex flex-wrap justify-center items-center gap-1.5">
+									{topContenders.map((nameItem, index) => (
+										<motion.button
+											key={nameItem.id}
+											type="button"
+											onClick={() => handleToggleName(nameItem.id)}
+											whileHover={{ y: -1, scale: 1.02 }}
+											whileTap={{ scale: 0.98 }}
+											className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+												selectedNames.has(nameItem.id)
+													? "bg-primary/20 border border-primary/40 text-primary"
+													: "bg-muted/40 border border-border/40 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+											}`}
+										>
+											<span className="opacity-40 mr-1">#{index + 1}</span>
+											{nameItem.name}
+										</motion.button>
+									))}
+								</div>
+							</div>
 						)}
 					</div>
+				)}
+
+				{/* Selection Controls */}
+				<div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-4">
+					<span className="text-xs sm:text-sm text-muted-foreground" aria-live="polite">
+						{selectedAvailableCount}/{availableNames.length} selected
+						{selectedHiddenCount > 0 && ` (+${selectedHiddenCount} hidden)`}
+					</span>
+					{isSwipeMode && swipeHistory.length > 0 && (
+						<Button onClick={handleUndo} variant="glass" size="small" className="text-xs">
+							Undo ({swipeHistory.length})
+						</Button>
+					)}
 					{!isSwipeMode && (
-						<div className="flex flex-wrap items-center justify-center gap-2">
+						<>
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleSelectAllAvailable}
 								disabled={!canSelectAllAvailable}
+								className="text-xs"
 							>
-								Select all
+								All
 							</Button>
-							<Button
-								variant="glass"
-								size="small"
-								onClick={handleSelectRandomAvailable}
-							>
-								<Shuffle size={14} />
-								Pick 8
+							<Button variant="glass" size="small" onClick={handleSelectRandomAvailable} className="text-xs">
+								<Shuffle size={12} />
+								Random
 							</Button>
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleClearSelection}
 								disabled={!hasAnySelection}
+								className="text-xs"
 							>
 								Clear
 							</Button>
-						</div>
+						</>
 					)}
 				</div>
 
