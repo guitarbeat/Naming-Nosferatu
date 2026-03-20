@@ -5,9 +5,10 @@
  */
 
 import { cva } from "class-variance-authority";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
+import { useTilt } from "@/shared/hooks/useTilt";
 import { cn } from "@/shared/lib/basic";
 import { TIMING } from "@/shared/lib/constants";
 import { ZoomIn } from "@/shared/lib/icons";
@@ -135,14 +136,7 @@ const CardBase = memo(
 			},
 			ref,
 		) => {
-			const mouseX = useMotionValue(0);
-			const mouseY = useMotionValue(0);
-
-			const mouseXSpring = useSpring(mouseX);
-			const mouseYSpring = useSpring(mouseY);
-
-			const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-			const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+			const tilt = useTilt(enableTilt);
 
 			const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
 				const rect = e.currentTarget.getBoundingClientRect();
@@ -153,21 +147,12 @@ const CardBase = memo(
 				e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
 				e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
 
-				if (enableTilt) {
-					const xPct = x / rect.width - 0.5;
-					const yPct = y / rect.height - 0.5;
-					mouseX.set(xPct);
-					mouseY.set(yPct);
-				}
-
+				tilt.handleMouseMove(e);
 				onMouseMove?.(e);
 			};
 
 			const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-				if (enableTilt) {
-					mouseX.set(0);
-					mouseY.set(0);
-				}
+				tilt.handleMouseLeave();
 				onMouseLeave?.(e);
 			};
 
@@ -245,18 +230,18 @@ const CardBase = memo(
 				);
 			}
 
-			const motionProps = enableTilt
+			const motionProps = tilt.isEnabled
 				? {
 						style: {
-							rotateX,
-							rotateY,
+							rotateX: tilt.rotateX,
+							rotateY: tilt.rotateY,
 							transformStyle: "preserve-3d" as const,
 							...style,
 						},
 					}
 				: { style };
 
-			const CommonComponent = (enableTilt ? motion.div : Component) as React.ElementType;
+			const CommonComponent = (tilt.isEnabled ? motion.div : Component) as React.ElementType;
 
 			return (
 				<CommonComponent
@@ -273,7 +258,7 @@ const CardBase = memo(
 						style={
 							enableTilt
 								? {
-										transform: "translateZ(20px)",
+										transform: "translateZ(10px)",
 										transformStyle: "preserve-3d",
 									}
 								: undefined
@@ -428,6 +413,7 @@ interface CardNameProps {
 	onSelectionChange?: (selected: boolean) => void;
 	image?: string;
 	onImageClick?: (e: React.MouseEvent) => void;
+	enableTilt?: boolean;
 }
 
 const CardNameBase = memo(function CardName({
@@ -446,10 +432,18 @@ const CardNameBase = memo(function CardName({
 	onSelectionChange,
 	image,
 	onImageClick,
+	enableTilt = true,
 }: CardNameProps) {
 	const [rippleStyle, setRippleStyle] = useState<React.CSSProperties>({});
 	const [isRippling, setIsRippling] = useState(false);
 	const cardRef = React.useRef<HTMLDivElement>(null);
+
+	// Disable tilt on touch devices for better performance
+	const [isTouchDevice, setIsTouchDevice] = useState(false);
+	useEffect(() => {
+		setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
+	}, []);
+	const shouldEnableTilt = enableTilt && !isTouchDevice;
 
 	useEffect(() => {
 		if (isRippling) {
@@ -524,7 +518,7 @@ const CardNameBase = memo(function CardName({
 	const Component = isInteractive ? "button" : "div";
 
 	const cardContent = (
-		<div className="relative w-full h-full">
+		<div className="relative w-full h-full" style={{ perspective: shouldEnableTilt && !disabled ? "800px" : undefined }}>
 			<Card
 				as={Component}
 				ref={cardRef as React.Ref<HTMLDivElement>}
@@ -565,6 +559,7 @@ const CardNameBase = memo(function CardName({
 				variant={isSelected ? "primary" : "default"}
 				padding={size === "small" ? "small" : "medium"}
 				interactive={isInteractive}
+				enableTilt={shouldEnableTilt && !disabled}
 			>
 				{/* Hidden Badge */}
 				{isHidden && (
@@ -615,7 +610,7 @@ const CardNameBase = memo(function CardName({
 				<div
 					className={cn(
 						"z-10 flex flex-col items-center gap-1",
-						image && "mt-auto pb-3 px-3 w-full",
+						image && "absolute inset-0 justify-center px-3 w-full",
 					)}
 				>
 					<h3

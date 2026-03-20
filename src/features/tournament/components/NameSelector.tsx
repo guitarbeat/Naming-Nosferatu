@@ -526,6 +526,7 @@ export function NameSelector() {
 	const cardsToRender = useMemo(() => visibleCards.slice(0, 3), [visibleCards]);
 
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
+	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
 	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
 	const hiddenFiltered = useMemo(() => {
 		return hiddenNamesAll.filter((name) => {
@@ -704,109 +705,92 @@ export function NameSelector() {
 	return (
 		<div className="mx-auto w-full">
 			<div className="space-y-6 mobile-nav-safe-bottom">
-				{(() => {
-					const lockedInNames = getLockedNames(names);
-					if (lockedInNames.length === 0) {
-						return null;
-					}
-					return (
-						<div className="text-center space-y-4">
-							<h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
-								My cat's name is
-							</h3>
-							<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 w-full px-2 relative z-[60]">
-								{lockedInNames.map((nameItem) => (
-									<motion.div
-										key={nameItem.id}
-										whileHover={{ y: -4, scale: 1.02 }}
-										className="group relative shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-warning/30 bg-warning/10 ring-1 md:ring-2 ring-warning/40 shadow-[0_0_15px_hsl(var(--warning)/0.15)] rounded-sm"
-									>
-										<div className="text-foreground font-bold text-xs sm:text-sm md:text-base lg:text-lg">
-											{nameItem.name}
-										</div>
-
-										{(nameItem.description || nameItem.pronunciation) && (
-											<div
-												ref={tooltipRef}
-												onMouseEnter={measureTooltip}
-												className={`name-lock-tooltip ${
-													tooltipPosition === "top"
-														? "name-lock-tooltip--top"
-														: "name-lock-tooltip--bottom"
-												}`}
-											>
-												{nameItem.pronunciation && (
-													<div className="name-lock-tooltip__header">
-														<div className="name-lock-tooltip__label">Pronunciation</div>
-														<div className="name-lock-tooltip__pronunciation">
-															{nameItem.pronunciation}
-														</div>
-													</div>
-												)}
-												<div className="name-lock-tooltip__body">{nameItem.description}</div>
-												<div className="name-lock-tooltip__arrow" />
-											</div>
-										)}
-									</motion.div>
-								))}
-							</div>
-						</div>
-					);
-				})()}
-
-				<div className="text-center space-y-4 mt-2">
-					<p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-						{isSwipeMode
-							? "Swipe right to select, left to skip. You can also use arrow keys (or A/D) and Ctrl+Z to undo."
-							: "Click to select names • Select at least 2 names • 2v2 auto-enables when selected count is divisible by 4 (and >=4), otherwise 1v1"}
-					</p>
-					<div
-						className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground"
-						aria-live="polite"
-					>
-						<span>
-							Selected: {selectedAvailableCount} / {availableNames.length}
+				{/* Current Names - Prominent Display */}
+				{lockedInNames.length > 0 && (
+					<div className="flex flex-col items-center gap-2 px-4">
+						<span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+							My cat is named
 						</span>
-						{selectedHiddenCount > 0 && <span>Hidden selected: {selectedHiddenCount}</span>}
-						{isSwipeMode && swipeHistory.length > 0 && (
-							<Button
-								onClick={handleUndo}
-								variant="glass"
-								size="small"
-								className="px-3 py-1 text-xs"
-							>
-								Undo Last ({swipeHistory.length})
-							</Button>
-						)}
+						<div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 relative z-[60]">
+							{lockedInNames.map((nameItem, index) => (
+								<motion.div
+									key={nameItem.id}
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: index * 0.05 }}
+									whileHover={{ y: -1 }}
+									className="group relative px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-b from-warning/15 to-warning/5 border border-warning/25 rounded-md"
+								>
+									<span className="text-foreground font-medium text-sm">
+										{nameItem.name}
+									</span>
+									{(nameItem.description || nameItem.pronunciation) && (
+										<div
+											ref={tooltipRef}
+											onMouseEnter={measureTooltip}
+											className={`name-lock-tooltip ${
+												tooltipPosition === "top"
+													? "name-lock-tooltip--top"
+													: "name-lock-tooltip--bottom"
+											}`}
+										>
+											{nameItem.pronunciation && (
+												<div className="name-lock-tooltip__header">
+													<div className="name-lock-tooltip__label">Pronunciation</div>
+													<div className="name-lock-tooltip__pronunciation">
+														{nameItem.pronunciation}
+													</div>
+												</div>
+											)}
+											<div className="name-lock-tooltip__body">{nameItem.description}</div>
+											<div className="name-lock-tooltip__arrow" />
+										</div>
+									)}
+								</motion.div>
+							))}
+						</div>
 					</div>
-					{!isSwipeMode && (
-						<div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 min-[420px]:max-w-xl min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:justify-center">
+				)}
+
+				{/* Selection Controls - Inline and Compact */}
+				<div className="flex items-center justify-center gap-3 px-4">
+					<span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
+						{selectedAvailableCount}/{availableNames.length}
+						{selectedHiddenCount > 0 && <span className="opacity-60"> +{selectedHiddenCount}</span>}
+					</span>
+					<div className="h-3 w-px bg-border/50" />
+					{isSwipeMode && swipeHistory.length > 0 ? (
+						<Button onClick={handleUndo} variant="glass" size="small" className="text-xs h-7 px-2">
+							Undo ({swipeHistory.length})
+						</Button>
+					) : (
+						<div className="flex items-center gap-1.5">
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleSelectAllAvailable}
 								disabled={!canSelectAllAvailable}
-								className="w-full min-[420px]:w-auto"
+								className="text-xs h-7 px-2.5"
 							>
-								Select all visible
+								All
 							</Button>
-							<Button
-								variant="glass"
-								size="small"
-								onClick={handleSelectRandomAvailable}
-								className="w-full min-[420px]:w-auto"
+							<Button 
+								variant="glass" 
+								size="small" 
+								onClick={handleSelectRandomAvailable} 
+								className="text-xs h-7 px-2.5"
 							>
-								<Shuffle size={14} />
-								Pick 8 random
+								<Shuffle size={11} className="mr-1" />
+								Random
 							</Button>
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleClearSelection}
 								disabled={!hasAnySelection}
-								className="w-full min-[420px]:w-auto"
+								className="text-xs h-7 px-2.5"
 							>
-								Clear selection
+								Clear
 							</Button>
 						</div>
 					)}

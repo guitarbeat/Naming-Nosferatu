@@ -16,7 +16,7 @@ interface SectionHeadingProps {
 
 export function SectionHeading({ icon: Icon, title, subtitle, className }: SectionHeadingProps) {
 	return (
-		<div className={cn("flex flex-col items-center gap-3 py-2 mb-6 sm:mb-8", className)}>
+		<div className={cn("flex flex-col items-center gap-2 py-1 mb-2 sm:mb-4", className)}>
 			{/* Decorative divider */}
 			<div className="flex w-full items-center gap-4" aria-hidden="true">
 				<div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
