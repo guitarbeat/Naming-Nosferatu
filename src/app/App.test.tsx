@@ -83,6 +83,8 @@ vi.mock("@/app/appConfig", () => ({
 
 describe("App Component", () => {
 	it("renders the tournament flow on home route", async () => {
+		const scrollToSpy = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+
 		render(
 			<MemoryRouter initialEntries={["/"]}>
 				<App />
@@ -93,6 +95,9 @@ describe("App Component", () => {
 			expect(screen.getByTestId("app-layout")).toBeInTheDocument();
 			expect(screen.getByTestId("tournament-flow")).toBeInTheDocument();
 		});
+
+		expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, left: 0, behavior: "auto" });
+		scrollToSpy.mockRestore();
 	});
 
 	it("renders the tournament page", async () => {

@@ -7,8 +7,8 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { Suspense, useCallback, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import { NameSuggestionInner } from "@/features/tournament/components/NameSuggestion";
@@ -35,8 +35,13 @@ function App() {
 	const { user: authUser, isLoading } = useAuth();
 	const isInitialized = !isLoading;
 	const { userActions } = useAppStore();
+	const location = useLocation();
 
 	// Sync auth user with store
+	useLayoutEffect(() => {
+		window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+	}, [location.pathname]);
+
 	useEffect(() => {
 		if (authUser) {
 			userActions.setAdminStatus(Boolean(authUser.isAdmin));
