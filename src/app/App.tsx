@@ -112,7 +112,6 @@ function HomeContent() {
 					<SectionHeading
 						icon={Trophy}
 						title="Pick Names"
-						subtitle="Select names to start a tournament"
 					/>
 				</div>
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>

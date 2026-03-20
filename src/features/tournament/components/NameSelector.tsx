@@ -704,21 +704,24 @@ export function NameSelector() {
 
 	return (
 		<div className="mx-auto w-full">
-			<div className="space-y-8 mobile-nav-safe-bottom">
-				{/* Current Names Header */}
+			<div className="space-y-6 mobile-nav-safe-bottom">
+				{/* Current Names - Prominent Display */}
 				{lockedInNames.length > 0 && (
-					<div className="flex flex-col items-center gap-3 px-4">
-						<h3 className="text-xs font-semibold text-warning/80 uppercase tracking-widest">
-							Current Names
-						</h3>
-						<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 relative z-[60]">
-							{lockedInNames.map((nameItem) => (
+					<div className="flex flex-col items-center gap-2 px-4">
+						<span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+							My cat is named
+						</span>
+						<div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 relative z-[60]">
+							{lockedInNames.map((nameItem, index) => (
 								<motion.div
 									key={nameItem.id}
-									whileHover={{ y: -2, scale: 1.03 }}
-									className="group relative px-4 py-2 sm:px-5 sm:py-2.5 bg-warning/10 border border-warning/30 rounded-lg shadow-sm shadow-warning/5"
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: index * 0.05 }}
+									whileHover={{ y: -1 }}
+									className="group relative px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-b from-warning/15 to-warning/5 border border-warning/25 rounded-md"
 								>
-									<span className="text-foreground font-semibold text-sm sm:text-base">
+									<span className="text-foreground font-medium text-sm">
 										{nameItem.name}
 									</span>
 									{(nameItem.description || nameItem.pronunciation) && (
@@ -749,30 +752,35 @@ export function NameSelector() {
 					</div>
 				)}
 
-				{/* Selection Controls */}
-				<div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-4">
-					<span className="text-xs sm:text-sm text-muted-foreground" aria-live="polite">
-						{selectedAvailableCount}/{availableNames.length} selected
-						{selectedHiddenCount > 0 && ` (+${selectedHiddenCount} hidden)`}
+				{/* Selection Controls - Inline and Compact */}
+				<div className="flex items-center justify-center gap-3 px-4">
+					<span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
+						{selectedAvailableCount}/{availableNames.length}
+						{selectedHiddenCount > 0 && <span className="opacity-60"> +{selectedHiddenCount}</span>}
 					</span>
-					{isSwipeMode && swipeHistory.length > 0 && (
-						<Button onClick={handleUndo} variant="glass" size="small" className="text-xs">
+					<div className="h-3 w-px bg-border/50" />
+					{isSwipeMode && swipeHistory.length > 0 ? (
+						<Button onClick={handleUndo} variant="glass" size="small" className="text-xs h-7 px-2">
 							Undo ({swipeHistory.length})
 						</Button>
-					)}
-					{!isSwipeMode && (
-						<>
+					) : (
+						<div className="flex items-center gap-1.5">
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleSelectAllAvailable}
 								disabled={!canSelectAllAvailable}
-								className="text-xs"
+								className="text-xs h-7 px-2.5"
 							>
 								All
 							</Button>
-							<Button variant="glass" size="small" onClick={handleSelectRandomAvailable} className="text-xs">
-								<Shuffle size={12} />
+							<Button 
+								variant="glass" 
+								size="small" 
+								onClick={handleSelectRandomAvailable} 
+								className="text-xs h-7 px-2.5"
+							>
+								<Shuffle size={11} className="mr-1" />
 								Random
 							</Button>
 							<Button
@@ -780,11 +788,11 @@ export function NameSelector() {
 								size="small"
 								onClick={handleClearSelection}
 								disabled={!hasAnySelection}
-								className="text-xs"
+								className="text-xs h-7 px-2.5"
 							>
 								Clear
 							</Button>
-						</>
+						</div>
 					)}
 				</div>
 
