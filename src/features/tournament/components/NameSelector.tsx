@@ -526,6 +526,18 @@ export function NameSelector() {
 	const cardsToRender = useMemo(() => visibleCards.slice(0, 3), [visibleCards]);
 
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
+	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
+	const topContenders = useMemo(() => {
+		// Get top 5 names by avg_rating that aren't locked in
+		return [...availableNames]
+			.filter((name) => !isNameLocked(name))
+			.sort((a, b) => {
+				const ratingA = a.avg_rating ?? a.avgRating ?? 1500;
+				const ratingB = b.avg_rating ?? b.avgRating ?? 1500;
+				return ratingB - ratingA;
+			})
+			.slice(0, 5);
+	}, [availableNames]);
 	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
 	const hiddenFiltered = useMemo(() => {
 		return hiddenNamesAll.filter((name) => {
@@ -703,28 +715,25 @@ export function NameSelector() {
 
 	return (
 		<div className="mx-auto w-full">
-			<div className="space-y-6 mobile-nav-safe-bottom">
-				{(() => {
-					const lockedInNames = getLockedNames(names);
-					if (lockedInNames.length === 0) {
-						return null;
-					}
-					return (
-						<div className="text-center space-y-4">
-							<h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
-								My cat's name is
+			<div className="space-y-8 mobile-nav-safe-bottom">
+				{/* Header Section - Current Names & Top Contenders */}
+				<div className="space-y-6">
+					{/* Current Names (Locked In) */}
+					{lockedInNames.length > 0 && (
+						<div className="text-center space-y-3">
+							<h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+								Current Names
 							</h3>
-							<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 w-full px-2 relative z-[60]">
+							<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 relative z-[60]">
 								{lockedInNames.map((nameItem) => (
 									<motion.div
 										key={nameItem.id}
-										whileHover={{ y: -4, scale: 1.02 }}
-										className="group relative shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-3 border-[1px] md:border-2 border-warning/30 bg-warning/10 ring-1 md:ring-2 ring-warning/40 shadow-[0_0_15px_hsl(var(--warning)/0.15)] rounded-sm"
+										whileHover={{ y: -2, scale: 1.02 }}
+										className="group relative px-4 py-2 sm:px-5 sm:py-2.5 bg-warning/15 border border-warning/40 rounded-lg shadow-sm"
 									>
-										<div className="text-foreground font-bold text-xs sm:text-sm md:text-base lg:text-lg">
+										<span className="text-foreground font-semibold text-sm sm:text-base">
 											{nameItem.name}
-										</div>
-
+										</span>
 										{(nameItem.description || nameItem.pronunciation) && (
 											<div
 												ref={tooltipRef}
@@ -751,23 +760,51 @@ export function NameSelector() {
 								))}
 							</div>
 						</div>
-					);
-				})()}
+					)}
 
-				<div className="text-center space-y-4 mt-2">
-					<p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-						{isSwipeMode
-							? "Swipe right to select, left to skip. You can also use arrow keys (or A/D) and Ctrl+Z to undo."
-							: "Click to select names • Select at least 2 names • 2v2 auto-enables when selected count is divisible by 4 (and >=4), otherwise 1v1"}
-					</p>
+					{/* Top Contenders */}
+					{topContenders.length > 0 && (
+						<div className="text-center space-y-3">
+							<h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+								Top Contenders
+							</h3>
+							<div className="flex flex-wrap justify-center items-center gap-2">
+								{topContenders.map((nameItem, index) => (
+									<motion.button
+										key={nameItem.id}
+										type="button"
+										onClick={() => handleToggleName(nameItem.id)}
+										whileHover={{ y: -2, scale: 1.02 }}
+										whileTap={{ scale: 0.98 }}
+										className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition-colors ${
+											selectedNames.has(nameItem.id)
+												? "bg-primary/20 border border-primary/50 text-primary"
+												: "bg-muted/50 border border-border/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+										}`}
+									>
+										<span className="opacity-50 mr-1.5">#{index + 1}</span>
+										{nameItem.name}
+									</motion.button>
+								))}
+							</div>
+						</div>
+					)}
+				</div>
+
+				{/* Selection Controls */}
+				<div className="flex flex-col items-center gap-3">
 					<div
-						className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground"
+						className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground"
 						aria-live="polite"
 					>
-						<span>
-							Selected: {selectedAvailableCount} / {availableNames.length}
+						<span className="px-3 py-1 bg-muted/30 rounded-full">
+							{selectedAvailableCount} of {availableNames.length} selected
 						</span>
-						{selectedHiddenCount > 0 && <span>Hidden selected: {selectedHiddenCount}</span>}
+						{selectedHiddenCount > 0 && (
+							<span className="px-3 py-1 bg-muted/30 rounded-full">
+								+{selectedHiddenCount} hidden
+							</span>
+						)}
 						{isSwipeMode && swipeHistory.length > 0 && (
 							<Button
 								onClick={handleUndo}
@@ -780,33 +817,30 @@ export function NameSelector() {
 						)}
 					</div>
 					{!isSwipeMode && (
-						<div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 min-[420px]:max-w-xl min-[420px]:flex-row min-[420px]:flex-wrap min-[420px]:justify-center">
+						<div className="flex flex-wrap items-center justify-center gap-2">
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleSelectAllAvailable}
 								disabled={!canSelectAllAvailable}
-								className="w-full min-[420px]:w-auto"
 							>
-								Select all visible
+								Select all
 							</Button>
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleSelectRandomAvailable}
-								className="w-full min-[420px]:w-auto"
 							>
 								<Shuffle size={14} />
-								Pick 8 random
+								Pick 8
 							</Button>
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleClearSelection}
 								disabled={!hasAnySelection}
-								className="w-full min-[420px]:w-auto"
 							>
-								Clear selection
+								Clear
 							</Button>
 						</div>
 					)}
