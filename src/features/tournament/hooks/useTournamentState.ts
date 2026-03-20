@@ -241,16 +241,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			}),
 		[bracketDerived],
 	);
-	const {
-		totalMatches,
-		matchNumber,
-		round,
-		totalRounds,
-		stageLabel,
-		roundSize,
-		progress,
-		etaMinutes,
-	} = metrics;
+	const { totalMatches, matchNumber, round, totalRounds, stageLabel, progress, etaMinutes } =
+		metrics;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {

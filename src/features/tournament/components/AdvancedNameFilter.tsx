@@ -50,7 +50,9 @@ export function AdvancedNameFilter({
 		const categories = new Set<string>();
 		names.forEach((name) => {
 			if (name.categories) {
-				name.categories.forEach((cat: string) => categories.add(cat));
+				name.categories.forEach((cat: string) => {
+					categories.add(cat);
+				});
 			}
 		});
 		return Array.from(categories).sort();

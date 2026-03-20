@@ -58,7 +58,7 @@ export function TournamentReplay({
 	onExportHistory,
 	onReplayMatch,
 }: TournamentReplayProps) {
-	const [selectedTournament, setSelectedTournament] = useState<string>("");
+	const [selectedTournament, setSelectedTournament] = useState<string>(tournamentId ?? "");
 	const [selectedMatch, setSelectedMatch] = useState<string>("");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [playbackSpeed, setPlaybackSpeed] = useState(1);
@@ -158,6 +158,12 @@ export function TournamentReplay({
 
 		loadMockData();
 	}, []);
+
+	useEffect(() => {
+		if (tournamentId) {
+			setSelectedTournament(tournamentId);
+		}
+	}, [tournamentId]);
 
 	// Filter matches by selected tournament
 	const filteredMatches = useMemo(() => {

@@ -3,7 +3,7 @@
  * @description Dashboard component for analytics and results
  */
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
@@ -109,21 +109,22 @@ export function Dashboard({
 		fetchLeaderboard();
 	}, []);
 
+	const fetchEngagementMetrics = useCallback(async () => {
+		setIsLoadingStats(true);
+		try {
+			const metrics = await statsAPI.getEngagementMetrics(timeframe);
+			setEngagementMetrics(metrics);
+		} catch (error) {
+			console.error("Failed to fetch engagement metrics:", error);
+		} finally {
+			setIsLoadingStats(false);
+		}
+	}, [timeframe]);
+
 	// Fetch engagement metrics
 	useEffect(() => {
-		const fetchEngagementMetrics = async () => {
-			setIsLoadingStats(true);
-			try {
-				const metrics = await statsAPI.getEngagementMetrics(timeframe);
-				setEngagementMetrics(metrics);
-			} catch (error) {
-				console.error("Failed to fetch engagement metrics:", error);
-			} finally {
-				setIsLoadingStats(false);
-			}
-		};
 		fetchEngagementMetrics();
-	}, [timeframe]);
+	}, [fetchEngagementMetrics]);
 
 	// Fetch stats
 	useEffect(() => {

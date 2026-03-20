@@ -154,7 +154,7 @@ export const imagesAPI = {
 			const fileName = `${userName}_${timestamp}_${randomId}.${fileExt}`;
 
 			// Upload to Supabase Storage
-			const { data, error } = await client.storage.from("cat-images").upload(fileName, file, {
+			const { error } = await client.storage.from("cat-images").upload(fileName, file, {
 				cacheControl: "3600",
 				upsert: false,
 				contentType: file instanceof File ? file.type : "image/jpeg",

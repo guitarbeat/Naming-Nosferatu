@@ -202,36 +202,36 @@ export function TournamentBracket({
 					<Trophy size={24} className="text-chart-4" />
 					<h2 className="text-xl font-bold text-foreground">Tournament Bracket</h2>
 				</div>
-				
+
 				<div className="flex items-center gap-2">
 					{/* View Mode Toggle */}
 					<div className="flex bg-foreground/10 rounded-lg p-1">
 						<button
-							onClick={() => handleViewModeChange('bracket')}
+							onClick={() => handleViewModeChange("bracket")}
 							className={`px-3 py-2 rounded-l text-sm font-medium transition-colors ${
-								viewMode === 'bracket'
-									? 'bg-chart-4 text-white'
-									: 'text-foreground hover:bg-foreground/20'
+								viewMode === "bracket"
+									? "bg-chart-4 text-white"
+									: "text-foreground hover:bg-foreground/20"
 							}`}
 						>
 							Bracket
 						</button>
 						<button
-							onClick={() => handleViewModeChange('tree')}
+							onClick={() => handleViewModeChange("tree")}
 							className={`px-3 py-2 rounded-r text-sm font-medium transition-colors ${
-								viewMode === 'tree'
-									? 'bg-chart-4 text-white'
-									: 'text-foreground hover:bg-foreground/20'
+								viewMode === "tree"
+									? "bg-chart-4 text-white"
+									: "text-foreground hover:bg-foreground/20"
 							}`}
 						>
 							Tree
 						</button>
 						<button
-							onClick={() => handleViewModeChange('compact')}
+							onClick={() => handleViewModeChange("compact")}
 							className={`px-3 py-2 rounded-r text-sm font-medium transition-colors ${
-								viewMode === 'compact'
-									? 'bg-chart-4 text-white'
-									: 'text-foreground hover:bg-foreground/20'
+								viewMode === "compact"
+									? "bg-chart-4 text-white"
+									: "text-foreground hover:bg-foreground/20"
 							}`}
 						>
 							Compact
@@ -299,15 +299,21 @@ export function TournamentBracket({
 					</div>
 					<div>
 						<span className="text-muted-foreground">Completed Matches:</span>
-						<span className="font-medium text-foreground ml-1">{bracketStats.completedMatches}</span>
+						<span className="font-medium text-foreground ml-1">
+							{bracketStats.completedMatches}
+						</span>
 					</div>
 					<div>
 						<span className="text-muted-foreground">Completion Rate:</span>
-						<span className="font-medium text-foreground ml-1">{bracketStats.completionRate.toFixed(1)}%</span>
+						<span className="font-medium text-foreground ml-1">
+							{bracketStats.completionRate.toFixed(1)}%
+						</span>
 					</div>
 					<div>
 						<span className="text-muted-foreground">Avg Matches/Round:</span>
-						<span className="font-medium text-foreground ml-1">{bracketStats.averageMatchesPerRound.toFixed(1)}</span>
+						<span className="font-medium text-foreground ml-1">
+							{bracketStats.averageMatchesPerRound.toFixed(1)}
+						</span>
 					</div>
 				</div>
 			</div>
@@ -315,9 +321,9 @@ export function TournamentBracket({
 			{/* Round Navigation */}
 			<div className="flex items-center justify-between mb-6">
 				<button
-						onClick={handlePreviousRound}
-						disabled={selectedRound === 1}
-						className="flex items-center gap-2 px-4 py-2 bg-foreground/10 text-foreground hover:bg-foreground/20 disabled:opacity-50 rounded-lg"
+					onClick={handlePreviousRound}
+					disabled={selectedRound === 1}
+					className="flex items-center gap-2 px-4 py-2 bg-foreground/10 text-foreground hover:bg-foreground/20 disabled:opacity-50 rounded-lg"
 				>
 					<ChevronLeft size={20} />
 					<span className="text-sm font-medium">Round {selectedRound - 1}</span>
@@ -326,14 +332,16 @@ export function TournamentBracket({
 				<div className="text-center">
 					<span className="text-lg font-bold text-foreground">Round {selectedRound}</span>
 					{currentRoundMatches.length > 0 && (
-						<span className="text-sm text-muted-foreground ml-4">({currentRoundMatches.length} matches)</span>
+						<span className="text-sm text-muted-foreground ml-4">
+							({currentRoundMatches.length} matches)
+						</span>
 					)}
 				</div>
 
 				<button
-						onClick={handleNextRound}
-						disabled={selectedRound === bracketStats.totalRounds}
-						className="flex items-center gap-2 px-4 py-2 bg-foreground/10 text-foreground hover:bg-foreground/20 disabled:opacity-50 rounded-lg"
+					onClick={handleNextRound}
+					disabled={selectedRound === bracketStats.totalRounds}
+					className="flex items-center gap-2 px-4 py-2 bg-foreground/10 text-foreground hover:bg-foreground/20 disabled:opacity-50 rounded-lg"
 				>
 					<span className="text-sm font-medium">Round {selectedRound + 1}</span>
 					<ChevronRight size={20} />
@@ -342,9 +350,9 @@ export function TournamentBracket({
 
 			{/* Bracket Visualization */}
 			<div className="bg-card border border-border rounded-lg p-6 overflow-x-auto">
-				{viewMode === 'bracket' && (
+				{viewMode === "bracket" ? (
 					<div className="space-y-4">
-						{bracketRounds.map((round, _roundIndex) => (
+						{bracketRounds.map((round) => (
 							<div key={round.round} className="space-y-4">
 								<div className="text-center font-semibold text-foreground mb-4">
 									Round {round.round}
@@ -352,35 +360,47 @@ export function TournamentBracket({
 										<span className="ml-2 text-chart-4">🏆 Winner: {round.winner}</span>
 									)}
 								</div>
-								<div className="grid grid-cols-2 gap-4" style={{ minHeight: `${bracketSize.height * 2}px` }}>
+								<div
+									className="grid grid-cols-2 gap-4"
+									style={{ minHeight: `${bracketSize.height * 2}px` }}
+								>
 									{round.matches.map((match, matchIndex) => (
 										<div
 											key={match.id}
 											onClick={() => onMatchClick?.(match.id)}
 											className="relative bg-card border border-border rounded-lg p-4 cursor-pointer transition-all hover:shadow-lg hover:border-chart-4/50"
-											style={{ 
+											style={{
 												minHeight: `${bracketSize.height}px`,
-												width: '100%'
+												width: "100%",
 											}}
 										>
 											<div className="flex items-center justify-between mb-2">
 												<div className="flex items-center gap-2">
-													<span className="text-xs text-muted-foreground">Match {matchIndex + 1}</span>
+													<span className="text-xs text-muted-foreground">
+														Match {matchIndex + 1}
+													</span>
 													{match.leftScore !== undefined && (
-														<span className="text-sm font-medium text-foreground">({match.leftScore})</span>
+														<span className="text-sm font-medium text-foreground">
+															({match.leftScore})
+														</span>
 													)}
 												</div>
 												<div className="text-xs text-muted-foreground">
 													{match.rightScore !== undefined && (
-														<span className="text-sm font-medium text-foreground">({match.rightScore})</span>
+														<span className="text-sm font-medium text-foreground">
+															({match.rightScore})
+														</span>
 													)}
 												</div>
 											</div>
-											
+
 											<div className="flex items-center justify-between">
 												<div className="flex items-center gap-2">
 													{match.leftId && (
-														<span className="text-sm font-bold text-foreground truncate max-w-20" title={match.leftId}>
+														<span
+															className="text-sm font-bold text-foreground truncate max-w-20"
+															title={match.leftId}
+														>
 															{match.leftId}
 														</span>
 													)}
@@ -390,7 +410,10 @@ export function TournamentBracket({
 												</div>
 												<div className="flex items-center gap-2">
 													{match.rightId && (
-														<span className="text-sm font-bold text-foreground truncate max-w-20" title={match.rightId}>
+														<span
+															className="text-sm font-bold text-foreground truncate max-w-20"
+															title={match.rightId}
+														>
 															{match.rightId}
 														</span>
 													)}
@@ -399,93 +422,87 @@ export function TournamentBracket({
 													)}
 												</div>
 											</div>
+
+											{match.winnerId && (
+												<div className="absolute top-2 right-2 bg-chart-4 text-white text-xs font-bold px-2 py-1 rounded">
+													Winner
+												</div>
+											)}
 										</div>
-
-										{match.winnerId && (
-											<_div _className="absolute top-2 right-2 bg-chart-4 text-white text-xs font-bold px-2 py-1 rounded">
-												Winner
-											</_div>
-										)}
-									</div>
+									))}
 								</div>
-							))}
-						</div>
-					))}
+							</div>
+						))}
 					</div>
-				)}
-
-				{viewMode === 'tree' && (
+				) : viewMode === "tree" ? (
 					<div className="space-y-4">
 						{bracketRounds.map((round) => (
 							<div key={round.round} className="space-y-2">
 								<div className="flex items-center justify-between">
 									<span className="font-semibold text-foreground">Round {round.round}</span>
-									{round.winner && (
-										<span className="text-chart-4">🏆 Winner: {round.winner}</span>
-									)}
+									{round.winner && <span className="text-chart-4">🏆 Winner: {round.winner}</span>}
 								</div>
 								<div className="bg-foreground/5 rounded-lg p-4">
 									{round.matches.map((match, index) => (
-										<div key={match.id} className="flex items-center justify-between py-2 border-b border-border/10">
-											<span className="text-sm text-muted-foreground">
-												Match {index + 1}
-											</span>
+										<div
+											key={match.id}
+											className="flex items-center justify-between py-2 border-b border-border/10"
+										>
+											<span className="text-sm text-muted-foreground">Match {index + 1}</span>
 											<div className="flex items-center gap-2">
-												<span className="text-sm font-medium truncate max-w-24" title={match.leftId}>
+												<span
+													className="text-sm font-medium truncate max-w-24"
+													title={match.leftId}
+												>
 													{match.leftId}
 												</span>
 												<span className="text-muted-foreground">vs</span>
-												<span className="text-sm font-medium truncate max-w-24" title={match.rightId}>
+												<span
+													className="text-sm font-medium truncate max-w-24"
+													title={match.rightId}
+												>
 													{match.rightId}
 												</span>
 											</div>
 											<span className="text-chart-4">
-												{match.winnerId === match.leftId ? '←' : match.winnerId === match.rightId ? '→' : ''}
+												{match.winnerId === match.leftId
+													? "←"
+													: match.winnerId === match.rightId
+														? "→"
+														: ""}
 											</span>
-											</div>
 										</div>
-									</div>
-								))}
+									))}
+								</div>
 							</div>
 						))}
 					</div>
-				)
-}
-
-{
-	viewMode === 'compact' && (
+				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						{bracketRounds.map((round) => (
 							<div key={round.round} className="bg-foreground/5 rounded-lg p-4">
 								<div className="flex items-center justify-between mb-4">
 									<span className="font-semibold text-foreground">Round {round.round}</span>
-									{round.winner && (
-										<span className="text-chart-4">🏆 {round.winner}</span>
-									)}
+									{round.winner && <span className="text-chart-4">🏆 {round.winner}</span>}
 								</div>
 								<div className="space-y-2">
 									{round.matches.map((match, index) => (
 										<div key={match.id} className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground w-20">M{index + 1}</span>
 											<span className="flex-1 text-center">
-												{match.leftId && (
-														<span className="font-medium">{match.leftId}</span>
-												)}
+												{match.leftId && <span className="font-medium">{match.leftId}</span>}
 												<span className="text-muted-foreground">vs</span>
-												{match.rightId && (
-														<span className="font-medium">{match.rightId}</span>
-												)}
+												{match.rightId && <span className="font-medium">{match.rightId}</span>}
 											</span>
 											<span className="text-muted-foreground w-20">M{index + 1}</span>
 										</div>
-									</div>
-								))}
+									))}
+								</div>
 							</div>
 						))}
 					</div>
-				)
-}
-</div>
+				)}
+			</div>
 		</div>
-	)
+	);
 }
