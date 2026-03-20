@@ -527,17 +527,6 @@ export function NameSelector() {
 
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
 	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
-	const topContenders = useMemo(() => {
-		// Get top 5 names by avg_rating that aren't locked in
-		return [...availableNames]
-			.filter((name) => !isNameLocked(name))
-			.sort((a, b) => {
-				const ratingA = a.avg_rating ?? a.avgRating ?? 1500;
-				const ratingB = b.avg_rating ?? b.avgRating ?? 1500;
-				return ratingB - ratingA;
-			})
-			.slice(0, 5);
-	}, [availableNames]);
 	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
 	const hiddenFiltered = useMemo(() => {
 		return hiddenNamesAll.filter((name) => {
@@ -715,130 +704,91 @@ export function NameSelector() {
 
 	return (
 		<div className="mx-auto w-full">
-			<div className="space-y-8 mobile-nav-safe-bottom">
-				{/* Header Section - Current Names & Top Contenders */}
-				<div className="space-y-6">
-					{/* Current Names (Locked In) */}
-					{lockedInNames.length > 0 && (
-						<div className="text-center space-y-3">
-							<h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
-								Current Names
-							</h3>
-							<div className="flex flex-wrap justify-center items-center gap-2 sm:gap-3 relative z-[60]">
-								{lockedInNames.map((nameItem) => (
-									<motion.div
-										key={nameItem.id}
-										whileHover={{ y: -2, scale: 1.02 }}
-										className="group relative px-4 py-2 sm:px-5 sm:py-2.5 bg-warning/15 border border-warning/40 rounded-lg shadow-sm"
-									>
-										<span className="text-foreground font-semibold text-sm sm:text-base">
-											{nameItem.name}
-										</span>
-										{(nameItem.description || nameItem.pronunciation) && (
-											<div
-												ref={tooltipRef}
-												onMouseEnter={measureTooltip}
-												className={`name-lock-tooltip ${
-													tooltipPosition === "top"
-														? "name-lock-tooltip--top"
-														: "name-lock-tooltip--bottom"
-												}`}
-											>
-												{nameItem.pronunciation && (
-													<div className="name-lock-tooltip__header">
-														<div className="name-lock-tooltip__label">Pronunciation</div>
-														<div className="name-lock-tooltip__pronunciation">
-															{nameItem.pronunciation}
-														</div>
-													</div>
-												)}
-												<div className="name-lock-tooltip__body">{nameItem.description}</div>
-												<div className="name-lock-tooltip__arrow" />
-											</div>
-										)}
-									</motion.div>
-								))}
-							</div>
-						</div>
-					)}
-
-					{/* Top Contenders */}
-					{topContenders.length > 0 && (
-						<div className="text-center space-y-3">
-							<h3 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
-								Top Contenders
-							</h3>
-							<div className="flex flex-wrap justify-center items-center gap-2">
-								{topContenders.map((nameItem, index) => (
-									<motion.button
-										key={nameItem.id}
-										type="button"
-										onClick={() => handleToggleName(nameItem.id)}
-										whileHover={{ y: -2, scale: 1.02 }}
-										whileTap={{ scale: 0.98 }}
-										className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition-colors ${
-											selectedNames.has(nameItem.id)
-												? "bg-primary/20 border border-primary/50 text-primary"
-												: "bg-muted/50 border border-border/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-										}`}
-									>
-										<span className="opacity-50 mr-1.5">#{index + 1}</span>
-										{nameItem.name}
-									</motion.button>
-								))}
-							</div>
-						</div>
-					)}
-				</div>
-
-				{/* Selection Controls */}
-				<div className="flex flex-col items-center gap-3">
-					<div
-						className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground"
-						aria-live="polite"
-					>
-						<span className="px-3 py-1 bg-muted/30 rounded-full">
-							{selectedAvailableCount} of {availableNames.length} selected
+			<div className="space-y-6 mobile-nav-safe-bottom">
+				{/* Current Names - Prominent Display */}
+				{lockedInNames.length > 0 && (
+					<div className="flex flex-col items-center gap-2 px-4">
+						<span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+							My cat is named
 						</span>
-						{selectedHiddenCount > 0 && (
-							<span className="px-3 py-1 bg-muted/30 rounded-full">
-								+{selectedHiddenCount} hidden
-							</span>
-						)}
-						{isSwipeMode && swipeHistory.length > 0 && (
-							<Button
-								onClick={handleUndo}
-								variant="glass"
-								size="small"
-								className="px-3 py-1 text-xs"
-							>
-								Undo Last ({swipeHistory.length})
-							</Button>
-						)}
+						<div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 relative z-[60]">
+							{lockedInNames.map((nameItem, index) => (
+								<motion.div
+									key={nameItem.id}
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: index * 0.05 }}
+									whileHover={{ y: -1 }}
+									className="group relative px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-b from-warning/15 to-warning/5 border border-warning/25 rounded-md"
+								>
+									<span className="text-foreground font-medium text-sm">
+										{nameItem.name}
+									</span>
+									{(nameItem.description || nameItem.pronunciation) && (
+										<div
+											ref={tooltipRef}
+											onMouseEnter={measureTooltip}
+											className={`name-lock-tooltip ${
+												tooltipPosition === "top"
+													? "name-lock-tooltip--top"
+													: "name-lock-tooltip--bottom"
+											}`}
+										>
+											{nameItem.pronunciation && (
+												<div className="name-lock-tooltip__header">
+													<div className="name-lock-tooltip__label">Pronunciation</div>
+													<div className="name-lock-tooltip__pronunciation">
+														{nameItem.pronunciation}
+													</div>
+												</div>
+											)}
+											<div className="name-lock-tooltip__body">{nameItem.description}</div>
+											<div className="name-lock-tooltip__arrow" />
+										</div>
+									)}
+								</motion.div>
+							))}
+						</div>
 					</div>
-					{!isSwipeMode && (
-						<div className="flex flex-wrap items-center justify-center gap-2">
+				)}
+
+				{/* Selection Controls - Inline and Compact */}
+				<div className="flex items-center justify-center gap-3 px-4">
+					<span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
+						{selectedAvailableCount}/{availableNames.length}
+						{selectedHiddenCount > 0 && <span className="opacity-60"> +{selectedHiddenCount}</span>}
+					</span>
+					<div className="h-3 w-px bg-border/50" />
+					{isSwipeMode && swipeHistory.length > 0 ? (
+						<Button onClick={handleUndo} variant="glass" size="small" className="text-xs h-7 px-2">
+							Undo ({swipeHistory.length})
+						</Button>
+					) : (
+						<div className="flex items-center gap-1.5">
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleSelectAllAvailable}
 								disabled={!canSelectAllAvailable}
+								className="text-xs h-7 px-2.5"
 							>
-								Select all
+								All
 							</Button>
-							<Button
-								variant="glass"
-								size="small"
-								onClick={handleSelectRandomAvailable}
+							<Button 
+								variant="glass" 
+								size="small" 
+								onClick={handleSelectRandomAvailable} 
+								className="text-xs h-7 px-2.5"
 							>
-								<Shuffle size={14} />
-								Pick 8
+								<Shuffle size={11} className="mr-1" />
+								Random
 							</Button>
 							<Button
 								variant="glass"
 								size="small"
 								onClick={handleClearSelection}
 								disabled={!hasAnySelection}
+								className="text-xs h-7 px-2.5"
 							>
 								Clear
 							</Button>
