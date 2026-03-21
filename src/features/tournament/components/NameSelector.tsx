@@ -7,6 +7,7 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/app/providers/Providers";
+import { createTournamentId } from "@/features/tournament/hooks/tournamentPersistence";
 import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
 import Button, { getButtonClassName } from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
@@ -44,6 +45,7 @@ import {
 	coreAPI,
 	hiddenNamesAPI,
 	isUsingFallbackData,
+	selectionsAPI,
 } from "@/shared/services/supabase/api";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
@@ -429,9 +431,15 @@ export function NameSelector() {
 			return;
 		}
 
+		const tournamentId = `${createTournamentId(selectedNameItems, userName)}-${Date.now()}`;
+		void selectionsAPI.recordTournamentSelections(
+			tournamentId,
+			selectedNameItems.map((name) => name.id),
+		);
+
 		tournamentActions.startTournament(selectedNameItems);
 		navigate("/tournament");
-	}, [getSelectedNameItems, navigate, selectedNames, toast, tournamentActions]);
+	}, [getSelectedNameItems, navigate, selectedNames, toast, tournamentActions, userName]);
 
 	const toggleName = useCallback(
 		(nameId: IdType) => {

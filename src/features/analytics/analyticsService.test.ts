@@ -63,7 +63,7 @@ describe("leaderboardAPI", () => {
 		]);
 	});
 
-	it("returns empty array when the RPC fails", async () => {
+	it("returns fallback leaderboard data when the RPC fails", async () => {
 		const mockRpc = vi.fn().mockResolvedValue({
 			data: null,
 			error: { message: "boom" },
@@ -76,6 +76,11 @@ describe("leaderboardAPI", () => {
 		const result = await leaderboardAPI.getLeaderboard(50);
 
 		expect(mockRpc).toHaveBeenCalledWith("get_leaderboard_stats", { limit_count: 50 });
-		expect(result).toEqual([]);
+		expect(result.length).toBeGreaterThan(0);
+		expect(result[0]).toMatchObject({
+			avg_rating: 1500,
+			total_ratings: 0,
+			wins: 0,
+		});
 	});
 });

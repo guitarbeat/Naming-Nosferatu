@@ -4,7 +4,11 @@
  */
 
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
+import {
+	type EngagementMetrics,
+	leaderboardAPI,
+	statsAPI,
+} from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import {
@@ -13,7 +17,6 @@ import {
 	Clock,
 	Eye,
 	EyeOff,
-	Target,
 	TrendingUp,
 	Trophy,
 	Users,
@@ -36,23 +39,6 @@ interface DashboardProps {
 	isAdmin?: boolean;
 	canHideNames?: boolean;
 	onNameHidden?: (nameId: string) => void;
-}
-
-interface EngagementMetrics {
-	totalTournaments: number;
-	completedTournaments: number;
-	averageTournamentTime: number;
-	totalMatches: number;
-	peakActiveUsers: number;
-	dailyActiveUsers: number;
-	weeklyActiveUsers: number;
-	monthlyActiveUsers: number;
-	mostActiveHour: string;
-	mostActiveDay: string;
-	userRetentionRate: number;
-	averageSessionDuration: number;
-	totalPageViews: number;
-	bounceRate: number;
 }
 
 export function Dashboard({
@@ -365,87 +351,124 @@ export function Dashboard({
 							<div className="flex items-center gap-2 mb-2">
 								<Users className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Total Tournaments</p>
+									<p className="text-sm text-muted-foreground">Active Users</p>
 									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.totalTournaments}
+										{engagementMetrics.activeUsers}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
-								<Trophy className="text-chart-4" size={20} />
+								<Users className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Completed</p>
+									<p className="text-sm text-muted-foreground">Active Selectors</p>
 									<p className="text-2xl font-bold text-chart-4">
-										{engagementMetrics.completedTournaments}
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<Clock className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Avg Duration</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.averageTournamentTime}m
-									</p>
-								</div>
-							</div>
-						</div>
-
-						<div className="p-4 border border-border rounded-lg bg-card">
-							<div className="flex items-center gap-2 mb-2">
-								<Target className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Peak Active Users</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.peakActiveUsers}
+										{engagementMetrics.activeSelectors}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
 								<Activity className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">User Retention</p>
-									<p className="text-2xl font-bold text-chart-4">
-										{engagementMetrics.userRetentionRate}%
+									<p className="text-sm text-muted-foreground">Active Raters</p>
+									<p className="text-2xl font-bold text-foreground">
+										{engagementMetrics.activeRaters}
 									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<BarChart3 className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Bounce Rate</p>
-									<p className="text-2xl font-bold text-chart-4">{engagementMetrics.bounceRate}%</p>
 								</div>
 							</div>
 						</div>
 
 						<div className="p-4 border border-border rounded-lg bg-card">
 							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
+								<Activity className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Daily Active</p>
+									<p className="text-sm text-muted-foreground">Selections In Window</p>
 									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.dailyActiveUsers}
+										{engagementMetrics.selectionsInWindow}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
+								<Activity className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Weekly Active</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.weeklyActiveUsers}
+									<p className="text-sm text-muted-foreground">Ratings Updated</p>
+									<p className="text-2xl font-bold text-chart-4">
+										{engagementMetrics.ratingsUpdatedInWindow}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
+								<BarChart3 className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Monthly Active</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.monthlyActiveUsers}
+									<p className="text-sm text-muted-foreground">Avg Ratings / Rater</p>
+									<p className="text-2xl font-bold text-chart-4">
+										{engagementMetrics.averageRatingsPerRater}
 									</p>
 								</div>
+							</div>
+						</div>
+
+						<div className="p-4 border border-border rounded-lg bg-card">
+							<div className="flex items-center gap-2 mb-2">
+								<TrendingUp className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Avg Selections / Selector</p>
+									<p className="text-2xl font-bold text-foreground">
+										{engagementMetrics.averageSelectionsPerSelector}
+									</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2 mb-2">
+								<Clock className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Latest Selection</p>
+									<p className="text-sm font-semibold text-foreground">
+										{engagementMetrics.latestSelectionAt
+											? new Date(engagementMetrics.latestSelectionAt).toLocaleString()
+											: "No recent selections"}
+									</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2 mb-2">
+								<Clock className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Latest Rating</p>
+									<p className="text-sm font-semibold text-foreground">
+										{engagementMetrics.latestRatingAt
+											? new Date(engagementMetrics.latestRatingAt).toLocaleString()
+											: "No recent rating changes"}
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<div className="p-4 border border-border rounded-lg bg-card">
+							<div className="flex items-center gap-2 mb-3">
+								<Trophy className="text-chart-4" size={20} />
+								<div>
+									<p className="text-sm text-muted-foreground">Top Selections</p>
+									<p className="text-xs text-muted-foreground">
+										Most chosen names across recorded tournaments
+									</p>
+								</div>
+							</div>
+							<div className="space-y-2">
+								{engagementMetrics.topSelections.length > 0 ? (
+									engagementMetrics.topSelections.slice(0, 3).map((selection, index) => (
+										<div
+											key={selection.nameId}
+											className="flex items-center justify-between text-sm"
+										>
+											<span className="text-foreground">
+												{index + 1}. {selection.name}
+											</span>
+											<span className="text-chart-4 font-semibold">{selection.count}</span>
+										</div>
+									))
+								) : (
+									<p className="text-sm text-muted-foreground">
+										No recorded tournament selections yet.
+									</p>
+								)}
 							</div>
 						</div>
 					</div>

@@ -1,10 +1,19 @@
 /**
  * @module AdminDashboard
- * @description Comprehensive admin dashboard for managing names and viewing analytics
+ * @description Admin dashboard for managing names and reviewing real site activity.
  */
 
 import { AnimatePresence, motion } from "framer-motion";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import {
+	type AdminActivityItem,
+	type AdminUserSummary,
+	adminAnalyticsAPI,
+	statsAPI as analyticsStatsAPI,
+	type EngagementMetrics,
+	leaderboardAPI,
+	type TopSelectionSummary,
+} from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Input } from "@/shared/components/layout/FormPrimitives";
@@ -16,7 +25,7 @@ import {
 	isNameLocked,
 	matchesNameSearchTerm,
 } from "@/shared/lib/basic";
-import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/shared/lib/icons";
+import { Activity, BarChart3, Eye, EyeOff, Loader2, Lock, Trophy, Users } from "@/shared/lib/icons";
 import {
 	adminNamesAPI,
 	coreAPI,
@@ -36,23 +45,23 @@ type ToggleOptions = {
 };
 
 interface AdminStats {
-	totalNames: number;
 	activeNames: number;
 	hiddenNames: number;
 	lockedInNames: number;
-	totalUsers: number;
 	recentVotes: number;
+	totalNames: number;
+	totalUsers: number;
 }
 
 interface NameWithStats extends NameItem {
-	votes?: number;
 	lastVoted?: string;
 	popularityScore?: number;
+	votes?: number;
 }
 
 interface SiteStatsLike {
-	totalUsers?: unknown;
 	totalRatings?: unknown;
+	totalUsers?: unknown;
 }
 
 const ADMIN_TABS: readonly { id: DashboardTab; label: string }[] = [
@@ -72,6 +81,14 @@ const FILTER_OPTIONS: readonly { value: NameFilter; label: string }[] = [
 function toNumber(value: unknown): number {
 	const parsed = Number(value);
 	return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatTimestamp(value: string | null | undefined): string {
+	if (!value) {
+		return "No recent activity";
+	}
+
+	return new Date(value).toLocaleString();
 }
 
 function mapNameToDisplay(name: NameItem): NameWithStats {
@@ -128,18 +145,39 @@ export function AdminDashboard() {
 	const [filterStatus, setFilterStatus] = useState<NameFilter>("all");
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
+	const [recentActivity, setRecentActivity] = useState<AdminActivityItem[]>([]);
+	const [userSummaries, setUserSummaries] = useState<AdminUserSummary[]>([]);
+	const [engagement, setEngagement] = useState<EngagementMetrics | null>(null);
+	const [topSelections, setTopSelections] = useState<TopSelectionSummary[]>([]);
+	const [leaderboard, setLeaderboard] = useState<Array<{ name: string; avg_rating: number }>>([]);
 
 	const loadAdminData = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const [allNames, siteStats] = await Promise.all([
-				coreAPI.getTrendingNames(true),
-				statsAPI.getSiteStats(),
-			]);
+			const [allNames, siteStats, activity, users, snapshot, selections, topNames] =
+				await Promise.all([
+					coreAPI.getTrendingNames(true),
+					statsAPI.getSiteStats(),
+					adminAnalyticsAPI.getRecentActivity(12),
+					adminAnalyticsAPI.getUserSummaries(20),
+					analyticsStatsAPI.getEngagementMetrics("week"),
+					adminAnalyticsAPI.getTopSelections(8),
+					leaderboardAPI.getLeaderboard(5),
+				]);
 
 			const namesWithStats = allNames.map(mapNameToDisplay);
 			setStats(buildAdminStats(namesWithStats, siteStats));
 			setNames(namesWithStats);
+			setRecentActivity(activity);
+			setUserSummaries(users);
+			setEngagement(snapshot);
+			setTopSelections(selections);
+			setLeaderboard(
+				topNames.map((entry) => ({
+					name: entry.name,
+					avg_rating: entry.avg_rating,
+				})),
+			);
 		} catch (error) {
 			console.error("Failed to load admin data:", error);
 		} finally {
@@ -244,21 +282,20 @@ export function AdminDashboard() {
 
 			try {
 				const result = await imagesAPI.upload(file, actorName);
-				if (result.success) {
-					console.log("Image uploaded successfully:", result.path);
-				} else {
-					console.error("Upload failed:", result.error);
+				if (!result.success) {
+					throw new Error(result.error || "Upload failed");
 				}
+				await loadAdminData();
 			} catch (error) {
 				console.error("Upload error:", error);
 			}
 		},
-		[actorName],
+		[actorName, loadAdminData],
 	);
 
 	const handleSelectionChange = useCallback((nameId: string, checked: boolean) => {
-		setSelectedNames((prevSelectedNames) => {
-			const next = new Set(prevSelectedNames);
+		setSelectedNames((previous) => {
+			const next = new Set(previous);
 			if (checked) {
 				next.add(nameId);
 			} else {
@@ -266,17 +303,6 @@ export function AdminDashboard() {
 			}
 			return next;
 		});
-	}, []);
-
-	const handleTabChange = useCallback((tab: DashboardTab) => {
-		setActiveTab(tab);
-	}, []);
-
-	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
-		if (option) {
-			setFilterStatus(option.value);
-		}
 	}, []);
 
 	if (isLoading) {
@@ -293,41 +319,34 @@ export function AdminDashboard() {
 				<h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-muted-foreground">Manage names and monitor site activity</p>
+				<p className="text-muted-foreground">Manage names and monitor live tournament activity</p>
 			</div>
 
 			{stats && (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-6 mb-8">
 					<div className="p-6">
-						<div className="flex items-center gap-3 mb-2">
-							<BarChart3 className="text-primary" size={24} />
-							<h3 className="text-lg font-semibold text-primary">Total Names</h3>
-						</div>
+						<p className="text-sm text-muted-foreground mb-1">Total Names</p>
 						<p className="text-3xl font-bold text-foreground">{stats.totalNames}</p>
 					</div>
-
 					<div className="p-6">
-						<div className="flex items-center gap-3 mb-2">
-							<Eye className="text-chart-2" size={24} />
-							<h3 className="text-lg font-semibold text-chart-2">Active</h3>
-						</div>
-						<p className="text-3xl font-bold text-foreground">{stats.activeNames}</p>
+						<p className="text-sm text-muted-foreground mb-1">Active Names</p>
+						<p className="text-3xl font-bold text-chart-2">{stats.activeNames}</p>
 					</div>
-
 					<div className="p-6">
-						<div className="flex items-center gap-3 mb-2">
-							<Lock className="text-chart-4" size={24} />
-							<h3 className="text-lg font-semibold text-chart-4">Locked In</h3>
-						</div>
-						<p className="text-3xl font-bold text-foreground">{stats.lockedInNames}</p>
+						<p className="text-sm text-muted-foreground mb-1">Locked In</p>
+						<p className="text-3xl font-bold text-chart-4">{stats.lockedInNames}</p>
 					</div>
-
 					<div className="p-6">
-						<div className="flex items-center gap-3 mb-2">
-							<EyeOff className="text-destructive" size={24} />
-							<h3 className="text-lg font-semibold text-destructive">Hidden</h3>
-						</div>
-						<p className="text-3xl font-bold text-foreground">{stats.hiddenNames}</p>
+						<p className="text-sm text-muted-foreground mb-1">Hidden Names</p>
+						<p className="text-3xl font-bold text-destructive">{stats.hiddenNames}</p>
+					</div>
+					<div className="p-6">
+						<p className="text-sm text-muted-foreground mb-1">Known Users</p>
+						<p className="text-3xl font-bold text-foreground">{stats.totalUsers}</p>
+					</div>
+					<div className="p-6">
+						<p className="text-sm text-muted-foreground mb-1">Rating Rows</p>
+						<p className="text-3xl font-bold text-foreground">{stats.recentVotes}</p>
 					</div>
 				</div>
 			)}
@@ -336,7 +355,7 @@ export function AdminDashboard() {
 				{ADMIN_TABS.map((tab) => (
 					<Button
 						key={tab.id}
-						onClick={() => handleTabChange(tab.id)}
+						onClick={() => setActiveTab(tab.id)}
 						type="button"
 						variant={activeTab === tab.id ? "secondary" : "ghost"}
 						presentation="chip"
@@ -353,6 +372,59 @@ export function AdminDashboard() {
 			</div>
 
 			<AnimatePresence mode="wait">
+				{activeTab === "overview" && (
+					<motion.div
+						key="overview"
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -20 }}
+						className="grid grid-cols-1 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)] gap-6"
+					>
+						<div className="p-6 border border-border/10 rounded-2xl bg-card">
+							<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
+							<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
+							<input
+								type="file"
+								accept="image/*"
+								onChange={handleImageUpload}
+								className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+							/>
+						</div>
+
+						<div className="p-6 border border-border/10 rounded-2xl bg-card">
+							<div className="flex items-center gap-3 mb-4">
+								<Activity className="text-primary" size={22} />
+								<h2 className="text-2xl font-bold">Recent Activity</h2>
+							</div>
+							<div className="space-y-3">
+								{recentActivity.length > 0 ? (
+									recentActivity.map((entry) => (
+										<div
+											key={entry.id}
+											className="flex items-start justify-between gap-4 border-b border-border/10 pb-3"
+										>
+											<div>
+												<p className="font-medium text-foreground">
+													{entry.userName} {entry.type === "selection" ? "selected" : "updated"}{" "}
+													{entry.name}
+												</p>
+												<p className="text-sm text-muted-foreground">{entry.details}</p>
+											</div>
+											<p className="text-xs text-muted-foreground whitespace-nowrap">
+												{formatTimestamp(entry.timestamp)}
+											</p>
+										</div>
+									))
+								) : (
+									<p className="text-muted-foreground">
+										No recorded tournament or rating activity yet.
+									</p>
+								)}
+							</div>
+						</div>
+					</motion.div>
+				)}
+
 				{activeTab === "names" && (
 					<motion.div
 						key="names"
@@ -373,7 +445,12 @@ export function AdminDashboard() {
 							<div className="flex gap-2">
 								<select
 									value={filterStatus}
-									onChange={handleFilterChange}
+									onChange={(event) => {
+										const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
+										if (option) {
+											setFilterStatus(option.value);
+										}
+									}}
 									className="px-4 py-2 bg-foreground/10 border border-border/20 rounded-lg text-foreground"
 								>
 									{FILTER_OPTIONS.map((option) => (
@@ -422,6 +499,7 @@ export function AdminDashboard() {
 								const nameId = String(name.id);
 								const hidden = isNameHidden(name);
 								const locked = isNameLocked(name);
+
 								return (
 									<div key={name.id} className="py-4">
 										<div className="flex items-center justify-between">
@@ -443,9 +521,6 @@ export function AdminDashboard() {
 															Score:{" "}
 															{name.popularityScore == null ? "?" : name.popularityScore.toFixed(1)}
 														</span>
-														{name.lastVoted && (
-															<span>Last: {new Date(name.lastVoted).toLocaleDateString()}</span>
-														)}
 													</div>
 												</div>
 											</div>
@@ -490,44 +565,85 @@ export function AdminDashboard() {
 					</motion.div>
 				)}
 
-				{activeTab === "overview" && (
-					<motion.div
-						key="overview"
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -20 }}
-					>
-						<div className="p-6">
-							<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
-									<input
-										type="file"
-										accept="image/*"
-										onChange={handleImageUpload}
-										className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
-									/>
-								</div>
-								<div>
-									<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
-									<p className="text-muted-foreground">Activity tracking coming soon...</p>
-								</div>
-							</div>
-						</div>
-					</motion.div>
-				)}
-
 				{activeTab === "users" && (
 					<motion.div
 						key="users"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -20 }}
+						className="space-y-6"
 					>
-						<div className="p-6">
-							<h2 className="text-2xl font-bold mb-4">User Analytics</h2>
-							<p className="text-muted-foreground">User tracking and analytics coming soon...</p>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<div className="flex items-center gap-3 mb-2">
+									<Users className="text-primary" size={22} />
+									<h2 className="text-lg font-semibold">Tracked Users</h2>
+								</div>
+								<p className="text-3xl font-bold">{userSummaries.length}</p>
+							</div>
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<div className="flex items-center gap-3 mb-2">
+									<Activity className="text-chart-4" size={22} />
+									<h2 className="text-lg font-semibold">Selections Logged</h2>
+								</div>
+								<p className="text-3xl font-bold">
+									{userSummaries.reduce((sum, summary) => sum + summary.selectionsCount, 0)}
+								</p>
+							</div>
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<div className="flex items-center gap-3 mb-2">
+									<BarChart3 className="text-chart-2" size={22} />
+									<h2 className="text-lg font-semibold">Ratings Logged</h2>
+								</div>
+								<p className="text-3xl font-bold">
+									{userSummaries.reduce((sum, summary) => sum + summary.ratingsCount, 0)}
+								</p>
+							</div>
+						</div>
+
+						<div className="p-6 border border-border/10 rounded-2xl bg-card">
+							<h2 className="text-2xl font-bold mb-4">Most Active Users</h2>
+							<div className="space-y-3">
+								{userSummaries.length > 0 ? (
+									userSummaries.map((summary) => (
+										<div
+											key={summary.userKey}
+											className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_repeat(5,minmax(0,120px))] gap-4 border-b border-border/10 pb-3"
+										>
+											<div>
+												<p className="font-medium text-foreground">{summary.userName}</p>
+												<p className="text-xs text-muted-foreground">
+													Last active: {formatTimestamp(summary.lastActiveAt)}
+												</p>
+											</div>
+											<div>
+												<p className="text-xs text-muted-foreground">Selections</p>
+												<p className="font-semibold">{summary.selectionsCount}</p>
+											</div>
+											<div>
+												<p className="text-xs text-muted-foreground">Ratings</p>
+												<p className="font-semibold">{summary.ratingsCount}</p>
+											</div>
+											<div>
+												<p className="text-xs text-muted-foreground">Wins</p>
+												<p className="font-semibold">{summary.totalWins}</p>
+											</div>
+											<div>
+												<p className="text-xs text-muted-foreground">Losses</p>
+												<p className="font-semibold">{summary.totalLosses}</p>
+											</div>
+											<div>
+												<p className="text-xs text-muted-foreground">Avg Rating</p>
+												<p className="font-semibold">{summary.averageRating}</p>
+											</div>
+										</div>
+									))
+								) : (
+									<p className="text-muted-foreground">
+										User analytics will appear after people start rating and selecting names.
+									</p>
+								)}
+							</div>
 						</div>
 					</motion.div>
 				)}
@@ -538,10 +654,79 @@ export function AdminDashboard() {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -20 }}
+						className="space-y-6"
 					>
-						<div className="p-6">
-							<h2 className="text-2xl font-bold mb-4">Site Analytics</h2>
-							<p className="text-muted-foreground">Advanced analytics coming soon...</p>
+						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<p className="text-sm text-muted-foreground mb-1">Weekly Active Users</p>
+								<p className="text-3xl font-bold">{engagement?.activeUsers ?? 0}</p>
+							</div>
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<p className="text-sm text-muted-foreground mb-1">Weekly Selections</p>
+								<p className="text-3xl font-bold">{engagement?.selectionsInWindow ?? 0}</p>
+							</div>
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<p className="text-sm text-muted-foreground mb-1">Weekly Rating Updates</p>
+								<p className="text-3xl font-bold">{engagement?.ratingsUpdatedInWindow ?? 0}</p>
+							</div>
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<p className="text-sm text-muted-foreground mb-1">Avg Selections / Selector</p>
+								<p className="text-3xl font-bold">
+									{engagement?.averageSelectionsPerSelector ?? 0}
+								</p>
+							</div>
+						</div>
+
+						<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<div className="flex items-center gap-3 mb-4">
+									<Trophy className="text-chart-4" size={22} />
+									<h2 className="text-2xl font-bold">Top Selected Names</h2>
+								</div>
+								<div className="space-y-3">
+									{topSelections.length > 0 ? (
+										topSelections.map((selection, index) => (
+											<div
+												key={selection.nameId}
+												className="flex items-center justify-between border-b border-border/10 pb-3"
+											>
+												<p className="font-medium">
+													{index + 1}. {selection.name}
+												</p>
+												<p className="text-chart-4 font-semibold">{selection.count}</p>
+											</div>
+										))
+									) : (
+										<p className="text-muted-foreground">
+											No tournament selections have been recorded yet.
+										</p>
+									)}
+								</div>
+							</div>
+
+							<div className="p-6 border border-border/10 rounded-2xl bg-card">
+								<div className="flex items-center gap-3 mb-4">
+									<BarChart3 className="text-primary" size={22} />
+									<h2 className="text-2xl font-bold">Leaderboard Snapshot</h2>
+								</div>
+								<div className="space-y-3">
+									{leaderboard.length > 0 ? (
+										leaderboard.map((entry, index) => (
+											<div
+												key={entry.name}
+												className="flex items-center justify-between border-b border-border/10 pb-3"
+											>
+												<p className="font-medium">
+													{index + 1}. {entry.name}
+												</p>
+												<p className="text-primary font-semibold">{Math.round(entry.avg_rating)}</p>
+											</div>
+										))
+									) : (
+										<p className="text-muted-foreground">No leaderboard data yet.</p>
+									)}
+								</div>
+							</div>
 						</div>
 					</motion.div>
 				)}
