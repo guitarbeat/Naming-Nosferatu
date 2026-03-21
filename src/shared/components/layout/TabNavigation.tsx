@@ -35,15 +35,13 @@ interface TabNavigationProps {
 export function TabNavigation({ activeTab, onTabChange, className }: TabNavigationProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { tournament, user, ui, uiActions } = useAppStore();
+	const { tournament, tournamentActions, user, ui, uiActions } = useAppStore();
 	const { selectedNames } = tournament;
-	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
+	const { isLoggedIn, name: userName } = user;
 	const { isSwipeMode } = ui;
 	const { setSwipeMode } = uiActions;
 
 	const selectedCount = selectedNames?.length || 0;
-	const isTournamentActive = Boolean(tournament.names);
-	const isComplete = tournament.isComplete;
 	const isTournamentRoute = location.pathname === "/tournament";
 
 	// Define tabs based on current state
@@ -53,6 +51,11 @@ export function TabNavigation({ activeTab, onTabChange, className }: TabNavigati
 				id: "pick",
 				label: selectedCount >= 2 ? `Start (${selectedCount})` : "Pick Names",
 				icon: selectedCount >= 2 ? Trophy : CheckCircle,
+			},
+			{
+				id: "analyze",
+				label: "Analyze",
+				icon: BarChart3,
 			},
 			{
 				id: "suggest",
@@ -66,15 +69,6 @@ export function TabNavigation({ activeTab, onTabChange, className }: TabNavigati
 			},
 		];
 
-		// Add analyze tab if tournament is complete
-		if (isComplete) {
-			baseTabs.splice(1, 0, {
-				id: "analyze",
-				label: "Analyze",
-				icon: BarChart3,
-			});
-		}
-
 		return baseTabs;
 	};
 
@@ -84,7 +78,7 @@ export function TabNavigation({ activeTab, onTabChange, className }: TabNavigati
 		if (tab === "pick" && selectedCount >= 2) {
 			// Start tournament
 			if (selectedNames && selectedNames.length >= 2) {
-				tournament.actions.setNames(selectedNames);
+				tournamentActions.startTournament(selectedNames);
 				navigate("/tournament");
 			}
 		} else if (tab === "analyze") {
@@ -117,7 +111,7 @@ export function TabNavigation({ activeTab, onTabChange, className }: TabNavigati
 
 			{/* Tab Navigation */}
 			<div className="flex items-center justify-center bg-gradient-to-r from-background via-background/95 to-background backdrop-blur-sm rounded-2xl border border-border/20 p-1.5 shadow-xl shadow-foreground/5">
-				{tabs.map((tab, index) => (
+				{tabs.map((tab) => (
 					<motion.button
 						key={tab.id}
 						type="button"
@@ -129,16 +123,21 @@ export function TabNavigation({ activeTab, onTabChange, className }: TabNavigati
 							activeTab === tab.id
 								? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/25"
 								: "text-foreground/70 hover:text-foreground hover:bg-foreground/10",
-							tab.id === "pick" && selectedCount >= 2 && "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40",
+							tab.id === "pick" &&
+								selectedCount >= 2 &&
+								"bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40",
 						)}
 					>
-						<tab.icon size={16} className={cn(
-							activeTab === tab.id && "text-primary-foreground",
-							tab.id === "pick" && selectedCount >= 2 && "text-white"
-						)} />
+						<tab.icon
+							size={16}
+							className={cn(
+								activeTab === tab.id && "text-primary-foreground",
+								tab.id === "pick" && selectedCount >= 2 && "text-white",
+							)}
+						/>
 						<span className="hidden sm:inline font-medium">{tab.label}</span>
 						<span className="sm:hidden font-medium">{tab.label.split(" ")[0]}</span>
-						
+
 						{/* Active indicator */}
 						{activeTab === tab.id && (
 							<motion.div

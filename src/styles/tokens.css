@@ -227,6 +227,9 @@
 	--z-toast: 500;
 	--z-modal-backdrop: 1050;
 	--z-max: 10000;
+	--z-background-shell: 0;
+	--z-content: 10;
+	--z-frame: 80;
 }
 
 /* ==========================================================================
@@ -341,6 +344,8 @@
 	--pw-transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
 	/* Background effects (fixed medium intensity) */
+	--pw-fx-magic-opacity: 0.12;
+	--pw-fx-magic-opacity-mobile: 0.08;
 	--pw-fx-moire-opacity: 0.2;
 	--pw-fx-moire-opacity-mobile: 0.15;
 	--pw-fx-moire-opacity-reduced: 0.14;
@@ -365,6 +370,10 @@
 	--pw-fx-vignette-outer-rgb: 0 0 0;
 	--pw-fx-vignette-mid-alpha: 0.2;
 	--pw-fx-vignette-outer-alpha: 0.44;
+	--pw-frame-border-width: 7px;
+	--pw-frame-border-radius: 20px;
+	--pw-frame-color-rgb: 153 153 153;
+	--pw-frame-color-alpha: 0.82;
 
 	/* Heading treatment (hybrid typography: body untouched, headings tuned) */
 	--pw-heading-1-size: clamp(2.15rem, 4.4vw, 3.65rem);
@@ -566,6 +575,8 @@
 	--pw-analysis-accent-rgb: 36, 117, 137;
 
 	/* Background effects (fixed medium intensity, light-tuned) */
+	--pw-fx-magic-opacity: 0.08;
+	--pw-fx-magic-opacity-mobile: 0.06;
 	--pw-fx-moire-opacity: 0.11;
 	--pw-fx-moire-opacity-mobile: 0.09;
 	--pw-fx-moire-opacity-reduced: 0.09;
@@ -585,6 +596,8 @@
 	--pw-fx-vignette-outer-rgb: 15 23 42;
 	--pw-fx-vignette-mid-alpha: 0.08;
 	--pw-fx-vignette-outer-alpha: 0.16;
+	--pw-frame-color-rgb: 96 108 122;
+	--pw-frame-color-alpha: 0.7;
 
 	/* Keep semantic tokens coherent with light mode contrast */
 	--button-secondary-bg: color-mix(in srgb, var(--pw-text-strong) 8%, transparent);

@@ -4,111 +4,135 @@
  */
 
 import { motion } from "framer-motion";
-import type { ElementType } from "react";
+import { type ElementType, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/shared/lib/basic";
-import { CheckCircle, Trophy, BarChart3, Lightbulb, User, Layers, LayoutGrid } from "@/shared/lib/icons";
+import {
+	BarChart3,
+	CheckCircle,
+	Layers,
+	LayoutGrid,
+	Lightbulb,
+	Trophy,
+	User,
+} from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
-import { useState, useEffect } from "react";
 
 type NavSection = "pick" | "suggest" | "profile" | "analyze";
 
 function FloatingNavItem({
-  icon: Icon,
-  label,
-  isAccent = false,
-  isCurrent = false,
-  isPressed = false,
-  variant = "primary",
-  onClick,
-  className,
-  customIcon,
-  ariaLabel,
+	icon: Icon,
+	label,
+	isAccent = false,
+	isCurrent = false,
+	isPressed = false,
+	variant = "primary",
+	onClick,
+	className,
+	customIcon,
+	ariaLabel,
 }: {
-  icon: ElementType;
-  label: string;
-  isAccent?: boolean;
-  isCurrent?: boolean;
-  isPressed?: boolean;
-  variant?: "primary" | "utility";
-  onClick?: () => void;
-  className?: string;
-  customIcon?: React.ReactNode;
-  ariaLabel?: string;
+	icon: ElementType;
+	label: string;
+	isAccent?: boolean;
+	isCurrent?: boolean;
+	isPressed?: boolean;
+	variant?: "primary" | "utility";
+	onClick?: () => void;
+	className?: string;
+	customIcon?: React.ReactNode;
+	ariaLabel?: string;
 }) {
-  const baseClasses = cn(
-    "floating-navbar__item",
-    "relative flex items-center justify-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200",
-    variant === "primary" && "floating-navbar__item--primary",
-    variant === "utility" && "floating-navbar__item--utility",
-    isCurrent && "floating-navbar__item--current",
-    isPressed && "floating-navbar__item--pressed",
-    isAccent && "floating-navbar__item--accent",
-    className,
-  );
+	const baseClasses = cn(
+		"floating-navbar__item",
+		"relative flex items-center justify-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200",
+		variant === "primary" && "floating-navbar__item--primary",
+		variant === "utility" && "floating-navbar__item--utility",
+		isCurrent && "floating-navbar__item--current",
+		isPressed && "floating-navbar__item--pressed",
+		isAccent && "floating-navbar__item--accent",
+		className,
+	);
 
-  return (
-    <motion.button
-      type="button"
-      whileTap={{ scale: 0.97 }}
-      className={baseClasses}
-      onClick={onClick}
-      aria-label={ariaLabel}
-      aria-pressed={isPressed}
-    >
-      {customIcon || <Icon className="floating-navbar__icon" />}
-      <span className="floating-navbar__label">{label}</span>
-    </motion.button>
-  );
+	return (
+		<motion.button
+			type="button"
+			whileTap={{ scale: 0.97 }}
+			className={baseClasses}
+			onClick={onClick}
+			aria-label={ariaLabel}
+			aria-pressed={isPressed}
+		>
+			{customIcon || <Icon className="floating-navbar__icon" />}
+			<span className="floating-navbar__label">{label}</span>
+		</motion.button>
+	);
 }
 
 export function FloatingNavbar() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { tournament, tournamentActions, user, userActions, ui, uiActions } = useAppStore();
+	const navigate = useNavigate();
+	const location = useLocation();
+	const { tournament, tournamentActions, user, ui, uiActions } = useAppStore();
 
-  const [activeSection, setActiveSection] = useState<NavSection>("pick");
-  const [isNavVisible, setIsNavVisible] = useState(true);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+	const [activeSection, setActiveSection] = useState<NavSection>("pick");
+	const [isNavVisible, setIsNavVisible] = useState(true);
+	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  const isHomeRoute = location.pathname === "/";
-  const isTournamentRoute = location.pathname === "/tournament";
-  const isAnalysisRoute = location.pathname === "/analysis";
+	const isHomeRoute = location.pathname === "/";
+	const isTournamentRoute = location.pathname === "/tournament";
+	const isAnalysisRoute = location.pathname === "/analysis";
 
-  const { selectedNames } = tournament;
-  const { isLoggedIn, userName, isAdmin, avatarUrl } = user;
-  const { isSwipeMode } = ui;
+	const { selectedNames } = tournament;
+	const { isLoggedIn, name: userName, isAdmin, avatarUrl } = user;
+	const { isSwipeMode } = ui;
 
-  const selectedCount = selectedNames?.length || 0;
-  const isTournamentActive = Boolean(tournament.names);
-  const isComplete = tournament.isComplete;
-  const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
-  const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
-  const navGlassId = cn("navbar", isHomeRoute ? "home" : "page");
+	const selectedCount = selectedNames?.length || 0;
+	const isTournamentActive = Boolean(tournament.names);
+	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
+	const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
+	const navGlassId = cn("navbar", isHomeRoute ? "home" : "page");
 
-  const handleStartTournament = () => {
-    if (selectedNames && selectedNames.length >= 2) {
-      tournamentActions.setNames(selectedNames);
-      navigate("/tournament");
-    }
-  };
+	const handleStartTournament = () => {
+		if (selectedNames && selectedNames.length >= 2) {
+			tournamentActions.startTournament(selectedNames);
+			navigate("/tournament");
+		}
+	};
 
-  const handleViewResults = () => {
-    navigate("/analysis");
-  };
+	const scrollToSection = (key: NavSection) => {
+		const targetId = key === "analyze" ? "analysis" : key;
+		const element = document.getElementById(targetId);
+		if (element) {
+			element.scrollIntoView({ behavior: "smooth", block: "start" });
+		}
+	};
 
-  const scrollToSection = (key: NavSection) => {
-    const element = document.getElementById(key);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
+	const navigateHome = (hash?: "suggest" | "profile") => {
+		navigate({
+			pathname: "/",
+			hash: hash ?? "",
+		});
+	};
 
-  const handleNavClick = (key: NavSection) => {
-    scrollToSection(key);
-  };
+	const handleNavClick = (key: NavSection) => {
+		if (key === "analyze") {
+			if (isAnalysisRoute) {
+				scrollToSection(key);
+				return;
+			}
+			navigate("/analysis");
+			return;
+		}
+
+		if (!isHomeRoute) {
+			navigateHome(key === "pick" ? undefined : key);
+			return;
+		}
+
+		scrollToSection(key);
+	};
 
 	useEffect(() => {
 		if (!isHomeRoute) {
@@ -210,6 +234,9 @@ export function FloatingNavbar() {
 		};
 	}, []);
 
+	if (isHomeRoute) {
+		return null;
+	}
 
 	return (
 		<motion.div
@@ -251,7 +278,7 @@ export function FloatingNavbar() {
 									} else if (selectedCount >= 2) {
 										handleStartTournament();
 									} else {
-										handleNavClick("pick");
+										navigateHome();
 									}
 								}}
 							/>

@@ -62,6 +62,7 @@ export type { NameItem, RatingData, VoteRecord };
 
 export interface TournamentActions {
 	setNames: (names: NameItem[] | null) => void;
+	startTournament: (names: NameItem[]) => void;
 	setRatings: (
 		ratings:
 			| Record<string, RatingData>
@@ -207,6 +208,18 @@ function getInitialSwipeMode(): boolean {
 	return getStorageString(STORAGE_KEYS.SWIPE_MODE) === "true";
 }
 
+function buildTournamentNames(
+	names: NameItem[] | null,
+	currentRatings: Record<string, RatingData>,
+): NameItem[] | null {
+	return (
+		names?.map((name) => ({
+			...name,
+			rating: currentRatings[name.name]?.rating ?? 1500,
+		})) ?? null
+	);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // Tournament Slice
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -230,13 +243,18 @@ const createTournamentSlice: StateCreator<
 		setNames: (names) => {
 			const currentRatings = get().tournament.ratings;
 			patch(set, "tournament", {
-				names:
-					names?.map((n) => ({
-						id: n.id,
-						name: n.name,
-						description: n.description,
-						rating: currentRatings[n.name]?.rating ?? 1500,
-					})) ?? null,
+				names: buildTournamentNames(names, currentRatings),
+			});
+		},
+
+		startTournament: (selectedNames) => {
+			const currentRatings = get().tournament.ratings;
+			patch(set, "tournament", {
+				selectedNames,
+				names: buildTournamentNames(selectedNames, currentRatings),
+				isComplete: false,
+				isLoading: false,
+				voteHistory: [],
 			});
 		},
 

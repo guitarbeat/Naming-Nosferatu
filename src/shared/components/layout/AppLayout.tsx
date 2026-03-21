@@ -10,6 +10,8 @@ import {
 	Loading,
 	OfflineIndicator,
 } from "@/shared/components/layout/Feedback";
+import { AppVisualEffects } from "@/shared/components/layout/AppVisualEffects";
+import { FrameEffect } from "@/shared/components/layout/FrameEffect";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
 import useAppStore from "@/store/appStore";
 
@@ -18,60 +20,62 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-	const { user, tournament, errors, errorActions } = useAppStore();
+	const { user, tournament, errors, errorActions, ui } = useAppStore();
 	const { isLoggedIn } = user;
 
 	return (
 		<ErrorBoundary context="Main Application Layout">
-			<div className="app relative min-h-dvh w-full text-foreground bg-background">
+			<div className="app relative isolate min-h-dvh w-full bg-background text-foreground">
+				<AppVisualEffects theme={ui.theme} />
+
 				<OfflineIndicator />
 
 				<a
 					href="#main-content"
-					className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+					className="sr-only fixed left-4 top-4 z-[10001] focus:not-sr-only focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
 				>
 					Skip to main content
 				</a>
 
-				{/* Simplified background */}
-				<div className="fixed inset-0 -z-10 bg-gradient-to-br from-background via-background to-muted/20" aria-hidden="true" />
-
 				<FloatingNavbar />
 
-				{/* Main content area with proper spacing */}
-				<main
-					id="main-content"
-					className="relative flex min-h-dvh w-full flex-col px-4 pb-12 pt-6 sm:px-6 sm:pb-16 md:pt-10"
-					tabIndex={-1}
-				>
-					{/* Error banner */}
-					{Boolean(errors.current) && (
-						<div className="mx-auto mb-4 w-full max-w-4xl">
-							<ErrorComponent
-								error={String(errors.current)}
-								onRetry={() => errorActions.clearError()}
-								onDismiss={() => errorActions.clearError()}
-							/>
+				<FrameEffect>
+					<main
+						id="main-content"
+						className="app-main-shell relative flex min-h-dvh w-full flex-col px-4 pb-12 pt-6 sm:px-6 sm:pb-16 md:pt-10"
+						tabIndex={-1}
+					>
+						{/* Error banner */}
+						{Boolean(errors.current) && (
+							<div className="mx-auto mb-4 w-full max-w-4xl">
+								<ErrorComponent
+									error={String(errors.current)}
+									onRetry={() => errorActions.clearError()}
+									onDismiss={() => errorActions.clearError()}
+								/>
+							</div>
+						)}
+
+						{/* Page content */}
+						<div className="flex w-full flex-1 flex-col items-center gap-8 sm:gap-12">
+							{children}
 						</div>
-					)}
 
-					{/* Page content */}
-					<div className="flex w-full flex-1 flex-col items-center gap-8 sm:gap-12">{children}</div>
+						{/* Loading overlay */}
+						{tournament.isLoading && (
+							<div
+								className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+								role="status"
+								aria-live="polite"
+								aria-busy="true"
+							>
+								<Loading variant="spinner" text="Initializing Tournament..." />
+							</div>
+						)}
 
-					{/* Loading overlay */}
-					{tournament.isLoading && (
-						<div
-							className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-							role="status"
-							aria-live="polite"
-							aria-busy="true"
-						>
-							<Loading variant="spinner" text="Initializing Tournament..." />
-						</div>
-					)}
-
-					<ScrollToTopButton isLoggedIn={isLoggedIn} />
-				</main>
+						<ScrollToTopButton isLoggedIn={isLoggedIn} />
+					</main>
+				</FrameEffect>
 			</div>
 		</ErrorBoundary>
 	);

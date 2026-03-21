@@ -7,8 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { type ReactNode, Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
@@ -19,7 +18,6 @@ import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { TabNavigation } from "@/shared/components/layout/TabNavigation";
 import { useOfflineSync } from "@/shared/hooks";
-import { Lightbulb, Trophy, User } from "@/shared/lib/icons";
 import {
 	cleanupPerformanceMonitoring,
 	initializePerformanceMonitoring,
@@ -31,6 +29,42 @@ import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
 const AdminDashboardLazy = routeComponents.AdminDashboardLazy;
+
+type HomeTab = "pick" | "suggest" | "profile";
+
+function getHomeTabFromHash(hash: string): HomeTab {
+	switch (hash) {
+		case "#suggest":
+			return "suggest";
+		case "#profile":
+			return "profile";
+		default:
+			return "pick";
+	}
+}
+
+function HomeTabPanel({
+	id,
+	activeTab,
+	children,
+}: {
+	id: HomeTab;
+	activeTab: HomeTab;
+	children: ReactNode;
+}) {
+	const isActive = activeTab === id;
+
+	return (
+		<div
+			id={id}
+			role="tabpanel"
+			aria-hidden={!isActive}
+			className={isActive ? "w-full" : "hidden w-full"}
+		>
+			{children}
+		</div>
+	);
+}
 
 function App() {
 	const { user: authUser, isLoading } = useAuth();
@@ -105,43 +139,47 @@ function App() {
 
 function HomeContent() {
 	const { login } = useAuth();
-	const [activeTab, setActiveTab] = useState<"pick" | "suggest" | "profile">("pick");
+	const location = useLocation();
+	const navigate = useNavigate();
+	const activeTab = getHomeTabFromHash(location.hash);
 
-	const renderTabContent = () => {
-		switch (activeTab) {
-			case "pick":
-				return (
-					<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-						<TournamentFlow />
-					</Suspense>
-				);
-			case "suggest":
-				return <NameSuggestionInner />;
-			case "profile":
-				return <ProfileInner onLogin={(name) => login({ name })} />;
-			default:
-				return null;
-		}
-	};
+	const handleTabChange = useCallback(
+		(tab: HomeTab) => {
+			navigate(
+				{
+					pathname: "/",
+					hash: tab === "pick" ? "" : tab,
+				},
+				{ replace: true },
+			);
+		},
+		[navigate],
+	);
 
 	return (
 		<Section id="home" variant="minimal" padding="comfortable" maxWidth="4xl" centered={true}>
 			<div className="w-full space-y-10">
 				{/* Tab Navigation */}
 				<div className="w-full">
-					<TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+					<TabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
 				</div>
 
 				{/* Tab Content */}
-				<motion.div
-					key={activeTab}
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.3, ease: "easeOut" }}
-					className="min-h-[500px] w-full"
-				>
-					{renderTabContent()}
-				</motion.div>
+				<div className="min-h-[500px] w-full">
+					<HomeTabPanel id="pick" activeTab={activeTab}>
+						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+							<TournamentFlow />
+						</Suspense>
+					</HomeTabPanel>
+
+					<HomeTabPanel id="suggest" activeTab={activeTab}>
+						<NameSuggestionInner />
+					</HomeTabPanel>
+
+					<HomeTabPanel id="profile" activeTab={activeTab}>
+						<ProfileInner onLogin={(name) => login({ name })} />
+					</HomeTabPanel>
+				</div>
 			</div>
 		</Section>
 	);
