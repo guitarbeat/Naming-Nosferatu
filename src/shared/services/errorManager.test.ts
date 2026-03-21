@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CircuitBreaker } from "./errorManager";
+import { CircuitBreaker, ErrorManager } from "./errorManager";
 
 describe("CircuitBreaker", () => {
 	beforeEach(() => {
@@ -104,5 +104,111 @@ describe("CircuitBreaker", () => {
 		// State goes back to OPEN immediately, and failure count increments (or stays at threshold depending on implementation, here it increments)
 		expect(cb.state).toBe("OPEN");
 		expect(cb.failureCount).toBe(2);
+	});
+});
+
+describe("ErrorManager", () => {
+	afterEach(() => {
+		ErrorManager.setErrorService(null);
+		vi.restoreAllMocks();
+	});
+
+	it("sends captured errors to the configured error service", () => {
+		const captureException = vi.fn();
+		ErrorManager.setErrorService({ captureException });
+
+		ErrorManager.handleError(new Error("boom"), "Unit Test");
+
+		expect(captureException).toHaveBeenCalledTimes(1);
+		const [capturedError, context] = captureException.mock.calls[0] ?? [];
+		expect(capturedError).toBeInstanceOf(Error);
+		expect((capturedError as Error).name).toBe("Unit Test");
+		expect(context).toEqual(
+			expect.objectContaining({
+				tags: expect.objectContaining({ context: "Unit Test" }),
+			}),
+		);
+	});
+
+	it("ignores resource load errors in the global handler", () => {
+		const handleSpy = vi.spyOn(ErrorManager, "handleError");
+		const listeners = new Map<string, EventListener>();
+		const addSpy = vi
+			.spyOn(globalThis, "addEventListener")
+			.mockImplementation((type, listener) => {
+				listeners.set(type, listener as EventListener);
+			});
+		const removeSpy = vi
+			.spyOn(globalThis, "removeEventListener")
+			.mockImplementation((type, listener) => {
+				if (listeners.get(type) === listener) {
+					listeners.delete(type);
+				}
+			});
+
+		const cleanup = ErrorManager.setupGlobalErrorHandling();
+
+		const errorEvent = new Event("error");
+		Object.defineProperty(errorEvent, "target", {
+			value: document.createElement("img"),
+		});
+		Object.defineProperty(errorEvent, "error", {
+			value: undefined,
+		});
+
+		listeners.get("error")?.(errorEvent);
+
+		expect(handleSpy).not.toHaveBeenCalled();
+
+		cleanup();
+		addSpy.mockRestore();
+		removeSpy.mockRestore();
+	});
+
+	it("captures runtime errors and unhandled rejections", () => {
+		const handleSpy = vi.spyOn(ErrorManager, "handleError");
+		const listeners = new Map<string, EventListener>();
+		const addSpy = vi
+			.spyOn(globalThis, "addEventListener")
+			.mockImplementation((type, listener) => {
+				listeners.set(type, listener as EventListener);
+			});
+
+		const cleanup = ErrorManager.setupGlobalErrorHandling();
+
+		const runtimeError = new Error("Runtime boom");
+		const errorEvent = new ErrorEvent("error", {
+			message: "Runtime boom",
+			error: runtimeError,
+			filename: "app.ts",
+			lineno: 10,
+			colno: 5,
+		});
+
+		listeners.get("error")?.(errorEvent);
+
+		expect(handleSpy).toHaveBeenCalledWith(
+			runtimeError,
+			"Global",
+			expect.objectContaining({
+				isCritical: true,
+				filename: "app.ts",
+				line: 10,
+				column: 5,
+			}),
+		);
+
+		const rejectionError = new Error("Promise boom");
+		const rejectionEvent = { reason: rejectionError } as PromiseRejectionEvent;
+		listeners.get("unhandledrejection")?.(rejectionEvent as unknown as Event);
+
+		expect(handleSpy).toHaveBeenCalledWith(
+			rejectionError,
+			"Global",
+			expect.objectContaining({ isCritical: true }),
+		);
+
+		cleanup();
+		addSpy.mockRestore();
 	});
 });
