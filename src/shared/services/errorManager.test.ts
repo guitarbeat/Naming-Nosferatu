@@ -133,11 +133,9 @@ describe("ErrorManager", () => {
 	it("ignores resource load errors in the global handler", () => {
 		const handleSpy = vi.spyOn(ErrorManager, "handleError");
 		const listeners = new Map<string, EventListener>();
-		const addSpy = vi
-			.spyOn(globalThis, "addEventListener")
-			.mockImplementation((type, listener) => {
-				listeners.set(type, listener as EventListener);
-			});
+		const addSpy = vi.spyOn(globalThis, "addEventListener").mockImplementation((type, listener) => {
+			listeners.set(type, listener as EventListener);
+		});
 		const removeSpy = vi
 			.spyOn(globalThis, "removeEventListener")
 			.mockImplementation((type, listener) => {
@@ -168,11 +166,9 @@ describe("ErrorManager", () => {
 	it("captures runtime errors and unhandled rejections", () => {
 		const handleSpy = vi.spyOn(ErrorManager, "handleError");
 		const listeners = new Map<string, EventListener>();
-		const addSpy = vi
-			.spyOn(globalThis, "addEventListener")
-			.mockImplementation((type, listener) => {
-				listeners.set(type, listener as EventListener);
-			});
+		const addSpy = vi.spyOn(globalThis, "addEventListener").mockImplementation((type, listener) => {
+			listeners.set(type, listener as EventListener);
+		});
 
 		const cleanup = ErrorManager.setupGlobalErrorHandling();
 
