@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/app/providers/Providers";
 import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
-import Button from "@/shared/components/layout/Button";
+import Button, { getButtonClassName } from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
@@ -210,15 +210,22 @@ const AdminActionButton = ({
 	const isHidden = actionType === "toggle-hidden";
 	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
 
-	const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+	const buttonClasses = [
+		getButtonClassName({
+			variant:
+				isHidden ? (isEnabled ? "secondary" : "danger") : isEnabled ? "ghost" : "secondary",
+			presentation: "chip",
+		}),
+		"flex-1 justify-center shadow-lg",
 		isHidden
 			? isEnabled
-				? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
-				: "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
+				? "bg-success text-success-foreground hover:bg-success/80 hover:text-success-foreground shadow-success/25"
+				: "bg-destructive text-destructive-foreground hover:bg-destructive/80 hover:text-destructive-foreground shadow-destructive/25"
 			: isEnabled
-				? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
-				: "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
-	} ${isProcessing ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`;
+				? "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-muted-foreground shadow-muted/25"
+				: "bg-warning text-warning-foreground hover:bg-warning/80 hover:text-warning-foreground shadow-warning/25",
+		isProcessing ? "opacity-50" : "",
+	].join(" ");
 
 	return (
 		<motion.button

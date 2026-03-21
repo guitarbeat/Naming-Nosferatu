@@ -17,6 +17,7 @@ import {
 	User,
 } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
+import { getButtonClassName } from "./Button";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
 
@@ -45,7 +46,13 @@ function FloatingNavItem({
 	customIcon?: React.ReactNode;
 	ariaLabel?: string;
 }) {
+	const sharedVariant = isAccent ? "primary" : variant === "utility" ? "ghost" : "secondary";
 	const baseClasses = cn(
+		getButtonClassName({
+			variant: sharedVariant,
+			presentation: "chip",
+			shape: "pill",
+		}),
 		"floating-navbar__item",
 		"relative flex items-center justify-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200",
 		variant === "primary" && "floating-navbar__item--primary",

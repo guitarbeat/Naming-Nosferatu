@@ -10,6 +10,7 @@ import {
 	useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "@/shared/components/layout/Button";
 import { ErrorComponent } from "@/shared/components/layout/Feedback";
 import { LoadingSequence } from "@/shared/components/layout/LoadingSequence";
 import { getRandomCatImage, getVisibleNames } from "@/shared/lib/basic";
@@ -418,23 +419,30 @@ function TournamentContent({
 						</div>
 
 						<div className="ml-auto flex items-center gap-1.5">
-							<button
+							<Button
 								type="button"
 								onClick={() => handleUndo()}
-								className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+								variant="ghost"
+								size="icon"
+								iconOnly={true}
+								shape="pill"
+								className={`size-9 ${
 									canUndo
-										? "border-primary/20 bg-primary/10 text-primary hover:bg-primary/14"
-										: "cursor-not-allowed border-border/10 bg-foreground/[0.03] text-foreground/35"
+										? "border-primary/20 bg-primary/10 text-primary hover:bg-primary/14 hover:text-primary"
+										: "border-border/10 bg-foreground/[0.03] text-foreground/35"
 								}`}
 								aria-label="Undo last vote"
 								disabled={!canUndo}
 							>
 								<Undo2 className="size-3.5" />
-							</button>
-							<button
+							</Button>
+							<Button
 								type="button"
 								onClick={() => setIsUtilityPanelOpen((open) => !open)}
-								className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border/15 bg-foreground/[0.05] px-3 text-xs font-semibold text-foreground/80 transition-colors hover:bg-foreground/[0.08]"
+								variant="ghost"
+								presentation="chip"
+								shape="pill"
+								className="border border-border/15 bg-foreground/[0.05] text-foreground/80 hover:bg-foreground/[0.08] hover:text-foreground"
 								aria-label={
 									isUtilityPanelOpen
 										? "Hide tournament utilities"
@@ -449,15 +457,19 @@ function TournamentContent({
 										isUtilityPanelOpen ? "rotate-180" : ""
 									}`}
 								/>
-							</button>
-							<button
+							</Button>
+							<Button
 								type="button"
 								onClick={quitTournament}
-								className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-destructive/20 bg-destructive/10 text-destructive transition-colors hover:bg-destructive/14"
+								variant="ghost"
+								size="icon"
+								iconOnly={true}
+								shape="pill"
+								className="size-9 border border-destructive/20 bg-destructive/10 text-destructive hover:bg-destructive/14 hover:text-destructive"
 								aria-label="Quit tournament"
 							>
 								<LogOut className="size-3.5" />
-							</button>
+							</Button>
 						</div>
 					</div>
 
@@ -468,16 +480,19 @@ function TournamentContent({
 						>
 							<div className="flex max-w-full flex-wrap justify-end gap-2 rounded-[1rem] border border-border/12 bg-foreground/[0.03] p-2">
 								{utilityControls.map(({ action, icon: Icon, label }) => (
-									<button
+									<Button
 										key={label}
 										type="button"
 										onClick={action}
-										className="inline-flex items-center gap-2 rounded-full border border-border/12 bg-background/40 px-3 py-2 text-xs font-medium text-foreground/75 transition-colors hover:bg-background/65"
+										variant="ghost"
+										presentation="chip"
+										shape="pill"
+										className="border border-border/12 bg-background/40 text-foreground/75 hover:bg-background/65 hover:text-foreground"
 										aria-label={label}
+										startIcon={<Icon className="size-3.5" />}
 									>
-										<Icon className="size-3.5" />
 										<span>{label}</span>
-									</button>
+									</Button>
 								))}
 							</div>
 						</div>

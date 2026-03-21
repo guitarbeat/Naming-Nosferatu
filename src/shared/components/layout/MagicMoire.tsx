@@ -1,14 +1,14 @@
-import { useEffect, useRef, useState } from "react";
 import {
 	Camera,
 	Color,
 	Geometry,
 	Mesh,
+	type OGLRenderingContext,
 	Program,
 	Renderer,
 	Vec2,
-	type OGLRenderingContext,
 } from "ogl";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/shared/lib/basic";
 import RippleEffect from "./RippleEffect";
 
@@ -47,9 +47,7 @@ export function supportsWebGL(): boolean {
 
 function getScrollProgress() {
 	const scrollTop = window.scrollY || document.documentElement.scrollTop;
-	const maxScroll =
-		document.documentElement.scrollHeight -
-		document.documentElement.clientHeight;
+	const maxScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
 
 	if (maxScroll <= 0) {
 		return 0;
@@ -58,24 +56,16 @@ function getScrollProgress() {
 	return Math.min(Math.max(scrollTop / maxScroll, 0), 1);
 }
 
-function readColorToken(
-	variableName: string,
-	fallback: string,
-): [number, number, number] {
+function readColorToken(variableName: string, fallback: string): [number, number, number] {
 	if (typeof document === "undefined") {
 		return hexToNormalizedRgb(fallback);
 	}
 
-	const token = getComputedStyle(document.documentElement)
-		.getPropertyValue(variableName)
-		.trim();
+	const token = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
 	return parseCssColor(token || fallback, fallback);
 }
 
-function parseCssColor(
-	value: string,
-	fallback: string,
-): [number, number, number] {
+function parseCssColor(value: string, fallback: string): [number, number, number] {
 	if (typeof document === "undefined") {
 		return hexToNormalizedRgb(fallback);
 	}
@@ -92,19 +82,13 @@ function parseCssColor(
 		return hexToNormalizedRgb(fallback);
 	}
 
-	return [
-		Number(channels[0]) / 255,
-		Number(channels[1]) / 255,
-		Number(channels[2]) / 255,
-	];
+	return [Number(channels[0]) / 255, Number(channels[1]) / 255, Number(channels[2]) / 255];
 }
 
 function hexToNormalizedRgb(value: string): [number, number, number] {
 	const normalized = value.replace("#", "");
 	const hex =
-		normalized.length === 3
-			? normalized.replace(/./g, (char) => `${char}${char}`)
-			: normalized;
+		normalized.length === 3 ? normalized.replace(/./g, (char) => `${char}${char}`) : normalized;
 
 	return [
 		Number.parseInt(hex.slice(0, 2), 16) / 255,
@@ -151,6 +135,7 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 
 	useEffect(() => {
 		setIsVisible(false);
+		void theme;
 
 		const container = containerRef.current;
 		if (!container) {
@@ -177,12 +162,8 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 		let pendingMouseDrop = false;
 		const mouse = new Vec2();
 
-		const primaryColor = new Color(
-			readColorToken("--color-neon-cyan", "#2ff3e0"),
-		);
-		const secondaryColor = new Color(
-			readColorToken("--color-hot-pink", "#ff5aa5"),
-		);
+		const primaryColor = new Color(readColorToken("--color-neon-cyan", "#2ff3e0"));
+		const secondaryColor = new Color(readColorToken("--color-hot-pink", "#ff5aa5"));
 
 		const cleanupCanvas = () => {
 			if (gl?.canvas?.parentNode === container) {
@@ -221,10 +202,7 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 					const uvOffset = pointIndex * 2;
 
 					positions.set([x, originY + row * worldPointSize, 0], positionOffset);
-					uvs.set(
-						[uvStartX + column * uvStepX, uvStartY + row * uvStepY],
-						uvOffset,
-					);
+					uvs.set([uvStartX + column * uvStepX, uvStartY + row * uvStepY], uvOffset);
 					sizes[pointIndex] = POINT_SCREEN_SIZE / 2;
 				}
 			}
@@ -315,32 +293,29 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 			resizeTimeout = window.setTimeout(resize, RESIZE_DEBOUNCE_MS);
 		};
 
-			const updateMousePosition = (event: MouseEvent | TouchEvent) => {
-				if (!gl || width <= 0 || height <= 0) {
-					return;
-				}
+		const updateMousePosition = (event: MouseEvent | TouchEvent) => {
+			if (!gl || width <= 0 || height <= 0) {
+				return;
+			}
 
-				mouseOver = true;
-				const { x, y } = getViewportEventPosition(event);
-				const rect = gl.canvas.getBoundingClientRect();
-				const normalizedWidth = rect.width || width;
-				const normalizedHeight = rect.height || height;
-				const relativeX = x - rect.left;
-				const relativeY = y - rect.top;
+			mouseOver = true;
+			const { x, y } = getViewportEventPosition(event);
+			const rect = gl.canvas.getBoundingClientRect();
+			const normalizedWidth = rect.width || width;
+			const normalizedHeight = rect.height || height;
+			const relativeX = x - rect.left;
+			const relativeY = y - rect.top;
 
-				mouse.set(
-					(relativeX / normalizedWidth) * 2 - 1,
-					(1 - relativeY / normalizedHeight) * 2 - 1,
-				);
+			mouse.set((relativeX / normalizedWidth) * 2 - 1, (1 - relativeY / normalizedHeight) * 2 - 1);
 
-				if (gridRatio >= 1) {
-					mouse.y /= gridRatio;
-				} else {
-					mouse.x /= gridRatio;
-				}
+			if (gridRatio >= 1) {
+				mouse.y /= gridRatio;
+			} else {
+				mouse.x /= gridRatio;
+			}
 
-				pendingMouseDrop = true;
-			};
+			pendingMouseDrop = true;
+		};
 
 		const handlePointerLeave = () => {
 			mouseOver = false;
@@ -353,8 +328,7 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 
 			scrollFrameId = window.requestAnimationFrame(() => {
 				scrollFrameId = 0;
-				cameraTargetZ =
-					CAMERA_BASE_Z - getScrollProgress() * CAMERA_SCROLL_RANGE;
+				cameraTargetZ = CAMERA_BASE_Z - getScrollProgress() * CAMERA_SCROLL_RANGE;
 			});
 		};
 
@@ -364,16 +338,10 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 			}
 
 			animationFrameId = window.requestAnimationFrame(animate);
-			camera.position.z +=
-				(cameraTargetZ - camera.position.z) * CAMERA_LERP_FACTOR;
+			camera.position.z += (cameraTargetZ - camera.position.z) * CAMERA_LERP_FACTOR;
 
 			if (pendingMouseDrop) {
-				ripple.addDrop(
-					mouse.x,
-					mouse.y,
-					ACTIVE_DROP_RADIUS,
-					ACTIVE_DROP_STRENGTH,
-				);
+				ripple.addDrop(mouse.x, mouse.y, ACTIVE_DROP_RADIUS, ACTIVE_DROP_STRENGTH);
 				pendingMouseDrop = false;
 			} else if (!mouseOver) {
 				const time = Date.now() * 0.00065;
@@ -450,10 +418,7 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 				}
 			});
 		} catch (error) {
-			console.warn(
-				"[MagicMoire] Unable to initialize interactive moire effect.",
-				error,
-			);
+			console.warn("[MagicMoire] Unable to initialize interactive moire effect.", error);
 			removeListeners();
 			cleanupCanvas();
 			onError?.();

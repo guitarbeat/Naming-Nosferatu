@@ -248,7 +248,7 @@ export function Dashboard({
 						<h3 className="text-xl font-semibold text-foreground">Top Names</h3>
 					</div>
 					{onStartNew && (
-						<Button variant="ghost" size="small" onClick={onStartNew}>
+						<Button variant="ghost" size="sm" onClick={onStartNew}>
 							Start New Tournament
 						</Button>
 					)}
@@ -350,7 +350,7 @@ export function Dashboard({
 							</select>
 							<Button
 								variant="ghost"
-								size="small"
+								size="sm"
 								onClick={() => fetchEngagementMetrics()}
 								disabled={_isLoadingStats}
 							>
@@ -462,7 +462,7 @@ export function Dashboard({
 						</div>
 						<Button
 							variant="ghost"
-							size="small"
+							size="sm"
 							onClick={() => setShowHiddenNames(!showHiddenNames)}
 						>
 							{showHiddenNames ? "Hide List" : "Show List"}
@@ -480,7 +480,7 @@ export function Dashboard({
 										<span className="text-foreground font-medium">{name.name}</span>
 										<Button
 											variant="ghost"
-											size="small"
+											size="sm"
 											onClick={() => handleUnhideName(name.id)}
 											className="text-chart-2 hover:text-chart-2/80"
 										>

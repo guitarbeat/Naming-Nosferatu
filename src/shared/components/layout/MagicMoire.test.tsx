@@ -69,10 +69,7 @@ vi.mock("ogl", () => ({
 	Mesh: class {
 		geometry;
 		program;
-		constructor(
-			_gl: unknown,
-			options: { geometry?: unknown; program?: unknown },
-		) {
+		constructor(_gl: unknown, options: { geometry?: unknown; program?: unknown }) {
 			this.geometry = options.geometry;
 			this.program = options.program;
 		}
@@ -125,8 +122,9 @@ describe("MagicMoire", () => {
 	};
 
 	const getBodyListener = (eventName: string) => {
-		const addEventListenerMock =
-			document.body.addEventListener as unknown as ReturnType<typeof vi.fn>;
+		const addEventListenerMock = document.body.addEventListener as unknown as ReturnType<
+			typeof vi.fn
+		>;
 		const call = addEventListenerMock.mock.calls.find(
 			([registeredEventName]) => registeredEventName === eventName,
 		);
@@ -148,7 +146,7 @@ describe("MagicMoire", () => {
 		mockCanvas = document.createElement("canvas");
 		rafQueue = [];
 		rippleEffectMock = createRippleEffectMock();
-		delete (window as Window & { ontouchstart?: unknown }).ontouchstart;
+		Reflect.deleteProperty(window, "ontouchstart");
 		Object.defineProperty(window, "innerWidth", {
 			value: 400,
 			configurable: true,
@@ -194,18 +192,11 @@ describe("MagicMoire", () => {
 		const { unmount } = render(<MagicMoire theme="dark" />);
 
 		expect(screen.getByTestId("magic-container")).toBeInTheDocument();
-		expect(screen.getByTestId("magic-container").querySelector("canvas")).toBe(
-			mockCanvas,
-		);
-		expect(window.addEventListener).toHaveBeenCalledWith(
-			"resize",
-			expect.any(Function),
-		);
-		expect(window.addEventListener).toHaveBeenCalledWith(
-			"scroll",
-			expect.any(Function),
-			{ passive: true },
-		);
+		expect(screen.getByTestId("magic-container").querySelector("canvas")).toBe(mockCanvas);
+		expect(window.addEventListener).toHaveBeenCalledWith("resize", expect.any(Function));
+		expect(window.addEventListener).toHaveBeenCalledWith("scroll", expect.any(Function), {
+			passive: true,
+		});
 		expect(
 			(document.body.addEventListener as ReturnType<typeof vi.fn>).mock.calls.some(
 				([eventName]) => eventName === "mousemove",
@@ -216,24 +207,16 @@ describe("MagicMoire", () => {
 			flushAnimationFrameQueue();
 		});
 
-		expect(screen.getByTestId("magic-container")).toHaveClass(
-			"magic-container--visible",
-		);
+		expect(screen.getByTestId("magic-container")).toHaveClass("magic-container--visible");
 
 		unmount();
 
-		expect(window.removeEventListener).toHaveBeenCalledWith(
-			"resize",
-			expect.any(Function),
-		);
-		expect(window.removeEventListener).toHaveBeenCalledWith(
-			"scroll",
-			expect.any(Function),
-		);
+		expect(window.removeEventListener).toHaveBeenCalledWith("resize", expect.any(Function));
+		expect(window.removeEventListener).toHaveBeenCalledWith("scroll", expect.any(Function));
 		expect(
-			(
-				document.body.removeEventListener as ReturnType<typeof vi.fn>
-			).mock.calls.some(([eventName]) => eventName === "mousemove"),
+			(document.body.removeEventListener as ReturnType<typeof vi.fn>).mock.calls.some(
+				([eventName]) => eventName === "mousemove",
+			),
 		).toBe(true);
 		expect(mockCanvas.parentNode).toBeNull();
 	});

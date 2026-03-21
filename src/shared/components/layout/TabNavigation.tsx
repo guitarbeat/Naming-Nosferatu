@@ -16,6 +16,7 @@ import {
 	User,
 } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
+import { getButtonClassName } from "./Button";
 
 type Tab = "pick" | "suggest" | "profile" | "analyze";
 
@@ -110,7 +111,15 @@ export function TabNavigation({ activeTab, onTabChange, className }: TabNavigati
 					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
 					onClick={() => setSwipeMode(!isSwipeMode)}
-					className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-foreground/10 to-foreground/5 border border-border/30 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-gradient-to-r hover:from-foreground/20 hover:to-foreground/10 transition-all duration-300 shadow-sm hover:shadow-md"
+					className={cn(
+						getButtonClassName({
+							variant: isSwipeMode ? "secondary" : "ghost",
+							shape: "pill",
+						}),
+						"px-6",
+						!isSwipeMode &&
+							"border-border/30 bg-gradient-to-r from-foreground/10 to-foreground/5 text-foreground/80 hover:from-foreground/20 hover:to-foreground/10",
+					)}
 				>
 					{isSwipeMode ? <Layers size={16} /> : <LayoutGrid size={16} />}
 					<span className="font-medium">{isSwipeMode ? "Swipe Mode" : "Grid Mode"}</span>
@@ -127,10 +136,17 @@ export function TabNavigation({ activeTab, onTabChange, className }: TabNavigati
 						whileTap={{ scale: 0.98 }}
 						onClick={() => handleTabClick(tab.id)}
 						className={cn(
-							"relative flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300",
-							activeTab === tab.id
-								? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg shadow-primary/25"
-								: "text-foreground/70 hover:text-foreground hover:bg-foreground/10",
+							getButtonClassName({
+								variant:
+									activeTab === tab.id || (tab.id === "pick" && selectedCount >= 2)
+										? "primary"
+										: "ghost",
+								presentation: "chip",
+								shape: "pill",
+							}),
+							"relative flex items-center gap-2.5 px-5 py-3 text-sm font-semibold transition-all duration-300",
+							activeTab !== tab.id &&
+								"bg-transparent text-foreground/70 hover:bg-foreground/10 hover:text-foreground",
 							tab.id === "pick" &&
 								selectedCount >= 2 &&
 								"bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40",
