@@ -121,16 +121,16 @@ const SelectionBadge = () => (
 const NameContent = ({ nameItem, variant = "grid" }: { nameItem: NameItem; variant?: "grid" | "swipe" }) => {
 	const isGrid = variant === "grid";
 	const nameClasses = isGrid
-		? "mobile-readable-title font-bold text-foreground text-sm sm:text-base leading-tight drop-shadow-lg"
-		: "font-whimsical text-4xl lg:text-5xl text-foreground tracking-wide drop-shadow-2xl break-words w-full text-center";
+		? "mobile-readable-title font-bold text-foreground text-base sm:text-lg leading-tight drop-shadow-lg"
+		: "font-whimsical text-5xl lg:text-6xl text-foreground tracking-wide drop-shadow-2xl break-words w-full text-center";
 	
 	const pronunciationClasses = isGrid
-		? "mobile-readable-meta text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md"
-		: "text-warning text-2xl lg:text-3xl font-bold italic opacity-90";
+		? "mobile-readable-meta text-warning/90 text-sm sm:text-base leading-tight font-bold italic drop-shadow-md"
+		: "text-warning text-3xl lg:text-4xl font-bold italic opacity-90";
 	
 	const descriptionClasses = isGrid
-		? "mobile-readable-description text-foreground/85 text-xs sm:text-sm leading-snug line-clamp-2 sm:line-clamp-2 mt-1 drop-shadow-sm font-medium"
-		: "text-foreground/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3 text-center";
+		? "mobile-readable-description text-foreground/85 text-sm sm:text-base leading-snug line-clamp-2 sm:line-clamp-2 mt-1 drop-shadow-sm font-medium"
+		: "text-foreground/90 text-base md:text-lg leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3 text-center";
 
 	return (
 		<>
