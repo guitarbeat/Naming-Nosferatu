@@ -158,6 +158,12 @@ interface FormattedError {
 	stack?: string | null;
 }
 
+interface ErrorServiceReporter {
+	captureException?: (error: Error, options?: unknown) => void;
+}
+
+let configuredErrorService: ErrorServiceReporter | null = null;
+
 function generateErrorId() {
 	const scope = GLOBAL_SCOPE as typeof globalThis;
 	if (scope.crypto?.randomUUID) {
@@ -394,6 +400,18 @@ function buildAIContext(f: FormattedError, d: { fingerprint: string }): string {
 	return `ID: ${f.id}\nType: ${f.type}\nSeverity: ${f.severity}\nContext: ${f.context}\nMessage: ${f.message}\nFingerprint: ${d.fingerprint}`;
 }
 
+function getConfiguredErrorService(): ErrorServiceReporter | null {
+	if (configuredErrorService) {
+		return configuredErrorService;
+	}
+
+	const g = getGlobalScope() as typeof globalThis & {
+		Sentry?: ErrorServiceReporter;
+	};
+
+	return g.Sentry ?? null;
+}
+
 interface ErrorServiceLogData {
 	error: FormattedError;
 	context: string;
@@ -401,15 +419,12 @@ interface ErrorServiceLogData {
 }
 
 function sendToErrorService(logData: ErrorServiceLogData): void {
-	const g = getGlobalScope() as typeof globalThis & {
-		Sentry?: { captureException?: (error: Error, options?: unknown) => void };
-	};
-	const sentry = g.Sentry;
-	if (sentry?.captureException) {
+	const errorService = getConfiguredErrorService();
+	if (errorService?.captureException) {
 		const e = new Error(logData.error.message);
 		e.name = logData.context;
 		e.stack = logData.error.stack || undefined;
-		sentry.captureException(e, {
+		errorService.captureException(e, {
 			tags: {
 				context: logData.context,
 				errorType: logData.error.type,
@@ -568,6 +583,9 @@ export class ErrorManager {
 	static withRetry = withRetry;
 	static CircuitBreaker = CircuitBreaker;
 	static createResilientFunction = createResilientFunction;
+	static setErrorService(errorService: ErrorServiceReporter | null): void {
+		configuredErrorService = errorService;
+	}
 
 	static setupGlobalErrorHandling(): () => void {
 		const g = getGlobalScope() as typeof globalThis;
@@ -576,17 +594,38 @@ export class ErrorManager {
 				// Intentional no-op: addEventListener not available
 			};
 		}
-		const h = (e: ErrorEvent | PromiseRejectionEvent) => {
-			const error = "reason" in e ? e.reason : e.error;
-			ErrorManager.handleError(error, "Global", {
+
+		const onUnhandledRejection = (event: PromiseRejectionEvent) => {
+			ErrorManager.handleError(event.reason ?? new Error("Unhandled promise rejection"), "Global", {
 				isCritical: true,
 			});
 		};
-		g.addEventListener("unhandledrejection", h);
-		g.addEventListener("error", h);
+
+		const onError = (event: ErrorEvent) => {
+			// Ignore resource load failures here. They don't produce actionable exception data and
+			// otherwise become noisy "unexpected" runtime errors in development.
+			if (event.target && event.target !== g && !event.error) {
+				return;
+			}
+
+			const error = event.error ?? (event.message ? new Error(event.message) : null);
+			if (!error) {
+				return;
+			}
+
+			ErrorManager.handleError(error, "Global", {
+				isCritical: true,
+				filename: event.filename,
+				line: event.lineno,
+				column: event.colno,
+			});
+		};
+
+		g.addEventListener("unhandledrejection", onUnhandledRejection);
+		g.addEventListener("error", onError);
 		return () => {
-			g.removeEventListener("unhandledrejection", h);
-			g.removeEventListener("error", h);
+			g.removeEventListener("unhandledrejection", onUnhandledRejection);
+			g.removeEventListener("error", onError);
 		};
 	}
 }

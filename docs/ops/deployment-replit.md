@@ -58,7 +58,7 @@ Preferred communication style: Simple, everyday language.
 - **Framework**: React 19 with TypeScript, built with Vite
 - **Routing**: React Router DOM v6 with lazy-loaded route components for code splitting
 - **State Management**: Zustand for client-side app state (`src/store/appStore.ts`), TanStack Query for server state caching
-- **Styling**: Tailwind CSS v4 with PostCSS, plus CVA (Class Variance Authority) for component variants. Design tokens defined in CSS custom properties (`src/shared/styles/design-tokens.css`). HeroUI component library is integrated.
+- **Styling**: Tailwind CSS v4 with PostCSS, plus CVA (Class Variance Authority) for component variants. Utility generation lives in `src/tailwind.css`, and shared design tokens/global styles are consolidated in `src/index.scss`. HeroUI component library is integrated.
 - **Animations**: Framer Motion for UI transitions and micro-interactions
 - **Forms**: Custom form hooks with Zod validation (see `src/hooks/useNames.ts`)
 - **Entry Point**: `src/app/main.tsx` → wraps App in QueryClientProvider, BrowserRouter, and custom Providers (auth)

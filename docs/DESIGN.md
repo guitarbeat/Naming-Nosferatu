@@ -21,7 +21,7 @@
 
 ## 1. Design Tokens
 
-All design tokens are defined in `src/styles/tokens.scss`. Use these tokens instead of hardcoded values.
+All shared design tokens and global styles are defined in `src/index.scss`. Use these tokens instead of hardcoded values.
 
 ### Spacing System
 
@@ -187,7 +187,7 @@ Respect user preferences for reduced motion.
 
 ## 6. Liquid Glass Component
 
-A specialized React component (`src/shared/components/layout/LiquidGlass.tsx`) that creates fluid refraction effects via SVG displacement maps, with shared styling in `src/styles/liquid-glass.scss`.
+A specialized React component (`src/shared/components/layout/LiquidGlass.tsx`) that creates fluid refraction effects via SVG displacement maps, with shared styling consolidated into `src/index.scss`.
 
 ---
 
@@ -208,8 +208,8 @@ We focus on "Progressive Disclosure"—only showing complexity when the user is 
 
 ## 8. Best Practices
 
-### Layered Global SCSS
-Keep shared styles in `src/styles/*.scss` and wire them through `src/styles/index.scss` in the documented order.
+### Layered Global Styling
+Keep Tailwind utility generation in `src/tailwind.css` and consolidated global styles in `src/index.scss`.
 
 ### Component-Specific SCSS
 Use co-located `.scss` files only when a component needs isolated styling that is not reusable globally (example: `src/shared/components/layout/FancyButton.scss` imported by `Button.tsx`).
@@ -232,22 +232,16 @@ Animate only `transform` and `opacity` to maintain 60fps.
 
 ### File Organization
 
-Global styles live in `src/styles/` and are split by responsibility:
+Global styling now uses two entry files:
 
 | File | Responsibility |
 | ---- | -------------- |
-| `base.scss` | Tailwind directives only (`@tailwind base/components/utilities`) |
-| `tokens.scss` | All design tokens and theme variables (CSS custom properties) |
-| `reset.scss` | Reset, base element defaults, focus, and scrollbar behavior |
-| `typography.scss` | Typography utility classes built on tokens |
-| `layout.scss` | Layout primitives, responsive behavior, accessibility media rules |
-| `components.scss` | Shared component classes and feature-level UI styling |
-| `motion.scss` | Keyframes, transitions, and reduced-motion handling |
-| `liquid-glass.scss` | Liquid glass visual system styles |
+| `src/tailwind.css` | Tailwind CSS v4 entrypoint, config, and source discovery |
+| `src/index.scss` | Consolidated design tokens, reset, typography, layout, components, motion, and glass styles |
 
 Entry bridge files:
+- `src/app/main.tsx` imports `../tailwind.css`
 - `src/app/main.tsx` imports `../index.scss`
-- `src/index.scss` loads `src/styles/index.scss`
 
 Component-level stylesheet imports:
 - `src/shared/components/layout/Button.tsx` imports `./FancyButton.scss`
@@ -257,22 +251,17 @@ Component-level stylesheet imports:
 
 ```text
 src/app/main.tsx
+  -> src/tailwind.css
+    -> @import "tailwindcss"
+    -> @config "../config/tailwind.config.js"
+    -> @source "./**/*.{js,jsx,ts,tsx}"
   -> src/index.scss
-    -> src/styles/index.scss
-      -> @import "tailwindcss"
-      -> @include meta.load-css("./base")
-      -> @include meta.load-css("./tokens")
-      -> @include meta.load-css("./reset")
-      -> @include meta.load-css("./typography")
-      -> @include meta.load-css("./layout")
-      -> @include meta.load-css("./components")
-      -> @include meta.load-css("./motion")
-      -> @include meta.load-css("./liquid-glass")
+    -> consolidated global design system sections
 ```
 
 ### Why Order Matters
 
-1. Tailwind primitives load first.
+1. Tailwind utilities load first from `src/tailwind.css`.
 2. Tokens define variables consumed by later layers.
 3. Reset normalizes element defaults before utility/component styling.
 4. Typography and layout establish reusable structure.
