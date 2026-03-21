@@ -244,9 +244,6 @@ export function FloatingNavbar() {
 		};
 	}, []);
 
-	if (isTournamentRoute) {
-		return null;
-	}
 
 	return (
 		<motion.div
