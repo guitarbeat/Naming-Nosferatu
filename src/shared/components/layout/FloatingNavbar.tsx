@@ -104,7 +104,7 @@ export function FloatingNavbar() {
 	const isTournamentActive = Boolean(tournament.names);
 	const isComplete = tournament.isComplete;
 	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
-	const primaryItemCount = Number(!isComplete && !isTournamentActive) + Number(isComplete) + 2;
+	const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
 
 	const scrollToSection = (key: NavSection) => {
 		const id = keyToId[key];
