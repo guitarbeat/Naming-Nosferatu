@@ -37,6 +37,7 @@ export interface BracketRound {
 interface TournamentBracketProps {
 	tournamentId?: string;
 	matches: BracketMatch[];
+	labelsById?: Record<string, string>;
 	onMatchClick?: (matchId: string) => void;
 	onExport?: () => void;
 	onShare?: () => void;
@@ -45,6 +46,7 @@ interface TournamentBracketProps {
 export function TournamentBracket({
 	tournamentId,
 	matches,
+	labelsById,
 	onMatchClick,
 	onExport,
 	onShare,
@@ -179,6 +181,16 @@ export function TournamentBracket({
 			navigator.share(shareData);
 		}
 	}, [onShare, bracketStats]);
+
+	const getLabel = useCallback(
+		(id: string | null) => {
+			if (!id) {
+				return null;
+			}
+			return labelsById?.[id] ?? id;
+		},
+		[labelsById],
+	);
 
 	if (matches.length === 0) {
 		return (
