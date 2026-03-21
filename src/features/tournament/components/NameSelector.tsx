@@ -35,6 +35,7 @@ import {
 	EyeOff,
 	Heart,
 	Shuffle,
+	Undo2,
 	X,
 	ZoomIn,
 } from "@/shared/lib/icons";
@@ -295,7 +296,8 @@ export function NameSelector() {
 				setSelectedNames((prev) => {
 					const next = new Set(prev);
 					next.add(nameId);
-					syncSelectionToStore(next);
+					// Defer sync to prevent render cycle issue
+					setTimeout(() => syncSelectionToStore(next), 0);
 					return next;
 				});
 			}
@@ -367,7 +369,8 @@ export function NameSelector() {
 			setSelectedNames((prev) => {
 				const next = new Set(prev);
 				next.delete(lastSwipe.id);
-				syncSelectionToStore(next);
+				// Defer sync to prevent render cycle issue
+				setTimeout(() => syncSelectionToStore(next), 0);
 				return next;
 			});
 		}
@@ -627,7 +630,7 @@ export function NameSelector() {
 				setLightboxOpen(true);
 			}
 		},
-		[names],
+		[names, setLightboxIndex, setLightboxOpen],
 	);
 
 	const handleSelectAllAvailable = useCallback(() => {
@@ -636,7 +639,8 @@ export function NameSelector() {
 			availableNames.forEach((name) => {
 				next.add(name.id);
 			});
-			syncSelectionToStore(next);
+			// Defer sync to prevent render cycle issue
+			setTimeout(() => syncSelectionToStore(next), 0);
 			return next;
 		});
 		triggerHaptic();
@@ -645,7 +649,8 @@ export function NameSelector() {
 	const handleClearSelection = useCallback(() => {
 		const lockedIds = new Set(getLockedNames(names).map((name) => name.id));
 		setSelectedNames(lockedIds);
-		syncSelectionToStore(lockedIds);
+		// Defer sync to prevent render cycle issue
+		setTimeout(() => syncSelectionToStore(lockedIds), 0);
 		triggerHaptic();
 	}, [names, syncSelectionToStore, triggerHaptic]);
 
@@ -669,7 +674,8 @@ export function NameSelector() {
 			randomIds.forEach((id) => {
 				next.add(id);
 			});
-			syncSelectionToStore(next);
+			// Defer sync to prevent render cycle issue
+			setTimeout(() => syncSelectionToStore(next), 0);
 			return next;
 		});
 		triggerHaptic();
@@ -752,48 +758,77 @@ export function NameSelector() {
 					</div>
 				)}
 
-				{/* Selection Controls - Inline and Compact */}
-				<div className="flex items-center justify-center gap-3 px-4">
-					<span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
-						{selectedAvailableCount}/{availableNames.length}
-						{selectedHiddenCount > 0 && <span className="opacity-60"> +{selectedHiddenCount}</span>}
-					</span>
-					<div className="h-3 w-px bg-border/50" />
-					{isSwipeMode && swipeHistory.length > 0 ? (
-						<Button onClick={handleUndo} variant="glass" size="small" className="text-xs h-7 px-2">
-							Undo ({swipeHistory.length})
-						</Button>
-					) : (
-						<div className="flex items-center gap-1.5">
-							<Button
-								variant="glass"
-								size="small"
-								onClick={handleSelectAllAvailable}
-								disabled={!canSelectAllAvailable}
-								className="text-xs h-7 px-2.5"
-							>
-								All
-							</Button>
-							<Button 
-								variant="glass" 
-								size="small" 
-								onClick={handleSelectRandomAvailable} 
-								className="text-xs h-7 px-2.5"
-							>
-								<Shuffle size={11} className="mr-1" />
-								Random
-							</Button>
-							<Button
-								variant="glass"
-								size="small"
-								onClick={handleClearSelection}
-								disabled={!hasAnySelection}
-								className="text-xs h-7 px-2.5"
-							>
-								Clear
-							</Button>
+				{/* Selection Controls - Enhanced Design */}
+				<div className="relative px-4 py-2">
+					{/* Progress Bar */}
+					<div className="mb-4">
+						<div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+							<span className="font-medium">Selection Progress</span>
+							<span className="tabular-nums font-mono">{selectedAvailableCount}/{availableNames.length}</span>
 						</div>
-					)}
+						<div className="w-full h-2 bg-border/20 rounded-full overflow-hidden">
+							<motion.div
+								className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
+								initial={{ width: 0 }}
+								animate={{ width: `${(selectedAvailableCount / Math.max(availableNames.length, 1)) * 100}%` }}
+								transition={{ duration: 0.5, ease: "easeOut" }}
+							/>
+						</div>
+						{selectedHiddenCount > 0 && (
+							<div className="mt-2 text-center">
+								<span className="inline-flex items-center gap-1 px-2 py-1 bg-warning/10 text-warning/80 rounded-full text-[10px] font-medium">
+									<EyeOff size={10} />
+									{selectedHiddenCount} hidden selected
+								</span>
+							</div>
+						)}
+					</div>
+
+					{/* Action Buttons - Enhanced Layout */}
+					<div className="flex items-center justify-center">
+						{isSwipeMode && swipeHistory.length > 0 ? (
+							<div className="flex items-center gap-3">
+								<Button onClick={handleUndo} variant="outline" size="small" className="gap-2 border-warning/20 text-warning hover:bg-warning/10 hover:border-warning">
+									<ArrowCounterClockwise size={14} />
+									Undo ({swipeHistory.length})
+								</Button>
+							</div>
+						) : (
+							<div className="inline-flex items-center gap-2 p-1 bg-background/50 backdrop-blur-sm rounded-xl border border-border/20 shadow-sm">
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={handleSelectAllAvailable}
+									disabled={!canSelectAllAvailable}
+									className="gap-2 h-8 px-3 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-accent/50 transition-colors"
+								>
+									<CheckCircle size={14} />
+									All
+								</Button>
+								<div className="w-px h-4 bg-border/30" />
+								<Button 
+									variant="ghost" 
+									size="sm" 
+									onClick={handleSelectRandomAvailable} 
+									className="gap-2 h-8 px-3 rounded-lg text-sm font-medium hover:bg-accent/50 transition-colors"
+								>
+									<Shuffle size={14} />
+									Random
+								</Button>
+								<div className="w-px h-4 bg-border/30" />
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={handleClearSelection}
+									disabled={!hasAnySelection}
+									className="gap-2 h-8 px-3 rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-accent/50 transition-colors"
+								>
+									<X size={14} />
+									Clear
+								</Button>
+							</div>
+						)}
+					</div>
 				</div>
 
 				{isSwipeMode ? (
@@ -997,50 +1032,112 @@ export function NameSelector() {
 									})
 								) : (
 									<div className="absolute inset-0 flex items-center justify-center">
-										<div className="text-center space-y-4">
-											<p className="text-2xl font-bold text-foreground">All done!</p>
-											<p className="text-muted-foreground">
-												You've reviewed all names. Ready to start?
-											</p>
-										</div>
+										<motion.div 
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ duration: 0.6, ease: "easeOut" }}
+											className="text-center space-y-6 max-w-md mx-auto px-6"
+										>
+											<motion.div
+												initial={{ scale: 0 }}
+												animate={{ scale: 1 }}
+												transition={{ delay: 0.2, type: "spring", stiffness: 400, damping: 25 }}
+												className="mx-auto w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center shadow-xl shadow-success/30"
+											>
+												<Check size={40} className="text-success-foreground" strokeWidth={3} />
+											</motion.div>
+											<div className="space-y-3">
+												<h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+													All done!
+												</h2>
+												<p className="text-muted-foreground text-lg leading-relaxed">
+													You've reviewed all names. Ready to start the tournament?
+												</p>
+											</div>
+											<motion.div
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
+												transition={{ delay: 0.4 }}
+												className="pt-4"
+											>
+												<Button
+													onClick={() => {
+														// Navigate to tournament or next step
+														window.location.href = '/tournament';
+													}}
+													className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
+												>
+													Start Tournament
+												</Button>
+											</motion.div>
+										</motion.div>
 									</div>
 								)}
 							</AnimatePresence>
 						</div>
 
 						{visibleCards.length > 0 && (
-							<div className="flex items-center justify-center gap-8 mt-8 pb-4">
-								<Button
-									variant="outline"
-									iconOnly={true}
-									className="h-16 w-16 rounded-full border-2 border-destructive/20 hover:bg-destructive/10 hover:border-destructive text-destructive transition-all duration-300 shadow-lg hover:shadow-destructive/25 hover:scale-110 active:scale-95"
-									onClick={() => {
-										const currentCard = visibleCards[0];
-										if (currentCard) {
-											handleSwipe(currentCard.id, "left");
-										}
-									}}
-									aria-label="Skip (Left Arrow)"
-									title="Skip (Left Arrow)"
+							<div className="flex items-center justify-center gap-6 sm:gap-8 mt-8 pb-6">
+								<motion.div
+									whileHover={{ scale: 1.05, y: -2 }}
+									whileTap={{ scale: 0.95 }}
+									transition={{ type: "spring", stiffness: 400, damping: 25 }}
 								>
-									<X size={32} />
-								</Button>
+									<Button
+										variant="outline"
+										iconOnly={true}
+										className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-destructive/30 hover:border-destructive/50 bg-gradient-to-br from-destructive/5 to-destructive/10 hover:from-destructive/15 hover:to-destructive/20 text-destructive transition-all duration-300 shadow-xl hover:shadow-destructive/30 hover:scale-110 active:scale-95"
+										onClick={() => {
+											const currentCard = visibleCards[0];
+											if (currentCard) {
+												handleSwipe(currentCard.id, "left");
+											}
+										}}
+										aria-label="Skip (Left Arrow)"
+										title="Skip (Left Arrow)"
+									>
+										<div className="relative">
+											<X size={28} className="sm:size-8" strokeWidth={2.5} />
+											<div className="absolute inset-0 bg-destructive/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+										</div>
+									</Button>
+									<div className="text-center mt-2">
+										<span className="text-xs text-muted-foreground font-medium">Skip</span>
+									</div>
+								</motion.div>
 
-								<Button
-									variant="outline"
-									iconOnly={true}
-									className="h-16 w-16 rounded-full border-2 border-success/20 hover:bg-success/10 hover:border-success text-success transition-all duration-300 shadow-lg hover:shadow-success/25 hover:scale-110 active:scale-95"
-									onClick={() => {
-										const currentCard = visibleCards[0];
-										if (currentCard) {
-											handleSwipe(currentCard.id, "right");
-										}
-									}}
-									aria-label="Select (Right Arrow)"
-									title="Select (Right Arrow)"
+								<motion.div
+									whileHover={{ scale: 1.05, y: -2 }}
+									whileTap={{ scale: 0.95 }}
+									transition={{ type: "spring", stiffness: 400, damping: 25 }}
 								>
-									<Heart size={32} />
-								</Button>
+									<Button
+										variant="outline"
+										iconOnly={true}
+										className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-success/30 hover:border-success/50 bg-gradient-to-br from-success/5 to-success/10 hover:from-success/15 hover:to-success/20 text-success transition-all duration-300 shadow-xl hover:shadow-success/30 hover:scale-110 active:scale-95"
+										onClick={() => {
+											const currentCard = visibleCards[0];
+											if (currentCard) {
+												handleSwipe(currentCard.id, "right");
+											}
+										}}
+										aria-label="Select (Right Arrow)"
+										title="Select (Right Arrow)"
+									>
+										<div className="relative">
+											<Heart 
+												size={28} 
+												className="sm:size-8" 
+												strokeWidth={2.5}
+												fill="currentColor"
+											/>
+											<div className="absolute inset-0 bg-success/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+										</div>
+									</Button>
+									<div className="text-center mt-2">
+										<span className="text-xs text-muted-foreground font-medium">Select</span>
+									</div>
+								</motion.div>
 							</div>
 						)}
 					</>
@@ -1050,7 +1147,7 @@ export function NameSelector() {
 							const activeNames = getActiveNames(names);
 							return (
 								activeNames.length > 0 && (
-									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
 										{activeNames.map((nameItem) => {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage =
@@ -1067,14 +1164,14 @@ export function NameSelector() {
 													}}
 													role="button"
 													tabIndex={0}
-													whileHover={{ scale: 1.02 }}
-													whileTap={{ scale: 0.98 }}
+													whileHover={{ scale: 1.03, y: -2 }}
+													whileTap={{ scale: 0.97 }}
 													transition={{ type: "spring", stiffness: 400, damping: 25 }}
-													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 overflow-hidden cursor-pointer ${
+													className={`mobile-readable-card relative group rounded-xl sm:rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-300 ${
 														isSelected
-															? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
-															: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
-													} ${isNameLocked(nameItem) ? "opacity-75" : ""}`}
+															? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 shadow-xl shadow-primary/20 ring-4 ring-primary/30 scale-[1.02] z-10"
+															: "border-border/20 bg-gradient-to-br from-foreground/5 to-foreground/0 hover:border-border/40 hover:bg-gradient-to-br hover:from-foreground/10 hover:to-foreground/5 hover:shadow-xl hover:shadow-foreground/10"
+													} ${isNameLocked(nameItem) ? "opacity-60 cursor-not-allowed" : ""}`}
 												>
 													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img">
 														<CatImage
@@ -1082,46 +1179,54 @@ export function NameSelector() {
 															alt={nameItem.name}
 															objectFit="cover"
 															containerClassName="w-full h-full"
-															imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+															imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 														/>
 
-														{/* Grid Name Overlay */}
-														<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
-															<div className="flex flex-col gap-0.5">
-																<div className="flex items-center justify-between gap-2">
-																	<span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
+														{/* Selection Badge */}
+														{isSelected && (
+															<motion.div
+																initial={{ scale: 0, opacity: 0 }}
+																animate={{ scale: 1, opacity: 1 }}
+																className="absolute top-3 right-3 z-20"
+															>
+																<div className="relative">
+																	<div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+																	<div className="relative size-6 sm:size-7 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-primary/50">
+																		<Check size={14} className="text-primary-foreground" strokeWidth={3} />
+																	</div>
+																</div>
+															</motion.div>
+														)}
+
+														{/* Enhanced Name Overlay */}
+														<div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 bg-gradient-to-t from-background/98 via-background/70 to-transparent flex flex-col justify-end pointer-events-none">
+															<div className="flex flex-col gap-1.5">
+																<div className="flex items-start justify-between gap-2">
+																	<span className="mobile-readable-title font-bold text-foreground text-sm sm:text-base leading-tight drop-shadow-lg truncate flex-1">
 																		{nameItem.name}
 																	</span>
-																	{isSelected && (
-																		<motion.div
-																			initial={{ scale: 0, opacity: 0 }}
-																			animate={{ scale: 1, opacity: 1 }}
-																			className="shrink-0 size-5 bg-primary rounded-full flex items-center justify-center shadow-lg"
-																		>
-																			<Check size={12} className="text-primary-foreground" />
-																		</motion.div>
-																	)}
 																</div>
 																{nameItem.pronunciation && (
-																	<span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+																	<span className="mobile-readable-meta text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md truncate">
 																		[{nameItem.pronunciation}]
 																	</span>
 																)}
 																{nameItem.description && (
-																	<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
+																	<p className="mobile-readable-description text-foreground/85 text-xs sm:text-sm leading-snug line-clamp-2 sm:line-clamp-2 mt-1 drop-shadow-sm font-medium">
 																		{nameItem.description}
 																	</p>
 																)}
 															</div>
 														</div>
 
+														{/* Enhanced Zoom Button */}
 														<button
 															type="button"
 															onClick={(e) => {
 																e.stopPropagation();
 																handleOpenLightbox(nameItem.id);
 															}}
-															className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/img:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
+															className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
 															aria-label="View full size"
 														>
 															<ZoomIn size={14} />

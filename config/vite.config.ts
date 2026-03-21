@@ -66,13 +66,13 @@ export default defineConfig(({ command }) => ({
                                 }
                         : undefined,
         server: {
-                host: "0.0.0.0",
-                port: 5000,
-                strictPort: true,
-                allowedHosts: true,
-                watch: {
-                        usePolling: true,
-                },
+		host: "0.0.0.0",
+		port: 5173,
+		strictPort: false,
+		allowedHosts: true,
+		watch: {
+			usePolling: true,
+		},
                 proxy: {
                         "/api": {
                                 target: "http://localhost:3001",
@@ -111,6 +111,7 @@ export default defineConfig(({ command }) => ({
                         "@/app": path.resolve(__dirname, "..", "src/app"),
                         "@/features": path.resolve(__dirname, "..", "src/features"),
                         "@/shared": path.resolve(__dirname, "..", "src/shared"),
+                        "@/services": path.resolve(__dirname, "..", "src/services"),
                 },
         },
         build: {
