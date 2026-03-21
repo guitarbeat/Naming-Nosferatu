@@ -1790,5 +1790,7 @@ export function NameSelector() {
 				onConfirm={confirmAdminAction}
 			/>
 		</motion.div>
+	</div>
+	</div>
 	);
 }
