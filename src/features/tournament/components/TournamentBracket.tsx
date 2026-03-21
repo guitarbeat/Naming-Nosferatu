@@ -192,6 +192,16 @@ export function TournamentBracket({
 		[labelsById],
 	);
 
+	const getRoundWinnerLabel = useCallback(
+		(winnerId?: string) => {
+			if (!winnerId) {
+				return null;
+			}
+			return getLabel(winnerId) ?? winnerId;
+		},
+		[getLabel],
+	);
+
 	if (matches.length === 0) {
 		return (
 			<div className="flex items-center justify-center min-h-96 p-8">
@@ -397,7 +407,9 @@ export function TournamentBracket({
 								<div className="text-center font-semibold text-foreground mb-4">
 									Round {round.round}
 									{round.winner && (
-										<span className="ml-2 text-chart-4">🏆 Winner: {round.winner}</span>
+										<span className="ml-2 text-chart-4">
+											🏆 Winner: {getRoundWinnerLabel(round.winner)}
+										</span>
 									)}
 								</div>
 								<div
@@ -439,9 +451,9 @@ export function TournamentBracket({
 													{match.leftId && (
 														<span
 															className="text-sm font-bold text-foreground truncate max-w-20"
-															title={match.leftId}
+															title={getLabel(match.leftId) ?? match.leftId}
 														>
-															{match.leftId}
+															{getLabel(match.leftId)}
 														</span>
 													)}
 													{match.winnerId === match.leftId && (
@@ -452,9 +464,9 @@ export function TournamentBracket({
 													{match.rightId && (
 														<span
 															className="text-sm font-bold text-foreground truncate max-w-20"
-															title={match.rightId}
+															title={getLabel(match.rightId) ?? match.rightId}
 														>
-															{match.rightId}
+															{getLabel(match.rightId)}
 														</span>
 													)}
 													{match.winnerId === match.rightId && (
@@ -480,7 +492,11 @@ export function TournamentBracket({
 							<div key={round.round} className="space-y-2">
 								<div className="flex items-center justify-between">
 									<span className="font-semibold text-foreground">Round {round.round}</span>
-									{round.winner && <span className="text-chart-4">🏆 Winner: {round.winner}</span>}
+									{round.winner && (
+										<span className="text-chart-4">
+											🏆 Winner: {getRoundWinnerLabel(round.winner)}
+										</span>
+									)}
 								</div>
 								<div className="bg-foreground/5 rounded-lg p-4">
 									{round.matches.map((match, index) => (
@@ -492,16 +508,16 @@ export function TournamentBracket({
 											<div className="flex items-center gap-2">
 												<span
 													className="text-sm font-medium truncate max-w-24"
-													title={match.leftId}
+													title={getLabel(match.leftId) ?? match.leftId ?? undefined}
 												>
-													{match.leftId}
+													{getLabel(match.leftId)}
 												</span>
 												<span className="text-muted-foreground">vs</span>
 												<span
 													className="text-sm font-medium truncate max-w-24"
-													title={match.rightId}
+													title={getLabel(match.rightId) ?? match.rightId ?? undefined}
 												>
-													{match.rightId}
+													{getLabel(match.rightId)}
 												</span>
 											</div>
 											<span className="text-chart-4">
@@ -523,16 +539,22 @@ export function TournamentBracket({
 							<div key={round.round} className="bg-foreground/5 rounded-lg p-4">
 								<div className="flex items-center justify-between mb-4">
 									<span className="font-semibold text-foreground">Round {round.round}</span>
-									{round.winner && <span className="text-chart-4">🏆 {round.winner}</span>}
+									{round.winner && (
+										<span className="text-chart-4">🏆 {getRoundWinnerLabel(round.winner)}</span>
+									)}
 								</div>
 								<div className="space-y-2">
 									{round.matches.map((match, index) => (
 										<div key={match.id} className="flex items-center justify-between text-sm">
 											<span className="text-muted-foreground w-20">M{index + 1}</span>
 											<span className="flex-1 text-center">
-												{match.leftId && <span className="font-medium">{match.leftId}</span>}
+												{match.leftId && (
+													<span className="font-medium">{getLabel(match.leftId)}</span>
+												)}
 												<span className="text-muted-foreground">vs</span>
-												{match.rightId && <span className="font-medium">{match.rightId}</span>}
+												{match.rightId && (
+													<span className="font-medium">{getLabel(match.rightId)}</span>
+												)}
 											</span>
 											<span className="text-muted-foreground w-20">M{index + 1}</span>
 										</div>

@@ -72,8 +72,7 @@ function readPersistedTournaments(): Array<{
 		return [];
 	}
 
-	const tournaments: Array<{ id: string; state: PersistentTournamentState }> =
-		[];
+	const tournaments: Array<{ id: string; state: PersistentTournamentState }> = [];
 	for (let index = 0; index < window.localStorage.length; index += 1) {
 		const key = window.localStorage.key(index);
 		if (!key || !key.startsWith("tournament-")) {
@@ -81,10 +80,7 @@ function readPersistedTournaments(): Array<{
 		}
 
 		const rawValue = window.localStorage.getItem(key);
-		const parsed = parseJsonValue<Record<string, unknown> | null>(
-			rawValue,
-			null,
-		);
+		const parsed = parseJsonValue<Record<string, unknown> | null>(rawValue, null);
 		if (!parsed) {
 			continue;
 		}
@@ -101,15 +97,10 @@ function readPersistedTournaments(): Array<{
 		tournaments.push({ id: key, state: sanitized });
 	}
 
-	return tournaments.sort(
-		(left, right) => right.state.lastUpdated - left.state.lastUpdated,
-	);
+	return tournaments.sort((left, right) => right.state.lastUpdated - left.state.lastUpdated);
 }
 
-function getMatchSide(
-	match: Match,
-	side: "left" | "right",
-): { id: string; label: string } {
+function getMatchSide(match: Match, side: "left" | "right"): { id: string; label: string } {
 	if (match.mode === "2v2") {
 		const team = side === "left" ? match.left : match.right;
 		return {
@@ -181,9 +172,7 @@ function buildTournamentHistory(
 		? new Date(orderedHistory[0].timestamp).toISOString()
 		: new Date(state.lastUpdated).toISOString();
 	const endTime = orderedHistory.at(-1)
-		? new Date(
-				orderedHistory.at(-1)?.timestamp ?? state.lastUpdated,
-			).toISOString()
+		? new Date(orderedHistory.at(-1)?.timestamp ?? state.lastUpdated).toISOString()
 		: undefined;
 	const completedMatches = orderedHistory.length;
 	const totalMatches = state.totalMatches || completedMatches;
@@ -192,10 +181,7 @@ function buildTournamentHistory(
 		endTime && startTime
 			? Math.max(
 					1,
-					Math.round(
-						(new Date(endTime).getTime() - new Date(startTime).getTime()) /
-							60000,
-					),
+					Math.round((new Date(endTime).getTime() - new Date(startTime).getTime()) / 60000),
 				)
 			: undefined;
 	const matches = orderedHistory.map((record, index) =>
@@ -208,10 +194,7 @@ function buildTournamentHistory(
 			name: `${state.userName || "Guest"} tournament`,
 			startTime,
 			endTime,
-			status:
-				completedMatches >= totalMatches && totalMatches > 0
-					? "completed"
-					: "in_progress",
+			status: completedMatches >= totalMatches && totalMatches > 0 ? "completed" : "in_progress",
 			totalMatches,
 			completedMatches,
 			winnerId,
@@ -227,9 +210,7 @@ export function TournamentReplay({
 	onExportHistory,
 	onReplayMatch,
 }: TournamentReplayProps) {
-	const [selectedTournament, setSelectedTournament] = useState<string>(
-		tournamentId ?? "",
-	);
+	const [selectedTournament, setSelectedTournament] = useState<string>(tournamentId ?? "");
 	const [selectedMatch, setSelectedMatch] = useState<string>("");
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [playbackSpeed, setPlaybackSpeed] = useState(1);
@@ -242,9 +223,7 @@ export function TournamentReplay({
 	useEffect(() => {
 		setIsLoading(true);
 		const persisted = readPersistedTournaments();
-		const rebuilt = persisted.map(({ id, state }) =>
-			buildTournamentHistory(id, state),
-		);
+		const rebuilt = persisted.map(({ id, state }) => buildTournamentHistory(id, state));
 		setTournaments(rebuilt.map((item) => item.tournament));
 		setMatches(rebuilt.flatMap((item) => item.matches));
 		if (!selectedTournament && rebuilt[0]?.tournament.id) {
@@ -298,16 +277,11 @@ export function TournamentReplay({
 			return null;
 		}
 
-		const totalDuration = filteredMatches.reduce(
-			(sum, match) => sum + match.duration,
-			0,
-		);
+		const totalDuration = filteredMatches.reduce((sum, match) => sum + match.duration, 0);
 		const avgDuration = totalDuration / filteredMatches.length;
 		const avgRatingChange =
-			filteredMatches.reduce((sum, match) => sum + match.ratingChange, 0) /
-			filteredMatches.length;
-		const roundsCompleted = new Set(filteredMatches.map((match) => match.round))
-			.size;
+			filteredMatches.reduce((sum, match) => sum + match.ratingChange, 0) / filteredMatches.length;
+		const roundsCompleted = new Set(filteredMatches.map((match) => match.round)).size;
 
 		return {
 			totalMatches: filteredMatches.length,
@@ -316,9 +290,7 @@ export function TournamentReplay({
 			avgRatingChange,
 			roundsCompleted,
 			longestMatch: Math.max(...filteredMatches.map((match) => match.duration)),
-			shortestMatch: Math.min(
-				...filteredMatches.map((match) => match.duration),
-			),
+			shortestMatch: Math.min(...filteredMatches.map((match) => match.duration)),
 		};
 	}, [filteredMatches]);
 
@@ -335,6 +307,16 @@ export function TournamentReplay({
 		[filteredMatches],
 	);
 
+	const bracketLabelsById = useMemo<Record<string, string>>(() => {
+		const labels: Record<string, string> = {};
+		for (const match of filteredMatches) {
+			labels[match.leftId] = match.leftName;
+			labels[match.rightId] = match.rightName;
+			labels[match.winnerId] = match.winnerName;
+		}
+		return labels;
+	}, [filteredMatches]);
+
 	const handlePlayPause = useCallback(() => {
 		setIsPlaying((current) => !current);
 	}, []);
@@ -344,9 +326,7 @@ export function TournamentReplay({
 	}, []);
 
 	const handleNextMatch = useCallback(() => {
-		setCurrentMatchIndex((current) =>
-			Math.min(filteredMatches.length - 1, current + 1),
-		);
+		setCurrentMatchIndex((current) => Math.min(filteredMatches.length - 1, current + 1));
 	}, [filteredMatches.length]);
 
 	const handleExportHistory = useCallback(() => {
@@ -378,9 +358,7 @@ export function TournamentReplay({
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-3">
 					<Calendar className="text-chart-4" size={24} />
-					<h2 className="text-xl font-bold text-foreground">
-						Tournament Replay & History
-					</h2>
+					<h2 className="text-xl font-bold text-foreground">Tournament Replay & History</h2>
 				</div>
 				<div className="flex gap-2">
 					{onExportHistory && (
@@ -421,9 +399,7 @@ export function TournamentReplay({
 				</div>
 
 				<div>
-					<p className="block text-sm font-medium text-foreground mb-2">
-						View Mode
-					</p>
+					<p className="block text-sm font-medium text-foreground mb-2">View Mode</p>
 					<div className="flex gap-2">
 						<Button
 							type="button"
@@ -451,21 +427,15 @@ export function TournamentReplay({
 
 			{matchStats && (
 				<div className="bg-foreground/5 rounded-lg p-4">
-					<h3 className="text-lg font-semibold text-foreground mb-4">
-						Match Statistics
-					</h3>
+					<h3 className="text-lg font-semibold text-foreground mb-4">Match Statistics</h3>
 					<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 						<div>
 							<span className="text-muted-foreground">Total Matches:</span>
-							<span className="font-medium text-foreground ml-1">
-								{matchStats.totalMatches}
-							</span>
+							<span className="font-medium text-foreground ml-1">{matchStats.totalMatches}</span>
 						</div>
 						<div>
 							<span className="text-muted-foreground">Total Duration:</span>
-							<span className="font-medium text-foreground ml-1">
-								{matchStats.totalDuration}s
-							</span>
+							<span className="font-medium text-foreground ml-1">{matchStats.totalDuration}s</span>
 						</div>
 						<div>
 							<span className="text-muted-foreground">Avg Duration:</span>
@@ -475,21 +445,15 @@ export function TournamentReplay({
 						</div>
 						<div>
 							<span className="text-muted-foreground">Rounds Completed:</span>
-							<span className="font-medium text-foreground ml-1">
-								{matchStats.roundsCompleted}
-							</span>
+							<span className="font-medium text-foreground ml-1">{matchStats.roundsCompleted}</span>
 						</div>
 						<div>
 							<span className="text-muted-foreground">Longest Match:</span>
-							<span className="font-medium text-foreground ml-1">
-								{matchStats.longestMatch}s
-							</span>
+							<span className="font-medium text-foreground ml-1">{matchStats.longestMatch}s</span>
 						</div>
 						<div>
 							<span className="text-muted-foreground">Shortest Match:</span>
-							<span className="font-medium text-foreground ml-1">
-								{matchStats.shortestMatch}s
-							</span>
+							<span className="font-medium text-foreground ml-1">{matchStats.shortestMatch}s</span>
 						</div>
 						<div>
 							<span className="text-muted-foreground">Avg Rating Delta:</span>
@@ -547,9 +511,7 @@ export function TournamentReplay({
 								<span className="text-sm text-muted-foreground">Speed:</span>
 								<select
 									value={playbackSpeed}
-									onChange={(event) =>
-										setPlaybackSpeed(Number(event.target.value))
-									}
+									onChange={(event) => setPlaybackSpeed(Number(event.target.value))}
 									className="px-2 py-1 border border-border rounded bg-background text-foreground text-sm"
 								>
 									<option value="0.5">0.5x</option>
@@ -586,32 +548,22 @@ export function TournamentReplay({
 										<span className="block text-sm text-muted-foreground mb-1">
 											{new Date(match.timestamp).toLocaleString()}
 										</span>
-										<span className="block font-semibold text-foreground">
-											{match.winnerName}
-										</span>
-										<span className="block text-xs text-muted-foreground">
-											{match.duration}s
-										</span>
+										<span className="block font-semibold text-foreground">{match.winnerName}</span>
+										<span className="block text-xs text-muted-foreground">{match.duration}s</span>
 									</span>
 								</span>
 								<span className="mt-2 pt-2 border-t border-border/10 block">
 									<span className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
 										<span>
-											<span className="text-muted-foreground">
-												{match.leftName}:
-											</span>
+											<span className="text-muted-foreground">{match.leftName}:</span>
 											<span className="ml-2">
-												{match.leftRating} (
-												{match.winnerId === match.leftId ? "W" : "L"})
+												{match.leftRating} ({match.winnerId === match.leftId ? "W" : "L"})
 											</span>
 										</span>
 										<span>
-											<span className="text-muted-foreground">
-												{match.rightName}:
-											</span>
+											<span className="text-muted-foreground">{match.rightName}:</span>
 											<span className="ml-2">
-												{match.rightRating} (
-												{match.winnerId === match.rightId ? "W" : "L"})
+												{match.rightRating} ({match.winnerId === match.rightId ? "W" : "L"})
 											</span>
 										</span>
 									</span>
@@ -626,6 +578,7 @@ export function TournamentReplay({
 				<TournamentBracket
 					tournamentId={selectedTournament}
 					matches={bracketMatches}
+					labelsById={bracketLabelsById}
 				/>
 			)}
 
@@ -633,13 +586,9 @@ export function TournamentReplay({
 				<div className="flex items-center justify-center p-8">
 					<div className="text-center text-muted-foreground">
 						<BarChart3 size={48} className="mx-auto mb-4" />
-						<h3 className="text-lg font-semibold text-foreground mb-2">
-							No Match History
-						</h3>
+						<h3 className="text-lg font-semibold text-foreground mb-2">No Match History</h3>
 						<p>No completed tournament history was found on this device.</p>
-						<p className="text-sm">
-							Start and finish a tournament to replay it here.
-						</p>
+						<p className="text-sm">Start and finish a tournament to replay it here.</p>
 					</div>
 				</div>
 			)}

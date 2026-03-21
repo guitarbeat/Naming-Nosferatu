@@ -230,6 +230,7 @@ export interface UserPreferences {
 export interface UserState {
 	id: string | null;
 	name: string;
+	email?: string;
 	isLoggedIn: boolean;
 	isAdmin: boolean;
 	avatarUrl?: string;

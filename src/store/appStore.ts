@@ -152,6 +152,7 @@ function getInitialUserState(): UserState {
 	const base: UserState = {
 		id: null,
 		name: "",
+		email: undefined,
 		isLoggedIn: false,
 		isAdmin: false,
 		preferences: {},
@@ -330,7 +331,14 @@ const createUserAndSettingsSlice: StateCreator<
 			onContext?.(null);
 			set((state) => ({
 				...state,
-				user: { ...state.user, name: "", isLoggedIn: false, isAdmin: false },
+				user: {
+					...state.user,
+					id: null,
+					name: "",
+					email: undefined,
+					isLoggedIn: false,
+					isAdmin: false,
+				},
 				tournament: {
 					...state.tournament,
 					names: null,

@@ -7,15 +7,24 @@ import App from "./App";
 // Mock dependencies
 vi.mock("@/app/providers/Providers", () => ({
 	useAuth: () => ({
-		user: { id: "1", isAdmin: false },
+		user: {
+			id: "1",
+			name: "Test User",
+			userName: "Test User",
+			email: "test@example.com",
+			isAdmin: false,
+		},
 		isLoading: false,
+		login: vi.fn(),
+		logout: vi.fn(),
+		register: vi.fn(),
 	}),
 }));
 
 vi.mock("@/store/appStore", () => ({
 	default: () => ({
 		user: { name: "Test User", isAdmin: false, isLoggedIn: false },
-		userActions: { setAdminStatus: vi.fn() },
+		userActions: { setUser: vi.fn(), logout: vi.fn() },
 		tournament: { names: [], ratings: [], selectedNames: [] },
 		tournamentActions: {},
 		ui: { isSwipeMode: false },

@@ -382,8 +382,8 @@ export function NameSelector() {
 	// Show warning when using fallback data
 	useEffect(() => {
 		if (isUsingFallbackData()) {
-			toast.showWarning(
-				"Using demo data - database connection unavailable. Your votes won't be saved to the global leaderboard.",
+			toast.showInfo(
+				"Using the local development catalog because Supabase is unavailable. Global sync resumes when the connection returns.",
 			);
 		}
 	}, [toast]);

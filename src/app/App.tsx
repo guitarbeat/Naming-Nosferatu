@@ -84,9 +84,23 @@ function App() {
 
 	useEffect(() => {
 		if (authUser) {
-			userActions.setAdminStatus(Boolean(authUser.isAdmin));
+			userActions.setUser({
+				id: authUser.id,
+				name: authUser.userName ?? authUser.name,
+				email: authUser.email,
+				isLoggedIn: true,
+				isAdmin: Boolean(authUser.isAdmin),
+			});
+		} else {
+			userActions.setUser({
+				id: null,
+				name: "",
+				email: undefined,
+				isLoggedIn: false,
+				isAdmin: false,
+			});
 		}
-		updateSupabaseUserContext(authUser?.name ?? null, authUser?.id ?? null);
+		updateSupabaseUserContext(authUser?.userName ?? authUser?.name ?? null, authUser?.id ?? null);
 	}, [authUser, userActions]);
 
 	useEffect(() => {
@@ -150,7 +164,7 @@ function App() {
 }
 
 function HomeContent() {
-	const { login } = useAuth();
+	const { login, logout, register } = useAuth();
 	const location = useLocation();
 	const activeTab = getHomeTabFromHash(location.hash);
 
@@ -179,7 +193,12 @@ function HomeContent() {
 
 				<HomeTabPanel id="profile" activeTab={activeTab}>
 					<div className="home-panel-shell">
-						<ProfileInner onLogin={(name) => login({ name })} />
+						<ProfileInner
+							onLogin={(name) => login({ name })}
+							onAccountLogin={(credentials) => login(credentials)}
+							onRegister={register}
+							onLogout={logout}
+						/>
 					</div>
 				</HomeTabPanel>
 			</div>
