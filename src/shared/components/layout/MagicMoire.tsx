@@ -335,12 +335,12 @@ export function MagicMoire({ theme, onError }: MagicMoireProps) {
 
 				if (gridRatio >= 1) {
 					mouse.y /= gridRatio;
-			} else {
-				mouse.x /= gridRatio;
-			}
+				} else {
+					mouse.x /= gridRatio;
+				}
 
-			pendingMouseDrop = true;
-		};
+				pendingMouseDrop = true;
+			};
 
 		const handlePointerLeave = () => {
 			mouseOver = false;

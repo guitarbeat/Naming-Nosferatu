@@ -914,7 +914,7 @@ export function NameSelector() {
 						<p className="text-lg font-medium">Failed to load names</p>
 						<p className="text-sm opacity-75 mt-1">{error}</p>
 					</div>
-					<Button onClick={() => setRetryCount((prev) => prev + 1)} variant="glass" size="small">
+					<Button onClick={() => setRetryCount((prev) => prev + 1)} variant="glass" size="sm">
 						Try Again
 					</Button>
 				</div>
@@ -1068,7 +1068,7 @@ export function NameSelector() {
 										<Button
 											onClick={handleUndo}
 											variant="outline"
-											size="small"
+											size="sm"
 											className="gap-2 border-warning/25 bg-background/80 text-warning hover:border-warning hover:bg-warning/10"
 										>
 											<Undo2 size={14} />
@@ -1233,17 +1233,21 @@ export function NameSelector() {
 
 															{/* Zoom Button Overlay */}
 															{index === 0 && (
-																<button
+																<Button
 																	type="button"
 																	onClick={(e) => {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-4 right-4 p-2.5 rounded-full bg-foreground/50 backdrop-blur-sm text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/70 z-30"
+																	variant="ghost"
+																	size="icon"
+																	iconOnly={true}
+																	shape="pill"
+																	className="absolute top-4 right-4 z-30 size-10 bg-foreground/50 text-background opacity-0 backdrop-blur-sm group-hover:opacity-100 hover:bg-foreground/70 hover:text-background focus:opacity-100"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={18} />
-																</button>
+																</Button>
 															)}
 
 															{/* Name and Info Overlay */}
@@ -1257,7 +1261,7 @@ export function NameSelector() {
 																</div>
 
 																{isAdmin && (
-																	<button
+																	<Button
 																		type="button"
 																		onClick={(e) => {
 																			e.stopPropagation();
@@ -1268,10 +1272,12 @@ export function NameSelector() {
 																			});
 																		}}
 																		disabled={togglingHidden.has(nameItem.id)}
-																		className={`mt-4 flex items-center gap-2 pointer-events-auto w-fit text-sm font-bold tracking-wider uppercase transition-all ${
+																		variant="ghost"
+																		shape="pill"
+																		className={`mt-4 pointer-events-auto w-fit bg-transparent text-sm font-bold tracking-wider uppercase ${
 																			togglingHidden.has(nameItem.id)
-																				? "text-muted-foreground cursor-not-allowed"
-																				: "text-warning hover:text-warning/80 hover:scale-105 active:scale-95"
+																				? "text-muted-foreground"
+																				: "text-warning hover:bg-warning/10 hover:text-warning/80"
 																		}`}
 																	>
 																		{togglingHidden.has(nameItem.id) ? (
@@ -1290,7 +1296,7 @@ export function NameSelector() {
 																				<span>Hide From Public</span>
 																			</>
 																		)}
-																	</button>
+																	</Button>
 																)}
 
 																{selectedNames.has(nameItem.id) && (
@@ -1526,7 +1532,7 @@ export function NameSelector() {
 							return (
 								<div className="mt-6">
 									<div className="select-none">
-										<button
+										<Button
 											type="button"
 											onClick={() => {
 												if (!hiddenPanel.isCollapsed) {
@@ -1538,7 +1544,8 @@ export function NameSelector() {
 											}}
 											aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
 											aria-controls="hidden-names-panel"
-											className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
+											variant="ghost"
+											className="w-full justify-between bg-transparent px-0 py-0 text-left hover:bg-transparent hover:text-inherit"
 										>
 											<div className="flex items-center gap-2">
 												<span className="text-muted-foreground">
@@ -1555,7 +1562,7 @@ export function NameSelector() {
 											<span className="text-[11px] sm:text-xs text-muted-foreground">
 												{hiddenPanel.isCollapsed ? "Click to expand" : "Click to collapse"}
 											</span>
-										</button>
+										</Button>
 
 										{hiddenPanel.isCollapsed && (
 											<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
@@ -1598,28 +1605,34 @@ export function NameSelector() {
 												/>
 												<div className="flex items-center justify-between sm:justify-end gap-3">
 													{hiddenQuery.trim().length > 0 && (
-														<button
+														<Button
 															type="button"
 															onClick={() => {
 																setHiddenQuery("");
 																setHiddenRenderCount(24);
 															}}
-															className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
+															variant="ghost"
+															presentation="chip"
+															shape="pill"
+															className="border border-border/10 bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground"
 														>
 															Clear search
-														</button>
+														</Button>
 													)}
-													<button
+													<Button
 														type="button"
 														onClick={() => setHiddenShowSelectedOnly((v) => !v)}
-														className={`px-3 py-2 border text-xs font-medium ${
+														variant={hiddenShowSelectedOnly ? "secondary" : "ghost"}
+														presentation="chip"
+														shape="pill"
+														className={`border ${
 															hiddenShowSelectedOnly
-																? "bg-primary/20 border-primary/40 text-foreground"
-																: "bg-foreground/5 border-border/10 text-foreground/80"
+																? "bg-primary/20 border-primary/40 text-foreground hover:bg-primary/24"
+																: "bg-foreground/5 border-border/10 text-foreground/80 hover:bg-foreground/10 hover:text-foreground"
 														}`}
 													>
 														Selected only
-													</button>
+													</Button>
 													<span className="text-xs text-muted-foreground">
 														{hiddenFiltered.length} / {hiddenNamesAll.length}
 													</span>
@@ -1703,21 +1716,25 @@ export function NameSelector() {
 																	</div>
 																</div>
 
-																<button
+																<Button
 																	type="button"
 																	onClick={(e) => {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
+																	variant="ghost"
+																	size="icon"
+																	iconOnly={true}
+																	shape="pill"
+																	className="absolute top-1.5 right-1.5 z-10 size-7 bg-foreground/60 text-background opacity-100 backdrop-blur-sm hover:bg-foreground/80 hover:text-background md:opacity-0 md:group-hover/hidden:opacity-100 sm:top-2 sm:right-2 sm:size-9"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={14} />
-																</button>
+																</Button>
 															</div>
 															{isAdmin && (
 																<div className="px-3 pb-3">
-																	<button
+																	<Button
 																		type="button"
 																		onClick={(e) => {
 																			e.stopPropagation();
@@ -1728,7 +1745,8 @@ export function NameSelector() {
 																			});
 																		}}
 																		disabled={togglingHidden.has(nameItem.id)}
-																		className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-success hover:bg-success/80 text-success-foreground ${
+																		variant="secondary"
+																		className={`w-full bg-success text-success-foreground hover:bg-success/80 hover:text-success-foreground ${
 																			togglingHidden.has(nameItem.id)
 																				? "opacity-50 cursor-not-allowed"
 																				: ""
@@ -1745,7 +1763,7 @@ export function NameSelector() {
 																				Unhide
 																			</>
 																		)}
-																	</button>
+																	</Button>
 																</div>
 															)}
 														</div>
@@ -1763,7 +1781,7 @@ export function NameSelector() {
 													<Button
 														onClick={() => setHiddenRenderCount((c) => c + 24)}
 														variant="glass"
-														size="small"
+														size="sm"
 													>
 														Load more
 													</Button>
