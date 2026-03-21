@@ -267,26 +267,36 @@ export function FloatingNavbar() {
 						className="floating-navbar__primary"
 						style={{ gridTemplateColumns: `repeat(${primaryItemCount}, minmax(0, 1fr))` }}
 					>
-						{!isComplete && !isTournamentActive && (
+						{(!isTournamentActive || isTournamentRoute) && (
 							<FloatingNavItem
-								icon={selectedCount >= 2 ? Trophy : CheckCircle}
-								label={selectedCount >= 2 ? `Start (${selectedCount})` : "Pick Names"}
-								isCurrent={isHomeRoute && activeSection === "pick"}
-								isAccent={selectedCount >= 2}
-								onClick={() =>
-									selectedCount >= 2 ? handleStartTournament() : handleNavClick("pick")
+								icon={selectedCount >= 2 && !isTournamentRoute ? Trophy : CheckCircle}
+								label={
+									isTournamentRoute
+										? "Home"
+										: selectedCount >= 2
+											? `Start (${selectedCount})`
+											: "Pick Names"
 								}
+								isCurrent={isHomeRoute && activeSection === "pick"}
+								isAccent={selectedCount >= 2 && !isTournamentRoute}
+								onClick={() => {
+									if (isTournamentRoute) {
+										navigate("/");
+									} else if (selectedCount >= 2) {
+										handleStartTournament();
+									} else {
+										handleNavClick("pick");
+									}
+								}}
 							/>
 						)}
 
-						{isComplete && (
-							<FloatingNavItem
-								icon={BarChart3}
-								label="Analyze"
-								isCurrent={isAnalysisRoute}
-								onClick={() => handleNavClick("analyze")}
-							/>
-						)}
+						<FloatingNavItem
+							icon={BarChart3}
+							label="Analyze"
+							isCurrent={isAnalysisRoute}
+							onClick={() => handleNavClick("analyze")}
+						/>
 
 						<FloatingNavItem
 							icon={Lightbulb}
