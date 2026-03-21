@@ -195,13 +195,14 @@ describe("FloatingNavbar", () => {
 		expect(profileIcon).toHaveClass("text-chart-4");
 	});
 
-	it("does not render on the tournament route", () => {
+	it("keeps the nav available on the tournament route with a home action", () => {
 		render(
 			<MemoryRouter initialEntries={["/tournament"]}>
 				<FloatingNavbar />
 			</MemoryRouter>,
 		);
 
-		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
+		expect(screen.getByRole("navigation", { name: "Primary" })).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Home" })).toBeInTheDocument();
 	});
 });

@@ -110,6 +110,12 @@ export function FloatingNavbar() {
 	const { isSwipeMode } = ui;
 
 	const selectedCount = selectedNames?.length || 0;
+	const pickIcon = isTournamentRoute ? CheckCircle : selectedCount >= 2 ? Trophy : CheckCircle;
+	const pickLabel = isTournamentRoute
+		? "Home"
+		: selectedCount >= 2
+			? `Pick (${selectedCount})`
+			: "Pick";
 	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
 	const primaryItemCount = 4;
 	const navGlassId = isHomeRoute
@@ -196,7 +202,7 @@ export function FloatingNavbar() {
 		};
 	}, []);
 
-	if (isTournamentRoute || isAdminRoute) {
+	if (isAdminRoute) {
 		return null;
 	}
 
@@ -223,10 +229,10 @@ export function FloatingNavbar() {
 						style={{ gridTemplateColumns: `repeat(${primaryItemCount}, minmax(0, 1fr))` }}
 					>
 						<FloatingNavItem
-							icon={selectedCount >= 2 ? Trophy : CheckCircle}
-							label={selectedCount >= 2 ? `Pick (${selectedCount})` : "Pick"}
+							icon={pickIcon}
+							label={pickLabel}
 							isCurrent={isHomeRoute && activeHomeTab === "pick"}
-							isAccent={selectedCount >= 2}
+							isAccent={!isTournamentRoute && selectedCount >= 2}
 							onClick={() => handleNavClick("pick")}
 						/>
 

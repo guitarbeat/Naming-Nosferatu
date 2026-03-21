@@ -8,16 +8,24 @@ const bootstrapMocks = vi.hoisted(() => {
 	const createRootMock = vi.fn(() => ({
 		render: renderMock,
 	}));
+	const sentryInitMock = vi.fn();
+	const setErrorServiceMock = vi.fn();
 
-	return { createRootMock, renderMock };
+	return { createRootMock, renderMock, sentryInitMock, setErrorServiceMock };
 });
 
 vi.mock("../polyfills", () => ({}));
 
 vi.mock("@sentry/react", () => ({
-	init: vi.fn(),
+	init: bootstrapMocks.sentryInitMock,
 	browserTracingIntegration: vi.fn(),
 	replayIntegration: vi.fn(),
+}));
+
+vi.mock("@/shared/services/errorManager", () => ({
+	ErrorManager: {
+		setErrorService: bootstrapMocks.setErrorServiceMock,
+	},
 }));
 
 vi.mock("react-dom/client", () => ({
@@ -69,6 +77,8 @@ describe("main bootstrap", () => {
 	beforeEach(() => {
 		bootstrapMocks.createRootMock.mockClear();
 		bootstrapMocks.renderMock.mockClear();
+		bootstrapMocks.sentryInitMock.mockClear();
+		bootstrapMocks.setErrorServiceMock.mockClear();
 		document.body.innerHTML = '<div id="root"></div>';
 		vi.resetModules();
 	});
@@ -94,6 +104,8 @@ describe("main bootstrap", () => {
 		expect(screen.getByTestId("browser-router")).toBeInTheDocument();
 		expect(screen.getByTestId("app")).toBeInTheDocument();
 		expect(screen.queryByTestId("analytics")).not.toBeInTheDocument();
+		expect(bootstrapMocks.setErrorServiceMock).toHaveBeenCalledWith(null);
+		expect(bootstrapMocks.sentryInitMock).not.toHaveBeenCalled();
 	});
 
 	it("throws when the root element is missing", async () => {

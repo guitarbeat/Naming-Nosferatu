@@ -25,7 +25,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 	const { pathname } = useLocation();
 	const { user, tournament, errors, errorActions, ui } = useAppStore();
 	const { isLoggedIn } = user;
-	const showsFloatingNav = pathname !== "/tournament" && pathname !== "/admin";
+	const showsFloatingNav = pathname !== "/admin";
 
 	return (
 		<ErrorBoundary context="Main Application Layout">

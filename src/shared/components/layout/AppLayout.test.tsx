@@ -57,9 +57,21 @@ describe("AppLayout", () => {
 		expect(screen.getByRole("main")).toHaveClass("app-main-shell--nav-safe");
 	});
 
-	it("drops the nav-safe shell padding on immersive routes", () => {
+	it("keeps the nav-safe shell padding on the tournament route", () => {
 		render(
 			<MemoryRouter initialEntries={["/tournament"]}>
+				<AppLayout>
+					<div>Bracket Content</div>
+				</AppLayout>
+			</MemoryRouter>,
+		);
+
+		expect(screen.getByRole("main")).toHaveClass("app-main-shell--nav-safe");
+	});
+
+	it("drops the nav-safe shell padding on the admin route", () => {
+		render(
+			<MemoryRouter initialEntries={["/admin"]}>
 				<AppLayout>
 					<div>Bracket Content</div>
 				</AppLayout>
