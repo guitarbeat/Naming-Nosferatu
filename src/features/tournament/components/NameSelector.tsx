@@ -789,7 +789,7 @@ export function NameSelector() {
 						{isSwipeMode && swipeHistory.length > 0 ? (
 							<div className="flex items-center gap-3">
 								<Button onClick={handleUndo} variant="outline" size="small" className="gap-2 border-warning/20 text-warning hover:bg-warning/10 hover:border-warning">
-									<ArrowCounterClockwise size={14} />
+									<Undo2 size={14} />
 									Undo ({swipeHistory.length})
 								</Button>
 							</div>
@@ -961,17 +961,17 @@ export function NameSelector() {
 															)}
 
 															{/* Name and Info Overlay */}
-															<div className="relative z-10 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent flex flex-col justify-end pointer-events-none">
-																<h3 className="font-whimsical text-4xl lg:text-5xl text-foreground tracking-wide drop-shadow-2xl break-words w-full">
+															<div className="relative z-10 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent flex flex-col justify-center items-center text-center pointer-events-none">
+																<h3 className="font-whimsical text-4xl lg:text-5xl text-foreground tracking-wide drop-shadow-2xl break-words w-full text-center">
 																	{nameItem.name}
 																	{nameItem.pronunciation && (
-																		<span className="ml-3 text-warning text-2xl lg:text-3xl font-bold italic opacity-90">
+																		<span className="block mt-2 text-warning text-2xl lg:text-3xl font-bold italic opacity-90">
 																			[{nameItem.pronunciation}]
 																		</span>
 																	)}
 																</h3>
 																{nameItem.description && (
-																	<p className="text-foreground/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3">
+																	<p className="text-foreground/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3 text-center">
 																		{nameItem.description}
 																	</p>
 																)}
@@ -1199,15 +1199,13 @@ export function NameSelector() {
 														)}
 
 														{/* Enhanced Name Overlay */}
-														<div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 bg-gradient-to-t from-background/98 via-background/70 to-transparent flex flex-col justify-end pointer-events-none">
-															<div className="flex flex-col gap-1.5">
-																<div className="flex items-start justify-between gap-2">
-																	<span className="mobile-readable-title font-bold text-foreground text-sm sm:text-base leading-tight drop-shadow-lg truncate flex-1">
-																		{nameItem.name}
-																	</span>
-																</div>
+														<div className="absolute inset-0 p-3 sm:p-4 bg-gradient-to-t from-background/98 via-background/70 to-transparent flex flex-col justify-center items-center text-center pointer-events-none">
+															<div className="flex flex-col gap-1.5 max-w-full">
+																<span className="mobile-readable-title font-bold text-foreground text-sm sm:text-base leading-tight drop-shadow-lg">
+																	{nameItem.name}
+																</span>
 																{nameItem.pronunciation && (
-																	<span className="mobile-readable-meta text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md truncate">
+																	<span className="mobile-readable-meta text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md">
 																		[{nameItem.pronunciation}]
 																	</span>
 																)}
