@@ -206,55 +206,77 @@ export function TournamentBracket({
 				<div className="flex items-center gap-2">
 					{/* View Mode Toggle */}
 					<div className="flex bg-foreground/10 rounded-lg p-1">
-						<button
+						<Button
+							type="button"
 							onClick={() => handleViewModeChange("bracket")}
-							className={`px-3 py-2 rounded-l text-sm font-medium transition-colors ${
+							variant={viewMode === "bracket" ? "secondary" : "ghost"}
+							presentation="chip"
+							shape="pill"
+							className={`${
 								viewMode === "bracket"
-									? "bg-chart-4 text-white"
-									: "text-foreground hover:bg-foreground/20"
+									? "bg-chart-4 text-white hover:bg-chart-4/85 hover:text-white"
+									: "bg-transparent text-foreground hover:bg-foreground/20 hover:text-foreground"
 							}`}
 						>
 							Bracket
-						</button>
-						<button
+						</Button>
+						<Button
+							type="button"
 							onClick={() => handleViewModeChange("tree")}
-							className={`px-3 py-2 rounded-r text-sm font-medium transition-colors ${
+							variant={viewMode === "tree" ? "secondary" : "ghost"}
+							presentation="chip"
+							shape="pill"
+							className={`${
 								viewMode === "tree"
-									? "bg-chart-4 text-white"
-									: "text-foreground hover:bg-foreground/20"
+									? "bg-chart-4 text-white hover:bg-chart-4/85 hover:text-white"
+									: "bg-transparent text-foreground hover:bg-foreground/20 hover:text-foreground"
 							}`}
 						>
 							Tree
-						</button>
-						<button
+						</Button>
+						<Button
+							type="button"
 							onClick={() => handleViewModeChange("compact")}
-							className={`px-3 py-2 rounded-r text-sm font-medium transition-colors ${
+							variant={viewMode === "compact" ? "secondary" : "ghost"}
+							presentation="chip"
+							shape="pill"
+							className={`${
 								viewMode === "compact"
-									? "bg-chart-4 text-white"
-									: "text-foreground hover:bg-foreground/20"
+									? "bg-chart-4 text-white hover:bg-chart-4/85 hover:text-white"
+									: "bg-transparent text-foreground hover:bg-foreground/20 hover:text-foreground"
 							}`}
 						>
 							Compact
-						</button>
+						</Button>
 					</div>
 
 					{/* Zoom Controls */}
 					<div className="flex items-center gap-2 bg-foreground/10 rounded-lg p-1">
-						<button
+						<Button
+							type="button"
 							onClick={handleZoomOut}
 							disabled={zoomLevel === 1}
-							className="p-2 text-foreground hover:bg-foreground/20 disabled:opacity-50"
+							variant="ghost"
+							size="icon"
+							iconOnly={true}
+							shape="pill"
+							className="size-8 bg-transparent text-foreground hover:bg-foreground/20"
 						>
 							<ZoomOut size={16} />
-						</button>
+						</Button>
 						<span className="text-sm text-muted-foreground px-2">{zoomLevel}x</span>
-						<button
+						<Button
+							type="button"
 							onClick={handleZoomIn}
 							disabled={zoomLevel === 3}
-							className="p-2 text-foreground hover:bg-foreground/20 disabled:opacity-50"
+							variant="ghost"
+							size="icon"
+							iconOnly={true}
+							shape="pill"
+							className="size-8 bg-transparent text-foreground hover:bg-foreground/20"
 						>
 							<ZoomIn size={16} />
-						</button>
+						</Button>
 					</div>
 
 					{/* Export/Share */}
@@ -262,7 +284,7 @@ export function TournamentBracket({
 						<Button
 							onClick={handleExport}
 							variant="ghost"
-							size="small"
+							size="sm"
 							className="text-chart-4 hover:text-chart-4/80"
 						>
 							<Download size={16} className="mr-1" />
@@ -271,7 +293,7 @@ export function TournamentBracket({
 						<Button
 							onClick={handleShare}
 							variant="ghost"
-							size="small"
+							size="sm"
 							className="text-chart-4 hover:text-chart-4/80"
 						>
 							<Share2 size={16} className="mr-1" />
@@ -320,14 +342,17 @@ export function TournamentBracket({
 
 			{/* Round Navigation */}
 			<div className="flex items-center justify-between mb-6">
-				<button
+				<Button
 					onClick={handlePreviousRound}
 					disabled={selectedRound === 1}
-					className="flex items-center gap-2 px-4 py-2 bg-foreground/10 text-foreground hover:bg-foreground/20 disabled:opacity-50 rounded-lg"
+					type="button"
+					variant="ghost"
+					shape="pill"
+					className="bg-foreground/10 text-foreground hover:bg-foreground/20"
+					startIcon={<ChevronLeft size={20} />}
 				>
-					<ChevronLeft size={20} />
 					<span className="text-sm font-medium">Round {selectedRound - 1}</span>
-				</button>
+				</Button>
 
 				<div className="text-center">
 					<span className="text-lg font-bold text-foreground">Round {selectedRound}</span>
@@ -338,14 +363,17 @@ export function TournamentBracket({
 					)}
 				</div>
 
-				<button
+				<Button
 					onClick={handleNextRound}
 					disabled={selectedRound === bracketStats.totalRounds}
-					className="flex items-center gap-2 px-4 py-2 bg-foreground/10 text-foreground hover:bg-foreground/20 disabled:opacity-50 rounded-lg"
+					type="button"
+					variant="ghost"
+					shape="pill"
+					className="bg-foreground/10 text-foreground hover:bg-foreground/20"
+					endIcon={<ChevronRight size={20} />}
 				>
 					<span className="text-sm font-medium">Round {selectedRound + 1}</span>
-					<ChevronRight size={20} />
-				</button>
+				</Button>
 			</div>
 
 			{/* Bracket Visualization */}
