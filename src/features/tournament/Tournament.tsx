@@ -880,7 +880,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</div>
 
 				{/* Row 2: Bracket path + streak (compact) */}
-				<div className="flex items-center justify-between gap-2">
+				<div className="hidden sm:flex items-center justify-between gap-2">
 					<BracketTree round={roundNumber} totalRounds={totalRounds} />
 					{dominantStreak && (
 						<span
