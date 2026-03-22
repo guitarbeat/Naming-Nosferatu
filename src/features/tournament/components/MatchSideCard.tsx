@@ -101,11 +101,15 @@ export function MatchSideCard({
 								</span>
 							) : null}
 							<div className={`flex items-center gap-2 flex-wrap ${headingWrap}`}>
-								<h3
-									className={`font-whimsical text-[1.85rem] sm:text-3xl text-foreground tracking-wide break-words drop-shadow-sm leading-tight ${isRight ? "text-left sm:text-right" : ""}`}
+								<h2
+									className={`m-0 font-sans font-bold normal-case text-foreground break-words drop-shadow-sm leading-[1.12] text-balance ${isRight ? "text-left sm:text-right" : ""}`}
+									style={{
+										fontSize: "var(--pw-heading-2-size)",
+										letterSpacing: "var(--pw-heading-tracking)",
+									}}
 								>
 									{name}
-								</h3>
+								</h2>
 							</div>
 						</div>
 						{pronunciation && (

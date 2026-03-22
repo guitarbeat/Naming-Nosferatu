@@ -137,9 +137,19 @@ const NameContent = ({
 	showDetails?: boolean;
 }) => {
 	const isGrid = variant === "grid";
+	const HeadingTag = isGrid ? "h3" : "h1";
 	const nameClasses = isGrid
-		? "mobile-readable-title block w-full text-left text-lg sm:text-[1.35rem] font-semibold leading-tight text-foreground drop-shadow-md"
-		: "font-whimsical text-5xl lg:text-6xl text-foreground tracking-wide drop-shadow-2xl break-words w-full text-center";
+		? "mobile-readable-title m-0 block w-full text-left font-bold leading-[1.18] normal-case text-foreground drop-shadow-md text-balance"
+		: "m-0 block w-full text-center font-bold leading-[1.08] normal-case text-foreground drop-shadow-2xl break-words text-balance";
+	const nameStyle = isGrid
+		? {
+				fontSize: "var(--pw-heading-3-size)",
+				letterSpacing: "var(--pw-heading-tracking)",
+			}
+		: {
+				fontSize: "var(--pw-heading-1-size)",
+				letterSpacing: "var(--pw-heading-tracking)",
+			};
 
 	const pronunciationClasses = isGrid
 		? `mobile-readable-meta block text-left text-[11px] sm:text-sm leading-tight font-semibold italic text-warning/95 drop-shadow-sm transition-all duration-300 ${
@@ -159,7 +169,9 @@ const NameContent = ({
 
 	return (
 		<>
-			<span className={nameClasses}>{nameItem.name}</span>
+			<HeadingTag className={nameClasses} style={nameStyle}>
+				{nameItem.name}
+			</HeadingTag>
 			{nameItem.pronunciation && (
 				<span className={isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`}>
 					[{nameItem.pronunciation}]
