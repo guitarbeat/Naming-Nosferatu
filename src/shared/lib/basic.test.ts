@@ -11,6 +11,7 @@ import {
 	isNameHidden,
 	isNameLocked,
 	matchesNameSearchTerm,
+	getRandomCatImage,
 } from "./basic";
 
 describe("cn", () => {
@@ -233,5 +234,35 @@ describe("calculatePercentile", () => {
 			// 5, 10. Value NaN. Below: 0. Total 2.
 			expect(calculatePercentile(NaN, [5, 10])).toBe(0);
 		});
+	});
+});
+
+
+describe("getRandomCatImage", () => {
+	const mockImages = ["image1.png", "image2.png", "image3.png"];
+
+	it("returns the first image when id is null or undefined", () => {
+		expect(getRandomCatImage(null, mockImages)).toBe("image1.png");
+		expect(getRandomCatImage(undefined, mockImages)).toBe("image1.png");
+	});
+
+	it("returns empty string when images array is empty", () => {
+		expect(getRandomCatImage(null, [])).toBe("");
+		expect(getRandomCatImage(123, [])).toBe("");
+	});
+
+	it("returns a deterministic image when id is a string", () => {
+		const result1 = getRandomCatImage("test-id-1", mockImages);
+		const result2 = getRandomCatImage("test-id-1", mockImages);
+		expect(result1).toBe(result2);
+		expect(mockImages).toContain(result1);
+	});
+
+	it("returns a deterministic image when id is a number", () => {
+		// id 0 will trigger `!id` check so we test with non-zero
+		const result1 = getRandomCatImage(42, mockImages);
+		const result2 = getRandomCatImage(42, mockImages);
+		expect(result1).toBe(result2);
+		expect(mockImages).toContain(result1);
 	});
 });
