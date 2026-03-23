@@ -14,7 +14,7 @@ export function getStorageString(key: string, fallback: string | null = null): s
         }
 
         try {
-                return window.localStorage.getItem(key);
+                return window.localStorage.getItem(key) ?? fallback;
         } catch {
                 return fallback;
         }
