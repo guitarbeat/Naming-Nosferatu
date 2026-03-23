@@ -428,62 +428,58 @@ export function AdminDashboard() {
 								const hidden = isNameHidden(name);
 								const locked = isNameLocked(name);
 								return (
-									<div key={name.id} className="py-4">
-										<div className="flex items-center justify-between">
-											<div className="flex items-center gap-4">
+									<div key={name.id} className="py-3 sm:py-4">
+										<div className="flex items-start sm:items-center justify-between gap-2">
+											<div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
 												<input
 													type="checkbox"
 													checked={selectedNames.has(nameId)}
 													onChange={(event) => handleSelectionChange(nameId, event.target.checked)}
-													className="w-4 h-4"
+													className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
 												/>
-												<div>
-													<h3 className="font-semibold text-foreground">{name.name}</h3>
+												<div className="min-w-0">
+													<div className="flex items-center gap-2 flex-wrap">
+														<h3 className="font-semibold text-foreground text-sm sm:text-base">{name.name}</h3>
+														{locked && (
+															<span className="text-[10px] text-chart-4 font-semibold inline-flex items-center gap-0.5">
+																<Lock size={10} /> Locked
+															</span>
+														)}
+														{hidden && (
+															<span className="text-[10px] text-destructive font-semibold inline-flex items-center gap-0.5">
+																<EyeOff size={10} /> Hidden
+															</span>
+														)}
+													</div>
 													{name.description && (
-														<p className="text-sm text-muted-foreground">{name.description}</p>
+														<p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{name.description}</p>
 													)}
-													<div className="flex gap-4 mt-1 text-xs text-muted-foreground/60">
+													<div className="flex gap-3 mt-0.5 text-[10px] sm:text-xs text-muted-foreground/60">
 														<span>Votes: {name.votes}</span>
 														<span>
 															Score:{" "}
 															{name.popularityScore == null ? "?" : name.popularityScore.toFixed(1)}
 														</span>
-														{name.lastVoted && (
-															<span>Last: {new Date(name.lastVoted).toLocaleDateString()}</span>
-														)}
 													</div>
 												</div>
 											</div>
 
-											<div className="flex items-center gap-2">
-												{locked && (
-													<div className="text-xs text-chart-4 font-semibold">
-														<Lock size={12} /> Locked
-													</div>
-												)}
-												{hidden && (
-													<div className="text-xs text-destructive font-semibold">
-														<EyeOff size={12} /> Hidden
-													</div>
-												)}
-
-												<div className="flex gap-1">
-													<Button
-														onClick={() => void handleToggleHidden(name.id, hidden)}
-														variant="ghost"
-														size="small"
-													>
-														{hidden ? <Eye size={14} /> : <EyeOff size={14} />}
-													</Button>
-													<Button
-														onClick={() => void handleToggleLocked(name.id, locked)}
-														variant="ghost"
-														size="small"
-														aria-label={locked ? "Unlock name" : "Lock name"}
-													>
-														<Lock size={14} />
-													</Button>
-												</div>
+											<div className="flex items-center gap-1 shrink-0">
+												<Button
+													onClick={() => void handleToggleHidden(name.id, hidden)}
+													variant="ghost"
+													size="small"
+												>
+													{hidden ? <Eye size={14} /> : <EyeOff size={14} />}
+												</Button>
+												<Button
+													onClick={() => void handleToggleLocked(name.id, locked)}
+													variant="ghost"
+													size="small"
+													aria-label={locked ? "Unlock name" : "Lock name"}
+												>
+													<Lock size={14} />
+												</Button>
 											</div>
 										</div>
 									</div>

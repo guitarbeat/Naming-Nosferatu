@@ -115,7 +115,7 @@ export function ProfileInner({ onLogin }: ProfileSectionProps) {
 										onChange={(e) => setEditedName(e.target.value)}
 										placeholder="Who are you?"
 										onKeyDown={(e) => e.key === "Enter" && handleSave()}
-										className="w-full h-[50px] pl-12 pr-4 font-medium backdrop-blur-sm"
+										className="w-full h-11 sm:h-[50px] pl-12 pr-4 font-medium backdrop-blur-sm"
 									/>
 								</div>
 							</div>
