@@ -310,7 +310,7 @@ export function AdminDashboard() {
 			</div>
 
 			{stats && (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+				<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
 					<div className="p-6">
 						<div className="flex items-center gap-3 mb-2">
 							<BarChart3 className="text-primary" size={24} />
