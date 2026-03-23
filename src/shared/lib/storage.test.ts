@@ -1,15 +1,15 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { STORAGE_KEYS } from "./constants";
 import {
-	isStorageAvailable,
+	clearUserStorage,
 	getStorageString,
-	setStorageString,
-	removeStorageItem,
+	isStorageAvailable,
 	parseJsonValue,
 	readStorageJson,
+	removeStorageItem,
+	setStorageString,
 	writeStorageJson,
-	clearUserStorage,
 } from "./storage";
-import { STORAGE_KEYS } from "./constants";
 
 describe("Storage Utilities", () => {
 	let originalWindow: typeof window | undefined;
@@ -34,7 +34,7 @@ describe("Storage Utilities", () => {
 
 		it("returns false when window is undefined", () => {
 			const tempWindow = globalThis.window;
-			// @ts-ignore
+			// @ts-expect-error
 			delete globalThis.window;
 
 			expect(isStorageAvailable()).toBe(false);
@@ -44,12 +44,12 @@ describe("Storage Utilities", () => {
 
 		it("returns false when window.localStorage is undefined", () => {
 			const tempLocalStorage = globalThis.window.localStorage;
-			// @ts-ignore
+			// @ts-expect-error
 			delete globalThis.window.localStorage;
 
 			expect(isStorageAvailable()).toBe(false);
 
-			// @ts-ignore
+			// @ts-expect-error
 			globalThis.window.localStorage = tempLocalStorage;
 		});
 
@@ -74,12 +74,12 @@ describe("Storage Utilities", () => {
 	describe("getStorageString", () => {
 		it("returns fallback if storage is unavailable", () => {
 			const tempLocalStorage = globalThis.window.localStorage;
-			// @ts-ignore
+			// @ts-expect-error
 			delete globalThis.window.localStorage;
 
 			expect(getStorageString("test-key", "default")).toBe("default");
 
-			// @ts-ignore
+			// @ts-expect-error
 			globalThis.window.localStorage = tempLocalStorage;
 		});
 
@@ -107,18 +107,20 @@ describe("Storage Utilities", () => {
 	describe("setStorageString", () => {
 		it("does nothing if storage is unavailable", () => {
 			const tempLocalStorage = globalThis.window.localStorage;
-			// @ts-ignore
+			// @ts-expect-error
 			delete globalThis.window.localStorage;
 
 			setStorageString("test-key", "test-value"); // Should not throw
 
-			// @ts-ignore
+			// @ts-expect-error
 			globalThis.window.localStorage = tempLocalStorage;
 		});
 
 		it("sets value in localStorage", () => {
 			setStorageString("test-key", "test-value");
-			expect(globalThis.window.localStorage.getItem("test-key")).toBe("test-value");
+			expect(globalThis.window.localStorage.getItem("test-key")).toBe(
+				"test-value",
+			);
 		});
 
 		it("silently catches errors when localStorage.setItem throws", () => {
@@ -136,12 +138,12 @@ describe("Storage Utilities", () => {
 	describe("removeStorageItem", () => {
 		it("does nothing if storage is unavailable", () => {
 			const tempLocalStorage = globalThis.window.localStorage;
-			// @ts-ignore
+			// @ts-expect-error
 			delete globalThis.window.localStorage;
 
 			removeStorageItem("test-key"); // Should not throw
 
-			// @ts-ignore
+			// @ts-expect-error
 			globalThis.window.localStorage = tempLocalStorage;
 		});
 
@@ -176,42 +178,52 @@ describe("Storage Utilities", () => {
 		});
 
 		it("returns fallback if JSON parsing throws", () => {
-			expect(parseJsonValue('{"a":1', { fallback: true })).toEqual({ fallback: true });
+			expect(parseJsonValue('{"a":1', { fallback: true })).toEqual({
+				fallback: true,
+			});
 			expect(parseJsonValue("undefined", "fallback")).toBe("fallback");
 		});
 	});
 
 	describe("readStorageJson", () => {
 		it("returns fallback if value is not in localStorage", () => {
-			expect(readStorageJson("test-key", { fallback: true })).toEqual({ fallback: true });
+			expect(readStorageJson("test-key", { fallback: true })).toEqual({
+				fallback: true,
+			});
 		});
 
 		it("returns parsed JSON value if it exists in localStorage", () => {
 			globalThis.window.localStorage.setItem("test-key", '{"data": "value"}');
-			expect(readStorageJson("test-key", { fallback: true })).toEqual({ data: "value" });
+			expect(readStorageJson("test-key", { fallback: true })).toEqual({
+				data: "value",
+			});
 		});
 
 		it("returns fallback if value in localStorage is invalid JSON", () => {
 			globalThis.window.localStorage.setItem("test-key", "invalid-json");
-			expect(readStorageJson("test-key", { fallback: true })).toEqual({ fallback: true });
+			expect(readStorageJson("test-key", { fallback: true })).toEqual({
+				fallback: true,
+			});
 		});
 	});
 
 	describe("writeStorageJson", () => {
 		it("does nothing if storage is unavailable", () => {
 			const tempLocalStorage = globalThis.window.localStorage;
-			// @ts-ignore
+			// @ts-expect-error
 			delete globalThis.window.localStorage;
 
 			writeStorageJson("test-key", { data: "value" }); // Should not throw
 
-			// @ts-ignore
+			// @ts-expect-error
 			globalThis.window.localStorage = tempLocalStorage;
 		});
 
 		it("sets JSON string in localStorage", () => {
 			writeStorageJson("test-key", { data: "value" });
-			expect(globalThis.window.localStorage.getItem("test-key")).toBe('{"data":"value"}');
+			expect(globalThis.window.localStorage.getItem("test-key")).toBe(
+				'{"data":"value"}',
+			);
 		});
 
 		it("silently catches errors when localStorage.setItem throws", () => {
@@ -220,7 +232,9 @@ describe("Storage Utilities", () => {
 				throw new Error("Quota exceeded");
 			};
 
-			expect(() => writeStorageJson("test-key", { data: "value" })).not.toThrow();
+			expect(() =>
+				writeStorageJson("test-key", { data: "value" }),
+			).not.toThrow();
 
 			globalThis.window.localStorage.setItem = tempSetItem;
 		});
@@ -237,13 +251,23 @@ describe("Storage Utilities", () => {
 
 			clearUserStorage();
 
-			expect(globalThis.window.localStorage.getItem(STORAGE_KEYS.USER)).toBe(null);
-			expect(globalThis.window.localStorage.getItem(STORAGE_KEYS.USER_ID)).toBe(null);
-			expect(globalThis.window.localStorage.getItem(STORAGE_KEYS.THEME)).toBe(null);
-			expect(globalThis.window.localStorage.getItem("ratings_fallback")).toBe(null);
+			expect(globalThis.window.localStorage.getItem(STORAGE_KEYS.USER)).toBe(
+				null,
+			);
+			expect(globalThis.window.localStorage.getItem(STORAGE_KEYS.USER_ID)).toBe(
+				null,
+			);
+			expect(globalThis.window.localStorage.getItem(STORAGE_KEYS.THEME)).toBe(
+				null,
+			);
+			expect(globalThis.window.localStorage.getItem("ratings_fallback")).toBe(
+				null,
+			);
 
 			// Should not remove unspecified keys
-			expect(globalThis.window.localStorage.getItem("other-key")).toBe("keep-me");
+			expect(globalThis.window.localStorage.getItem("other-key")).toBe(
+				"keep-me",
+			);
 		});
 	});
 });
