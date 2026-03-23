@@ -1,0 +1,33 @@
+--- src/features/tournament/modes/TournamentFlow.tsx
++++ src/features/tournament/modes/TournamentFlow.tsx
+@@ -29,19 +29,17 @@
+                         ratingsAPI
+                                 .saveRatings(userName, ratingsSnapshot)
+                                 .then(async (result) => {
+-                                        if (result?.success) {
+-                                                console.log(`Successfully saved ${result.count} ratings to database`);
+-                                        } else {
+-                                                // Save failed (e.g. offline) — enqueue for later sync
+-                                                const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
+-                                                        name_id: nameId,
+-                                                        rating: data.rating,
+-                                                        wins: data.wins,
+-                                                        losses: data.losses,
+-                                                }));
+-                                                await enqueueRatingsMutation(records);
+-                                                console.warn("Ratings save failed; queued for offline sync");
+-                                        }
++                                        if (!result?.success) {
++                                                // Save failed (e.g. offline) — enqueue for later sync
++                                                const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
++                                                        name_id: nameId,
++                                                        rating: data.rating,
++                                                        wins: data.wins,
++                                                        losses: data.losses,
++                                                }));
++                                                await enqueueRatingsMutation(records);
++                                                console.warn("Ratings save failed; queued for offline sync");
++                                        }
+                                 })
+                                 .catch(async (_error) => {
+                                         // Network error — enqueue for later sync
