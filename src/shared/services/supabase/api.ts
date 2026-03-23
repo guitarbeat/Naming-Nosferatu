@@ -585,8 +585,6 @@ const cleanupLocalStorage = (priorityKeys: string[] = []): void => {
                         console.warn(`Failed to remove localStorage key ${key}:`, error);
                 }
         }
-
-        console.log(`localStorage cleanup: removed ${Math.round(removedSize / 1024)}KB`);
 };
 
 const safeLocalStorageSet = (key: string, value: string, isPriority: boolean = false): boolean => {
