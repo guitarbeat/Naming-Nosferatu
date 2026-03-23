@@ -15,6 +15,7 @@ import { NameSuggestionInner } from "@/features/tournament/components/NameSugges
 import { ProfileInner } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
+import { CatNameHero } from "@/shared/components/layout/CatNameHero";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { LoadingSequence } from "@/shared/components/layout/LoadingSequence";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
@@ -131,6 +132,8 @@ function HomeContent() {
 
         return (
                 <>
+                        <CatNameHero />
+
                         {/* Match-card top banner */}
                         <div className="w-full border-b border-white/5">
                                 <div className="mx-auto max-w-4xl px-4 py-2 flex justify-center">
