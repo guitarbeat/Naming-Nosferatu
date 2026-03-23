@@ -33,7 +33,7 @@ export function CatNameHero() {
 					{nameParts.map((part, i) => (
 						<span
 							key={i}
-							className={`cat-name-hero__part${!isSet ? " cat-name-hero__part--placeholder" : ""}`}
+							className={`cat-name-hero__part${isSet ? "" : " cat-name-hero__part--placeholder"}`}
 						>
 							{part}
 						</span>

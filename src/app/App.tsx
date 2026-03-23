@@ -15,8 +15,8 @@ import { NameSuggestionInner } from "@/features/tournament/components/NameSugges
 import { ProfileInner } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
-import { CatNameHero } from "@/shared/components/layout/CatNameHero";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
+import { CatNameHero } from "@/shared/components/layout/CatNameHero";
 import { LoadingSequence } from "@/shared/components/layout/LoadingSequence";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useOfflineSync } from "@/shared/hooks";
@@ -153,7 +153,7 @@ function HomeContent() {
 				<div className="mx-auto max-w-4xl w-full">
 					<SectionHeading
 						variant="matchcard"
-						isHero
+						isHero={true}
 						eyebrow="● Main Event ●"
 						title="Name The Beast"
 						subtitle="Select 2 or more contenders to begin the tournament bracket"

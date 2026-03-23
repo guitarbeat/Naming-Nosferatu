@@ -1,7 +1,7 @@
+import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { api } from "@/shared/services/apiClient";
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { getFallbackNames } from "../../../../shared/fallbackNames";
 import { resolveSupabaseClient } from "./runtime";
 
@@ -587,7 +587,7 @@ const cleanupLocalStorage = (priorityKeys: string[] = []): void => {
 	console.log(`localStorage cleanup: removed ${Math.round(removedSize / 1024)}KB`);
 };
 
-const safeLocalStorageSet = (key: string, value: string, isPriority: boolean = false): boolean => {
+const _safeLocalStorageSet = (key: string, value: string, isPriority: boolean = false): boolean => {
 	const quota = checkLocalStorageQuota();
 
 	// Cleanup if needed
@@ -615,7 +615,7 @@ const safeLocalStorageSet = (key: string, value: string, isPriority: boolean = f
 };
 
 // Validation utilities
-const validateRatingsData = (
+const _validateRatingsData = (
 	userId: string,
 	ratings: Record<string, { rating: number; wins: number; losses: number }>,
 ): { isValid: boolean; error?: string } => {

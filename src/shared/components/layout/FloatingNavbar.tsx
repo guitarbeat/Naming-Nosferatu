@@ -29,19 +29,6 @@ const keyToId: Record<NavSection, string> = {
 	profile: "profile",
 };
 
-function useIsMobile() {
-	const [isMobile, setIsMobile] = useState(() =>
-		typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false,
-	);
-	useEffect(() => {
-		const mql = window.matchMedia("(max-width: 768px)");
-		const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-		mql.addEventListener("change", handler);
-		return () => mql.removeEventListener("change", handler);
-	}, []);
-	return isMobile;
-}
-
 function FloatingNavItem({
 	icon: Icon,
 	label,
@@ -102,7 +89,6 @@ export function FloatingNavbar() {
 	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const isMobile = useIsMobile();
 	const { tournament, tournamentActions, user, ui, uiActions } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
@@ -118,14 +104,8 @@ export function FloatingNavbar() {
 	const isAnalysisRoute = location.pathname === "/analysis";
 	const isTournamentRoute = location.pathname === "/tournament";
 
-	// The UI spec + test suite expect the primary navigation to be hidden on the tournament route.
-	if (isTournamentRoute) {
-		return null;
-	}
-
 	const selectedCount = selectedNames?.length || 0;
 	const isTournamentActive = Boolean(tournament.names);
-	const isComplete = tournament.isComplete;
 	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
 	// On mobile, hide utility toggle (it moves into the picker surface)
 	const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
@@ -134,7 +114,10 @@ export function FloatingNavbar() {
 		const id = keyToId[key];
 		const target = document.getElementById(id);
 		if (!target) {
-			window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+			window.scrollTo({
+				top: 0,
+				behavior: prefersReducedMotion ? "auto" : "smooth",
+			});
 			return;
 		}
 
@@ -276,6 +259,11 @@ export function FloatingNavbar() {
 		};
 	}, []);
 
+	// The UI spec + test suite expect the primary navigation to be hidden on the tournament route.
+	if (isTournamentRoute) {
+		return null;
+	}
+
 	return (
 		<motion.div
 			className={cn(
@@ -296,7 +284,9 @@ export function FloatingNavbar() {
 				<nav aria-label="Primary" className="floating-navbar">
 					<div
 						className="floating-navbar__primary"
-						style={{ gridTemplateColumns: `repeat(${primaryItemCount}, minmax(0, 1fr))` }}
+						style={{
+							gridTemplateColumns: `repeat(${primaryItemCount}, minmax(0, 1fr))`,
+						}}
 					>
 						{(!isTournamentActive || isTournamentRoute) && (
 							<FloatingNavItem

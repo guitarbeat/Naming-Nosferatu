@@ -182,7 +182,7 @@ const AdminActionButton = ({
 	onClick: () => void;
 }) => {
 	const isHidden = actionType === "toggle-hidden";
-	const isLocked = actionType === "toggle-locked";
+	const _isLocked = actionType === "toggle-locked";
 	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
 
 	const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
@@ -781,7 +781,7 @@ export function NameSelector() {
 				setLightboxOpen(true);
 			}
 		},
-		[names, setLightboxIndex, setLightboxOpen],
+		[names],
 	);
 
 	const handleSelectAllAvailable = useCallback(() => {
