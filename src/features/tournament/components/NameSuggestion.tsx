@@ -136,7 +136,7 @@ export function NameSuggestionInner() {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.6, duration: 0.6 }}
-						className="space-y-8"
+						className="space-y-5 sm:space-y-8"
 					>
 						{/* Name Input */}
 						<div className="space-y-3">
