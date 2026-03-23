@@ -1,15 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type {
-	HeadToHeadMatch,
-	NameItem,
-	Team,
-	TeamVersusMatch,
-} from "@/shared/types";
-import {
-	extractMatchData,
-	getMatchSideId,
-	getMatchSideName,
-} from "./matchHelpers";
+import type { HeadToHeadMatch, NameItem, Team, TeamVersusMatch } from "@/shared/types";
+import { extractMatchData, getMatchSideId, getMatchSideName } from "./matchHelpers";
 
 describe("matchHelpers", () => {
 	// Mock Data Setup
