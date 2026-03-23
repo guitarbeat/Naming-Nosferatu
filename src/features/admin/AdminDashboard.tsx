@@ -345,12 +345,13 @@ export function AdminDashboard() {
 				</div>
 			)}
 
-			<div className="flex gap-2 mb-6 border-b border-border/10">
+			{/* Tabs - horizontal scroll on mobile */}
+			<div className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 border-b border-border/10 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
 				{ADMIN_TABS.map((tab) => (
 					<button
 						key={tab.id}
 						onClick={() => handleTabChange(tab.id)}
-						className={`px-4 py-2 font-medium transition-colors ${
+						className={`px-3 sm:px-4 py-2 font-medium text-sm whitespace-nowrap transition-colors ${
 							activeTab === tab.id
 								? "text-foreground border-b-2 border-primary"
 								: "text-muted-foreground hover:text-foreground"
