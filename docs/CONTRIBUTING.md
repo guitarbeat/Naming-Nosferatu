@@ -257,7 +257,7 @@ Recommended daily cadence:
 - Prefer lazy loading for heavy components (`Dashboard`, `Tournament`)
 
 #### Styling Guidelines
-- Use Tailwind CSS utilities from `src/tailwind.css` with shared design tokens from `src/index.scss`
+- Use Tailwind CSS utilities from `src/tailwind.css` with shared design tokens from `src/index.css`
 - Follow the established glass surface design system
 - Use semantic spacing tokens (--space-1 through --space-24)
 - Maintain accessibility standards (focus management, keyboard navigation)

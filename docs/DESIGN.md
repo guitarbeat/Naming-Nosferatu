@@ -21,7 +21,7 @@
 
 ## 1. Design Tokens
 
-All shared design tokens and global styles are defined in `src/index.scss`. Use these tokens instead of hardcoded values.
+All shared design tokens and global styles are defined in `src/index.css`. Use these tokens instead of hardcoded values.
 
 ### Spacing System
 
@@ -187,7 +187,7 @@ Respect user preferences for reduced motion.
 
 ## 6. Liquid Glass Component
 
-A specialized React component (`src/shared/components/layout/LiquidGlass.tsx`) that creates fluid refraction effects via SVG displacement maps, with shared styling consolidated into `src/index.scss`.
+A specialized React component (`src/shared/components/layout/LiquidGlass.tsx`) that creates fluid refraction effects via SVG displacement maps, with shared styling consolidated into `src/index.css`.
 
 ---
 
@@ -209,7 +209,7 @@ We focus on "Progressive Disclosure"—only showing complexity when the user is 
 ## 8. Best Practices
 
 ### Layered Global Styling
-Keep Tailwind utility generation in `src/tailwind.css` and consolidated global styles in `src/index.scss`.
+Keep Tailwind utility generation in `src/tailwind.css` and consolidated global styles in `src/index.css`.
 
 ### Component-Specific SCSS
 Use co-located `.scss` files only when a component needs isolated styling that is not reusable globally (example: `src/shared/components/layout/FancyButton.scss` imported by `Button.tsx`).
@@ -237,11 +237,11 @@ Global styling now uses two entry files:
 | File | Responsibility |
 | ---- | -------------- |
 | `src/tailwind.css` | Tailwind CSS v4 entrypoint, config, and source discovery |
-| `src/index.scss` | Consolidated design tokens, reset, typography, layout, components, motion, and glass styles |
+| `src/index.css` | Consolidated design tokens, reset, typography, layout, components, motion, and glass styles |
 
 Entry bridge files:
 - `src/app/main.tsx` imports `../tailwind.css`
-- `src/app/main.tsx` imports `../index.scss`
+- `src/app/main.tsx` imports `../index.css`
 
 Component-level stylesheet imports:
 - `src/shared/components/layout/Button.tsx` imports `./FancyButton.scss`
@@ -255,7 +255,7 @@ src/app/main.tsx
     -> @import "tailwindcss"
     -> @config "../config/tailwind.config.js"
     -> @source "./**/*.{js,jsx,ts,tsx}"
-  -> src/index.scss
+  -> src/index.css
     -> consolidated global design system sections
 ```
 

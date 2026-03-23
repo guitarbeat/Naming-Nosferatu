@@ -12,7 +12,7 @@ import { queryClient } from "@/shared/services/supabase/runtime";
 import App from "./App";
 import { shouldEnableAnalytics } from "./analytics";
 import { Providers } from "./providers/Providers";
-import "../index.scss";
+import "../index.css";
 
 // Initialize Sentry in production
 const sentryEnabled = import.meta.env.PROD && Boolean(import.meta.env.VITE_SENTRY_DSN);
