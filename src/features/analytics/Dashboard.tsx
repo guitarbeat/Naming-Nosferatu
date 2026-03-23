@@ -333,20 +333,20 @@ export function Dashboard({
 			{/* Engagement Metrics */}
 			{engagementMetrics && (
 				<div className="py-4">
-					<div className="flex items-center justify-between mb-4">
-						<div className="flex items-center gap-3">
-							<TrendingUp className="text-chart-4" size={24} />
-							<h3 className="text-xl font-semibold text-chart-4">Engagement Metrics</h3>
+					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-4">
+						<div className="flex items-center gap-2 sm:gap-3">
+							<TrendingUp className="text-chart-4" size={20} />
+							<h3 className="text-lg sm:text-xl font-semibold text-chart-4">Engagement</h3>
 						</div>
-						<div className="flex gap-2">
+						<div className="flex gap-2 w-full sm:w-auto">
 							<select
 								value={timeframe}
 								onChange={(e) => setTimeframe(e.target.value as "day" | "week" | "month")}
-								className="px-3 py-2 border border-border rounded-lg bg-background text-foreground"
+								className="flex-1 sm:flex-none px-3 py-1.5 sm:py-2 border border-border rounded-lg bg-background text-foreground text-sm"
 							>
-								<option value="day">Last 24 Hours</option>
-								<option value="week">Last Week</option>
-								<option value="month">Last Month</option>
+								<option value="day">24h</option>
+								<option value="week">Week</option>
+								<option value="month">Month</option>
 							</select>
 							<Button
 								variant="ghost"
