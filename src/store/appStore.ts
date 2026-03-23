@@ -204,7 +204,12 @@ function getInitialSwipeMode(): boolean {
 	if (!IS_BROWSER) {
 		return false;
 	}
-	return getStorageString(STORAGE_KEYS.SWIPE_MODE) === "true";
+	const stored = getStorageString(STORAGE_KEYS.SWIPE_MODE);
+	if (stored !== null) {
+		return stored === "true";
+	}
+	// Device-aware default: phones default to swipe mode
+	return window.matchMedia("(max-width: 768px)").matches;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

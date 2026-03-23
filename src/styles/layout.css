@@ -42,7 +42,7 @@
    ========================================================================== */
 
 .mobile-nav-safe-bottom {
-	padding-bottom: max(6rem, var(--mobile-nav-safe-offset));
+	padding-bottom: max(5rem, var(--mobile-nav-safe-offset));
 }
 
 @media (min-width: 769px) {

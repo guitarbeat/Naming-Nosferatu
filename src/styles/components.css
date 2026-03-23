@@ -227,6 +227,25 @@
 }
 
 /* ==========================================================================
+   MOBILE: Hide utility toggle in nav, simplify shell chrome
+   ========================================================================== */
+
+@media (width <= 768px) {
+	.floating-navbar__utility {
+		display: none;
+	}
+
+	.floating-navbar-shell.liquid-glass {
+		border-color: transparent;
+		box-shadow: 0 -1px 12px color-mix(in srgb, var(--pw-bg-0) 40%, transparent);
+	}
+
+	.floating-navbar-shell.liquid-glass::before {
+		opacity: 0.6;
+	}
+}
+
+/* ==========================================================================
    SCROLL TO TOP
    ========================================================================== */
 

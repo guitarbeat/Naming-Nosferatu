@@ -341,6 +341,7 @@ export function FloatingNavbar() {
 						/>
 					</div>
 
+					{/* Utility toggle hidden on mobile via CSS, moved into picker surface */}
 					<div className="floating-navbar__utility">
 						<FloatingNavItem
 							icon={isSwipeMode ? Layers : LayoutGrid}
