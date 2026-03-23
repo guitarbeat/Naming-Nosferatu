@@ -99,6 +99,7 @@ export function FloatingNavbar() {
 	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
+	const isMobile = useIsMobile();
 	const { tournament, tournamentActions, user, ui, uiActions } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
@@ -117,6 +118,7 @@ export function FloatingNavbar() {
 	const isTournamentActive = Boolean(tournament.names);
 	const isComplete = tournament.isComplete;
 	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
+	// On mobile, hide utility toggle (it moves into the picker surface)
 	const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
 
 	const scrollToSection = (key: NavSection) => {
