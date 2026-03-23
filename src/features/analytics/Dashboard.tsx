@@ -215,26 +215,26 @@ export function Dashboard({
 			{/* User Stats */}
 			{userName && userStats && (
 				<div className="py-2">
-					<div className="flex items-center gap-3 mb-4">
-						<BarChart3 className="text-primary" size={24} />
-						<h3 className="text-xl font-semibold text-foreground">Your Stats</h3>
+					<div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+						<BarChart3 className="text-primary" size={20} />
+						<h3 className="text-lg sm:text-xl font-semibold text-foreground">Your Stats</h3>
 					</div>
-					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+					<div className="grid grid-cols-2 gap-3 sm:gap-4">
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Ratings Given</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalRatings}</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Ratings</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.totalRatings}</p>
 						</div>
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Names Selected</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalSelections}</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Selected</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.totalSelections}</p>
 						</div>
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Total Wins</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalWins}</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Wins</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.totalWins}</p>
 						</div>
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Win Rate</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.winRate}%</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Win Rate</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.winRate}%</p>
 						</div>
 					</div>
 				</div>
