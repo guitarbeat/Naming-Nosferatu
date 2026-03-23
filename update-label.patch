@@ -1,0 +1,18 @@
+--- src/features/tournament/components/ProfileSection.tsx
++++ src/features/tournament/components/ProfileSection.tsx
+@@ -107,7 +107,7 @@
+					) : (
+						<div className="space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+							<div className="space-y-2">
+-								<label className="text-sm font-medium text-foreground/80 block">
++								<label htmlFor="user-name-input" className="text-sm font-medium text-foreground/80 block">
+									Your Name
+								</label>
+								<div className="relative">
+@@ -115,6 +115,7 @@
+									<input
+										ref={inputRef}
++										id="user-name-input"
+										type="text"
+										maxLength={MAX_NAME_LENGTH}
+										value={localName}

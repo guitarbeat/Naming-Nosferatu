@@ -1,0 +1,10 @@
+--- ProfileSection.tsx
++++ ProfileSection.tsx
+@@ -113,6 +113,7 @@
+								<div className="relative">
+									<User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
+									<input
++										id="user-name-input"
+										ref={inputRef}
+										type="text"
+										maxLength={MAX_NAME_LENGTH}
