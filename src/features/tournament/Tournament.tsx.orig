@@ -580,7 +580,7 @@ function TournamentContent({
 										length: getFlameCount(streakBurst.value.streak, 9),
 									}).map((_, i) => (
 										<span
-											key={`streak-flame-${streakBurst.value?.key}-${i.toString()}`}
+											key={`streak-flame-${streakBurst.value?.key}-${i}`}
 											className="text-sm sm:text-base animate-flame"
 											style={{ animationDelay: `${i * 80}ms` }}
 										>

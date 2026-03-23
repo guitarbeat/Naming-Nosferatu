@@ -1,0 +1,11 @@
+--- src/features/tournament/Tournament.tsx
++++ src/features/tournament/Tournament.tsx
+@@ -155,7 +155,7 @@
+			if (p) {
+				const name =
+					currentMatch.mode === "2v2"
+-						? (currentMatch[side] as any).memberNames.join(" + ")
++						? (currentMatch[side] as { memberNames: string[] }).memberNames.join(" + ")
+						: typeof p === "object"
+							? p.name
+							: p;

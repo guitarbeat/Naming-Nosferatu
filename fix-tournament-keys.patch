@@ -1,0 +1,9 @@
+--- src/features/tournament/Tournament.tsx
++++ src/features/tournament/Tournament.tsx
+@@ -581,7 +581,7 @@
+									}).map((_, i) => (
+										<span
+-											key={`streak-flame-${streakBurst.value?.key}-${i}`}
++											key={`streak-flame-${streakBurst.value?.key}-${i.toString()}`}
+											className="text-sm sm:text-base animate-flame"
+											style={{ animationDelay: `${i * 80}ms` }}
