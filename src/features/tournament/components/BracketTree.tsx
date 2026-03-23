@@ -14,12 +14,15 @@ function getRoundCaption(stageRound: number, totalRounds: number): string {
 	if (stageRound === totalRounds) {
 		return "Final";
 	}
+
 	if (stageRound === totalRounds - 1) {
 		return "Semi";
 	}
+
 	if (stageRound === totalRounds - 2) {
 		return "Quarter";
 	}
+
 	return `R${stageRound}`;
 }
 
@@ -27,12 +30,15 @@ function getStageFlavor(round: number, totalRounds: number): string {
 	if (round >= totalRounds) {
 		return "Crown Fight";
 	}
+
 	if (totalRounds - round === 1) {
 		return "Final Four Chaos";
 	}
+
 	if (round <= 2) {
 		return "Chaos Ladder";
 	}
+
 	return "Bracket Grind";
 }
 

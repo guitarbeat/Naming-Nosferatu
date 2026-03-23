@@ -1,11 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
-	"entry": ["src/app/main.tsx", "server/index.ts"],
-	"project": [
-		"src/**/*.{js,jsx,ts,tsx}",
-		"server/**/*.{js,jsx,ts,tsx}",
-		"shared/**/*.{js,jsx,ts,tsx}"
-	],
+	"entry": ["src/app/main.tsx"],
+	"project": ["src/**/*.{js,jsx,ts,tsx}"],
 	"ignore": [
 		"**/*.md",
 		"**/README.md",
@@ -14,12 +10,13 @@
 	],
 	"ignoreDependencies": [
 		"@capacitor/cli",
-		"tailwindcss",
-		"multer",
+		"@sentry/tracing",
 		"@types/multer",
-		"react-window",
 		"@types/react-window",
-		"@sentry/tracing"
+		"fast-check",
+		"multer",
+		"react-window",
+		"tailwindcss"
 	],
 	"typescript": true
 }

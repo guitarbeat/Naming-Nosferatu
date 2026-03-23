@@ -128,42 +128,39 @@ export const imagesAPI = {
 				};
 			}
 
-			const fileName =
-				typeof (file as File).name === "string" && (file as File).name.length > 0
-					? (file as File).name
-					: "upload.jpg";
-			const fileType = file.type || "image/jpeg";
-			const fileSize = typeof file.size === "number" ? file.size : 0;
-			const fileExt = fileName.split(".").pop() || "jpg";
-			const maxSize = 5 * 1024 * 1024; // 5MB
-			const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+			// Validate file
+			if (file instanceof File) {
+				const maxSize = 5 * 1024 * 1024; // 5MB
+				const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-			if (fileSize > maxSize) {
-				return {
-					path: null,
-					error: "File size exceeds 5MB limit",
-					success: false,
-				};
-			}
+				if (file.size > maxSize) {
+					return {
+						path: null,
+						error: "File size exceeds 5MB limit",
+						success: false,
+					};
+				}
 
-			if (!allowedTypes.includes(fileType)) {
-				return {
-					path: null,
-					error: "Only JPEG, PNG, GIF, and WebP images are allowed",
-					success: false,
-				};
+				if (!allowedTypes.includes(file.type)) {
+					return {
+						path: null,
+						error: "Only JPEG, PNG, GIF, and WebP images are allowed",
+						success: false,
+					};
+				}
 			}
 
 			// Generate unique filename
+			const fileExt = file instanceof File ? file.name.split(".").pop() : "jpg";
 			const timestamp = Date.now();
 			const randomId = Math.random().toString(36).substring(2, 8);
-			const uploadFileName = `${userName}_${timestamp}_${randomId}.${fileExt}`;
+			const fileName = `${userName}_${timestamp}_${randomId}.${fileExt}`;
 
 			// Upload to Supabase Storage
-			const { error } = await client.storage.from("cat-images").upload(uploadFileName, file, {
+			const { error } = await client.storage.from("cat-images").upload(fileName, file, {
 				cacheControl: "3600",
 				upsert: false,
-				contentType: fileType,
+				contentType: file instanceof File ? file.type : "image/jpeg",
 			});
 
 			if (error) {
@@ -178,7 +175,7 @@ export const imagesAPI = {
 			// Get public URL
 			const {
 				data: { publicUrl },
-			} = client.storage.from("cat-images").getPublicUrl(uploadFileName);
+			} = client.storage.from("cat-images").getPublicUrl(fileName);
 
 			return {
 				path: publicUrl,
@@ -420,6 +417,10 @@ const snakeToCamelCase = (str: string): string => {
 	return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 };
 
+const camelToSnakeCase = (str: string): string => {
+	return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+};
+
 const mapFields = <T extends Record<string, any>>(
 	obj: T,
 	mapper: (key: string) => string,
@@ -434,6 +435,10 @@ const mapFields = <T extends Record<string, any>>(
 
 const mapSnakeToCamel = <T extends Record<string, any>>(obj: T): Record<string, any> => {
 	return mapFields(obj, snakeToCamelCase);
+};
+
+const _mapCamelToSnake = <T extends Record<string, any>>(obj: T): Record<string, any> => {
+	return mapFields(obj, camelToSnakeCase);
 };
 
 // localStorage management utilities

@@ -134,7 +134,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						: typeof p === "object"
 							? p.name
 							: String(p);
-				return { name, id, description: "", outcome: winnerId === id ? "winner" : "loser" };
+				return {
+					name,
+					id,
+					description: "",
+					outcome: winnerId === id ? "winner" : "loser",
+				};
 			};
 			onVote({
 				match: { left: sideData("left"), right: sideData("right") },
@@ -208,7 +213,13 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 			if (heatLevel) {
 				streakBurst.setTimed(
-					{ key: Date.now(), side, winnerName, streak: expectedStreak, heatLevel },
+					{
+						key: Date.now(),
+						side,
+						winnerName,
+						streak: expectedStreak,
+						heatLevel,
+					},
 					prefersReducedMotion ? 280 : 950,
 				);
 				audioManager.playStreakSound(expectedStreak);
@@ -318,7 +329,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							className={
 								"h-full rounded-full transition-all duration-500 bg-primary shadow-[0_0_10px_#a65eed]"
 							}
-							style={{ width: `${progress || (currentMatchNumber / totalMatches) * 100}%` }}
+							style={{
+								width: `${progress || (currentMatchNumber / totalMatches) * 100}%`,
+							}}
 						/>
 					</div>
 
@@ -354,7 +367,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									label: audioManager.backgroundMusicEnabled ? "Stop music" : "Play music",
 									active: audioManager.backgroundMusicEnabled,
 								},
-								{ action: audioManager.handleNextTrack, icon: SkipForward, label: "Next track" },
+								{
+									action: audioManager.handleNextTrack,
+									icon: SkipForward,
+									label: "Next track",
+								},
 								{
 									action: () => setCatPictures(!showCatPictures),
 									icon: PawPrint,
@@ -467,17 +484,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									{streakBurst.value.winnerName} x{streakBurst.value.streak}
 								</p>
 								<div className="flex gap-1 mt-1">
-									{Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map(
-										(_, i) => (
-											<span
-												key={`streak-flame-${streakBurst.value?.key}-${i}`}
-												className="text-sm sm:text-base animate-flame"
-												style={{ animationDelay: `${i * 80}ms` }}
-											>
-												🔥
-											</span>
-										),
-									)}
+									{Array.from({
+										length: getFlameCount(streakBurst.value.streak, 9),
+									}).map((_, i) => (
+										<span
+											key={`streak-flame-${streakBurst.value?.key}-${i}`}
+											className="text-sm sm:text-base animate-flame"
+											style={{ animationDelay: `${i * 80}ms` }}
+										>
+											🔥
+										</span>
+									))}
 								</div>
 							</div>
 						</motion.div>

@@ -126,6 +126,11 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	// Cleanup WebSocket metrics on unmount
 	useEffect(() => {
 		return () => {
+			// Clean up any WebSocket connections and metrics
+			if (webSocket && typeof webSocket.cleanup === "function") {
+				webSocket.cleanup();
+			}
+
 			// Clear any pending timeouts or intervals
 			const timeouts = (window as any).__tournamentTimeouts || [];
 			const intervals = (window as any).__tournamentIntervals || [];
@@ -153,7 +158,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			// Clear event handlers registry
 			(window as any).__tournamentEventHandlers = {};
 		};
-	}, []);
+	}, [webSocket]);
 
 	useEffect(() => {
 		ratingsRef.current = ratings;
@@ -247,12 +252,24 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		};
 
 		// Use requestAnimationFrame to ensure smooth initialization
-		const frameId = requestAnimationFrame(initializeTournament);
-
-		return () => {
-			cancelAnimationFrame(frameId);
-		};
-	}, [names, namesKey, persistentState, tournamentMode, updatePersistentState]);
+		requestAnimationFrame(initializeTournament);
+	}, [
+		namesKey,
+		names.length,
+		tournamentMode,
+		persistentState.bracketEntrants.filter,
+		persistentState.bracketEntrants,
+		persistentState.currentRound,
+		persistentState.matchHistory,
+		persistentState.mode,
+		persistentState.namesKey,
+		persistentState.ratings,
+		persistentState.teams,
+		persistentState.currentMatch,
+		updatePersistentState,
+		names.map,
+		names,
+	]); // Reduced dependency array
 
 	const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
 	const teamsById = useMemo(() => createTeamsById(persistentState.teams), [persistentState.teams]);

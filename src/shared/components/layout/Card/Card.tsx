@@ -441,6 +441,11 @@ const CardNameBase = memo(function CardName({
 	// Disable tilt on touch devices for better performance
 	const [isTouchDevice, setIsTouchDevice] = useState(false);
 	useEffect(() => {
+		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+			setIsTouchDevice(false);
+			return;
+		}
+
 		setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
 	}, []);
 	const shouldEnableTilt = enableTilt && !isTouchDevice;
