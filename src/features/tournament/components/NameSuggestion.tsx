@@ -163,7 +163,7 @@ export function NameSuggestionInner() {
 									value={values.name}
 									onChange={(e) => handleChange("name", e.target.value)}
 									placeholder="e.g. Count Whiskula, Sir Paws-a-lot, Meow-zart"
-									className="w-full h-16 px-6 text-lg font-semibold bg-gradient-to-r from-foreground/5 to-foreground/10 border-border/30 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 rounded-xl backdrop-blur-sm transition-all duration-300"
+									className="w-full h-12 sm:h-16 px-4 sm:px-6 text-base sm:text-lg font-semibold bg-gradient-to-r from-foreground/5 to-foreground/10 border-border/30 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/50 rounded-xl backdrop-blur-sm transition-all duration-300"
 									disabled={isSubmitting}
 									maxLength={50}
 								/>
