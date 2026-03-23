@@ -37,6 +37,7 @@ import {
         matchesMediaQuery,
 } from "@/shared/lib/mediaQuery";
 import {
+        clearUserStorage,
         getStorageString,
         parseJsonValue,
         removeStorageItem,
@@ -318,19 +319,9 @@ const createUserAndSettingsSlice: StateCreator<
                 },
 
                 logout: (onContext) => {
-                        removeStorageItem(STORAGE_KEYS.USER);
-                        removeStorageItem(STORAGE_KEYS.USER_ID);
-                        removeStorageItem(STORAGE_KEYS.USER_AVATAR);
-                        removeStorageItem(STORAGE_KEYS.THEME);
-                        removeStorageItem(STORAGE_KEYS.SWIPE_MODE);
-                        removeStorageItem(STORAGE_KEYS.TOURNAMENT);
-                        removeStorageItem(STORAGE_KEYS.USER_STORAGE);
-                        // Clear any user-specific localStorage keys not covered by STORAGE_KEYS
-                        try {
-                                localStorage.removeItem("ratings_fallback");
-                        } catch {
-                                /* ignore storage errors */
-                        }
+                        // Centralised: clears all user-identity/session keys.
+                        // Device-preference keys are intentionally preserved.
+                        clearUserStorage();
                         onContext?.(null);
                         set((state) => ({
                                 ...state,

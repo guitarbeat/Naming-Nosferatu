@@ -9,6 +9,7 @@
 import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import {
+        clearUserStorage,
         getStorageString,
         isStorageAvailable,
         removeStorageItem,
@@ -140,11 +141,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 await client.auth.signOut();
                         }
 
-                        // Clear localStorage
-                        if (isStorageAvailable()) {
-                                removeStorageItem(STORAGE_KEYS.USER);
-                                removeStorageItem(STORAGE_KEYS.USER_ID);
-                        }
+                        // Centralised: clears all user-identity/session keys.
+                        // Device-preference keys are intentionally preserved.
+                        clearUserStorage();
                 } catch (error) {
                         console.error("Logout error:", error);
                 }
