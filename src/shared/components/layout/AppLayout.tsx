@@ -3,7 +3,6 @@
  * @description Main application layout component with floating primary nav
  */
 
-import { useLocation } from "react-router-dom";
 import { AppVisualEffects } from "@/shared/components/layout/AppVisualEffects";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
@@ -15,6 +14,7 @@ import {
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
 import { FrameEffect } from "@/shared/components/layout/FrameEffect";
 import useAppStore from "@/store/appStore";
+import { useLocation } from "react-router-dom";
 
 interface AppLayoutProps {
 	children: React.ReactNode;
