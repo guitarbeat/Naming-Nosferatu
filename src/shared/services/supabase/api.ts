@@ -337,11 +337,11 @@ export const coreAPI = {
                 const failures: string[] = [];
                 const defaultError = `Failed to ${isHidden ? "hide" : "unhide"} name`;
                 let client = null as Awaited<ReturnType<typeof resolveSupabaseClient>>;
+                let contextOk = true;
 
                 try {
                         client = await resolveSupabaseClient();
                         if (client) {
-                                let contextOk = true;
                                 try {
                                         if (userName) {
                                                 await client.rpc("set_user_context", { user_name_param: userName });
@@ -375,6 +375,15 @@ export const coreAPI = {
                         }
                 } catch (error) {
                         failures.push(error instanceof Error ? error.message : "unknown error");
+                }
+
+                // If user-context setup failed, abort immediately — do not attempt
+                // unauthenticated fallback paths that would bypass audit context.
+                if (!contextOk) {
+                        return {
+                                success: false,
+                                error: failures.join(" | ") || defaultError,
+                        };
                 }
 
                 try {

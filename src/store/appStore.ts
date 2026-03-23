@@ -319,18 +319,29 @@ const createUserAndSettingsSlice: StateCreator<
 
                 logout: (onContext) => {
                         removeStorageItem(STORAGE_KEYS.USER);
+                        removeStorageItem(STORAGE_KEYS.USER_ID);
                         removeStorageItem(STORAGE_KEYS.USER_AVATAR);
                         removeStorageItem(STORAGE_KEYS.THEME);
                         removeStorageItem(STORAGE_KEYS.SWIPE_MODE);
+                        removeStorageItem(STORAGE_KEYS.TOURNAMENT);
+                        removeStorageItem(STORAGE_KEYS.USER_STORAGE);
+                        // Clear any user-specific localStorage keys not covered by STORAGE_KEYS
+                        try {
+                                localStorage.removeItem("ratings_fallback");
+                        } catch {
+                                /* ignore storage errors */
+                        }
                         onContext?.(null);
                         set((state) => ({
                                 ...state,
-                                user: { ...state.user, name: "", isLoggedIn: false, isAdmin: false },
+                                user: { ...state.user, name: "", isLoggedIn: false, isAdmin: false, avatarUrl: undefined },
                                 tournament: {
                                         ...state.tournament,
                                         names: null,
+                                        ratings: {},
                                         isComplete: false,
                                         voteHistory: [],
+                                        selectedNames: [],
                                 },
                         }));
                 },

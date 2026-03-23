@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trophy } from "@/shared/lib/icons";
 import { ratingsAPI } from "@/shared/services/supabase/api";
+import { enqueueRatingsMutation } from "@/shared/services/supabase/outbox";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
 import { useTournamentHandlers } from "../hooks";
@@ -24,17 +25,35 @@ export default function TournamentFlow() {
         useEffect(() => {
                 if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
                         const userName = user.name || "anonymous";
+                        const ratingsSnapshot = tournament.ratings;
 
                         ratingsAPI
-                                .saveRatings(userName, tournament.ratings)
-                                .then((result) => {
+                                .saveRatings(userName, ratingsSnapshot)
+                                .then(async (result) => {
                                         if (result?.success) {
                                                 console.log(`Successfully saved ${result.count} ratings to database`);
+                                        } else {
+                                                // Save failed (e.g. offline) — enqueue for later sync
+                                                const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
+                                                        name_id: nameId,
+                                                        rating: data.rating,
+                                                        wins: data.wins,
+                                                        losses: data.losses,
+                                                }));
+                                                await enqueueRatingsMutation(records);
+                                                console.warn("Ratings save failed; queued for offline sync");
                                         }
                                 })
-                                .catch((_error) => {
-                                        // Error is already logged by ratingsAPI with context
-                                        console.warn("Tournament ratings save failed, but fallback may have been used");
+                                .catch(async (_error) => {
+                                        // Network error — enqueue for later sync
+                                        const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
+                                                name_id: nameId,
+                                                rating: data.rating,
+                                                wins: data.wins,
+                                                losses: data.losses,
+                                        }));
+                                        await enqueueRatingsMutation(records);
+                                        console.warn("Tournament ratings save failed; queued for offline sync");
                                 });
                 }
         }, [tournament.isComplete, tournament.ratings, user.name]);
