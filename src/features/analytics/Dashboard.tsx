@@ -188,7 +188,7 @@ export function Dashboard({
 	};
 
 	return (
-		<div className="dashboard-container space-y-10">
+		<div className="dashboard-container space-y-6 sm:space-y-10">
 			{/* Personal Results with Ranking Adjustment */}
 			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
 				<PersonalResults
