@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getStorageString } from "./storage";
 
 describe("storage", () => {
@@ -37,15 +37,17 @@ describe("storage", () => {
 			const originalLocalStorage = window.localStorage;
 
 			Object.defineProperty(window, "localStorage", {
-				get: () => { throw new Error("Access denied"); },
-				configurable: true
+				get: () => {
+					throw new Error("Access denied");
+				},
+				configurable: true,
 			});
 
 			expect(getStorageString("unavailable-key", "fallback-value")).toBe("fallback-value");
 
 			Object.defineProperty(window, "localStorage", {
 				value: originalLocalStorage,
-				configurable: true
+				configurable: true,
 			});
 		});
 	});
