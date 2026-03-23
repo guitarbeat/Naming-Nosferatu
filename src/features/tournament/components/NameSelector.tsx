@@ -1051,7 +1051,8 @@ export function NameSelector() {
 														scale: 1.02,
 														transition: { duration: 0.15 },
 													}}
-													className="w-full max-w-md h-[550px]"
+												className="w-full max-w-md"
+												style={{ height: "min(65dvh, 500px)" }}
 												>
 													<Card
 														className={`relative overflow-hidden group transition-all duration-200 h-full ${

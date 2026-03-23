@@ -354,9 +354,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</div>
 			</header>
 
-			<main className="relative flex flex-1 flex-col items-center justify-start px-2 py-3 min-h-0 sm:px-4 sm:py-2 sm:justify-center">
-				{/* Animated blob backgrounds */}
-				<div className="absolute inset-0 overflow-hidden pointer-events-none">
+			<main className="relative flex flex-1 flex-col items-center justify-start px-1 py-2 min-h-0 sm:px-4 sm:py-2 sm:justify-center">
+				{/* Animated blob backgrounds - smaller on mobile */}
+				<div className="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block">
 					<div className="absolute top-0 left-0 w-32 h-32 bg-primary/20 rounded-full animate-blob animation-delay-2000" />
 					<div className="absolute top-1/4 right-0 w-24 h-24 bg-stardust/20 rounded-full animate-blob" />
 					<div className="absolute bottom-1/4 left-1/4 w-28 h-28 bg-primary/15 rounded-full animate-blob animation-delay-4000" />

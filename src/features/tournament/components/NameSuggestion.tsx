@@ -195,9 +195,9 @@ export function NameSuggestionInner() {
 									id="suggest-description"
 									value={values.description}
 									onChange={(e) => handleChange("description", e.target.value)}
-									placeholder="Share the meaning, story, or personality fit... What makes this name perfect for a cat? Is it funny, elegant, mysterious, or playful?"
-									rows={5}
-									className="w-full px-6 py-4 text-lg font-medium bg-gradient-to-r from-foreground/5 to-foreground/10 border-border/30 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:border-accent/50 rounded-xl backdrop-blur-sm resize-none transition-all duration-300"
+								placeholder="Why is this name special?"
+								rows={3}
+								className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg font-medium bg-gradient-to-r from-foreground/5 to-foreground/10 border-border/30 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:border-accent/50 rounded-xl backdrop-blur-sm resize-none transition-all duration-300"
 									disabled={isSubmitting}
 									maxLength={500}
 									showCount={false}
