@@ -128,39 +128,42 @@ export const imagesAPI = {
 				};
 			}
 
-			// Validate file
-			if (file instanceof File) {
-				const maxSize = 5 * 1024 * 1024; // 5MB
-				const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+			const maxSize = 5 * 1024 * 1024; // 5MB
+			const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+			const fileName =
+				"name" in file && typeof file.name === "string" && file.name.trim()
+					? file.name
+					: "upload.jpg";
+			const fileType = typeof file.type === "string" ? file.type : "image/jpeg";
+			const fileSize = typeof file.size === "number" ? file.size : 0;
 
-				if (file.size > maxSize) {
-					return {
-						path: null,
-						error: "File size exceeds 5MB limit",
-						success: false,
-					};
-				}
+			if (fileSize > maxSize) {
+				return {
+					path: null,
+					error: "File size exceeds 5MB limit",
+					success: false,
+				};
+			}
 
-				if (!allowedTypes.includes(file.type)) {
-					return {
-						path: null,
-						error: "Only JPEG, PNG, GIF, and WebP images are allowed",
-						success: false,
-					};
-				}
+			if (!allowedTypes.includes(fileType)) {
+				return {
+					path: null,
+					error: "Only JPEG, PNG, GIF, and WebP images are allowed",
+					success: false,
+				};
 			}
 
 			// Generate unique filename
-			const fileExt = file instanceof File ? file.name.split(".").pop() : "jpg";
+			const fileExt = fileName.split(".").pop() || "jpg";
 			const timestamp = Date.now();
 			const randomId = Math.random().toString(36).substring(2, 8);
-			const fileName = `${userName}_${timestamp}_${randomId}.${fileExt}`;
+			const uploadFileName = `${userName}_${timestamp}_${randomId}.${fileExt}`;
 
 			// Upload to Supabase Storage
-			const { error } = await client.storage.from("cat-images").upload(fileName, file, {
+			const { error } = await client.storage.from("cat-images").upload(uploadFileName, file, {
 				cacheControl: "3600",
 				upsert: false,
-				contentType: file instanceof File ? file.type : "image/jpeg",
+				contentType: fileType,
 			});
 
 			if (error) {
@@ -175,7 +178,7 @@ export const imagesAPI = {
 			// Get public URL
 			const {
 				data: { publicUrl },
-			} = client.storage.from("cat-images").getPublicUrl(fileName);
+			} = client.storage.from("cat-images").getPublicUrl(uploadFileName);
 
 			return {
 				path: publicUrl,
@@ -437,7 +440,7 @@ const mapSnakeToCamel = <T extends Record<string, any>>(obj: T): Record<string, 
 	return mapFields(obj, snakeToCamelCase);
 };
 
-const _mapCamelToSnake = <T extends Record<string, any>>(obj: T): Record<string, any> => {
+const mapCamelToSnake = <T extends Record<string, any>>(obj: T): Record<string, any> => {
 	return mapFields(obj, camelToSnakeCase);
 };
 
@@ -447,7 +450,7 @@ const LOCALSTORAGE_CLEANUP_THRESHOLD = 0.8; // Clean at 80% capacity
 
 const checkLocalStorageQuota = (): { available: boolean; usage: number; percentage: number } => {
 	try {
-		const testKey = `quota_test_${Date.now()}`;
+		const testKey = "quota_test_" + Date.now();
 		const testData = "x".repeat(1024); // 1KB test data
 
 		// Check current usage
@@ -511,21 +514,11 @@ const cleanupLocalStorage = (priorityKeys: string[] = []): void => {
 
 	// Sort by priority (keep priority keys) then by timestamp (oldest first)
 	keysWithMeta.sort((a, b) => {
-		if (a.isPriority && !b.isPriority) {
-			return 1;
-		}
-		if (!a.isPriority && b.isPriority) {
-			return -1;
-		}
-		if (a.timestamp && b.timestamp) {
-			return a.timestamp - b.timestamp;
-		}
-		if (a.timestamp && !b.timestamp) {
-			return 1;
-		}
-		if (!a.timestamp && b.timestamp) {
-			return -1;
-		}
+		if (a.isPriority && !b.isPriority) return 1;
+		if (!a.isPriority && b.isPriority) return -1;
+		if (a.timestamp && b.timestamp) return a.timestamp - b.timestamp;
+		if (a.timestamp && !b.timestamp) return 1;
+		if (!a.timestamp && b.timestamp) return -1;
 		return 0;
 	});
 
@@ -534,9 +527,7 @@ const cleanupLocalStorage = (priorityKeys: string[] = []): void => {
 	const targetSize = LOCALSTORAGE_QUOTA_BYTES * 0.6; // Target 60% capacity
 
 	for (const { key, size } of keysWithMeta) {
-		if (quota.usage - removedSize <= targetSize) {
-			break;
-		}
+		if (quota.usage - removedSize <= targetSize) break;
 
 		try {
 			localStorage.removeItem(key);
@@ -613,7 +604,7 @@ const validateRatingsData = (
 		const { rating, wins, losses } = data;
 
 		// Validate rating value
-		if (typeof rating !== "number" || Number.isNaN(rating) || rating < 800 || rating > 2400) {
+		if (typeof rating !== "number" || isNaN(rating) || rating < 800 || rating > 2400) {
 			return {
 				isValid: false,
 				error: `Invalid rating for ${nameId}: must be a number between 800 and 2400`,
@@ -621,7 +612,7 @@ const validateRatingsData = (
 		}
 
 		// Validate wins
-		if (typeof wins !== "number" || Number.isNaN(wins) || wins < 0 || wins > 1000) {
+		if (typeof wins !== "number" || isNaN(wins) || wins < 0 || wins > 1000) {
 			return {
 				isValid: false,
 				error: `Invalid wins for ${nameId}: must be a number between 0 and 1000`,
@@ -629,7 +620,7 @@ const validateRatingsData = (
 		}
 
 		// Validate losses
-		if (typeof losses !== "number" || Number.isNaN(losses) || losses < 0 || losses > 1000) {
+		if (typeof losses !== "number" || isNaN(losses) || losses < 0 || losses > 1000) {
 			return {
 				isValid: false,
 				error: `Invalid losses for ${nameId}: must be a number between 0 and 1000`,

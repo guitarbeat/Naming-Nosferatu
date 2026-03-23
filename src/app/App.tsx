@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
@@ -16,6 +16,7 @@ import { ProfileInner } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
+import { LoadingSequence } from "@/shared/components/layout/LoadingSequence";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useOfflineSync } from "@/shared/hooks";
 import { Lightbulb, Trophy, User } from "@/shared/lib/icons";
@@ -34,6 +35,7 @@ const AdminDashboardLazy = routeComponents.AdminDashboardLazy;
 function App() {
 	const { user: authUser, isLoading } = useAuth();
 	const isInitialized = !isLoading;
+	const [hasCompletedBootSequence, setHasCompletedBootSequence] = useState(false);
 	const { userActions } = useAppStore();
 	const location = useLocation();
 	const { pathname } = location;
@@ -65,6 +67,9 @@ function App() {
 	const handleUserContext = useCallback((name: string) => {
 		updateSupabaseUserContext(name, null);
 	}, []);
+	const handleBootSequenceComplete = useCallback(() => {
+		setHasCompletedBootSequence(true);
+	}, []);
 	useAppStoreInitialization(handleUserContext);
 	useOfflineSync();
 
@@ -78,6 +83,14 @@ function App() {
 
 	return (
 		<AppLayout>
+			{!hasCompletedBootSequence && (
+				<LoadingSequence
+					title="Naming Nosferatu"
+					subtitle="Preparing the tournament floor for the first matchup."
+					onComplete={handleBootSequenceComplete}
+				/>
+			)}
+
 			<Routes>
 				<Route
 					path="/"
@@ -107,19 +120,29 @@ function HomeContent() {
 
 	return (
 		<>
-			<Section id="pick" variant="minimal" padding="compact" maxWidth="full">
+			<Section
+				id="pick"
+				variant="minimal"
+				padding="compact"
+				maxWidth="full"
+				className="app-home-section app-home-section--pick"
+			>
 				<div className="mx-auto max-w-4xl">
-					<SectionHeading
-						icon={Trophy}
-						title="Pick Names"
-					/>
+					<SectionHeading icon={Trophy} title="Pick Names" />
 				</div>
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 					<TournamentFlow />
 				</Suspense>
 			</Section>
 
-			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered={true}>
+			<Section
+				id="suggest"
+				variant="minimal"
+				padding="comfortable"
+				maxWidth="lg"
+				centered={true}
+				className="app-home-section"
+			>
 				<SectionHeading
 					icon={Lightbulb}
 					title="Suggest a Name"
@@ -128,7 +151,14 @@ function HomeContent() {
 				<NameSuggestionInner />
 			</Section>
 
-			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+			<Section
+				id="profile"
+				variant="minimal"
+				padding="comfortable"
+				maxWidth="md"
+				centered={true}
+				className="app-home-section app-home-section--tail"
+			>
 				<SectionHeading
 					icon={User}
 					title="Your Profile"
@@ -188,7 +218,14 @@ function AnalysisContent() {
 	});
 
 	return (
-		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+		<Section
+			id="analysis"
+			variant="minimal"
+			padding="comfortable"
+			maxWidth="2xl"
+			centered={true}
+			className="app-analysis-section"
+		>
 			<h2 className="mb-8 text-center text-3xl font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter sm:mb-12 md:text-5xl">
 				The Victors Emerge
 			</h2>

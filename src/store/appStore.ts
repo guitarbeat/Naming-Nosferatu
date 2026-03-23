@@ -32,6 +32,11 @@ import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import {
+	addMediaQueryListener,
+	getMediaQueryList,
+	matchesMediaQuery,
+} from "@/shared/lib/mediaQuery";
+import {
 	getStorageString,
 	parseJsonValue,
 	removeStorageItem,
@@ -191,7 +196,7 @@ function getInitialTheme(): Pick<UIState, "theme" | "themePreference"> {
 	if (stored === "light" || stored === "dark" || stored === "system") {
 		const resolved: ThemeValue =
 			stored === "system"
-				? window.matchMedia("(prefers-color-scheme: dark)").matches
+				? matchesMediaQuery("(prefers-color-scheme: dark)", true)
 					? "dark"
 					: "light"
 				: stored;
@@ -377,16 +382,14 @@ const createUserAndSettingsSlice: StateCreator<
 			let resolved: ThemeValue;
 
 			if (preference === "system" && IS_BROWSER) {
-				const mql = window.matchMedia("(prefers-color-scheme: dark)");
-				resolved = mql.matches ? "dark" : "light";
+				const mediaQueryList = getMediaQueryList("(prefers-color-scheme: dark)");
+				resolved = mediaQueryList?.matches ? "dark" : "light";
 
-				const onChange = (e: MediaQueryListEvent) => {
+				systemThemeCleanup = addMediaQueryListener(mediaQueryList, (event) => {
 					if (get().ui.themePreference === "system") {
-						patch(set, "ui", { theme: e.matches ? "dark" : "light" });
+						patch(set, "ui", { theme: event.matches ? "dark" : "light" });
 					}
-				};
-				mql.addEventListener("change", onChange);
-				systemThemeCleanup = () => mql.removeEventListener("change", onChange);
+				});
 			} else {
 				resolved = preference === "light" ? "light" : "dark";
 			}

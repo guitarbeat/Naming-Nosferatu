@@ -1,5 +1,6 @@
 import { type MotionValue, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import { subscribeToMediaQuery, supportsMatchMedia } from "@/shared/lib/mediaQuery";
 
 interface TiltConfig {
 	maxTilt?: number;
@@ -25,14 +26,11 @@ export function useTilt(enabled = true, config: TiltConfig = {}): TiltValues {
 	const { maxTilt, speed } = { ...defaultConfig, ...config };
 
 	// Detect touch device to disable tilt on mobile
-	const [isTouchDevice, setIsTouchDevice] = useState(false);
+	const [isTouchDevice, setIsTouchDevice] = useState(() => !supportsMatchMedia());
 	useEffect(() => {
-		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-			setIsTouchDevice(false);
-			return;
-		}
-
-		setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
+		return subscribeToMediaQuery("(pointer: coarse)", setIsTouchDevice, {
+			fallback: true,
+		});
 	}, []);
 
 	const isEnabled = enabled && !isTouchDevice;

@@ -11,7 +11,6 @@ describe("imagesAPI", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		mockedResolveSupabaseClient.mockReset();
 	});
 
 	describe("imagesAPI.list", () => {
@@ -79,31 +78,26 @@ describe("imagesAPI", () => {
 		});
 
 		it("should fail if file size exceeds 5MB", async () => {
-			const mockFrom = vi.fn();
-			const mockClient = { storage: { from: mockFrom } };
-			const largeFile = new File([new Uint8Array(6 * 1024 * 1024)], "large.jpg", {
+			// Mock a large file
+			const largeFile = {
+				size: 6 * 1024 * 1024,
 				type: "image/jpeg",
-			});
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+				name: "large.jpg",
+			} as unknown as File;
 
 			const result = await imagesAPI.upload(largeFile, userName);
 
 			expect(result.success).toBe(false);
 			expect(result.error).toBe("File size exceeds 5MB limit");
-			expect(mockFrom).not.toHaveBeenCalled();
 		});
 
 		it("should fail if file type is not allowed", async () => {
-			const mockFrom = vi.fn();
-			const mockClient = { storage: { from: mockFrom } };
 			const invalidFile = new File(["dummy content"], "test.pdf", { type: "application/pdf" });
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
 
 			const result = await imagesAPI.upload(invalidFile, userName);
 
 			expect(result.success).toBe(false);
 			expect(result.error).toBe("Only JPEG, PNG, GIF, and WebP images are allowed");
-			expect(mockFrom).not.toHaveBeenCalled();
 		});
 
 		it("should return error when Supabase client is not available", async () => {

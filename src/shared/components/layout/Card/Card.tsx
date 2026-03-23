@@ -12,6 +12,7 @@ import { useTilt } from "@/shared/hooks/useTilt";
 import { cn } from "@/shared/lib/basic";
 import { TIMING } from "@/shared/lib/constants";
 import { ZoomIn } from "@/shared/lib/icons";
+import { subscribeToMediaQuery, supportsMatchMedia } from "@/shared/lib/mediaQuery";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 type CardVariant =
@@ -439,14 +440,11 @@ const CardNameBase = memo(function CardName({
 	const cardRef = React.useRef<HTMLDivElement>(null);
 
 	// Disable tilt on touch devices for better performance
-	const [isTouchDevice, setIsTouchDevice] = useState(false);
+	const [isTouchDevice, setIsTouchDevice] = useState(() => !supportsMatchMedia());
 	useEffect(() => {
-		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-			setIsTouchDevice(false);
-			return;
-		}
-
-		setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
+		return subscribeToMediaQuery("(pointer: coarse)", setIsTouchDevice, {
+			fallback: true,
+		});
 	}, []);
 	const shouldEnableTilt = enableTilt && !isTouchDevice;
 

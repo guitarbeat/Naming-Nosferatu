@@ -4,6 +4,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { matchesMediaQuery, subscribeToMediaQuery } from "@/shared/lib/mediaQuery";
 import {
 	getStorageString,
 	parseJsonValue,
@@ -96,20 +97,14 @@ function useEventListener<K extends keyof WindowEventMap>(
 
 /** Subscribe to a CSS media query. */
 export function useMediaQuery(query: string): boolean {
-	const [matches, setMatches] = useState(false);
+	const [matches, setMatches] = useState(() => matchesMediaQuery(query));
 
 	useEffect(() => {
 		if (!IS_BROWSER) {
 			return;
 		}
 
-		const media = window.matchMedia(query);
-		setMatches(media.matches);
-
-		const listener = () => setMatches(media.matches);
-		media.addEventListener("change", listener);
-
-		return () => media.removeEventListener("change", listener);
+		return subscribeToMediaQuery(query, setMatches);
 	}, [query]);
 
 	return matches;
