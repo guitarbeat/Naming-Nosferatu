@@ -29,6 +29,19 @@ const keyToId: Record<NavSection, string> = {
 	profile: "profile",
 };
 
+function useIsMobile() {
+	const [isMobile, setIsMobile] = useState(() =>
+		typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false,
+	);
+	useEffect(() => {
+		const mql = window.matchMedia("(max-width: 768px)");
+		const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+		mql.addEventListener("change", handler);
+		return () => mql.removeEventListener("change", handler);
+	}, []);
+	return isMobile;
+}
+
 function FloatingNavItem({
 	icon: Icon,
 	label,
