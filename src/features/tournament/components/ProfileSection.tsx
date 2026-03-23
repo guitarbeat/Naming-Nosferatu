@@ -75,22 +75,22 @@ export function ProfileInner({ onLogin }: ProfileSectionProps) {
 	};
 
 	return (
-		<div className="flex flex-col gap-6 w-full">
+		<div className="flex flex-col gap-4 sm:gap-6 w-full">
 			{/* Section Header - Only show when editing/logging in */}
 			{isEditing && !user.isLoggedIn && (
-				<div className="text-center space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
-					<h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+				<div className="text-center space-y-1.5 sm:space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
+					<h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 						Join the Council
 					</h2>
-					<p className="text-sm text-muted-foreground">Enter your name to track your rankings</p>
+					<p className="text-xs sm:text-sm text-muted-foreground">Enter your name to track your rankings</p>
 				</div>
 			)}
 
-			<div className="flex flex-col md:flex-row gap-6 items-center">
-				{/* Avatar with glow */}
+			<div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center">
+				{/* Avatar - smaller on mobile */}
 				<div className="relative shrink-0">
 					<div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-xl animate-pulse" />
-					<div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-primary/30 shadow-lg shadow-primary/20 bg-muted">
+					<div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-primary/30 shadow-lg shadow-primary/20 bg-muted">
 						<img
 							src={avatarSrc}
 							alt="Profile"
