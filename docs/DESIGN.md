@@ -1,6 +1,6 @@
 # Design System & UI/UX
 
-**Last Updated:** March 21, 2026
+**Last Updated:** March 5, 2026
 **Status:** Primary Reference for Visual Design & Usability
 
 ---
@@ -15,13 +15,13 @@
 6. [Liquid Glass Component](#6-liquid-glass-component)
 7. [Usability & Onboarding](#7-usability--onboarding)
 8. [Best Practices](#8-best-practices)
-9. [SCSS File Organization & Import Chain](#9-scss-file-organization--import-chain)
+9. [CSS File Organization & Import Chain](#9-css-file-organization--import-chain)
 
 ---
 
 ## 1. Design Tokens
 
-All shared design tokens and global styles are defined in `src/index.css`. Use these tokens instead of hardcoded values.
+All design tokens are defined in `src/styles/tokens.css`. Use these tokens instead of hardcoded values.
 
 ### Spacing System
 
@@ -187,7 +187,7 @@ Respect user preferences for reduced motion.
 
 ## 6. Liquid Glass Component
 
-A specialized React component (`src/shared/components/layout/LiquidGlass.tsx`) that creates fluid refraction effects via SVG displacement maps, with shared styling consolidated into `src/index.css`.
+A specialized React component (`src/shared/components/layout/LiquidGlass.tsx`) that creates fluid refraction effects via SVG displacement maps, with shared styling in `src/styles/liquid-glass.css`.
 
 ---
 
@@ -208,11 +208,11 @@ We focus on "Progressive Disclosure"—only showing complexity when the user is 
 
 ## 8. Best Practices
 
-### Layered Global Styling
-Keep Tailwind utility generation in `src/tailwind.css` and consolidated global styles in `src/index.css`.
+### Layered Global CSS
+Keep shared styles in `src/styles/*.css` and wire them through `src/styles/index.css` in the documented order.
 
-### Component-Specific SCSS
-Use co-located `.scss` files only when a component needs isolated styling that is not reusable globally (example: `src/shared/components/layout/FancyButton.scss` imported by `Button.tsx`).
+### Component-Specific CSS
+Use co-located `.css` files only when a component needs isolated styling that is not reusable globally (example: `src/shared/components/layout/FancyButton.css` imported by `Button.tsx`).
 
 ### Avoid Inline Styles
 Use CSS custom properties for dynamic values.
@@ -228,40 +228,51 @@ Animate only `transform` and `opacity` to maintain 60fps.
 
 ---
 
-## 9. SCSS File Organization & Import Chain
+## 9. CSS File Organization & Import Chain
 
 ### File Organization
 
-Global styling now uses two entry files:
+Global styles live in `src/styles/` and are split by responsibility:
 
 | File | Responsibility |
 | ---- | -------------- |
-| `src/tailwind.css` | Tailwind CSS v4 entrypoint, config, and source discovery |
-| `src/index.css` | Consolidated design tokens, reset, typography, layout, components, motion, and glass styles |
+| `base.css` | Tailwind directives only (`@tailwind base/components/utilities`) |
+| `tokens.css` | All design tokens and theme variables (CSS custom properties) |
+| `reset.css` | Reset, base element defaults, focus, and scrollbar behavior |
+| `typography.css` | Typography utility classes built on tokens |
+| `layout.css` | Layout primitives, responsive behavior, accessibility media rules |
+| `components.css` | Shared component classes and feature-level UI styling |
+| `motion.css` | Keyframes, transitions, and reduced-motion handling |
+| `liquid-glass.css` | Liquid glass visual system styles |
 
 Entry bridge files:
-- `src/app/main.tsx` imports `../tailwind.css`
 - `src/app/main.tsx` imports `../index.css`
+- `src/index.css` imports `./styles/index.css`
 
 Component-level stylesheet imports:
-- `src/shared/components/layout/Button.tsx` imports `./FancyButton.scss`
-- `src/shared/components/layout/LiquidGradient.scss` exists, but is not part of the current runtime import chain
+- `src/shared/components/layout/Button.tsx` imports `./FancyButton.css`
+- `src/shared/components/layout/LiquidGradient.css` exists, but is not part of the current runtime import chain
 
 ### Canonical Import Chain
 
 ```text
 src/app/main.tsx
-  -> src/tailwind.css
-    -> @import "tailwindcss"
-    -> @config "../config/tailwind.config.js"
-    -> @source "./**/*.{js,jsx,ts,tsx}"
   -> src/index.css
-    -> consolidated global design system sections
+    -> src/styles/index.css
+      -> @import "tailwindcss"
+      -> @import "./base.css"
+      -> @import "./tokens.css"
+      -> @import "./reset.css"
+      -> @import "./typography.css"
+      -> @import "./layout.css"
+      -> @import "./components.css"
+      -> @import "./motion.css"
+      -> @import "./liquid-glass.css"
 ```
 
 ### Why Order Matters
 
-1. Tailwind utilities load first from `src/tailwind.css`.
+1. Tailwind primitives load first.
 2. Tokens define variables consumed by later layers.
 3. Reset normalizes element defaults before utility/component styling.
 4. Typography and layout establish reusable structure.

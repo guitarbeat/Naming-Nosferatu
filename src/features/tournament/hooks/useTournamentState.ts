@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
+import { TIMING } from "@/shared/lib/constants";
 import {
 	EloRating,
 	generateRandomTeams,
@@ -7,7 +8,6 @@ import {
 } from "@/features/tournament/services/tournament";
 import { useWebSocket } from "@/features/websocket/hooks/useWebSocket";
 import { useLocalStorage } from "@/shared/hooks";
-import { TIMING } from "@/shared/lib/constants";
 import type {
 	Match,
 	MatchRecord,
@@ -60,8 +60,6 @@ interface UseTournamentStateResult {
 }
 
 const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
-const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:8080";
-const noop = () => undefined;
 
 function haveSameIds(a: string[], b: string[]): boolean {
 	if (a.length !== b.length) {
@@ -84,15 +82,23 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
 	const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
-	const {
-		disconnect: disconnectWebSocket,
-		subscribeToMatches,
-		subscribeToTournament,
-		subscribeToUserActivity,
-	} = useWebSocket({
-		url: WEBSOCKET_URL,
-		autoConnect: true,
-	});
+
+	// WebSocket integration with error boundaries
+	const webSocket = useMemo(() => {
+		try {
+			return useWebSocket({
+				url: import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:8080",
+				autoConnect: true,
+			});
+		} catch (error) {
+			console.warn("WebSocket initialization failed, continuing without real-time updates:", error);
+			return {
+				subscribeToTournament: () => () => {},
+				subscribeToMatches: () => () => {},
+				subscribeToUserActivity: () => () => {},
+			};
+		}
+	}, []);
 
 	const defaultPersistentState = useMemo(
 		() => createDefaultPersistentState(userName || "anonymous"),
@@ -132,35 +138,35 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	// Cleanup WebSocket metrics on unmount
 	useEffect(() => {
 		return () => {
-			disconnectWebSocket();
+			// Clean up any WebSocket connections and metrics
+			if (webSocket && typeof webSocket.cleanup === 'function') {
+				webSocket.cleanup();
+			}
+			
 			// Clear any pending timeouts or intervals
 			const timeouts = (window as any).__tournamentTimeouts || [];
 			const intervals = (window as any).__tournamentIntervals || [];
-
-			timeouts.forEach((timeoutId: number) => {
-				clearTimeout(timeoutId);
-			});
-			intervals.forEach((intervalId: number) => {
-				clearInterval(intervalId);
-			});
-
+			
+			timeouts.forEach((timeoutId: number) => clearTimeout(timeoutId));
+			intervals.forEach((intervalId: number) => clearInterval(intervalId));
+			
 			// Clear the arrays
 			(window as any).__tournamentTimeouts = [];
 			(window as any).__tournamentIntervals = [];
-
+			
 			// Clean up any event listeners
-			const cleanupEvents = ["beforeunload", "pagehide", "visibilitychange"];
-			cleanupEvents.forEach((event) => {
+			const cleanupEvents = ['beforeunload', 'pagehide', 'visibilitychange'];
+			cleanupEvents.forEach(event => {
 				const handlers = (window as any).__tournamentEventHandlers?.[event] || [];
 				handlers.forEach((handler: EventListener) => {
 					window.removeEventListener(event, handler);
 				});
 			});
-
+			
 			// Clear event handlers registry
 			(window as any).__tournamentEventHandlers = {};
 		};
-	}, [disconnectWebSocket]);
+	}, [webSocket]);
 
 	useEffect(() => {
 		ratingsRef.current = ratings;
@@ -181,23 +187,15 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			return;
 		}
 
-		let cancelled = false;
-
 		// Batch all state updates to prevent race conditions
 		const initializeTournament = () => {
-			if (cancelled) {
-				return;
-			}
-
 			const hasValidPersistence =
 				persistentState.namesKey === namesKey && persistentState.mode === tournamentMode;
 			const initialRatings = buildInitialRatings(names);
 
 			let teams = persistentState.teams;
 			if (tournamentMode === "2v2" && teams.length < 2) {
-				teams = generateRandomTeams(
-					names.map((name) => ({ id: String(name.id), name: name.name })),
-				);
+				teams = generateRandomTeams(names.map((name) => ({ id: String(name.id), name: name.name })));
 			}
 
 			const participantIds =
@@ -233,19 +231,12 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 					teamMatches: [],
 					teamMatchIndex: 0,
 				});
-			} else if (
-				shouldResetBracket ||
-				(tournamentMode === "2v2" && teams !== persistentState.teams)
-			) {
+			} else if (shouldResetBracket || (tournamentMode === "2v2" && teams !== persistentState.teams)) {
 				stateUpdates.ratings = shouldResetBracket ? initialRatings : persistentState.ratings;
 			}
 
 			// Update ratings and persistent state atomically
-			if (
-				hasValidPersistence &&
-				persistentState.ratings &&
-				Object.keys(persistentState.ratings).length > 0
-			) {
+			if (hasValidPersistence && persistentState.ratings && Object.keys(persistentState.ratings).length > 0) {
 				setRatings(persistentState.ratings);
 			} else {
 				setRatings(initialRatings);
@@ -260,13 +251,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		};
 
 		// Use requestAnimationFrame to ensure smooth initialization
-		const frameId = requestAnimationFrame(initializeTournament);
-
-		return () => {
-			cancelled = true;
-			cancelAnimationFrame(frameId);
-		};
-	}, [names, namesKey, persistentState, tournamentMode, updatePersistentState]);
+		requestAnimationFrame(initializeTournament);
+	}, [namesKey, names.length, tournamentMode]); // Reduced dependency array
 
 	const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
 	const teamsById = useMemo(() => createTeamsById(persistentState.teams), [persistentState.teams]);
@@ -422,8 +408,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		isVoting,
 		handleVoteWithAnimation,
 		matchHistory: persistentState.matchHistory,
-		subscribeToTournamentUpdates: subscribeToTournament ?? noop,
-		subscribeToMatchResults: subscribeToMatches ?? noop,
-		subscribeToUserActivity: subscribeToUserActivity ?? noop,
+		subscribeToTournamentUpdates: webSocket.subscribeToTournament,
+		subscribeToMatchResults: webSocket.subscribeToMatches,
+		subscribeToUserActivity: webSocket.subscribeToUserActivity,
 	};
 }

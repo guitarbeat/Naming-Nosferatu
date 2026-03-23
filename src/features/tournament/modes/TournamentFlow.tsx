@@ -6,23 +6,15 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useOptionalToast } from "@/app/providers/Providers";
-import Button from "@/shared/components/layout/Button";
 import { Trophy } from "@/shared/lib/icons";
-import { ratingsAPI } from "@/shared/services/supabase";
+import { ratingsAPI } from "@/shared/services/supabase/api";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
 import { useTournamentHandlers } from "../hooks";
 
-const noopToast = {
-	showInfo: (_message: string) => undefined,
-	showError: (_message: string) => undefined,
-};
-
 export default function TournamentFlow() {
 	const { user, tournament, tournamentActions } = useAppStore();
 	const navigate = useNavigate();
-	const toast = useOptionalToast() ?? noopToast;
 
 	const { handleStartNewTournament } = useTournamentHandlers({
 		userName: user.name,
@@ -31,7 +23,7 @@ export default function TournamentFlow() {
 
 	useEffect(() => {
 		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
-			const userName = user.name || "anonymous";
+			const userId = user.name || "anonymous";
 
 			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
 				(acc, [nameId, rating]) => {
@@ -46,31 +38,18 @@ export default function TournamentFlow() {
 			);
 
 			ratingsAPI
-				.saveRatings(userName, ratingsWithStats)
+				.saveRatings(userId, ratingsWithStats)
 				.then((result) => {
-					if (!result) {
-						return;
+					if (result?.success) {
+						console.log(`Successfully saved ${result.count} ratings to database`);
 					}
-
-					if (result.status === "committed") {
-						console.log(`Successfully saved ${result.count ?? 0} ratings to Supabase`);
-						return;
-					}
-
-					if (result.status === "queued") {
-						toast.showInfo(
-							"Your ratings were queued locally and will sync when the connection is restored.",
-						);
-						return;
-					}
-
-					toast.showError(result.error || "Could not save ratings. Sign in again to sync results.");
 				})
 				.catch((_error) => {
-					toast.showError("Could not save ratings. Sign in again to sync results.");
+					// Error is already logged by ratingsAPI with context
+					console.warn("Tournament ratings save failed, but fallback may have been used");
 				});
 		}
-	}, [toast, tournament.isComplete, tournament.ratings, user.name]);
+	}, [tournament.isComplete, tournament.ratings, user.name]);
 
 	return (
 		<div className="w-full flex flex-col gap-2">
@@ -98,23 +77,18 @@ export default function TournamentFlow() {
 								and compare results!
 							</p>
 							<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-								<Button
+								<button
 									onClick={() => navigate("/analysis")}
-									size="lg"
-									shape="pill"
-									className="w-full sm:w-auto"
+									className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-colors"
 								>
 									Analyze Results
-								</Button>
-								<Button
+								</button>
+								<button
 									onClick={handleStartNewTournament}
-									variant="secondary"
-									size="lg"
-									shape="pill"
-									className="w-full sm:w-auto"
+									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-colors"
 								>
 									Start New Tournament
-								</Button>
+								</button>
 							</div>
 						</div>
 					</motion.div>

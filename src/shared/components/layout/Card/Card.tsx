@@ -441,11 +441,7 @@ const CardNameBase = memo(function CardName({
 	// Disable tilt on touch devices for better performance
 	const [isTouchDevice, setIsTouchDevice] = useState(false);
 	useEffect(() => {
-		const coarsePointerQuery =
-			typeof window !== "undefined" && typeof window.matchMedia === "function"
-				? window.matchMedia("(pointer: coarse)")
-				: null;
-		setIsTouchDevice(Boolean(coarsePointerQuery?.matches));
+		setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
 	}, []);
 	const shouldEnableTilt = enableTilt && !isTouchDevice;
 
@@ -522,10 +518,7 @@ const CardNameBase = memo(function CardName({
 	const Component = isInteractive ? "button" : "div";
 
 	const cardContent = (
-		<div
-			className="relative w-full h-full"
-			style={{ perspective: shouldEnableTilt && !disabled ? "800px" : undefined }}
-		>
+		<div className="relative w-full h-full" style={{ perspective: shouldEnableTilt && !disabled ? "800px" : undefined }}>
 			<Card
 				as={Component}
 				ref={cardRef as React.Ref<HTMLDivElement>}

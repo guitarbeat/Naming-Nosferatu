@@ -1,10 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useNameSuggestion } from "@/shared/hooks";
-import { coreAPI } from "@/shared/services/supabase";
+import { coreAPI } from "@/shared/services/supabase/client";
 
 // Mock the dependencies
-vi.mock("@/shared/services/supabase", () => ({
+vi.mock("@/shared/services/supabase/client", () => ({
 	coreAPI: {
 		addName: vi.fn(),
 	},
@@ -51,7 +51,6 @@ describe("useNameSuggestion", () => {
 		// Setup mock success response
 		mockedCoreAPI.addName.mockResolvedValue({
 			success: true,
-			status: "committed",
 			data: { id: "123", name: "Test Cat" },
 		});
 
@@ -74,11 +73,7 @@ describe("useNameSuggestion", () => {
 		const { result } = renderHook(() => useNameSuggestion());
 
 		// Setup mock error response
-		mockedCoreAPI.addName.mockResolvedValue({
-			success: false,
-			status: "failed",
-			error: "Duplicate name",
-		});
+		mockedCoreAPI.addName.mockResolvedValue({ success: false, error: "Duplicate name" });
 
 		act(() => {
 			result.current.handleChange("name", "Duplicate Cat");

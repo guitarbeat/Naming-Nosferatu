@@ -1,19 +1,10 @@
 /**
  * @module AdminDashboard
- * @description Admin dashboard for managing names and reviewing real site activity.
+ * @description Comprehensive admin dashboard for managing names and viewing analytics
  */
 
 import { AnimatePresence, motion } from "framer-motion";
 import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import {
-	type AdminActivityItem,
-	type AdminUserSummary,
-	adminAnalyticsAPI,
-	statsAPI as analyticsStatsAPI,
-	type EngagementMetrics,
-	leaderboardAPI,
-	type TopSelectionSummary,
-} from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Input } from "@/shared/components/layout/FormPrimitives";
@@ -25,14 +16,10 @@ import {
 	isNameLocked,
 	matchesNameSearchTerm,
 } from "@/shared/lib/basic";
-import { Activity, BarChart3, Eye, EyeOff, Loader2, Lock, Trophy, Users } from "@/shared/lib/icons";
-import {
-	adminNamesAPI,
-	coreAPI,
-	hiddenNamesAPI,
-	imagesAPI,
-	statsAPI,
-} from "@/shared/services/supabase";
+import { isRpcSignatureError } from "@/shared/lib/errors";
+import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/shared/lib/icons";
+import { coreAPI, hiddenNamesAPI, imagesAPI, statsAPI } from "@/shared/services/supabase/api";
+import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
@@ -45,23 +32,23 @@ type ToggleOptions = {
 };
 
 interface AdminStats {
+	totalNames: number;
 	activeNames: number;
 	hiddenNames: number;
 	lockedInNames: number;
-	recentVotes: number;
-	totalNames: number;
 	totalUsers: number;
+	recentVotes: number;
 }
 
 interface NameWithStats extends NameItem {
+	votes?: number;
 	lastVoted?: string;
 	popularityScore?: number;
-	votes?: number;
 }
 
 interface SiteStatsLike {
-	totalRatings?: unknown;
 	totalUsers?: unknown;
+	totalRatings?: unknown;
 }
 
 const ADMIN_TABS: readonly { id: DashboardTab; label: string }[] = [
@@ -81,14 +68,6 @@ const FILTER_OPTIONS: readonly { value: NameFilter; label: string }[] = [
 function toNumber(value: unknown): number {
 	const parsed = Number(value);
 	return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function formatTimestamp(value: string | null | undefined): string {
-	if (!value) {
-		return "No recent activity";
-	}
-
-	return new Date(value).toLocaleString();
 }
 
 function mapNameToDisplay(name: NameItem): NameWithStats {
@@ -145,39 +124,18 @@ export function AdminDashboard() {
 	const [filterStatus, setFilterStatus] = useState<NameFilter>("all");
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
-	const [recentActivity, setRecentActivity] = useState<AdminActivityItem[]>([]);
-	const [userSummaries, setUserSummaries] = useState<AdminUserSummary[]>([]);
-	const [engagement, setEngagement] = useState<EngagementMetrics | null>(null);
-	const [topSelections, setTopSelections] = useState<TopSelectionSummary[]>([]);
-	const [leaderboard, setLeaderboard] = useState<Array<{ name: string; avg_rating: number }>>([]);
 
 	const loadAdminData = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const [allNames, siteStats, activity, users, snapshot, selections, topNames] =
-				await Promise.all([
-					coreAPI.getTrendingNames(true),
-					statsAPI.getSiteStats(),
-					adminAnalyticsAPI.getRecentActivity(12),
-					adminAnalyticsAPI.getUserSummaries(20),
-					analyticsStatsAPI.getEngagementMetrics("week"),
-					adminAnalyticsAPI.getTopSelections(8),
-					leaderboardAPI.getLeaderboard(5),
-				]);
+			const [allNames, siteStats] = await Promise.all([
+				coreAPI.getTrendingNames(true),
+				statsAPI.getSiteStats(),
+			]);
 
 			const namesWithStats = allNames.map(mapNameToDisplay);
 			setStats(buildAdminStats(namesWithStats, siteStats));
 			setNames(namesWithStats);
-			setRecentActivity(activity);
-			setUserSummaries(users);
-			setEngagement(snapshot);
-			setTopSelections(selections);
-			setLeaderboard(
-				topNames.map((entry) => ({
-					name: entry.name,
-					avg_rating: entry.avg_rating,
-				})),
-			);
 		} catch (error) {
 			console.error("Failed to load admin data:", error);
 		} finally {
@@ -228,10 +186,27 @@ export function AdminDashboard() {
 		async (nameId: string | number, isLocked: boolean, options: ToggleOptions = {}) => {
 			try {
 				const idStr = String(nameId);
-				const result = await adminNamesAPI.toggleLockedIn(idStr, !isLocked);
-				if (!result.success) {
-					throw new Error(result.error || "Failed to toggle locked status");
-				}
+				await withSupabase(async (client) => {
+					await client.rpc("set_user_context", { user_name_param: actorName });
+
+					const canonicalArgs = {
+						p_name_id: idStr,
+						p_locked_in: !isLocked,
+					};
+
+					let result = await client.rpc("toggle_name_locked_in", canonicalArgs);
+					if (result.error && isRpcSignatureError(result.error.message || "")) {
+						result = await client.rpc("toggle_name_locked_in", {
+							...canonicalArgs,
+							p_user_name: actorName,
+						});
+					}
+
+					if (result.error) {
+						throw new Error(result.error.message || "Failed to toggle locked status");
+					}
+					return result.data;
+				}, null);
 
 				if (!options.skipRefresh) {
 					await loadAdminData();
@@ -240,7 +215,7 @@ export function AdminDashboard() {
 				console.error("Failed to toggle locked status:", error);
 			}
 		},
-		[loadAdminData],
+		[actorName, loadAdminData],
 	);
 
 	const handleBulkAction = useCallback(
@@ -282,20 +257,21 @@ export function AdminDashboard() {
 
 			try {
 				const result = await imagesAPI.upload(file, actorName);
-				if (!result.success) {
-					throw new Error(result.error || "Upload failed");
+				if (result.success) {
+					console.log("Image uploaded successfully:", result.path);
+				} else {
+					console.error("Upload failed:", result.error);
 				}
-				await loadAdminData();
 			} catch (error) {
 				console.error("Upload error:", error);
 			}
 		},
-		[actorName, loadAdminData],
+		[actorName],
 	);
 
 	const handleSelectionChange = useCallback((nameId: string, checked: boolean) => {
-		setSelectedNames((previous) => {
-			const next = new Set(previous);
+		setSelectedNames((prevSelectedNames) => {
+			const next = new Set(prevSelectedNames);
 			if (checked) {
 				next.add(nameId);
 			} else {
@@ -303,6 +279,17 @@ export function AdminDashboard() {
 			}
 			return next;
 		});
+	}, []);
+
+	const handleTabChange = useCallback((tab: DashboardTab) => {
+		setActiveTab(tab);
+	}, []);
+
+	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
+		if (option) {
+			setFilterStatus(option.value);
+		}
 	}, []);
 
 	if (isLoading) {
@@ -314,117 +301,68 @@ export function AdminDashboard() {
 	}
 
 	return (
-		<div className="min-h-screen bg-background text-foreground p-6">
-			<div className="mb-8">
-				<h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+		<div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+			<div className="mb-4 sm:mb-8">
+				<h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-muted-foreground">Manage names and monitor live tournament activity</p>
+				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
 			</div>
 
 			{stats && (
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-6 mb-8">
-					<div className="p-6">
-						<p className="text-sm text-muted-foreground mb-1">Total Names</p>
-						<p className="text-3xl font-bold text-foreground">{stats.totalNames}</p>
+				<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
+					<div className="p-3 sm:p-6">
+						<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+							<BarChart3 className="text-primary" size={18} />
+							<h3 className="text-sm sm:text-lg font-semibold text-primary">Total</h3>
+						</div>
+						<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.totalNames}</p>
 					</div>
-					<div className="p-6">
-						<p className="text-sm text-muted-foreground mb-1">Active Names</p>
-						<p className="text-3xl font-bold text-chart-2">{stats.activeNames}</p>
+
+					<div className="p-3 sm:p-6">
+						<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+							<Eye className="text-chart-2" size={18} />
+							<h3 className="text-sm sm:text-lg font-semibold text-chart-2">Active</h3>
+						</div>
+						<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.activeNames}</p>
 					</div>
-					<div className="p-6">
-						<p className="text-sm text-muted-foreground mb-1">Locked In</p>
-						<p className="text-3xl font-bold text-chart-4">{stats.lockedInNames}</p>
+
+					<div className="p-3 sm:p-6">
+						<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+							<Lock className="text-chart-4" size={18} />
+							<h3 className="text-sm sm:text-lg font-semibold text-chart-4">Locked</h3>
+						</div>
+						<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.lockedInNames}</p>
 					</div>
-					<div className="p-6">
-						<p className="text-sm text-muted-foreground mb-1">Hidden Names</p>
-						<p className="text-3xl font-bold text-destructive">{stats.hiddenNames}</p>
-					</div>
-					<div className="p-6">
-						<p className="text-sm text-muted-foreground mb-1">Known Users</p>
-						<p className="text-3xl font-bold text-foreground">{stats.totalUsers}</p>
-					</div>
-					<div className="p-6">
-						<p className="text-sm text-muted-foreground mb-1">Rating Rows</p>
-						<p className="text-3xl font-bold text-foreground">{stats.recentVotes}</p>
+
+					<div className="p-3 sm:p-6">
+						<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+							<EyeOff className="text-destructive" size={18} />
+							<h3 className="text-sm sm:text-lg font-semibold text-destructive">Hidden</h3>
+						</div>
+						<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.hiddenNames}</p>
 					</div>
 				</div>
 			)}
 
-			<div className="flex gap-2 mb-6 border-b border-border/10">
+			{/* Tabs - horizontal scroll on mobile */}
+			<div className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 border-b border-border/10 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
 				{ADMIN_TABS.map((tab) => (
-					<Button
+					<button
 						key={tab.id}
-						onClick={() => setActiveTab(tab.id)}
-						type="button"
-						variant={activeTab === tab.id ? "secondary" : "ghost"}
-						presentation="chip"
-						shape="pill"
-						className={`px-4 py-2 font-medium ${
+						onClick={() => handleTabChange(tab.id)}
+						className={`px-3 sm:px-4 py-2 font-medium text-sm whitespace-nowrap transition-colors ${
 							activeTab === tab.id
-								? "bg-primary/12 text-foreground"
-								: "bg-transparent text-muted-foreground hover:bg-foreground/8 hover:text-foreground"
+								? "text-foreground border-b-2 border-primary"
+								: "text-muted-foreground hover:text-foreground"
 						}`}
 					>
 						{tab.label}
-					</Button>
+					</button>
 				))}
 			</div>
 
 			<AnimatePresence mode="wait">
-				{activeTab === "overview" && (
-					<motion.div
-						key="overview"
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -20 }}
-						className="grid grid-cols-1 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)] gap-6"
-					>
-						<div className="p-6 border border-border/10 rounded-2xl bg-card">
-							<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-							<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
-							<input
-								type="file"
-								accept="image/*"
-								onChange={handleImageUpload}
-								className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
-							/>
-						</div>
-
-						<div className="p-6 border border-border/10 rounded-2xl bg-card">
-							<div className="flex items-center gap-3 mb-4">
-								<Activity className="text-primary" size={22} />
-								<h2 className="text-2xl font-bold">Recent Activity</h2>
-							</div>
-							<div className="space-y-3">
-								{recentActivity.length > 0 ? (
-									recentActivity.map((entry) => (
-										<div
-											key={entry.id}
-											className="flex items-start justify-between gap-4 border-b border-border/10 pb-3"
-										>
-											<div>
-												<p className="font-medium text-foreground">
-													{entry.userName} {entry.type === "selection" ? "selected" : "updated"}{" "}
-													{entry.name}
-												</p>
-												<p className="text-sm text-muted-foreground">{entry.details}</p>
-											</div>
-											<p className="text-xs text-muted-foreground whitespace-nowrap">
-												{formatTimestamp(entry.timestamp)}
-											</p>
-										</div>
-									))
-								) : (
-									<p className="text-muted-foreground">
-										No recorded tournament or rating activity yet.
-									</p>
-								)}
-							</div>
-						</div>
-					</motion.div>
-				)}
-
 				{activeTab === "names" && (
 					<motion.div
 						key="names"
@@ -445,12 +383,7 @@ export function AdminDashboard() {
 							<div className="flex gap-2">
 								<select
 									value={filterStatus}
-									onChange={(event) => {
-										const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
-										if (option) {
-											setFilterStatus(option.value);
-										}
-									}}
+									onChange={handleFilterChange}
 									className="px-4 py-2 bg-foreground/10 border border-border/20 rounded-lg text-foreground"
 								>
 									{FILTER_OPTIONS.map((option) => (
@@ -460,34 +393,29 @@ export function AdminDashboard() {
 									))}
 								</select>
 
-								<Button
-									onClick={() => void loadAdminData()}
-									variant="ghost"
-									size="sm"
-									iconOnly={true}
-								>
+								<Button onClick={() => void loadAdminData()} variant="ghost" size="small">
 									<Loader2 size={16} />
 								</Button>
 							</div>
 						</div>
 
 						{selectedNames.size > 0 && (
-							<div className="mb-4 py-4 border-y border-border/10">
-								<p className="text-sm text-primary mb-2">{selectedNames.size} names selected</p>
-								<div className="flex gap-2">
-									<Button onClick={() => void handleBulkAction("hide")} size="sm">
+							<div className="mb-4 py-3 sm:py-4 border-y border-border/10">
+								<p className="text-sm text-primary mb-2">{selectedNames.size} selected</p>
+								<div className="flex flex-wrap gap-2">
+									<Button onClick={() => void handleBulkAction("hide")} size="small">
 										<EyeOff size={14} /> Hide
 									</Button>
-									<Button onClick={() => void handleBulkAction("unhide")} size="sm">
+									<Button onClick={() => void handleBulkAction("unhide")} size="small">
 										<Eye size={14} /> Unhide
 									</Button>
-									<Button onClick={() => void handleBulkAction("lock")} size="sm">
+									<Button onClick={() => void handleBulkAction("lock")} size="small">
 										<Lock size={14} /> Lock
 									</Button>
-									<Button onClick={() => void handleBulkAction("unlock")} size="sm">
+									<Button onClick={() => void handleBulkAction("unlock")} size="small">
 										<Lock size={14} /> Unlock
 									</Button>
-									<Button onClick={() => setSelectedNames(new Set())} variant="ghost" size="sm">
+									<Button onClick={() => setSelectedNames(new Set())} variant="ghost" size="small">
 										Clear
 									</Button>
 								</div>
@@ -499,23 +427,34 @@ export function AdminDashboard() {
 								const nameId = String(name.id);
 								const hidden = isNameHidden(name);
 								const locked = isNameLocked(name);
-
 								return (
-									<div key={name.id} className="py-4">
-										<div className="flex items-center justify-between">
-											<div className="flex items-center gap-4">
+									<div key={name.id} className="py-3 sm:py-4">
+										<div className="flex items-start sm:items-center justify-between gap-2">
+											<div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
 												<input
 													type="checkbox"
 													checked={selectedNames.has(nameId)}
 													onChange={(event) => handleSelectionChange(nameId, event.target.checked)}
-													className="w-4 h-4"
+													className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
 												/>
-												<div>
-													<h3 className="font-semibold text-foreground">{name.name}</h3>
+												<div className="min-w-0">
+													<div className="flex items-center gap-2 flex-wrap">
+														<h3 className="font-semibold text-foreground text-sm sm:text-base">{name.name}</h3>
+														{locked && (
+															<span className="text-[10px] text-chart-4 font-semibold inline-flex items-center gap-0.5">
+																<Lock size={10} /> Locked
+															</span>
+														)}
+														{hidden && (
+															<span className="text-[10px] text-destructive font-semibold inline-flex items-center gap-0.5">
+																<EyeOff size={10} /> Hidden
+															</span>
+														)}
+													</div>
 													{name.description && (
-														<p className="text-sm text-muted-foreground">{name.description}</p>
+														<p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">{name.description}</p>
 													)}
-													<div className="flex gap-4 mt-1 text-xs text-muted-foreground/60">
+													<div className="flex gap-3 mt-0.5 text-[10px] sm:text-xs text-muted-foreground/60">
 														<span>Votes: {name.votes}</span>
 														<span>
 															Score:{" "}
@@ -525,42 +464,55 @@ export function AdminDashboard() {
 												</div>
 											</div>
 
-											<div className="flex items-center gap-2">
-												{locked && (
-													<div className="text-xs text-chart-4 font-semibold">
-														<Lock size={12} /> Locked
-													</div>
-												)}
-												{hidden && (
-													<div className="text-xs text-destructive font-semibold">
-														<EyeOff size={12} /> Hidden
-													</div>
-												)}
-
-												<div className="flex gap-1">
-													<Button
-														onClick={() => void handleToggleHidden(name.id, hidden)}
-														variant="ghost"
-														size="sm"
-														iconOnly={true}
-													>
-														{hidden ? <Eye size={14} /> : <EyeOff size={14} />}
-													</Button>
-													<Button
-														onClick={() => void handleToggleLocked(name.id, locked)}
-														variant="ghost"
-														size="sm"
-														iconOnly={true}
-														aria-label={locked ? "Unlock name" : "Lock name"}
-													>
-														<Lock size={14} />
-													</Button>
-												</div>
+											<div className="flex items-center gap-1 shrink-0">
+												<Button
+													onClick={() => void handleToggleHidden(name.id, hidden)}
+													variant="ghost"
+													size="small"
+												>
+													{hidden ? <Eye size={14} /> : <EyeOff size={14} />}
+												</Button>
+												<Button
+													onClick={() => void handleToggleLocked(name.id, locked)}
+													variant="ghost"
+													size="small"
+													aria-label={locked ? "Unlock name" : "Lock name"}
+												>
+													<Lock size={14} />
+												</Button>
 											</div>
 										</div>
 									</div>
 								);
 							})}
+						</div>
+					</motion.div>
+				)}
+
+				{activeTab === "overview" && (
+					<motion.div
+						key="overview"
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -20 }}
+					>
+						<div className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
+									<input
+										type="file"
+										accept="image/*"
+										onChange={handleImageUpload}
+										className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+									/>
+								</div>
+								<div>
+									<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
+									<p className="text-muted-foreground">Activity tracking coming soon...</p>
+								</div>
+							</div>
 						</div>
 					</motion.div>
 				)}
@@ -571,79 +523,10 @@ export function AdminDashboard() {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -20 }}
-						className="space-y-6"
 					>
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<div className="flex items-center gap-3 mb-2">
-									<Users className="text-primary" size={22} />
-									<h2 className="text-lg font-semibold">Tracked Users</h2>
-								</div>
-								<p className="text-3xl font-bold">{userSummaries.length}</p>
-							</div>
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<div className="flex items-center gap-3 mb-2">
-									<Activity className="text-chart-4" size={22} />
-									<h2 className="text-lg font-semibold">Selections Logged</h2>
-								</div>
-								<p className="text-3xl font-bold">
-									{userSummaries.reduce((sum, summary) => sum + summary.selectionsCount, 0)}
-								</p>
-							</div>
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<div className="flex items-center gap-3 mb-2">
-									<BarChart3 className="text-chart-2" size={22} />
-									<h2 className="text-lg font-semibold">Ratings Logged</h2>
-								</div>
-								<p className="text-3xl font-bold">
-									{userSummaries.reduce((sum, summary) => sum + summary.ratingsCount, 0)}
-								</p>
-							</div>
-						</div>
-
-						<div className="p-6 border border-border/10 rounded-2xl bg-card">
-							<h2 className="text-2xl font-bold mb-4">Most Active Users</h2>
-							<div className="space-y-3">
-								{userSummaries.length > 0 ? (
-									userSummaries.map((summary) => (
-										<div
-											key={summary.userKey}
-											className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_repeat(5,minmax(0,120px))] gap-4 border-b border-border/10 pb-3"
-										>
-											<div>
-												<p className="font-medium text-foreground">{summary.userName}</p>
-												<p className="text-xs text-muted-foreground">
-													Last active: {formatTimestamp(summary.lastActiveAt)}
-												</p>
-											</div>
-											<div>
-												<p className="text-xs text-muted-foreground">Selections</p>
-												<p className="font-semibold">{summary.selectionsCount}</p>
-											</div>
-											<div>
-												<p className="text-xs text-muted-foreground">Ratings</p>
-												<p className="font-semibold">{summary.ratingsCount}</p>
-											</div>
-											<div>
-												<p className="text-xs text-muted-foreground">Wins</p>
-												<p className="font-semibold">{summary.totalWins}</p>
-											</div>
-											<div>
-												<p className="text-xs text-muted-foreground">Losses</p>
-												<p className="font-semibold">{summary.totalLosses}</p>
-											</div>
-											<div>
-												<p className="text-xs text-muted-foreground">Avg Rating</p>
-												<p className="font-semibold">{summary.averageRating}</p>
-											</div>
-										</div>
-									))
-								) : (
-									<p className="text-muted-foreground">
-										User analytics will appear after people start rating and selecting names.
-									</p>
-								)}
-							</div>
+						<div className="p-6">
+							<h2 className="text-2xl font-bold mb-4">User Analytics</h2>
+							<p className="text-muted-foreground">User tracking and analytics coming soon...</p>
 						</div>
 					</motion.div>
 				)}
@@ -654,79 +537,10 @@ export function AdminDashboard() {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -20 }}
-						className="space-y-6"
 					>
-						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<p className="text-sm text-muted-foreground mb-1">Weekly Active Users</p>
-								<p className="text-3xl font-bold">{engagement?.activeUsers ?? 0}</p>
-							</div>
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<p className="text-sm text-muted-foreground mb-1">Weekly Selections</p>
-								<p className="text-3xl font-bold">{engagement?.selectionsInWindow ?? 0}</p>
-							</div>
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<p className="text-sm text-muted-foreground mb-1">Weekly Rating Updates</p>
-								<p className="text-3xl font-bold">{engagement?.ratingsUpdatedInWindow ?? 0}</p>
-							</div>
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<p className="text-sm text-muted-foreground mb-1">Avg Selections / Selector</p>
-								<p className="text-3xl font-bold">
-									{engagement?.averageSelectionsPerSelector ?? 0}
-								</p>
-							</div>
-						</div>
-
-						<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<div className="flex items-center gap-3 mb-4">
-									<Trophy className="text-chart-4" size={22} />
-									<h2 className="text-2xl font-bold">Top Selected Names</h2>
-								</div>
-								<div className="space-y-3">
-									{topSelections.length > 0 ? (
-										topSelections.map((selection, index) => (
-											<div
-												key={selection.nameId}
-												className="flex items-center justify-between border-b border-border/10 pb-3"
-											>
-												<p className="font-medium">
-													{index + 1}. {selection.name}
-												</p>
-												<p className="text-chart-4 font-semibold">{selection.count}</p>
-											</div>
-										))
-									) : (
-										<p className="text-muted-foreground">
-											No tournament selections have been recorded yet.
-										</p>
-									)}
-								</div>
-							</div>
-
-							<div className="p-6 border border-border/10 rounded-2xl bg-card">
-								<div className="flex items-center gap-3 mb-4">
-									<BarChart3 className="text-primary" size={22} />
-									<h2 className="text-2xl font-bold">Leaderboard Snapshot</h2>
-								</div>
-								<div className="space-y-3">
-									{leaderboard.length > 0 ? (
-										leaderboard.map((entry, index) => (
-											<div
-												key={entry.name}
-												className="flex items-center justify-between border-b border-border/10 pb-3"
-											>
-												<p className="font-medium">
-													{index + 1}. {entry.name}
-												</p>
-												<p className="text-primary font-semibold">{Math.round(entry.avg_rating)}</p>
-											</div>
-										))
-									) : (
-										<p className="text-muted-foreground">No leaderboard data yet.</p>
-									)}
-								</div>
-							</div>
+						<div className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Site Analytics</h2>
+							<p className="text-muted-foreground">Advanced analytics coming soon...</p>
 						</div>
 					</motion.div>
 				)}

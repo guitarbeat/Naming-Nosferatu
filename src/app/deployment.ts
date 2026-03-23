@@ -194,7 +194,7 @@ function renderConsoleErrors(errors: string[]): string {
 				<button 
 					type="button" 
 					onclick="copyErrorsToClipboard()"
-					class="deployment-error__button deployment-error__button--danger deployment-error__button--compact"
+					style="margin-left:auto;padding:4px 12px;font-size:12px;background:#dc2626;color:white;border:none;border-radius:4px;cursor:pointer"
 				>
 					Copy All
 				</button>
@@ -259,12 +259,10 @@ ${errorText || "No errors captured"}
 			if (btn) {
 				const original = btn.textContent;
 				btn.textContent = "Copied!";
-				btn.classList.remove("deployment-error__button--danger");
-				btn.classList.add("deployment-error__button--success");
+				btn.style.background = "#22c55e";
 				setTimeout(() => {
 					btn.textContent = original;
-					btn.classList.remove("deployment-error__button--success");
-					btn.classList.add("deployment-error__button--danger");
+					btn.style.background = "#dc2626";
 				}, 2000);
 			}
 		},
@@ -302,7 +300,7 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
 		${renderDeploymentList("How to Fix:", errorInfo.suggestions, "ol")}
 		<div class="deployment-error__button-row">
 			<button type="button" class="deployment-error__button" onclick="window.location.reload()">Reload Page</button>
-			<button type="button" class="deployment-error__button deployment-error__button--secondary" onclick="document.getElementById('deployment-error-display').remove()">Dismiss</button>
+			<button type="button" class="deployment-error__button" style="background:#6b7280" onclick="document.getElementById('deployment-error-display').remove()">Dismiss</button>
 		</div>
 		<p style="text-align:center;color:#9ca3af;font-size:11px;margin-top:16px">
 			Press F12 to open browser DevTools for more details

@@ -4,11 +4,7 @@
  */
 
 import { Suspense, useCallback, useEffect, useState } from "react";
-import {
-	type EngagementMetrics,
-	leaderboardAPI,
-	statsAPI,
-} from "@/features/analytics/services/analyticsService";
+import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import {
@@ -17,11 +13,12 @@ import {
 	Clock,
 	Eye,
 	EyeOff,
+	Target,
 	TrendingUp,
 	Trophy,
 	Users,
 } from "@/shared/lib/icons";
-import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase";
+import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase/api";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
 import { PersonalResults } from "./PersonalResults";
@@ -39,6 +36,23 @@ interface DashboardProps {
 	isAdmin?: boolean;
 	canHideNames?: boolean;
 	onNameHidden?: (nameId: string) => void;
+}
+
+interface EngagementMetrics {
+	totalTournaments: number;
+	completedTournaments: number;
+	averageTournamentTime: number;
+	totalMatches: number;
+	peakActiveUsers: number;
+	dailyActiveUsers: number;
+	weeklyActiveUsers: number;
+	monthlyActiveUsers: number;
+	mostActiveHour: string;
+	mostActiveDay: string;
+	userRetentionRate: number;
+	averageSessionDuration: number;
+	totalPageViews: number;
+	bounceRate: number;
 }
 
 export function Dashboard({
@@ -174,7 +188,7 @@ export function Dashboard({
 	};
 
 	return (
-		<div className="dashboard-container space-y-10">
+		<div className="dashboard-container space-y-6 sm:space-y-10">
 			{/* Personal Results with Ranking Adjustment */}
 			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
 				<PersonalResults
@@ -201,26 +215,26 @@ export function Dashboard({
 			{/* User Stats */}
 			{userName && userStats && (
 				<div className="py-2">
-					<div className="flex items-center gap-3 mb-4">
-						<BarChart3 className="text-primary" size={24} />
-						<h3 className="text-xl font-semibold text-foreground">Your Stats</h3>
+					<div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+						<BarChart3 className="text-primary" size={20} />
+						<h3 className="text-lg sm:text-xl font-semibold text-foreground">Your Stats</h3>
 					</div>
-					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+					<div className="grid grid-cols-2 gap-3 sm:gap-4">
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Ratings Given</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalRatings}</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Ratings</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.totalRatings}</p>
 						</div>
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Names Selected</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalSelections}</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Selected</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.totalSelections}</p>
 						</div>
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Total Wins</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.totalWins}</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Wins</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.totalWins}</p>
 						</div>
 						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Win Rate</p>
-							<p className="text-2xl font-bold text-foreground">{userStats.winRate}%</p>
+							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Win Rate</p>
+							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.winRate}%</p>
 						</div>
 					</div>
 				</div>
@@ -228,13 +242,13 @@ export function Dashboard({
 
 			{/* Global Leaderboard */}
 			<div className="py-2">
-				<div className="flex items-center justify-between mb-4">
-					<div className="flex items-center gap-3">
-						<Trophy className="text-chart-4" size={24} />
-						<h3 className="text-xl font-semibold text-foreground">Top Names</h3>
+				<div className="flex items-center justify-between mb-3 sm:mb-4">
+					<div className="flex items-center gap-2 sm:gap-3">
+						<Trophy className="text-chart-4" size={20} />
+						<h3 className="text-lg sm:text-xl font-semibold text-foreground">Top Names</h3>
 					</div>
 					{onStartNew && (
-						<Button variant="ghost" size="sm" onClick={onStartNew}>
+						<Button variant="ghost" size="small" onClick={onStartNew}>
 							Start New Tournament
 						</Button>
 					)}
@@ -287,7 +301,7 @@ export function Dashboard({
 			{siteStats && (
 				<div className="py-2">
 					<h3 className="text-xl font-semibold text-foreground mb-4">Site Statistics</h3>
-					<div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+					<div className="grid grid-cols-2 gap-3 sm:gap-4">
 						<div className="py-2">
 							<p className="text-sm text-muted-foreground mb-1">Total Names</p>
 							<p className="text-2xl font-bold text-foreground">{siteStats.totalNames}</p>
@@ -319,24 +333,24 @@ export function Dashboard({
 			{/* Engagement Metrics */}
 			{engagementMetrics && (
 				<div className="py-4">
-					<div className="flex items-center justify-between mb-4">
-						<div className="flex items-center gap-3">
-							<TrendingUp className="text-chart-4" size={24} />
-							<h3 className="text-xl font-semibold text-chart-4">Engagement Metrics</h3>
+					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-4">
+						<div className="flex items-center gap-2 sm:gap-3">
+							<TrendingUp className="text-chart-4" size={20} />
+							<h3 className="text-lg sm:text-xl font-semibold text-chart-4">Engagement</h3>
 						</div>
-						<div className="flex gap-2">
+						<div className="flex gap-2 w-full sm:w-auto">
 							<select
 								value={timeframe}
 								onChange={(e) => setTimeframe(e.target.value as "day" | "week" | "month")}
-								className="px-3 py-2 border border-border rounded-lg bg-background text-foreground"
+								className="flex-1 sm:flex-none px-3 py-1.5 sm:py-2 border border-border rounded-lg bg-background text-foreground text-sm"
 							>
-								<option value="day">Last 24 Hours</option>
-								<option value="week">Last Week</option>
-								<option value="month">Last Month</option>
+								<option value="day">24h</option>
+								<option value="week">Week</option>
+								<option value="month">Month</option>
 							</select>
 							<Button
 								variant="ghost"
-								size="sm"
+								size="small"
 								onClick={() => fetchEngagementMetrics()}
 								disabled={_isLoadingStats}
 							>
@@ -346,32 +360,32 @@ export function Dashboard({
 						</div>
 					</div>
 
-					<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
 						<div className="p-4 border border-border rounded-lg bg-card">
 							<div className="flex items-center gap-2 mb-2">
 								<Users className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Active Users</p>
+									<p className="text-sm text-muted-foreground">Total Tournaments</p>
 									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.activeUsers}
+										{engagementMetrics.totalTournaments}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
+								<Trophy className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Active Selectors</p>
+									<p className="text-sm text-muted-foreground">Completed</p>
 									<p className="text-2xl font-bold text-chart-4">
-										{engagementMetrics.activeSelectors}
+										{engagementMetrics.completedTournaments}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
-								<Activity className="text-chart-4" size={20} />
+								<Clock className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Active Raters</p>
+									<p className="text-sm text-muted-foreground">Avg Duration</p>
 									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.activeRaters}
+										{engagementMetrics.averageTournamentTime}m
 									</p>
 								</div>
 							</div>
@@ -379,96 +393,59 @@ export function Dashboard({
 
 						<div className="p-4 border border-border rounded-lg bg-card">
 							<div className="flex items-center gap-2 mb-2">
-								<Activity className="text-chart-4" size={20} />
+								<Target className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Selections In Window</p>
+									<p className="text-sm text-muted-foreground">Peak Active Users</p>
 									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.selectionsInWindow}
+										{engagementMetrics.peakActiveUsers}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
 								<Activity className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Ratings Updated</p>
+									<p className="text-sm text-muted-foreground">User Retention</p>
 									<p className="text-2xl font-bold text-chart-4">
-										{engagementMetrics.ratingsUpdatedInWindow}
+										{engagementMetrics.userRetentionRate}%
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
 								<BarChart3 className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Avg Ratings / Rater</p>
-									<p className="text-2xl font-bold text-chart-4">
-										{engagementMetrics.averageRatingsPerRater}
-									</p>
+									<p className="text-sm text-muted-foreground">Bounce Rate</p>
+									<p className="text-2xl font-bold text-chart-4">{engagementMetrics.bounceRate}%</p>
 								</div>
 							</div>
 						</div>
 
 						<div className="p-4 border border-border rounded-lg bg-card">
 							<div className="flex items-center gap-2 mb-2">
-								<TrendingUp className="text-chart-4" size={20} />
+								<Users className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Avg Selections / Selector</p>
+									<p className="text-sm text-muted-foreground">Daily Active</p>
 									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.averageSelectionsPerSelector}
+										{engagementMetrics.dailyActiveUsers}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
-								<Clock className="text-chart-4" size={20} />
+								<Users className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Latest Selection</p>
-									<p className="text-sm font-semibold text-foreground">
-										{engagementMetrics.latestSelectionAt
-											? new Date(engagementMetrics.latestSelectionAt).toLocaleString()
-											: "No recent selections"}
+									<p className="text-sm text-muted-foreground">Weekly Active</p>
+									<p className="text-2xl font-bold text-foreground">
+										{engagementMetrics.weeklyActiveUsers}
 									</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 mb-2">
-								<Clock className="text-chart-4" size={20} />
+								<Users className="text-chart-4" size={20} />
 								<div>
-									<p className="text-sm text-muted-foreground">Latest Rating</p>
-									<p className="text-sm font-semibold text-foreground">
-										{engagementMetrics.latestRatingAt
-											? new Date(engagementMetrics.latestRatingAt).toLocaleString()
-											: "No recent rating changes"}
+									<p className="text-sm text-muted-foreground">Monthly Active</p>
+									<p className="text-2xl font-bold text-foreground">
+										{engagementMetrics.monthlyActiveUsers}
 									</p>
 								</div>
-							</div>
-						</div>
-
-						<div className="p-4 border border-border rounded-lg bg-card">
-							<div className="flex items-center gap-2 mb-3">
-								<Trophy className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Top Selections</p>
-									<p className="text-xs text-muted-foreground">
-										Most chosen names across recorded tournaments
-									</p>
-								</div>
-							</div>
-							<div className="space-y-2">
-								{engagementMetrics.topSelections.length > 0 ? (
-									engagementMetrics.topSelections.slice(0, 3).map((selection, index) => (
-										<div
-											key={selection.nameId}
-											className="flex items-center justify-between text-sm"
-										>
-											<span className="text-foreground">
-												{index + 1}. {selection.name}
-											</span>
-											<span className="text-chart-4 font-semibold">{selection.count}</span>
-										</div>
-									))
-								) : (
-									<p className="text-sm text-muted-foreground">
-										No recorded tournament selections yet.
-									</p>
-								)}
 							</div>
 						</div>
 					</div>
@@ -483,7 +460,11 @@ export function Dashboard({
 							<EyeOff className="text-chart-4" size={24} />
 							<h3 className="text-xl font-semibold text-chart-4">Admin: Hidden Names</h3>
 						</div>
-						<Button variant="ghost" size="sm" onClick={() => setShowHiddenNames(!showHiddenNames)}>
+						<Button
+							variant="ghost"
+							size="small"
+							onClick={() => setShowHiddenNames(!showHiddenNames)}
+						>
 							{showHiddenNames ? "Hide List" : "Show List"}
 						</Button>
 					</div>
@@ -499,7 +480,7 @@ export function Dashboard({
 										<span className="text-foreground font-medium">{name.name}</span>
 										<Button
 											variant="ghost"
-											size="sm"
+											size="small"
 											onClick={() => handleUnhideName(name.id)}
 											className="text-chart-2 hover:text-chart-2/80"
 										>

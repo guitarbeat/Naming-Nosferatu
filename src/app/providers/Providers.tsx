@@ -16,7 +16,7 @@
  * @example
  * // main.tsx
  * import { Providers } from "@/app/providers/Providers";
- * import { supabaseAuthAdapter as authAdapter } from "@/services/supabaseAuthAdapter";
+ * import { authAdapter } from "@/services/authAdapter";
  *
  * <Providers auth={{ adapter: authAdapter }}>
  *   <App />
@@ -33,7 +33,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import Button from "@/shared/components/layout/Button";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Constants
@@ -52,7 +51,6 @@ type UserRole = keyof typeof ROLE_HIERARCHY;
 export interface AuthUser {
 	id: string;
 	name: string;
-	userName?: string;
 	email?: string;
 	isAdmin: boolean;
 	role?: UserRole;
@@ -206,10 +204,6 @@ export function useToast(): ToastContextValue {
 	return ctx;
 }
 
-export function useOptionalToast(): ToastContextValue | null {
-	return useContext(ToastContext);
-}
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Toast Container (self-contained UI)
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -269,18 +263,14 @@ function ToastContainer({
 							{style.icon}
 						</span>
 						<span className="flex-1">{toast.message}</span>
-						<Button
+						<button
 							onClick={() => onDismiss(toast.id)}
-							variant="ghost"
-							size="icon"
-							iconOnly={true}
-							shape="pill"
-							className="ml-2 size-7 bg-white/8 text-primary-foreground/80 hover:bg-white/14 hover:text-primary-foreground"
+							className="ml-2 rounded p-0.5 opacity-70 transition-opacity hover:opacity-100"
 							aria-label="Dismiss"
 							type="button"
 						>
 							✕
-						</Button>
+						</button>
 					</div>
 				);
 			})}

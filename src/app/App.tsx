@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { type ReactNode, Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
@@ -16,8 +16,9 @@ import { ProfileInner } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
-import { LoadingSequence } from "@/shared/components/layout/LoadingSequence";
+import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useOfflineSync } from "@/shared/hooks";
+import { Lightbulb, Trophy, User } from "@/shared/lib/icons";
 import {
 	cleanupPerformanceMonitoring,
 	initializePerformanceMonitoring,
@@ -30,46 +31,9 @@ const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
 const AdminDashboardLazy = routeComponents.AdminDashboardLazy;
 
-type HomeTab = "pick" | "suggest" | "profile";
-
-function getHomeTabFromHash(hash: string): HomeTab {
-	switch (hash) {
-		case "#suggest":
-			return "suggest";
-		case "#profile":
-			return "profile";
-		default:
-			return "pick";
-	}
-}
-
-function HomeTabPanel({
-	id,
-	activeTab,
-	children,
-}: {
-	id: HomeTab;
-	activeTab: HomeTab;
-	children: ReactNode;
-}) {
-	const isActive = activeTab === id;
-
-	return (
-		<div
-			id={id}
-			role="tabpanel"
-			aria-hidden={!isActive}
-			className={isActive ? "w-full" : "hidden w-full"}
-		>
-			{children}
-		</div>
-	);
-}
-
 function App() {
 	const { user: authUser, isLoading } = useAuth();
 	const isInitialized = !isLoading;
-	const [hasCompletedBootSequence, setHasCompletedBootSequence] = useState(false);
 	const { userActions } = useAppStore();
 	const location = useLocation();
 	const { pathname } = location;
@@ -84,23 +48,9 @@ function App() {
 
 	useEffect(() => {
 		if (authUser) {
-			userActions.setUser({
-				id: authUser.id,
-				name: authUser.userName ?? authUser.name,
-				email: authUser.email,
-				isLoggedIn: true,
-				isAdmin: Boolean(authUser.isAdmin),
-			});
-		} else {
-			userActions.setUser({
-				id: null,
-				name: "",
-				email: undefined,
-				isLoggedIn: false,
-				isAdmin: false,
-			});
+			userActions.setAdminStatus(Boolean(authUser.isAdmin));
 		}
-		updateSupabaseUserContext(authUser?.userName ?? authUser?.name ?? null, authUser?.id ?? null);
+		updateSupabaseUserContext(authUser?.name ?? null, authUser?.id ?? null);
 	}, [authUser, userActions]);
 
 	useEffect(() => {
@@ -115,9 +65,6 @@ function App() {
 	const handleUserContext = useCallback((name: string) => {
 		updateSupabaseUserContext(name, null);
 	}, []);
-	const handleBootSequenceComplete = useCallback(() => {
-		setHasCompletedBootSequence(true);
-	}, []);
 	useAppStoreInitialization(handleUserContext);
 	useOfflineSync();
 
@@ -131,14 +78,6 @@ function App() {
 
 	return (
 		<AppLayout>
-			{!hasCompletedBootSequence && (
-				<LoadingSequence
-					title="Naming Nosferatu"
-					subtitle="Preparing the tournament floor for the first matchup."
-					onComplete={handleBootSequenceComplete}
-				/>
-			)}
-
 			<Routes>
 				<Route
 					path="/"
@@ -164,45 +103,40 @@ function App() {
 }
 
 function HomeContent() {
-	const { login, logout, register } = useAuth();
-	const location = useLocation();
-	const activeTab = getHomeTabFromHash(location.hash);
+	const { login } = useAuth();
 
 	return (
-		<Section
-			id="home"
-			variant="minimal"
-			padding="none"
-			maxWidth="full"
-			className="app-home-section"
-		>
-			<div className="app-home-panels">
-				<HomeTabPanel id="pick" activeTab={activeTab}>
-					<div className="home-panel-shell">
-						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-							<TournamentFlow />
-						</Suspense>
-					</div>
-				</HomeTabPanel>
+		<>
+			<Section id="pick" variant="minimal" padding="compact" maxWidth="full">
+				<div className="mx-auto max-w-4xl">
+					<SectionHeading
+						icon={Trophy}
+						title="Pick Names"
+					/>
+				</div>
+				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+					<TournamentFlow />
+				</Suspense>
+			</Section>
 
-				<HomeTabPanel id="suggest" activeTab={activeTab}>
-					<div className="home-panel-shell">
-						<NameSuggestionInner />
-					</div>
-				</HomeTabPanel>
+			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered={true}>
+				<SectionHeading
+					icon={Lightbulb}
+					title="Suggest a Name"
+					subtitle="Got a great cat name? Share it with the community"
+				/>
+				<NameSuggestionInner />
+			</Section>
 
-				<HomeTabPanel id="profile" activeTab={activeTab}>
-					<div className="home-panel-shell">
-						<ProfileInner
-							onLogin={(name) => login({ name })}
-							onAccountLogin={(credentials) => login(credentials)}
-							onRegister={register}
-							onLogout={logout}
-						/>
-					</div>
-				</HomeTabPanel>
-			</div>
-		</Section>
+			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+				<SectionHeading
+					icon={User}
+					title="Your Profile"
+					subtitle="Track your rankings and tournament history"
+				/>
+				<ProfileInner onLogin={(name) => login({ name })} />
+			</Section>
+		</>
 	);
 }
 

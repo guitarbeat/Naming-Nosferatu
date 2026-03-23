@@ -149,10 +149,9 @@ export function ConfirmDialog({
 								</Button>
 								<Button
 									type="button"
-									variant={confirmTone === "danger" ? "danger" : "primary"}
+									variant={confirmTone === "danger" ? "danger" : "gradient"}
 									onClick={() => void onConfirm()}
 									loading={loading}
-									shape="pill"
 									className={cn(confirmTone === "danger" && "bg-red-600 hover:bg-red-500")}
 								>
 									{confirmLabel}

@@ -3,8 +3,6 @@
  * @description Main application layout component with floating primary nav
  */
 
-import { useLocation } from "react-router-dom";
-import { AppVisualEffects } from "@/shared/components/layout/AppVisualEffects";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
 	ErrorBoundary,
@@ -13,8 +11,6 @@ import {
 	OfflineIndicator,
 } from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
-import { FrameEffect } from "@/shared/components/layout/FrameEffect";
-import { cn } from "@/shared/lib/basic";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
@@ -22,62 +18,65 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-	const { pathname } = useLocation();
-	const { user, tournament, errors, errorActions, ui } = useAppStore();
+	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
-	const showsFloatingNav = pathname !== "/admin";
 
 	return (
 		<ErrorBoundary context="Main Application Layout">
-			<div className="app relative isolate min-h-dvh w-full bg-background text-foreground">
-				<AppVisualEffects theme={ui.theme} />
-
+			<div className="app relative min-h-dvh w-full text-foreground">
 				<OfflineIndicator />
 
 				<a
 					href="#main-content"
-					className="sr-only fixed left-4 top-4 z-[10001] focus:not-sr-only focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+					className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
 				>
 					Skip to main content
 				</a>
 
+				{/* Background effects layer */}
+				<div className="cat-background fixed inset-0 -z-10" aria-hidden="true">
+					<div className="cat-background__gradient" />
+					<div className="cat-background__moire" />
+					<div className="cat-background__soft-blur" />
+					<div className="cat-background__vignette" />
+				</div>
+
 				<FloatingNavbar />
 
-				<FrameEffect>
-					<main
-						id="main-content"
-						className={cn("app-main-shell", showsFloatingNav && "app-main-shell--nav-safe")}
-						tabIndex={-1}
-					>
-						{/* Error banner */}
-						{Boolean(errors.current) && (
-							<div className="app-error-banner">
-								<ErrorComponent
-									error={String(errors.current)}
-									onRetry={() => errorActions.clearError()}
-									onDismiss={() => errorActions.clearError()}
-								/>
-							</div>
-						)}
+				{/* Main content area with proper spacing */}
+				<main
+					id="main-content"
+					className="relative flex min-h-dvh w-full flex-col px-3 pb-24 pt-4 sm:px-6 sm:pb-24 sm:pt-6 md:pt-10"
+					tabIndex={-1}
+				>
+					{/* Error banner */}
+					{Boolean(errors.current) && (
+						<div className="mx-auto mb-4 w-full max-w-4xl">
+							<ErrorComponent
+								error={String(errors.current)}
+								onRetry={() => errorActions.clearError()}
+								onDismiss={() => errorActions.clearError()}
+							/>
+						</div>
+					)}
 
-						{/* Page content */}
-						<div className="app-page-stack">{children}</div>
+					{/* Page content */}
+					<div className="flex w-full flex-1 flex-col items-center gap-8 sm:gap-12">{children}</div>
 
-						{/* Loading overlay */}
-						{tournament.isLoading && (
-							<div
-								className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-								role="status"
-								aria-live="polite"
-								aria-busy="true"
-							>
-								<Loading variant="spinner" text="Initializing Tournament..." />
-							</div>
-						)}
+					{/* Loading overlay */}
+					{tournament.isLoading && (
+						<div
+							className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+							role="status"
+							aria-live="polite"
+							aria-busy="true"
+						>
+							<Loading variant="spinner" text="Initializing Tournament..." />
+						</div>
+					)}
 
-						<ScrollToTopButton isLoggedIn={isLoggedIn} />
-					</main>
-				</FrameEffect>
+					<ScrollToTopButton isLoggedIn={isLoggedIn} />
+				</main>
 			</div>
 		</ErrorBoundary>
 	);

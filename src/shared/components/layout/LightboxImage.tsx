@@ -5,7 +5,6 @@
 
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Button from "./Button";
 
 interface LightboxImageProps {
 	src: string;
@@ -83,19 +82,17 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 					<div className="text-6xl mb-4">🐱</div>
 					<p className="text-sm mb-2">Image failed to load</p>
 					{retryCount >= maxRetries && (
-						<Button
+						<button
 							type="button"
 							onClick={() => {
 								setRetryCount(0);
 								setHasError(false);
 								setIsLoading(true);
 							}}
-							variant="ghost"
-							presentation="chip"
-							shape="pill"
+							className="px-3 py-1 text-xs bg-foreground/10 hover:bg-foreground/20 rounded-full transition-colors"
 						>
 							Retry
-						</Button>
+						</button>
 					)}
 				</div>
 			</div>

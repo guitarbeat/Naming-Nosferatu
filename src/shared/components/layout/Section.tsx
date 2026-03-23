@@ -20,8 +20,8 @@ interface SectionProps {
 }
 
 const paddingClasses = {
-	comfortable: "py-4 sm:py-6 md:py-8",
-	compact: "py-3 sm:py-4",
+	comfortable: "py-6 sm:py-8 md:py-10",
+	compact: "py-4 sm:py-6",
 	none: "",
 } as const;
 

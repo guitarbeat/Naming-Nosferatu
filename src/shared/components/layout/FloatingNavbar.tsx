@@ -1,12 +1,13 @@
 /**
  * @module FloatingNavbar
- * @description Primary bottom navigation and quick actions for the app shell
+ * @description Accessible, bottom-fixed primary navigation for key app flows.
  */
 
 import { motion } from "framer-motion";
-import { type ElementType, useEffect, useState } from "react";
+import type { ElementType, ReactNode } from "react";
+import { useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { cn } from "@/shared/lib/basic";
+import { cn, hapticNavTap, hapticTournamentStart } from "@/shared/lib/basic";
 import {
 	BarChart3,
 	CheckCircle,
@@ -17,133 +18,189 @@ import {
 	User,
 } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
-import { getButtonClassName } from "./Button";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
 
-type NavSection = "pick" | "suggest" | "profile" | "analyze";
-type HomeTab = Exclude<NavSection, "analyze">;
+type NavSection = "pick" | "suggest" | "profile";
 
-function getHomeTabFromHash(hash: string): HomeTab {
-	switch (hash) {
-		case "#suggest":
-			return "suggest";
-		case "#profile":
-			return "profile";
-		default:
-			return "pick";
-	}
+const keyToId: Record<NavSection, string> = {
+	pick: "pick",
+	suggest: "suggest",
+	profile: "profile",
+};
+
+function useIsMobile() {
+	const [isMobile, setIsMobile] = useState(() =>
+		typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false,
+	);
+	useEffect(() => {
+		const mql = window.matchMedia("(max-width: 768px)");
+		const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+		mql.addEventListener("change", handler);
+		return () => mql.removeEventListener("change", handler);
+	}, []);
+	return isMobile;
 }
 
 function FloatingNavItem({
 	icon: Icon,
 	label,
-	isAccent = false,
+	variant = "primary",
 	isCurrent = false,
 	isPressed = false,
-	variant = "primary",
+	isAccent = false,
 	onClick,
-	className,
 	customIcon,
+	className,
 	ariaLabel,
 }: {
 	icon: ElementType;
 	label: string;
-	isAccent?: boolean;
+	variant?: "primary" | "utility";
 	isCurrent?: boolean;
 	isPressed?: boolean;
-	variant?: "primary" | "utility";
-	onClick?: () => void;
+	isAccent?: boolean;
+	onClick: () => void;
+	customIcon?: ReactNode;
 	className?: string;
-	customIcon?: React.ReactNode;
 	ariaLabel?: string;
 }) {
-	const sharedVariant = isAccent ? "primary" : variant === "utility" ? "ghost" : "secondary";
-	const baseClasses = cn(
-		getButtonClassName({
-			variant: sharedVariant,
-			presentation: "chip",
-			shape: "pill",
-		}),
-		"floating-navbar__item",
-		"relative flex items-center justify-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200",
-		variant === "primary" && "floating-navbar__item--primary",
-		variant === "utility" && "floating-navbar__item--utility",
-		isCurrent && "floating-navbar__item--current",
-		isPressed && "floating-navbar__item--pressed",
-		isAccent && "floating-navbar__item--accent",
-		className,
-	);
-
 	return (
 		<motion.button
 			type="button"
 			whileTap={{ scale: 0.97 }}
-			className={baseClasses}
+			className={cn(
+				"floating-navbar__item",
+				variant === "utility" ? "floating-navbar__item--utility" : "floating-navbar__item--primary",
+				isAccent && "floating-navbar__item--accent",
+				className,
+			)}
 			onClick={onClick}
-			aria-label={ariaLabel}
-			aria-current={isCurrent ? "location" : undefined}
-			aria-pressed={isPressed}
+			aria-current={variant === "primary" && isCurrent ? "location" : undefined}
+			aria-pressed={variant === "utility" ? isPressed : undefined}
+			aria-label={ariaLabel ?? label}
 		>
-			{customIcon || <Icon className="floating-navbar__icon" />}
-			<span className="floating-navbar__label">{label}</span>
+			<span className="floating-navbar__icon" aria-hidden="true">
+				{customIcon || <Icon className="h-5 w-5 sm:h-6 sm:w-6" />}
+			</span>
+			<span
+				className={cn(
+					"floating-navbar__label",
+					variant === "utility" && "floating-navbar__label--utility",
+				)}
+			>
+				{label}
+			</span>
 		</motion.button>
 	);
 }
 
 export function FloatingNavbar() {
+	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { tournament, user, ui, uiActions } = useAppStore();
-
+	const isMobile = useIsMobile();
+	const { tournament, tournamentActions, user, ui, uiActions } = appStore;
+	const { selectedNames } = tournament;
+	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
+	const { isSwipeMode } = ui;
+	const { setSwipeMode } = uiActions;
+	const [activeSection, setActiveSection] = useState<NavSection>("pick");
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+	const navGlassId = useId();
 
 	const isHomeRoute = location.pathname === "/";
-	const isTournamentRoute = location.pathname === "/tournament";
 	const isAnalysisRoute = location.pathname === "/analysis";
-	const isAdminRoute = location.pathname === "/admin";
-	const activeHomeTab = getHomeTabFromHash(location.hash);
-
-	const { selectedNames } = tournament;
-	const { isLoggedIn, name: userName, isAdmin, avatarUrl } = user;
-	const { isSwipeMode } = ui;
+	const isTournamentRoute = location.pathname === "/tournament";
 
 	const selectedCount = selectedNames?.length || 0;
-	const pickIcon = isTournamentRoute ? CheckCircle : selectedCount >= 2 ? Trophy : CheckCircle;
-	const pickLabel = isTournamentRoute
-		? "Home"
-		: selectedCount >= 2
-			? `Pick (${selectedCount})`
-			: "Pick";
+	const isTournamentActive = Boolean(tournament.names);
+	const isComplete = tournament.isComplete;
 	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
-	const primaryItemCount = 4;
-	const navGlassId = isHomeRoute
-		? `navbar-home-${activeHomeTab}`
-		: isAnalysisRoute
-			? "navbar-analysis"
-			: "navbar-page";
+	// On mobile, hide utility toggle (it moves into the picker surface)
+	const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
 
-	const navigateHome = (tab: HomeTab = "pick", replace = false) => {
-		navigate(
-			{
-				pathname: "/",
-				hash: tab === "pick" ? "" : tab,
-			},
-			{ replace },
-		);
-	};
-
-	const handleNavClick = (key: NavSection) => {
-		if (key === "analyze") {
-			if (!isAnalysisRoute) {
-				navigate("/analysis");
-			}
+	const scrollToSection = (key: NavSection) => {
+		const id = keyToId[key];
+		const target = document.getElementById(id);
+		if (!target) {
+			window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
 			return;
 		}
 
-		navigateHome(key, isHomeRoute);
+		target.scrollIntoView({
+			behavior: prefersReducedMotion ? "auto" : "smooth",
+			block: "start",
+		});
 	};
+
+	const handleStartTournament = () => {
+		hapticTournamentStart();
+		if (selectedNames && selectedNames.length >= 2) {
+			tournamentActions.setNames(selectedNames);
+			navigate("/tournament");
+		}
+	};
+
+	const handleNavClick = (key: NavSection | "analyze") => {
+		hapticNavTap();
+		if (key === "analyze") {
+			navigate("/analysis");
+			return;
+		}
+
+		if (!isHomeRoute) {
+			navigate("/");
+			window.setTimeout(() => scrollToSection(key), 120);
+			return;
+		}
+
+		scrollToSection(key);
+	};
+
+	useEffect(() => {
+		if (!isHomeRoute) {
+			return;
+		}
+
+		let rafId: number | null = null;
+		const sections: NavSection[] = ["pick", "suggest", "profile"];
+
+		const handleScroll = () => {
+			if (rafId) {
+				return;
+			}
+			rafId = requestAnimationFrame(() => {
+				rafId = null;
+				let current: NavSection = "pick";
+				let minDistance = Number.POSITIVE_INFINITY;
+
+				for (const section of sections) {
+					const element = document.getElementById(section);
+					if (!element) {
+						continue;
+					}
+					const rect = element.getBoundingClientRect();
+					const distance = Math.abs(rect.top);
+					if (distance < minDistance && rect.top < window.innerHeight * 0.7) {
+						minDistance = distance;
+						current = section;
+					}
+				}
+				setActiveSection(current);
+			});
+		};
+
+		window.addEventListener("scroll", handleScroll, { passive: true });
+		handleScroll();
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+			if (rafId) {
+				cancelAnimationFrame(rafId);
+			}
+		};
+	}, [isHomeRoute]);
 
 	useEffect(() => {
 		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -202,9 +259,6 @@ export function FloatingNavbar() {
 		};
 	}, []);
 
-	if (isAdminRoute) {
-		return null;
-	}
 
 	return (
 		<motion.div
@@ -228,13 +282,29 @@ export function FloatingNavbar() {
 						className="floating-navbar__primary"
 						style={{ gridTemplateColumns: `repeat(${primaryItemCount}, minmax(0, 1fr))` }}
 					>
-						<FloatingNavItem
-							icon={pickIcon}
-							label={pickLabel}
-							isCurrent={isHomeRoute && activeHomeTab === "pick"}
-							isAccent={!isTournamentRoute && selectedCount >= 2}
-							onClick={() => handleNavClick("pick")}
-						/>
+						{(!isTournamentActive || isTournamentRoute) && (
+							<FloatingNavItem
+								icon={selectedCount >= 2 && !isTournamentRoute ? Trophy : CheckCircle}
+								label={
+									isTournamentRoute
+										? "Home"
+										: selectedCount >= 2
+											? `Start (${selectedCount})`
+											: "Pick Names"
+								}
+								isCurrent={isHomeRoute && activeSection === "pick"}
+								isAccent={selectedCount >= 2 && !isTournamentRoute}
+								onClick={() => {
+									if (isTournamentRoute) {
+										navigate("/");
+									} else if (selectedCount >= 2) {
+										handleStartTournament();
+									} else {
+										handleNavClick("pick");
+									}
+								}}
+							/>
+						)}
 
 						<FloatingNavItem
 							icon={BarChart3}
@@ -246,14 +316,14 @@ export function FloatingNavbar() {
 						<FloatingNavItem
 							icon={Lightbulb}
 							label="Suggest"
-							isCurrent={isHomeRoute && activeHomeTab === "suggest"}
+							isCurrent={isHomeRoute && activeSection === "suggest"}
 							onClick={() => handleNavClick("suggest")}
 						/>
 
 						<FloatingNavItem
 							icon={User}
 							label={profileLabel}
-							isCurrent={isHomeRoute && activeHomeTab === "profile"}
+							isCurrent={isHomeRoute && activeSection === "profile"}
 							onClick={() => handleNavClick("profile")}
 							customIcon={
 								isLoggedIn && avatarUrl ? (
@@ -271,6 +341,7 @@ export function FloatingNavbar() {
 						/>
 					</div>
 
+					{/* Utility toggle hidden on mobile via CSS, moved into picker surface */}
 					<div className="floating-navbar__utility">
 						<FloatingNavItem
 							icon={isSwipeMode ? Layers : LayoutGrid}
@@ -278,7 +349,7 @@ export function FloatingNavbar() {
 							variant="utility"
 							isPressed={isSwipeMode}
 							ariaLabel={isSwipeMode ? "Swipe mode active" : "Grid mode active"}
-							onClick={() => uiActions.setSwipeMode(!isSwipeMode)}
+							onClick={() => setSwipeMode(!isSwipeMode)}
 						/>
 					</div>
 				</nav>

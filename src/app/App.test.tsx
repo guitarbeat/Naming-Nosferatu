@@ -7,28 +7,17 @@ import App from "./App";
 // Mock dependencies
 vi.mock("@/app/providers/Providers", () => ({
 	useAuth: () => ({
-		user: {
-			id: "1",
-			name: "Test User",
-			userName: "Test User",
-			email: "test@example.com",
-			isAdmin: false,
-		},
+		user: { id: "1", isAdmin: false },
 		isLoading: false,
-		login: vi.fn(),
-		logout: vi.fn(),
-		register: vi.fn(),
 	}),
 }));
 
 vi.mock("@/store/appStore", () => ({
 	default: () => ({
-		user: { name: "Test User", isAdmin: false, isLoggedIn: false },
-		userActions: { setUser: vi.fn(), logout: vi.fn() },
-		tournament: { names: [], ratings: [], selectedNames: [] },
+		user: { name: "Test User", isAdmin: false },
+		userActions: { setAdminStatus: vi.fn() },
+		tournament: { names: [], ratings: [] },
 		tournamentActions: {},
-		ui: { isSwipeMode: false },
-		uiActions: { setSwipeMode: vi.fn() },
 	}),
 	useAppStoreInitialization: vi.fn(),
 }));
@@ -79,16 +68,6 @@ vi.mock("@/shared/services/errorManager", () => ({
 	},
 }));
 
-vi.mock("@/shared/components/layout/LoadingSequence", () => ({
-	LoadingSequence: ({ title }: { title: string }) => (
-		<div data-testid="loading-sequence">{title}</div>
-	),
-}));
-
-vi.mock("@/shared/components/layout/TabNavigation", () => ({
-	TabNavigation: () => <div data-testid="tab-navigation">Tab Navigation</div>,
-}));
-
 // Mock lazy components using the alias
 vi.mock("@/app/appConfig", () => ({
 	errorContexts: {
@@ -118,7 +97,6 @@ describe("App Component", () => {
 			expect(screen.getByTestId("tournament-flow")).toBeInTheDocument();
 		});
 
-		expect(screen.getByTestId("loading-sequence")).toHaveTextContent("Naming Nosferatu");
 		expect(document.documentElement.scrollTop).toBe(0);
 		expect(document.body.scrollTop).toBe(0);
 	});

@@ -184,8 +184,7 @@ export function AdvancedNameFilter({
 				</div>
 				<Button
 					variant="ghost"
-					size="sm"
-					iconOnly={true}
+					size="small"
 					onClick={() => setIsExpanded(!isExpanded)}
 					className="text-chart-4 hover:text-chart-4/80"
 				>
@@ -214,17 +213,12 @@ export function AdvancedNameFilter({
 								className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground pr-10"
 							/>
 							{filters.searchTerm && (
-								<Button
-									type="button"
+								<button
 									onClick={() => updateFilter("searchTerm", "")}
-									variant="ghost"
-									size="icon"
-									iconOnly={true}
-									shape="pill"
-									className="absolute right-2 top-1/2 size-7 -translate-y-1/2 bg-transparent text-chart-4 hover:bg-chart-4/10 hover:text-chart-4"
+									className="absolute right-2 top-1/2 text-chart-4 hover:text-chart-4/80"
 								>
 									<X size={16} />
-								</Button>
+								</button>
 							)}
 						</div>
 					</div>
@@ -235,26 +229,22 @@ export function AdvancedNameFilter({
 							<label className="block text-sm font-medium text-foreground mb-2">Categories</label>
 							<div className="flex flex-wrap gap-2">
 								{availableCategories.map((category) => (
-									<Button
+									<button
 										key={category}
-										type="button"
 										onClick={() => {
 											const newCategories = filters.categories.includes(category)
 												? filters.categories.filter((c) => c !== category)
 												: [...filters.categories, category];
 											updateFilter("categories", newCategories);
 										}}
-										variant={filters.categories.includes(category) ? "secondary" : "ghost"}
-										presentation="chip"
-										shape="pill"
-										className={`${
+										className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
 											filters.categories.includes(category)
-												? "bg-chart-4 text-white hover:bg-chart-4/85 hover:text-white"
-												: "bg-foreground/10 text-foreground hover:bg-foreground/20 hover:text-foreground"
+												? "bg-chart-4 text-white"
+												: "bg-foreground/10 text-foreground hover:bg-foreground/20"
 										}`}
 									>
 										{category}
-									</Button>
+									</button>
 								))}
 							</div>
 						</div>
@@ -297,35 +287,29 @@ export function AdvancedNameFilter({
 
 					{/* Quick Filters */}
 					<div className="flex gap-2">
-						<Button
-							type="button"
+						<button
 							onClick={() => updateFilter("onlyFavorites", !filters.onlyFavorites)}
-							variant={filters.onlyFavorites ? "secondary" : "ghost"}
-							shape="pill"
-							startIcon={<Star size={16} />}
-							className={`${
+							className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
 								filters.onlyFavorites
-									? "bg-chart-4 text-white hover:bg-chart-4/85 hover:text-white"
-									: "bg-foreground/10 text-foreground hover:bg-foreground/20 hover:text-foreground"
+									? "bg-chart-4 text-white"
+									: "bg-foreground/10 text-foreground hover:bg-foreground/20"
 							}`}
 						>
+							<Star size={16} />
 							Favorites Only
-						</Button>
+						</button>
 
-						<Button
-							type="button"
+						<button
 							onClick={() => updateFilter("onlyRecentlyActive", !filters.onlyRecentlyActive)}
-							variant={filters.onlyRecentlyActive ? "secondary" : "ghost"}
-							shape="pill"
-							startIcon={<Clock size={16} />}
-							className={`${
+							className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
 								filters.onlyRecentlyActive
-									? "bg-chart-4 text-white hover:bg-chart-4/85 hover:text-white"
-									: "bg-foreground/10 text-foreground hover:bg-foreground/20 hover:text-foreground"
+									? "bg-chart-4 text-white"
+									: "bg-foreground/10 text-foreground hover:bg-foreground/20"
 							}`}
 						>
+							<Clock size={16} />
 							Recent Only
-						</Button>
+						</button>
 					</div>
 
 					{/* Sort Options */}
@@ -367,7 +351,7 @@ export function AdvancedNameFilter({
 						<Button
 							onClick={clearAllFilters}
 							variant="ghost"
-							size="sm"
+							size="small"
 							className="text-chart-4 hover:text-chart-4/80"
 						>
 							<X size={16} className="mr-1" />

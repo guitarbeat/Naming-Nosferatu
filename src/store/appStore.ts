@@ -62,7 +62,6 @@ export type { NameItem, RatingData, VoteRecord };
 
 export interface TournamentActions {
 	setNames: (names: NameItem[] | null) => void;
-	startTournament: (names: NameItem[]) => void;
 	setRatings: (
 		ratings:
 			| Record<string, RatingData>
@@ -152,7 +151,6 @@ function getInitialUserState(): UserState {
 	const base: UserState = {
 		id: null,
 		name: "",
-		email: undefined,
 		isLoggedIn: false,
 		isAdmin: false,
 		preferences: {},
@@ -206,19 +204,12 @@ function getInitialSwipeMode(): boolean {
 	if (!IS_BROWSER) {
 		return false;
 	}
-	return getStorageString(STORAGE_KEYS.SWIPE_MODE) === "true";
-}
-
-function buildTournamentNames(
-	names: NameItem[] | null,
-	currentRatings: Record<string, RatingData>,
-): NameItem[] | null {
-	return (
-		names?.map((name) => ({
-			...name,
-			rating: currentRatings[name.name]?.rating ?? 1500,
-		})) ?? null
-	);
+	const stored = getStorageString(STORAGE_KEYS.SWIPE_MODE);
+	if (stored !== null) {
+		return stored === "true";
+	}
+	// Device-aware default: phones default to swipe mode
+	return window.matchMedia("(max-width: 768px)").matches;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -244,18 +235,13 @@ const createTournamentSlice: StateCreator<
 		setNames: (names) => {
 			const currentRatings = get().tournament.ratings;
 			patch(set, "tournament", {
-				names: buildTournamentNames(names, currentRatings),
-			});
-		},
-
-		startTournament: (selectedNames) => {
-			const currentRatings = get().tournament.ratings;
-			patch(set, "tournament", {
-				selectedNames,
-				names: buildTournamentNames(selectedNames, currentRatings),
-				isComplete: false,
-				isLoading: false,
-				voteHistory: [],
+				names:
+					names?.map((n) => ({
+						id: n.id,
+						name: n.name,
+						description: n.description,
+						rating: currentRatings[n.name]?.rating ?? 1500,
+					})) ?? null,
 			});
 		},
 
@@ -331,14 +317,7 @@ const createUserAndSettingsSlice: StateCreator<
 			onContext?.(null);
 			set((state) => ({
 				...state,
-				user: {
-					...state.user,
-					id: null,
-					name: "",
-					email: undefined,
-					isLoggedIn: false,
-					isAdmin: false,
-				},
+				user: { ...state.user, name: "", isLoggedIn: false, isAdmin: false },
 				tournament: {
 					...state.tournament,
 					names: null,

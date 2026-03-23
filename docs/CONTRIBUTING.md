@@ -44,6 +44,7 @@ This document provides a comprehensive guide for setting up, developing, maintai
 | Command          | Description                                |
 | ---------------- | ------------------------------------------ |
 | `pnpm run dev`   | Start the Vite frontend dev server         |
+| `pnpm run dev:server` | Start the backend API server          |
 | `pnpm run build` | Production build                           |
 | `pnpm run lint`  | Run Biome linting and TypeScript checks    |
 | `pnpm run fix`   | Auto-fix linting issues                    |
@@ -198,15 +199,7 @@ Working with AI agents works best in small, verifiable cycles:
 - [ ] `pnpm run check` passes with zero errors.
 - [ ] Documentation (if applicable) is updated in `docs/`.
 
-### 3. Release Workflow
-
-- `main` stays the everyday work branch and should remain releasable
-- `git push origin main` updates source control and GitHub CI only
-- Use `pnpm run release:preview` when you want a manual Vercel preview deployment
-- Use `pnpm run release:prod` when you want production to change
-- Production may intentionally lag behind `main`
-
-### 4. Administrative Operating Model (February 19, 2026)
+### 3. Administrative Operating Model (February 19, 2026)
 
 To reduce cycle time and merge friction, use these process rules:
 
@@ -226,7 +219,7 @@ Recommended daily cadence:
 1. Triage new issues and PRs once per day.
 2. Merge low-risk green PRs in small batches.
 3. Resolve conflicts in active stacks before opening new feature branches.
-4. Keep `main` releasable at all times and cut production releases with `pnpm run release:prod` when ready.
+4. Keep `main` releasable at all times.
 
 ---
 
@@ -257,7 +250,7 @@ Recommended daily cadence:
 - Prefer lazy loading for heavy components (`Dashboard`, `Tournament`)
 
 #### Styling Guidelines
-- Use Tailwind CSS utilities from `src/tailwind.css` with shared design tokens from `src/index.css`
+- Use Tailwind CSS exclusively with design tokens from `src/styles/tokens.css`
 - Follow the established glass surface design system
 - Use semantic spacing tokens (--space-1 through --space-24)
 - Maintain accessibility standards (focus management, keyboard navigation)
@@ -284,7 +277,7 @@ src/
 ├── services/           # API and Supabase runtime/api wrappers
 ├── shared/             # Shared components, hooks, utils, types
 ├── store/              # Zustand app store
-├── styles/             # SCSS layers/tokens/effects
+├── styles/             # CSS layers/tokens/effects
 └── types/              # App-level types
 ```
 
@@ -292,7 +285,7 @@ src/
 
 ## �🧪 Testing Strategy
 
-This project uses **Vitest** for testing, with **React Testing Library** for frontend components.
+This project uses **Vitest** for testing, with **React Testing Library** for frontend components and **Supertest** for backend routes.
 
 ### Test Commands
 
@@ -300,19 +293,37 @@ This project uses **Vitest** for testing, with **React Testing Library** for fro
 - **Run tests in watch mode**: `pnpm run test:watch`
 - **Run tests with coverage**: `pnpm run test:coverage`
 
+### Backend Testing
+
+The backend tests are split into two categories:
+
+#### 1. Mock Mode (`server/routes.test.ts`)
+These tests verify API endpoints when the database is unavailable. The server falls back to "mock mode", returning static data.
+
+- **Focus**: Route handling, input validation, fallback logic
+- **Mocking**: `server/db` is mocked to be `null`
+
+#### 2. Database Mode (`server/routes.db.test.ts`)
+These tests verify API endpoints when the database is available, mocking the Drizzle ORM to simulate database interactions.
+
+- **Focus**: Database queries, CRUD operations, business logic
+- **Mocking**: `server/db` provides mocked methods (`insert`, `select`, `update`, `delete`)
+
 ### Frontend Testing
 
 Frontend tests are located alongside components (e.g., `src/app/App.test.tsx`).
 
 - **Tools**: React Testing Library, Vitest
 - **Mocking**:
-  - `@/shared/services/supabase`: Mocked to prevent network calls and simulate Supabase availability
+  - `@/shared/services/supabase/client`: Mocked to prevent network calls
+  - `@/shared/services/apiClient`: Mocked to simulate API responses
   - Complex providers/hooks (`useAuth`, `useAppStore`) mocked to isolate component logic
 
 ### Coverage
 
 We aim for high test coverage in critical paths:
-- Supabase service adapters and fallbacks
+- Server API routes (`server/routes.ts`)
+- Data validation (`server/validation.ts`)
 - Core business logic (`src/services/`)
 
 Run `pnpm run test:coverage` to view the current coverage report.
@@ -374,13 +385,14 @@ src/
 ├── app/                # App entry, providers, deployment/config
 ├── features/           # Domain features (admin, analytics, tournament)
 ├── hooks/              # Reusable React hooks
-├── services/           # Supabase runtime wrappers and shared services
+├── services/           # API and Supabase runtime/api wrappers
 ├── shared/             # Shared components, hooks, utils, types
 ├── store/              # Zustand app store
 ├── styles/             # CSS layers/tokens/effects
 └── types/              # App-level types
 
-shared/                 # Shared data, helpers, and fallback content
+server/                 # Express API routes/auth/validation
+shared/                 # Cross-runtime shared schema
 supabase/               # DB migrations and generated DB types
 docs/                   # Project documentation
 ```

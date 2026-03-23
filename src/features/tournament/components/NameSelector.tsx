@@ -5,11 +5,9 @@
 
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/app/providers/Providers";
-import { createTournamentId } from "@/features/tournament/hooks/tournamentPersistence";
 import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
-import Button, { getButtonClassName } from "@/shared/components/layout/Button";
+import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
@@ -27,6 +25,7 @@ import {
 	matchesNameSearchTerm,
 } from "@/shared/lib/basic";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { isRpcSignatureError } from "@/shared/lib/errors";
 import {
 	Check,
 	CheckCircle,
@@ -40,32 +39,15 @@ import {
 	X,
 	ZoomIn,
 } from "@/shared/lib/icons";
-import {
-	adminNamesAPI,
-	coreAPI,
-	hiddenNamesAPI,
-	isUsingFallbackData,
-	selectionsAPI,
-} from "@/shared/services/supabase/api";
+import { api } from "@/shared/services/apiClient";
+import { coreAPI, hiddenNamesAPI, isUsingFallbackData } from "@/shared/services/supabase/api";
+import { resolveSupabaseClient } from "@/shared/services/supabase/client";
+import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
 const SWIPE_OFFSET_THRESHOLD = 100;
 const SWIPE_VELOCITY_THRESHOLD = 500;
-
-const areIdSetsEqual = (a: Set<IdType>, b: Set<IdType>) => {
-	if (a.size !== b.size) {
-		return false;
-	}
-
-	for (const id of a) {
-		if (!b.has(id)) {
-			return false;
-		}
-	}
-
-	return true;
-};
 
 // Smart tooltip positioning hook - positions tooltip on the best side
 function useSmartTooltip() {
@@ -108,6 +90,15 @@ const EXIT_SPRING_CONFIG = {
 	velocity: 50,
 };
 
+// Shared hook for deferred sync to prevent render cycle issues
+const useDeferredSync = () => {
+	const deferredSync = useCallback((syncFn: () => void) => {
+		setTimeout(syncFn, 0);
+	}, []);
+	
+	return deferredSync;
+};
+
 // Shared components for better DRY architecture
 
 // Selection badge component
@@ -127,110 +118,79 @@ const SelectionBadge = () => (
 );
 
 // Name content component
-const NameContent = ({
-	nameItem,
-	variant = "grid",
-	showDetails = true,
-}: {
-	nameItem: NameItem;
-	variant?: "grid" | "swipe";
-	showDetails?: boolean;
-}) => {
+const NameContent = ({ nameItem, variant = "grid" }: { nameItem: NameItem; variant?: "grid" | "swipe" }) => {
 	const isGrid = variant === "grid";
-	const HeadingTag = isGrid ? "h3" : "h1";
 	const nameClasses = isGrid
-		? "mobile-readable-title m-0 block w-full text-left font-bold leading-[1.18] normal-case text-foreground drop-shadow-md text-balance"
-		: "m-0 block w-full text-center font-bold leading-[1.08] normal-case text-foreground drop-shadow-2xl break-words text-balance";
-	const nameStyle = isGrid
-		? {
-				fontSize: "var(--pw-heading-3-size)",
-				letterSpacing: "var(--pw-heading-tracking)",
-			}
-		: {
-				fontSize: "var(--pw-heading-1-size)",
-				letterSpacing: "var(--pw-heading-tracking)",
-			};
-
+		? "mobile-readable-title font-bold text-foreground text-sm sm:text-base leading-tight drop-shadow-lg"
+		: "font-whimsical text-4xl lg:text-5xl text-foreground tracking-wide drop-shadow-2xl break-words w-full text-center";
+	
 	const pronunciationClasses = isGrid
-		? `mobile-readable-meta block text-left text-[11px] sm:text-sm leading-tight font-semibold italic text-warning/95 drop-shadow-sm transition-all duration-300 ${
-				showDetails ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
-			}`
-		: `text-warning text-3xl lg:text-4xl font-bold italic opacity-90 transition-all duration-300 ${
-				showDetails ? "opacity-100 scale-100" : "opacity-80 scale-95"
-			}`;
-
+		? "mobile-readable-meta text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md"
+		: "text-warning text-2xl lg:text-3xl font-bold italic opacity-90";
+	
 	const descriptionClasses = isGrid
-		? `mobile-readable-description mt-1 max-w-[24ch] text-left text-sm sm:text-[15px] leading-snug line-clamp-2 text-foreground/84 drop-shadow-sm transition-all duration-500 ${
-				showDetails ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-			}`
-		: `text-foreground/90 text-base md:text-lg leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3 text-center transition-all duration-300 ${
-				showDetails ? "opacity-100 transform scale-100" : "opacity-70 transform scale-95"
-			}`;
+		? "mobile-readable-description text-foreground/85 text-xs sm:text-sm leading-snug line-clamp-2 sm:line-clamp-2 mt-1 drop-shadow-sm font-medium"
+		: "text-foreground/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3 text-center";
 
 	return (
 		<>
-			<HeadingTag className={nameClasses} style={nameStyle}>
+			<span className={nameClasses}>
 				{nameItem.name}
-			</HeadingTag>
+			</span>
 			{nameItem.pronunciation && (
 				<span className={isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`}>
 					[{nameItem.pronunciation}]
 				</span>
 			)}
-			{nameItem.description && <p className={descriptionClasses}>{nameItem.description}</p>}
+			{nameItem.description && (
+				<p className={descriptionClasses}>
+					{nameItem.description}
+				</p>
+			)}
 		</>
 	);
 };
 
 // Zoom button component
 const ZoomButton = ({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) => (
-	<Button
+	<button
 		type="button"
 		onClick={(e) => {
 			e.stopPropagation();
 			onClick(nameId);
 		}}
-		variant="ghost"
-		size="icon"
-		iconOnly={true}
-		shape="pill"
-		className="absolute top-3 right-3 z-10 size-9 bg-foreground/70 text-background opacity-0 backdrop-blur-md group-hover:opacity-100 hover:bg-foreground/90 hover:text-background focus:opacity-100 sm:size-10"
+		className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
 		aria-label="View full size"
 	>
 		<ZoomIn size={14} />
-	</Button>
+	</button>
 );
 
 // Admin action button component
-const AdminActionButton = ({
-	nameItem,
-	actionType,
-	isProcessing,
-	onClick,
-}: {
-	nameItem: NameItem;
-	actionType: "toggle-hidden" | "toggle-locked";
-	isProcessing: boolean;
-	onClick: () => void;
+const AdminActionButton = ({ 
+	nameItem, 
+	actionType, 
+	isProcessing, 
+	onClick 
+}: { 
+	nameItem: NameItem; 
+	actionType: "toggle-hidden" | "toggle-locked"; 
+	isProcessing: boolean; 
+	onClick: () => void; 
 }) => {
 	const isHidden = actionType === "toggle-hidden";
+	const isLocked = actionType === "toggle-locked";
 	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
-
-	const buttonClasses = [
-		getButtonClassName({
-			variant: isHidden ? (isEnabled ? "secondary" : "danger") : isEnabled ? "ghost" : "secondary",
-			presentation: "chip",
-		}),
-		"flex-1 justify-center shadow-lg",
+	
+	const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
 		isHidden
 			? isEnabled
-				? "bg-success text-success-foreground hover:bg-success/80 hover:text-success-foreground shadow-success/25"
-				: "bg-destructive text-destructive-foreground hover:bg-destructive/80 hover:text-destructive-foreground shadow-destructive/25"
+				? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
+				: "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
 			: isEnabled
-				? "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-muted-foreground shadow-muted/25"
-				: "bg-warning text-warning-foreground hover:bg-warning/80 hover:text-warning-foreground shadow-warning/25",
-		isProcessing ? "opacity-50" : "",
-	].join(" ");
+				? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
+				: "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
+	} ${isProcessing ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`;
 
 	return (
 		<motion.button
@@ -259,39 +219,32 @@ const AdminActionButton = ({
 				</>
 			)}
 		</motion.button>
-	);
+);
 };
 
 // Card styles utility
 const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
-	const baseClasses =
-		"mobile-readable-card relative group overflow-hidden rounded-[1.65rem] border transition-all duration-300 transform-gpu";
+	const baseClasses = "mobile-readable-card relative group rounded-xl sm:rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-300";
 	const selectedClasses = isSelected
-		? "z-10 -translate-y-1 border-primary/60 bg-primary/10 shadow-xl shadow-primary/15 ring-2 ring-primary/20"
-		: "border-border/40 bg-background/55 shadow-lg shadow-foreground/5 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl hover:shadow-foreground/10";
-	const lockedClasses = isLocked ? "cursor-not-allowed opacity-55 saturate-50" : "";
-
+		? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 shadow-xl shadow-primary/20 ring-4 ring-primary/30 scale-[1.02] z-10"
+		: "border-border/20 bg-gradient-to-br from-foreground/5 to-foreground/0 hover:border-border/40 hover:bg-gradient-to-br hover:from-foreground/10 hover:to-foreground/5 hover:shadow-xl hover:shadow-foreground/10";
+	const lockedClasses = isLocked ? "opacity-60 cursor-not-allowed" : "";
+	
 	return `${baseClasses} ${selectedClasses} ${lockedClasses}`;
 };
 
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
-	const baseClasses = "absolute flex flex-col pointer-events-none";
-	const gridClasses =
-		"inset-x-0 bottom-0 justify-end items-start p-3 sm:p-4 text-left bg-gradient-to-t from-background/96 via-background/38 to-transparent";
-	const swipeClasses =
-		"inset-0 justify-end items-center p-8 text-center bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10";
-
+	const baseClasses = "absolute flex flex-col justify-center items-center text-center pointer-events-none";
+	const gridClasses = "inset-0 p-3 sm:p-4 bg-gradient-to-t from-background/98 via-background/70 to-transparent";
+	const swipeClasses = "inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10";
+	
 	return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
 
 export function NameSelector() {
-	const navigate = useNavigate();
 	const toast = useToast();
-	const storedSelectedNames = useAppStore((state) => state.tournament.selectedNames);
-	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(
-		() => new Set(storedSelectedNames.map((name) => name.id)),
-	);
+	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
@@ -316,6 +269,8 @@ export function NameSelector() {
 		Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
 	>([]);
 	const { tooltipRef, tooltipPosition, measureTooltip } = useSmartTooltip();
+	const deferredSync = useDeferredSync();
+
 	// Memoize cat images and build an id->image lookup map
 	const { catImages, catImageById } = useMemo(() => {
 		const images = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
@@ -348,7 +303,24 @@ export function NameSelector() {
 					}
 				}
 
-				const fetchedNames = await coreAPI.getTrendingNames(true);
+				const fetchedNames = await coreAPI.getTrendingNames(true); // Include hidden names for everyone
+				if (fetchedNames.length === 0) {
+					try {
+						await api.get<unknown[]>("/names?includeHidden=true");
+					} catch (probeError) {
+						const hasSupabaseFallback =
+							Boolean(import.meta.env.VITE_SUPABASE_URL) &&
+							Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY);
+
+						if (!hasSupabaseFallback) {
+							throw new Error(
+								"Could not load cards from backend. `/api/names` is unreachable and Supabase fallback is not configured.",
+							);
+						}
+
+						console.warn("Backend probe failed but Supabase fallback is configured:", probeError);
+					}
+				}
 				setNames(fetchedNames);
 				setCachedData(fetchedNames, true);
 				setRetryCount(0); // Reset retry count on success
@@ -383,77 +355,54 @@ export function NameSelector() {
 	// Show warning when using fallback data
 	useEffect(() => {
 		if (isUsingFallbackData()) {
-			toast.showInfo(
-				"Using the local development catalog because Supabase is unavailable. Global sync resumes when the connection returns.",
+			toast.showWarning(
+				"Using demo data - database connection unavailable. Your votes won't be saved to the global leaderboard.",
 			);
 		}
 	}, [toast]);
 
-	// Keep local selection in sync with the active shortlist after remounts and catalog updates.
+	// Auto-select locked-in names when names are loaded
 	useEffect(() => {
-		const storedIds = new Set(storedSelectedNames.map((name) => name.id));
-		const availableIds = new Set(getActiveNames(names).map((name) => name.id));
-		const nextSelectedIds =
-			names.length > 0
-				? new Set([...storedIds].filter((id) => availableIds.has(id)))
-				: new Set(storedIds);
+		if (names.length > 0) {
+			const lockedInIds = new Set(getLockedNames(names).map((name) => name.id));
 
-		setSelectedNames((prev) => (areIdSetsEqual(prev, nextSelectedIds) ? prev : nextSelectedIds));
-	}, [names, storedSelectedNames]);
-
-	const getSelectedNameItems = useCallback(
-		(selectedIds: Set<IdType>) => names.filter((name) => selectedIds.has(name.id)),
-		[names],
-	);
+			if (lockedInIds.size > 0) {
+				setSelectedNames((prev) => {
+					const newSelection = new Set(prev);
+					lockedInIds.forEach((id) => {
+						newSelection.add(id);
+					});
+					return newSelection;
+				});
+			}
+		}
+	}, [names]);
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
-			const selectedNameItems = getSelectedNameItems(nextSelectedIds);
+			const selectedNameItems = names.filter((n) => nextSelectedIds.has(n.id));
 			tournamentActions.setSelection(selectedNameItems);
 		},
-		[getSelectedNameItems, tournamentActions],
+		[names, tournamentActions],
 	);
 
-	useEffect(() => {
-		const storedIds = new Set(storedSelectedNames.map((name) => name.id));
-		if (areIdSetsEqual(storedIds, selectedNames)) {
-			return;
-		}
+	const toggleName = useCallback(
+		(nameId: IdType) => {
+			setSelectedNames((prev) => {
+				const next = new Set(prev);
+				if (next.has(nameId)) {
+					next.delete(nameId);
+				} else {
+					next.add(nameId);
+				}
 
-		syncSelectionToStore(selectedNames);
-	}, [selectedNames, storedSelectedNames, syncSelectionToStore]);
+				syncSelectionToStore(next);
 
-	const handleStartTournament = useCallback(() => {
-		const selectedNameItems = getSelectedNameItems(selectedNames);
-		const bracketNames = [...getLockedNames(names), ...selectedNameItems];
-
-		if (selectedNameItems.length < 2) {
-			toast.showWarning("Choose at least two names before starting the tournament.");
-			return;
-		}
-
-		const tournamentId = `${createTournamentId(bracketNames, userName)}-${Date.now()}`;
-		void selectionsAPI.recordTournamentSelections(
-			tournamentId,
-			selectedNameItems.map((name) => name.id),
-		);
-
-		tournamentActions.startTournament(bracketNames);
-		navigate("/tournament");
-	}, [getSelectedNameItems, navigate, names, selectedNames, toast, tournamentActions, userName]);
-
-	const toggleName = useCallback((nameId: IdType) => {
-		setSelectedNames((prev) => {
-			const next = new Set(prev);
-			if (next.has(nameId)) {
-				next.delete(nameId);
-			} else {
-				next.add(nameId);
-			}
-
-			return next;
-		});
-	}, []);
+				return next;
+			});
+		},
+		[syncSelectionToStore],
+	);
 
 	// Trigger haptic feedback if available
 	const triggerHaptic = useCallback(() => {
@@ -500,6 +449,8 @@ export function NameSelector() {
 				setSelectedNames((prev) => {
 					const next = new Set(prev);
 					next.add(nameId);
+					// Use deferred sync to prevent render cycle issue
+					deferredSync(() => syncSelectionToStore(next));
 					return next;
 				});
 			}
@@ -521,7 +472,7 @@ export function NameSelector() {
 				}, resetDelay);
 			});
 		},
-		[markSwiped, triggerHaptic],
+		[markSwiped, syncSelectionToStore, triggerHaptic, deferredSync],
 	);
 
 	const handleDragEnd = useCallback(
@@ -571,12 +522,14 @@ export function NameSelector() {
 			setSelectedNames((prev) => {
 				const next = new Set(prev);
 				next.delete(lastSwipe.id);
+				// Use deferred sync to prevent render cycle issue
+				deferredSync(() => syncSelectionToStore(next));
 				return next;
 			});
 		}
 
 		triggerHaptic();
-	}, [swipeHistory, triggerHaptic]);
+	}, [swipeHistory, syncSelectionToStore, triggerHaptic, deferredSync]);
 
 	const handleToggleHidden = useCallback(
 		async (nameId: IdType, isCurrentlyHidden: boolean) => {
@@ -591,6 +544,18 @@ export function NameSelector() {
 			});
 
 			try {
+				// Ensure user context is set
+				await withSupabase(async (_client) => {
+					try {
+						const client = await resolveSupabaseClient();
+						if (client) {
+							await client.rpc("set_user_context", { user_name_param: userName.trim() });
+						}
+					} catch {
+						/* ignore */
+					}
+				}, null);
+
 				if (isCurrentlyHidden) {
 					const result = await hiddenNamesAPI.unhideName(userName, nameId);
 					if (!result.success) {
@@ -634,14 +599,39 @@ export function NameSelector() {
 			});
 
 			try {
-				const result = await adminNamesAPI.toggleLockedIn(nameId, !isCurrentlyLocked);
+				const result = await withSupabase(async (client) => {
+					try {
+						await client.rpc("set_user_context", { user_name_param: userName.trim() });
+					} catch {
+						/* ignore */
+					}
 
-				if (result.success) {
+					const canonicalArgs = {
+						p_name_id: String(nameId),
+						p_locked_in: !isCurrentlyLocked,
+					};
+					let rpcResult = await client.rpc("toggle_name_locked_in", canonicalArgs);
+
+					if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
+						rpcResult = await client.rpc("toggle_name_locked_in", {
+							...canonicalArgs,
+							p_user_name: userName.trim(),
+						});
+					}
+
+					if (rpcResult.error) {
+						throw new Error(rpcResult.error.message || "Failed to toggle locked status");
+					}
+					if (rpcResult.data !== true) {
+						throw new Error("Failed to toggle locked status");
+					}
+					return rpcResult.data;
+				}, null);
+
+				if (result) {
 					const fetchedNames = await coreAPI.getTrendingNames(true);
 					setNames(fetchedNames);
 					toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
-				} else {
-					throw new Error(result.error || "Failed to toggle locked status");
 				}
 			} catch (error) {
 				console.error("Failed to toggle locked status:", error);
@@ -733,11 +723,6 @@ export function NameSelector() {
 		});
 		return count;
 	}, [hiddenNamesAll, selectedIdsSet]);
-	const progressPercentage = useMemo(
-		() => Math.round((selectedAvailableCount / Math.max(availableNames.length, 1)) * 100),
-		[selectedAvailableCount, availableNames.length],
-	);
-	const bracketSize = selectedIdsSet.size + lockedInNames.length;
 	const canSelectAllAvailable = useMemo(
 		() => availableNames.some((name) => !selectedIdsSet.has(name.id)),
 		[availableNames, selectedIdsSet],
@@ -798,7 +783,7 @@ export function NameSelector() {
 				setLightboxOpen(true);
 			}
 		},
-		[names],
+		[names, setLightboxIndex, setLightboxOpen],
 	);
 
 	const handleSelectAllAvailable = useCallback(() => {
@@ -807,16 +792,20 @@ export function NameSelector() {
 			availableNames.forEach((name) => {
 				next.add(name.id);
 			});
+			// Use deferred sync to prevent render cycle issue
+			deferredSync(() => syncSelectionToStore(next));
 			return next;
 		});
 		triggerHaptic();
-	}, [availableNames, triggerHaptic]);
+	}, [availableNames, syncSelectionToStore, triggerHaptic, deferredSync]);
 
 	const handleClearSelection = useCallback(() => {
-		const nextSelectedIds = new Set<IdType>();
-		setSelectedNames(nextSelectedIds);
+		const lockedIds = new Set(getLockedNames(names).map((name) => name.id));
+		setSelectedNames(lockedIds);
+		// Use deferred sync to prevent render cycle issue
+		deferredSync(() => syncSelectionToStore(lockedIds));
 		triggerHaptic();
-	}, [triggerHaptic]);
+	}, [names, syncSelectionToStore, triggerHaptic, deferredSync]);
 
 	const handleSelectRandomAvailable = useCallback(() => {
 		if (availableNames.length === 0) {
@@ -838,11 +827,13 @@ export function NameSelector() {
 			randomIds.forEach((id) => {
 				next.add(id);
 			});
+			// Use deferred sync to prevent render cycle issue
+			deferredSync(() => syncSelectionToStore(next));
 			return next;
 		});
 		triggerHaptic();
 		toast.showSuccess(`Added ${targetCount} random names.`);
-	}, [availableNames, toast, triggerHaptic]);
+	}, [availableNames, syncSelectionToStore, toast, triggerHaptic, deferredSync]);
 
 	if (isLoading) {
 		return (
@@ -862,7 +853,7 @@ export function NameSelector() {
 						<p className="text-lg font-medium">Failed to load names</p>
 						<p className="text-sm opacity-75 mt-1">{error}</p>
 					</div>
-					<Button onClick={() => setRetryCount((prev) => prev + 1)} variant="glass" size="sm">
+					<Button onClick={() => setRetryCount((prev) => prev + 1)} variant="glass" size="small">
 						Try Again
 					</Button>
 				</div>
@@ -871,221 +862,149 @@ export function NameSelector() {
 	}
 
 	return (
-		<div className="mx-auto w-full max-w-7xl">
-			<div className="space-y-6">
-				<div className="overflow-hidden rounded-[2rem] border border-border/50 bg-gradient-to-br from-background/96 via-background/90 to-muted/45 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-					<div className="space-y-6 px-5 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
-						<div className="flex flex-col gap-5 2xl:flex-row 2xl:items-end 2xl:justify-between">
-							<div className="max-w-2xl space-y-3">
-								<span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary/80">
-									Name Shortlist
-								</span>
-								<div className="space-y-2">
-									<h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
-										Pick Names
-									</h1>
-									<p className="max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-										Keep the names that feel right. Choose at least two contenders to unlock the
-										tournament bracket.
-									</p>
-								</div>
-							</div>
-
-							<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-								<div className="rounded-2xl border border-border/40 bg-background/70 px-4 py-3 shadow-sm">
-									<div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-										Your Picks
-									</div>
-									<div className="mt-1 text-2xl font-semibold text-foreground">
-										{selectedIdsSet.size}
-									</div>
-								</div>
-								<div className="rounded-2xl border border-border/40 bg-background/70 px-4 py-3 shadow-sm">
-									<div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-										Locked In
-									</div>
-									<div className="mt-1 text-2xl font-semibold text-foreground">
-										{lockedInNames.length}
-									</div>
-								</div>
-								<div className="rounded-2xl border border-border/40 bg-background/70 px-4 py-3 shadow-sm">
-									<div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-										Status
-									</div>
-									<div className="mt-1 text-sm font-semibold text-foreground sm:text-base">
-										{selectedIdsSet.size >= 2
-											? "Ready to bracket"
-											: `Need ${Math.max(2 - selectedIdsSet.size, 0)} more`}
-									</div>
-								</div>
-							</div>
-						</div>
-
-						{lockedInNames.length > 0 && (
-							<div className="rounded-[1.5rem] border border-warning/20 bg-warning/[0.08] px-4 py-4">
-								<div className="mb-3 flex flex-wrap items-center gap-2">
-									<span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-										My cat is named
+		<div className="mx-auto w-full">
+			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
+				{/* Current Names - Prominent Display */}
+				{lockedInNames.length > 0 && (
+					<div className="flex flex-col items-center gap-1.5 sm:gap-2 px-2 sm:px-4">
+						<span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+							My cat is named
+						</span>
+						<div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 relative z-[60]">
+							{lockedInNames.map((nameItem, index) => (
+								<motion.div
+									key={nameItem.id}
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: index * 0.05 }}
+									whileHover={{ y: -1 }}
+									className="group relative px-2.5 py-1 sm:px-4 sm:py-2 bg-gradient-to-b from-warning/15 to-warning/5 border border-warning/25 rounded-md"
+								>
+									<span className="text-foreground font-medium text-xs sm:text-sm">
+										{nameItem.name}
 									</span>
-									<span className="rounded-full bg-background/80 px-2.5 py-1 text-xs font-medium text-foreground/70">
-										Locked into every bracket
-									</span>
-								</div>
-								<div className="flex flex-wrap items-center gap-2">
-									{lockedInNames.map((nameItem, index) => (
-										<motion.div
-											key={nameItem.id}
-											initial={{ opacity: 0, y: 10 }}
-											animate={{ opacity: 1, y: 0 }}
-											transition={{ delay: index * 0.05 }}
-											whileHover={{ y: -1 }}
-											className="group relative rounded-full border border-warning/25 bg-background/85 px-3.5 py-2 shadow-sm"
+									{(nameItem.description || nameItem.pronunciation) && (
+										<div
+											ref={tooltipRef}
+											onMouseEnter={measureTooltip}
+											className={`name-lock-tooltip ${
+												tooltipPosition === "top"
+													? "name-lock-tooltip--top"
+													: "name-lock-tooltip--bottom"
+											}`}
 										>
-											<span className="text-sm font-medium text-foreground">{nameItem.name}</span>
-											{(nameItem.description || nameItem.pronunciation) && (
-												<div
-													ref={tooltipRef}
-													onMouseEnter={measureTooltip}
-													className={`name-lock-tooltip ${
-														tooltipPosition === "top"
-															? "name-lock-tooltip--top"
-															: "name-lock-tooltip--bottom"
-													}`}
-												>
-													{nameItem.pronunciation && (
-														<div className="name-lock-tooltip__header">
-															<div className="name-lock-tooltip__label">Pronunciation</div>
-															<div className="name-lock-tooltip__pronunciation">
-																{nameItem.pronunciation}
-															</div>
-														</div>
-													)}
-													<div className="name-lock-tooltip__body">{nameItem.description}</div>
-													<div className="name-lock-tooltip__arrow" />
+											{nameItem.pronunciation && (
+												<div className="name-lock-tooltip__header">
+													<div className="name-lock-tooltip__label">Pronunciation</div>
+													<div className="name-lock-tooltip__pronunciation">
+														{nameItem.pronunciation}
+													</div>
 												</div>
 											)}
-										</motion.div>
-									))}
-								</div>
-							</div>
-						)}
-
-						<div className="flex flex-col gap-4 rounded-[1.5rem] border border-border/40 bg-background/70 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
-							<div className="min-w-0 flex-1">
-								<div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm">
-									<div>
-										<div className="font-semibold text-foreground">Selection progress</div>
-										<div className="text-xs text-muted-foreground">
-											{progressPercentage}% of visible names chosen
-										</div>
-									</div>
-									<div className="rounded-full bg-background/85 px-3 py-1 text-sm font-medium text-foreground/80">
-										{selectedAvailableCount}/{availableNames.length}
-									</div>
-								</div>
-								<div className="h-2.5 overflow-hidden rounded-full bg-border/30">
-									<motion.div
-										className="h-full rounded-full bg-gradient-to-r from-primary via-primary to-primary/80"
-										initial={{ width: 0 }}
-										animate={{ width: `${progressPercentage}%` }}
-										transition={{ duration: 0.5, ease: "easeOut" }}
-									/>
-								</div>
-								<div className="mt-3 flex flex-wrap items-center gap-2">
-									<span
-										className={`rounded-full px-3 py-1 text-xs font-medium ${
-											selectedIdsSet.size >= 2
-												? "bg-primary/10 text-primary"
-												: "bg-muted text-muted-foreground"
-										}`}
-									>
-										{selectedIdsSet.size >= 2 ? "Tournament ready" : "Select at least 2 names"}
-									</span>
-									{lockedInNames.length > 0 && (
-										<span className="rounded-full bg-background/85 px-3 py-1 text-xs font-medium text-foreground/70">
-											{lockedInNames.length} locked-in names join automatically
-										</span>
-									)}
-									{selectedHiddenCount > 0 && (
-										<span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-3 py-1 text-xs font-medium text-warning/90">
-											<EyeOff size={12} />
-											{selectedHiddenCount} hidden selected
-										</span>
-									)}
-								</div>
-							</div>
-
-							<div className="flex justify-center lg:justify-end">
-								<div className="flex flex-col items-center gap-3 lg:items-end">
-									{isSwipeMode && swipeHistory.length > 0 ? (
-										<div className="flex items-center gap-3">
-											<Button
-												onClick={handleUndo}
-												variant="outline"
-												size="sm"
-												className="gap-2 border-warning/25 bg-background/80 text-warning hover:border-warning hover:bg-warning/10"
-											>
-												<Undo2 size={14} />
-												Undo ({swipeHistory.length})
-											</Button>
-										</div>
-									) : (
-										<div className="inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-border/40 bg-background/85 p-1.5 shadow-sm">
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={handleSelectAllAvailable}
-												disabled={!canSelectAllAvailable}
-												className="h-9 gap-2 rounded-full px-4 text-sm font-medium hover:bg-accent/60 disabled:opacity-50"
-											>
-												<CheckCircle size={14} />
-												All
-											</Button>
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={handleSelectRandomAvailable}
-												className="h-9 gap-2 rounded-full px-4 text-sm font-medium hover:bg-accent/60"
-											>
-												<Shuffle size={14} />
-												Random
-											</Button>
-											<Button
-												variant="ghost"
-												size="sm"
-												onClick={handleClearSelection}
-												disabled={!hasAnySelection}
-												className="h-9 gap-2 rounded-full px-4 text-sm font-medium hover:bg-accent/60 disabled:opacity-50"
-											>
-												<X size={14} />
-												Clear
-											</Button>
+											<div className="name-lock-tooltip__body">{nameItem.description}</div>
+											<div className="name-lock-tooltip__arrow" />
 										</div>
 									)}
+								</motion.div>
+							))}
+						</div>
+					</div>
+				)}
 
-									<Button
-										onClick={handleStartTournament}
-										disabled={selectedIdsSet.size < 2}
-										className="min-w-[13rem] gap-2 rounded-full bg-gradient-to-r from-primary to-primary/80 px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:from-primary/90 hover:to-primary/70 disabled:cursor-not-allowed disabled:opacity-50"
-									>
-										Start Tournament
-										{bracketSize > 0 ? (
-											<span className="text-xs font-medium text-primary-foreground/80">
-												({bracketSize} total)
-											</span>
-										) : null}
-									</Button>
-								</div>
+				{/* Selection Controls + Mode Toggle (inline on mobile) */}
+				<div className="relative px-2 sm:px-4 py-2">
+					{/* Progress Bar - compact on mobile */}
+					<div className="mb-3 sm:mb-4">
+						<div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground mb-1.5 sm:mb-2">
+							<span className="font-medium">
+								{selectedAvailableCount} selected
+							</span>
+							<div className="flex items-center gap-2">
+								{/* Mode toggle inline on mobile */}
+								<button
+									type="button"
+									onClick={() => {
+										const { setSwipeMode } = useAppStore.getState().uiActions;
+										setSwipeMode(!isSwipeMode);
+									}}
+									className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-border/20 bg-foreground/5 text-[10px] sm:text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+									aria-label={isSwipeMode ? "Switch to grid mode" : "Switch to swipe mode"}
+								>
+									{isSwipeMode ? "Swipe" : "Grid"}
+								</button>
+								<span className="tabular-nums font-mono">{selectedAvailableCount}/{availableNames.length}</span>
 							</div>
 						</div>
+						<div className="w-full h-1.5 sm:h-2 bg-border/20 rounded-full overflow-hidden">
+							<motion.div
+								className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
+								initial={{ width: 0 }}
+								animate={{ width: `${(selectedAvailableCount / Math.max(availableNames.length, 1)) * 100}%` }}
+								transition={{ duration: 0.5, ease: "easeOut" }}
+							/>
+						</div>
+						{selectedHiddenCount > 0 && (
+							<div className="mt-1.5 text-center">
+								<span className="inline-flex items-center gap-1 px-2 py-0.5 bg-warning/10 text-warning/80 rounded-full text-[10px] font-medium">
+									<EyeOff size={10} />
+									{selectedHiddenCount} hidden selected
+								</span>
+							</div>
+						)}
+					</div>
+
+					{/* Action Buttons - stacked on very small screens */}
+					<div className="flex items-center justify-center">
+						{isSwipeMode && swipeHistory.length > 0 ? (
+							<div className="flex items-center gap-3">
+								<Button onClick={handleUndo} variant="outline" size="small" className="gap-2 border-warning/20 text-warning hover:bg-warning/10 hover:border-warning">
+									<Undo2 size={14} />
+									Undo ({swipeHistory.length})
+								</Button>
+							</div>
+						) : (
+							<div className="inline-flex flex-wrap items-center justify-center gap-1 sm:gap-0 p-1 bg-background/50 backdrop-blur-sm rounded-xl border border-border/20 shadow-sm">
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={handleSelectAllAvailable}
+									disabled={!canSelectAllAvailable}
+									className="gap-1.5 h-8 px-2.5 sm:px-3 rounded-lg text-xs sm:text-sm font-medium disabled:opacity-50 hover:bg-accent/50 transition-colors"
+								>
+									<CheckCircle size={14} />
+									All
+								</Button>
+								<div className="hidden sm:block w-px h-4 bg-border/30" />
+								<Button 
+									variant="ghost" 
+									size="sm" 
+									onClick={handleSelectRandomAvailable} 
+									className="gap-1.5 h-8 px-2.5 sm:px-3 rounded-lg text-xs sm:text-sm font-medium hover:bg-accent/50 transition-colors"
+								>
+									<Shuffle size={14} />
+									Random
+								</Button>
+								<div className="hidden sm:block w-px h-4 bg-border/30" />
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={handleClearSelection}
+									disabled={!hasAnySelection}
+									className="gap-1.5 h-8 px-2.5 sm:px-3 rounded-lg text-xs sm:text-sm font-medium disabled:opacity-50 hover:bg-accent/50 transition-colors"
+								>
+									<X size={14} />
+									Clear
+								</Button>
+							</div>
+						)}
 					</div>
 				</div>
 
-				{isSwipeMode ? (
+			{isSwipeMode ? (
 					<>
 						<div
 							className="relative w-full flex items-center justify-center"
-							style={{ minHeight: "600px" }}
+							style={{ minHeight: "min(70dvh, 550px)" }}
 						>
 							<AnimatePresence mode="popLayout">
 								{visibleCards.length > 0 ? (
@@ -1132,21 +1051,18 @@ export function NameSelector() {
 														scale: 1.02,
 														transition: { duration: 0.15 },
 													}}
-													whileHover={{
-														scale: index === 0 ? 1.05 : 1,
-														transition: { duration: 0.2 },
-													}}
-													className="w-full max-w-md h-[550px]"
+												className="w-full max-w-md"
+												style={{ height: "min(65dvh, 500px)" }}
 												>
 													<Card
-														className={`relative overflow-hidden group transition-all duration-500 h-full bg-gradient-to-br from-background via-background/95 to-background/90 backdrop-blur-sm ${
+														className={`relative overflow-hidden group transition-all duration-200 h-full ${
 															selectedNames.has(nameItem.id)
-																? "shadow-[0_0_40px_hsl(var(--success)/0.4)] ring-2 ring-success/30 ring-offset-4 ring-offset-background/20"
-																: "shadow-2xl shadow-foreground/30 border-2 border-border/20"
+																? "shadow-[0_0_30px_hsl(var(--success)/0.3)]"
+																: ""
 														} ${
 															index === 0
-																? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95 hover:shadow-3xl hover:shadow-foreground/40"
-																: "pointer-events-none opacity-80"
+																? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
+																: "pointer-events-none"
 														}`}
 														variant="filled"
 														padding="none"
@@ -1201,35 +1117,27 @@ export function NameSelector() {
 
 															{/* Zoom Button Overlay */}
 															{index === 0 && (
-																<Button
+																<button
 																	type="button"
 																	onClick={(e) => {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	variant="ghost"
-																	size="icon"
-																	iconOnly={true}
-																	shape="pill"
-																	className="absolute top-4 right-4 z-30 size-10 bg-foreground/50 text-background opacity-0 backdrop-blur-sm group-hover:opacity-100 hover:bg-foreground/70 hover:text-background focus:opacity-100"
+																	className="absolute top-4 right-4 p-2.5 rounded-full bg-foreground/50 backdrop-blur-sm text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/70 z-30"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={18} />
-																</Button>
+																</button>
 															)}
 
 															{/* Name and Info Overlay */}
 															<div className={getNameOverlayClasses("swipe")}>
 																<div className="flex flex-col gap-1.5 max-w-full">
-																	<NameContent
-																		nameItem={nameItem}
-																		variant="swipe"
-																		showDetails={true}
-																	/>
+																	<NameContent nameItem={nameItem} variant="swipe" />
 																</div>
 
 																{isAdmin && (
-																	<Button
+																	<button
 																		type="button"
 																		onClick={(e) => {
 																			e.stopPropagation();
@@ -1240,12 +1148,10 @@ export function NameSelector() {
 																			});
 																		}}
 																		disabled={togglingHidden.has(nameItem.id)}
-																		variant="ghost"
-																		shape="pill"
-																		className={`mt-4 pointer-events-auto w-fit bg-transparent text-sm font-bold tracking-wider uppercase ${
+																		className={`mt-4 flex items-center gap-2 pointer-events-auto w-fit text-sm font-bold tracking-wider uppercase transition-all ${
 																			togglingHidden.has(nameItem.id)
-																				? "text-muted-foreground"
-																				: "text-warning hover:bg-warning/10 hover:text-warning/80"
+																				? "text-muted-foreground cursor-not-allowed"
+																				: "text-warning hover:text-warning/80 hover:scale-105 active:scale-95"
 																		}`}
 																	>
 																		{togglingHidden.has(nameItem.id) ? (
@@ -1264,7 +1170,7 @@ export function NameSelector() {
 																				<span>Hide From Public</span>
 																			</>
 																		)}
-																	</Button>
+																	</button>
 																)}
 
 																{selectedNames.has(nameItem.id) && (
@@ -1286,7 +1192,7 @@ export function NameSelector() {
 									})
 								) : (
 									<div className="absolute inset-0 flex items-center justify-center">
-										<motion.div
+										<motion.div 
 											initial={{ opacity: 0, y: 20 }}
 											animate={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.6, ease: "easeOut" }}
@@ -1315,7 +1221,10 @@ export function NameSelector() {
 												className="pt-4"
 											>
 												<Button
-													onClick={handleStartTournament}
+													onClick={() => {
+														// Navigate to tournament or next step
+														window.location.href = '/tournament';
+													}}
 													className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
 												>
 													Start Tournament
@@ -1376,9 +1285,9 @@ export function NameSelector() {
 										title="Select (Right Arrow)"
 									>
 										<div className="relative">
-											<Heart
-												size={28}
-												className="sm:size-8"
+											<Heart 
+												size={28} 
+												className="sm:size-8" 
 												strokeWidth={2.5}
 												fill="currentColor"
 											/>
@@ -1398,7 +1307,7 @@ export function NameSelector() {
 							const activeNames = getActiveNames(names);
 							return (
 								activeNames.length > 0 && (
-									<div className="grid grid-cols-2 gap-4 pb-6 min-[520px]:grid-cols-3 sm:gap-5 sm:pb-8 md:grid-cols-4 xl:gap-6">
+									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
 										{activeNames.map((nameItem) => {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage =
@@ -1415,18 +1324,18 @@ export function NameSelector() {
 													}}
 													role="button"
 													tabIndex={0}
-													whileHover={{ scale: 1.04, y: -4, rotate: [-1, 1] }}
-													whileTap={{ scale: 0.96 }}
-													transition={{ type: "spring", stiffness: 300, damping: 20 }}
+													whileHover={{ scale: 1.03, y: -2 }}
+													whileTap={{ scale: 0.97 }}
+													transition={{ type: "spring", stiffness: 400, damping: 25 }}
 													className={getCardStyles(isSelected, isNameLocked(nameItem))}
 												>
-													<div className="w-full relative aspect-[5/4] group/img sm:aspect-[4/3] xl:aspect-[3/2]">
+													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img">
 														<CatImage
 															src={catImage}
 															alt={nameItem.name}
 															objectFit="cover"
 															containerClassName="w-full h-full"
-															imageClassName="h-full w-full object-cover brightness-[0.8] saturate-[1.05] transition-transform duration-700 ease-out group-hover:scale-105 group-hover:brightness-[0.9]"
+															imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 														/>
 
 														{/* Selection Badge */}
@@ -1434,7 +1343,7 @@ export function NameSelector() {
 
 														{/* Enhanced Name Overlay */}
 														<div className={getNameOverlayClasses("grid")}>
-															<div className="flex max-w-full flex-col gap-1.5 rounded-[1.35rem] border border-white/10 bg-background/78 px-3.5 py-3 shadow-xl shadow-black/15 backdrop-blur-md sm:px-4 sm:py-3.5">
+															<div className="flex flex-col gap-1.5 max-w-full">
 																<NameContent nameItem={nameItem} variant="grid" />
 															</div>
 														</div>
@@ -1453,26 +1362,22 @@ export function NameSelector() {
 																nameItem={nameItem}
 																actionType="toggle-hidden"
 																isProcessing={togglingHidden.has(nameItem.id)}
-																onClick={() =>
-																	requestAdminAction({
-																		type: "toggle-hidden",
-																		nameId: nameItem.id,
-																		isCurrentlyEnabled: isNameHidden(nameItem),
-																	})
-																}
+																onClick={() => requestAdminAction({
+																	type: "toggle-hidden",
+																	nameId: nameItem.id,
+																	isCurrentlyEnabled: isNameHidden(nameItem),
+																})}
 															/>
 
 															<AdminActionButton
 																nameItem={nameItem}
 																actionType="toggle-locked"
 																isProcessing={togglingLocked.has(nameItem.id)}
-																onClick={() =>
-																	requestAdminAction({
-																		type: "toggle-locked",
-																		nameId: nameItem.id,
-																		isCurrentlyEnabled: isNameLocked(nameItem),
-																	})
-																}
+																onClick={() => requestAdminAction({
+																	type: "toggle-locked",
+																	nameId: nameItem.id,
+																	isCurrentlyEnabled: isNameLocked(nameItem),
+																})}
 															/>
 														</motion.div>
 													)}
@@ -1500,7 +1405,7 @@ export function NameSelector() {
 							return (
 								<div className="mt-6">
 									<div className="select-none">
-										<Button
+										<button
 											type="button"
 											onClick={() => {
 												if (!hiddenPanel.isCollapsed) {
@@ -1512,8 +1417,7 @@ export function NameSelector() {
 											}}
 											aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
 											aria-controls="hidden-names-panel"
-											variant="ghost"
-											className="w-full justify-between bg-transparent px-0 py-0 text-left hover:bg-transparent hover:text-inherit"
+											className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
 										>
 											<div className="flex items-center gap-2">
 												<span className="text-muted-foreground">
@@ -1530,7 +1434,7 @@ export function NameSelector() {
 											<span className="text-[11px] sm:text-xs text-muted-foreground">
 												{hiddenPanel.isCollapsed ? "Click to expand" : "Click to collapse"}
 											</span>
-										</Button>
+										</button>
 
 										{hiddenPanel.isCollapsed && (
 											<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
@@ -1573,55 +1477,35 @@ export function NameSelector() {
 												/>
 												<div className="flex items-center justify-between sm:justify-end gap-3">
 													{hiddenQuery.trim().length > 0 && (
-														<Button
+														<button
 															type="button"
 															onClick={() => {
 																setHiddenQuery("");
 																setHiddenRenderCount(24);
 															}}
-															variant="ghost"
-															presentation="chip"
-															shape="pill"
-															className="border border-border/10 bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground"
+															className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
 														>
 															Clear search
-														</Button>
+														</button>
 													)}
-													<Button
+													<button
 														type="button"
 														onClick={() => setHiddenShowSelectedOnly((v) => !v)}
-														variant={hiddenShowSelectedOnly ? "secondary" : "ghost"}
-														presentation="chip"
-														shape="pill"
-														className={`border ${
+														className={`px-3 py-2 border text-xs font-medium ${
 															hiddenShowSelectedOnly
-																? "bg-primary/20 border-primary/40 text-foreground hover:bg-primary/24"
-																: "bg-foreground/5 border-border/10 text-foreground/80 hover:bg-foreground/10 hover:text-foreground"
+																? "bg-primary/20 border-primary/40 text-foreground"
+																: "bg-foreground/5 border-border/10 text-foreground/80"
 														}`}
 													>
 														Selected only
-													</Button>
+													</button>
 													<span className="text-xs text-muted-foreground">
 														{hiddenFiltered.length} / {hiddenNamesAll.length}
 													</span>
 												</div>
 											</div>
 
-											<motion.div
-												className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3"
-												initial="hidden"
-												animate="visible"
-												variants={{
-													hidden: { opacity: 0 },
-													visible: {
-														opacity: 1,
-														transition: {
-															staggerChildren: 0.05,
-															delayChildren: 0.1,
-														},
-													},
-												}}
-											>
+											<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
 												{renderItems.map((nameItem) => {
 													const isSelected = selectedNames.has(nameItem.id);
 													const catImage =
@@ -1684,25 +1568,21 @@ export function NameSelector() {
 																	</div>
 																</div>
 
-																<Button
+																<button
 																	type="button"
 																	onClick={(e) => {
 																		e.stopPropagation();
 																		handleOpenLightbox(nameItem.id);
 																	}}
-																	variant="ghost"
-																	size="icon"
-																	iconOnly={true}
-																	shape="pill"
-																	className="absolute top-1.5 right-1.5 z-10 size-7 bg-foreground/60 text-background opacity-100 backdrop-blur-sm hover:bg-foreground/80 hover:text-background md:opacity-0 md:group-hover/hidden:opacity-100 sm:top-2 sm:right-2 sm:size-9"
+																	className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
 																	aria-label="View full size"
 																>
 																	<ZoomIn size={14} />
-																</Button>
+																</button>
 															</div>
 															{isAdmin && (
 																<div className="px-3 pb-3">
-																	<Button
+																	<button
 																		type="button"
 																		onClick={(e) => {
 																			e.stopPropagation();
@@ -1713,8 +1593,7 @@ export function NameSelector() {
 																			});
 																		}}
 																		disabled={togglingHidden.has(nameItem.id)}
-																		variant="secondary"
-																		className={`w-full bg-success text-success-foreground hover:bg-success/80 hover:text-success-foreground ${
+																		className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-success hover:bg-success/80 text-success-foreground ${
 																			togglingHidden.has(nameItem.id)
 																				? "opacity-50 cursor-not-allowed"
 																				: ""
@@ -1731,13 +1610,13 @@ export function NameSelector() {
 																				Unhide
 																			</>
 																		)}
-																	</Button>
+																	</button>
 																</div>
 															)}
 														</div>
 													);
 												})}
-											</motion.div>
+											</div>
 											{hiddenFiltered.length === 0 && (
 												<div className="mt-4 rounded-xl border border-border/10 bg-foreground/5 px-4 py-6 text-center text-sm text-foreground/70">
 													No hidden names match this filter.
@@ -1749,7 +1628,7 @@ export function NameSelector() {
 													<Button
 														onClick={() => setHiddenRenderCount((c) => c + 24)}
 														variant="glass"
-														size="sm"
+														size="small"
 													>
 														Load more
 													</Button>

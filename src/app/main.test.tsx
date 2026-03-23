@@ -8,30 +8,16 @@ const bootstrapMocks = vi.hoisted(() => {
 	const createRootMock = vi.fn(() => ({
 		render: renderMock,
 	}));
-	const sentryInitMock = vi.fn();
-	const setErrorServiceMock = vi.fn();
 
-	return { createRootMock, renderMock, sentryInitMock, setErrorServiceMock };
+	return { createRootMock, renderMock };
 });
 
 vi.mock("../polyfills", () => ({}));
 
 vi.mock("@sentry/react", () => ({
-	init: bootstrapMocks.sentryInitMock,
+	init: vi.fn(),
 	browserTracingIntegration: vi.fn(),
 	replayIntegration: vi.fn(),
-}));
-
-vi.mock("@/shared/services/errorManager", () => ({
-	ErrorManager: {
-		setErrorService: bootstrapMocks.setErrorServiceMock,
-	},
-}));
-
-vi.mock("@/shared/components/layout/Feedback/ErrorBoundary", () => ({
-	ErrorBoundary: ({ children }: { children: ReactNode }) => (
-		<div data-testid="error-boundary">{children}</div>
-	),
 }));
 
 vi.mock("react-dom/client", () => ({
@@ -59,11 +45,11 @@ vi.mock("react-router-dom", () => ({
 	),
 }));
 
-vi.mock("@/services/supabaseAuthAdapter", () => ({
-	supabaseAuthAdapter: { kind: "auth-adapter" },
+vi.mock("@/services/authAdapter", () => ({
+	authAdapter: { kind: "auth-adapter" },
 }));
 
-vi.mock("@/shared/services/supabase/runtime", () => ({
+vi.mock("@/shared/services/supabase/client", () => ({
 	queryClient: { kind: "query-client" },
 }));
 
@@ -83,8 +69,6 @@ describe("main bootstrap", () => {
 	beforeEach(() => {
 		bootstrapMocks.createRootMock.mockClear();
 		bootstrapMocks.renderMock.mockClear();
-		bootstrapMocks.sentryInitMock.mockClear();
-		bootstrapMocks.setErrorServiceMock.mockClear();
 		document.body.innerHTML = '<div id="root"></div>';
 		vi.resetModules();
 	});
@@ -110,8 +94,6 @@ describe("main bootstrap", () => {
 		expect(screen.getByTestId("browser-router")).toBeInTheDocument();
 		expect(screen.getByTestId("app")).toBeInTheDocument();
 		expect(screen.queryByTestId("analytics")).not.toBeInTheDocument();
-		expect(bootstrapMocks.setErrorServiceMock).toHaveBeenCalledWith(null);
-		expect(bootstrapMocks.sentryInitMock).not.toHaveBeenCalled();
 	});
 
 	it("throws when the root element is missing", async () => {

@@ -1,24 +1,26 @@
 import "../polyfills";
-import * as Sentry from "@sentry/react";
+// Conditional Sentry import to prevent app from breaking if package is missing
+let Sentry: typeof import("@sentry/react") | null = null;
+try {
+	Sentry = require("@sentry/react");
+} catch (error) {
+	console.warn("Sentry not available, continuing without error tracking:", error);
+}
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { supabaseAuthAdapter as authAdapter } from "@/services/supabaseAuthAdapter";
+import { authAdapter } from "@/services/authAdapter";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
-import { ErrorManager } from "@/shared/services/errorManager";
-import { queryClient } from "@/shared/services/supabase/runtime";
+import { queryClient } from "@/shared/services/supabase/client";
 import App from "./App";
 import { shouldEnableAnalytics } from "./analytics";
 import { Providers } from "./providers/Providers";
 import "../index.css";
 
 // Initialize Sentry in production
-const sentryEnabled = import.meta.env.PROD && Boolean(import.meta.env.VITE_SENTRY_DSN);
-ErrorManager.setErrorService(null);
-
-if (sentryEnabled) {
+if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN && Sentry) {
 	try {
 		Sentry.init({
 			dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -35,10 +37,8 @@ if (sentryEnabled) {
 			environment: import.meta.env.MODE,
 			release: `name-nosferatu@${import.meta.env.VITE_APP_VERSION || "1.0.2"}`,
 		});
-		ErrorManager.setErrorService(Sentry);
 	} catch (error) {
 		console.warn("Failed to initialize Sentry:", error);
-		ErrorManager.setErrorService(null);
 	}
 }
 

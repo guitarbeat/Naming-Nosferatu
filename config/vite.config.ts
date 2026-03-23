@@ -1,100 +1,71 @@
+import type { ServerResponse } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import autoprefixer from "autoprefixer";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { createLogger, defineConfig } from "vite";
 import { consoleForwardPlugin } from "../scripts/vite-console-forward-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const viteLogger = createLogger();
 
-function getPackageName(id: string): string | null {
-	const modulePath = id.split("node_modules/").pop();
-	if (!modulePath) {
-		return null;
-	}
-
-	const parts = modulePath.split("/");
-	if (parts[0]?.startsWith("@") && parts[1]) {
-		return `${parts[0]}/${parts[1]}`;
-	}
-
-	return parts[0] ?? null;
-}
+const suppressedProxyErrors = ["http proxy error: /api/names?includeHidden=true"];
 
 function getManualChunk(id: string): string | undefined {
-	if (!id.includes("node_modules")) {
-		return undefined;
-	}
+        if (!id.includes("node_modules")) {
+                return undefined;
+        }
 
-	const packageName = getPackageName(id);
-	if (!packageName) {
-		return "vendor";
-	}
+        if (
+                id.includes("/react/") ||
+                id.includes("/react-dom/") ||
+                id.includes("/scheduler/") ||
+                id.includes("/react-router/")
+        ) {
+                return "vendor-react";
+        }
 
-	if (
-		[
-			"react",
-			"react-dom",
-			"react-router",
-			"react-router-dom",
-			"@remix-run/router",
-			"scheduler",
-			"hoist-non-react-statics",
-			"react-is",
-			"react-redux",
-			"redux",
-			"use-sync-external-store",
-		].includes(packageName)
-	) {
-		return "react-vendor";
-	}
+        if (id.includes("/@tanstack/") || id.includes("/@supabase/")) {
+                return "vendor-data";
+        }
 
-	if (packageName.startsWith("@sentry/") || packageName.startsWith("@sentry-internal/")) {
-		return "sentry-vendor";
-	}
+        if (id.includes("/framer-motion/") || id.includes("/@hello-pangea/dnd/")) {
+                return "vendor-motion";
+        }
 
-	if (
-		packageName === "framer-motion" ||
-		packageName === "motion-dom" ||
-		packageName === "motion-utils"
-	) {
-		return "motion-vendor";
-	}
+        if (
+                id.includes("/@heroui/") ||
+                id.includes("/@react-aria/") ||
+                id.includes("/@react-stately/") ||
+                id.includes("/@internationalized/")
+        ) {
+                return "vendor-ui";
+        }
 
-	if (packageName === "ogl") {
-		return "visual-vendor";
-	}
+        if (id.includes("/lucide-react/")) {
+                return "vendor-icons";
+        }
 
-	if (packageName.startsWith("@supabase/")) {
-		return "supabase-vendor";
-	}
-
-	if (
-		packageName === "@hello-pangea/dnd" ||
-		packageName === "lucide-react" ||
-		packageName.startsWith("@heroui/") ||
-		packageName.startsWith("@react-aria/") ||
-		packageName.startsWith("@react-stately/") ||
-		packageName.startsWith("@react-types/") ||
-		packageName.startsWith("@internationalized/") ||
-		packageName.startsWith("@floating-ui/") ||
-		packageName.startsWith("@zag-js/")
-	) {
-		return "ui-vendor";
-	}
-
-	if (packageName.startsWith("@tanstack/") || packageName === "zustand") {
-		return "state-vendor";
-	}
-
-	return "vendor";
+        return "vendor-misc";
 }
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
-	server: {
+        customLogger:
+                command === "serve"
+                        ? {
+                                        ...viteLogger,
+                                        error(msg, options) {
+                                                if (suppressedProxyErrors.some((entry) => msg.includes(entry))) {
+                                                        return;
+                                                }
+                                                viteLogger.error(msg, options);
+                                        },
+                                }
+                        : undefined,
+        server: {
 		host: "0.0.0.0",
 		port: 5173,
 		strictPort: false,
@@ -102,35 +73,52 @@ export default defineConfig(({ command }) => ({
 		watch: {
 			usePolling: true,
 		},
-	},
-	css: {
-		postcss: {
-			plugins: [autoprefixer()],
-		},
-	},
-	build: {
-		rollupOptions: {
-			output: {
-				manualChunks: getManualChunk,
-			},
-		},
-	},
-	plugins: [
-		react(),
-		tailwindcss(),
-		consoleForwardPlugin({
-			enabled: command === "serve",
-			endpoint: "/__dev/client-logs",
-			levels: ["log", "warn", "error", "info", "debug"],
-		}),
-	],
-	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "..", "src"),
-			"@/app": path.resolve(__dirname, "..", "src/app"),
-			"@/features": path.resolve(__dirname, "..", "src/features"),
-			"@/shared": path.resolve(__dirname, "..", "src/shared"),
-			"@/services": path.resolve(__dirname, "..", "src/services"),
-		},
-	},
+                proxy: {
+                        "/api": {
+                                target: "http://localhost:3001",
+                                changeOrigin: true,
+                                configure(proxy) {
+                                        proxy.on("error", (_error, _req, res) => {
+                                                const response = res as ServerResponse | undefined;
+                                                if (!response || response.headersSent) {
+                                                        return;
+                                                }
+
+                                                response.writeHead(503, { "Content-Type": "application/json" });
+                                                response.end(JSON.stringify({ error: "API server unavailable" }));
+                                        });
+                                },
+                        },
+                },
+        },
+        css: {
+                postcss: {
+                        plugins: [autoprefixer()],
+                },
+        },
+        plugins: [
+                react(),
+                tailwindcss(),
+                consoleForwardPlugin({
+                        enabled: command === "serve",
+                        endpoint: "/api/debug/client-logs",
+                        levels: ["log", "warn", "error", "info", "debug"],
+                }),
+        ],
+        resolve: {
+                alias: {
+                        "@": path.resolve(__dirname, "..", "src"),
+                        "@/app": path.resolve(__dirname, "..", "src/app"),
+                        "@/features": path.resolve(__dirname, "..", "src/features"),
+                        "@/shared": path.resolve(__dirname, "..", "src/shared"),
+                        "@/services": path.resolve(__dirname, "..", "src/services"),
+                },
+        },
+        build: {
+                rollupOptions: {
+                        output: {
+                                manualChunks: getManualChunk,
+                        },
+                },
+        },
 }));

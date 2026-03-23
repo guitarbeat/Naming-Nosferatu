@@ -1,5 +1,6 @@
 const CACHE_VERSION = "2025-12-08";
 const STATIC_CACHE = `harmonic-studio-static-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `harmonic-studio-runtime-${CACHE_VERSION}`;
 const HTML_CACHE = `harmonic-studio-html-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -33,10 +34,11 @@ self.addEventListener("activate", (event) => {
 				Promise.all(
 					keys
 						.filter(
-								(key) =>
-									key.startsWith("harmonic-studio-") &&
-									key !== STATIC_CACHE &&
-									key !== HTML_CACHE,
+							(key) =>
+								key.startsWith("harmonic-studio-") &&
+								key !== STATIC_CACHE &&
+								key !== RUNTIME_CACHE &&
+								key !== HTML_CACHE,
 						)
 						.map((key) => caches.delete(key)),
 				),
@@ -58,7 +60,7 @@ self.addEventListener("message", (event) => {
  * * Routing strategy:
  * * - Navigations: network-first to avoid serving stale HTML pointing to old bundles.
  * * - Same-origin static assets: cache-first for speed with background revalidation.
- * * - Other requests: pass through untouched so Supabase/Auth/RPC traffic is never cached.
+ * * - Other GET requests: stale-while-revalidate in a runtime cache.
  */
 self.addEventListener("fetch", (event) => {
 	const { request } = event;
@@ -79,6 +81,8 @@ self.addEventListener("fetch", (event) => {
 		event.respondWith(cacheFirst(request, STATIC_CACHE));
 		return;
 	}
+
+	event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
 });
 
 async function networkFirst(request, cacheName) {
@@ -112,6 +116,21 @@ async function cacheFirst(request, cacheName) {
 		cache.put(request, response.clone());
 	}
 	return response;
+}
+
+async function staleWhileRevalidate(request, cacheName) {
+	const cache = await caches.open(cacheName);
+	const cached = await cache.match(request);
+	const fetchPromise = fetch(request)
+		.then((response) => {
+			if (response?.ok) {
+				cache.put(request, response.clone());
+			}
+			return response;
+		})
+		.catch(() => cached || fetch(request));
+
+	return cached || fetchPromise;
 }
 
 async function fetchAndUpdate(request, cache) {

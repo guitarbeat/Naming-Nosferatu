@@ -8,14 +8,9 @@ vi.mock("./runtime", () => ({
 
 describe("imagesAPI", () => {
 	const mockedResolveSupabaseClient = vi.mocked(resolveSupabaseClient);
-	const mockAuthGetUser = vi.fn();
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		mockAuthGetUser.mockResolvedValue({
-			data: { user: { id: "user-1", email: "admin@example.com", user_metadata: {} } },
-			error: null,
-		});
 	});
 
 	describe("imagesAPI.list", () => {
@@ -23,8 +18,8 @@ describe("imagesAPI", () => {
 			const mockData = [{ name: "cat1.jpg" }, { name: "cat2.png" }];
 			const mockList = vi.fn().mockResolvedValue({ data: mockData, error: null });
 			const mockFrom = vi.fn().mockReturnValue({ list: mockList });
-			const mockClient = { auth: { getUser: mockAuthGetUser }, storage: { from: mockFrom } };
-
+			const mockClient = { storage: { from: mockFrom } };
+			
 			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
 
 			const result = await imagesAPI.list();
@@ -43,8 +38,8 @@ describe("imagesAPI", () => {
 			const mockError = { message: "Bucket not found" };
 			const mockList = vi.fn().mockResolvedValue({ data: null, error: mockError });
 			const mockFrom = vi.fn().mockReturnValue({ list: mockList });
-			const mockClient = { auth: { getUser: mockAuthGetUser }, storage: { from: mockFrom } };
-
+			const mockClient = { storage: { from: mockFrom } };
+			
 			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
 
 			const result = await imagesAPI.list();
@@ -58,15 +53,13 @@ describe("imagesAPI", () => {
 
 		it("should upload a file and return the public URL on success", async () => {
 			const mockUpload = vi.fn().mockResolvedValue({ data: { path: "some-path" }, error: null });
-			const mockGetPublicUrl = vi
-				.fn()
-				.mockReturnValue({ data: { publicUrl: "https://example.com/test-cat.jpg" } });
-			const mockFrom = vi.fn().mockReturnValue({
+			const mockGetPublicUrl = vi.fn().mockReturnValue({ data: { publicUrl: "https://example.com/test-cat.jpg" } });
+			const mockFrom = vi.fn().mockReturnValue({ 
 				upload: mockUpload,
-				getPublicUrl: mockGetPublicUrl,
+				getPublicUrl: mockGetPublicUrl 
 			});
-			const mockClient = { auth: { getUser: mockAuthGetUser }, storage: { from: mockFrom } };
-
+			const mockClient = { storage: { from: mockFrom } };
+			
 			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
 
 			const result = await imagesAPI.upload(mockFile, userName);
@@ -75,7 +68,7 @@ describe("imagesAPI", () => {
 			expect(mockUpload).toHaveBeenCalledWith(
 				expect.stringMatching(new RegExp(`^${userName}_\\d+_\\w+\\.jpg$`)),
 				mockFile,
-				expect.objectContaining({ upsert: false }),
+				expect.objectContaining({ upsert: false })
 			);
 			expect(result.success).toBe(true);
 			expect(result.path).toBe("https://example.com/test-cat.jpg");
@@ -87,9 +80,9 @@ describe("imagesAPI", () => {
 			const largeFile = {
 				size: 6 * 1024 * 1024,
 				type: "image/jpeg",
-				name: "large.jpg",
+				name: "large.jpg"
 			} as unknown as File;
-
+			
 			const result = await imagesAPI.upload(largeFile, userName);
 
 			expect(result.success).toBe(false);
@@ -98,7 +91,7 @@ describe("imagesAPI", () => {
 
 		it("should fail if file type is not allowed", async () => {
 			const invalidFile = new File(["dummy content"], "test.pdf", { type: "application/pdf" });
-
+			
 			const result = await imagesAPI.upload(invalidFile, userName);
 
 			expect(result.success).toBe(false);
@@ -109,15 +102,15 @@ describe("imagesAPI", () => {
 			mockedResolveSupabaseClient.mockResolvedValue(null);
 			const result = await imagesAPI.upload(mockFile, userName);
 			expect(result.success).toBe(false);
-			expect(result.error).toBe("Supabase is not configured for this environment.");
+			expect(result.error).toBe("Storage client not available");
 		});
 
 		it("should return error when upload fails", async () => {
 			const mockError = { message: "Network error" };
 			const mockUpload = vi.fn().mockResolvedValue({ data: null, error: mockError });
 			const mockFrom = vi.fn().mockReturnValue({ upload: mockUpload });
-			const mockClient = { auth: { getUser: mockAuthGetUser }, storage: { from: mockFrom } };
-
+			const mockClient = { storage: { from: mockFrom } };
+			
 			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
 
 			const result = await imagesAPI.upload(mockFile, userName);

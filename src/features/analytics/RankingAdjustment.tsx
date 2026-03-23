@@ -7,11 +7,9 @@ import {
 	type DroppableProvided,
 	type DropResult,
 } from "@hello-pangea/dnd";
-import { CardBody, CardHeader, Chip, Divider } from "@heroui/react";
+import { Button, CardBody, CardHeader, Chip, cn, Divider } from "@heroui/react";
 import { motion } from "framer-motion";
 import { memo, useEffect, useRef, useState } from "react";
-import Button from "@/shared/components/layout/Button";
-import { cn } from "@/shared/lib/basic";
 import { GripVertical, Loader2, Save } from "@/shared/lib/icons";
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
@@ -256,9 +254,8 @@ export const RankingAdjustment = memo(
 				<div className="p-6 flex justify-end">
 					<Button
 						onClick={onCancel}
-						variant="ghost"
-						shape="pill"
-						className="bg-foreground/5 text-foreground hover:bg-foreground/10 hover:text-foreground"
+						variant="flat"
+						className="bg-foreground/5 hover:bg-foreground/10 text-foreground border border-border/10"
 					>
 						Back to Tournament
 					</Button>
