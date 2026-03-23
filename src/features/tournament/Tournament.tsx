@@ -292,19 +292,18 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						)}
 					</div>
 
-					<div className="shrink-0 flex items-center gap-1">
+					{/* Controls - wrap on mobile */}
+					<div className="shrink-0 flex flex-wrap items-center gap-1">
 						{([
 							{ action: audioManager.handleToggleMute, icon: audioManager.isMuted ? VolumeX : Volume2, label: audioManager.isMuted ? "Unmute" : "Mute" },
-							{ action: audioManager.handlePreviousTrack, icon: SkipBack, label: "Previous track" },
 							{ action: audioManager.toggleBackgroundMusic, icon: Music, label: audioManager.backgroundMusicEnabled ? "Stop music" : "Play music", active: audioManager.backgroundMusicEnabled },
-							{ action: audioManager.handleNextTrack, icon: SkipForward, label: "Next track" },
 							{ action: () => setCatPictures(!showCatPictures), icon: PawPrint, label: showCatPictures ? "Names only" : "Show cats", active: showCatPictures },
 						] as const).map(({ action, icon: Icon, label, active }) => (
 							<button
 								key={label}
 								type="button"
 								onClick={action}
-								className={`size-8 flex items-center justify-center rounded-lg transition-colors ${
+								className={`size-7 sm:size-8 flex items-center justify-center rounded-lg transition-colors ${
 									active ? "bg-primary/20 text-primary" : "bg-foreground/5 text-muted-foreground hover:text-foreground"
 								}`}
 								aria-label={label}
@@ -312,11 +311,28 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								<Icon className="size-3" />
 							</button>
 						))}
+						{/* Track controls hidden on mobile to save space */}
+						<button
+							type="button"
+							onClick={audioManager.handlePreviousTrack}
+							className="hidden sm:flex size-8 items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors"
+							aria-label="Previous track"
+						>
+							<SkipBack className="size-3" />
+						</button>
+						<button
+							type="button"
+							onClick={audioManager.handleNextTrack}
+							className="hidden sm:flex size-8 items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors"
+							aria-label="Next track"
+						>
+							<SkipForward className="size-3" />
+						</button>
 						{handleQuit && (
 							<button
 								type="button"
 								onClick={handleQuit}
-								className="size-8 flex items-center justify-center rounded-lg bg-destructive/20 text-destructive hover:text-destructive/80 transition-colors"
+								className="size-7 sm:size-8 flex items-center justify-center rounded-lg bg-destructive/20 text-destructive hover:text-destructive/80 transition-colors"
 								aria-label="Quit tournament"
 							>
 								<X className="size-3.5" />
