@@ -28,8 +28,6 @@ if (connectionString) {
 		db = null;
 		pool = null;
 	}
-} else {
-	console.log("ℹ No database URL set - running in mock mode without database");
 }
 
 export { pool, db };
