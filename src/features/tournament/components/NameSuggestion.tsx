@@ -139,7 +139,7 @@ export function NameSuggestionInner() {
 						className="space-y-5 sm:space-y-8"
 					>
 						{/* Name Input */}
-						<div className="space-y-3">
+						<div className="space-y-2 sm:space-y-3">
 							<label htmlFor="suggest-name" className="flex items-center gap-2 text-sm font-bold text-foreground/90">
 								<span className="w-2 h-2 bg-primary rounded-full" />
 								Name suggestion
