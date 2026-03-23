@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { getMatchSideId, getMatchSideName, extractMatchData } from "./matchHelpers";
+import { describe, expect, it } from "vitest";
 import type { Match, NameItem, Team } from "@/shared/types";
+import { extractMatchData, getMatchSideId, getMatchSideName } from "./matchHelpers";
 
 describe("matchHelpers", () => {
 	const mockNameItem1: NameItem = {
@@ -29,13 +29,21 @@ describe("matchHelpers", () => {
 
 	describe("getMatchSideId", () => {
 		it("should return the stringified id from a NameItem object in a 1v1 match", () => {
-			const match: Match = { mode: "1v1", left: mockNameItem1, right: mockNameItem2 };
+			const match: Match = {
+				mode: "1v1",
+				left: mockNameItem1,
+				right: mockNameItem2,
+			};
 			expect(getMatchSideId(match, "left")).toBe("1");
 			expect(getMatchSideId(match, "right")).toBe("cat-2");
 		});
 
 		it("should return the string value when the participant is a string in a 1v1 match", () => {
-			const match: Match = { mode: "1v1", left: "string-id-1", right: "string-id-2" };
+			const match: Match = {
+				mode: "1v1",
+				left: "string-id-1",
+				right: "string-id-2",
+			};
 			expect(getMatchSideId(match, "left")).toBe("string-id-1");
 			expect(getMatchSideId(match, "right")).toBe("string-id-2");
 		});
@@ -49,13 +57,21 @@ describe("matchHelpers", () => {
 
 	describe("getMatchSideName", () => {
 		it("should return the name from a NameItem object in a 1v1 match", () => {
-			const match: Match = { mode: "1v1", left: mockNameItem1, right: mockNameItem2 };
+			const match: Match = {
+				mode: "1v1",
+				left: mockNameItem1,
+				right: mockNameItem2,
+			};
 			expect(getMatchSideName(match, "left")).toBe("Mittens");
 			expect(getMatchSideName(match, "right")).toBe("Garfield");
 		});
 
 		it("should return the string value when the participant is a string in a 1v1 match", () => {
-			const match: Match = { mode: "1v1", left: "String Cat", right: "Another Cat" };
+			const match: Match = {
+				mode: "1v1",
+				left: "String Cat",
+				right: "Another Cat",
+			};
 			expect(getMatchSideName(match, "left")).toBe("String Cat");
 			expect(getMatchSideName(match, "right")).toBe("Another Cat");
 		});
@@ -69,7 +85,11 @@ describe("matchHelpers", () => {
 
 	describe("extractMatchData", () => {
 		it("should correctly extract data for a 1v1 match with NameItem objects", () => {
-			const match: Match = { mode: "1v1", left: mockNameItem1, right: mockNameItem2 };
+			const match: Match = {
+				mode: "1v1",
+				left: mockNameItem1,
+				right: mockNameItem2,
+			};
 			const data = extractMatchData(match);
 
 			expect(data).toEqual({
@@ -89,7 +109,11 @@ describe("matchHelpers", () => {
 		});
 
 		it("should correctly extract data for a 1v1 match with string participants", () => {
-			const match: Match = { mode: "1v1", left: "String Cat 1", right: "String Cat 2" };
+			const match: Match = {
+				mode: "1v1",
+				left: "String Cat 1",
+				right: "String Cat 2",
+			};
 			const data = extractMatchData(match);
 
 			expect(data).toEqual({
