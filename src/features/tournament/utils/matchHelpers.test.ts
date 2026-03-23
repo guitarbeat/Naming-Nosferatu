@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { getMatchSideName } from "./matchHelpers";
+import { describe, expect, it } from "vitest";
 import type { HeadToHeadMatch, TeamVersusMatch } from "@/shared/types";
+import { getMatchSideName } from "./matchHelpers";
 
 describe("getMatchSideName", () => {
 	describe("1v1 mode", () => {
