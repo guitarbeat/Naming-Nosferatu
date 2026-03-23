@@ -1,9 +1,17 @@
-import { describe, it, expect } from "vitest";
-import { getMatchSideId, getMatchSideName, extractMatchData } from "./matchHelpers";
-import type { HeadToHeadMatch, TeamVersusMatch, NameItem, Team } from "@/shared/types";
+import { describe, expect, it } from "vitest";
+import type {
+	HeadToHeadMatch,
+	NameItem,
+	Team,
+	TeamVersusMatch,
+} from "@/shared/types";
+import {
+	extractMatchData,
+	getMatchSideId,
+	getMatchSideName,
+} from "./matchHelpers";
 
 describe("matchHelpers", () => {
-
 	describe("getMatchSideId", () => {
 		it("returns string ID when participant is a NameItem object (1v1)", () => {
 			const match: HeadToHeadMatch = {
@@ -36,8 +44,16 @@ describe("matchHelpers", () => {
 		});
 
 		it("returns the team ID when participant is a Team object (2v2)", () => {
-			const leftTeam: Team = { id: "team-a", memberIds: ["1", "2"], memberNames: ["Cat1", "Cat2"] };
-			const rightTeam: Team = { id: "team-b", memberIds: ["3", "4"], memberNames: ["Cat3", "Cat4"] };
+			const leftTeam: Team = {
+				id: "team-a",
+				memberIds: ["1", "2"],
+				memberNames: ["Cat1", "Cat2"],
+			};
+			const rightTeam: Team = {
+				id: "team-b",
+				memberIds: ["3", "4"],
+				memberNames: ["Cat3", "Cat4"],
+			};
 			const match: TeamVersusMatch = {
 				mode: "2v2",
 				left: leftTeam,
@@ -59,8 +75,16 @@ describe("matchHelpers", () => {
 
 	describe("getMatchSideName", () => {
 		it("returns joined member names for 2v2 matches", () => {
-			const leftTeam: Team = { id: "team-a", memberIds: ["1", "2"], memberNames: ["Cat1", "Cat2"] };
-			const rightTeam: Team = { id: "team-b", memberIds: ["3", "4"], memberNames: ["Cat3", "Cat4"] };
+			const leftTeam: Team = {
+				id: "team-a",
+				memberIds: ["1", "2"],
+				memberNames: ["Cat1", "Cat2"],
+			};
+			const rightTeam: Team = {
+				id: "team-b",
+				memberIds: ["3", "4"],
+				memberNames: ["Cat3", "Cat4"],
+			};
 			const match: TeamVersusMatch = {
 				mode: "2v2",
 				left: leftTeam,
@@ -93,8 +117,16 @@ describe("matchHelpers", () => {
 
 	describe("extractMatchData", () => {
 		it("extracts data correctly for 2v2 matches", () => {
-			const leftTeam: Team = { id: "team-a", memberIds: ["1", "2"], memberNames: ["Cat1", "Cat2"] };
-			const rightTeam: Team = { id: "team-b", memberIds: ["3", "4"], memberNames: ["Cat3", "Cat4"] };
+			const leftTeam: Team = {
+				id: "team-a",
+				memberIds: ["1", "2"],
+				memberNames: ["Cat1", "Cat2"],
+			};
+			const rightTeam: Team = {
+				id: "team-b",
+				memberIds: ["3", "4"],
+				memberNames: ["Cat3", "Cat4"],
+			};
 			const match: TeamVersusMatch = {
 				mode: "2v2",
 				left: leftTeam,
@@ -118,7 +150,12 @@ describe("matchHelpers", () => {
 		it("extracts data correctly for 1v1 matches with NameItem objects", () => {
 			const match: HeadToHeadMatch = {
 				mode: "1v1",
-				left: { id: "123", name: "LeftCat", description: "Left description", pronunciation: "Left pro" } as NameItem,
+				left: {
+					id: "123",
+					name: "LeftCat",
+					description: "Left description",
+					pronunciation: "Left pro",
+				} as NameItem,
 				right: { id: 456, name: "RightCat" } as NameItem,
 			};
 
