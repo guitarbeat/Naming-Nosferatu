@@ -126,15 +126,6 @@ function HomeContent() {
 				/>
 				<NameSuggestionInner />
 			</Section>
-
-			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
-				<SectionHeading
-					icon={User}
-					title="Your Profile"
-					subtitle="Track your rankings and tournament history"
-				/>
-				<ProfileInner onLogin={(name) => login({ name })} />
-			</Section>
 		</>
 	);
 }

@@ -118,9 +118,15 @@ export function AppLayout({ children }: AppLayoutProps) {
 						</div>
 					)}
 
-					<ScrollToTopButton isLoggedIn={isLoggedIn} />
-				</main>
-			</div>
-		</ErrorBoundary>
+				<ScrollToTopButton isLoggedIn={isLoggedIn} />
+			</main>
+
+			<AnimatePresence>
+				{ui.isProfileOpen && (
+					<ProfileOverlay onClose={() => uiActions.setProfileOpen(false)} />
+				)}
+			</AnimatePresence>
+		</div>
+	</ErrorBoundary>
 	);
 }
