@@ -21,12 +21,11 @@ import useAppStore from "@/store/appStore";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
 
-type NavSection = "pick" | "suggest" | "profile";
+type NavSection = "pick" | "suggest";
 
 const keyToId: Record<NavSection, string> = {
 	pick: "pick",
 	suggest: "suggest",
-	profile: "profile",
 };
 
 function useIsMobile() {
@@ -165,7 +164,7 @@ export function FloatingNavbar() {
 		}
 
 		let rafId: number | null = null;
-		const sections: NavSection[] = ["pick", "suggest", "profile"];
+		const sections: NavSection[] = ["pick", "suggest"];
 
 		const handleScroll = () => {
 			if (rafId) {
@@ -320,12 +319,12 @@ export function FloatingNavbar() {
 							onClick={() => handleNavClick("suggest")}
 						/>
 
-						<FloatingNavItem
-							icon={User}
-							label={profileLabel}
-							isCurrent={isHomeRoute && activeSection === "profile"}
-							onClick={() => handleNavClick("profile")}
-							customIcon={
+					<FloatingNavItem
+						icon={User}
+						label={profileLabel}
+						isCurrent={ui.isProfileOpen}
+						onClick={() => uiActions.setProfileOpen(true)}
+						customIcon={
 								isLoggedIn && avatarUrl ? (
 									<img src={avatarUrl} alt={profileLabel} className="floating-navbar__avatar" />
 								) : (

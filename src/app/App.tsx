@@ -12,13 +12,12 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import { NameSuggestionInner } from "@/features/tournament/components/NameSuggestion";
-import { ProfileInner } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useOfflineSync } from "@/shared/hooks";
-import { Lightbulb, Trophy, User } from "@/shared/lib/icons";
+import { Lightbulb, Trophy } from "@/shared/lib/icons";
 import {
 	cleanupPerformanceMonitoring,
 	initializePerformanceMonitoring,
@@ -103,8 +102,6 @@ function App() {
 }
 
 function HomeContent() {
-	const { login } = useAuth();
-
 	return (
 		<>
 			<Section id="pick" variant="minimal" padding="compact" maxWidth="full">
@@ -126,15 +123,6 @@ function HomeContent() {
 					subtitle="Got a great cat name? Share it with the community"
 				/>
 				<NameSuggestionInner />
-			</Section>
-
-			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
-				<SectionHeading
-					icon={User}
-					title="Your Profile"
-					subtitle="Track your rankings and tournament history"
-				/>
-				<ProfileInner onLogin={(name) => login({ name })} />
 			</Section>
 		</>
 	);

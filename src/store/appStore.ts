@@ -91,7 +91,8 @@ interface UIActions {
 	setSwipeMode: (enabled: boolean) => void;
 	setCatPictures: (show: boolean) => void;
 	setUserComparison: (show: boolean) => void;
-	setEditingProfile: (editing: boolean) => void;
+		setEditingProfile: (editing: boolean) => void;
+		setProfileOpen: (open: boolean) => void;
 }
 
 interface SiteSettingsActions {
@@ -367,6 +368,7 @@ const createUserAndSettingsSlice: StateCreator<
 		isSwipeMode: getInitialSwipeMode(),
 		showCatPictures: true,
 		isEditingProfile: false,
+		isProfileOpen: false,
 	},
 
 	uiActions: {
@@ -417,6 +419,7 @@ const createUserAndSettingsSlice: StateCreator<
 		setCatPictures: (show) => patch(set, "ui", { showCatPictures: show }),
 		setUserComparison: (show) => patch(set, "ui", { showUserComparison: show }),
 		setEditingProfile: (editing) => patch(set, "ui", { isEditingProfile: editing }),
+		setProfileOpen: (open) => patch(set, "ui", { isProfileOpen: open }),
 	},
 
 	// ── Site Settings ────────────────────────────────────────────────────────
