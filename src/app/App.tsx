@@ -102,8 +102,6 @@ function App() {
 }
 
 function HomeContent() {
-	const { login } = useAuth();
-
 	return (
 		<>
 			<Section id="pick" variant="minimal" padding="compact" maxWidth="full">
