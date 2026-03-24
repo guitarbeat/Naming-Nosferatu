@@ -37,7 +37,7 @@ function ProfileOverlay({ onClose }: { onClose: () => void }) {
 
 			{/* Panel */}
 			<motion.div
-				className="relative z-50 w-full max-w-md rounded-2xl border border-border/50 bg-card p-6 shadow-2xl"
+				className="relative z-50 w-full max-w-md overflow-hidden rounded-2xl border border-border/50 bg-card p-6 shadow-2xl"
 				initial={{ y: 40, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				exit={{ y: 40, opacity: 0 }}
