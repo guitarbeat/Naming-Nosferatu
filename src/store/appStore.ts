@@ -91,7 +91,8 @@ interface UIActions {
 	setSwipeMode: (enabled: boolean) => void;
 	setCatPictures: (show: boolean) => void;
 	setUserComparison: (show: boolean) => void;
-	setEditingProfile: (editing: boolean) => void;
+		setEditingProfile: (editing: boolean) => void;
+		setProfileOpen: (open: boolean) => void;
 }
 
 interface SiteSettingsActions {
