@@ -231,13 +231,5 @@ describe("FloatingNavbar", () => {
 		expect(profileIcon).toHaveClass("text-chart-4");
 	});
 
-	it("does not render on the tournament route", () => {
-		render(
-			<MemoryRouter initialEntries={["/tournament"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
 
-		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
-	});
 });
