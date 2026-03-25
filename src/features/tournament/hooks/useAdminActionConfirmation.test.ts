@@ -42,7 +42,9 @@ describe("useAdminActionConfirmation", () => {
 				result.current.requestAdminAction(mockAction);
 			});
 
-			expect(options.toast.showWarning).toHaveBeenCalledWith("Only admins can perform that action.");
+			expect(options.toast.showWarning).toHaveBeenCalledWith(
+				"Only admins can perform that action.",
+			);
 			expect(result.current.pendingAdminAction).toBeNull();
 		});
 
@@ -119,7 +121,7 @@ describe("useAdminActionConfirmation", () => {
 			await act(async () => {
 				try {
 					await result.current.confirmAdminAction();
-				} catch (e) {
+				} catch (_e) {
 					// Expected to throw
 				}
 			});

@@ -230,6 +230,4 @@ describe("FloatingNavbar", () => {
 		expect(profileIcon).not.toBeNull();
 		expect(profileIcon).toHaveClass("text-chart-4");
 	});
-
-
 });
