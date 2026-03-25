@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { buildInitialRatings } from "./tournamentPersistence";
+import { describe, expect, it } from "vitest";
 import { ELO_RATING } from "@/shared/lib/constants";
 import type { NameItem } from "@/shared/types";
+import { buildInitialRatings } from "./tournamentPersistence";
 
 describe("buildInitialRatings", () => {
 	it("should return an empty object for an empty array", () => {
@@ -51,9 +51,7 @@ describe("buildInitialRatings", () => {
 	});
 
 	it("should convert numeric ids to strings correctly", () => {
-		const names: Partial<NameItem>[] = [
-			{ id: 100, name: "Cat 100", rating: 1550 },
-		];
+		const names: Partial<NameItem>[] = [{ id: 100, name: "Cat 100", rating: 1550 }];
 		const result = buildInitialRatings(names as NameItem[]);
 
 		expect(result).toEqual({

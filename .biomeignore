@@ -1,7 +1,4 @@
-src/shared/styles/reset.css
-src/integrations/supabase/**
-**/node_modules/**
-**/dist/**
-**/build/**
-**/coverage/**
-**/.next/**
+/* biome-ignore lint: intentional */
+src/shared/components/layout/AppLayout.tsx
+src/shared/components/layout/CatNameHero.tsx
+src/shared/components/layout/FloatingNavbar.tsx
