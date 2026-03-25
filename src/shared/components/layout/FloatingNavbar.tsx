@@ -120,6 +120,10 @@ export function FloatingNavbar() {
 	// On mobile, hide utility toggle (it moves into the picker surface)
 	const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
 
+	if (isTournamentRoute) {
+		return null;
+	}
+
 	const scrollToSection = (key: NavSection) => {
 		const id = keyToId[key];
 		const target = document.getElementById(id);

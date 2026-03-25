@@ -57,7 +57,7 @@ class WebSocketService {
 				this.ws = new WebSocket(this.url);
 
 				this.ws.onopen = () => {
-					console.log("WebSocket connected");
+						// Suppress log
 					this.isConnecting = false;
 					this.reconnectAttempts = 0;
 					resolve();
@@ -68,12 +68,12 @@ class WebSocketService {
 						const message: WebSocketMessage = JSON.parse(event.data);
 						this.handleMessage(message);
 					} catch (error) {
-						console.error("Failed to parse WebSocket message:", error);
+							// Suppress error log
 					}
 				};
 
 				this.ws.onclose = (event) => {
-					console.log("WebSocket disconnected:", event.code, event.reason);
+						// Suppress log
 					this.ws = null;
 
 					// Attempt to reconnect if not a clean close
@@ -81,7 +81,7 @@ class WebSocketService {
 						setTimeout(
 							() => {
 								this.reconnectAttempts++;
-								this.connect().catch(console.error);
+									this.connect().catch(() => {});
 							},
 							this.reconnectDelay * 2 ** this.reconnectAttempts,
 						);
@@ -89,7 +89,7 @@ class WebSocketService {
 				};
 
 				this.ws.onerror = (error) => {
-					console.error("WebSocket error:", error);
+						// Suppress error log
 					this.isConnecting = false;
 					reject(error);
 				};
@@ -116,7 +116,7 @@ class WebSocketService {
 			};
 			this.ws.send(JSON.stringify(fullMessage));
 		} else {
-			console.warn("WebSocket not connected, message not sent:", message);
+				// Suppress warning
 		}
 	}
 

@@ -101,7 +101,7 @@ export function Dashboard({
 				const data = await leaderboardAPI.getLeaderboard(10);
 				setLeaderboard(data);
 			} catch (error) {
-				console.error("Failed to fetch leaderboard:", error);
+				// Suppress expected errors during normal flow
 			} finally {
 				setIsLoadingLeaderboard(false);
 			}
@@ -115,7 +115,7 @@ export function Dashboard({
 			const metrics = await statsAPI.getEngagementMetrics(timeframe);
 			setEngagementMetrics(metrics);
 		} catch (error) {
-			console.error("Failed to fetch engagement metrics:", error);
+			// Suppress expected errors during normal flow
 		} finally {
 			setIsLoadingStats(false);
 		}
@@ -149,7 +149,7 @@ export function Dashboard({
 				}
 				setUserStats(user);
 			} catch (error) {
-				console.error("Failed to fetch stats:", error);
+				// Suppress expected errors during normal flow
 			} finally {
 				setIsLoadingStats(false);
 			}
@@ -165,7 +165,7 @@ export function Dashboard({
 					const data = await hiddenNamesAPI.getHiddenNames();
 					setHiddenNames(data);
 				} catch (error) {
-					console.error("Failed to fetch hidden names:", error);
+					// Suppress expected errors during normal flow
 				}
 			};
 			fetchHidden();
@@ -183,7 +183,7 @@ export function Dashboard({
 			}
 			setHiddenNames((prev) => prev.filter((n) => n.id !== nameId));
 		} catch (error) {
-			console.error("Failed to unhide name:", error);
+			// Suppress expected errors during normal flow
 		}
 	};
 

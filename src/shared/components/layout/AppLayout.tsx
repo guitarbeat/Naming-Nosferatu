@@ -13,7 +13,7 @@ import {
 	OfflineIndicator,
 } from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
-import { ProfileInner } from "@/features/tournament/components/ProfileSection";
+import { ProfileInner } from "@/shared/components/profile/ProfileSection";
 import { X } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
 
