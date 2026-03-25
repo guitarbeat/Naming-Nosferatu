@@ -5,10 +5,8 @@
  */
 
 import { cva } from "class-variance-authority";
-import { motion } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
-import { useTilt } from "@/shared/hooks/useTilt";
 import { cn } from "@/shared/lib/basic";
 import { TIMING } from "@/shared/lib/constants";
 import { ZoomIn } from "@/shared/lib/icons";
@@ -136,26 +134,6 @@ const CardBase = memo(
 			},
 			ref,
 		) => {
-			const tilt = useTilt(enableTilt);
-
-			const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-				const rect = e.currentTarget.getBoundingClientRect();
-				const x = e.clientX - rect.left;
-				const y = e.clientY - rect.top;
-
-				// Update CSS variables for the CSS-based glow effect
-				e.currentTarget.style.setProperty("--mouse-x", `${x}px`);
-				e.currentTarget.style.setProperty("--mouse-y", `${y}px`);
-
-				tilt.handleMouseMove(e);
-				onMouseMove?.(e);
-			};
-
-			const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-				tilt.handleMouseLeave();
-				onMouseLeave?.(e);
-			};
-
 			const cardRefClasses = cardVariants({
 				variant,
 				padding,
@@ -171,9 +149,10 @@ const CardBase = memo(
 				interactive &&
 					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-primary",
 				interactive && onClick && "active:translate-y-0",
-				// Glow effect helper
+				enableTilt &&
+					"transform-gpu [transform-style:preserve-3d] motion-safe:hover:[transform:perspective(1100px)_rotateX(4deg)_rotateY(-4deg)_translateY(-6px)]",
 				"before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
-				"before:bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(168,85,247,0.15),transparent_50%)]",
+				"before:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_55%)]",
 			);
 
 			// * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
@@ -230,27 +209,14 @@ const CardBase = memo(
 				);
 			}
 
-			const motionProps = tilt.isEnabled
-				? {
-						style: {
-							rotateX: tilt.rotateX,
-							rotateY: tilt.rotateY,
-							transformStyle: "preserve-3d" as const,
-							...style,
-						},
-					}
-				: { style };
-
-			const CommonComponent = (tilt.isEnabled ? motion.div : Component) as React.ElementType;
-
 			return (
-				<CommonComponent
+				<Component
 					ref={ref}
 					className={finalClasses}
 					onClick={onClick}
-					onMouseMove={handleMouseMove}
-					onMouseLeave={handleMouseLeave}
-					{...motionProps}
+					onMouseMove={onMouseMove}
+					onMouseLeave={onMouseLeave}
+					style={style}
 					{...props}
 				>
 					<div
@@ -266,7 +232,7 @@ const CardBase = memo(
 					>
 						{children}
 					</div>
-				</CommonComponent>
+				</Component>
 			);
 		},
 	),
@@ -441,7 +407,11 @@ const CardNameBase = memo(function CardName({
 	// Disable tilt on touch devices for better performance
 	const [isTouchDevice, setIsTouchDevice] = useState(false);
 	useEffect(() => {
-		setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
+		setIsTouchDevice(
+			typeof window !== "undefined" &&
+				typeof window.matchMedia === "function" &&
+				window.matchMedia("(pointer: coarse)").matches,
+		);
 	}, []);
 	const shouldEnableTilt = enableTilt && !isTouchDevice;
 

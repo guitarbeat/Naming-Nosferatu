@@ -31,13 +31,6 @@ const mockStore = {
 	},
 };
 
-vi.mock("framer-motion", () => ({
-	motion: {
-		button: ({ whileTap: _whileTap, ...props }: Record<string, unknown>) => <button {...props} />,
-		div: ({ whileTap: _whileTap, ...props }: Record<string, unknown>) => <div {...props} />,
-	},
-}));
-
 vi.mock("./LiquidGlass", () => ({
 	default: ({
 		children,

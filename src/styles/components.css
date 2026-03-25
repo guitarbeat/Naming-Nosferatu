@@ -17,6 +17,9 @@
 }
 
 .floating-navbar-shell.liquid-glass {
+	--glass-radius: 1.8rem;
+	--glass-blur: 18px;
+	--glass-saturation: 1.16;
 	overflow: hidden;
 	border-radius: 1.8rem;
 	border: 1px solid var(--nav-shell-border);

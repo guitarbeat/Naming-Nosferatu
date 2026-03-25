@@ -8,7 +8,6 @@ import {
 	catAppUsers,
 	catNameOptions,
 	catNameRatings,
-	catTournamentSelections,
 	userRoles,
 } from "../shared/schema";
 import { requireAdmin } from "./auth";
@@ -339,17 +338,29 @@ router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req,
 
 		// Optimization: Batch insert to prevent N+1 queries
 		if (records.length > 0) {
-			await db
-				.insert(catNameRatings)
-				.values(records)
-				.onConflictDoUpdate({
-					target: [catNameRatings.userId, catNameRatings.nameId],
-					set: {
-						rating: sql`excluded.rating`,
-						wins: sql`cat_name_ratings.wins + excluded.wins`,
-						losses: sql`cat_name_ratings.losses + excluded.losses`,
-					},
-				});
+			await db.transaction(async (tx) => {
+				await tx
+					.insert(catNameRatings)
+					.values(records)
+					.onConflictDoUpdate({
+						target: [catNameRatings.userId, catNameRatings.nameId],
+						set: {
+							rating: sql`excluded.rating`,
+							wins: sql`coalesce(${catNameRatings.wins}, 0) + excluded.wins`,
+							losses: sql`coalesce(${catNameRatings.losses}, 0) + excluded.losses`,
+						},
+					});
+
+				for (const record of records) {
+					await tx
+						.update(catNameOptions)
+						.set({
+							globalWins: sql`coalesce(${catNameOptions.globalWins}, 0) + ${record.wins}`,
+							globalLosses: sql`coalesce(${catNameOptions.globalLosses}, 0) + ${record.losses}`,
+						})
+						.where(eq(catNameOptions.id, record.nameId));
+				}
+			});
 		}
 		res.json({ success: true, count: records.length });
 	} catch (error) {
@@ -387,14 +398,18 @@ router.get("/api/analytics/popularity", async (req, res) => {
 
 		const results = await db
 			.select({
-				nameId: catTournamentSelections.nameId,
+				nameId: catNameOptions.id,
 				name: catNameOptions.name,
-				count: sql<number>`count(*)`,
+				count: sql<number>`coalesce(${catNameOptions.globalWins}, 0) + coalesce(${catNameOptions.globalLosses}, 0)`,
 			})
-			.from(catTournamentSelections)
-			.innerJoin(catNameOptions, eq(catTournamentSelections.nameId, catNameOptions.id))
-			.groupBy(catTournamentSelections.nameId, catNameOptions.name)
-			.orderBy((_t) => desc(sql<number>`count(*)`))
+			.from(catNameOptions)
+			.where(eq(catNameOptions.isDeleted, false))
+			.orderBy(
+				(_t) =>
+					desc(
+						sql<number>`coalesce(${catNameOptions.globalWins}, 0) + coalesce(${catNameOptions.globalLosses}, 0)`,
+					),
+			)
 			.limit(limit);
 		res.json(results);
 	} catch (error) {
@@ -420,7 +435,7 @@ router.get("/api/analytics/ranking-history", async (_req, res) => {
 			.select({
 				nameId: catNameRatings.nameId,
 				name: catNameOptions.name,
-				avgRating: sql<number>`avg(cat_name_ratings.rating)`,
+				avgRating: sql<number>`avg(${catNameRatings.rating})`,
 			})
 			.from(catNameRatings)
 			.innerJoin(catNameOptions, eq(catNameRatings.nameId, catNameOptions.id))
@@ -455,18 +470,29 @@ router.get("/api/analytics/leaderboard", async (req, res) => {
 
 		const ratings = await db
 			.select({
-				nameId: catNameRatings.nameId,
+				nameId: catNameOptions.id,
 				name: catNameOptions.name,
-				avgRating: sql<number>`round(avg(cat_name_ratings.rating))`,
-				totalWins: sql<number>`sum(cat_name_ratings.wins)`,
-				totalLosses: sql<number>`sum(cat_name_ratings.losses)`,
-				totalVotes: sql<number>`count(cat_name_ratings.rating)`,
+				avgRating: sql<number>`round(coalesce(avg(${catNameRatings.rating}), ${catNameOptions.avgRating}, 1500))`,
+				totalWins: sql<number>`coalesce(${catNameOptions.globalWins}, 0)`,
+				totalLosses: sql<number>`coalesce(${catNameOptions.globalLosses}, 0)`,
+				totalVotes: sql<number>`count(${catNameRatings.rating})`,
 			})
-			.from(catNameRatings)
-			.innerJoin(catNameOptions, eq(catNameRatings.nameId, catNameOptions.id))
+			.from(catNameOptions)
+			.leftJoin(catNameRatings, eq(catNameRatings.nameId, catNameOptions.id))
 			.where(eq(catNameOptions.isDeleted, false))
-			.groupBy(catNameRatings.nameId, catNameOptions.name)
-			.orderBy((_r) => desc(sql<number>`avg(cat_name_ratings.rating)`))
+			.groupBy(
+				catNameOptions.id,
+				catNameOptions.name,
+				catNameOptions.avgRating,
+				catNameOptions.globalWins,
+				catNameOptions.globalLosses,
+			)
+			.orderBy(
+				(_r) =>
+					desc(
+						sql<number>`coalesce(avg(${catNameRatings.rating}), ${catNameOptions.avgRating}, 1500)`,
+					),
+			)
 			.limit(limit);
 
 		res.json(ratings);
@@ -487,9 +513,15 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 			});
 		}
 
-		const [totalNames, totalRatings, totalUsers] = await Promise.all([
+		const [nameStats, totalRatings, totalUsers] = await Promise.all([
 			db
-				.select({ count: sql<number>`count(*)` })
+				.select({
+					totalNames: sql<number>`count(*)`,
+					activeNames: sql<number>`count(*) filter (where ${catNameOptions.isActive} = true)`,
+					hiddenNames: sql<number>`count(*) filter (where ${catNameOptions.isHidden} = true)`,
+					totalSelections: sql<number>`coalesce(sum(coalesce(${catNameOptions.globalWins}, 0) + coalesce(${catNameOptions.globalLosses}, 0)), 0)`,
+					avgRating: sql<number>`round(coalesce(avg(${catNameOptions.avgRating}), 1500))`,
+				})
 				.from(catNameOptions)
 				.where(eq(catNameOptions.isDeleted, false)),
 			db.select({ count: sql<number>`count(*)` }).from(catNameRatings),
@@ -497,9 +529,13 @@ router.get("/api/analytics/site-stats", async (_req, res) => {
 		]);
 
 		res.json({
-			totalNames: totalNames[0]?.count || 0,
+			totalNames: nameStats[0]?.totalNames || 0,
+			activeNames: nameStats[0]?.activeNames || 0,
+			hiddenNames: nameStats[0]?.hiddenNames || 0,
 			totalRatings: totalRatings[0]?.count || 0,
 			totalUsers: totalUsers[0]?.count || 0,
+			totalSelections: nameStats[0]?.totalSelections || 0,
+			avgRating: nameStats[0]?.avgRating || 1500,
 		});
 	} catch (error) {
 		console.error("Error fetching site stats:", error);
@@ -525,14 +561,18 @@ router.get("/api/analytics/top-selected", async (req, res) => {
 
 		const results = await db
 			.select({
-				nameId: catTournamentSelections.nameId,
+				nameId: catNameOptions.id,
 				name: catNameOptions.name,
-				times_selected: sql<number>`count(*)`,
+				times_selected: sql<number>`coalesce(${catNameOptions.globalWins}, 0) + coalesce(${catNameOptions.globalLosses}, 0)`,
 			})
-			.from(catTournamentSelections)
-			.innerJoin(catNameOptions, eq(catTournamentSelections.nameId, catNameOptions.id))
-			.groupBy(catTournamentSelections.nameId, catNameOptions.name)
-			.orderBy((_t) => desc(sql<number>`count(*)`))
+			.from(catNameOptions)
+			.where(eq(catNameOptions.isDeleted, false))
+			.orderBy(
+				(_t) =>
+					desc(
+						sql<number>`coalesce(${catNameOptions.globalWins}, 0) + coalesce(${catNameOptions.globalLosses}, 0)`,
+					),
+			)
 			.limit(limit);
 		res.json(results);
 	} catch (error) {
@@ -561,16 +601,28 @@ router.get("/api/analytics/popularity-scores", async (req, res) => {
 
 		const results = await db
 			.select({
-				nameId: catNameRatings.nameId,
+				nameId: catNameOptions.id,
 				name: catNameOptions.name,
-				avg_rating: sql<number>`avg(cat_name_ratings.rating)`,
-				total_wins: sql<number>`sum(cat_name_ratings.wins)`,
-				times_selected: sql<number>`count(*)`,
+				avg_rating: sql<number>`round(coalesce(avg(${catNameRatings.rating}), ${catNameOptions.avgRating}, 1500))`,
+				total_wins: sql<number>`coalesce(${catNameOptions.globalWins}, 0)`,
+				times_selected: sql<number>`coalesce(${catNameOptions.globalWins}, 0) + coalesce(${catNameOptions.globalLosses}, 0)`,
 			})
-			.from(catNameRatings)
-			.innerJoin(catNameOptions, eq(catNameRatings.nameId, catNameOptions.id))
-			.groupBy(catNameRatings.nameId, catNameOptions.name)
-			.orderBy((_r) => desc(sql<number>`avg(cat_name_ratings.rating)`))
+			.from(catNameOptions)
+			.leftJoin(catNameRatings, eq(catNameRatings.nameId, catNameOptions.id))
+			.where(eq(catNameOptions.isDeleted, false))
+			.groupBy(
+				catNameOptions.id,
+				catNameOptions.name,
+				catNameOptions.avgRating,
+				catNameOptions.globalWins,
+				catNameOptions.globalLosses,
+			)
+			.orderBy(
+				(_r) =>
+					desc(
+						sql<number>`coalesce(avg(${catNameRatings.rating}), ${catNameOptions.avgRating}, 1500)`,
+					),
+			)
 			.limit(limit);
 		res.json(results);
 	} catch (error) {
@@ -646,8 +698,8 @@ router.get("/api/analytics/user-stats", async (req, res) => {
 		const [stats] = await db
 			.select({
 				totalRatings: sql<number>`count(*)`,
-				totalWins: sql<number>`sum(cat_name_ratings.wins)`,
-				totalLosses: sql<number>`sum(cat_name_ratings.losses)`,
+				totalWins: sql<number>`sum(${catNameRatings.wins})`,
+				totalLosses: sql<number>`sum(${catNameRatings.losses})`,
 			})
 			.from(catNameRatings)
 			.where(eq(catNameRatings.userId, user.userId));

@@ -4,7 +4,6 @@
  */
 
 import { Skeleton, Spinner } from "@heroui/react";
-import { motion } from "framer-motion";
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";
 import { cn } from "@/shared/lib/basic";
@@ -45,48 +44,32 @@ const CatSpinnerContent: React.FC<{
 	switch (catVariant) {
 		case "paw":
 			return (
-				<motion.div
-					animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-					transition={{ duration: 1.5, repeat: Infinity }}
-					className="text-pink-500"
-				>
+				<div className="text-pink-500 motion-safe:animate-[float_1.1s_ease-in-out_infinite]">
 					<PawPrint size={iconSize} />
-				</motion.div>
+				</div>
 			);
 
 		case "tail":
 		case "bounce":
 			return (
-				<motion.div
-					animate={{ y: [0, -10, 0] }}
-					transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
-					className="text-purple-500"
-				>
+				<div className="text-purple-500 motion-safe:animate-[bounce_900ms_ease-in-out_infinite]">
 					<Cat size={iconSize} />
-				</motion.div>
+				</div>
 			);
 
 		case "spin":
 			return (
-				<motion.div
-					animate={{ rotate: 360 }}
-					transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-					className="text-cyan-500"
-				>
+				<div className="text-cyan-500 motion-safe:animate-spin [animation-duration:2s]">
 					<Cat size={iconSize} />
-				</motion.div>
+				</div>
 			);
 
 		case "heartbeat":
 			return (
 				<div className="relative flex items-center justify-center">
-					<motion.div
-						animate={{ scale: [1, 1.3, 1] }}
-						transition={{ duration: 0.8, repeat: Infinity }}
-						className="text-red-500 absolute"
-					>
+					<div className="absolute text-red-500 motion-safe:animate-[bounce_800ms_ease-in-out_infinite]">
 						<Heart size={iconSize} fill="currentColor" />
-					</motion.div>
+					</div>
 					{showFace && (
 						<Cat size={iconSize * 0.6} className="relative z-10 text-white drop-shadow-md" />
 					)}
@@ -96,15 +79,11 @@ const CatSpinnerContent: React.FC<{
 		case "orbit":
 			return (
 				<div className="relative flex items-center justify-center w-12 h-12">
-					<motion.div
-						animate={{ rotate: 360 }}
-						transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-						className="absolute w-full h-full"
-					>
+					<div className="absolute h-full w-full motion-safe:animate-spin [animation-duration:3s]">
 						<div className="absolute top-0 left-1/2 -translate-x-1/2 text-yellow-500">
 							<Cat size={16} />
 						</div>
-					</motion.div>
+					</div>
 					{showFace && <div className="text-xl">🐱</div>}
 				</div>
 			);

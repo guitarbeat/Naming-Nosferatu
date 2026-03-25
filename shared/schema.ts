@@ -21,12 +21,14 @@ export const catAppUsers = pgTable("cat_app_users", {
 	deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });
 
-export const catNameOptions = pgTable("cat_name_options", {
+export const catNames = pgTable("cat_names", {
 	id: bigserial("id", { mode: "number" }).primaryKey(),
 	name: text("name").notNull(),
 	description: text("description"),
 	pronunciation: text("pronunciation"),
 	avgRating: doublePrecision("avg_rating").default(1500),
+	globalWins: integer("global_wins").default(0),
+	globalLosses: integer("global_losses").default(0),
 	isHidden: boolean("is_hidden").default(false),
 	isActive: boolean("is_active").default(true),
 	lockedIn: boolean("locked_in").default(false),
@@ -36,15 +38,17 @@ export const catNameOptions = pgTable("cat_name_options", {
 	deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });
 
-export const catNameRatings = pgTable(
-	"cat_name_ratings",
+export const catNameOptions = catNames;
+
+export const userCatNameRatings = pgTable(
+	"user_cat_name_ratings",
 	{
 		userId: uuid("user_id")
 			.notNull()
 			.references(() => catAppUsers.userId, { onDelete: "cascade" }),
 		nameId: bigint("name_id", { mode: "number" })
 			.notNull()
-			.references(() => catNameOptions.id, { onDelete: "cascade" }),
+			.references(() => catNames.id, { onDelete: "cascade" }),
 		rating: doublePrecision("rating").default(1500),
 		wins: integer("wins").default(0),
 		losses: integer("losses").default(0),
@@ -52,23 +56,12 @@ export const catNameRatings = pgTable(
 	(table) => {
 		return {
 			pk: primaryKey({ columns: [table.userId, table.nameId] }),
-			nameIdIdx: index("cat_name_ratings_name_id_idx").on(table.nameId),
+			nameIdIdx: index("user_cat_name_ratings_name_id_idx").on(table.nameId),
 		};
 	},
 );
 
-export const catTournamentSelections = pgTable("cat_tournament_selections", {
-	id: bigserial("id", { mode: "number" }).primaryKey(),
-	userId: uuid("user_id")
-		.notNull()
-		.references(() => catAppUsers.userId, { onDelete: "cascade" }),
-	nameId: bigint("name_id", { mode: "number" })
-		.notNull()
-		.references(() => catNameOptions.id),
-	tournamentId: text("tournament_id"),
-	selectedAt: timestamp("selected_at", { withTimezone: true }).defaultNow(),
-	selectionType: text("selection_type"),
-});
+export const catNameRatings = userCatNameRatings;
 
 export const userRoles = pgTable(
 	"cat_user_roles",

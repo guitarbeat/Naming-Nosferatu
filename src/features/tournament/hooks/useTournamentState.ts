@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { TIMING } from "@/shared/lib/constants";
-import {
-	EloRating,
-	generateRandomTeams,
-	resolveTournamentMode,
-} from "@/features/tournament/services/tournament";
+import { generateRandomTeams, resolveTournamentMode } from "@/features/tournament/services/tournament";
 import { useWebSocket } from "@/features/websocket/hooks/useWebSocket";
 import { useLocalStorage } from "@/shared/hooks";
 import type {
@@ -77,7 +73,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	const [ratings, setRatings] = useState<Record<string, number>>({});
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
 	const [refreshKey, setRefreshKey] = useState(0);
-	const [elo] = useState(() => new EloRating());
 	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
@@ -291,8 +286,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			const ratingsSnapshot = ratingsRef.current;
 			const newRatings = computeUpdatedRatings({
 				currentMatch,
-				tournamentMode,
-				elo,
 				ratingsSnapshot,
 				winnerId,
 				loserId,
@@ -327,7 +320,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 			setRefreshKey((k) => k + 1);
 		},
-		[currentMatch, elo, matchNumber, round, updatePersistentState, tournamentMode],
+		[currentMatch, matchNumber, round, updatePersistentState],
 	);
 
 	const handleVoteWithAnimation = useCallback(

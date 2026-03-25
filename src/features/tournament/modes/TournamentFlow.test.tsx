@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom/vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -31,6 +32,15 @@ vi.mock("../components/NameSelector", () => ({
 }));
 
 describe("TournamentFlow responsive behavior", () => {
+	const renderWithProviders = () =>
+		render(
+			<QueryClientProvider client={new QueryClient()}>
+				<MemoryRouter>
+					<TournamentFlow />
+				</MemoryRouter>
+			</QueryClientProvider>,
+		);
+
 	beforeEach(() => {
 		mockHandleStartNewTournament.mockReset();
 		mockStore.tournament.isComplete = false;
@@ -38,11 +48,7 @@ describe("TournamentFlow responsive behavior", () => {
 	});
 
 	it("shows the setup selector when tournament is not complete", () => {
-		render(
-			<MemoryRouter>
-				<TournamentFlow />
-			</MemoryRouter>,
-		);
+		renderWithProviders();
 
 		expect(screen.getByTestId("name-selector")).toBeInTheDocument();
 		expect(screen.queryByRole("button", { name: "Analyze Results" })).not.toBeInTheDocument();
@@ -52,11 +58,7 @@ describe("TournamentFlow responsive behavior", () => {
 		mockStore.tournament.isComplete = true;
 		mockStore.tournament.names = ["A", "B"];
 
-		render(
-			<MemoryRouter>
-				<TournamentFlow />
-			</MemoryRouter>,
-		);
+		renderWithProviders();
 
 		const analyzeButton = screen.getByRole("button", { name: "Analyze Results" });
 		const startButton = screen.getByRole("button", { name: "Start New Tournament" });

@@ -50,11 +50,10 @@ import type {
 	TournamentState,
 	UIState,
 	UserState,
-	VoteRecord,
 } from "@/shared/types";
 
 // Re-export domain types so consumers can import from either location
-export type { NameItem, RatingData, VoteRecord };
+export type { NameItem, RatingData };
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Action Interfaces
@@ -68,8 +67,6 @@ export interface TournamentActions {
 			| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
 	) => void;
 	setComplete: (isComplete: boolean) => void;
-	setLoading: (isLoading: boolean) => void;
-	addVote: (vote: VoteRecord) => void;
 	resetTournament: () => void;
 	setSelection: (names: NameItem[]) => void;
 }
@@ -227,8 +224,6 @@ const createTournamentSlice: StateCreator<
 		names: null,
 		ratings: {},
 		isComplete: false,
-		isLoading: false,
-		voteHistory: [],
 		selectedNames: [],
 	},
 
@@ -253,19 +248,11 @@ const createTournamentSlice: StateCreator<
 		},
 
 		setComplete: (isComplete) => patch(set, "tournament", { isComplete }),
-		setLoading: (isLoading) => patch(set, "tournament", { isLoading }),
-
-		addVote: (vote) =>
-			patch(set, "tournament", {
-				voteHistory: [...get().tournament.voteHistory, vote],
-			}),
 
 		resetTournament: () =>
 			patch(set, "tournament", {
 				names: null,
 				isComplete: false,
-				voteHistory: [],
-				isLoading: false,
 			}),
 
 		setSelection: (selectedNames) => patch(set, "tournament", { selectedNames }),
@@ -323,7 +310,6 @@ const createUserAndSettingsSlice: StateCreator<
 					...state.tournament,
 					names: null,
 					isComplete: false,
-					voteHistory: [],
 				},
 			}));
 		},

@@ -1,9 +1,5 @@
-import {
-	applyTeamMatchElo,
-	type EloRating,
-	getBracketStageLabel,
-} from "@/features/tournament/services/tournament";
-import { ELO_RATING } from "@/shared/lib/constants";
+import { applyEloMatchUpdate } from "@/features/tournament/services/pureElo";
+import { getBracketStageLabel } from "@/features/tournament/services/tournament";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/shared/types";
 
 export interface HistoryEntry {
@@ -328,39 +324,29 @@ export function calculateTournamentMetrics({
 
 export function computeUpdatedRatings({
 	currentMatch,
-	tournamentMode,
-	elo,
 	ratingsSnapshot,
 	winnerId,
 	loserId,
 }: {
 	currentMatch: Match;
-	tournamentMode: TournamentMode;
-	elo: EloRating;
 	ratingsSnapshot: Record<string, number>;
 	winnerId: string;
 	loserId: string;
 }): Record<string, number> {
-	if (tournamentMode === "2v2" && currentMatch.mode === "2v2") {
-		const winnerSide = winnerId === currentMatch.left.id ? "left" : "right";
-		return applyTeamMatchElo({
-			elo,
-			ratings: ratingsSnapshot,
-			leftTeam: currentMatch.left,
-			rightTeam: currentMatch.right,
-			winnerSide,
-		});
-	}
+	void loserId;
 
-	const winnerRating = ratingsSnapshot[winnerId] || ELO_RATING.DEFAULT_RATING;
-	const loserRating = ratingsSnapshot[loserId] || ELO_RATING.DEFAULT_RATING;
-	const result = elo.calculateNewRatings(winnerRating, loserRating, "left");
+	const leftParticipantIds =
+		currentMatch.mode === "2v2" ? currentMatch.left.memberIds : [String(currentMatch.left.id)];
+	const rightParticipantIds =
+		currentMatch.mode === "2v2" ? currentMatch.right.memberIds : [String(currentMatch.right.id)];
+	const winnerSide = leftParticipantIds.includes(winnerId) ? "left" : "right";
 
-	return {
-		...ratingsSnapshot,
-		[winnerId]: result.newRatingA,
-		[loserId]: result.newRatingB,
-	};
+	return applyEloMatchUpdate({
+		ratings: ratingsSnapshot,
+		leftParticipantIds,
+		rightParticipantIds,
+		winnerSide,
+	}).ratings;
 }
 
 export function createMatchRecord({

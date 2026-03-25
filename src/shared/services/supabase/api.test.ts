@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/shared/services/apiClient";
 import { FALLBACK_NAMES } from "../../../../shared/fallbackNames";
-import { coreAPI } from "./api";
+import { coreAPI, ratingsAPI } from "./api";
 import { resolveSupabaseClient } from "./runtime";
 
 // Mock dependencies
@@ -206,6 +206,37 @@ describe("Supabase Service API", () => {
 			expect(mockRpc).toHaveBeenCalled();
 			expect(api.patch).toHaveBeenCalledWith("/names/123/hide", { isHidden: true });
 			expect(result.success).toBe(true);
+		});
+	});
+
+	describe("ratingsAPI.applyTournamentMatch", () => {
+		it("calls the Elo RPC and maps the returned rows", async () => {
+			const mockRpc = vi.fn().mockResolvedValue({
+				data: [
+					{ name_id: "left-1", rating: 1540, wins: 1, losses: 0 },
+					{ name_id: "right-1", rating: 1460, wins: 0, losses: 1 },
+				],
+				error: null,
+			});
+			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc });
+
+			const result = await ratingsAPI.applyTournamentMatch({
+				userName: "aaron",
+				leftNameIds: ["left-1"],
+				rightNameIds: ["right-1"],
+				winnerSide: "left",
+			});
+
+			expect(mockRpc).toHaveBeenCalledWith("apply_tournament_match_elo", {
+				p_user_name: "aaron",
+				p_left_name_ids: ["left-1"],
+				p_right_name_ids: ["right-1"],
+				p_winner_side: "left",
+			});
+			expect(result).toEqual({
+				"left-1": { rating: 1540, wins: 1, losses: 0 },
+				"right-1": { rating: 1460, wins: 0, losses: 1 },
+			});
 		});
 	});
 });

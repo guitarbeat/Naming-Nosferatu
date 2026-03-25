@@ -51,8 +51,16 @@ describe("Analytics Routes", () => {
 				return mock;
 			};
 
-			// Query 1: Total Names
-			const query1 = createMockQuery([{ count: 10 }]);
+			// Query 1: Name aggregate stats
+			const query1 = createMockQuery([
+				{
+					totalNames: 10,
+					activeNames: 8,
+					hiddenNames: 2,
+					totalSelections: 42,
+					avgRating: 1512,
+				},
+			]);
 			// Query 2: Total Ratings
 			const query2 = createMockQuery([{ count: 20 }]);
 			// Query 3: Total Users
@@ -68,8 +76,12 @@ describe("Analytics Routes", () => {
 			expect(res.status).toBe(200);
 			expect(res.body).toEqual({
 				totalNames: 10,
+				activeNames: 8,
+				hiddenNames: 2,
 				totalRatings: 20,
 				totalUsers: 5,
+				totalSelections: 42,
+				avgRating: 1512,
 			});
 
 			expect(dbMocks.select).toHaveBeenCalledTimes(3);

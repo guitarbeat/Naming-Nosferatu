@@ -5,6 +5,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Trophy } from "@/shared/lib/icons";
 import { ratingsAPI } from "@/shared/services/supabase/api";
@@ -19,6 +20,15 @@ export default function TournamentFlow() {
 	const { handleStartNewTournament } = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
+	});
+	const saveRatingsMutation = useMutation({
+		mutationFn: ({
+			userId,
+			ratings,
+		}: {
+			userId: string;
+			ratings: Record<string, { rating: number; wins: number; losses: number }>;
+		}) => ratingsAPI.saveRatings(userId, ratings),
 	});
 
 	useEffect(() => {
@@ -37,8 +47,8 @@ export default function TournamentFlow() {
 				{} as Record<string, { rating: number; wins: number; losses: number }>,
 			);
 
-			ratingsAPI
-				.saveRatings(userId, ratingsWithStats)
+			saveRatingsMutation
+				.mutateAsync({ userId, ratings: ratingsWithStats })
 				.then((result) => {
 					if (result?.success) {
 						console.log(`Successfully saved ${result.count} ratings to database`);
@@ -49,7 +59,7 @@ export default function TournamentFlow() {
 					console.warn("Tournament ratings save failed, but fallback may have been used");
 				});
 		}
-	}, [tournament.isComplete, tournament.ratings, user.name]);
+	}, [saveRatingsMutation, tournament.isComplete, tournament.ratings, user.name]);
 
 	return (
 		<div className="w-full flex flex-col gap-2">

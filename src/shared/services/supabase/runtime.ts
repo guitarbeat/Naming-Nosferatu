@@ -7,7 +7,8 @@ import { getStorageString, isStorageAvailable } from "@/shared/lib/storage";
 export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			staleTime: 1000 * 60 * 5, // 5 minutes
+			staleTime: 30_000,
+			gcTime: 1000 * 60 * 5,
 			retry: 1,
 			refetchOnWindowFocus: false,
 		},

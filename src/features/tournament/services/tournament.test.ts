@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ELO_RATING } from "@/shared/lib/constants";
+import { applyEloMatchUpdate, calculatePairEloUpdate } from "./pureElo";
 import {
 	applyTeamMatchElo,
 	buildTeamMatches,
@@ -269,6 +270,37 @@ describe("EloRating", () => {
 			expect(result.winsB).toBe(1); // 0 + 1
 			expect(result.lossesB).toBe(0); // 0 + 0
 		});
+	});
+});
+
+describe("pure Elo helpers", () => {
+	it("calculatePairEloUpdate is deterministic with plain inputs", () => {
+		const result = calculatePairEloUpdate({
+			leftRating: 1500,
+			rightRating: 1500,
+			outcome: "left",
+		});
+
+		expect(result.newRatingA).toBe(1540);
+		expect(result.newRatingB).toBe(1460);
+		expect(result.winsA).toBe(1);
+		expect(result.lossesB).toBe(1);
+	});
+
+	it("applyEloMatchUpdate updates both members of a 2v2 team evenly", () => {
+		const result = applyEloMatchUpdate({
+			ratings: { 1: 1500, 2: 1500, 3: 1500, 4: 1500 },
+			leftParticipantIds: ["1", "2"],
+			rightParticipantIds: ["3", "4"],
+			winnerSide: "left",
+		});
+
+		expect(result.ratings["1"]).toBe(1540);
+		expect(result.ratings["2"]).toBe(1540);
+		expect(result.ratings["3"]).toBe(1460);
+		expect(result.ratings["4"]).toBe(1460);
+		expect(result.participants["1"]?.delta).toBe(40);
+		expect(result.participants["3"]?.delta).toBe(-40);
 	});
 });
 

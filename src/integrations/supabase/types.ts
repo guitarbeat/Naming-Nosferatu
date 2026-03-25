@@ -91,13 +91,15 @@ export type Database = {
           },
         ]
       }
-      cat_name_options: {
+      cat_names: {
         Row: {
           avg_rating: number | null
           categories: string[] | null
           created_at: string
           deleted_at: string | null
           description: string | null
+          global_losses: number
+          global_wins: number
           id: string
           is_active: boolean | null
           is_deleted: boolean
@@ -115,6 +117,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          global_losses?: number
+          global_wins?: number
           id?: string
           is_active?: boolean | null
           is_deleted?: boolean
@@ -132,6 +136,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           description?: string | null
+          global_losses?: number
+          global_wins?: number
           id?: string
           is_active?: boolean | null
           is_deleted?: boolean
@@ -145,7 +151,7 @@ export type Database = {
         }
         Relationships: []
       }
-      cat_name_ratings: {
+      user_cat_name_ratings: {
         Row: {
           is_hidden: boolean | null
           losses: number | null
@@ -181,14 +187,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "cat_name_ratings_name_id_fkey"
+            foreignKeyName: "user_cat_name_ratings_name_id_fkey"
             columns: ["name_id"]
             isOneToOne: false
-            referencedRelation: "cat_name_options"
+            referencedRelation: "cat_names"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "cat_name_ratings_user_id_fkey"
+            foreignKeyName: "user_cat_name_ratings_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "cat_app_users"
@@ -252,54 +258,6 @@ export type Database = {
           value?: Json
         }
         Relationships: []
-      }
-      cat_tournament_selections: {
-        Row: {
-          created_at: string
-          id: number
-          name_id: string
-          selected_at: string
-          selection_type: string | null
-          tournament_id: string
-          user_id: string
-          user_name: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          name_id: string
-          selected_at?: string
-          selection_type?: string | null
-          tournament_id: string
-          user_id: string
-          user_name: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          name_id?: string
-          selected_at?: string
-          selection_type?: string | null
-          tournament_id?: string
-          user_id?: string
-          user_name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cat_tournament_selections_name_id_fkey"
-            columns: ["name_id"]
-            isOneToOne: false
-            referencedRelation: "cat_name_options"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cat_tournament_selections_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "cat_app_users"
-            referencedColumns: ["user_id"]
-          },
-        ]
       }
       cat_user_roles: {
         Row: {
@@ -390,6 +348,20 @@ export type Database = {
     }
     Functions: {
       add_app_access_to_user: { Args: { app_name: string }; Returns: undefined }
+      apply_tournament_match_elo: {
+        Args: {
+          p_left_name_ids: string[]
+          p_right_name_ids: string[]
+          p_user_name: string
+          p_winner_side: string
+        }
+        Returns: {
+          losses: number
+          name_id: string
+          rating: number
+          wins: number
+        }[]
+      }
       calculate_elo_change: {
         Args: {
           current_rating: number

@@ -4,7 +4,6 @@
  * Single source of truth for all form components in the application.
  */
 
-import { AnimatePresence, motion } from "framer-motion";
 import React, { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
 import { cn } from "@/shared/lib/basic";
@@ -151,21 +150,15 @@ const FormField: React.FC<FormFieldProps> = ({
 					</label>
 				)}
 				{children}
-				<AnimatePresence mode="wait">
-					{error && errorId && (
-						<motion.div
-							id={errorId}
-							key={error}
-							initial={{ opacity: 0, y: -5 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: -5 }}
-							className="text-xs font-medium text-destructive ml-1"
-							role="alert"
-						>
-							{error}
-						</motion.div>
-					)}
-				</AnimatePresence>
+				{error && errorId && (
+					<div
+						id={errorId}
+						className="ml-1 text-xs font-medium text-destructive motion-safe:animate-[fadeIn_140ms_ease-out]"
+						role="alert"
+					>
+						{error}
+					</div>
+				)}
 			</div>
 		</FormFieldContext.Provider>
 	);
@@ -249,28 +242,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 						aria-invalid={hasError || undefined}
 						aria-describedby={hasError ? `${id}-error` : undefined}
 					/>
-					<AnimatePresence>
-						{isSuccess && (
-							<motion.span
-								initial={{ scale: 0, opacity: 0 }}
-								animate={{ scale: 1, opacity: 1 }}
-								exit={{ scale: 0, opacity: 0 }}
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-chart-2 pointer-events-none"
-							>
-								✅
-							</motion.span>
-						)}
-						{hasError && (
-							<motion.span
-								initial={{ scale: 0, opacity: 0 }}
-								animate={{ scale: 1, opacity: 1 }}
-								exit={{ scale: 0, opacity: 0 }}
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive pointer-events-none"
-							>
-								❌
-							</motion.span>
-						)}
-					</AnimatePresence>
+					{isSuccess && (
+						<span className="absolute right-3 top-1/2 -translate-y-1/2 text-chart-2 pointer-events-none motion-safe:animate-[fadeIn_160ms_ease-out]">
+							✅
+						</span>
+					)}
+					{hasError && (
+						<span className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive pointer-events-none motion-safe:animate-[fadeIn_160ms_ease-out]">
+							❌
+						</span>
+					)}
 				</div>
 			</FormField>
 		);

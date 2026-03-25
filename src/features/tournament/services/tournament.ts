@@ -1,5 +1,11 @@
 import { ELO_RATING } from "@/shared/lib/constants";
 import type { Team, TeamMatch, TournamentMode } from "@/shared/types";
+import {
+	applyEloMatchUpdate,
+	calculatePairEloUpdate,
+	getExpectedEloScore,
+	updateEloRating,
+} from "./pureElo";
 /* =========================================================================
    SERVICE
    ========================================================================= */
@@ -14,16 +20,26 @@ export class EloRating {
 		public kFactor: number = ELO_RATING.DEFAULT_K_FACTOR,
 	) {}
 	getExpectedScore(ra: number, rb: number) {
-		return 1 / (1 + 10 ** ((rb - ra) / ELO_RATING.RATING_DIVISOR));
+		return getExpectedEloScore(ra, rb, {
+			ratingDivisor: ELO_RATING.RATING_DIVISOR,
+		});
 	}
 	updateRating(r: number, exp: number, act: number, games = 0) {
-		// Use constant multiplier for new players (< 15 games) for faster convergence
-		const kMultiplier = games < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD 
-			? ELO_RATING.NEW_PLAYER_K_MULTIPLIER 
-			: 1;
-		const k = this.kFactor * kMultiplier;
-		const updated = Math.round(r + k * (act - exp));
-		return Math.max(ELO_RATING.MIN_RATING, Math.min(ELO_RATING.MAX_RATING, updated));
+		return updateEloRating({
+			rating: r,
+			expectedScore: exp,
+			actualScore: act,
+			gamesPlayed: games,
+			config: {
+				kFactor: this.kFactor,
+				defaultRating: this.defaultRating,
+				minRating: ELO_RATING.MIN_RATING,
+				maxRating: ELO_RATING.MAX_RATING,
+				ratingDivisor: ELO_RATING.RATING_DIVISOR,
+				newPlayerGameThreshold: ELO_RATING.NEW_PLAYER_GAME_THRESHOLD,
+				newPlayerKMultiplier: ELO_RATING.NEW_PLAYER_K_MULTIPLIER,
+			},
+		});
 	}
 	calculateNewRatings(
 		ra: number,
@@ -31,32 +47,39 @@ export class EloRating {
 		outcome: string,
 		stats?: { winsA: number; lossesA: number; winsB: number; lossesB: number },
 	) {
-		const expA = this.getExpectedScore(ra, rb);
-		const expB = this.getExpectedScore(rb, ra);
-		const actA = outcome === "left" ? 1 : outcome === "right" ? 0 : 0.5;
-		const actB = outcome === "right" ? 1 : outcome === "left" ? 0 : 0.5;
-
-		const winsA = (stats?.winsA || 0) + (actA === 1 ? 1 : 0);
-		const lossesA = (stats?.lossesA || 0) + (actA === 0 ? 1 : 0);
-		const winsB = (stats?.winsB || 0) + (actB === 1 ? 1 : 0);
-		const lossesB = (stats?.lossesB || 0) + (actB === 0 ? 1 : 0);
-
-		const gamesA = (stats?.winsA || 0) + (stats?.lossesA || 0);
-		const gamesB = (stats?.winsB || 0) + (stats?.lossesB || 0);
+		const result = calculatePairEloUpdate({
+			leftRating: ra,
+			rightRating: rb,
+			outcome: outcome === "left" || outcome === "right" ? outcome : "tie",
+			leftStats: {
+				wins: stats?.winsA,
+				losses: stats?.lossesA,
+			},
+			rightStats: {
+				wins: stats?.winsB,
+				losses: stats?.lossesB,
+			},
+			config: {
+				kFactor: this.kFactor,
+				defaultRating: this.defaultRating,
+				minRating: ELO_RATING.MIN_RATING,
+				maxRating: ELO_RATING.MAX_RATING,
+				ratingDivisor: ELO_RATING.RATING_DIVISOR,
+				newPlayerGameThreshold: ELO_RATING.NEW_PLAYER_GAME_THRESHOLD,
+				newPlayerKMultiplier: ELO_RATING.NEW_PLAYER_K_MULTIPLIER,
+			},
+		});
 
 		return {
-			newRatingA: this.updateRating(ra, expA, actA, gamesA),
-			newRatingB: this.updateRating(rb, expB, actB, gamesB),
-			winsA,
-			lossesA,
-			winsB,
-			lossesB,
+			newRatingA: result.newRatingA,
+			newRatingB: result.newRatingB,
+			winsA: result.winsA,
+			lossesA: result.lossesA,
+			winsB: result.winsB,
+			lossesB: result.lossesB,
 		};
 	}
 }
-
-const clampRating = (rating: number): number =>
-	Math.max(ELO_RATING.MIN_RATING, Math.min(ELO_RATING.MAX_RATING, rating));
 
 export function resolveTournamentMode(selectedCount: number): TournamentMode {
 	return selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2" : "1v1";
@@ -121,26 +144,21 @@ export function applyTeamMatchElo({
 	rightTeam: Team;
 	winnerSide: "left" | "right";
 }): Record<string, number> {
-	const leftRatings = leftTeam.memberIds.map((id) => ratings[id] ?? ELO_RATING.DEFAULT_RATING);
-	const rightRatings = rightTeam.memberIds.map((id) => ratings[id] ?? ELO_RATING.DEFAULT_RATING);
-	const leftAverage = leftRatings.reduce((sum, value) => sum + value, 0) / leftRatings.length;
-	const rightAverage = rightRatings.reduce((sum, value) => sum + value, 0) / rightRatings.length;
-
-	const teamResult = elo.calculateNewRatings(leftAverage, rightAverage, winnerSide);
-	const leftDeltaPerMember = teamResult.newRatingA - leftAverage;
-	const rightDeltaPerMember = teamResult.newRatingB - rightAverage;
-
-	const nextRatings = { ...ratings };
-	for (const memberId of leftTeam.memberIds) {
-		const current = ratings[memberId] ?? ELO_RATING.DEFAULT_RATING;
-		nextRatings[memberId] = clampRating(Math.round(current + leftDeltaPerMember));
-	}
-	for (const memberId of rightTeam.memberIds) {
-		const current = ratings[memberId] ?? ELO_RATING.DEFAULT_RATING;
-		nextRatings[memberId] = clampRating(Math.round(current + rightDeltaPerMember));
-	}
-
-	return nextRatings;
+	return applyEloMatchUpdate({
+		ratings,
+		leftParticipantIds: leftTeam.memberIds,
+		rightParticipantIds: rightTeam.memberIds,
+		winnerSide,
+		config: {
+			defaultRating: elo.defaultRating,
+			kFactor: elo.kFactor,
+			minRating: ELO_RATING.MIN_RATING,
+			maxRating: ELO_RATING.MAX_RATING,
+			ratingDivisor: ELO_RATING.RATING_DIVISOR,
+			newPlayerGameThreshold: ELO_RATING.NEW_PLAYER_GAME_THRESHOLD,
+			newPlayerKMultiplier: ELO_RATING.NEW_PLAYER_K_MULTIPLIER,
+		},
+	}).ratings;
 }
 
 export function getBracketStageLabel(round: number, totalRounds: number): string {

@@ -4,7 +4,10 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useCallback, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toggleNameHidden, toggleNameLocked } from "@/features/names/mutations";
+import { namesQueryKeys, namesQueryOptions } from "@/features/names/queries";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Input } from "@/shared/components/layout/FormPrimitives";
@@ -16,10 +19,8 @@ import {
 	isNameLocked,
 	matchesNameSearchTerm,
 } from "@/shared/lib/basic";
-import { isRpcSignatureError } from "@/shared/lib/errors";
 import { BarChart3, Eye, EyeOff, Loader2, Lock } from "@/shared/lib/icons";
-import { coreAPI, hiddenNamesAPI, imagesAPI, statsAPI } from "@/shared/services/supabase/api";
-import { withSupabase } from "@/shared/services/supabase/runtime";
+import { imagesAPI, statsAPI } from "@/shared/services/supabase/api";
 import type { NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
@@ -115,37 +116,54 @@ function filterNamesByStatusAndSearch(
 
 export function AdminDashboard() {
 	const { user } = useAppStore();
+	const queryClient = useQueryClient();
 	const actorName = user.name.trim();
 
 	const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
-	const [stats, setStats] = useState<AdminStats | null>(null);
-	const [names, setNames] = useState<NameWithStats[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterStatus, setFilterStatus] = useState<NameFilter>("all");
-	const [isLoading, setIsLoading] = useState(true);
 	const [selectedNames, setSelectedNames] = useState<Set<string>>(new Set());
+	const namesQuery = useQuery(namesQueryOptions(true));
+	const siteStatsQuery = useQuery({
+		queryKey: ["site-stats"],
+		queryFn: () => statsAPI.getSiteStats(),
+		staleTime: 30_000,
+	});
+	const names = useMemo(
+		() => (namesQuery.data?.names ?? []).map(mapNameToDisplay),
+		[namesQuery.data?.names],
+	);
+	const stats = useMemo(
+		() => buildAdminStats(names, siteStatsQuery.data),
+		[names, siteStatsQuery.data],
+	);
+	const isLoading = namesQuery.isPending || siteStatsQuery.isPending;
 
-	const loadAdminData = useCallback(async () => {
-		setIsLoading(true);
-		try {
-			const [allNames, siteStats] = await Promise.all([
-				coreAPI.getTrendingNames(true),
-				statsAPI.getSiteStats(),
-			]);
+	const toggleHiddenMutation = useMutation({
+		mutationFn: ({
+			nameId,
+			isCurrentlyHidden,
+		}: {
+			nameId: string | number;
+			isCurrentlyHidden: boolean;
+		}) => toggleNameHidden({ nameId, isCurrentlyHidden, userName: actorName }),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
+		},
+	});
 
-			const namesWithStats = allNames.map(mapNameToDisplay);
-			setStats(buildAdminStats(namesWithStats, siteStats));
-			setNames(namesWithStats);
-		} catch (error) {
-			console.error("Failed to load admin data:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	}, []);
-
-	useEffect(() => {
-		void loadAdminData();
-	}, [loadAdminData]);
+	const toggleLockedMutation = useMutation({
+		mutationFn: ({
+			nameId,
+			isCurrentlyLocked,
+		}: {
+			nameId: string | number;
+			isCurrentlyLocked: boolean;
+		}) => toggleNameLocked({ nameId, isCurrentlyLocked, userName: actorName }),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
+		},
+	});
 
 	const filteredNames = useMemo(
 		() => filterNamesByStatusAndSearch(names, filterStatus, searchTerm),
@@ -164,58 +182,39 @@ export function AdminDashboard() {
 		async (nameId: string | number, isHidden: boolean, options: ToggleOptions = {}) => {
 			try {
 				const idStr = String(nameId);
-				const result = isHidden
-					? await hiddenNamesAPI.unhideName(actorName, idStr)
-					: await hiddenNamesAPI.hideName(actorName, idStr);
-
-				if (!result.success) {
-					throw new Error(result.error || "Failed to update name visibility");
+				if (isHidden) {
+					await toggleHiddenMutation.mutateAsync({ nameId: idStr, isCurrentlyHidden: true });
+				} else {
+					await toggleHiddenMutation.mutateAsync({ nameId: idStr, isCurrentlyHidden: false });
 				}
 
 				if (!options.skipRefresh) {
-					await loadAdminData();
+					await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
 				}
 			} catch (error) {
 				console.error("Failed to toggle hidden status:", error);
 			}
 		},
-		[actorName, loadAdminData],
+		[queryClient, toggleHiddenMutation],
 	);
 
 	const handleToggleLocked = useCallback(
 		async (nameId: string | number, isLocked: boolean, options: ToggleOptions = {}) => {
 			try {
 				const idStr = String(nameId);
-				await withSupabase(async (client) => {
-					await client.rpc("set_user_context", { user_name_param: actorName });
-
-					const canonicalArgs = {
-						p_name_id: idStr,
-						p_locked_in: !isLocked,
-					};
-
-					let result = await client.rpc("toggle_name_locked_in", canonicalArgs);
-					if (result.error && isRpcSignatureError(result.error.message || "")) {
-						result = await client.rpc("toggle_name_locked_in", {
-							...canonicalArgs,
-							p_user_name: actorName,
-						});
-					}
-
-					if (result.error) {
-						throw new Error(result.error.message || "Failed to toggle locked status");
-					}
-					return result.data;
-				}, null);
+				await toggleLockedMutation.mutateAsync({
+					nameId: idStr,
+					isCurrentlyLocked: isLocked,
+				});
 
 				if (!options.skipRefresh) {
-					await loadAdminData();
+					await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
 				}
 			} catch (error) {
 				console.error("Failed to toggle locked status:", error);
 			}
 		},
-		[actorName, loadAdminData],
+		[queryClient, toggleLockedMutation],
 	);
 
 	const handleBulkAction = useCallback(
@@ -239,13 +238,13 @@ export function AdminDashboard() {
 					}
 					await actionHandlers[action](name);
 				}
-				await loadAdminData();
+				await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
 				setSelectedNames(new Set());
 			} catch (error) {
 				console.error("Failed to perform bulk action:", error);
 			}
 		},
-		[handleToggleHidden, handleToggleLocked, loadAdminData, nameById, selectedNames],
+		[handleToggleHidden, handleToggleLocked, nameById, queryClient, selectedNames],
 	);
 
 	const handleImageUpload = useCallback(
@@ -393,7 +392,13 @@ export function AdminDashboard() {
 									))}
 								</select>
 
-								<Button onClick={() => void loadAdminData()} variant="ghost" size="small">
+								<Button
+									onClick={() => {
+										void Promise.all([namesQuery.refetch(), siteStatsQuery.refetch()]);
+									}}
+									variant="ghost"
+									size="small"
+								>
 									<Loader2 size={16} />
 								</Button>
 							</div>

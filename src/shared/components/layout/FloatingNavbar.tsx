@@ -3,7 +3,6 @@
  * @description Accessible, bottom-fixed primary navigation for key app flows.
  */
 
-import { motion } from "framer-motion";
 import type { ElementType, ReactNode } from "react";
 import { useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -27,19 +26,6 @@ const keyToId: Record<NavSection, string> = {
 	pick: "pick",
 	suggest: "suggest",
 };
-
-function useIsMobile() {
-	const [isMobile, setIsMobile] = useState(() =>
-		typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false,
-	);
-	useEffect(() => {
-		const mql = window.matchMedia("(max-width: 768px)");
-		const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-		mql.addEventListener("change", handler);
-		return () => mql.removeEventListener("change", handler);
-	}, []);
-	return isMobile;
-}
 
 function FloatingNavItem({
 	icon: Icon,
@@ -65,11 +51,11 @@ function FloatingNavItem({
 	ariaLabel?: string;
 }) {
 	return (
-		<motion.button
+		<button
 			type="button"
-			whileTap={{ scale: 0.97 }}
 			className={cn(
 				"floating-navbar__item",
+				"motion-safe:duration-200 motion-safe:ease-out active:scale-[0.98]",
 				variant === "utility" ? "floating-navbar__item--utility" : "floating-navbar__item--primary",
 				isAccent && "floating-navbar__item--accent",
 				className,
@@ -90,7 +76,7 @@ function FloatingNavItem({
 			>
 				{label}
 			</span>
-		</motion.button>
+		</button>
 	);
 }
 
@@ -98,7 +84,6 @@ export function FloatingNavbar() {
 	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const isMobile = useIsMobile();
 	const { tournament, tournamentActions, user, ui, uiActions } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
@@ -115,7 +100,6 @@ export function FloatingNavbar() {
 
 	const selectedCount = selectedNames?.length || 0;
 	const isTournamentActive = Boolean(tournament.names);
-	const isComplete = tournament.isComplete;
 	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
 	// On mobile, hide utility toggle (it moves into the picker surface)
 	const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
@@ -258,12 +242,15 @@ export function FloatingNavbar() {
 		};
 	}, []);
 
+	if (isTournamentRoute) {
+		return null;
+	}
 
 	return (
-		<motion.div
+		<div
 			className={cn(
 				"floating-navbar-frame",
-				!prefersReducedMotion && "transition-transform transition-opacity duration-300",
+				!prefersReducedMotion && "transition-transform transition-opacity duration-300 ease-out",
 				prefersReducedMotion && "transition-none",
 				isNavVisible
 					? "translate-y-0 opacity-100"
@@ -273,7 +260,7 @@ export function FloatingNavbar() {
 			<LiquidGlass
 				id={`floating-navbar-${navGlassId.replace(/:/g, "-")}`}
 				{...getGlassPreset("navbar")}
-				className="floating-navbar-shell"
+				className="floating-navbar-shell app-navbar-glass"
 				style={{ width: "100%", height: "auto" }}
 			>
 				<nav aria-label="Primary" className="floating-navbar">
@@ -353,6 +340,6 @@ export function FloatingNavbar() {
 					</div>
 				</nav>
 			</LiquidGlass>
-		</motion.div>
+		</div>
 	);
 }

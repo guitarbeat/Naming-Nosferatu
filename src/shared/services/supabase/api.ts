@@ -11,6 +11,10 @@ interface ApiNameRow {
 	pronunciation?: string | null;
 	avgRating?: number | null;
 	avg_rating?: number | null;
+	globalWins?: number | null;
+	global_wins?: number | null;
+	globalLosses?: number | null;
+	global_losses?: number | null;
 	createdAt?: string | null;
 	created_at?: string | null;
 	isHidden?: boolean;
@@ -46,6 +50,13 @@ interface PendingRequest<T> {
 	promise: Promise<T>;
 }
 
+interface ApplyTournamentMatchParams {
+	userName: string;
+	leftNameIds: string[];
+	rightNameIds: string[];
+	winnerSide: "left" | "right" | "tie";
+}
+
 const trendingNamesRequests = new Map<string, PendingRequest<NameItem[]>>();
 
 function mapNameRow(item: ApiNameRow): NameItem {
@@ -59,6 +70,8 @@ function mapNameRow(item: ApiNameRow): NameItem {
 		pronunciation: mappedItem.pronunciation ?? undefined,
 		avgRating: mappedItem.avgRating ?? 1500,
 		createdAt: mappedItem.createdAt ?? null,
+		wins: mappedItem.globalWins ?? mappedItem.wins ?? 0,
+		losses: mappedItem.globalLosses ?? mappedItem.losses ?? 0,
 		isHidden: mappedItem.isHidden ?? false,
 		isActive: mappedItem.isActive ?? true,
 		lockedIn: mappedItem.lockedIn ?? false,
@@ -75,14 +88,14 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 	}
 
 	const selectColumns =
-		"id, name, description, pronunciation, avg_rating, created_at, is_hidden, is_active, locked_in, is_deleted";
+		"id, name, description, pronunciation, avg_rating, global_wins, global_losses, created_at, is_hidden, is_active, locked_in, is_deleted";
 
 	const filters: Record<string, any> = { is_active: true, is_deleted: false };
 	if (!includeHidden) {
 		filters.is_hidden = false;
 	}
 
-	let query: any = client.from("cat_name_options").select(selectColumns);
+	let query: any = client.from("cat_names").select(selectColumns);
 	for (const [key, value] of Object.entries(filters)) {
 		query = query.eq(key, value);
 	}
@@ -371,7 +384,7 @@ export const coreAPI = {
 
 		if (client) {
 			const { error } = await client
-				.from("cat_name_options")
+				.from("cat_names")
 				.update({ is_hidden: isHidden })
 				.eq("id", String(nameId));
 			if (error) {
@@ -627,6 +640,48 @@ const validateRatingsData = (
 const _ratingsCircuitBreaker = new ErrorManager.CircuitBreaker(3, 30000); // 3 failures, 30s timeout
 
 export const ratingsAPI = {
+	applyTournamentMatch: async ({
+		userName,
+		leftNameIds,
+		rightNameIds,
+		winnerSide,
+	}: ApplyTournamentMatchParams) => {
+		const client = (await resolveSupabaseClient()) as any;
+		if (!client) {
+			throw new Error("Supabase client not available");
+		}
+
+		const { data, error } = await client.rpc("apply_tournament_match_elo", {
+			p_user_name: userName.trim(),
+			p_left_name_ids: leftNameIds,
+			p_right_name_ids: rightNameIds,
+			p_winner_side: winnerSide,
+		});
+
+		if (error) {
+			throw new Error(error.message || "Failed to apply tournament Elo update");
+		}
+
+		return (data ?? []).reduce(
+			(
+				acc: Record<string, { rating: number; wins: number; losses: number }>,
+				row: {
+					name_id: string;
+					rating: number | null;
+					wins: number | null;
+					losses: number | null;
+				},
+			) => {
+				acc[String(row.name_id)] = {
+					rating: Number(row.rating ?? 1500),
+					wins: Number(row.wins ?? 0),
+					losses: Number(row.losses ?? 0),
+				};
+				return acc;
+			},
+			{},
+		);
+	},
 	saveRatings: ErrorManager.createResilientFunction(
 		async (
 			userId: string,

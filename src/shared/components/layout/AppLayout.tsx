@@ -3,7 +3,6 @@
  * @description Main application layout component with floating primary nav
  */
 
-import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/app/providers/Providers";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
@@ -25,24 +24,12 @@ function ProfileOverlay({ onClose }: { onClose: () => void }) {
 	const { login } = useAuth();
 
 	return (
-		<motion.div
-			className="fixed inset-0 z-40 flex items-center justify-center px-4 pb-24 sm:pb-4"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0 }}
-			transition={{ duration: 0.2 }}
-		>
+		<div className="fixed inset-0 z-40 flex items-center justify-center px-4 pb-24 sm:pb-4 motion-safe:animate-[fadeIn_180ms_ease-out]">
 			{/* Backdrop */}
 			<div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
 
 			{/* Panel */}
-			<motion.div
-				className="relative z-50 w-full max-w-md overflow-hidden rounded-2xl border border-border/50 bg-card p-6 shadow-2xl"
-				initial={{ y: 40, opacity: 0 }}
-				animate={{ y: 0, opacity: 1 }}
-				exit={{ y: 40, opacity: 0 }}
-				transition={{ type: "spring", damping: 28, stiffness: 300 }}
-			>
+			<div className="glass-surface relative z-50 w-full max-w-md overflow-hidden rounded-[calc(var(--glass-radius,1.5rem)+0.25rem)] border border-border/50 bg-card/80 p-6 shadow-2xl motion-safe:animate-[surface-enter_220ms_var(--ease-out-expo)]">
 				<div className="mb-4 flex items-center justify-between">
 					<h2 className="text-lg font-semibold text-foreground">Your Profile</h2>
 					<button
@@ -55,8 +42,8 @@ function ProfileOverlay({ onClose }: { onClose: () => void }) {
 					</button>
 				</div>
 				<ProfileInner onLogin={(name) => login({ name })} />
-			</motion.div>
-		</motion.div>
+			</div>
+		</div>
 	);
 }
 
@@ -118,15 +105,13 @@ export function AppLayout({ children }: AppLayoutProps) {
 						</div>
 					)}
 
-				<ScrollToTopButton isLoggedIn={isLoggedIn} />
-			</main>
+					<ScrollToTopButton isLoggedIn={isLoggedIn} />
+				</main>
 
-			<AnimatePresence>
 				{ui.isProfileOpen && (
 					<ProfileOverlay onClose={() => uiActions.setProfileOpen(false)} />
 				)}
-			</AnimatePresence>
-		</div>
-	</ErrorBoundary>
+			</div>
+		</ErrorBoundary>
 	);
 }

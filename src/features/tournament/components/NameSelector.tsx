@@ -5,7 +5,10 @@
 
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/app/providers/Providers";
+import { toggleNameHidden, toggleNameLocked } from "@/features/names/mutations";
+import { namesQueryKeys, namesQueryOptions } from "@/features/names/queries";
 import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
@@ -14,7 +17,7 @@ import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader
 import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
-import { useCollapsible, useNamesCache } from "@/shared/hooks";
+import { useCollapsible } from "@/shared/hooks";
 import {
 	getActiveNames,
 	getHiddenNames,
@@ -25,7 +28,6 @@ import {
 	matchesNameSearchTerm,
 } from "@/shared/lib/basic";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import { isRpcSignatureError } from "@/shared/lib/errors";
 import {
 	Check,
 	CheckCircle,
@@ -39,10 +41,6 @@ import {
 	X,
 	ZoomIn,
 } from "@/shared/lib/icons";
-import { api } from "@/shared/services/apiClient";
-import { coreAPI, hiddenNamesAPI, isUsingFallbackData } from "@/shared/services/supabase/api";
-import { resolveSupabaseClient } from "@/shared/services/supabase/client";
-import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
@@ -244,6 +242,7 @@ const getNameOverlayClasses = (variant: "grid" | "swipe") => {
 
 export function NameSelector() {
 	const toast = useToast();
+	const queryClient = useQueryClient();
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
@@ -252,13 +251,8 @@ export function NameSelector() {
 	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
 	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
 	const [dragOffset, setDragOffset] = useState(0);
-	const [names, setNames] = useState<NameItem[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [retryCount, setRetryCount] = useState(0);
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
-	const { getCachedData, setCachedData } = useNamesCache();
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [lightboxIndex, setLightboxIndex] = useState(0);
 	const hiddenPanel = useCollapsible(true, "hidden-names-collapsed");
@@ -270,6 +264,26 @@ export function NameSelector() {
 	>([]);
 	const { tooltipRef, tooltipPosition, measureTooltip } = useSmartTooltip();
 	const deferredSync = useDeferredSync();
+	const namesQuery = useQuery({
+		...namesQueryOptions(true),
+		retry: 2,
+	});
+	const names = namesQuery.data?.names ?? [];
+	const isLoading = namesQuery.isPending;
+	const error =
+		namesQuery.error instanceof Error
+			? namesQuery.error.message
+			: namesQuery.error
+				? "Failed to load names"
+				: null;
+
+	const syncSelectionToStore = useCallback(
+		(nextSelectedIds: Set<IdType>) => {
+			const selectedNameItems = names.filter((nameItem) => nextSelectedIds.has(nameItem.id));
+			tournamentActions.setSelection(selectedNameItems);
+		},
+		[names, tournamentActions],
+	);
 
 	// Memoize cat images and build an id->image lookup map
 	const { catImages, catImageById } = useMemo(() => {
@@ -284,107 +298,38 @@ export function NameSelector() {
 		return { catImages: images, catImageById: byId };
 	}, [names]);
 
-	// Fetch names from Supabase on mount with retry mechanism and caching
 	useEffect(() => {
-		let retryTimeout: number | undefined;
-
-		const fetchNames = async () => {
-			try {
-				setIsLoading(true);
-				setError(null);
-
-				// Try cache first, but don't short-circuit on empty cache entries.
-				const cachedData = getCachedData(true);
-				if (cachedData && retryCount === 0) {
-					setNames(cachedData);
-					setIsLoading(false);
-					if (cachedData.length > 0) {
-						return;
-					}
-				}
-
-				const fetchedNames = await coreAPI.getTrendingNames(true); // Include hidden names for everyone
-				if (fetchedNames.length === 0) {
-					try {
-						await api.get<unknown[]>("/names?includeHidden=true");
-					} catch (probeError) {
-						const hasSupabaseFallback =
-							Boolean(import.meta.env.VITE_SUPABASE_URL) &&
-							Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY);
-
-						if (!hasSupabaseFallback) {
-							throw new Error(
-								"Could not load cards from backend. `/api/names` is unreachable and Supabase fallback is not configured.",
-							);
-						}
-
-						console.warn("Backend probe failed but Supabase fallback is configured:", probeError);
-					}
-				}
-				setNames(fetchedNames);
-				setCachedData(fetchedNames, true);
-				setRetryCount(0); // Reset retry count on success
-			} catch (error) {
-				console.error("Failed to fetch names:", error);
-				const errorMessage = error instanceof Error ? error.message : "Failed to load names";
-				setError(errorMessage);
-
-				// Auto-retry for network errors (max 3 retries)
-				if (retryCount < 2 && errorMessage.toLowerCase().includes("network")) {
-					retryTimeout = window.setTimeout(
-						() => {
-							setRetryCount((prev) => prev + 1);
-						},
-						1000 * (retryCount + 1),
-					); // Exponential backoff
-				}
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchNames();
-
-		return () => {
-			if (retryTimeout != null) {
-				window.clearTimeout(retryTimeout);
-			}
-		};
-	}, [retryCount, getCachedData, setCachedData]);
-
-	// Show warning when using fallback data
-	useEffect(() => {
-		if (isUsingFallbackData()) {
+		if (namesQuery.data?.source === "fallback") {
 			toast.showWarning(
 				"Using demo data - database connection unavailable. Your votes won't be saved to the global leaderboard.",
 			);
 		}
-	}, [toast]);
+	}, [namesQuery.data?.source, toast]);
 
 	// Auto-select locked-in names when names are loaded
 	useEffect(() => {
-		if (names.length > 0) {
-			const lockedInIds = new Set(getLockedNames(names).map((name) => name.id));
-
-			if (lockedInIds.size > 0) {
-				setSelectedNames((prev) => {
-					const newSelection = new Set(prev);
-					lockedInIds.forEach((id) => {
-						newSelection.add(id);
-					});
-					return newSelection;
-				});
-			}
+		if (names.length === 0) {
+			return;
 		}
-	}, [names]);
-
-	const syncSelectionToStore = useCallback(
-		(nextSelectedIds: Set<IdType>) => {
-			const selectedNameItems = names.filter((n) => nextSelectedIds.has(n.id));
-			tournamentActions.setSelection(selectedNameItems);
-		},
-		[names, tournamentActions],
-	);
+		const lockedInIds = new Set(getLockedNames(names).map((nameItem) => nameItem.id));
+		if (lockedInIds.size === 0) {
+			return;
+		}
+		setSelectedNames((prev) => {
+			let changed = false;
+			const next = new Set(prev);
+			lockedInIds.forEach((id) => {
+				if (!next.has(id)) {
+					next.add(id);
+					changed = true;
+				}
+			});
+			if (changed) {
+				deferredSync(() => syncSelectionToStore(next));
+			}
+			return changed ? next : prev;
+		});
+	}, [deferredSync, names, syncSelectionToStore]);
 
 	const toggleName = useCallback(
 		(nameId: IdType) => {
@@ -531,6 +476,36 @@ export function NameSelector() {
 		triggerHaptic();
 	}, [swipeHistory, syncSelectionToStore, triggerHaptic, deferredSync]);
 
+	const toggleHiddenMutation = useMutation({
+		mutationFn: ({
+			nameId,
+			isCurrentlyHidden,
+		}: {
+			nameId: IdType;
+			isCurrentlyHidden: boolean;
+		}) => toggleNameHidden({ nameId, isCurrentlyHidden, userName }),
+		onSuccess: async (_data, variables) => {
+			await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
+			toast.showSuccess(
+				variables.isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
+			);
+		},
+	});
+
+	const toggleLockedMutation = useMutation({
+		mutationFn: ({
+			nameId,
+			isCurrentlyLocked,
+		}: {
+			nameId: IdType;
+			isCurrentlyLocked: boolean;
+		}) => toggleNameLocked({ nameId, isCurrentlyLocked, userName }),
+		onSuccess: async (_data, variables) => {
+			await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
+			toast.showSuccess(variables.isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
+		},
+	});
+
 	const handleToggleHidden = useCallback(
 		async (nameId: IdType, isCurrentlyHidden: boolean) => {
 			if (!isAdmin || !userName?.trim()) {
@@ -544,33 +519,7 @@ export function NameSelector() {
 			});
 
 			try {
-				// Ensure user context is set
-				await withSupabase(async (_client) => {
-					try {
-						const client = await resolveSupabaseClient();
-						if (client) {
-							await client.rpc("set_user_context", { user_name_param: userName.trim() });
-						}
-					} catch {
-						/* ignore */
-					}
-				}, null);
-
-				if (isCurrentlyHidden) {
-					const result = await hiddenNamesAPI.unhideName(userName, nameId);
-					if (!result.success) {
-						throw new Error(result.error || "Failed to unhide name");
-					}
-				} else {
-					const result = await hiddenNamesAPI.hideName(userName, nameId);
-					if (!result.success) {
-						throw new Error(result.error || "Failed to hide name");
-					}
-				}
-
-				const fetchedNames = await coreAPI.getTrendingNames(true);
-				setNames(fetchedNames);
-				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
+				await toggleHiddenMutation.mutateAsync({ nameId, isCurrentlyHidden });
 			} catch (error) {
 				console.error("Failed to toggle hidden status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
@@ -583,7 +532,7 @@ export function NameSelector() {
 				});
 			}
 		},
-		[userName, isAdmin, toast],
+		[isAdmin, toast, toggleHiddenMutation, userName],
 	);
 
 	const handleToggleLocked = useCallback(
@@ -599,40 +548,7 @@ export function NameSelector() {
 			});
 
 			try {
-				const result = await withSupabase(async (client) => {
-					try {
-						await client.rpc("set_user_context", { user_name_param: userName.trim() });
-					} catch {
-						/* ignore */
-					}
-
-					const canonicalArgs = {
-						p_name_id: String(nameId),
-						p_locked_in: !isCurrentlyLocked,
-					};
-					let rpcResult = await client.rpc("toggle_name_locked_in", canonicalArgs);
-
-					if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
-						rpcResult = await client.rpc("toggle_name_locked_in", {
-							...canonicalArgs,
-							p_user_name: userName.trim(),
-						});
-					}
-
-					if (rpcResult.error) {
-						throw new Error(rpcResult.error.message || "Failed to toggle locked status");
-					}
-					if (rpcResult.data !== true) {
-						throw new Error("Failed to toggle locked status");
-					}
-					return rpcResult.data;
-				}, null);
-
-				if (result) {
-					const fetchedNames = await coreAPI.getTrendingNames(true);
-					setNames(fetchedNames);
-					toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
-				}
+				await toggleLockedMutation.mutateAsync({ nameId, isCurrentlyLocked });
 			} catch (error) {
 				console.error("Failed to toggle locked status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
@@ -645,7 +561,7 @@ export function NameSelector() {
 				});
 			}
 		},
-		[userName, isAdmin, toast],
+		[isAdmin, toast, toggleLockedMutation, userName],
 	);
 
 	const {
@@ -853,11 +769,11 @@ export function NameSelector() {
 						<p className="text-lg font-medium">Failed to load names</p>
 						<p className="text-sm opacity-75 mt-1">{error}</p>
 					</div>
-					<Button onClick={() => setRetryCount((prev) => prev + 1)} variant="glass" size="small">
-						Try Again
-					</Button>
+						<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+							Try Again
+						</Button>
+					</div>
 				</div>
-			</div>
 		);
 	}
 

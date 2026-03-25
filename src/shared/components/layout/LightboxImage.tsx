@@ -3,7 +3,6 @@
  * @description Enhanced image component with loading states and error handling for the lightbox
  */
 
-import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface LightboxImageProps {
@@ -106,14 +105,10 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 					<div className="animate-spin rounded-full h-12 w-12 border-4 border-foreground/20 border-t-foreground" />
 				</div>
 			)}
-			<motion.img
-				key={`${src}-${retryCount}`}
+			<img
 				src={src}
 				alt={alt}
-				className={className}
-				initial={{ opacity: 0, scale: 0.9 }}
-				animate={{ opacity: isLoading ? 0 : 1, scale: isLoading ? 0.9 : 1 }}
-				exit={{ opacity: 0, scale: 0.9 }}
+				className={`${className ?? ""} transition-[opacity,transform] duration-300 ease-out ${isLoading ? "opacity-0 scale-[0.98]" : "opacity-100 scale-100"}`.trim()}
 				onLoad={handleLoad}
 				onError={handleError}
 				loading="eager"
