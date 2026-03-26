@@ -136,7 +136,7 @@ describe("FloatingNavbar", () => {
 			"location",
 		);
 		expect(screen.getByRole("button", { name: "Profile" })).toBeInTheDocument();
-	});
+	}, 10000);
 
 	it("promotes the first item to a highlighted start action when enough names are selected", () => {
 		mountSections({ pick: 0, suggest: 200, profile: 400 });

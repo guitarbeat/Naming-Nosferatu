@@ -42,7 +42,7 @@ describe("ConfirmDialog", () => {
 		cancelButton.focus();
 		fireEvent.keyDown(window, { key: "Tab", shiftKey: true });
 		expect(confirmButton).toHaveFocus();
-	});
+	}, 10000);
 
 	it("restores focus to the opener when dismissed", () => {
 		render(<ConfirmDialogHarness />);

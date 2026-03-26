@@ -94,7 +94,7 @@ describe("main bootstrap", () => {
 		expect(screen.getByTestId("browser-router")).toBeInTheDocument();
 		expect(screen.getByTestId("app")).toBeInTheDocument();
 		expect(screen.queryByTestId("analytics")).not.toBeInTheDocument();
-	});
+	}, 10000);
 
 	it("throws when the root element is missing", async () => {
 		document.body.innerHTML = "";

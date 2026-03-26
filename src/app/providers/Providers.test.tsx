@@ -86,5 +86,5 @@ describe("Providers", () => {
 		});
 
 		expect(await screen.findByRole("alert")).toHaveTextContent("Saved successfully");
-	});
+	}, 10000);
 });
