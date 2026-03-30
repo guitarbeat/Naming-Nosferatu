@@ -256,9 +256,7 @@ export function AdminDashboard() {
 
 			try {
 				const result = await imagesAPI.upload(file, actorName);
-				if (result.success) {
-					console.log("Image uploaded successfully:", result.path);
-				} else {
+				if (!result.success) {
 					console.error("Upload failed:", result.error);
 				}
 			} catch (error) {
