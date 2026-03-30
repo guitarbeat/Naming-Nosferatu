@@ -288,6 +288,7 @@ router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req,
 		}
 
 		// Enhanced validation for each rating
+		const seenNameIds = new Set<number>();
 		for (const rating of ratings) {
 			// Rating bounds check (already in schema but double-check)
 			if (rating.rating < 1000 || rating.rating > 3000) {
@@ -310,10 +311,10 @@ router.post("/api/ratings", ratingsRateLimiter, requireSupabaseAuth, async (req,
 			}
 
 			// Check for duplicate nameIds in the same request
-			const duplicateCount = ratings.filter((r) => r.nameId === rating.nameId).length;
-			if (duplicateCount > 1) {
+			if (seenNameIds.has(rating.nameId)) {
 				return res.status(400).json({ error: `Duplicate nameId ${rating.nameId} in request` });
 			}
+			seenNameIds.add(rating.nameId);
 		}
 
 		const { user } = req;
