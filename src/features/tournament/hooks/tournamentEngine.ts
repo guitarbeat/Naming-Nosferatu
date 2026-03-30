@@ -38,9 +38,90 @@ const roundCache = new Map<string, number>(); // Cache round calculations by ent
 const MAX_CACHE_SIZE = 100;
 
 function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
-	const entrantsKey = bracketEntrants.map(String).filter(Boolean).sort().join(",");
-	const historyKey = matchHistory.map((m) => `${m.left}-${m.right}-${m.winner}`).join("|");
-	return `${entrantsKey}:${historyKey}`;
+	let hash = 0;
+
+	const sortedEntrants = [...bracketEntrants].filter(Boolean).sort();
+	for (let i = 0; i < sortedEntrants.length; i++) {
+		const str = String(sortedEntrants[i]);
+		for (let j = 0; j < str.length; j++) {
+			hash = ((hash << 5) - hash + str.charCodeAt(j)) | 0;
+		}
+		hash = ((hash << 5) - hash + 44) | 0; // ','
+	}
+
+	hash = ((hash << 5) - hash + 58) | 0; // ':'
+
+	for (let i = 0; i < matchHistory.length; i++) {
+		const m = matchHistory[i] as any;
+		let h = 0;
+
+		const left = m.left;
+		if (left !== undefined) {
+			const leftStr = String(left);
+			for (let j = 0; j < leftStr.length; j++) {
+				h = ((h << 5) - h + leftStr.charCodeAt(j)) | 0;
+			}
+		} else {
+			h = ((h << 5) - h + 117) | 0; // u
+			h = ((h << 5) - h + 110) | 0; // n
+			h = ((h << 5) - h + 100) | 0; // d
+			h = ((h << 5) - h + 101) | 0; // e
+			h = ((h << 5) - h + 102) | 0; // f
+			h = ((h << 5) - h + 105) | 0; // i
+			h = ((h << 5) - h + 110) | 0; // n
+			h = ((h << 5) - h + 101) | 0; // e
+			h = ((h << 5) - h + 100) | 0; // d
+		}
+
+		h = ((h << 5) - h + 45) | 0; // '-'
+
+		const right = m.right;
+		if (right !== undefined) {
+			const rightStr = String(right);
+			for (let j = 0; j < rightStr.length; j++) {
+				h = ((h << 5) - h + rightStr.charCodeAt(j)) | 0;
+			}
+		} else {
+			h = ((h << 5) - h + 117) | 0; // u
+			h = ((h << 5) - h + 110) | 0; // n
+			h = ((h << 5) - h + 100) | 0; // d
+			h = ((h << 5) - h + 101) | 0; // e
+			h = ((h << 5) - h + 102) | 0; // f
+			h = ((h << 5) - h + 105) | 0; // i
+			h = ((h << 5) - h + 110) | 0; // n
+			h = ((h << 5) - h + 101) | 0; // e
+			h = ((h << 5) - h + 100) | 0; // d
+		}
+
+		h = ((h << 5) - h + 45) | 0; // '-'
+
+		const winner = m.winner;
+		if (winner !== undefined && winner !== null) {
+			const winnerStr = String(winner);
+			for (let j = 0; j < winnerStr.length; j++) {
+				h = ((h << 5) - h + winnerStr.charCodeAt(j)) | 0;
+			}
+		} else if (winner === null) {
+			h = ((h << 5) - h + 110) | 0; // n
+			h = ((h << 5) - h + 117) | 0; // u
+			h = ((h << 5) - h + 108) | 0; // l
+			h = ((h << 5) - h + 108) | 0; // l
+		} else {
+			h = ((h << 5) - h + 117) | 0; // u
+			h = ((h << 5) - h + 110) | 0; // n
+			h = ((h << 5) - h + 100) | 0; // d
+			h = ((h << 5) - h + 101) | 0; // e
+			h = ((h << 5) - h + 102) | 0; // f
+			h = ((h << 5) - h + 105) | 0; // i
+			h = ((h << 5) - h + 110) | 0; // n
+			h = ((h << 5) - h + 101) | 0; // e
+			h = ((h << 5) - h + 100) | 0; // d
+		}
+
+		hash = ((hash << 5) - hash + h) | 0;
+	}
+
+	return (hash >>> 0).toString(36);
 }
 
 // Enhanced round caching with fallback calculation
