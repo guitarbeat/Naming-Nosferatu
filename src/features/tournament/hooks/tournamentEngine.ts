@@ -122,9 +122,17 @@ export function deriveBracketState(
 		return cached;
 	}
 
-	const entrants = bracketEntrants.map(String).filter(Boolean);
-	const realEntrants = entrants.filter((id) => !isBye(id));
-	const totalEntrants = realEntrants.length;
+	const entrants: string[] = [];
+	let totalEntrants = 0;
+	for (const rawId of bracketEntrants) {
+		const id = String(rawId);
+		if (id) {
+			entrants.push(id);
+			if (!isBye(id)) {
+				totalEntrants++;
+			}
+		}
+	}
 
 	if (totalEntrants < 2) {
 		const result = {
