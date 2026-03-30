@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { isRpcSignatureError } from "./errors";
 
 describe("isRpcSignatureError", () => {
@@ -7,9 +7,9 @@ describe("isRpcSignatureError", () => {
 	});
 
 	it('should return true when message contains "function" and "no function matches"', () => {
-		expect(
-			isRpcSignatureError("No function matches the given name and argument types."),
-		).toBe(true);
+		expect(isRpcSignatureError("No function matches the given name and argument types.")).toBe(
+			true,
+		);
 	});
 
 	it('should return true when message contains "function" and "could not find"', () => {
