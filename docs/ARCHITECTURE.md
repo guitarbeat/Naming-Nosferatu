@@ -51,7 +51,7 @@ Names are created, compete in tournaments via pairwise comparison, and are eithe
 
 ### Elo Rating System
 
-Standard Elo with K-factor of 32 (64 for new players):
+Standard Elo with K-factor of 40 (80 for new players with fewer than 30 games):
 
 ```typescript
 getExpectedScore(ra, rb) = 1 / (1 + 10 ** ((rb - ra) / 400))

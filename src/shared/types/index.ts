@@ -17,8 +17,8 @@
 // Identifiers
 // ═══════════════════════════════════════════════════════════════════════════════
 
-/** IDs may be strings (UUIDs) or numbers (auto-increment). */
-export type IdType = string | number;
+/** IDs are always strings — auto-increment numbers are stringified at the API boundary. */
+export type IdType = string;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Core Domain Types
@@ -31,46 +31,43 @@ export type IdType = string | number;
  * accommodate both client conventions and raw database rows.
  */
 export interface NameItem {
-	id: IdType;
-	name: string;
-	description?: string;
-	pronunciation?: string;
+        id: IdType;
+        name: string;
+        description?: string;
+        pronunciation?: string;
 
-	// Visibility
-	isHidden?: boolean;
-	is_hidden?: boolean;
+        // Visibility
+        isHidden?: boolean;
+        is_hidden?: boolean;
 
-	// Admin controls
-	lockedIn?: boolean;
-	locked_in?: boolean;
-	sortOrder?: number;
-	sort_order?: number;
+        // Admin controls
+        lockedIn?: boolean;
+        locked_in?: boolean;
+        sortOrder?: number;
+        sort_order?: number;
 
-	// Ratings & stats
-	rating?: number;
-	avgRating?: number;
-	avg_rating?: number;
-	wins?: number;
-	losses?: number;
-	popularity_score?: number;
+        // Ratings & stats
+        rating?: number;
+        avgRating?: number;
+        avg_rating?: number;
+        wins?: number;
+        losses?: number;
+        popularity_score?: number;
 
-	// Selection (client-side UI state)
-	isSelected?: boolean;
+        // Selection (client-side UI state)
+        isSelected?: boolean;
 
-	// Provenance & lifecycle
-	owner?: string;
-	status?: "candidate" | "intake" | "tournament" | "eliminated" | "archived";
-	provenance?: ProvenanceEntry[];
-
-	/** Allow additional database columns without type errors. */
-	[key: string]: unknown;
+        // Provenance & lifecycle
+        owner?: string;
+        status?: "candidate" | "intake" | "tournament" | "eliminated" | "archived";
+        provenance?: ProvenanceEntry[];
 }
 
 export interface ProvenanceEntry {
-	action: string;
-	timestamp: string;
-	userId?: string;
-	details?: Record<string, unknown>;
+        action: string;
+        timestamp: string;
+        userId?: string;
+        details?: Record<string, unknown>;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -79,9 +76,9 @@ export interface ProvenanceEntry {
 
 /** A rating record with win/loss counts. */
 export interface RatingData {
-	rating: number;
-	wins: number;
-	losses: number;
+        rating: number;
+        wins: number;
+        losses: number;
 }
 
 /**
@@ -98,92 +95,92 @@ export type RatingInput = RatingData | number;
 export type TournamentMode = "1v1" | "2v2";
 
 export interface Team {
-	id: string;
-	memberIds: string[];
-	memberNames: string[];
+        id: string;
+        memberIds: string[];
+        memberNames: string[];
 }
 
 export interface TeamMatch {
-	leftTeamId: string;
-	rightTeamId: string;
+        leftTeamId: string;
+        rightTeamId: string;
 }
 
 export interface HeadToHeadMatch {
-	mode: "1v1";
-	left: NameItem | string;
-	right: NameItem | string;
+        mode: "1v1";
+        left: NameItem | string;
+        right: NameItem | string;
 }
 
 export interface TeamVersusMatch {
-	mode: "2v2";
-	left: Team;
-	right: Team;
+        mode: "2v2";
+        left: Team;
+        right: Team;
 }
 
 export type Match = HeadToHeadMatch | TeamVersusMatch;
 
 /** Serialized record of a completed match. */
 export interface MatchRecord {
-	match: Match;
-	winner: string | null;
-	loser: string | null;
-	voteType: string;
-	matchNumber: number;
-	roundNumber: number;
-	timestamp: number;
+        match: Match;
+        winner: string | null;
+        loser: string | null;
+        voteType: string;
+        matchNumber: number;
+        roundNumber: number;
+        timestamp: number;
 }
 
 /** A vote participant with outcome metadata. */
 interface VoteParticipant {
-	name: string;
-	id: IdType | null;
-	description: string;
-	outcome: string;
+        name: string;
+        id: IdType | null;
+        description: string;
+        outcome: string;
 }
 
 /** Full vote data payload (sent to analytics / API). */
 export interface VoteData {
-	match: {
-		left: VoteParticipant;
-		right: VoteParticipant;
-	};
-	result: number;
-	ratings: Record<string, number>;
-	timestamp: string;
+        match: {
+                left: VoteParticipant;
+                right: VoteParticipant;
+        };
+        result: number;
+        ratings: Record<string, number>;
+        timestamp: string;
 }
 
 /** Minimal vote record for store history. */
 export interface VoteRecord {
-	winnerId: IdType;
-	loserId: IdType;
-	timestamp: number;
-	[key: string]: unknown;
+        winnerId: IdType;
+        loserId: IdType;
+        timestamp: number;
+        [key: string]: unknown;
 }
 
 /** Props for the core Tournament component. */
 export interface TournamentProps {
-	names: NameItem[];
-	existingRatings?: Record<string, RatingInput>;
-	onComplete: (ratings: Record<string, RatingData>) => void;
-	userName?: string;
-	onVote?: (voteData: VoteData) => Promise<void> | void;
+        names: NameItem[];
+        existingRatings?: Record<string, RatingInput>;
+        onComplete: (ratings: Record<string, RatingData>) => void;
+        userName?: string;
+        onVote?: (voteData: VoteData) => Promise<void> | void;
 }
 
 /** Persisted tournament progress (for resume-after-refresh). */
 export interface PersistentTournamentState {
-	matchHistory: MatchRecord[];
-	currentRound: number;
-	currentMatch: number;
-	totalMatches: number;
-	userName: string;
-	lastUpdated: number;
-	namesKey: string;
-	ratings: Record<string, number>;
-	mode: TournamentMode;
-	teams: Team[];
-	teamMatches: TeamMatch[];
-	teamMatchIndex: number;
-	bracketEntrants: string[];
+        matchHistory: MatchRecord[];
+        currentRound: number;
+        currentMatch: number;
+        totalMatches: number;
+        userName: string;
+        lastUpdated: number;
+        namesKey: string;
+        ratings: Record<string, number>;
+        mode: TournamentMode;
+        teams: Team[];
+        teamMatches: TeamMatch[];
+        teamMatchIndex: number;
+        bracketEntrants: string[];
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -191,13 +188,13 @@ export interface PersistentTournamentState {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export interface CatChosenName {
-	first_name: string;
-	middle_names: string[];
-	last_name: string;
-	greeting_text: string;
-	display_name: string;
-	is_set: boolean;
-	show_banner: boolean;
+        first_name: string;
+        middle_names: string[];
+        last_name: string;
+        greeting_text: string;
+        display_name: string;
+        is_set: boolean;
+        show_banner: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -205,10 +202,10 @@ export interface CatChosenName {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export interface UserPreferences {
-	theme?: string;
-	notifications?: boolean;
-	showCatPictures?: boolean;
-	matrixMode?: boolean;
+        theme?: string;
+        notifications?: boolean;
+        showCatPictures?: boolean;
+        matrixMode?: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -219,51 +216,51 @@ export interface UserPreferences {
 // appStore.ts because they reference `set`/`get` closures.
 
 export interface UserState {
-	id: string | null;
-	name: string;
-	isLoggedIn: boolean;
-	isAdmin: boolean;
-	avatarUrl?: string;
-	preferences: UserPreferences;
+        id: string | null;
+        name: string;
+        isLoggedIn: boolean;
+        isAdmin: boolean;
+        avatarUrl?: string;
+        preferences: UserPreferences;
 }
 
 export type ThemeValue = "light" | "dark";
 export type ThemePreference = "light" | "dark" | "system";
 
 export interface UIState {
-	theme: ThemeValue;
-	themePreference: ThemePreference;
-	showGlobalAnalytics: boolean;
-	showUserComparison: boolean;
-	matrixMode: boolean;
-	isSwipeMode: boolean;
-	showCatPictures: boolean;
-	isEditingProfile: boolean;
-	isProfileOpen: boolean;
+        theme: ThemeValue;
+        themePreference: ThemePreference;
+        showGlobalAnalytics: boolean;
+        showUserComparison: boolean;
+        matrixMode: boolean;
+        isSwipeMode: boolean;
+        showCatPictures: boolean;
+        isEditingProfile: boolean;
+        isProfileOpen: boolean;
 }
 
 export interface TournamentState {
-	names: NameItem[] | null;
-	ratings: Record<string, RatingData>;
-	isComplete: boolean;
-	isLoading: boolean;
-	voteHistory: VoteRecord[];
-	selectedNames: NameItem[];
+        names: NameItem[] | null;
+        ratings: Record<string, RatingData>;
+        isComplete: boolean;
+        isLoading: boolean;
+        voteHistory: VoteRecord[];
+        selectedNames: NameItem[];
 }
 
 export interface SiteSettingsState {
-	catChosenName: CatChosenName | null;
-	isLoaded: boolean;
+        catChosenName: CatChosenName | null;
+        isLoaded: boolean;
 }
 
 export interface ErrorLog {
-	error: unknown;
-	context: string;
-	metadata: Record<string, unknown>;
-	timestamp: string;
+        error: unknown;
+        context: string;
+        metadata: Record<string, unknown>;
+        timestamp: string;
 }
 
 export interface ErrorState {
-	current: unknown | null;
-	history: ErrorLog[];
+        current: unknown | null;
+        history: ErrorLog[];
 }
