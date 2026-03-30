@@ -38,9 +38,29 @@ const roundCache = new Map<string, number>(); // Cache round calculations by ent
 const MAX_CACHE_SIZE = 100;
 
 function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
-	const entrantsKey = bracketEntrants.map(String).filter(Boolean).sort().join(",");
-	const historyKey = matchHistory.map((m) => `${m.left}-${m.right}-${m.winner}`).join("|");
-	return `${entrantsKey}:${historyKey}`;
+	let key = "";
+	const validEntrants: string[] = [];
+
+	for (let i = 0; i < bracketEntrants.length; i++) {
+		const e = bracketEntrants[i];
+		if (e) validEntrants.push(String(e));
+	}
+	validEntrants.sort();
+
+	for (let i = 0; i < validEntrants.length; i++) {
+		if (i > 0) key += ",";
+		key += validEntrants[i];
+	}
+
+	key += ":";
+
+	for (let i = 0; i < matchHistory.length; i++) {
+		if (i > 0) key += "|";
+		const m = matchHistory[i];
+		key += `${m.left}-${m.right}-${m.winner}`;
+	}
+
+	return key;
 }
 
 // Enhanced round caching with fallback calculation
