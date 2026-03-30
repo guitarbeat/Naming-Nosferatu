@@ -228,7 +228,7 @@ export const isSupabaseAdmin = async (userId: string): Promise<boolean> => {
                 }
 
                 const { data, error } = await supabase
-                        .from("user_roles")
+                        .from("cat_user_roles")
                         .select("role")
                         .eq("user_id", userId)
                         .eq("role", "admin")
