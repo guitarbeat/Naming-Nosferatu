@@ -73,7 +73,6 @@ class WebSocketService {
 				};
 
 				this.ws.onclose = (event) => {
-					console.log("WebSocket disconnected:", event.code, event.reason);
 					this.ws = null;
 
 					// Attempt to reconnect if not a clean close
