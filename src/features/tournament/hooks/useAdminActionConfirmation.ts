@@ -80,11 +80,7 @@ export function useAdminActionConfirmation({
 	}, []);
 
 	const namesById = useMemo(() => {
-		const map = new Map<IdType, string>();
-		for (const name of names) {
-			map.set(name.id, name.name);
-		}
-		return map;
+		return new Map(names.map((name) => [name.id, name.name]));
 	}, [names]);
 
 	const confirmActionName = useMemo(() => {
