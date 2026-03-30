@@ -79,14 +79,21 @@ export function useAdminActionConfirmation({
 		setPendingAdminAction(null);
 	}, []);
 
+	const namesById = useMemo(() => {
+		const map = new Map<IdType, string>();
+		for (const name of names) {
+			map.set(name.id, name.name);
+		}
+		return map;
+	}, [names]);
+
 	const confirmActionName = useMemo(() => {
 		if (!pendingAdminAction) {
 			return "";
 		}
 
-		const target = names.find((name) => name.id === pendingAdminAction.nameId);
-		return target?.name ?? "this name";
-	}, [names, pendingAdminAction]);
+		return namesById.get(pendingAdminAction.nameId) ?? "this name";
+	}, [namesById, pendingAdminAction]);
 
 	const isPendingActionBusy = useMemo(() => {
 		if (!pendingAdminAction) {
