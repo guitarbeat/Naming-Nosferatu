@@ -156,7 +156,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
                         }
 
                         const { data, error } = await client
-                                .from("user_roles")
+                                .from("cat_user_roles")
                                 .select("role")
                                 .eq("user_id", userId)
                                 .eq("role", "admin")
