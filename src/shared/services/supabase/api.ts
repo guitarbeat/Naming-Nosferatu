@@ -285,56 +285,31 @@ export const coreAPI = {
 
         hideName: async (_userName: string, nameId: string | number, isHidden: boolean) => {
                 const userName = _userName?.trim();
-                const failures: string[] = [];
-                const defaultError = `Failed to ${isHidden ? "hide" : "unhide"} name`;
 
-                try {
-                        const client = await resolveSupabaseClient();
-                        if (!client) {
-                                return { success: false, error: "Supabase client not available" };
-                        }
-
-                        if (userName) {
-                                try {
-                                        await client.rpc("set_user_context", { user_name_param: userName });
-                                } catch (error) {
-                                        failures.push(
-                                                `set_user_context failed: ${error instanceof Error ? error.message : "unknown error"}`,
-                                        );
-                                }
-                        }
-
-                        const rpcResult = await client.rpc("toggle_name_visibility", {
-                                p_name_id: String(nameId),
-                                p_hide: isHidden,
-                                p_user_name: userName || undefined,
-                        });
-
-                        if (!rpcResult.error && rpcResult.data === true) {
-                                return { success: true };
-                        }
-
-                        if (rpcResult.error) {
-                                failures.push(`toggle_name_visibility failed: ${rpcResult.error.message}`);
-                        }
-
-                        const { error: directError } = await client
-                                .from("cat_names")
-                                .update({ is_hidden: isHidden })
-                                .eq("id", String(nameId));
-                        if (directError) {
-                                failures.push(`Direct table update failed: ${directError.message}`);
-                        } else {
-                                return { success: true };
-                        }
-                } catch (error) {
-                        failures.push(error instanceof Error ? error.message : "unknown error");
+                const client = await resolveSupabaseClient();
+                if (!client) {
+                        return { success: false, error: "Supabase client not available" };
                 }
 
-                return {
-                        success: false,
-                        error: failures.join(" | ") || defaultError,
-                };
+                // Set user context for RLS — soft failure is acceptable
+                if (userName) {
+                        await client.rpc("set_user_context", { user_name_param: userName }).catch(() => {});
+                }
+
+                const rpcResult = await client.rpc("toggle_name_visibility", {
+                        p_name_id: String(nameId),
+                        p_hide: isHidden,
+                        p_user_name: userName || undefined,
+                });
+
+                if (rpcResult.error) {
+                        return {
+                                success: false,
+                                error: rpcResult.error.message || `Failed to ${isHidden ? "hide" : "unhide"} name`,
+                        };
+                }
+
+                return { success: true };
         },
 };
 

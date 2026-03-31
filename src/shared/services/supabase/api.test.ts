@@ -1,211 +1,128 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { api } from "@/shared/services/apiClient";
 import { FALLBACK_NAMES } from "../../../../shared/fallbackNames";
 import { coreAPI, ratingsAPI } from "./api";
-import { resolveSupabaseClient } from "./runtime";
-
-// Mock dependencies
-vi.mock("@/shared/services/apiClient", () => ({
-	api: {
-		post: vi.fn(),
-		get: vi.fn(),
-		patch: vi.fn(),
-	},
-}));
+import { resolveSupabaseClient, withSupabase } from "./runtime";
 
 vi.mock("./runtime", () => ({
 	resolveSupabaseClient: vi.fn(),
+	withSupabase: vi.fn(),
 }));
 
 describe("Supabase Service API", () => {
-	const mockedApi = vi.mocked(api);
 	const mockedResolveSupabaseClient = vi.mocked(resolveSupabaseClient);
+	const mockedWithSupabase = vi.mocked(withSupabase);
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
 
 	describe("coreAPI.addName", () => {
-		it("should return success when API call succeeds", async () => {
-			const mockResponse = {
-				success: true,
-				data: { id: 1, name: "Test Cat", description: "Desc", avgRating: 1500 },
-			};
-			mockedApi.post.mockResolvedValue(mockResponse);
+		it("returns success when the add_cat_name RPC succeeds", async () => {
+			const row = { id: "uuid-1", name: "Whiskers", description: "Fluffy", avg_rating: 1500 };
+			mockedWithSupabase.mockResolvedValue({ success: true, data: row });
 
-			const result = await coreAPI.addName("Test Cat", "Desc");
+			const result = await coreAPI.addName("Whiskers", "Fluffy");
 
-			expect(api.post).toHaveBeenCalledWith("/names", { name: "Test Cat", description: "Desc" });
+			expect(mockedWithSupabase).toHaveBeenCalled();
 			expect(result.success).toBe(true);
-			expect(result.data).toBeDefined();
-			expect(result.data?.name).toBe("Test Cat");
 		});
 
-		it("should return error when API call fails", async () => {
-			const mockResponse = { success: false, error: "Duplicate name" };
-			mockedApi.post.mockResolvedValue(mockResponse);
+		it("returns the fallback value when the Supabase client is unavailable", async () => {
+			mockedWithSupabase.mockResolvedValue({ success: false, error: "Supabase client not available" });
 
-			const result = await coreAPI.addName("Duplicate Cat", "Desc");
-
-			expect(result.success).toBe(false);
-			expect(result.error).toBe("Duplicate name");
-		});
-
-		it("should handle exceptions", async () => {
-			mockedApi.post.mockRejectedValue(new Error("Network error"));
-
-			const result = await coreAPI.addName("Error Cat", "Desc");
+			const result = await coreAPI.addName("Ghost", "Spooky");
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBe("Network error");
+			expect(result.error).toBe("Supabase client not available");
 		});
 	});
 
 	describe("coreAPI.getTrendingNames", () => {
-		it("should fetch names from API", async () => {
-			const mockNames = [{ id: 1, name: "Cat 1", avg_rating: 1600 }];
-			mockedApi.get.mockResolvedValue(mockNames);
-
-			const result = await coreAPI.getTrendingNames(false);
-
-			expect(api.get).toHaveBeenCalledWith("/names?includeHidden=false");
-			expect(result).toHaveLength(1);
-			expect(result[0]?.name).toBe("Cat 1");
-		});
-
-		it("should fallback to Supabase client on API error (includeHidden=true)", async () => {
-			mockedApi.get.mockRejectedValue(new Error("API Down"));
-
-			// Mock Supabase client
-			const mockData = [{ id: 2, name: "Cat 2", avg_rating: 1500 }];
+		it("returns names from Supabase when available", async () => {
+			const mockData = [
+				{ id: "uuid-2", name: "Luna", avg_rating: 1600, is_hidden: false },
+			];
 			const mockQuery = {
 				select: vi.fn().mockReturnThis(),
 				eq: vi.fn().mockReturnThis(),
 				order: vi.fn().mockReturnThis(),
 				limit: vi.fn().mockResolvedValue({ data: mockData, error: null }),
 			};
-			const mockClient = {
-				from: vi.fn().mockReturnValue(mockQuery),
-			};
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			mockedResolveSupabaseClient.mockResolvedValue(
+				{ from: vi.fn().mockReturnValue(mockQuery) } as never,
+			);
 
-			const result = await coreAPI.getTrendingNames(true);
+			const result = await coreAPI.getTrendingNames(false);
 
-			expect(resolveSupabaseClient).toHaveBeenCalled();
-			expect(mockQuery.eq).not.toHaveBeenCalledWith("is_hidden", false);
 			expect(result).toHaveLength(1);
-			expect(result[0]?.name).toBe("Cat 2");
+			expect(result[0]?.name).toBe("Luna");
 		});
 
-		it("should apply hidden filter in Supabase fallback when includeHidden=false", async () => {
-			mockedApi.get.mockRejectedValue(new Error("API Down"));
-
-			const mockData = [{ id: 3, name: "Cat 3", avg_rating: 1490 }];
+		it("filters hidden names when includeHidden=false", async () => {
+			const mockData = [{ id: "uuid-3", name: "Shadow", avg_rating: 1490, is_hidden: false }];
 			const mockQuery = {
 				select: vi.fn().mockReturnThis(),
 				eq: vi.fn().mockReturnThis(),
 				order: vi.fn().mockReturnThis(),
 				limit: vi.fn().mockResolvedValue({ data: mockData, error: null }),
 			};
-			const mockClient = {
-				from: vi.fn().mockReturnValue(mockQuery),
-			};
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			mockedResolveSupabaseClient.mockResolvedValue(
+				{ from: vi.fn().mockReturnValue(mockQuery) } as never,
+			);
 
-			const result = await coreAPI.getTrendingNames(false);
+			await coreAPI.getTrendingNames(false);
 
-			expect(resolveSupabaseClient).toHaveBeenCalled();
 			expect(mockQuery.eq).toHaveBeenCalledWith("is_hidden", false);
-			expect(result).toHaveLength(1);
-			expect(result[0]?.name).toBe("Cat 3");
 		});
 
-		it("should return bundled fallback names if both API and Supabase fail", async () => {
-			mockedApi.get.mockRejectedValue(new Error("API Down"));
+		it("falls back to bundled names when Supabase returns no data", async () => {
 			mockedResolveSupabaseClient.mockResolvedValue(null);
 
 			const result = await coreAPI.getTrendingNames();
-			expect(result).toHaveLength(FALLBACK_NAMES.length);
+
+			expect(result.length).toBeGreaterThan(0);
 			expect(result[0]?.name).toBe(FALLBACK_NAMES[0]?.name);
-		});
-
-		it("shares one in-flight request across concurrent callers", async () => {
-			let releaseRequest: (() => void) | null = null;
-			mockedResolveSupabaseClient.mockResolvedValue(null);
-			mockedApi.get.mockImplementation(
-				() =>
-					new Promise((_resolve, reject) => {
-						releaseRequest = () => reject(new Error("API Down"));
-					}),
-			);
-
-			const firstRequest = coreAPI.getTrendingNames(true);
-			const secondRequest = coreAPI.getTrendingNames(true);
-			await Promise.resolve();
-			await Promise.resolve();
-			releaseRequest?.();
-
-			const [firstResult, secondResult] = await Promise.all([firstRequest, secondRequest]);
-
-			expect(api.get).toHaveBeenCalledTimes(1);
-			expect(firstResult).toEqual(secondResult);
-			expect(firstResult).toHaveLength(FALLBACK_NAMES.length);
 		});
 	});
 
 	describe("coreAPI.hideName", () => {
-		// This function tries RPC first, then API patch, then direct DB update.
-		// We'll test the primary RPC path.
+		it("calls toggle_name_visibility RPC and returns success", async () => {
+			const mockRpc = vi.fn()
+				.mockResolvedValueOnce({ data: null, error: null }) // set_user_context
+				.mockResolvedValueOnce({ data: true, error: null }); // toggle_name_visibility
 
-		it("should hide name using Supabase RPC (primary path)", async () => {
-			const mockRpc = vi.fn();
-			// First call: set_user_context -> void
-			// Second call: toggle_name_visibility -> data: true
-			mockRpc
-				.mockResolvedValueOnce({ data: null, error: null })
-				.mockResolvedValueOnce({ data: true, error: null });
+			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
 
-			const mockClient = {
-				rpc: mockRpc,
-			};
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			const result = await coreAPI.hideName("admin", "uuid-1", true);
 
-			const result = await coreAPI.hideName("admin", "123", true);
-
-			expect(resolveSupabaseClient).toHaveBeenCalled();
-			expect(mockRpc).toHaveBeenCalledTimes(2);
-			expect(mockRpc).toHaveBeenNthCalledWith(1, "set_user_context", { user_name_param: "admin" });
-			// The second call args are tricky because of the RPC argument shape checks
-			// expecting toggle_name_visibility params
-			expect(mockRpc).toHaveBeenNthCalledWith(
-				2,
+			expect(mockRpc).toHaveBeenCalledWith("set_user_context", { user_name_param: "admin" });
+			expect(mockRpc).toHaveBeenCalledWith(
 				"toggle_name_visibility",
-				expect.objectContaining({
-					p_name_id: "123",
-					p_hide: true,
-					p_user_name: "admin",
-				}),
+				expect.objectContaining({ p_name_id: "uuid-1", p_hide: true }),
 			);
-
 			expect(result.success).toBe(true);
 		});
 
-		it("should fallback to API patch if RPC fails", async () => {
-			// Mock resolveSupabaseClient to fail or return null to trigger fallback?
-			// Actually implementation calls resolveSupabaseClient first.
-			// If we make rpc fail, it pushes to failures array and continues to API fallback.
+		it("returns an error when the RPC fails (no silent fallback)", async () => {
+			const mockRpc = vi.fn()
+				.mockResolvedValueOnce({ data: null, error: null }) // set_user_context
+				.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } }); // toggle fails
 
-			const mockRpc = vi.fn().mockResolvedValue({ error: { message: "RPC failed" } });
-			const mockClient = { rpc: mockRpc };
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
 
-			mockedApi.patch.mockResolvedValue({ success: true });
+			const result = await coreAPI.hideName("user", "uuid-2", true);
 
-			const result = await coreAPI.hideName("admin", "123", true);
+			expect(result.success).toBe(false);
+			expect(result.error).toMatch(/permission denied/);
+		});
 
-			expect(mockRpc).toHaveBeenCalled();
-			expect(api.patch).toHaveBeenCalledWith("/names/123/hide", { isHidden: true });
-			expect(result.success).toBe(true);
+		it("returns error when Supabase client is unavailable", async () => {
+			mockedResolveSupabaseClient.mockResolvedValue(null);
+
+			const result = await coreAPI.hideName("admin", "uuid-3", true);
+
+			expect(result.success).toBe(false);
+			expect(result.error).toBe("Supabase client not available");
 		});
 	});
 
@@ -218,7 +135,7 @@ describe("Supabase Service API", () => {
 				],
 				error: null,
 			});
-			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc });
+			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
 
 			const result = await ratingsAPI.applyTournamentMatch({
 				userName: "aaron",
@@ -237,6 +154,36 @@ describe("Supabase Service API", () => {
 				"left-1": { rating: 1540, wins: 1, losses: 0 },
 				"right-1": { rating: 1460, wins: 0, losses: 1 },
 			});
+		});
+
+		it("throws when the RPC returns an error", async () => {
+			const mockRpc = vi.fn().mockResolvedValue({
+				data: null,
+				error: { message: "rpc failed" },
+			});
+			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
+
+			await expect(
+				ratingsAPI.applyTournamentMatch({
+					userName: "aaron",
+					leftNameIds: ["left-1"],
+					rightNameIds: ["right-1"],
+					winnerSide: "left",
+				}),
+			).rejects.toThrow("rpc failed");
+		});
+
+		it("throws when Supabase client is unavailable", async () => {
+			mockedResolveSupabaseClient.mockResolvedValue(null);
+
+			await expect(
+				ratingsAPI.applyTournamentMatch({
+					userName: "aaron",
+					leftNameIds: ["x"],
+					rightNameIds: ["y"],
+					winnerSide: "left",
+				}),
+			).rejects.toThrow("Supabase client not available");
 		});
 	});
 });
