@@ -1,13 +1,10 @@
 /**
- * @module WebSocketService
- * @description Real-time WebSocket service for live tournament updates
+ * @module websocketService
+ * @description Real-time service backed by Supabase Realtime channels.
+ * Replaces the legacy WebSocket server integration.
  */
 
-export interface WebSocketMessage {
-	type: "tournament_update" | "match_result" | "user_joined" | "user_left";
-	data: unknown;
-	timestamp: number;
-}
+import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
 export interface TournamentUpdate {
 	tournamentId: string;
@@ -34,179 +31,118 @@ export interface UserActivity {
 	timestamp: number;
 }
 
-class WebSocketService {
-	private ws: WebSocket | null = null;
-	private reconnectAttempts = 0;
-	private maxReconnectAttempts = 5;
-	private reconnectDelay = 1000; // 1 second
-	private messageHandlers = new Map<string, (message: WebSocketMessage) => void>();
-	private isConnecting = false;
+type ConnectionState = "connecting" | "connected" | "disconnected" | "error";
 
-	constructor(private url: string) {}
+class RealtimeService {
+	private channel: ReturnType<any["channel"]> | null = null;
+	private connectionState: ConnectionState = "disconnected";
+	private nameChangeCallbacks: Array<(payload: unknown) => void> = [];
+	private ratingChangeCallbacks: Array<(payload: unknown) => void> = [];
 
-	connect(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			if (this.isConnecting || this.ws?.readyState === WebSocket.OPEN) {
-				resolve();
+	async connect(): Promise<void> {
+		if (this.connectionState === "connected" || this.connectionState === "connecting") {
+			return;
+		}
+
+		this.connectionState = "connecting";
+
+		try {
+			const client = (await resolveSupabaseClient()) as any;
+			if (!client) {
+				this.connectionState = "disconnected";
 				return;
 			}
 
-			this.isConnecting = true;
-
-			try {
-				this.ws = new WebSocket(this.url);
-
-				this.ws.onopen = () => {
-					console.log("WebSocket connected");
-					this.isConnecting = false;
-					this.reconnectAttempts = 0;
-					resolve();
-				};
-
-				this.ws.onmessage = (event) => {
-					try {
-						const message: WebSocketMessage = JSON.parse(event.data);
-						this.handleMessage(message);
-					} catch (error) {
-						console.error("Failed to parse WebSocket message:", error);
+			this.channel = client
+				.channel("db-changes")
+				.on(
+					"postgres_changes",
+					{ event: "*", schema: "public", table: "cat_names" },
+					(payload: unknown) => {
+						for (const cb of this.nameChangeCallbacks) cb(payload);
+					},
+				)
+				.on(
+					"postgres_changes",
+					{ event: "INSERT", schema: "public", table: "user_cat_name_ratings" },
+					(payload: unknown) => {
+						for (const cb of this.ratingChangeCallbacks) cb(payload);
+					},
+				)
+				.subscribe((status: string) => {
+					if (status === "SUBSCRIBED") {
+						this.connectionState = "connected";
+					} else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
+						this.connectionState = "disconnected";
 					}
-				};
-
-				this.ws.onclose = (event) => {
-					console.log("WebSocket disconnected:", event.code, event.reason);
-					this.ws = null;
-
-					// Attempt to reconnect if not a clean close
-					if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
-						setTimeout(
-							() => {
-								this.reconnectAttempts++;
-								this.connect().catch(console.error);
-							},
-							this.reconnectDelay * 2 ** this.reconnectAttempts,
-						);
-					}
-				};
-
-				this.ws.onerror = (error) => {
-					console.error("WebSocket error:", error);
-					this.isConnecting = false;
-					reject(error);
-				};
-			} catch (error) {
-				this.isConnecting = false;
-				reject(error);
-			}
-		});
+				});
+		} catch (error) {
+			console.warn("[RealtimeService] Failed to connect:", error);
+			this.connectionState = "error";
+		}
 	}
 
 	disconnect(): void {
-		if (this.ws) {
-			this.ws.close(1000, "Client disconnect");
-			this.ws = null;
+		if (this.channel) {
+			this.channel.unsubscribe();
+			this.channel = null;
 		}
-		this.reconnectAttempts = this.maxReconnectAttempts; // Prevent reconnection
+		this.connectionState = "disconnected";
 	}
 
-	sendMessage(message: Omit<WebSocketMessage, "timestamp">): void {
-		if (this.ws?.readyState === WebSocket.OPEN) {
-			const fullMessage: WebSocketMessage = {
-				...message,
-				timestamp: Date.now(),
-			};
-			this.ws.send(JSON.stringify(fullMessage));
-		} else {
-			console.warn("WebSocket not connected, message not sent:", message);
-		}
-	}
-
-	// Message handlers
-	onMessage(type: string, handler: (message: WebSocketMessage) => void): void {
-		this.messageHandlers.set(type, handler);
-	}
-
-	offMessage(type: string): void {
-		this.messageHandlers.delete(type);
-	}
-
-	private handleMessage(message: WebSocketMessage): void {
-		const handler = this.messageHandlers.get(message.type);
-		if (handler) {
-			handler(message);
-		}
-	}
-
-	// Public API methods
-	subscribeToTournament(
-		tournamentId: string,
-		callback: (update: TournamentUpdate) => void,
-	): () => void {
-		this.onMessage("tournament_update", (message) => {
-			if (message.data && typeof message.data === "object" && "tournamentId" in message.data) {
-				const update = message.data as TournamentUpdate;
-				if (update.tournamentId === tournamentId) {
-					callback(update);
-				}
-			}
-		});
-
-		return () => {
-			this.offMessage("tournament_update");
-		};
-	}
-
-	subscribeToMatches(callback: (result: MatchResult) => void): () => void {
-		this.onMessage("match_result", (message) => {
-			if (message.data && typeof message.data === "object") {
-				callback(message.data as MatchResult);
-			}
-		});
-
-		return () => {
-			this.offMessage("match_result");
-		};
-	}
-
-	subscribeToUserActivity(callback: (activity: UserActivity) => void): () => void {
-		this.onMessage("user_joined", (message) => {
-			if (message.data && typeof message.data === "object") {
-				callback(message.data as UserActivity);
-			}
-		});
-
-		this.onMessage("user_left", (message) => {
-			if (message.data && typeof message.data === "object") {
-				callback(message.data as UserActivity);
-			}
-		});
-
-		return () => {
-			this.offMessage("user_joined");
-			this.offMessage("user_left");
-		};
-	}
-
-	getConnectionState(): "connecting" | "connected" | "disconnected" {
-		if (this.isConnecting) {
-			return "connecting";
-		}
-		if (this.ws?.readyState === WebSocket.OPEN) {
-			return "connected";
-		}
-		return "disconnected";
+	getConnectionState(): ConnectionState {
+		return this.connectionState;
 	}
 
 	isConnected(): boolean {
-		return this.ws?.readyState === WebSocket.OPEN;
+		return this.connectionState === "connected";
+	}
+
+	onNameChange(callback: (payload: unknown) => void): () => void {
+		this.nameChangeCallbacks.push(callback);
+		return () => {
+			this.nameChangeCallbacks = this.nameChangeCallbacks.filter((cb) => cb !== callback);
+		};
+	}
+
+	onRatingChange(callback: (payload: unknown) => void): () => void {
+		this.ratingChangeCallbacks.push(callback);
+		return () => {
+			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter((cb) => cb !== callback);
+		};
+	}
+
+	subscribeToTournament(
+		_tournamentId: string,
+		_callback: (update: TournamentUpdate) => void,
+	): () => void {
+		return () => {};
+	}
+
+	subscribeToMatches(_callback: (result: MatchResult) => void): () => void {
+		return () => {};
+	}
+
+	subscribeToUserActivity(_callback: (activity: UserActivity) => void): () => void {
+		return () => {};
+	}
+
+	sendMessage(_message: unknown): void {}
+
+	onMessage(_type: string, _handler: (message: unknown) => void): void {}
+
+	offMessage(_type: string): void {}
+
+	cleanup(): void {
+		this.disconnect();
 	}
 }
 
-// Singleton instance
-let wsService: WebSocketService | null = null;
+let serviceInstance: RealtimeService | null = null;
 
-export const getWebSocketService = (url: string): WebSocketService => {
-	if (!wsService) {
-		wsService = new WebSocketService(url);
+export function getWebSocketService(_url?: string): RealtimeService {
+	if (!serviceInstance) {
+		serviceInstance = new RealtimeService();
 	}
-	return wsService;
-};
+	return serviceInstance;
+}

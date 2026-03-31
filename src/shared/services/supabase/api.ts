@@ -1,4 +1,3 @@
-import { api } from "@/shared/services/apiClient";
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 import { getFallbackNames } from "../../../../shared/fallbackNames";
@@ -260,14 +259,22 @@ export function isUsingFallbackData(): boolean {
 export const coreAPI = {
         addName: async (name: string, description: string) => {
                 try {
-                        const response = await api.post<{ success: boolean; data: any; error?: any }>("/names", {
-                                name,
-                                description,
-                        });
-                        if (response.success && response.data) {
-                                return { success: true, data: mapNameRow(response.data) };
+                        const client = (await resolveSupabaseClient()) as any;
+                        if (!client) {
+                                return { success: false, error: "Supabase client not available" };
                         }
-                        return { success: false, error: response.error || "Failed to add name" };
+                        const { data, error } = await client.rpc("add_cat_name", {
+                                p_name: name,
+                                p_description: description || "",
+                        });
+                        if (error) {
+                                return { success: false, error: error.message || "Failed to add name" };
+                        }
+                        const row = Array.isArray(data) ? data[0] : data;
+                        if (!row) {
+                                return { success: false, error: "No data returned from add_cat_name" };
+                        }
+                        return { success: true, data: mapNameRow(row as ApiNameRow) };
                 } catch (error) {
                         return {
                                 success: false,
@@ -295,7 +302,7 @@ export const coreAPI = {
                 const controller = new AbortController();
 
                 const request = (async () => {
-                        // Primary path: query Supabase directly (no Express backend needed)
+                        // Primary path: query Supabase directly
                         const supabaseResult = await getNamesFromSupabase(includeHidden);
                         if (supabaseResult.length > 0) {
                                 usingFallbackData = false;
@@ -307,19 +314,10 @@ export const coreAPI = {
                                 throw new Error("Request aborted");
                         }
 
-                        // Fallback: try API server if Supabase returned nothing
-                        try {
-                                const data = await api.get<ApiNameRow[]>(`/names?includeHidden=${includeHidden}`);
-                                usingFallbackData = false;
-                                return (data ?? []).map((item) => mapNameRow(item));
-                        } catch {
-                                if (controller.signal.aborted) {
-                                        throw new Error("Request aborted");
-                                }
-                                usingFallbackData = true;
-                                console.warn("Using fallback/demo data - database connection unavailable");
-                                return getFallbackNames(includeHidden).map((item) => mapNameRow(item));
-                        }
+                        // Fallback: use local static data when Supabase is unavailable
+                        usingFallbackData = true;
+                        console.warn("Using fallback/demo data - database connection unavailable");
+                        return getFallbackNames(includeHidden).map((item) => mapNameRow(item));
                 })();
 
                 const pendingRequest: PendingRequest<NameItem[]> = {
@@ -357,62 +355,48 @@ export const coreAPI = {
                 const userName = _userName?.trim();
                 const failures: string[] = [];
                 const defaultError = `Failed to ${isHidden ? "hide" : "unhide"} name`;
-                let client = null as Awaited<ReturnType<typeof resolveSupabaseClient>>;
 
                 try {
-                        client = await resolveSupabaseClient();
-                        if (client) {
+                        const client = await resolveSupabaseClient();
+                        if (!client) {
+                                return { success: false, error: "Supabase client not available" };
+                        }
+
+                        if (userName) {
                                 try {
-                                        if (userName) {
-                                                await client.rpc("set_user_context", { user_name_param: userName });
-                                        }
+                                        await client.rpc("set_user_context", { user_name_param: userName });
                                 } catch (error) {
                                         failures.push(
                                                 `set_user_context failed: ${error instanceof Error ? error.message : "unknown error"}`,
                                         );
                                 }
-
-                                try {
-                                        const rpcResult = await client.rpc("toggle_name_visibility", {
-                                                p_name_id: String(nameId),
-                                                p_hide: isHidden,
-                                                p_user_name: userName || undefined,
-                                        });
-
-                                        if (rpcResult.error) {
-                                                failures.push(`toggle_name_visibility failed: ${rpcResult.error.message}`);
-                                        } else if (rpcResult.data === true) {
-                                                return { success: true };
-                                        }
-                                } catch (error) {
-                                        failures.push(
-                                                `toggle_name_visibility failed: ${error instanceof Error ? error.message : "unknown error"}`,
-                                        );
-                                }
                         }
-                } catch (error) {
-                        failures.push(error instanceof Error ? error.message : "unknown error");
-                }
 
-                try {
-                        await api.patch(`/names/${nameId}/hide`, { isHidden });
-                        return { success: true };
-                } catch (error) {
-                        failures.push(
-                                `API fallback failed: ${error instanceof Error ? error.message : "unknown error"}`,
-                        );
-                }
+                        const rpcResult = await client.rpc("toggle_name_visibility", {
+                                p_name_id: String(nameId),
+                                p_hide: isHidden,
+                                p_user_name: userName || undefined,
+                        });
 
-                if (client) {
-                        const { error } = await client
+                        if (!rpcResult.error && rpcResult.data === true) {
+                                return { success: true };
+                        }
+
+                        if (rpcResult.error) {
+                                failures.push(`toggle_name_visibility failed: ${rpcResult.error.message}`);
+                        }
+
+                        const { error: directError } = await client
                                 .from("cat_names")
                                 .update({ is_hidden: isHidden })
                                 .eq("id", String(nameId));
-                        if (error) {
-                                failures.push(`Direct table fallback failed: ${error.message}`);
+                        if (directError) {
+                                failures.push(`Direct table update failed: ${directError.message}`);
                         } else {
                                 return { success: true };
                         }
+                } catch (error) {
+                        failures.push(error instanceof Error ? error.message : "unknown error");
                 }
 
                 return {
@@ -439,7 +423,14 @@ export const hiddenNamesAPI = {
 export const statsAPI = {
         getSiteStats: async () => {
                 try {
-                        return await api.get<any>("/analytics/site-stats");
+                        const client = (await resolveSupabaseClient()) as any;
+                        if (!client) return {};
+                        const { data, error } = await client.rpc("get_site_stats");
+                        if (error) {
+                                console.warn("[statsAPI] get_site_stats failed:", error.message);
+                                return {};
+                        }
+                        return data ?? {};
                 } catch {
                         return {};
                 }
@@ -711,13 +702,23 @@ export const ratingsAPI = {
                                         losses: data.losses,
                                 }));
 
-                                const response = await api.post<{ success: boolean; count: number }>("/ratings", {
-                                        userId,
-                                        ratings: ratingsList,
+                                const client = (await resolveSupabaseClient()) as any;
+                                if (!client) {
+                                        throw new Error("Supabase client not available");
+                                }
+
+                                const { data, error } = await client.rpc("save_user_ratings", {
+                                        p_user_name: userId,
+                                        p_ratings: ratingsList,
                                 });
 
+                                if (error) {
+                                        throw new Error(error.message || "Failed to save ratings");
+                                }
+
+                                const response = data as { success: boolean; count: number } | null;
                                 if (!response?.success) {
-                                        throw new Error(`Failed to save ratings: ${response?.error || "Unknown error"}`);
+                                        throw new Error("Failed to save ratings: RPC returned failure");
                                 }
 
                                 return response;
@@ -729,27 +730,25 @@ export const ratingsAPI = {
                                         isRetryable: true,
                                 });
 
-                                // Fallback to localStorage if API is completely unavailable
-                                if (error instanceof Error && error.message.includes("fetch")) {
-                                        try {
-                                                const existingData = localStorage.getItem("ratings_fallback");
-                                                const fallbackData = existingData ? JSON.parse(existingData) : {};
-                                                fallbackData[userId] = { ...ratings, timestamp: Date.now() };
+                                // Fallback to localStorage when Supabase is unavailable
+                                try {
+                                        const existingData = localStorage.getItem("ratings_fallback");
+                                        const fallbackData = existingData ? JSON.parse(existingData) : {};
+                                        fallbackData[userId] = { ...ratings, timestamp: Date.now() };
 
-                                                const success = safeLocalStorageSet(
-                                                        "ratings_fallback",
-                                                        JSON.stringify(fallbackData),
-                                                        true,
-                                                );
-                                                if (success) {
-                                                        console.warn("Ratings saved to localStorage fallback due to API unavailability");
-                                                        return { success: true, count: Object.keys(ratings).length };
-                                                } else {
-                                                        console.error("Failed to save ratings to localStorage fallback: quota exceeded");
-                                                }
-                                        } catch (fallbackError) {
-                                                console.error("Failed to save ratings to localStorage fallback:", fallbackError);
+                                        const success = safeLocalStorageSet(
+                                                "ratings_fallback",
+                                                JSON.stringify(fallbackData),
+                                                true,
+                                        );
+                                        if (success) {
+                                                console.warn("Ratings saved to localStorage fallback due to Supabase unavailability");
+                                                return { success: true, count: Object.keys(ratings).length };
+                                        } else {
+                                                console.error("Failed to save ratings to localStorage fallback: quota exceeded");
                                         }
+                                } catch (fallbackError) {
+                                        console.error("Failed to save ratings to localStorage fallback:", fallbackError);
                                 }
 
                                 throw error;
