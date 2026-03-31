@@ -336,8 +336,8 @@ const validateRatingsData = (
                 return { isValid: false, error: "Invalid ratings: cannot be empty" };
         }
 
-        if (ratingsCount > 1000) {
-                return { isValid: false, error: "Invalid ratings: exceeds maximum limit of 1000 entries" };
+        if (ratingsCount > 200) {
+                return { isValid: false, error: "Invalid ratings: exceeds maximum limit of 200 entries" };
         }
 
         // Validate each rating entry
