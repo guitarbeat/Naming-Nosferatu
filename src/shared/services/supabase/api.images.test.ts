@@ -1,16 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { imagesAPI } from "./api";
-import { resolveSupabaseClient } from "./runtime";
+import { resolveSupabaseClient, withSupabase } from "./runtime";
 
 vi.mock("./runtime", () => ({
 	resolveSupabaseClient: vi.fn(),
+	withSupabase: vi.fn(),
 }));
 
 describe("imagesAPI", () => {
 	const mockedResolveSupabaseClient = vi.mocked(resolveSupabaseClient);
+	const mockedWithSupabase = vi.mocked(withSupabase);
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+		mockedWithSupabase.mockImplementation(async (fn, fallback) => {
+			const client = await mockedResolveSupabaseClient();
+			if (!client) return fallback;
+			return fn(client as never);
+		});
 	});
 
 	describe("imagesAPI.list", () => {
@@ -20,7 +27,7 @@ describe("imagesAPI", () => {
 			const mockFrom = vi.fn().mockReturnValue({ list: mockList });
 			const mockClient = { storage: { from: mockFrom } };
 
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			mockedResolveSupabaseClient.mockResolvedValue(mockClient as never);
 
 			const result = await imagesAPI.list();
 
@@ -40,7 +47,7 @@ describe("imagesAPI", () => {
 			const mockFrom = vi.fn().mockReturnValue({ list: mockList });
 			const mockClient = { storage: { from: mockFrom } };
 
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			mockedResolveSupabaseClient.mockResolvedValue(mockClient as never);
 
 			const result = await imagesAPI.list();
 			expect(result).toEqual([]);
@@ -62,7 +69,7 @@ describe("imagesAPI", () => {
 			});
 			const mockClient = { storage: { from: mockFrom } };
 
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			mockedResolveSupabaseClient.mockResolvedValue(mockClient as never);
 
 			const result = await imagesAPI.upload(mockFile, userName);
 
@@ -78,7 +85,6 @@ describe("imagesAPI", () => {
 		});
 
 		it("should fail if file size exceeds 5MB", async () => {
-			// Mock a large file
 			const largeFile = {
 				size: 6 * 1024 * 1024,
 				type: "image/jpeg",
@@ -113,7 +119,7 @@ describe("imagesAPI", () => {
 			const mockFrom = vi.fn().mockReturnValue({ upload: mockUpload });
 			const mockClient = { storage: { from: mockFrom } };
 
-			mockedResolveSupabaseClient.mockResolvedValue(mockClient);
+			mockedResolveSupabaseClient.mockResolvedValue(mockClient as never);
 
 			const result = await imagesAPI.upload(mockFile, userName);
 			expect(result.success).toBe(false);

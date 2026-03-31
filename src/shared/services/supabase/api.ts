@@ -1,4 +1,3 @@
-import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 import { resolveSupabaseClient, withSupabase } from "./runtime";
 
@@ -381,9 +380,6 @@ const validateRatingsData = (
         return { isValid: true };
 };
 
-// Create circuit breaker for ratings API
-const _ratingsCircuitBreaker = new ErrorManager.CircuitBreaker(3, 30000); // 3 failures, 30s timeout
-
 export const ratingsAPI = {
         applyTournamentMatch: async ({
                 userName,
@@ -428,63 +424,42 @@ export const ratingsAPI = {
                         {},
                 );
         },
-        saveRatings: ErrorManager.createResilientFunction(
-                async (
-                        userId: string,
-                        ratings: Record<string, { rating: number; wins: number; losses: number }>,
-                ) => {
-                        try {
-                                // Validate input data before processing
-                                const validation = validateRatingsData(userId, ratings);
-                                if (!validation.isValid) {
-                                        throw new Error(validation.error || "Invalid ratings data");
-                                }
+        saveRatings: async (
+                userId: string,
+                ratings: Record<string, { rating: number; wins: number; losses: number }>,
+        ): Promise<{ success: boolean; count: number }> => {
+                const validation = validateRatingsData(userId, ratings);
+                if (!validation.isValid) {
+                        throw new Error(validation.error || 'Invalid ratings data');
+                }
 
-                                const ratingsList = Object.entries(ratings).map(([nameId, data]) => ({
-                                        nameId,
-                                        rating: data.rating,
-                                        wins: data.wins,
-                                        losses: data.losses,
-                                }));
+                const ratingsList = Object.entries(ratings).map(([nameId, data]) => ({
+                        nameId,
+                        rating: data.rating,
+                        wins: data.wins,
+                        losses: data.losses,
+                }));
 
-                                const client = await resolveSupabaseClient();
-                                if (!client) {
-                                        throw new Error("Supabase client not available");
-                                }
+                const client = await resolveSupabaseClient();
+                if (!client) {
+                        throw new Error('Supabase client not available');
+                }
 
-                                // @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
-                                const { data, error } = await client.rpc("save_user_ratings", {
-                                        p_user_name: userId,
-                                        p_ratings: ratingsList,
-                                });
+                // @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
+                const { data, error } = await client.rpc('save_user_ratings', {
+                        p_user_name: userId,
+                        p_ratings: ratingsList,
+                });
 
-                                if (error) {
-                                        throw new Error(error.message || "Failed to save ratings");
-                                }
+                if (error) {
+                        throw new Error(error.message || 'Failed to save ratings');
+                }
 
-                                const response = data as { success: boolean; count: number } | null;
-                                if (!response?.success) {
-                                        throw new Error("Failed to save ratings: RPC returned failure");
-                                }
+                const response = data as { success: boolean; count: number } | null;
+                if (!response?.success) {
+                        throw new Error('Failed to save ratings: RPC returned failure');
+                }
 
-                                return response;
-                        } catch (error) {
-                                // Log the error with context
-                                ErrorManager.handleError(error, "Ratings Save", {
-                                        userId,
-                                        ratingsCount: Object.keys(ratings).length,
-                                        isRetryable: true,
-                                });
-
-
-                                throw error;
-                        }
-                },
-                {
-                        threshold: 3,
-                        timeout: 30000,
-                        maxAttempts: 3,
-                        baseDelay: 1000,
-                },
-        ),
+                return response;
+        },
 };

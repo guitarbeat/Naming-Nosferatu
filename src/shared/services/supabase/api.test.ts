@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FALLBACK_NAMES } from "../../../../shared/fallbackNames";
 import { coreAPI, ratingsAPI } from "./api";
 import { resolveSupabaseClient, withSupabase } from "./runtime";
 
@@ -75,27 +74,25 @@ describe("Supabase Service API", () => {
 			expect(mockQuery.eq).toHaveBeenCalledWith("is_hidden", false);
 		});
 
-		it("falls back to bundled names when Supabase returns no data", async () => {
+		it("returns empty array when Supabase client is unavailable", async () => {
 			mockedResolveSupabaseClient.mockResolvedValue(null);
 
 			const result = await coreAPI.getTrendingNames();
 
-			expect(result.length).toBeGreaterThan(0);
-			expect(result[0]?.name).toBe(FALLBACK_NAMES[0]?.name);
+			expect(Array.isArray(result)).toBe(true);
+			expect(result.length).toBe(0);
 		});
 	});
 
 	describe("coreAPI.hideName", () => {
 		it("calls toggle_name_visibility RPC and returns success", async () => {
 			const mockRpc = vi.fn()
-				.mockResolvedValueOnce({ data: null, error: null }) // set_user_context
 				.mockResolvedValueOnce({ data: true, error: null }); // toggle_name_visibility
 
 			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
 
 			const result = await coreAPI.hideName("admin", "uuid-1", true);
 
-			expect(mockRpc).toHaveBeenCalledWith("set_user_context", { user_name_param: "admin" });
 			expect(mockRpc).toHaveBeenCalledWith(
 				"toggle_name_visibility",
 				expect.objectContaining({ p_name_id: "uuid-1", p_hide: true }),
@@ -103,10 +100,20 @@ describe("Supabase Service API", () => {
 			expect(result.success).toBe(true);
 		});
 
+		it("does not call set_user_context (privilege escalation removed)", async () => {
+			const mockRpc = vi.fn()
+				.mockResolvedValueOnce({ data: true, error: null });
+
+			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
+
+			await coreAPI.hideName("admin", "uuid-1", true);
+
+			expect(mockRpc).not.toHaveBeenCalledWith("set_user_context", expect.anything());
+		});
+
 		it("returns an error when the RPC fails (no silent fallback)", async () => {
 			const mockRpc = vi.fn()
-				.mockResolvedValueOnce({ data: null, error: null }) // set_user_context
-				.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } }); // toggle fails
+				.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } });
 
 			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
 
