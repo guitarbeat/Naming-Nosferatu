@@ -28,6 +28,7 @@ export {
 	Lightbulb,
 	Loader2,
 	Lock,
+	Trash2,
 	LogOut,
 	Medal,
 	Music,
