@@ -8,6 +8,7 @@
  */
 
 import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
@@ -17,7 +18,7 @@ import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useOfflineSync } from "@/shared/hooks";
-import { Lightbulb, Trophy } from "@/shared/lib/icons";
+import { ChevronDown, Lightbulb, Trophy } from "@/shared/lib/icons";
 import {
         cleanupPerformanceMonitoring,
         initializePerformanceMonitoring,
@@ -25,6 +26,8 @@ import {
 import { ErrorManager } from "@/shared/services/errorManager";
 import { updateSupabaseUserContext } from "@/shared/services/supabase/runtime";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
+import { getLockedNames } from "@/shared/lib/basic";
+import { namesQueryOptions } from "@/features/names/queries";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
@@ -105,10 +108,59 @@ const GRADIENT_HEADING_CLS =
         "font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter";
 
 function HomeContent() {
+        const namesQuery = useQuery(namesQueryOptions(true));
+        const lockedNames = getLockedNames(namesQuery.data?.names);
+        const nameDisplay =
+                lockedNames.length > 0
+                        ? lockedNames.map((n) => n.name.toUpperCase()).join(" ") + " WOODS"
+                        : null;
+
         return (
                 <>
+                        {/* Hero — bleeds edge-to-edge, full viewport height */}
+                        <section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-6 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] md:-mt-10">
+                                {/* Radial glow behind name */}
+                                <div
+                                        className="pointer-events-none absolute inset-0 -z-10"
+                                        aria-hidden="true"
+                                >
+                                        <div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
+                                </div>
+
+                                {/* Label */}
+                                <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:text-xs">
+                                        My cat's name is
+                                </p>
+
+                                {/* Decorative line */}
+                                <div className="mb-6 h-px w-16 bg-gradient-to-r from-transparent via-border to-transparent" />
+
+                                {/* Name */}
+                                <h1
+                                        className="font-black uppercase leading-[0.9] tracking-tighter"
+                                        style={{ fontSize: "clamp(2.6rem, 9vw, 9rem)" }}
+                                >
+                                        {nameDisplay ? (
+                                                <span className={GRADIENT_HEADING_CLS}>{nameDisplay}</span>
+                                        ) : (
+                                                <span className="text-foreground/15">________</span>
+                                        )}
+                                </h1>
+
+                                {/* Subtitle */}
+                                <p className="mt-10 max-w-xs text-sm leading-relaxed text-muted-foreground/70 sm:max-w-sm sm:text-base">
+                                        Help me decide — scroll down and pick the names you like best.
+                                </p>
+
+                                {/* Scroll hint */}
+                                <div className="absolute bottom-10 flex flex-col items-center gap-2 text-muted-foreground/40">
+                                        <span className="text-[9px] uppercase tracking-[0.3em]">scroll</span>
+                                        <ChevronDown className="h-4 w-4 animate-bounce" />
+                                </div>
+                        </section>
+
                         <Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
-                                <SectionHeading icon={Trophy} title="Pick Names" />
+                                <SectionHeading icon={Trophy} title="Pick Your Favorites" subtitle="These are the current top contenders — select the ones you like best." />
                                 <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                         <TournamentFlow />
                                 </Suspense>

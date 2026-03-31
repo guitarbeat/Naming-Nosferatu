@@ -223,7 +223,7 @@ const AdminActionButton = ({
 // Card styles utility
 const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
         const baseClasses =
-                "mobile-readable-card relative group rounded-xl sm:rounded-2xl border-2 overflow-hidden cursor-pointer transition-all duration-300";
+                "mobile-readable-card relative group rounded-xl sm:rounded-2xl border-2 cursor-pointer transition-all duration-300";
         const selectedClasses = isSelected
                 ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 shadow-xl shadow-primary/20 ring-4 ring-primary/30 scale-[1.02] z-10"
                 : "border-border/20 bg-gradient-to-br from-foreground/5 to-foreground/0 hover:border-border/40 hover:bg-gradient-to-br hover:from-foreground/10 hover:to-foreground/5 hover:shadow-xl hover:shadow-foreground/10";
@@ -266,7 +266,6 @@ export function NameSelector() {
         const [swipeHistory, setSwipeHistory] = useState<
                 Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
         >([]);
-        const { tooltipRef, tooltipPosition, measureTooltip } = useSmartTooltip();
         const deferredSync = useDeferredSync();
         const namesQuery = useQuery({
                 ...namesQueryOptions(true),
@@ -771,53 +770,6 @@ export function NameSelector() {
         return (
                 <div className="mx-auto w-full">
                         <div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
-                                {/* Current Names - Prominent Display */}
-                                {lockedInNames.length > 0 && (
-                                        <div className="flex flex-col items-center gap-1.5 sm:gap-2 px-2 sm:px-4">
-                                                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                                                        My cat is named
-                                                </span>
-                                                <div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 relative z-[60]">
-                                                        {lockedInNames.map((nameItem, index) => (
-                                                                <motion.div
-                                                                        key={nameItem.id}
-                                                                        initial={{ opacity: 0, y: 10 }}
-                                                                        animate={{ opacity: 1, y: 0 }}
-                                                                        transition={{ delay: index * 0.05 }}
-                                                                        whileHover={{ y: -1 }}
-                                                                        className="group relative px-2.5 py-1 sm:px-4 sm:py-2 bg-gradient-to-b from-warning/15 to-warning/5 border border-warning/25 rounded-md"
-                                                                >
-                                                                        <span className="text-foreground font-medium text-xs sm:text-sm">
-                                                                                {nameItem.name}
-                                                                        </span>
-                                                                        {(nameItem.description || nameItem.pronunciation) && (
-                                                                                <div
-                                                                                        ref={tooltipRef}
-                                                                                        onMouseEnter={measureTooltip}
-                                                                                        className={`name-lock-tooltip ${
-                                                                                                tooltipPosition === "top"
-                                                                                                        ? "name-lock-tooltip--top"
-                                                                                                        : "name-lock-tooltip--bottom"
-                                                                                        }`}
-                                                                                >
-                                                                                        {nameItem.pronunciation && (
-                                                                                                <div className="name-lock-tooltip__header">
-                                                                                                        <div className="name-lock-tooltip__label">Pronunciation</div>
-                                                                                                        <div className="name-lock-tooltip__pronunciation">
-                                                                                                                {nameItem.pronunciation}
-                                                                                                        </div>
-                                                                                                </div>
-                                                                                        )}
-                                                                                        <div className="name-lock-tooltip__body">{nameItem.description}</div>
-                                                                                        <div className="name-lock-tooltip__arrow" />
-                                                                                </div>
-                                                                        )}
-                                                                </motion.div>
-                                                        ))}
-                                                </div>
-                                        </div>
-                                )}
-
                                 {/* Selection Controls + Mode Toggle (inline on mobile) */}
                                 <div className="relative px-2 sm:px-4 py-2">
                                         {/* Progress Bar - compact on mobile */}
@@ -1243,7 +1195,7 @@ export function NameSelector() {
                                                                                                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                                                                                                         className={getCardStyles(isSelected, isNameLocked(nameItem))}
                                                                                                 >
-                                                                                                        <div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img">
+                                                                                                        <div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden rounded-xl sm:rounded-2xl">
                                                                                                                 <CatImage
                                                                                                                         src={catImage}
                                                                                                                         alt={nameItem.name}
