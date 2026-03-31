@@ -1,7 +1,7 @@
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 import { getFallbackNames } from "../../../../shared/fallbackNames";
-import { resolveSupabaseClient } from "./runtime";
+import { resolveSupabaseClient, withSupabase } from "./runtime";
 
 interface ApiNameRow {
         id: string | number;
@@ -131,65 +131,38 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
 }
 
 export const imagesAPI = {
-        list: async (_path = "") => {
-                try {
-                        const client = (await resolveSupabaseClient()) as any;
-                        if (!client) {
-                                return [] as string[];
-                        }
-
+        list: async (_path = ""): Promise<string[]> => {
+                return withSupabase(async (client) => {
                         const { data, error } = await client.storage.from("cat-images").list();
-
                         if (error) {
                                 console.error("Failed to list images:", error);
-                                return [] as string[];
+                                return [];
                         }
-
-                        return (data || []).map((item: any) => item.name);
-                } catch (error) {
-                        console.error("Error listing images:", error);
-                        return [] as string[];
-                }
+                        return (data ?? []).map((item) => item.name);
+                }, []);
         },
 
-        upload: async (file: File | Blob, userName: string) => {
-                try {
-                        const maxSize = 5 * 1024 * 1024; // 5MB
-                        const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+        upload: async (
+                file: File | Blob,
+                userName: string,
+        ): Promise<{ path: string | null; error: string | null; success: boolean }> => {
+                const maxSize = 5 * 1024 * 1024;
+                const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-                        if (file.size > maxSize) {
-                                return {
-                                        path: null,
-                                        error: "File size exceeds 5MB limit",
-                                        success: false,
-                                };
-                        }
+                if (file.size > maxSize) {
+                        return { path: null, error: "File size exceeds 5MB limit", success: false };
+                }
+                if (!allowedTypes.includes(file.type)) {
+                        return { path: null, error: "Only JPEG, PNG, GIF, and WebP images are allowed", success: false };
+                }
 
-                        if (!allowedTypes.includes(file.type)) {
-                                return {
-                                        path: null,
-                                        error: "Only JPEG, PNG, GIF, and WebP images are allowed",
-                                        success: false,
-                                };
-                        }
-
-                        const client = (await resolveSupabaseClient()) as any;
-                        if (!client) {
-                                return {
-                                        path: null,
-                                        error: "Storage client not available",
-                                        success: false,
-                                };
-                        }
-
-                        // Generate unique filename
+                return withSupabase(async (client) => {
                         const fileExt =
-                                "name" in file && typeof file.name === "string" ? file.name.split(".").pop() : "jpg";
-                        const timestamp = Date.now();
-                        const randomId = Math.random().toString(36).substring(2, 8);
-                        const fileName = `${userName}_${timestamp}_${randomId}.${fileExt}`;
+                                "name" in file && typeof (file as File).name === "string"
+                                        ? (file as File).name.split(".").pop()
+                                        : "jpg";
+                        const fileName = `${userName}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
 
-                        // Upload to Supabase Storage
                         const { error } = await client.storage.from("cat-images").upload(fileName, file, {
                                 cacheControl: "3600",
                                 upsert: false,
@@ -198,55 +171,23 @@ export const imagesAPI = {
 
                         if (error) {
                                 console.error("Upload failed:", error);
-                                return {
-                                        path: null,
-                                        error: error.message,
-                                        success: false,
-                                };
+                                return { path: null, error: error.message, success: false };
                         }
 
-                        // Get public URL
-                        const {
-                                data: { publicUrl },
-                        } = client.storage.from("cat-images").getPublicUrl(fileName);
-
-                        return {
-                                path: publicUrl,
-                                error: null,
-                                success: true,
-                        };
-                } catch (error) {
-                        console.error("Error uploading image:", error);
-                        return {
-                                path: null,
-                                error: error instanceof Error ? error.message : "Upload failed",
-                                success: false,
-                        };
-                }
+                        const { data: { publicUrl } } = client.storage.from("cat-images").getPublicUrl(fileName);
+                        return { path: publicUrl, error: null, success: true };
+                }, { path: null, error: "Storage client not available", success: false });
         },
 
-        delete: async (fileName: string) => {
-                try {
-                        const client = (await resolveSupabaseClient()) as any;
-                        if (!client) {
-                                return { success: false, error: "Storage client not available" };
-                        }
-
+        delete: async (fileName: string): Promise<{ success: boolean; error: string | null }> => {
+                return withSupabase(async (client) => {
                         const { error } = await client.storage.from("cat-images").remove([fileName]);
-
                         if (error) {
                                 console.error("Delete failed:", error);
                                 return { success: false, error: error.message };
                         }
-
                         return { success: true, error: null };
-                } catch (error) {
-                        console.error("Error deleting image:", error);
-                        return {
-                                success: false,
-                                error: error instanceof Error ? error.message : "Delete failed",
-                        };
-                }
+                }, { success: false, error: "Storage client not available" });
         },
 };
 
@@ -258,11 +199,7 @@ export function isUsingFallbackData(): boolean {
 
 export const coreAPI = {
         addName: async (name: string, description: string) => {
-                try {
-                        const client = (await resolveSupabaseClient()) as any;
-                        if (!client) {
-                                return { success: false, error: "Supabase client not available" };
-                        }
+                return withSupabase(async (client) => {
                         const { data, error } = await client.rpc("add_cat_name", {
                                 p_name: name,
                                 p_description: description || "",
@@ -275,12 +212,7 @@ export const coreAPI = {
                                 return { success: false, error: "No data returned from add_cat_name" };
                         }
                         return { success: true, data: mapNameRow(row as ApiNameRow) };
-                } catch (error) {
-                        return {
-                                success: false,
-                                error: error instanceof Error ? error.message : "An unknown error occurred",
-                        };
-                }
+                }, { success: false, error: "Supabase client not available" });
         },
 
         getTrendingNames: async (includeHidden: boolean = false) => {
@@ -421,19 +353,15 @@ export const hiddenNamesAPI = {
 };
 
 export const statsAPI = {
-        getSiteStats: async () => {
-                try {
-                        const client = (await resolveSupabaseClient()) as any;
-                        if (!client) return {};
+        getSiteStats: async (): Promise<Record<string, unknown>> => {
+                return withSupabase(async (client) => {
                         const { data, error } = await client.rpc("get_site_stats");
                         if (error) {
                                 console.warn("[statsAPI] get_site_stats failed:", error.message);
                                 return {};
                         }
-                        return data ?? {};
-                } catch {
-                        return {};
-                }
+                        return (data ?? {}) as Record<string, unknown>;
+                }, {});
         },
 };
 
@@ -647,11 +575,12 @@ export const ratingsAPI = {
                 rightNameIds,
                 winnerSide,
         }: ApplyTournamentMatchParams) => {
-                const client = (await resolveSupabaseClient()) as any;
+                const client = await resolveSupabaseClient();
                 if (!client) {
                         throw new Error("Supabase client not available");
                 }
 
+                // @ts-expect-error - apply_tournament_match_elo is a custom RPC not yet reflected in generated types
                 const { data, error } = await client.rpc("apply_tournament_match_elo", {
                         p_user_name: userName.trim(),
                         p_left_name_ids: leftNameIds,
@@ -702,11 +631,12 @@ export const ratingsAPI = {
                                         losses: data.losses,
                                 }));
 
-                                const client = (await resolveSupabaseClient()) as any;
+                                const client = await resolveSupabaseClient();
                                 if (!client) {
                                         throw new Error("Supabase client not available");
                                 }
 
+                                // @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
                                 const { data, error } = await client.rpc("save_user_ratings", {
                                         p_user_name: userId,
                                         p_ratings: ratingsList,

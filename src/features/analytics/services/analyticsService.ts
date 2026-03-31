@@ -1,5 +1,5 @@
 import { isNameHidden } from "@/shared/lib/basic";
-import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
+import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
 
 export interface LeaderboardItem {
@@ -96,39 +96,27 @@ function mapLeaderboardRow(row: Record<string, unknown>): LeaderboardItem {
 
 export const leaderboardAPI = {
 	getLeaderboard: async (limit: number | null = 50): Promise<LeaderboardItem[]> => {
-		try {
-			const client = (await resolveSupabaseClient()) as any;
-			if (!client) return [];
-
+		return withSupabase(async (client) => {
 			const { data, error } = await client.rpc("get_leaderboard_stats", {
-				limit_count: limit || 50,
+				limit_count: limit ?? 50,
 			});
-
 			if (error) {
 				console.warn("[analyticsService] get_leaderboard_stats failed:", error.message);
 				return [];
 			}
-
 			return ((data as Array<Record<string, unknown>>) ?? []).map(mapLeaderboardRow);
-		} catch {
-			return [];
-		}
+		}, []);
 	},
 };
 
 export const statsAPI = {
 	getSiteStats: async (): Promise<SiteStats | null> => {
-		try {
-			const client = (await resolveSupabaseClient()) as any;
-			if (!client) return null;
-
+		return withSupabase(async (client) => {
 			const { data, error } = await client.rpc("get_site_stats");
-
 			if (error || !data) {
 				console.warn("[analyticsService] get_site_stats failed:", error?.message);
 				return null;
 			}
-
 			const stats = data as Partial<SiteStats>;
 			return {
 				totalNames: toNumber(stats.totalNames),
@@ -139,31 +127,57 @@ export const statsAPI = {
 				totalSelections: toNumber(stats.totalSelections),
 				avgRating: toNumber(stats.avgRating),
 			};
-		} catch {
-			return null;
-		}
+		}, null);
 	},
 
 	getEngagementMetrics: async (
 		_timeframe: "day" | "week" | "month" | "year",
 	): Promise<EngagementMetrics | null> => {
-		return null;
+		return withSupabase(async (client) => {
+			const [namesResult, usersResult] = await Promise.all([
+				client
+					.from("cat_names")
+					.select("global_wins, global_losses")
+					.eq("is_deleted", false),
+				client
+					.from("user_cat_name_ratings")
+					.select("user_name", { count: "exact", head: true }),
+			]);
+
+			const totalMatches = (
+				(namesResult.data ?? []) as Array<{ global_wins: number | null; global_losses: number | null }>
+			).reduce((sum, row) => sum + toNumber(row.global_wins), 0);
+
+			const peakActiveUsers = usersResult.count ?? 0;
+
+			return {
+				totalTournaments: 0,
+				completedTournaments: 0,
+				averageTournamentTime: 0,
+				totalMatches,
+				peakActiveUsers,
+				dailyActiveUsers: 0,
+				weeklyActiveUsers: 0,
+				monthlyActiveUsers: 0,
+				mostActiveHour: "N/A",
+				mostActiveDay: "N/A",
+				userRetentionRate: 0,
+				averageSessionDuration: 0,
+				totalPageViews: 0,
+				bounceRate: 0,
+			};
+		}, null);
 	},
 
 	getDetailedUserStats: async (userName: string): Promise<DetailedUserStats | null> => {
-		try {
-			const client = (await resolveSupabaseClient()) as any;
-			if (!client) return null;
-
+		return withSupabase(async (client) => {
 			const { data, error } = await client.rpc("get_user_stats", {
 				p_user_name: userName,
 			});
-
 			if (error || !data) {
 				console.warn("[analyticsService] get_user_stats failed:", error?.message);
 				return null;
 			}
-
 			const stats = data as Partial<DetailedUserStats>;
 			return {
 				totalRatings: toNumber(stats.totalRatings),
@@ -171,24 +185,12 @@ export const statsAPI = {
 				totalWins: toNumber(stats.totalWins),
 				totalLosses: toNumber(stats.totalLosses),
 				winRate: toNumber(stats.winRate),
-				lastActiveAt: undefined,
-				totalTournaments: undefined,
-				completedTournaments: undefined,
-				averageTournamentTime: undefined,
-				favoriteNames: [],
-				preferredCategories: [],
-				engagementScore: undefined,
 			};
-		} catch {
-			return null;
-		}
+		}, null);
 	},
 
 	getUserRatedNames: async (userName: string): Promise<UserRatedName[]> => {
-		try {
-			const client = (await resolveSupabaseClient()) as any;
-			if (!client) return [];
-
+		return withSupabase(async (client) => {
 			const [namesResult, ratingsResult] = await Promise.all([
 				client
 					.from("cat_names")
@@ -206,7 +208,9 @@ export const statsAPI = {
 				return [];
 			}
 
-			const names: NameItem[] = (namesResult.data ?? []).map((row: Record<string, unknown>) => ({
+			const names: NameItem[] = (
+				(namesResult.data ?? []) as Array<Record<string, unknown>>
+			).map((row) => ({
 				id: String(row.id ?? ""),
 				name: String(row.name ?? ""),
 				description: typeof row.description === "string" ? row.description : "",
@@ -255,25 +259,18 @@ export const statsAPI = {
 					isHidden: isNameHidden(item),
 				};
 			});
-		} catch {
-			return [];
-		}
+		}, []);
 	},
 
 	getUserStats: async (userName: string): Promise<UserStats | null> => {
-		try {
-			const client = (await resolveSupabaseClient()) as any;
-			if (!client) return null;
-
+		return withSupabase(async (client) => {
 			const { data, error } = await client.rpc("get_user_stats", {
 				p_user_name: userName,
 			});
-
 			if (error || !data) {
 				console.warn("[analyticsService] get_user_stats failed:", error?.message);
 				return null;
 			}
-
 			const stats = data as Partial<UserStats>;
 			return {
 				totalRatings: toNumber(stats.totalRatings),
@@ -282,8 +279,6 @@ export const statsAPI = {
 				totalLosses: toNumber(stats.totalLosses),
 				winRate: toNumber(stats.winRate),
 			};
-		} catch {
-			return null;
-		}
+		}, null);
 	},
 };

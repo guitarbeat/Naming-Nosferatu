@@ -337,4 +337,4 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.save_user_ratings(TEXT, JSONB) TO authenticated, anon;
+GRANT EXECUTE ON FUNCTION public.save_user_ratings(TEXT, JSONB) TO authenticated;

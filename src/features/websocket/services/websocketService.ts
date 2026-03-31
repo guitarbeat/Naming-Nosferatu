@@ -4,6 +4,7 @@
  * Replaces the legacy WebSocket server integration.
  */
 
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
 export interface TournamentUpdate {
@@ -32,50 +33,66 @@ export interface UserActivity {
 }
 
 type ConnectionState = "connecting" | "connected" | "disconnected" | "error";
+type MessageHandler = (message: { data: unknown }) => void;
 
 class RealtimeService {
-	private channel: ReturnType<any["channel"]> | null = null;
+	private dbChannel: RealtimeChannel | null = null;
+	private appChannel: RealtimeChannel | null = null;
+	private tournamentChannels = new Map<string, RealtimeChannel>();
 	private connectionState: ConnectionState = "disconnected";
 	private nameChangeCallbacks: Array<(payload: unknown) => void> = [];
 	private ratingChangeCallbacks: Array<(payload: unknown) => void> = [];
+	private messageHandlers = new Map<string, Set<MessageHandler>>();
 
 	async connect(): Promise<void> {
 		if (this.connectionState === "connected" || this.connectionState === "connecting") {
 			return;
 		}
-
 		this.connectionState = "connecting";
 
 		try {
-			const client = (await resolveSupabaseClient()) as any;
+			const client = await resolveSupabaseClient();
 			if (!client) {
 				this.connectionState = "disconnected";
 				return;
 			}
 
-			this.channel = client
+			this.dbChannel = client
 				.channel("db-changes")
 				.on(
 					"postgres_changes",
 					{ event: "*", schema: "public", table: "cat_names" },
-					(payload: unknown) => {
+					(payload) => {
 						for (const cb of this.nameChangeCallbacks) cb(payload);
 					},
 				)
 				.on(
 					"postgres_changes",
 					{ event: "INSERT", schema: "public", table: "user_cat_name_ratings" },
-					(payload: unknown) => {
+					(payload) => {
 						for (const cb of this.ratingChangeCallbacks) cb(payload);
 					},
 				)
-				.subscribe((status: string) => {
+				.subscribe((status) => {
 					if (status === "SUBSCRIBED") {
 						this.connectionState = "connected";
 					} else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
 						this.connectionState = "disconnected";
 					}
 				});
+
+			this.appChannel = client
+				.channel("app-broadcast")
+				.on("broadcast", { event: "*" }, (payload) => {
+					const type = payload.event as string;
+					const handlers = this.messageHandlers.get(type);
+					if (handlers) {
+						for (const handler of handlers) {
+							handler({ data: payload.payload });
+						}
+					}
+				})
+				.subscribe();
 		} catch (error) {
 			console.warn("[RealtimeService] Failed to connect:", error);
 			this.connectionState = "error";
@@ -83,10 +100,14 @@ class RealtimeService {
 	}
 
 	disconnect(): void {
-		if (this.channel) {
-			this.channel.unsubscribe();
-			this.channel = null;
+		this.dbChannel?.unsubscribe();
+		this.dbChannel = null;
+		this.appChannel?.unsubscribe();
+		this.appChannel = null;
+		for (const ch of this.tournamentChannels.values()) {
+			ch.unsubscribe();
 		}
+		this.tournamentChannels.clear();
 		this.connectionState = "disconnected";
 	}
 
@@ -112,26 +133,103 @@ class RealtimeService {
 		};
 	}
 
+	onMessage(type: string, handler: MessageHandler): void {
+		if (!this.messageHandlers.has(type)) {
+			this.messageHandlers.set(type, new Set());
+		}
+		this.messageHandlers.get(type)?.add(handler);
+	}
+
+	offMessage(type: string): void {
+		this.messageHandlers.delete(type);
+	}
+
+	sendMessage(message: unknown): void {
+		this.appChannel?.send({
+			type: "broadcast",
+			event: "message",
+			payload: message,
+		});
+	}
+
 	subscribeToTournament(
-		_tournamentId: string,
-		_callback: (update: TournamentUpdate) => void,
+		tournamentId: string,
+		callback: (update: TournamentUpdate) => void,
 	): () => void {
-		return () => {};
+		let channel = this.tournamentChannels.get(tournamentId);
+
+		if (!channel) {
+			resolveSupabaseClient().then((client) => {
+				if (!client) return;
+				channel = client
+					.channel(`tournament:${tournamentId}`)
+					.on("broadcast", { event: "tournament_update" }, (payload) => {
+						const update = payload.payload as TournamentUpdate;
+						if (update?.tournamentId) callback(update);
+					})
+					.subscribe();
+				this.tournamentChannels.set(tournamentId, channel as RealtimeChannel);
+			});
+		}
+
+		const wrappedCallback = callback;
+		return () => {
+			const ch = this.tournamentChannels.get(tournamentId);
+			if (ch) {
+				ch.unsubscribe();
+				this.tournamentChannels.delete(tournamentId);
+			}
+			void wrappedCallback;
+		};
 	}
 
-	subscribeToMatches(_callback: (result: MatchResult) => void): () => void {
-		return () => {};
+	subscribeToMatches(callback: (result: MatchResult) => void): () => void {
+		const handler = (payload: unknown) => {
+			const record = (payload as { new?: Record<string, unknown> }).new;
+			if (!record) return;
+			const result: MatchResult = {
+				tournamentId: String(record.user_name ?? ""),
+				matchId: String(record.name_id ?? ""),
+				winnerId: String(record.name_id ?? ""),
+				loserId: "",
+				newRatings: { [String(record.name_id ?? "")]: Number(record.rating ?? 1500) },
+			};
+			callback(result);
+		};
+		this.ratingChangeCallbacks.push(handler);
+		return () => {
+			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter((cb) => cb !== handler);
+		};
 	}
 
-	subscribeToUserActivity(_callback: (activity: UserActivity) => void): () => void {
+	subscribeToUserActivity(callback: (activity: UserActivity) => void): () => void {
+		resolveSupabaseClient().then((client) => {
+			if (!client) return;
+			const presenceChannel = client.channel("user-presence");
+			presenceChannel
+				.on("presence", { event: "join" }, ({ newPresences }) => {
+					for (const presence of newPresences) {
+						callback({
+							userId: String((presence as Record<string, unknown>).user_id ?? presence.presence_ref),
+							action: "joined",
+							timestamp: Date.now(),
+						});
+					}
+				})
+				.on("presence", { event: "leave" }, ({ leftPresences }) => {
+					for (const presence of leftPresences) {
+						callback({
+							userId: String((presence as Record<string, unknown>).user_id ?? presence.presence_ref),
+							action: "left",
+							timestamp: Date.now(),
+						});
+					}
+				})
+				.subscribe();
+		});
+
 		return () => {};
 	}
-
-	sendMessage(_message: unknown): void {}
-
-	onMessage(_type: string, _handler: (message: unknown) => void): void {}
-
-	offMessage(_type: string): void {}
 
 	cleanup(): void {
 		this.disconnect();
