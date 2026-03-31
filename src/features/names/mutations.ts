@@ -1,5 +1,4 @@
 import { isRpcSignatureError } from "@/shared/lib/errors";
-import { api } from "@/shared/services/apiClient";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 import type { IdType } from "@/shared/types";
 
@@ -16,26 +15,21 @@ export async function toggleNameHidden(params: {
 		throw new Error("Supabase client not available");
 	}
 
-	try {
-		if (trimmedUserName) {
-			await client.rpc("set_user_context", { user_name_param: trimmedUserName });
-		}
+	if (trimmedUserName) {
+		await client.rpc("set_user_context", { user_name_param: trimmedUserName });
+	}
 
-		const { data, error } = await client.rpc("toggle_name_visibility", {
-			p_name_id: String(nameId),
-			p_hide: !isCurrentlyHidden,
-			p_user_name: trimmedUserName || undefined,
-		});
+	const { data, error } = await client.rpc("toggle_name_visibility", {
+		p_name_id: String(nameId),
+		p_hide: !isCurrentlyHidden,
+		p_user_name: trimmedUserName || undefined,
+	});
 
-		if (error) {
-			throw error;
-		}
-		if (data !== true) {
-			throw new Error("Failed to update name visibility");
-		}
-	} catch (error) {
-		console.warn("[names] Direct Supabase visibility toggle failed, falling back to API:", error);
-		await api.patch(`/names/${nameId}/hide`, { isHidden: !isCurrentlyHidden });
+	if (error) {
+		throw error;
+	}
+	if (data !== true) {
+		throw new Error("Failed to update name visibility");
 	}
 }
 

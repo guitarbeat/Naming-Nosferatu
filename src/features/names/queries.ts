@@ -1,13 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { Database } from "@/integrations/supabase/types";
-import { api } from "@/shared/services/apiClient";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 import type { NameItem } from "@/shared/types";
 import { getFallbackNames } from "../../../shared/fallbackNames";
 
 type CatNameRow = Database["public"]["Tables"]["cat_names"]["Row"];
 
-export type NamesDataSource = "supabase" | "api" | "fallback";
+export type NamesDataSource = "supabase" | "fallback";
 
 export interface NamesQueryResult {
 	names: NameItem[];
@@ -102,13 +101,6 @@ async function fetchNamesFromSupabase(includeHidden: boolean): Promise<NameItem[
 	return (data ?? []).map((row) => mapNameRow(row));
 }
 
-async function fetchNamesFromApi(includeHidden: boolean): Promise<NameItem[]> {
-	const rows = await api.get<Array<Record<string, unknown>>>(
-		`/names?includeHidden=${includeHidden}`,
-	);
-	return (rows ?? []).map((row) => mapNameRow(row));
-}
-
 export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	try {
 		const names = await fetchNamesFromSupabase(includeHidden);
@@ -116,21 +108,15 @@ export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResu
 			return { names, source: "supabase" };
 		}
 	} catch (error) {
-		console.warn("[names] Supabase query failed, falling back to API:", error);
+		console.warn("[names] Supabase query failed, using fallback names:", error);
 	}
 
-	try {
-		const names = await fetchNamesFromApi(includeHidden);
-		return { names, source: "api" };
-	} catch (error) {
-		console.warn("[names] API query failed, using fallback names:", error);
-		return {
-			names: getFallbackNames(includeHidden).map((row) =>
-				mapNameRow(row as Partial<CatNameRow> & Record<string, unknown>),
-			),
-			source: "fallback",
-		};
-	}
+	return {
+		names: getFallbackNames(includeHidden).map((row) =>
+			mapNameRow(row as Partial<CatNameRow> & Record<string, unknown>),
+		),
+		source: "fallback",
+	};
 }
 
 export const namesQueryOptions = (includeHidden: boolean) =>
