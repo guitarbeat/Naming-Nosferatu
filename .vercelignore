@@ -1,0 +1,35 @@
+# Agent / Replit internal tooling (not needed for deployment)
+.local/
+.agents/
+.junie/
+.lovable/
+.dyad/
+.Jules/
+.smart-coding-cache/
+
+# Dependencies (resolved at build time)
+node_modules/
+
+# Build / test artifacts
+dist/
+build/
+coverage/
+.cache/
+
+# Local environment overrides
+.env.local
+.env.*.local
+
+# Locks other than pnpm (only pnpm is used)
+package-lock.json
+yarn.lock
+bun.lock
+
+# Dev tooling
+*.log
+stats.html
+stats.json
+jscpd-report.html
+analysis/
+reports/
+scripts/data
