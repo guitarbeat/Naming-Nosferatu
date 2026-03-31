@@ -55,7 +55,8 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
     "dev:server": "tsx watch server/index.ts",
-    "dev:full": "concurrently \"pnpm run dev:server\" \"pnpm run dev:client\""
+    "dev:full": "concurrently \"pnpm run dev:server\" \"pnpm run dev:client\"",
+    "start": "tsx server/index.ts"
   },
   "dependencies": {
     "@capacitor/cli": "8.2.0",

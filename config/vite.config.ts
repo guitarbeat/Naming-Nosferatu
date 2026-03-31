@@ -66,13 +66,20 @@ export default defineConfig(({ command }) => ({
                                 }
                         : undefined,
         server: {
-		host: "0.0.0.0",
-		port: 5173,
-		strictPort: false,
-		allowedHosts: true,
-		watch: {
-			usePolling: true,
-		},
+                host: "0.0.0.0",
+                port: 5173,
+                strictPort: false,
+                allowedHosts: true,
+                watch: {
+                        usePolling: true,
+                        ignored: [
+                                "**/.local/**",
+                                "**/.cache/**",
+                                "**/node_modules/**",
+                                "**/dist/**",
+                                "**/.git/**",
+                        ],
+                },
                 proxy: {
                         "/api": {
                                 target: "http://localhost:3001",
