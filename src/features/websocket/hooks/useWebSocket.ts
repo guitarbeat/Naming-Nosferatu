@@ -98,7 +98,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
         }, []);
 
         // Send custom message
-        const sendMessage = useCallback((message: any) => {
+        const sendMessage = useCallback((message: unknown) => {
                 if (wsServiceRef.current) {
                         wsServiceRef.current.sendMessage(message);
                 }

@@ -5,6 +5,7 @@ import {
         resolveTournamentMode,
 } from "@/features/tournament/services/tournament";
 import { useWebSocket } from "@/features/websocket/hooks/useWebSocket";
+import type { MatchResult, TournamentUpdate, UserActivity } from "@/features/websocket/services/websocketService";
 import { useLocalStorage } from "@/shared/hooks";
 import { TIMING } from "@/shared/lib/constants";
 import type {
@@ -53,9 +54,9 @@ interface UseTournamentStateResult {
         isVoting: boolean;
         handleVoteWithAnimation: (winnerId: string, loserId: string) => void;
         matchHistory: MatchRecord[];
-        subscribeToTournamentUpdates?: (tournamentId: string, callback: (update: any) => void) => void;
-        subscribeToMatchResults?: (callback: (result: any) => void) => void;
-        subscribeToUserActivity?: (callback: (activity: any) => void) => void;
+        subscribeToTournamentUpdates?: (tournamentId: string, callback: (update: TournamentUpdate) => void) => void;
+        subscribeToMatchResults?: (callback: (result: MatchResult) => void) => void;
+        subscribeToUserActivity?: (callback: (activity: UserActivity) => void) => void;
 }
 
 const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
@@ -129,40 +130,12 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
         // with a stale value read from localStorage (e.g. after a failed flush).
         const lastRatingsUpdateRef = useRef(0);
 
-        // Cleanup WebSocket metrics on unmount
+        // Cleanup WebSocket connections on unmount
         useEffect(() => {
                 return () => {
-                        // Clean up any WebSocket connections and metrics
                         if (webSocket && typeof webSocket.cleanup === "function") {
                                 webSocket.cleanup();
                         }
-
-                        // Clear any pending timeouts or intervals
-                        const timeouts = (window as any).__tournamentTimeouts || [];
-                        const intervals = (window as any).__tournamentIntervals || [];
-
-                        timeouts.forEach((timeoutId: number) => {
-                                clearTimeout(timeoutId);
-                        });
-                        intervals.forEach((intervalId: number) => {
-                                clearInterval(intervalId);
-                        });
-
-                        // Clear the arrays
-                        (window as any).__tournamentTimeouts = [];
-                        (window as any).__tournamentIntervals = [];
-
-                        // Clean up any event listeners
-                        const cleanupEvents = ["beforeunload", "pagehide", "visibilitychange"];
-                        cleanupEvents.forEach((event) => {
-                                const handlers = (window as any).__tournamentEventHandlers?.[event] || [];
-                                handlers.forEach((handler: EventListener) => {
-                                        window.removeEventListener(event, handler);
-                                });
-                        });
-
-                        // Clear event handlers registry
-                        (window as any).__tournamentEventHandlers = {};
                 };
         }, [webSocket]);
 
