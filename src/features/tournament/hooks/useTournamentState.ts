@@ -127,6 +127,10 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
         const ratingsRef = useRef(ratings);
         const initializedRef = useRef(false);
         const lastNamesKeyRef = useRef("");
+        // Tracks when ratings were last updated in-memory (ms since epoch).
+        // Used during initialization to avoid overwriting newer in-memory ratings
+        // with a stale value read from localStorage (e.g. after a failed flush).
+        const lastRatingsUpdateRef = useRef(0);
 
         // Cleanup WebSocket metrics on unmount
         useEffect(() => {
@@ -237,13 +241,23 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                                 stateUpdates.ratings = shouldResetBracket ? initialRatings : persistentState.ratings;
                         }
 
-                        // Update ratings and persistent state atomically
+                        // Update ratings and persistent state atomically.
+                        // Guard: only restore ratings from storage if the stored timestamp is
+                        // at least as recent as the last in-memory update. This prevents a
+                        // stale localStorage value (e.g. from a failed unmount flush) from
+                        // silently overwriting newer in-memory ratings on remount.
+                        const storedRatingsAreFresh =
+                                (persistentState.lastUpdated ?? 0) >= lastRatingsUpdateRef.current;
                         if (
                                 hasValidPersistence &&
                                 persistentState.ratings &&
-                                Object.keys(persistentState.ratings).length > 0
+                                Object.keys(persistentState.ratings).length > 0 &&
+                                storedRatingsAreFresh
                         ) {
                                 setRatings(persistentState.ratings);
+                        } else if (lastRatingsUpdateRef.current > 0) {
+                                // In-memory ratings are newer — keep ratingsRef.current as-is
+                                setRatings(ratingsRef.current);
                         } else {
                                 setRatings(initialRatings);
                                 if (!stateUpdates.ratings) {
@@ -318,6 +332,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                                 loserId,
                         });
 
+                        const voteTimestamp = Date.now();
+                        lastRatingsUpdateRef.current = voteTimestamp;
                         setRatings(newRatings);
 
                         const matchRecord: MatchRecord = createMatchRecord({
@@ -343,6 +359,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                                 currentMatch: matchNumber + 1,
                                 currentRound: round,
                                 ratings: newRatings,
+                                lastUpdated: voteTimestamp,
                         }));
 
                         setRefreshKey((k) => k + 1);

@@ -329,7 +329,12 @@ export function useLocalStorage<T>(
         useEffect(() => {
                 return () => {
                         if (options.debounceWait && IS_BROWSER) {
-                                writeStorageJson(key, valueRef.current);
+                                const success = writeStorageJson(key, valueRef.current);
+                                if (!success) {
+                                        console.error(
+                                                `[useLocalStorage] Unmount flush failed for key "${key}". In-memory state may not have been persisted.`,
+                                        );
+                                }
                         }
                 };
                 // eslint-disable-next-line react-hooks/exhaustive-deps

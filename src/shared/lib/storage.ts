@@ -13,7 +13,8 @@ export function getStorageString(key: string, fallback: string | null = null): s
 
         try {
                 return window.localStorage.getItem(key);
-        } catch {
+        } catch (error) {
+                console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
                 return fallback;
         }
 }
@@ -51,7 +52,8 @@ export function parseJsonValue<T>(value: string | null, fallback: T): T {
 
         try {
                 return JSON.parse(value) as T;
-        } catch {
+        } catch (error) {
+                console.error("[storage] Failed to parse JSON from localStorage:", error);
                 return fallback;
         }
 }
