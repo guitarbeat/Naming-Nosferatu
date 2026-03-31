@@ -35,12 +35,24 @@ export default function TournamentFlow() {
                 if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
                         const userId = user.name || "anonymous";
 
+                        // Compute per-name wins and losses from the vote history
+                        const winsByName: Record<string, number> = {};
+                        const lossesByName: Record<string, number> = {};
+                        for (const vote of tournament.voteHistory) {
+                                const wId = String(vote.winnerId);
+                                const lId = String(vote.loserId);
+                                winsByName[wId] = (winsByName[wId] ?? 0) + 1;
+                                lossesByName[lId] = (lossesByName[lId] ?? 0) + 1;
+                        }
+
                         const ratingsWithStats = Object.entries(tournament.ratings).reduce(
-                                (acc, [nameId, rating]) => {
+                                (acc, [nameId, ratingData]) => {
+                                        const rating =
+                                                typeof ratingData === "number" ? ratingData : ratingData.rating;
                                         acc[nameId] = {
                                                 rating,
-                                                wins: 0,
-                                                losses: 0,
+                                                wins: winsByName[nameId] ?? 0,
+                                                losses: lossesByName[nameId] ?? 0,
                                         };
                                         return acc;
                                 },

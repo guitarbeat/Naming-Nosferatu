@@ -7,6 +7,7 @@ import {
 import { useWebSocket } from "@/features/websocket/hooks/useWebSocket";
 import type { MatchResult, TournamentUpdate, UserActivity } from "@/features/websocket/services/websocketService";
 import { useLocalStorage } from "@/shared/hooks";
+import { ratingsAPI } from "@/shared/services/supabase/api";
 import { TIMING } from "@/shared/lib/constants";
 import type {
         Match,
@@ -306,6 +307,28 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                         lastRatingsUpdateRef.current = voteTimestamp;
                         setRatings(newRatings);
 
+                        // Fire-and-forget: update global win/loss counters per match.
+                        // Errors are non-fatal — the local Elo update already happened.
+                        const leftIds =
+                                currentMatch.mode === "2v2"
+                                        ? currentMatch.left.memberIds
+                                        : [String(currentMatch.left.id)];
+                        const rightIds =
+                                currentMatch.mode === "2v2"
+                                        ? currentMatch.right.memberIds
+                                        : [String(currentMatch.right.id)];
+                        const winnerSide = leftIds.includes(winnerId) ? "left" : "right";
+                        ratingsAPI
+                                .applyTournamentMatch({
+                                        userName: userName ?? "anonymous",
+                                        leftNameIds: leftIds,
+                                        rightNameIds: rightIds,
+                                        winnerSide,
+                                })
+                                .catch((err: unknown) => {
+                                        console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
+                                });
+
                         const matchRecord: MatchRecord = createMatchRecord({
                                 currentMatch,
                                 winnerId,
@@ -334,7 +357,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
                         setRefreshKey((k) => k + 1);
                 },
-                [currentMatch, matchNumber, round, updatePersistentState],
+                [currentMatch, matchNumber, round, updatePersistentState, userName],
         );
 
         const handleVoteWithAnimation = useCallback(
