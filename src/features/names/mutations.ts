@@ -15,10 +15,6 @@ export async function toggleNameHidden(params: {
 		throw new Error("Supabase client not available");
 	}
 
-	if (trimmedUserName) {
-		await client.rpc("set_user_context", { user_name_param: trimmedUserName });
-	}
-
 	const { data, error } = await client.rpc("toggle_name_visibility", {
 		p_name_id: String(nameId),
 		p_hide: !isCurrentlyHidden,
@@ -44,14 +40,6 @@ export async function toggleNameLocked(params: {
 
 	if (!client) {
 		throw new Error("Supabase client not available");
-	}
-
-	if (trimmedUserName) {
-		try {
-			await client.rpc("set_user_context", { user_name_param: trimmedUserName });
-		} catch {
-			// Best-effort context for legacy RPC variants.
-		}
 	}
 
 	const canonicalArgs = {
