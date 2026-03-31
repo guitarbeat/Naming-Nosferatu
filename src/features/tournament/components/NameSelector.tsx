@@ -306,19 +306,6 @@ export function NameSelector() {
         useEffect(() => {
                 showWarningRef.current = toast.showWarning;
         });
-        const offlineWarnedRef = useRef(false);
-        useEffect(() => {
-                if (namesQuery.data?.source === "fallback") {
-                        if (!offlineWarnedRef.current) {
-                                offlineWarnedRef.current = true;
-                                showWarningRef.current(
-                                        "Offline mode — showing sample names. Your picks won't be saved to the leaderboard until the connection is restored.",
-                                );
-                        }
-                } else {
-                        offlineWarnedRef.current = false;
-                }
-        }, [namesQuery.data?.source]);
 
         // Auto-select locked-in names when names are loaded
         useEffect(() => {

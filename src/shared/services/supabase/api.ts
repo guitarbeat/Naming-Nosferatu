@@ -1,6 +1,5 @@
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
-import { getFallbackNames } from "../../../../shared/fallbackNames";
 import { resolveSupabaseClient, withSupabase } from "./runtime";
 
 interface ApiNameRow {
@@ -191,12 +190,6 @@ export const imagesAPI = {
         },
 };
 
-let usingFallbackData = false;
-
-export function isUsingFallbackData(): boolean {
-        return usingFallbackData;
-}
-
 export const coreAPI = {
         addName: async (name: string, description: string) => {
                 return withSupabase(async (client) => {
@@ -234,22 +227,10 @@ export const coreAPI = {
                 const controller = new AbortController();
 
                 const request = (async () => {
-                        // Primary path: query Supabase directly
-                        const supabaseResult = await getNamesFromSupabase(includeHidden);
-                        if (supabaseResult.length > 0) {
-                                usingFallbackData = false;
-                                return supabaseResult;
-                        }
-
-                        // Check if request was aborted
                         if (controller.signal.aborted) {
                                 throw new Error("Request aborted");
                         }
-
-                        // Fallback: use local static data when Supabase is unavailable
-                        usingFallbackData = true;
-                        console.warn("Using fallback/demo data - database connection unavailable");
-                        return getFallbackNames(includeHidden).map((item) => mapNameRow(item));
+                        return getNamesFromSupabase(includeHidden);
                 })();
 
                 const pendingRequest: PendingRequest<NameItem[]> = {
@@ -289,11 +270,6 @@ export const coreAPI = {
                 const client = await resolveSupabaseClient();
                 if (!client) {
                         return { success: false, error: "Supabase client not available" };
-                }
-
-                // Set user context for RLS — soft failure is acceptable
-                if (userName) {
-                        await client.rpc("set_user_context", { user_name_param: userName }).catch(() => {});
                 }
 
                 const rpcResult = await client.rpc("toggle_name_visibility", {
@@ -340,141 +316,6 @@ export const statsAPI = {
         },
 };
 
-
-// localStorage management utilities
-const LOCALSTORAGE_QUOTA_BYTES = 5 * 1024 * 1024; // 5MB limit
-const LOCALSTORAGE_CLEANUP_THRESHOLD = 0.8; // Clean at 80% capacity
-
-const checkLocalStorageQuota = (): { available: boolean; usage: number; percentage: number } => {
-        try {
-                const testKey = `quota_test_${Date.now()}`;
-                const testData = "x".repeat(1024); // 1KB test data
-
-                // Check current usage
-                let totalSize = 0;
-                for (const key in localStorage) {
-                        if (Object.hasOwn(localStorage, key)) {
-                                totalSize += localStorage[key].length + key.length;
-                        }
-                }
-
-                const usagePercentage = totalSize / LOCALSTORAGE_QUOTA_BYTES;
-
-                // Test if we can write more data
-                try {
-                        localStorage.setItem(testKey, testData);
-                        localStorage.removeItem(testKey);
-                        return { available: true, usage: totalSize, percentage: usagePercentage };
-                } catch {
-                        return { available: false, usage: totalSize, percentage: usagePercentage };
-                }
-        } catch {
-                return { available: false, usage: 0, percentage: 1 };
-        }
-};
-
-const cleanupLocalStorage = (priorityKeys: string[] = []): void => {
-        const quota = checkLocalStorageQuota();
-
-        // Only cleanup if we're over threshold
-        if (quota.percentage < LOCALSTORAGE_CLEANUP_THRESHOLD) {
-                return;
-        }
-
-        // Collect all keys with their metadata
-        const keysWithMeta: Array<{
-                key: string;
-                size: number;
-                isPriority: boolean;
-                timestamp?: number;
-        }> = [];
-
-        for (const key in localStorage) {
-                if (Object.hasOwn(localStorage, key)) {
-                        const value = localStorage[key];
-                        const size = value.length + key.length;
-                        const isPriority = priorityKeys.includes(key);
-
-                        let timestamp: number | undefined;
-                        try {
-                                const parsed = JSON.parse(value);
-                                if (parsed && typeof parsed === "object" && "timestamp" in parsed) {
-                                        timestamp = parsed.timestamp;
-                                }
-                        } catch {
-                                // Not JSON, skip timestamp extraction
-                        }
-
-                        keysWithMeta.push({ key, size, isPriority, timestamp });
-                }
-        }
-
-        // Sort by priority (keep priority keys) then by timestamp (oldest first)
-        keysWithMeta.sort((a, b) => {
-                if (a.isPriority && !b.isPriority) {
-                        return 1;
-                }
-                if (!a.isPriority && b.isPriority) {
-                        return -1;
-                }
-                if (a.timestamp && b.timestamp) {
-                        return a.timestamp - b.timestamp;
-                }
-                if (a.timestamp && !b.timestamp) {
-                        return 1;
-                }
-                if (!a.timestamp && b.timestamp) {
-                        return -1;
-                }
-                return 0;
-        });
-
-        // Remove old non-priority keys until we're under threshold
-        let removedSize = 0;
-        const targetSize = LOCALSTORAGE_QUOTA_BYTES * 0.6; // Target 60% capacity
-
-        for (const { key, size } of keysWithMeta) {
-                if (quota.usage - removedSize <= targetSize) {
-                        break;
-                }
-
-                try {
-                        localStorage.removeItem(key);
-                        removedSize += size;
-                } catch (error) {
-                        console.warn(`Failed to remove localStorage key ${key}:`, error);
-                }
-        }
-
-        console.log(`localStorage cleanup: removed ${Math.round(removedSize / 1024)}KB`);
-};
-
-const safeLocalStorageSet = (key: string, value: string, isPriority: boolean = false): boolean => {
-        const quota = checkLocalStorageQuota();
-
-        // Cleanup if needed
-        if (!quota.available || quota.percentage > LOCALSTORAGE_CLEANUP_THRESHOLD) {
-                cleanupLocalStorage(isPriority ? [key] : []);
-        }
-
-        // Try to set the value
-        try {
-                localStorage.setItem(key, value);
-                return true;
-        } catch (error) {
-                console.warn(`localStorage quota exceeded for key ${key}:`, error);
-
-                // Force cleanup and retry
-                cleanupLocalStorage(isPriority ? [key] : []);
-                try {
-                        localStorage.setItem(key, value);
-                        return true;
-                } catch (retryError) {
-                        console.error("Failed to store data in localStorage even after cleanup:", retryError);
-                        return false;
-                }
-        }
-};
 
 // Validation utilities
 const validateRatingsData = (
@@ -635,26 +476,6 @@ export const ratingsAPI = {
                                         isRetryable: true,
                                 });
 
-                                // Fallback to localStorage when Supabase is unavailable
-                                try {
-                                        const existingData = localStorage.getItem("ratings_fallback");
-                                        const fallbackData = existingData ? JSON.parse(existingData) : {};
-                                        fallbackData[userId] = { ...ratings, timestamp: Date.now() };
-
-                                        const success = safeLocalStorageSet(
-                                                "ratings_fallback",
-                                                JSON.stringify(fallbackData),
-                                                true,
-                                        );
-                                        if (success) {
-                                                console.warn("Ratings saved to localStorage fallback due to Supabase unavailability");
-                                                return { success: true, count: Object.keys(ratings).length };
-                                        } else {
-                                                console.error("Failed to save ratings to localStorage fallback: quota exceeded");
-                                        }
-                                } catch (fallbackError) {
-                                        console.error("Failed to save ratings to localStorage fallback:", fallbackError);
-                                }
 
                                 throw error;
                         }

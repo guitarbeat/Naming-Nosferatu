@@ -81,10 +81,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
         const namesKey = useMemo(() => createNamesKey(names), [names]);
         const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
 
-        const webSocket = useWebSocket({
-                url: import.meta.env.VITE_WEBSOCKET_URL || "ws://localhost:8080",
-                autoConnect: true,
-        });
+        const webSocket = useWebSocket({ autoConnect: true });
 
         const defaultPersistentState = useMemo(
                 () => createDefaultPersistentState(userName || "anonymous"),
