@@ -128,7 +128,7 @@ function HomeContent() {
                                 </div>
 
                                 {/* Label */}
-                                <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:text-xs">
+                                <p className="mb-5 text-base font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:text-lg md:text-xl">
                                         My cat's name is
                                 </p>
 
