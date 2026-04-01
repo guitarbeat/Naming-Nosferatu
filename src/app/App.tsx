@@ -17,9 +17,8 @@ import { NameSuggestionInner } from "@/features/tournament/components/NameSugges
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
-import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useOfflineSync } from "@/shared/hooks";
-import { ChevronDown, Lightbulb } from "@/shared/lib/icons";
+import { ChevronDown } from "@/shared/lib/icons";
 import {
         cleanupPerformanceMonitoring,
         initializePerformanceMonitoring,
@@ -165,7 +164,7 @@ function HomeContent() {
                                                                  */
                                                                 <motion.span
                                                                         key={`${word}-${i}`}
-                                                                        className="inline-block cursor-default"
+                                                                        className="block sm:inline-block cursor-default"
                                                                         onHoverStart={() => setHoveredWordIdx(i)}
                                                                         onHoverEnd={() => setHoveredWordIdx(null)}
                                                                         whileHover={{ filter: "brightness(1.25)" }}
@@ -319,11 +318,6 @@ function HomeContent() {
                         </Section>
 
                         <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered={true}>
-                                <SectionHeading
-                                        icon={Lightbulb}
-                                        title="Name Him"
-                                        subtitle="Think you've got the one? Throw it in."
-                                />
                                 <NameSuggestionInner />
                         </Section>
                 </>

@@ -140,16 +140,14 @@ function createLogEntry(level, args) {
   };
 }
 
-async function sendLogs(logs) {
-  try {
-    await fetch("${endpoint}", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logs }),
-    });
-  } catch (error) {
-    // Fail silently in production
-  }
+function sendLogs(logs) {
+  fetch("${endpoint}", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ logs }),
+  }).catch(() => {
+    // Fail silently - ignore network errors
+  });
 }
 
 function flushLogs() {
