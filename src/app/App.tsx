@@ -13,7 +13,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
-import { NameSuggestionInner } from "@/features/tournament/components/NameSuggestion";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
@@ -315,10 +314,6 @@ function HomeContent() {
                                 <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                         <TournamentFlow />
                                 </Suspense>
-                        </Section>
-
-                        <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered={true}>
-                                <NameSuggestionInner />
                         </Section>
                 </>
         );

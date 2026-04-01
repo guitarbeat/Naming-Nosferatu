@@ -13,6 +13,7 @@ import {
 } from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
 import { ProfileInner } from "@/shared/components/profile/ProfileInner";
+import { NameSuggestion } from "@/features/tournament/components/NameSuggestion";
 import { X } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
 
@@ -42,6 +43,31 @@ function ProfileOverlay({ onClose }: { onClose: () => void }) {
 					</button>
 				</div>
 				<ProfileInner onLogin={(name) => login({ name })} />
+			</div>
+		</div>
+	);
+}
+
+function NameSuggestionOverlay({ onClose }: { onClose: () => void }) {
+	return (
+		<div className="fixed inset-0 z-40 flex items-center justify-center px-4 pb-24 sm:pb-4 motion-safe:animate-[fadeIn_180ms_ease-out]">
+			{/* Backdrop */}
+			<div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
+
+			{/* Panel */}
+			<div className="glass-surface relative z-50 w-full max-w-2xl overflow-hidden rounded-[calc(var(--glass-radius,1.5rem)+0.25rem)] border border-border/50 bg-card/80 p-6 shadow-2xl motion-safe:animate-[surface-enter_220ms_var(--ease-out-expo)]">
+				<div className="mb-6 flex items-center justify-between">
+					<h2 className="text-lg font-semibold text-foreground">Suggest a Name</h2>
+					<button
+						type="button"
+						onClick={onClose}
+						className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+						aria-label="Close suggestion"
+					>
+						<X className="size-5" />
+					</button>
+				</div>
+				<NameSuggestion variant="modal" isOpen={true} onClose={onClose} />
 			</div>
 		</div>
 	);
@@ -110,6 +136,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 				</main>
 
 				{ui.isProfileOpen && <ProfileOverlay onClose={() => uiActions.setProfileOpen(false)} />}
+				{ui.isSuggestionOpen && <NameSuggestionOverlay onClose={() => uiActions.setSuggestionOpen(false)} />}
 			</div>
 		</ErrorBoundary>
 	);
