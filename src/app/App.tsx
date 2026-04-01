@@ -132,28 +132,28 @@ function HomeContent() {
         return (
                 <>
                         {/* Hero — bleeds edge-to-edge, full viewport height */}
-                        <section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-6 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] md:-mt-10">
-                                {/* Radial glow behind name */}
-                                <div
-                                        className="pointer-events-none absolute inset-0 -z-10"
-                                        aria-hidden="true"
-                                >
-                                        <div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
-                                </div>
+			<section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-end overflow-hidden px-3 pb-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:justify-center sm:px-6 sm:pb-0 md:-mt-10">
+				{/* Radial glow behind name */}
+				<div
+					className="pointer-events-none absolute inset-0 -z-10"
+					aria-hidden="true"
+				>
+					<div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
+				</div>
 
-                                {/* Label */}
-                                <p className="mb-5 text-base font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:text-lg md:text-xl">
-                                        My cat's name is
-                                </p>
+				{/* Label */}
+				<p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-lg md:text-xl">
+					My cat's name is
+				</p>
 
-                                {/* Decorative line */}
-                                <div className="mb-6 h-px w-16 bg-gradient-to-r from-transparent via-border to-transparent" />
+				{/* Decorative line */}
+				<div className="mb-4 h-px w-16 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6" />
 
-                                {/* Name — each word is independently hoverable */}
-                                <h1
-                                        className="font-black uppercase leading-[0.9] tracking-tighter"
-                                        style={{ fontSize: "clamp(2.6rem, 9vw, 9rem)" }}
-                                >
+				{/* Name — each word is independently hoverable */}
+				<h1
+					className="font-black uppercase leading-[0.85] tracking-tighter"
+					style={{ fontSize: "clamp(2rem, 11vw, 9rem)" }}
+				>
                                         {wordEntries.length > 0 ? (
                                                 <span>
                                                         {wordEntries.map(({ word }, i) => (
