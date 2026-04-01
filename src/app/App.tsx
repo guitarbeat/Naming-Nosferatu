@@ -185,18 +185,18 @@ function HomeContent() {
                                 </h1>
 
                                 {/* Subtitle — swaps to a stats card when hovering a name word */}
-                                <div className="mt-10 flex min-h-[4.5rem] items-center justify-center">
-                                        <AnimatePresence mode="wait">
-                                                {!hoveredEntry ? (
-                                                        <motion.p
-                                                                key="default"
-                                                                className="max-w-sm text-sm leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
-                                                                initial={{ opacity: 0, y: 6 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                exit={{ opacity: 0, y: -4 }}
-                                                                transition={{ duration: 0.18 }}
-                                                        >
-                                                                I'm indecisive — so I'm still considering the names below. Scroll down, pick your favorites from the top contenders, and help me make up my mind!
+				<div className="mt-6 flex min-h-[3.5rem] items-center justify-center sm:mt-10 sm:min-h-[4.5rem]">
+					<AnimatePresence mode="wait">
+						{!hoveredEntry ? (
+							<motion.p
+								key="default"
+								className="max-w-[85vw] text-xs leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
+								initial={{ opacity: 0, y: 6 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -4 }}
+								transition={{ duration: 0.18 }}
+							>
+								I'm indecisive — scroll down, pick your favorites, and help me decide!
                                                         </motion.p>
                                                 ) : !hoveredEntry.name ? (
                                                         <motion.p
