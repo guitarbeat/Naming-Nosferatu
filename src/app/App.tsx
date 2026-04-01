@@ -18,7 +18,7 @@ import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useOfflineSync } from "@/shared/hooks";
-import { ChevronDown, Lightbulb, Trophy } from "@/shared/lib/icons";
+import { ChevronDown, Lightbulb } from "@/shared/lib/icons";
 import {
         cleanupPerformanceMonitoring,
         initializePerformanceMonitoring,
@@ -148,8 +148,8 @@ function HomeContent() {
                                 </h1>
 
                                 {/* Subtitle */}
-                                <p className="mt-10 max-w-xs text-sm leading-relaxed text-muted-foreground/70 sm:max-w-sm sm:text-base">
-                                        Help me decide — scroll down and pick the names you like best.
+                                <p className="mt-10 max-w-sm text-sm leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base">
+                                        I'm indecisive — so I'm still considering the names below. Scroll down, pick your favorites from the top contenders, and help me make up my mind!
                                 </p>
 
                                 {/* Scroll hint */}
@@ -160,7 +160,6 @@ function HomeContent() {
                         </section>
 
                         <Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
-                                <SectionHeading icon={Trophy} title="Pick Your Favorites" subtitle="These are the current top contenders — select the ones you like best." />
                                 <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                         <TournamentFlow />
                                 </Suspense>
