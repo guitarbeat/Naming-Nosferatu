@@ -132,28 +132,28 @@ function HomeContent() {
         return (
                 <>
                         {/* Hero — bleeds edge-to-edge, full viewport height */}
-                        <section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-6 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] md:-mt-10">
-                                {/* Radial glow behind name */}
-                                <div
-                                        className="pointer-events-none absolute inset-0 -z-10"
-                                        aria-hidden="true"
-                                >
-                                        <div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
-                                </div>
+			<section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
+				{/* Radial glow behind name */}
+				<div
+					className="pointer-events-none absolute inset-0 -z-10"
+					aria-hidden="true"
+				>
+					<div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
+				</div>
 
-                                {/* Label */}
-                                <p className="mb-5 text-base font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:text-lg md:text-xl">
-                                        My cat's name is
-                                </p>
+				{/* Label */}
+				<p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-base md:text-lg">
+					My cat's name is
+				</p>
 
-                                {/* Decorative line */}
-                                <div className="mb-6 h-px w-16 bg-gradient-to-r from-transparent via-border to-transparent" />
+				{/* Decorative line */}
+				<div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6 sm:w-16" />
 
-                                {/* Name — each word is independently hoverable */}
-                                <h1
-                                        className="font-black uppercase leading-[0.9] tracking-tighter"
-                                        style={{ fontSize: "clamp(2.6rem, 9vw, 9rem)" }}
-                                >
+				{/* Name — fluid sizing that respects container padding */}
+				<h1
+					className="max-w-full font-black uppercase leading-[0.85] tracking-tighter"
+					style={{ fontSize: "clamp(1.75rem, 9vw, 9rem)" }}
+				>
                                         {wordEntries.length > 0 ? (
                                                 <span>
                                                         {wordEntries.map(({ word }, i) => (
@@ -185,18 +185,18 @@ function HomeContent() {
                                 </h1>
 
                                 {/* Subtitle — swaps to a stats card when hovering a name word */}
-                                <div className="mt-10 flex min-h-[4.5rem] items-center justify-center">
-                                        <AnimatePresence mode="wait">
-                                                {!hoveredEntry ? (
-                                                        <motion.p
-                                                                key="default"
-                                                                className="max-w-sm text-sm leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
-                                                                initial={{ opacity: 0, y: 6 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                exit={{ opacity: 0, y: -4 }}
-                                                                transition={{ duration: 0.18 }}
-                                                        >
-                                                                I'm indecisive — so I'm still considering the names below. Scroll down, pick your favorites from the top contenders, and help me make up my mind!
+				<div className="mt-6 flex min-h-[3.5rem] items-center justify-center sm:mt-10 sm:min-h-[4.5rem]">
+					<AnimatePresence mode="wait">
+						{!hoveredEntry ? (
+							<motion.p
+								key="default"
+								className="max-w-[85vw] text-xs leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
+								initial={{ opacity: 0, y: 6 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -4 }}
+								transition={{ duration: 0.18 }}
+							>
+								I'm indecisive — scroll down, pick your favorites, and help me decide!
                                                         </motion.p>
                                                 ) : !hoveredEntry.name ? (
                                                         <motion.p
