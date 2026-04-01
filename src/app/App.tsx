@@ -8,7 +8,7 @@
  */
 
 import { Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
@@ -129,28 +129,6 @@ function HomeContent() {
 
         const hoveredEntry = hoveredWordIdx !== null ? (wordEntries[hoveredWordIdx] ?? null) : null;
 
-        const subtitle = (() => {
-                if (!hoveredEntry) {
-                        return "I'm indecisive — so I'm still considering the names below. Scroll down, pick your favorites from the top contenders, and help me make up my mind!";
-                }
-                if (!hoveredEntry.name) {
-                        return "Woods — the surname every great cat deserves.";
-                }
-                const n = hoveredEntry.name;
-                const rating = Math.round(n.avgRating ?? n.avg_rating ?? 1500);
-                const wins = n.wins ?? 0;
-                const losses = n.losses ?? 0;
-                const total = wins + losses;
-                const winRate = total > 0 ? Math.round((wins / total) * 100) : null;
-                return [
-                        `"${n.name}" — rated ${rating}`,
-                        total > 0 ? `${wins}W / ${losses}L${winRate !== null ? ` (${winRate}% wins)` : ""}` : "no matches yet",
-                        n.description ? `· ${n.description}` : "",
-                ]
-                        .filter(Boolean)
-                        .join("  ·  ");
-        })();
-
         return (
                 <>
                         {/* Hero — bleeds edge-to-edge, full viewport height */}
@@ -206,16 +184,97 @@ function HomeContent() {
                                         )}
                                 </h1>
 
-                                {/* Subtitle — updates with stats when hovering a name word */}
-                                <motion.p
-                                        key={subtitle}
-                                        className="mt-10 max-w-sm text-sm leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
-                                        initial={{ opacity: 0, y: 4 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.2 }}
-                                >
-                                        {subtitle}
-                                </motion.p>
+                                {/* Subtitle — swaps to a stats card when hovering a name word */}
+                                <div className="mt-10 flex min-h-[4.5rem] items-center justify-center">
+                                        <AnimatePresence mode="wait">
+                                                {!hoveredEntry ? (
+                                                        <motion.p
+                                                                key="default"
+                                                                className="max-w-sm text-sm leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
+                                                                initial={{ opacity: 0, y: 6 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -4 }}
+                                                                transition={{ duration: 0.18 }}
+                                                        >
+                                                                I'm indecisive — so I'm still considering the names below. Scroll down, pick your favorites from the top contenders, and help me make up my mind!
+                                                        </motion.p>
+                                                ) : !hoveredEntry.name ? (
+                                                        <motion.p
+                                                                key="woods"
+                                                                className="text-sm italic text-muted-foreground/60"
+                                                                initial={{ opacity: 0, y: 6 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -4 }}
+                                                                transition={{ duration: 0.18 }}
+                                                        >
+                                                                Woods — the surname every great cat deserves.
+                                                        </motion.p>
+                                                ) : (
+                                                        <motion.div
+                                                                key={hoveredEntry.name.name}
+                                                                className="flex flex-col items-center gap-2.5"
+                                                                initial={{ opacity: 0, y: 6 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -4 }}
+                                                                transition={{ duration: 0.18 }}
+                                                        >
+                                                                {/* Name + rating badge */}
+                                                                <div className="flex items-center gap-2.5">
+                                                                        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground/50">
+                                                                                name
+                                                                        </span>
+                                                                        <span className="text-sm font-bold text-foreground">
+                                                                                {hoveredEntry.name.name}
+                                                                        </span>
+                                                                        <span className="rounded-full bg-primary/15 px-2.5 py-0.5 font-mono text-xs font-semibold text-primary">
+                                                                                ★{" "}
+                                                                                {Math.round(
+                                                                                        hoveredEntry.name.avgRating ??
+                                                                                                hoveredEntry.name.avg_rating ??
+                                                                                                1500,
+                                                                                )}
+                                                                        </span>
+                                                                </div>
+
+                                                                {/* Win / loss pills */}
+                                                                {(() => {
+                                                                        const wins = hoveredEntry.name.wins ?? 0;
+                                                                        const losses = hoveredEntry.name.losses ?? 0;
+                                                                        const total = wins + losses;
+                                                                        const winRate =
+                                                                                total > 0 ? Math.round((wins / total) * 100) : null;
+                                                                        return total > 0 ? (
+                                                                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70">
+                                                                                        <span className="rounded-full bg-green-500/10 px-2.5 py-0.5 font-medium text-green-400">
+                                                                                                {wins}W
+                                                                                        </span>
+                                                                                        <span className="text-muted-foreground/30">/</span>
+                                                                                        <span className="rounded-full bg-red-500/10 px-2.5 py-0.5 font-medium text-red-400">
+                                                                                                {losses}L
+                                                                                        </span>
+                                                                                        {winRate !== null && (
+                                                                                                <span className="ml-1 text-muted-foreground/50">
+                                                                                                        {winRate}% win rate
+                                                                                                </span>
+                                                                                        )}
+                                                                                </div>
+                                                                        ) : (
+                                                                                <span className="text-xs text-muted-foreground/40">
+                                                                                        no matches yet
+                                                                                </span>
+                                                                        );
+                                                                })()}
+
+                                                                {/* Description */}
+                                                                {hoveredEntry.name.description && (
+                                                                        <p className="max-w-xs text-center text-xs italic text-muted-foreground/50">
+                                                                                {hoveredEntry.name.description}
+                                                                        </p>
+                                                                )}
+                                                        </motion.div>
+                                                )}
+                                        </AnimatePresence>
+                                </div>
 
                                 {/* Scroll hint */}
                                 <div className="absolute bottom-10 flex flex-col items-center gap-2 text-muted-foreground/40">
