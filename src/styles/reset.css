@@ -28,7 +28,7 @@ html {
 /* Body base */
 body {
 	color: var(--text-primary);
-	background-color: var(--background-color);
+	background-color: transparent;
 	transition:
 		background-color var(--transition-theme),
 		color var(--transition-theme);
