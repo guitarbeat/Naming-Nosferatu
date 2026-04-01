@@ -134,6 +134,11 @@ export function FloatingNavbar() {
 			return;
 		}
 
+		if (key === "suggest") {
+			uiActions.setSuggestionOpen(true);
+			return;
+		}
+
 		if (!isHomeRoute) {
 			navigate("/");
 			window.setTimeout(() => scrollToSection(key), 120);
@@ -149,7 +154,7 @@ export function FloatingNavbar() {
 		}
 
 		let rafId: number | null = null;
-		const sections: NavSection[] = ["pick", "suggest"];
+		const sections: NavSection[] = ["pick"];
 
 		const handleScroll = () => {
 			if (rafId) {
@@ -309,7 +314,7 @@ export function FloatingNavbar() {
 						<FloatingNavItem
 							icon={Lightbulb}
 							label="Suggest"
-							isCurrent={isHomeRoute && activeSection === "suggest"}
+							isCurrent={ui.isSuggestionOpen}
 							onClick={() => handleNavClick("suggest")}
 						/>
 

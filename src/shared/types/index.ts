@@ -237,6 +237,7 @@ export interface UIState {
         showCatPictures: boolean;
         isEditingProfile: boolean;
         isProfileOpen: boolean;
+        isSuggestionOpen: boolean;
 }
 
 export interface TournamentState {

@@ -357,6 +357,7 @@ const createUserAndSettingsSlice: StateCreator<
                 showCatPictures: true,
                 isEditingProfile: false,
                 isProfileOpen: false,
+                isSuggestionOpen: false,
         },
 
         uiActions: {
@@ -408,6 +409,7 @@ const createUserAndSettingsSlice: StateCreator<
                 setUserComparison: (show) => patch(set, "ui", { showUserComparison: show }),
                 setEditingProfile: (editing) => patch(set, "ui", { isEditingProfile: editing }),
                 setProfileOpen: (open) => patch(set, "ui", { isProfileOpen: open }),
+                setSuggestionOpen: (open) => patch(set, "ui", { isSuggestionOpen: open }),
         },
 
         // ── Site Settings ────────────────────────────────────────────────────────
