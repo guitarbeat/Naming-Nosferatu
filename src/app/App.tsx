@@ -276,11 +276,40 @@ function HomeContent() {
                                         </AnimatePresence>
                                 </div>
 
-                                {/* Scroll hint */}
-                                <div className="absolute bottom-10 flex flex-col items-center gap-2 text-muted-foreground/40">
-                                        <span className="text-[9px] uppercase tracking-[0.3em]">scroll</span>
-                                        <ChevronDown className="h-4 w-4 animate-bounce" />
-                                </div>
+                                {/* Scroll hint — cascading chevrons */}
+                                <motion.div
+                                        className="absolute bottom-8 flex flex-col items-center gap-3"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 1.2, duration: 0.8 }}
+                                >
+                                        <motion.span
+                                                className="text-[9px] uppercase tracking-[0.35em] text-muted-foreground/35"
+                                                animate={{ opacity: [0.35, 0.7, 0.35] }}
+                                                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                                        >
+                                                scroll
+                                        </motion.span>
+                                        <div className="flex flex-col items-center -gap-1">
+                                                {[0, 1, 2].map((i) => (
+                                                        <motion.div
+                                                                key={i}
+                                                                animate={{
+                                                                        opacity: [0, 1, 0],
+                                                                        y: [0, 5, 10],
+                                                                }}
+                                                                transition={{
+                                                                        duration: 1.4,
+                                                                        repeat: Infinity,
+                                                                        delay: i * 0.22,
+                                                                        ease: "easeInOut",
+                                                                }}
+                                                        >
+                                                                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/50" />
+                                                        </motion.div>
+                                                ))}
+                                        </div>
+                                </motion.div>
                         </section>
 
                         <Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>

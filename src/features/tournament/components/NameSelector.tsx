@@ -123,15 +123,15 @@ const NameContent = ({
 }) => {
         const isGrid = variant === "grid";
         const nameClasses = isGrid
-                ? "mobile-readable-title font-bold text-foreground text-sm sm:text-base leading-tight drop-shadow-lg"
+                ? "font-black text-foreground text-2xl sm:text-3xl leading-none tracking-tight drop-shadow-lg w-full break-words"
                 : "font-whimsical text-4xl lg:text-5xl text-foreground tracking-wide drop-shadow-2xl break-words w-full text-center";
 
         const pronunciationClasses = isGrid
-                ? "mobile-readable-meta text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md"
+                ? "text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md"
                 : "text-warning text-2xl lg:text-3xl font-bold italic opacity-90";
 
         const descriptionClasses = isGrid
-                ? "mobile-readable-description text-foreground/85 text-xs sm:text-sm leading-snug line-clamp-2 sm:line-clamp-2 mt-1 drop-shadow-sm font-medium"
+                ? "text-foreground/75 text-[11px] sm:text-xs leading-snug line-clamp-2 mt-0.5 drop-shadow-sm font-medium"
                 : "text-foreground/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3 text-center";
 
         return (
@@ -233,11 +233,11 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
         const baseClasses =
-                "absolute flex flex-col justify-center items-center text-center pointer-events-none";
+                "absolute flex flex-col pointer-events-none";
         const gridClasses =
-                "inset-0 p-3 sm:p-4 bg-gradient-to-t from-background/98 via-background/70 to-transparent";
+                "inset-0 p-3 sm:p-4 bg-gradient-to-t from-background/95 via-background/50 to-transparent justify-end items-start text-left";
         const swipeClasses =
-                "inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10";
+                "inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10 justify-center items-center text-center";
 
         return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
