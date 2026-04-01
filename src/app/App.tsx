@@ -321,8 +321,8 @@ function HomeContent() {
                         <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered={true}>
                                 <SectionHeading
                                         icon={Lightbulb}
-                                        title="Suggest a Name"
-                                        subtitle="Got a great cat name? Share it with the community"
+                                        title="Name Him"
+                                        subtitle="Think you've got the one? Throw it in."
                                 />
                                 <NameSuggestionInner />
                         </Section>

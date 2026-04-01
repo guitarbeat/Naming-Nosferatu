@@ -235,7 +235,7 @@ const getNameOverlayClasses = (variant: "grid" | "swipe") => {
         const baseClasses =
                 "absolute flex flex-col pointer-events-none";
         const gridClasses =
-                "inset-0 p-3 sm:p-4 bg-gradient-to-t from-background/95 via-background/50 to-transparent justify-end items-start text-left";
+                "inset-0 p-3 sm:p-4 bg-gradient-to-t from-background/95 via-background/50 to-transparent justify-end items-center text-center";
         const swipeClasses =
                 "inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10 justify-center items-center text-center";
 
