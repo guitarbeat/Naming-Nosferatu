@@ -40,132 +40,120 @@ export function NameSuggestionInner() {
 	const isFormComplete = values.name.trim().length > 0 && values.description.trim().length > 0;
 
 	return (
-		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto">
-			{/* Card Wrapper with glassmorphism */}
-			<div className="relative group">
-				{/* Background blur effect */}
-				<div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 rounded-3xl blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
+		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto space-y-7">
+			{/* Header Section */}
+			<div className="text-center space-y-3">
+				<div className="inline-flex items-center gap-2.5 rounded-full border border-primary/30 bg-primary/10 px-5 py-2">
+					<Lightbulb size={16} className="text-primary" />
+					<span className="text-xs font-bold uppercase tracking-widest text-primary">
+						Pitch a Name
+					</span>
+				</div>
+				<h2 className="text-2xl sm:text-4xl font-black text-foreground">
+					What would you name him?
+				</h2>
+				<p className="text-sm text-muted-foreground">
+					Every suggestion enters the bracket for voting.
+				</p>
+			</div>
 
-				{/* Main card container */}
-				<div className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.03] backdrop-blur-2xl p-8 sm:p-10 space-y-7 shadow-2xl">
-					{/* Top accent line */}
-					<div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+			{/* Form Fields */}
+			<div className="space-y-5">
+				{/* Name Field */}
+				<div className="space-y-2">
+					<label
+						htmlFor="suggest-name"
+						className="flex items-center gap-2.5 text-sm font-semibold text-foreground"
+					>
+						<span className="w-1.5 h-1.5 bg-primary rounded-full" />
+						Name
+						<span className="text-destructive">*</span>
+						<span className="text-xs text-muted-foreground/60 ml-auto tabular-nums font-normal">
+							{values.name.length}/50
+						</span>
+					</label>
+					<Input
+						id="suggest-name"
+						type="text"
+						value={values.name}
+						onChange={(e) => handleChange("name", e.target.value)}
+						placeholder="e.g. Count Whiskula, Sir Paws-a-lot, Meow-zart"
+						className="h-12 text-base font-medium"
+						disabled={isSubmitting}
+						maxLength={50}
+					/>
+				</div>
 
-					{/* Header Section */}
-					<div className="text-center space-y-3">
-						<div className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/5 px-5 py-2 backdrop-blur-md hover:bg-white/10 transition-colors duration-300">
-							<Lightbulb size={16} className="text-primary" />
-							<span className="text-xs font-bold uppercase tracking-widest text-primary">
-								Pitch a Name
-							</span>
-						</div>
-						<h2 className="text-2xl sm:text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/80">
-							What would you name him?
-						</h2>
-						<p className="text-sm text-foreground/60">
-							Every suggestion enters the bracket for voting.
-						</p>
-					</div>
-
-					{/* Form Fields */}
-					<div className="space-y-5">
-						{/* Name Field */}
-						<div className="space-y-2">
-							<label
-								htmlFor="suggest-name"
-								className="flex items-center gap-2.5 text-sm font-semibold text-foreground"
-							>
-								<span className="w-2 h-2 bg-gradient-to-r from-primary to-accent rounded-full" />
-								Name
-								<span className="text-destructive">*</span>
-								<span className="text-xs text-foreground/50 ml-auto tabular-nums font-normal">
-									{values.name.length}/50
-								</span>
-							</label>
-							<Input
-								id="suggest-name"
-								type="text"
-								value={values.name}
-								onChange={(e) => handleChange("name", e.target.value)}
-								placeholder="e.g. Count Whiskula, Sir Paws-a-lot, Meow-zart"
-								className="h-12 text-base font-medium bg-white/5 border-white/10 hover:bg-white/10 focus:bg-white/15 transition-colors"
-								disabled={isSubmitting}
-								maxLength={50}
-							/>
-						</div>
-
-						{/* Description Field */}
-						<div className="space-y-2">
-							<div className="flex items-center justify-between">
-								<label
-									htmlFor="suggest-description"
-									className="flex items-center gap-2.5 text-sm font-semibold text-foreground"
-								>
-									<span className="w-2 h-2 bg-gradient-to-r from-accent to-primary rounded-full" />
-									Why this name?
-									<span className="text-destructive">*</span>
-								</label>
-								<span className="text-xs text-foreground/50 tabular-nums font-normal">
-									{values.description.length}/500
-								</span>
-							</div>
-							<Textarea
-								id="suggest-description"
-								value={values.description}
-								onChange={(e) => handleChange("description", e.target.value)}
-								placeholder="What makes it special? Help voters feel the vibe."
-								rows={4}
-								className="text-base resize-none bg-white/5 border-white/10 hover:bg-white/10 focus:bg-white/15 transition-colors"
-								disabled={isSubmitting}
-								maxLength={500}
-								showCount={false}
-							/>
-						</div>
-					</div>
-
-					{/* Footer Section */}
-					<div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 pt-4">
-						<p className="text-xs text-foreground/50 hidden sm:block">
-							Goes into the shared pool for everyone to discover
-						</p>
-						<Button
-							type="submit"
-							variant="glass"
-							disabled={!isFormComplete || isSubmitting}
-							loading={isSubmitting}
-							className="w-full sm:w-auto px-8 py-3 font-bold bg-gradient-to-r from-primary/80 to-accent/80 hover:from-primary to-accent text-primary-foreground border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300"
+				{/* Description Field */}
+				<div className="space-y-2">
+					<div className="flex items-center justify-between">
+						<label
+							htmlFor="suggest-description"
+							className="flex items-center gap-2.5 text-sm font-semibold text-foreground"
 						>
-							{isSubmitting ? "Submitting…" : "Submit"}
-						</Button>
+							<span className="w-1.5 h-1.5 bg-accent rounded-full" />
+							Why this name?
+							<span className="text-destructive">*</span>
+						</label>
+						<span className="text-xs text-muted-foreground/60 tabular-nums font-normal">
+							{values.description.length}/500
+						</span>
 					</div>
-
-					{/* Status Messages */}
-					<AnimatePresence mode="wait">
-						{globalError && (
-							<motion.div
-								initial={{ opacity: 0, y: -8 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: -8 }}
-								className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 backdrop-blur-sm text-sm font-medium text-center flex items-center justify-center gap-2"
-							>
-								<X size={16} className="text-destructive shrink-0" />
-								{globalError}
-							</motion.div>
-						)}
-						{successMessage && (
-							<motion.div
-								initial={{ opacity: 0, y: -8 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: -8 }}
-								className="p-4 rounded-xl border border-chart-2/30 bg-chart-2/10 backdrop-blur-sm text-sm font-medium text-center flex items-center justify-center gap-2 text-chart-2"
-							>
-								<CheckCircle size={16} className="shrink-0" />
-								{successMessage}
-							</motion.div>
-						)}
-					</AnimatePresence>
+					<Textarea
+						id="suggest-description"
+						value={values.description}
+						onChange={(e) => handleChange("description", e.target.value)}
+						placeholder="What makes it special? Help voters feel the vibe."
+						rows={4}
+						className="text-base resize-none"
+						disabled={isSubmitting}
+						maxLength={500}
+						showCount={false}
+					/>
 				</div>
 			</div>
+
+			{/* Footer Section */}
+			<div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
+				<p className="text-xs text-muted-foreground hidden sm:block">
+					Goes into the shared pool for everyone to discover
+				</p>
+				<Button
+					type="submit"
+					variant="glass"
+					disabled={!isFormComplete || isSubmitting}
+					loading={isSubmitting}
+					className="w-full sm:w-auto px-8 py-3 font-bold"
+				>
+					{isSubmitting ? "Submitting…" : "Submit"}
+				</Button>
+			</div>
+
+			{/* Status Messages */}
+			<AnimatePresence mode="wait">
+				{globalError && (
+					<motion.div
+						initial={{ opacity: 0, y: -8 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -8 }}
+						className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 text-sm font-medium text-center flex items-center justify-center gap-2"
+					>
+						<X size={16} className="text-destructive shrink-0" />
+						{globalError}
+					</motion.div>
+				)}
+				{successMessage && (
+					<motion.div
+						initial={{ opacity: 0, y: -8 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -8 }}
+						className="p-4 rounded-xl border border-chart-2/30 bg-chart-2/10 text-sm font-medium text-center flex items-center justify-center gap-2 text-chart-2"
+					>
+						<CheckCircle size={16} className="shrink-0" />
+						{successMessage}
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</form>
 	);
 }
