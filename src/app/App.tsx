@@ -8,6 +8,7 @@
  */
 
 import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
@@ -110,9 +111,12 @@ const GRADIENT_HEADING_CLS =
 function HomeContent() {
         const namesQuery = useQuery(namesQueryOptions(true));
         const lockedNames = getLockedNames(namesQuery.data?.names);
-        const nameDisplay =
+        const nameWords =
                 lockedNames.length > 0
-                        ? lockedNames.map((n) => n.name.toUpperCase()).join(" ") + " WOODS"
+                        ? [
+                                  ...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
+                                  "WOODS",
+                          ]
                         : null;
 
         return (
@@ -140,8 +144,23 @@ function HomeContent() {
                                         className="font-black uppercase leading-[0.9] tracking-tighter"
                                         style={{ fontSize: "clamp(2.6rem, 9vw, 9rem)" }}
                                 >
-                                        {nameDisplay ? (
-                                                <span className={GRADIENT_HEADING_CLS}>{nameDisplay}</span>
+                                        {nameWords ? (
+                                                <span className={GRADIENT_HEADING_CLS}>
+                                                        {nameWords.map((word, i) => (
+                                                                <motion.span
+                                                                        key={`${word}-${i}`}
+                                                                        className="inline-block cursor-default"
+                                                                        whileHover={{
+                                                                                scale: 1.1,
+                                                                                y: -6,
+                                                                                filter: "brightness(1.45) drop-shadow(0 0 22px rgba(255,255,255,0.18))",
+                                                                        }}
+                                                                        transition={{ type: "spring", stiffness: 500, damping: 28 }}
+                                                                >
+                                                                        {i < nameWords.length - 1 ? `${word}\u00a0` : word}
+                                                                </motion.span>
+                                                        ))}
+                                                </span>
                                         ) : (
                                                 <span className="text-foreground/15">________</span>
                                         )}
