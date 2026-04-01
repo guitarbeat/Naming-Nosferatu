@@ -40,7 +40,7 @@ export function NameSuggestionInner() {
 	const isFormComplete = values.name.trim().length > 0 && values.description.trim().length > 0;
 
 	return (
-		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto mt-4 sm:mt-6">
+		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto">
 			<div className="rounded-2xl border border-border/20 bg-card/60 backdrop-blur-xl p-5 sm:p-8 space-y-6">
 				{/* Header */}
 				<div className="text-center space-y-2">
