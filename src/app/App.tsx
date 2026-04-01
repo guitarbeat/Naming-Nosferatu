@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
@@ -111,13 +111,45 @@ const GRADIENT_HEADING_CLS =
 function HomeContent() {
         const namesQuery = useQuery(namesQueryOptions(true));
         const lockedNames = getLockedNames(namesQuery.data?.names);
-        const nameWords =
+        const [hoveredWordIdx, setHoveredWordIdx] = useState<number | null>(null);
+
+        // Build word list and a parallel map back to the source NameItem (null for "WOODS")
+        const wordEntries: Array<{ word: string; name: (typeof lockedNames)[number] | null }> =
                 lockedNames.length > 0
                         ? [
-                                  ...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
-                                  "WOODS",
+                                  ...lockedNames.flatMap((n) =>
+                                          n.name
+                                                  .toUpperCase()
+                                                  .split(/\s+/)
+                                                  .map((word) => ({ word, name: n })),
+                                  ),
+                                  { word: "WOODS", name: null },
                           ]
-                        : null;
+                        : [];
+
+        const hoveredEntry = hoveredWordIdx !== null ? (wordEntries[hoveredWordIdx] ?? null) : null;
+
+        const subtitle = (() => {
+                if (!hoveredEntry) {
+                        return "I'm indecisive — so I'm still considering the names below. Scroll down, pick your favorites from the top contenders, and help me make up my mind!";
+                }
+                if (!hoveredEntry.name) {
+                        return "Woods — the surname every great cat deserves.";
+                }
+                const n = hoveredEntry.name;
+                const rating = Math.round(n.avgRating ?? n.avg_rating ?? 1500);
+                const wins = n.wins ?? 0;
+                const losses = n.losses ?? 0;
+                const total = wins + losses;
+                const winRate = total > 0 ? Math.round((wins / total) * 100) : null;
+                return [
+                        `"${n.name}" — rated ${rating}`,
+                        total > 0 ? `${wins}W / ${losses}L${winRate !== null ? ` (${winRate}% wins)` : ""}` : "no matches yet",
+                        n.description ? `· ${n.description}` : "",
+                ]
+                        .filter(Boolean)
+                        .join("  ·  ");
+        })();
 
         return (
                 <>
@@ -139,25 +171,33 @@ function HomeContent() {
                                 {/* Decorative line */}
                                 <div className="mb-6 h-px w-16 bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                                {/* Name */}
+                                {/* Name — each word is independently hoverable */}
                                 <h1
                                         className="font-black uppercase leading-[0.9] tracking-tighter"
                                         style={{ fontSize: "clamp(2.6rem, 9vw, 9rem)" }}
                                 >
-                                        {nameWords ? (
-                                                <span className={GRADIENT_HEADING_CLS}>
-                                                        {nameWords.map((word, i) => (
+                                        {wordEntries.length > 0 ? (
+                                                <span>
+                                                        {wordEntries.map(({ word }, i) => (
+                                                                /*
+                                                                 * Two-span pattern: filter on the outer motion.span,
+                                                                 * bg-clip-text on the inner span. Applying filter
+                                                                 * directly to a bg-clip-text element makes text
+                                                                 * disappear in Chrome/Safari.
+                                                                 */
                                                                 <motion.span
                                                                         key={`${word}-${i}`}
                                                                         className="inline-block cursor-default"
-                                                                        whileHover={{
-                                                                                scale: 1.1,
-                                                                                y: -6,
-                                                                                filter: "brightness(1.45) drop-shadow(0 0 22px rgba(255,255,255,0.18))",
-                                                                        }}
-                                                                        transition={{ type: "spring", stiffness: 500, damping: 28 }}
+                                                                        onHoverStart={() => setHoveredWordIdx(i)}
+                                                                        onHoverEnd={() => setHoveredWordIdx(null)}
+                                                                        whileHover={{ filter: "brightness(1.25)" }}
+                                                                        transition={{ duration: 0.15 }}
                                                                 >
-                                                                        {i < nameWords.length - 1 ? `${word}\u00a0` : word}
+                                                                        <span className={GRADIENT_HEADING_CLS}>
+                                                                                {i < wordEntries.length - 1
+                                                                                        ? `${word}\u00a0`
+                                                                                        : word}
+                                                                        </span>
                                                                 </motion.span>
                                                         ))}
                                                 </span>
@@ -166,10 +206,16 @@ function HomeContent() {
                                         )}
                                 </h1>
 
-                                {/* Subtitle */}
-                                <p className="mt-10 max-w-sm text-sm leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base">
-                                        I'm indecisive — so I'm still considering the names below. Scroll down, pick your favorites from the top contenders, and help me make up my mind!
-                                </p>
+                                {/* Subtitle — updates with stats when hovering a name word */}
+                                <motion.p
+                                        key={subtitle}
+                                        className="mt-10 max-w-sm text-sm leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
+                                        initial={{ opacity: 0, y: 4 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                >
+                                        {subtitle}
+                                </motion.p>
 
                                 {/* Scroll hint */}
                                 <div className="absolute bottom-10 flex flex-col items-center gap-2 text-muted-foreground/40">
