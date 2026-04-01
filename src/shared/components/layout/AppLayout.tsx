@@ -76,7 +76,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 				{/* Main content area with proper spacing */}
 				<main
 					id="main-content"
-					className="relative flex min-h-dvh w-full flex-col px-3 pb-24 pt-4 sm:px-6 sm:pb-24 sm:pt-6 md:pt-10"
+					className="relative flex min-h-dvh w-full flex-col px-3 pb-32 pt-4 sm:px-6 sm:pb-32 sm:pt-6 md:pt-10"
 					tabIndex={-1}
 				>
 					{/* Error banner */}
