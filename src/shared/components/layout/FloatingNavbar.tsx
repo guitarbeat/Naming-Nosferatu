@@ -90,7 +90,12 @@ export function FloatingNavbar() {
 	const { isSwipeMode } = ui;
 	const { setSwipeMode } = uiActions;
 	const [activeSection, setActiveSection] = useState<NavSection>("pick");
-	const [isNavVisible, setIsNavVisible] = useState(true);
+	const [isNavVisible, setIsNavVisible] = useState(() => {
+		// Initialize based on viewport size - always visible on desktop
+		if (typeof window === "undefined") return true;
+		const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
+		return !mobileMediaQuery.matches; // true on desktop, false on mobile
+	});
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 	const navGlassId = useId();
 

@@ -164,14 +164,16 @@ function HomeContent() {
                                                                  */
                                                                 <motion.span
                                                                         key={`${word}-${i}`}
-                                                                        className="block cursor-default"
+                                                                        className="block sm:inline-block cursor-default"
                                                                         onHoverStart={() => setHoveredWordIdx(i)}
                                                                         onHoverEnd={() => setHoveredWordIdx(null)}
                                                                         whileHover={{ filter: "brightness(1.25)" }}
                                                                         transition={{ duration: 0.15 }}
                                                                 >
                                                                         <span className={GRADIENT_HEADING_CLS}>
-                                                                                {word}
+                                                                                {i < wordEntries.length - 1
+                                                                                        ? `${word}\u00a0`
+                                                                                        : word}
                                                                         </span>
                                                                 </motion.span>
                                                         ))}
