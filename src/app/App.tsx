@@ -317,7 +317,7 @@ function HomeContent() {
                                 </Suspense>
                         </Section>
 
-                        <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered={true}>
+                        <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="lg" centered={true} className="pt-12 sm:pt-16">
                                 <NameSuggestionInner />
                         </Section>
                 </>
