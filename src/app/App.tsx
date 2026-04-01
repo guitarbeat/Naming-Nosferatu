@@ -132,7 +132,7 @@ function HomeContent() {
         return (
                 <>
                         {/* Hero — bleeds edge-to-edge, full viewport height */}
-			<section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-2 py-12 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-6 md:-mt-10">
+			<section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
 				{/* Radial glow behind name */}
 				<div
 					className="pointer-events-none absolute inset-0 -z-10"
@@ -142,17 +142,17 @@ function HomeContent() {
 				</div>
 
 				{/* Label */}
-				<p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-lg md:text-xl">
+				<p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-base md:text-lg">
 					My cat's name is
 				</p>
 
 				{/* Decorative line */}
-				<div className="mb-4 h-px w-16 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6" />
+				<div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6 sm:w-16" />
 
-				{/* Name — each word is independently hoverable */}
+				{/* Name — fluid sizing that respects container padding */}
 				<h1
-					className="font-black uppercase leading-[0.85] tracking-tighter"
-					style={{ fontSize: "clamp(2rem, 11vw, 9rem)" }}
+					className="max-w-full font-black uppercase leading-[0.85] tracking-tighter"
+					style={{ fontSize: "clamp(1.75rem, 9vw, 9rem)" }}
 				>
                                         {wordEntries.length > 0 ? (
                                                 <span>
