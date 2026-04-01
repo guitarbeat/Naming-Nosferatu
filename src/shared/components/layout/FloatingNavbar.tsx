@@ -90,12 +90,8 @@ export function FloatingNavbar() {
 	const { isSwipeMode } = ui;
 	const { setSwipeMode } = uiActions;
 	const [activeSection, setActiveSection] = useState<NavSection>("pick");
-	const [isNavVisible, setIsNavVisible] = useState(() => {
-		// Initialize based on viewport size - always visible on desktop
-		if (typeof window === "undefined") return true;
-		const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
-		return !mobileMediaQuery.matches; // true on desktop, false on mobile
-	});
+	const [isNavVisible, setIsNavVisible] = useState(true);
+	const [isMobile, setIsMobile] = useState(false);
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 	const navGlassId = useId();
 
@@ -202,10 +198,14 @@ export function FloatingNavbar() {
 		let lastScrollY = window.scrollY;
 		let ticking = false;
 		const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
+		let isCurrentlyMobile = mobileMediaQuery.matches;
+
+		// Set initial mobile state
+		setIsMobile(isCurrentlyMobile);
 
 		const onScroll = () => {
-			if (!mobileMediaQuery.matches) {
-				setIsNavVisible(true);
+			// Always visible on desktop
+			if (!isCurrentlyMobile) {
 				lastScrollY = window.scrollY;
 				return;
 			}
@@ -233,7 +233,9 @@ export function FloatingNavbar() {
 		};
 
 		const onViewportChange = () => {
-			if (!mobileMediaQuery.matches) {
+			isCurrentlyMobile = mobileMediaQuery.matches;
+			setIsMobile(isCurrentlyMobile);
+			if (!isCurrentlyMobile) {
 				setIsNavVisible(true);
 			}
 		};
