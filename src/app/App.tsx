@@ -132,7 +132,7 @@ function HomeContent() {
         return (
                 <>
                         {/* Hero — bleeds edge-to-edge, full viewport height */}
-			<section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-end overflow-hidden px-3 pb-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:justify-center sm:px-6 sm:pb-0 md:-mt-10">
+			<section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-2 py-12 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-6 md:-mt-10">
 				{/* Radial glow behind name */}
 				<div
 					className="pointer-events-none absolute inset-0 -z-10"
