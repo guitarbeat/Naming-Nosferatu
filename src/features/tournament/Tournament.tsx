@@ -121,7 +121,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	// Vote adapter for external onVote callback
 	const handleVoteAdapter = useCallback(
-		(winnerId: string, _loserId: string) => {
+		async (winnerId: string, _loserId: string) => {
 			if (!onVote || !currentMatch) {
 				return;
 			}
@@ -136,12 +136,18 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							: String(p);
 				return { name, id, description: "", outcome: winnerId === id ? "winner" : "loser" };
 			};
-			onVote({
-				match: { left: sideData("left"), right: sideData("right") },
-				result: winnerId === sideData("left").id ? 1 : 0,
-				ratings,
-				timestamp: new Date().toISOString(),
-			});
+			try {
+				await Promise.resolve(
+					onVote({
+						match: { left: sideData("left"), right: sideData("right") },
+						result: winnerId === sideData("left").id ? 1 : 0,
+						ratings,
+						timestamp: new Date().toISOString(),
+					}),
+				);
+			} catch (error) {
+				console.error("Vote callback error:", error);
+			}
 		},
 		[onVote, currentMatch, ratings],
 	);
@@ -151,8 +157,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[visibleNames],
 	);
 
+	const completionHandledRef = useRef(false);
+
 	useEffect(() => {
-		if (isComplete && onComplete) {
+		if (isComplete && onComplete && !completionHandledRef.current) {
+			completionHandledRef.current = true;
 			audioManager.playLevelUpSound();
 			setTimeout(() => audioManager.playWowSound(), 500);
 			const results: Record<string, { rating: number; wins: number; losses: number }> = {};

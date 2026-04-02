@@ -38,11 +38,32 @@ export default function TournamentFlow() {
                         // Compute per-name wins and losses from the vote history
                         const winsByName: Record<string, number> = {};
                         const lossesByName: Record<string, number> = {};
+
+                        // Check if this is a 2v2 tournament by seeing if vote IDs exist in ratings
+                        // For 2v2, vote IDs are team IDs (not in ratings); for 1v1, they're name IDs (in ratings)
+                        const nameIds = new Set(Object.keys(tournament.ratings));
+                        let is2v2Tournament = false;
+
                         for (const vote of tournament.voteHistory) {
                                 const wId = String(vote.winnerId);
                                 const lId = String(vote.loserId);
-                                winsByName[wId] = (winsByName[wId] ?? 0) + 1;
-                                lossesByName[lId] = (lossesByName[lId] ?? 0) + 1;
+
+                                // If neither vote ID is in the ratings, it's likely a 2v2 tournament
+                                if (!nameIds.has(wId) && !nameIds.has(lId)) {
+                                        is2v2Tournament = true;
+                                        break;
+                                }
+                        }
+
+                        // Only count wins/losses for 1v1 tournaments
+                        // For 2v2, we would need team membership data which is not available here
+                        if (!is2v2Tournament) {
+                                for (const vote of tournament.voteHistory) {
+                                        const wId = String(vote.winnerId);
+                                        const lId = String(vote.loserId);
+                                        winsByName[wId] = (winsByName[wId] ?? 0) + 1;
+                                        lossesByName[lId] = (lossesByName[lId] ?? 0) + 1;
+                                }
                         }
 
                         const ratingsWithStats = Object.entries(tournament.ratings).reduce(

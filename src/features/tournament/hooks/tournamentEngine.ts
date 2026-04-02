@@ -47,9 +47,9 @@ function evictIfNeeded<V>(cache: Map<string, V>, limit: number): void {
 }
 
 function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
-        const entrantsKey = bracketEntrants.map(String).filter(Boolean).sort().join(",");
-        const historyKey = matchHistory.map((m) => `${m.left}-${m.right}-${m.winner}`).join("|");
-        return `${entrantsKey}:${historyKey}`;
+	const entrantsKey = bracketEntrants.map(String).filter(Boolean).sort().join(",");
+	const historyKey = matchHistory.map((m) => `${m.winner}-${m.loser}`).join("|");
+	return `${entrantsKey}:${historyKey}`;
 }
 
 // Enhanced round caching with fallback calculation

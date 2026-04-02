@@ -58,7 +58,7 @@ export const PersonalResults = ({
 				onSave={async (r: NameItem[]) => {
 					const ratingsMap = Object.fromEntries(
 						r.map((n) => [
-							n.name,
+							n.id || n.name,
 							{
 								rating: n.rating as number,
 								wins: n.wins ?? 0,

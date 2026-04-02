@@ -16,11 +16,23 @@ import {
 } from "@/shared/lib/storage";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
+/**
+ * Sanitize a user name to create a valid email local-part
+ * Removes special characters, spaces, and converts to lowercase
+ */
+function sanitizeNameForEmail(name: string): string {
+	return name
+		.toLowerCase()
+		.replace(/[^a-z0-9._-]/g, "") // Keep only alphanumeric, dots, underscores, hyphens
+		.replace(/^[.-]+|[.-]+$/g, "") // Remove leading/trailing dots or hyphens
+		.slice(0, 64); // Email local-part max length is 64 chars
+}
+
 export const supabaseAuthAdapter: AuthAdapter = {
-        /**
-         * Get current user from Supabase auth or localStorage fallback
-         */
-        async getCurrentUser(): Promise<AuthUser | null> {
+	/**
+	 * Get current user from Supabase auth or localStorage fallback
+	 */
+	async getCurrentUser(): Promise<AuthUser | null> {
                 if (!isStorageAvailable()) {
                         return null;
                 }

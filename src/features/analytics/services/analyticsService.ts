@@ -131,17 +131,37 @@ export const statsAPI = {
 	},
 
 	getEngagementMetrics: async (
-		_timeframe: "day" | "week" | "month" | "year",
+		timeframe: "day" | "week" | "month" | "year",
 	): Promise<EngagementMetrics | null> => {
 		return withSupabase(async (client) => {
+			// Calculate date range based on timeframe
+			const now = new Date();
+			const startDate = new Date();
+			switch (timeframe) {
+				case "day":
+					startDate.setDate(now.getDate() - 1);
+					break;
+				case "week":
+					startDate.setDate(now.getDate() - 7);
+					break;
+				case "month":
+					startDate.setMonth(now.getMonth() - 1);
+					break;
+				case "year":
+					startDate.setFullYear(now.getFullYear() - 1);
+					break;
+			}
+
 			const [namesResult, usersResult] = await Promise.all([
 				client
 					.from("cat_names")
 					.select("global_wins, global_losses")
-					.eq("is_deleted", false),
+					.eq("is_deleted", false)
+					.gte("created_at", startDate.toISOString()),
 				client
 					.from("user_cat_name_ratings")
-					.select("user_name", { count: "exact", head: true }),
+					.select("user_name, created_at", { count: "exact", head: true })
+					.gte("created_at", startDate.toISOString()),
 			]);
 
 			const totalMatches = (
