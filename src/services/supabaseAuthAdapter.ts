@@ -100,8 +100,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
                         }
 
                         // Sign in with Supabase
+                        const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
                         const { data, error } = await client.auth.signInWithPassword({
-                                email: `${name.trim()}@demo.local`, // Use email format for username
+                                email: sanitizedEmail,
                                 password: "demo-password", // Demo password
                         });
 
