@@ -360,6 +360,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                 [currentMatch, matchNumber, round, updatePersistentState, userName],
         );
 
+        const voteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
         const handleVoteWithAnimation = useCallback(
                 (winnerId: string, loserId: string) => {
                         if (isVoting) {
@@ -367,13 +369,22 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                         }
                         setIsVoting(true);
                         audioManager.playVoteSound();
-                        setTimeout(() => {
+                        voteTimeoutRef.current = setTimeout(() => {
                                 handleVote(winnerId, loserId);
                                 setIsVoting(false);
                         }, VOTE_COOLDOWN);
                 },
                 [handleVote, isVoting, audioManager],
         );
+
+        // Cleanup vote timeout on unmount
+        useEffect(() => {
+                return () => {
+                        if (voteTimeoutRef.current) {
+                                clearTimeout(voteTimeoutRef.current);
+                        }
+                };
+        }, []);
 
         const handleUndo = useCallback(() => {
                 if (history.length === 0) {

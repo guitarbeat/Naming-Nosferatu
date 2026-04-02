@@ -119,7 +119,9 @@ async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]>
         for (const [key, value] of Object.entries(filters)) {
                 query = query.eq(key, value);
         }
-        const result = await query.order("avg_rating", { ascending: false }).limit(1000);
+        // Only limit results for visible names; fetch all hidden names to avoid missing admin data
+        const orderedQuery = query.order("avg_rating", { ascending: false });
+        const result = await (includeHidden ? orderedQuery : orderedQuery.limit(1000));
         if (result.error) {
                 console.warn("[coreAPI.getTrendingNames] Supabase fallback failed:", result.error.message);
                 return [];

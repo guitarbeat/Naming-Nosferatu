@@ -157,10 +157,11 @@ class RealtimeService {
                 callback: (update: TournamentUpdate) => void,
         ): () => void {
                 let channel = this.tournamentChannels.get(tournamentId);
+                let cancelled = false;
 
                 if (!channel) {
                         resolveSupabaseClient().then((client) => {
-                                if (!client) return;
+                                if (!client || cancelled) return;
                                 channel = client
                                         .channel(`tournament:${tournamentId}`)
                                         .on("broadcast", { event: "tournament_update" }, (payload) => {
@@ -168,18 +169,19 @@ class RealtimeService {
                                                 if (update?.tournamentId) callback(update);
                                         })
                                         .subscribe();
-                                this.tournamentChannels.set(tournamentId, channel as RealtimeChannel);
+                                if (!cancelled) {
+                                        this.tournamentChannels.set(tournamentId, channel as RealtimeChannel);
+                                }
                         });
                 }
 
-                const wrappedCallback = callback;
                 return () => {
+                        cancelled = true;
                         const ch = this.tournamentChannels.get(tournamentId);
                         if (ch) {
                                 ch.unsubscribe();
                                 this.tournamentChannels.delete(tournamentId);
                         }
-                        void wrappedCallback;
                 };
         }
 
