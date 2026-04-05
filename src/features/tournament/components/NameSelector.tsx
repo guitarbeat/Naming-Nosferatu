@@ -232,14 +232,14 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
-        const baseClasses =
-                "absolute flex flex-col pointer-events-none";
-        const gridClasses =
-                "inset-0 p-3 sm:p-4 bg-gradient-to-t from-background/95 via-background/50 to-transparent justify-end items-center text-center";
-        const swipeClasses =
-                "inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10 justify-center items-center text-center";
+	const baseClasses =
+		"absolute flex flex-col pointer-events-none";
+	const gridClasses =
+		"inset-0 p-3 sm:p-4 bg-gradient-to-b from-background/40 via-background/70 to-background/40 justify-center items-center text-center";
+	const swipeClasses =
+		"inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10 justify-center items-center text-center";
 
-        return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
+	return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
 
 export function NameSelector() {
