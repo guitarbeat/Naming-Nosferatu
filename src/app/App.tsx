@@ -360,30 +360,32 @@ function TournamentContent() {
 }
 
 function AnalysisContent() {
-        const { user, tournament, tournamentActions } = useAppStore();
-        const { handleStartNewTournament } = useTournamentHandlers({
-                userName: user.name,
-                tournamentActions,
-        });
+	const { user, tournament, tournamentActions } = useAppStore();
+	const { handleStartNewTournament } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
 
-        return (
-                <Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
-                        <h2 className={`mb-8 text-center text-3xl sm:mb-12 md:text-5xl ${GRADIENT_HEADING_CLS}`}>
-                                The Victors Emerge
-                        </h2>
-                        <Suspense fallback={<Loading variant="skeleton" height={600} />}>
-                                <ErrorBoundary context={errorContexts.analysisDashboard}>
-                                        <DashboardLazy
-                                                personalRatings={tournament.ratings}
-                                                currentTournamentNames={tournament.names ?? undefined}
-                                                onStartNew={handleStartNewTournament}
-                                                userName={user.name ?? ""}
-                                                isAdmin={user.isAdmin}
-                                        />
-                                </ErrorBoundary>
-                        </Suspense>
-                </Section>
-        );
+	return (
+		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+			<h2 className={`mb-8 text-center text-3xl sm:mb-12 md:text-5xl ${GRADIENT_HEADING_CLS}`}>
+				The Victors Emerge
+			</h2>
+			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+				<ErrorBoundary context={errorContexts.analysisDashboard}>
+					<DashboardLazy
+						personalRatings={tournament.ratings}
+						currentTournamentNames={tournament.names ?? undefined}
+						onStartNew={handleStartNewTournament}
+						userName={user.name ?? ""}
+						isAdmin={user.isAdmin}
+						isLoggedIn={user.isLoggedIn}
+						avatarUrl={user.avatarUrl}
+					/>
+				</ErrorBoundary>
+			</Suspense>
+		</Section>
+	);
 }
 
 function AdminContent() {

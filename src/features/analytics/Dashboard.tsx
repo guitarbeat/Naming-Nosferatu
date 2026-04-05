@@ -16,6 +16,7 @@ import {
 	Target,
 	TrendingUp,
 	Trophy,
+	User,
 	Users,
 } from "@/shared/lib/icons";
 import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase/api";
@@ -34,6 +35,8 @@ interface DashboardProps {
 	) => void;
 	userName?: string;
 	isAdmin?: boolean;
+	isLoggedIn?: boolean;
+	avatarUrl?: string;
 	canHideNames?: boolean;
 	onNameHidden?: (nameId: string) => void;
 }
@@ -58,6 +61,8 @@ interface EngagementMetrics {
 export function Dashboard({
 	userName = "",
 	isAdmin = false,
+	isLoggedIn = false,
+	avatarUrl,
 	onStartNew,
 	onUpdateRatings,
 	personalRatings,
@@ -189,6 +194,31 @@ export function Dashboard({
 
 	return (
 		<div className="dashboard-container space-y-6 sm:space-y-10">
+			{/* User Profile Section - when logged in */}
+			{isLoggedIn && userName && (
+				<div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg sm:rounded-xl p-4 sm:p-6">
+					<div className="flex items-center gap-4">
+						{avatarUrl ? (
+							<img
+								src={avatarUrl}
+								alt={userName}
+								className="w-16 h-16 rounded-full object-cover border-2 border-primary/30"
+							/>
+						) : (
+							<div className="w-16 h-16 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center">
+								<User size={24} className="text-primary" />
+							</div>
+						)}
+						<div className="flex-1">
+							<h2 className="text-2xl sm:text-3xl font-bold text-foreground">{userName}</h2>
+							<p className="text-sm text-muted-foreground mt-1">
+								{isAdmin ? "Administrator" : "Tournament Participant"}
+							</p>
+						</div>
+					</div>
+				</div>
+			)}
+
 			{/* Personal Results with Ranking Adjustment */}
 			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
 				<PersonalResults
