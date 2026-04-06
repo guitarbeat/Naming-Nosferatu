@@ -31,7 +31,7 @@ function StatusMessage({ error, success }: { error?: string; success?: string })
 					initial={{ opacity: 0, y: -6 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: -6 }}
-					className="p-3 rounded-lg border border-destructive/20 bg-destructive/10 text-sm text-center flex items-center justify-center gap-2"
+					className="p-3 rounded-xl border border-destructive/20 bg-destructive/10 text-sm text-center flex items-center justify-center gap-2"
 				>
 					<X size={14} className="text-destructive shrink-0" />
 					{error}
@@ -42,7 +42,7 @@ function StatusMessage({ error, success }: { error?: string; success?: string })
 					initial={{ opacity: 0, y: -6 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: -6 }}
-					className="p-3 rounded-lg border border-chart-2/20 bg-chart-2/10 text-sm text-center flex items-center justify-center gap-2 text-chart-2"
+					className="p-3 rounded-xl border border-chart-2/20 bg-chart-2/10 text-sm text-center flex items-center justify-center gap-2 text-chart-2"
 				>
 					<CheckCircle size={14} className="shrink-0" />
 					{success}
@@ -53,7 +53,7 @@ function StatusMessage({ error, success }: { error?: string; success?: string })
 }
 
 // ============================================================================
-// INLINE INNER (no wrapper — used when embedded in a shared container)
+// INLINE INNER
 // ============================================================================
 
 export function NameSuggestionInner() {
@@ -69,7 +69,6 @@ export function NameSuggestionInner() {
 
 	return (
 		<form onSubmit={handleLocalSubmit} className="w-full max-w-lg mx-auto space-y-6">
-			{/* Header */}
 			<div className="text-center space-y-3">
 				<div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5">
 					<Lightbulb size={14} className="text-primary" />
@@ -85,7 +84,6 @@ export function NameSuggestionInner() {
 				</p>
 			</div>
 
-			{/* Name field */}
 			<div className="space-y-2">
 				<div className="flex items-baseline justify-between">
 					<label htmlFor="suggest-name" className="text-sm font-medium text-foreground/80">
@@ -107,7 +105,6 @@ export function NameSuggestionInner() {
 				/>
 			</div>
 
-			{/* Description field */}
 			<div className="space-y-2">
 				<div className="flex items-baseline justify-between">
 					<label htmlFor="suggest-description" className="text-sm font-medium text-foreground/80">
@@ -130,7 +127,6 @@ export function NameSuggestionInner() {
 				/>
 			</div>
 
-			{/* Submit */}
 			<Button
 				type="submit"
 				disabled={!isFormComplete || isSubmitting}
@@ -155,11 +151,7 @@ export function NameSuggestionInner() {
 // MODAL CONTENT
 // ============================================================================
 
-interface ModalNameSuggestionProps {
-	onClose: () => void;
-}
-
-function ModalNameSuggestionContent({ onClose }: ModalNameSuggestionProps) {
+function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 	const isMountedRef = useRef(true);
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -209,49 +201,53 @@ function ModalNameSuggestionContent({ onClose }: ModalNameSuggestionProps) {
 	return (
 		<form
 			onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}
-			className="flex flex-col gap-5"
+			className="flex flex-col gap-4"
 		>
-			<p className="text-sm text-muted-foreground">
-				Help expand the list by suggesting new cat names!
+			<p className="text-sm text-muted-foreground leading-relaxed">
+				Got an idea? Suggest a cat name and it'll enter the bracket for everyone to vote on.
 			</p>
 
-			<Input
-				id="modal-name-input"
-				label="Name"
-				ref={nameInputRef}
-				type="text"
-				value={values.name}
-				onChange={(e) => {
-					handleChange("name", e.target.value);
-					if (globalError) setGlobalError("");
-				}}
-				onBlur={() => handleBlur("name")}
-				placeholder="e.g., Whiskers"
-				maxLength={50}
-				showSuccess={true}
-				error={touched.name ? errors.name : null}
-			/>
+			<div className="space-y-4">
+				<Input
+					id="modal-name-input"
+					label="Name"
+					ref={nameInputRef}
+					type="text"
+					value={values.name}
+					onChange={(e) => {
+						handleChange("name", e.target.value);
+						if (globalError) setGlobalError("");
+					}}
+					onBlur={() => handleBlur("name")}
+					placeholder="e.g., Whiskers, Sir Meowsalot"
+					maxLength={50}
+					showSuccess={true}
+					error={touched.name ? errors.name : null}
+					className="h-11 text-sm"
+				/>
 
-			<Textarea
-				id="modal-description-input"
-				label="Description"
-				value={values.description}
-				onChange={(e) => {
-					handleChange("description", e.target.value);
-					if (globalError) setGlobalError("");
-				}}
-				onBlur={() => handleBlur("description")}
-				placeholder="Why is this name special?"
-				disabled={isSubmitting}
-				maxLength={500}
-				rows={3}
-				error={touched.description ? errors.description : null}
-				showCount={true}
-			/>
+				<Textarea
+					id="modal-description-input"
+					label="Why this name?"
+					value={values.description}
+					onChange={(e) => {
+						handleChange("description", e.target.value);
+						if (globalError) setGlobalError("");
+					}}
+					onBlur={() => handleBlur("description")}
+					placeholder="What makes it special?"
+					disabled={isSubmitting}
+					maxLength={500}
+					rows={3}
+					error={touched.description ? errors.description : null}
+					showCount={true}
+					className="text-sm resize-none"
+				/>
+			</div>
 
 			<StatusMessage error={globalError} success={success} />
 
-			<div className="flex justify-end gap-2.5 pt-4 border-t border-border/50">
+			<div className="flex justify-end gap-2 pt-3 border-t border-border/30">
 				<Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
 					Cancel
 				</Button>

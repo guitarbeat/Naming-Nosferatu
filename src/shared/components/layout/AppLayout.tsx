@@ -33,7 +33,7 @@ function ProfileOverlay({ onClose }: { onClose: () => void }) {
 
 function NameSuggestionOverlay({ onClose }: { onClose: () => void }) {
 	return (
-		<Modal title="Suggest a Name" onClose={onClose} maxWidth="max-w-2xl" headerSpacing="mb-6">
+		<Modal title="Suggest a Name" onClose={onClose} maxWidth="max-w-lg">
 			<NameSuggestion variant="modal" isOpen={true} onClose={onClose} />
 		</Modal>
 	);

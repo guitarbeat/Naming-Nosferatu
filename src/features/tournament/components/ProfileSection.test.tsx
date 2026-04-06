@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { forwardRef } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ProfileInner } from "./ProfileSection";
+import { ProfileInner } from "@/shared/components/profile/ProfileInner";
 
 const mockLogout = vi.fn();
 const mockStore = {
@@ -18,6 +18,16 @@ const mockStore = {
 
 vi.mock("@/store/appStore", () => ({
 	default: () => mockStore,
+}));
+
+vi.mock("@/shared/lib/constants", () => ({
+	CAT_IMAGES: ["https://example.com/cat.jpg"],
+}));
+
+vi.mock("@/shared/lib/icons", () => ({
+	LogOut: ({ size, ...props }: any) => <span {...props}>LogOut</span>,
+	Pencil: ({ size, ...props }: any) => <span {...props}>Pencil</span>,
+	User: ({ size, ...props }: any) => <span {...props}>User</span>,
 }));
 
 vi.mock("@/shared/components/layout", () => {

@@ -62,11 +62,11 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 	};
 
 	return (
-		<div className="flex flex-col items-center gap-6 w-full">
+		<div className="flex flex-col items-center gap-5 w-full">
 			{/* Avatar */}
-			<div className="relative">
-				<div className="absolute -inset-2 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 blur-xl opacity-60" aria-hidden="true" />
-				<div className="relative size-20 sm:size-24 rounded-full overflow-hidden ring-2 ring-primary/20 ring-offset-2 ring-offset-card bg-muted">
+			<div className="relative mb-1">
+				<div className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50" aria-hidden="true" />
+				<div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
 					<img
 						src={avatarSrc}
 						alt="Profile"
@@ -77,31 +77,28 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 			</div>
 
 			{isEditing ? (
-				<div className="w-full space-y-5 animate-in fade-in duration-200">
-					{/* Welcome text for new users */}
+				<div className="w-full space-y-4 animate-in fade-in duration-200">
 					{!user.isLoggedIn && (
-						<div className="text-center space-y-1">
-							<h3 className="text-lg font-semibold text-foreground">Join the Council</h3>
+						<div className="text-center space-y-1 mb-2">
+							<h3 className="text-lg font-bold text-foreground tracking-tight">Join the Council</h3>
 							<p className="text-sm text-muted-foreground">Enter your name to track rankings</p>
 						</div>
 					)}
 
-					{/* Name input */}
 					<div className="relative">
-						<User className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/50" />
+						<User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none" />
 						<Input
 							ref={nameInputRef}
 							type="text"
 							value={editedName}
 							onChange={(e) => setEditedName(e.target.value)}
-							placeholder="Your name"
+							placeholder="Who are you?"
 							onKeyDown={(e) => e.key === "Enter" && handleSave()}
-							className="w-full h-12 pl-10 pr-4 text-base"
+							className="w-full h-11 pl-10 pr-4 text-sm"
 						/>
 					</div>
 
-					{/* Actions */}
-					<div className="flex gap-2.5">
+					<div className="flex gap-2">
 						{user.isLoggedIn && (
 							<Button
 								type="button"
@@ -126,30 +123,27 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 					</div>
 				</div>
 			) : (
-				<div className="w-full flex flex-col items-center gap-4 animate-in fade-in duration-200">
-					{/* Name display */}
+				<div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
 					<div className="flex items-center gap-2">
-						<h3 className="text-xl sm:text-2xl font-bold text-foreground">{user.name}</h3>
+						<h3 className="text-xl font-bold text-foreground">{user.name}</h3>
 						<button
 							type="button"
 							onClick={() => setIsEditing(true)}
-							className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+							className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
 							aria-label="Edit name"
 						>
 							<Pencil size={14} />
 						</button>
 					</div>
 
-					{/* Status */}
-					<p className="text-xs text-muted-foreground">
+					<p className="text-xs text-muted-foreground/80">
 						Your preferences are saved for ranking.
 					</p>
 
-					{/* Logout */}
 					<button
 						type="button"
 						onClick={handleLogout}
-						className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/60 hover:text-destructive hover:bg-destructive/10 transition-colors"
+						className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
 					>
 						<LogOut size={13} />
 						Logout
