@@ -2,15 +2,6 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { forwardRef } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-vi.mock("@/shared/components/profile/ProfileInner", () => ({
-	ProfileInner: ({ onLogin }: { onLogin: (name: string) => Promise<boolean | undefined> }) => {
-		// Re-export handled by the actual test below using the real mock
-		return null;
-	},
-}));
-
-// Re-import after mock setup
 import { ProfileInner } from "./ProfileSection";
 
 const mockLogout = vi.fn();
@@ -31,6 +22,12 @@ vi.mock("@/store/appStore", () => ({
 
 vi.mock("@/shared/lib/constants", () => ({
 	CAT_IMAGES: ["https://example.com/cat.jpg"],
+}));
+
+vi.mock("@/shared/lib/icons", () => ({
+	LogOut: ({ size, ...props }: any) => <span {...props}>LogOut</span>,
+	Pencil: ({ size, ...props }: any) => <span {...props}>Pencil</span>,
+	User: ({ size, ...props }: any) => <span {...props}>User</span>,
 }));
 
 vi.mock("@/shared/components/layout", () => {
