@@ -24,6 +24,10 @@ import type { NameItem, RatingData } from "@/shared/types";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
 import { PersonalResults } from "./PersonalResults";
 
+// ============================================================================
+// TYPES
+// ============================================================================
+
 interface DashboardProps {
 	personalRatings?: Record<string, RatingData>;
 	currentTournamentNames?: NameItem[];
@@ -57,6 +61,68 @@ interface EngagementMetrics {
 	totalPageViews: number;
 	bounceRate: number;
 }
+
+// ============================================================================
+// STAT CARD
+// ============================================================================
+
+function StatCard({
+	label,
+	value,
+	icon: Icon,
+	accent = false,
+}: {
+	label: string;
+	value: string | number;
+	icon?: React.ElementType;
+	accent?: boolean;
+}) {
+	return (
+		<div className="group relative rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 transition-colors hover:bg-card/60">
+			<div className="flex items-start gap-3">
+				{Icon && (
+					<div className={`rounded-lg p-2 ${accent ? "bg-primary/15 text-primary" : "bg-muted/50 text-muted-foreground"}`}>
+						<Icon size={16} />
+					</div>
+				)}
+				<div className="flex-1 min-w-0">
+					<p className="text-xs font-medium text-muted-foreground mb-1">{label}</p>
+					<p className={`text-xl font-bold tabular-nums ${accent ? "text-primary" : "text-foreground"}`}>
+						{value}
+					</p>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// ============================================================================
+// SECTION HEADER
+// ============================================================================
+
+function SectionHeader({
+	icon: Icon,
+	title,
+	action,
+}: {
+	icon: React.ElementType;
+	title: string;
+	action?: React.ReactNode;
+}) {
+	return (
+		<div className="flex items-center justify-between mb-4">
+			<div className="flex items-center gap-2.5">
+				<Icon size={18} className="text-primary" />
+				<h3 className="text-base font-semibold text-foreground tracking-tight">{title}</h3>
+			</div>
+			{action}
+		</div>
+	);
+}
+
+// ============================================================================
+// DASHBOARD
+// ============================================================================
 
 export function Dashboard({
 	userName = "",
@@ -98,7 +164,6 @@ export function Dashboard({
 	const [engagementMetrics, setEngagementMetrics] = useState<EngagementMetrics | null>(null);
 	const [timeframe, setTimeframe] = useState<"day" | "week" | "month">("week");
 
-	// Fetch leaderboard
 	useEffect(() => {
 		const fetchLeaderboard = async () => {
 			setIsLoadingLeaderboard(true);
@@ -126,12 +191,10 @@ export function Dashboard({
 		}
 	}, [timeframe]);
 
-	// Fetch engagement metrics
 	useEffect(() => {
 		fetchEngagementMetrics();
 	}, [fetchEngagementMetrics]);
 
-	// Fetch stats
 	useEffect(() => {
 		const fetchStats = async () => {
 			setIsLoadingStats(true);
@@ -140,7 +203,6 @@ export function Dashboard({
 					statsAPI.getSiteStats(),
 					userName ? statsAPI.getUserStats(userName) : Promise.resolve(null),
 				]);
-
 				if (site) {
 					setSiteStats({
 						totalNames: site.totalNames || 0,
@@ -162,7 +224,6 @@ export function Dashboard({
 		fetchStats();
 	}, [userName]);
 
-	// Fetch hidden names (admin only)
 	useEffect(() => {
 		if (isAdmin && showHiddenNames) {
 			const fetchHidden = async () => {
@@ -178,14 +239,10 @@ export function Dashboard({
 	}, [isAdmin, showHiddenNames]);
 
 	const handleUnhideName = async (nameId: string | number) => {
-		if (!userName) {
-			return;
-		}
+		if (!userName) return;
 		try {
 			const result = await hiddenNamesAPI.unhideName(userName, nameId);
-			if (!result.success) {
-				throw new Error(result.error || "Failed to unhide name");
-			}
+			if (!result.success) throw new Error(result.error || "Failed to unhide name");
 			setHiddenNames((prev) => prev.filter((n) => n.id !== nameId));
 		} catch (error) {
 			console.error("Failed to unhide name:", error);
@@ -193,25 +250,26 @@ export function Dashboard({
 	};
 
 	return (
-		<div className="dashboard-container space-y-6 sm:space-y-10">
-			{/* User Profile Section - when logged in */}
+		<div className="dashboard-container space-y-8 sm:space-y-10 w-full">
+
+			{/* ── User Profile ── */}
 			{isLoggedIn && userName && (
-				<div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-lg sm:rounded-xl p-4 sm:p-6">
+				<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-5 sm:p-6">
 					<div className="flex items-center gap-4">
 						{avatarUrl ? (
 							<img
 								src={avatarUrl}
 								alt={userName}
-								className="w-16 h-16 rounded-full object-cover border-2 border-primary/30"
+								className="size-14 rounded-full object-cover ring-2 ring-primary/20 ring-offset-2 ring-offset-card"
 							/>
 						) : (
-							<div className="w-16 h-16 rounded-full bg-primary/20 border-2 border-primary/30 flex items-center justify-center">
-								<User size={24} className="text-primary" />
+							<div className="size-14 rounded-full bg-primary/10 ring-2 ring-primary/20 ring-offset-2 ring-offset-card flex items-center justify-center">
+								<User size={22} className="text-primary" />
 							</div>
 						)}
-						<div className="flex-1">
-							<h2 className="text-2xl sm:text-3xl font-bold text-foreground">{userName}</h2>
-							<p className="text-sm text-muted-foreground mt-1">
+						<div className="flex-1 min-w-0">
+							<h2 className="text-xl sm:text-2xl font-bold text-foreground truncate">{userName}</h2>
+							<p className="text-xs text-muted-foreground mt-0.5">
 								{isAdmin ? "Administrator" : "Tournament Participant"}
 							</p>
 						</div>
@@ -219,312 +277,190 @@ export function Dashboard({
 				</div>
 			)}
 
-			{/* Personal Results with Ranking Adjustment */}
+			{/* ── Personal Results ── */}
 			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
 				<PersonalResults
 					personalRatings={personalRatings}
 					currentTournamentNames={currentTournamentNames}
-					onStartNew={
-						onStartNew ||
-						(() => {
-							// Default no-op
-						})
-					}
+					onStartNew={onStartNew || (() => {})}
 					onUpdateRatings={onUpdateRatings}
 					userName={userName}
 				/>
 			)}
 
-			{/* Random Name Generator */}
-			<div className="py-2">
+			{/* ── Random Generator ── */}
+			<div>
 				<Suspense fallback={<div className="p-4">Loading...</div>}>
 					<RandomGenerator fetchNames={() => coreAPI.getTrendingNames(false)} />
 				</Suspense>
 			</div>
 
-			{/* User Stats */}
+			{/* ── Your Stats ── */}
 			{userName && userStats && (
-				<div className="py-2">
-					<div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-						<BarChart3 className="text-primary" size={20} />
-						<h3 className="text-lg sm:text-xl font-semibold text-foreground">Your Stats</h3>
-					</div>
-					<div className="grid grid-cols-2 gap-3 sm:gap-4">
-						<div className="py-2">
-							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Ratings</p>
-							<p className="text-xl sm:text-2xl font-bold text-foreground">
-								{userStats.totalRatings}
-							</p>
-						</div>
-						<div className="py-2">
-							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Selected</p>
-							<p className="text-xl sm:text-2xl font-bold text-foreground">
-								{userStats.totalSelections}
-							</p>
-						</div>
-						<div className="py-2">
-							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Wins</p>
-							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.totalWins}</p>
-						</div>
-						<div className="py-2">
-							<p className="text-xs sm:text-sm text-muted-foreground mb-1">Win Rate</p>
-							<p className="text-xl sm:text-2xl font-bold text-foreground">{userStats.winRate}%</p>
-						</div>
+				<div>
+					<SectionHeader icon={BarChart3} title="Your Stats" />
+					<div className="grid grid-cols-2 gap-3">
+						<StatCard label="Ratings" value={userStats.totalRatings} icon={BarChart3} />
+						<StatCard label="Selected" value={userStats.totalSelections} icon={Target} />
+						<StatCard label="Wins" value={userStats.totalWins} icon={Trophy} accent />
+						<StatCard label="Win Rate" value={`${userStats.winRate}%`} icon={TrendingUp} accent />
 					</div>
 				</div>
 			)}
 
-			{/* Global Leaderboard */}
-			<div className="py-2">
-				<div className="flex items-center justify-between mb-3 sm:mb-4">
-					<div className="flex items-center gap-2 sm:gap-3">
-						<Trophy className="text-chart-4" size={20} />
-						<h3 className="text-lg sm:text-xl font-semibold text-foreground">Top Names</h3>
-					</div>
-					{onStartNew && (
-						<Button variant="ghost" size="small" onClick={onStartNew}>
-							Start New Tournament
-						</Button>
-					)}
-				</div>
+			{/* ── Global Leaderboard ── */}
+			<div>
+				<SectionHeader
+					icon={Trophy}
+					title="Top Names"
+					action={
+						onStartNew ? (
+							<Button variant="ghost" size="small" onClick={onStartNew}>
+								New Tournament
+							</Button>
+						) : undefined
+					}
+				/>
 
 				{isLoadingLeaderboard ? (
 					<Loading variant="skeleton" height={300} />
 				) : leaderboard.length > 0 ? (
-					<div className="space-y-2">
+					<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm overflow-hidden">
 						{leaderboard.map((entry, index) => (
 							<div
 								key={entry.name}
-								className="flex items-center gap-4 py-3 border-b border-border/10"
+								className={`flex items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-foreground/[0.03] ${index < leaderboard.length - 1 ? "border-b border-border/20" : ""}`}
 							>
 								<div
-									className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+									className={`flex-shrink-0 size-8 rounded-full flex items-center justify-center text-sm font-bold ${
 										index === 0
-											? "bg-chart-4 text-background"
+											? "bg-chart-4/20 text-chart-4 ring-1 ring-chart-4/30"
 											: index === 1
-												? "bg-secondary text-secondary-foreground"
+												? "bg-secondary/30 text-secondary-foreground"
 												: index === 2
-													? "bg-chart-1 text-primary-foreground"
-													: "bg-foreground/10 text-muted-foreground"
+													? "bg-chart-1/20 text-chart-1"
+													: "bg-muted/50 text-muted-foreground"
 									}`}
 								>
 									{index + 1}
 								</div>
 								<div className="flex-1 min-w-0">
-									<p className="font-semibold text-foreground truncate">{entry.name}</p>
-									<p className="text-xs text-muted-foreground">
-										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} •{" "}
-										{entry.wins} win{entry.wins !== 1 ? "s" : ""}
+									<p className="font-semibold text-foreground text-sm truncate">{entry.name}</p>
+									<p className="text-[11px] text-muted-foreground">
+										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} · {entry.wins} win{entry.wins !== 1 ? "s" : ""}
 									</p>
 								</div>
-								<div className="text-right">
-									<p className="text-lg font-bold text-primary">{Math.round(entry.avg_rating)}</p>
-									<p className="text-xs text-muted-foreground">rating</p>
+								<div className="text-right flex-shrink-0">
+									<p className="text-base font-bold text-primary tabular-nums">{Math.round(entry.avg_rating)}</p>
 								</div>
 							</div>
 						))}
 					</div>
 				) : (
-					<p className="text-center text-muted-foreground py-8">
-						No ratings yet. Start a tournament!
-					</p>
+					<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-8 text-center">
+						<p className="text-sm text-muted-foreground">No ratings yet. Start a tournament!</p>
+					</div>
 				)}
 			</div>
 
-			{/* Site Statistics */}
+			{/* ── Site Statistics ── */}
 			{siteStats && (
-				<div className="py-2">
-					<h3 className="text-xl font-semibold text-foreground mb-4">Site Statistics</h3>
-					<div className="grid grid-cols-2 gap-3 sm:gap-4">
-						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Total Names</p>
-							<p className="text-2xl font-bold text-foreground">{siteStats.totalNames}</p>
-						</div>
-						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Active Names</p>
-							<p className="text-2xl font-bold text-foreground">{siteStats.activeNames}</p>
-						</div>
-						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Total Users</p>
-							<p className="text-2xl font-bold text-foreground">{siteStats.totalUsers}</p>
-						</div>
-						<div className="py-2">
-							<p className="text-sm text-muted-foreground mb-1">Avg Rating</p>
-							<p className="text-2xl font-bold text-foreground">
-								{Math.round(siteStats.avgRating)}
-							</p>
-						</div>
+				<div>
+					<SectionHeader icon={BarChart3} title="Site Statistics" />
+					<div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+						<StatCard label="Total Names" value={siteStats.totalNames} icon={Activity} />
+						<StatCard label="Active Names" value={siteStats.activeNames} icon={Target} />
+						<StatCard label="Total Users" value={siteStats.totalUsers} icon={Users} />
+						<StatCard label="Avg Rating" value={Math.round(siteStats.avgRating)} icon={TrendingUp} accent />
 						{isAdmin && (
-							<div className="py-2">
-								<p className="text-sm text-chart-4/80 mb-1">Hidden Names</p>
-								<p className="text-2xl font-bold text-chart-4">{siteStats.hiddenNames}</p>
-							</div>
+							<StatCard label="Hidden Names" value={siteStats.hiddenNames} icon={EyeOff} />
 						)}
 					</div>
 				</div>
 			)}
 
-			{/* Engagement Metrics */}
+			{/* ── Engagement Metrics ── */}
 			{engagementMetrics && (
-				<div className="py-4">
-					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-4">
-						<div className="flex items-center gap-2 sm:gap-3">
-							<TrendingUp className="text-chart-4" size={20} />
-							<h3 className="text-lg sm:text-xl font-semibold text-chart-4">Engagement</h3>
-						</div>
-						<div className="flex gap-2 w-full sm:w-auto">
-							<select
-								value={timeframe}
-								onChange={(e) => setTimeframe(e.target.value as "day" | "week" | "month")}
-								className="flex-1 sm:flex-none px-3 py-1.5 sm:py-2 border border-border rounded-lg bg-background text-foreground text-sm"
-							>
-								<option value="day">24h</option>
-								<option value="week">Week</option>
-								<option value="month">Month</option>
-							</select>
-							<Button
-								variant="ghost"
-								size="small"
-								onClick={() => fetchEngagementMetrics()}
-								disabled={_isLoadingStats}
-							>
-								<Activity size={16} className="mr-1" />
-								Refresh
-							</Button>
-						</div>
-					</div>
+				<div>
+					<SectionHeader
+						icon={TrendingUp}
+						title="Engagement"
+						action={
+							<div className="flex gap-2">
+								<select
+									value={timeframe}
+									onChange={(e) => setTimeframe(e.target.value as "day" | "week" | "month")}
+									className="px-2.5 py-1.5 border border-border/40 rounded-lg bg-card/60 text-foreground text-xs backdrop-blur-sm"
+								>
+									<option value="day">24h</option>
+									<option value="week">Week</option>
+									<option value="month">Month</option>
+								</select>
+								<Button
+									variant="ghost"
+									size="small"
+									onClick={() => fetchEngagementMetrics()}
+									disabled={_isLoadingStats}
+								>
+									<Activity size={14} className="mr-1" />
+									Refresh
+								</Button>
+							</div>
+						}
+					/>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-						<div className="p-4 border border-border rounded-lg bg-card">
-							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Total Tournaments</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.totalTournaments}
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<Trophy className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Completed</p>
-									<p className="text-2xl font-bold text-chart-4">
-										{engagementMetrics.completedTournaments}
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<Clock className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Avg Duration</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.averageTournamentTime}m
-									</p>
-								</div>
-							</div>
-						</div>
-
-						<div className="p-4 border border-border rounded-lg bg-card">
-							<div className="flex items-center gap-2 mb-2">
-								<Target className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Peak Active Users</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.peakActiveUsers}
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<Activity className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">User Retention</p>
-									<p className="text-2xl font-bold text-chart-4">
-										{engagementMetrics.userRetentionRate}%
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<BarChart3 className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Bounce Rate</p>
-									<p className="text-2xl font-bold text-chart-4">{engagementMetrics.bounceRate}%</p>
-								</div>
-							</div>
-						</div>
-
-						<div className="p-4 border border-border rounded-lg bg-card">
-							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Daily Active</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.dailyActiveUsers}
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Weekly Active</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.weeklyActiveUsers}
-									</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 mb-2">
-								<Users className="text-chart-4" size={20} />
-								<div>
-									<p className="text-sm text-muted-foreground">Monthly Active</p>
-									<p className="text-2xl font-bold text-foreground">
-										{engagementMetrics.monthlyActiveUsers}
-									</p>
-								</div>
-							</div>
-						</div>
+					<div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+						<StatCard label="Tournaments" value={engagementMetrics.totalTournaments} icon={Users} />
+						<StatCard label="Completed" value={engagementMetrics.completedTournaments} icon={Trophy} accent />
+						<StatCard label="Avg Duration" value={`${engagementMetrics.averageTournamentTime}m`} icon={Clock} />
+						<StatCard label="Peak Users" value={engagementMetrics.peakActiveUsers} icon={Target} />
+						<StatCard label="Retention" value={`${engagementMetrics.userRetentionRate}%`} icon={Activity} accent />
+						<StatCard label="Bounce Rate" value={`${engagementMetrics.bounceRate}%`} icon={BarChart3} />
+						<StatCard label="Daily Active" value={engagementMetrics.dailyActiveUsers} icon={Users} />
+						<StatCard label="Weekly Active" value={engagementMetrics.weeklyActiveUsers} icon={Users} />
+						<StatCard label="Monthly Active" value={engagementMetrics.monthlyActiveUsers} icon={Users} />
 					</div>
 				</div>
 			)}
 
-			{/* Admin: Hidden Names Management */}
+			{/* ── Admin: Hidden Names ── */}
 			{isAdmin && (
-				<div className="py-2">
-					<div className="flex items-center justify-between mb-4">
-						<div className="flex items-center gap-3">
-							<EyeOff className="text-chart-4" size={24} />
-							<h3 className="text-xl font-semibold text-chart-4">Admin: Hidden Names</h3>
-						</div>
-						<Button
-							variant="ghost"
-							size="small"
-							onClick={() => setShowHiddenNames(!showHiddenNames)}
-						>
-							{showHiddenNames ? "Hide List" : "Show List"}
-						</Button>
-					</div>
+				<div>
+					<SectionHeader
+						icon={EyeOff}
+						title="Hidden Names"
+						action={
+							<Button
+								variant="ghost"
+								size="small"
+								onClick={() => setShowHiddenNames(!showHiddenNames)}
+							>
+								{showHiddenNames ? "Hide List" : "Show List"}
+							</Button>
+						}
+					/>
 
 					{showHiddenNames && (
-						<div className="space-y-2">
+						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm overflow-hidden">
 							{hiddenNames.length > 0 ? (
-								hiddenNames.map((name) => (
+								hiddenNames.map((name, i) => (
 									<div
 										key={name.id}
-										className="flex items-center justify-between py-3 border-b border-border/10"
+										className={`flex items-center justify-between px-4 py-3 ${i < hiddenNames.length - 1 ? "border-b border-border/20" : ""}`}
 									>
-										<span className="text-foreground font-medium">{name.name}</span>
+										<span className="text-sm font-medium text-foreground">{name.name}</span>
 										<Button
 											variant="ghost"
 											size="small"
 											onClick={() => handleUnhideName(name.id)}
-											className="text-chart-2 hover:text-chart-2/80"
 										>
-											<Eye size={16} className="mr-1" />
+											<Eye size={14} className="mr-1" />
 											Unhide
 										</Button>
 									</div>
 								))
 							) : (
-								<p className="text-center text-muted-foreground py-4">No hidden names</p>
+								<p className="text-center text-sm text-muted-foreground py-6">No hidden names</p>
 							)}
 						</div>
 					)}
