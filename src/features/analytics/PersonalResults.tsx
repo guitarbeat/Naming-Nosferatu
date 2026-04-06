@@ -1,7 +1,7 @@
 import { Button as HeroButton } from "@heroui/react";
 import { useToast } from "@/app/providers/Providers";
 import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
-import { Plus } from "@/shared/lib/icons";
+import { Plus, Trophy, Star, Hash } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RankingAdjustment } from "./RankingAdjustment";
 
@@ -17,6 +17,24 @@ interface PersonalResultsProps {
 	userName?: string;
 }
 
+function HighlightCard({
+	emoji,
+	label,
+	value,
+}: {
+	emoji: string;
+	label: string;
+	value: string | number;
+}) {
+	return (
+		<div className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 text-center">
+			<span className="text-3xl select-none">{emoji}</span>
+			<p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{label}</p>
+			<p className="text-lg font-bold text-foreground truncate max-w-full">{value}</p>
+		</div>
+	);
+}
+
 export const PersonalResults = ({
 	personalRatings,
 	currentTournamentNames,
@@ -30,27 +48,11 @@ export const PersonalResults = ({
 	const { showToast } = useToast();
 
 	return (
-		<div className="flex flex-col gap-6 w-full">
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				<div className="flex flex-col items-center justify-center gap-2 py-6 text-center">
-					<span className="text-4xl select-none">🏆</span>
-					<h3 className="text-sm font-medium text-muted-foreground">Champion</h3>
-					<p className="text-xl font-bold text-foreground truncate max-w-full">
-						{rankings[0]?.name || "-"}
-					</p>
-				</div>
-
-				<div className="flex flex-col items-center justify-center gap-2 py-6 text-center">
-					<span className="text-4xl select-none">⭐</span>
-					<h3 className="text-sm font-medium text-muted-foreground">Highest Rated</h3>
-					<p className="text-xl font-bold text-foreground">{String(rankings[0]?.rating || 1500)}</p>
-				</div>
-
-				<div className="flex flex-col items-center justify-center gap-2 py-6 text-center">
-					<span className="text-4xl select-none">📝</span>
-					<h3 className="text-sm font-medium text-muted-foreground">Names Ranked</h3>
-					<p className="text-xl font-bold text-foreground">{rankings.length}</p>
-				</div>
+		<div className="flex flex-col gap-5 w-full">
+			<div className="grid grid-cols-3 gap-3">
+				<HighlightCard emoji="🏆" label="Champion" value={rankings[0]?.name || "—"} />
+				<HighlightCard emoji="⭐" label="Top Rating" value={String(rankings[0]?.rating || 1500)} />
+				<HighlightCard emoji="📝" label="Ranked" value={rankings.length} />
 			</div>
 
 			<RankingAdjustment
@@ -72,12 +74,12 @@ export const PersonalResults = ({
 				onCancel={onStartNew}
 			/>
 
-			<div className="flex flex-wrap gap-3 justify-end">
+			<div className="flex justify-end">
 				<HeroButton
 					onClick={onStartNew}
 					variant="flat"
-					className="bg-primary/20 hover:bg-primary/30 text-foreground"
-					startContent={<Plus size={18} />}
+					className="bg-primary/15 hover:bg-primary/25 text-foreground text-sm"
+					startContent={<Plus size={16} />}
 				>
 					New Tournament
 				</HeroButton>
