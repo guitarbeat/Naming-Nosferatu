@@ -20,6 +20,10 @@ vi.mock("@/store/appStore", () => ({
 	default: () => mockStore,
 }));
 
+vi.mock("@/shared/lib/constants", () => ({
+	CAT_IMAGES: ["https://example.com/cat.jpg"],
+}));
+
 vi.mock("@/shared/components/layout", () => {
 	return {
 		Button: ({
