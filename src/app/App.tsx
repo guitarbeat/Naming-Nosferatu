@@ -322,10 +322,49 @@ function HomeContent() {
 function TournamentContent() {
         const { user, tournament, tournamentActions } = useAppStore();
         const navigate = useNavigate();
-        const { handleTournamentComplete } = useTournamentHandlers({
+        const { handleTournamentComplete, handleStartNewTournament } = useTournamentHandlers({
                 userName: user.name,
                 tournamentActions,
         });
+        const { ratingsAPI } = useQuery({});
+
+        // Save tournament results to Supabase when tournament completes
+        useEffect(() => {
+                if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
+                        const userId = user.name || "anonymous";
+
+                        // Compute per-name wins and losses from the vote history
+                        const winsByName: Record<string, number> = {};
+                        const lossesByName: Record<string, number> = {};
+
+                        // For 1v1 tournaments, count wins and losses from vote history
+                        // Note: vote history is managed by useTournamentState in localStorage
+                        // We'll just use the ratings as-is since vote history is not exposed here
+
+                        const ratingsWithStats = Object.entries(tournament.ratings).reduce(
+                                (acc, [nameId, ratingData]) => {
+                                        const rating = typeof ratingData === "number" ? ratingData : ratingData.rating ?? 1500;
+                                        acc[nameId] = {
+                                                rating,
+                                                wins: (ratingData as any)?.wins ?? 0,
+                                                losses: (ratingData as any)?.losses ?? 0,
+                                        };
+                                        return acc;
+                                },
+                                {} as Record<string, { rating: number; wins: number; losses: number }>,
+                        );
+
+                        ratingsAPI.saveRatings(userId, ratingsWithStats)
+                                .then((result) => {
+                                        if (result?.success) {
+                                                console.log(`Tournament results saved: ${result.count} ratings`);
+                                        }
+                                })
+                                .catch((err) => {
+                                        console.warn("Tournament results save failed (non-fatal):", err);
+                                });
+                }
+        }, [tournament.isComplete, tournament.ratings, user.name, ratingsAPI]);
 
         return (
                 <Section id="tournament" variant="minimal" padding="compact" maxWidth="full">
