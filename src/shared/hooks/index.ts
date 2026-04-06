@@ -340,6 +340,20 @@ export function useLocalStorage<T>(
                 // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [key, options.debounceWait]);
 
+        // Flush synchronously on page unload (refresh / tab close) so debounced
+        // writes that haven't fired yet are not lost.
+        useEffect(() => {
+                if (!options.debounceWait || !IS_BROWSER) {
+                        return;
+                }
+                const handleBeforeUnload = () => {
+                        writeStorageJson(key, valueRef.current);
+                };
+                window.addEventListener("beforeunload", handleBeforeUnload);
+                return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [key, options.debounceWait]);
+
         const setValue = useCallback(
                 (next: SetStateAction<T>) => {
                         try {

@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/app/providers/Providers";
 import { Trophy } from "@/shared/lib/icons";
 import { ratingsAPI } from "@/shared/services/supabase/api";
 import useAppStore from "@/store/appStore";
@@ -16,6 +17,7 @@ import { useTournamentHandlers } from "../hooks";
 export default function TournamentFlow() {
         const { user, tournament, tournamentActions } = useAppStore();
         const navigate = useNavigate();
+        const toast = useToast();
 
         const { handleStartNewTournament } = useTournamentHandlers({
                 userName: user.name,
@@ -88,8 +90,10 @@ export default function TournamentFlow() {
                                         }
                                 })
                                 .catch((_error) => {
-                                        // Error is already logged by ratingsAPI with context
                                         console.warn("Tournament ratings save failed — ratings were not persisted");
+                                        toast.showWarning(
+                                                "Your tournament results could not be saved to the database. Your local rankings are still intact, but they won't appear in the global leaderboard.",
+                                        );
                                 });
                 }
         }, [saveRatingsMutation, tournament.isComplete, tournament.ratings, user.name]);
