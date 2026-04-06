@@ -2,6 +2,15 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { forwardRef } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@/shared/components/profile/ProfileInner", () => ({
+	ProfileInner: ({ onLogin }: { onLogin: (name: string) => Promise<boolean | undefined> }) => {
+		// Re-export handled by the actual test below using the real mock
+		return null;
+	},
+}));
+
+// Re-import after mock setup
 import { ProfileInner } from "./ProfileSection";
 
 const mockLogout = vi.fn();
