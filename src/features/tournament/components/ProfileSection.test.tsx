@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { forwardRef } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ProfileInner } from "./ProfileSection";
+import { ProfileInner } from "@/shared/components/profile/ProfileInner";
 
 const mockLogout = vi.fn();
 const mockStore = {
