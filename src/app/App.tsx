@@ -310,13 +310,21 @@ function HomeContent() {
                                 </motion.div>
                         </section>
 
-                        <Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
-                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
-                                        <TournamentFlow />
-                                </Suspense>
-                        </Section>
-                </>
-        );
+		<Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
+				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+					<TournamentFlow />
+				</Suspense>
+			</Section>
+
+			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+				<NameSuggestionInner />
+			</Section>
+
+			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+				<ProfileInner onLogin={(name) => login({ name })} />
+			</Section>
+		</>
+	);
 }
 
 function TournamentContent() {
