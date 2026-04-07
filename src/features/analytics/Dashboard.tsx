@@ -22,6 +22,10 @@ import {
 import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase/api";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
+import { RatingDistributionChart } from "./components/RatingDistributionChart";
+import { RatingRadarChart } from "./components/RatingRadarChart";
+import { TopNamesChart } from "./components/TopNamesChart";
+import { WinLossChart } from "./components/WinLossChart";
 import { PersonalResults } from "./PersonalResults";
 
 // ============================================================================
