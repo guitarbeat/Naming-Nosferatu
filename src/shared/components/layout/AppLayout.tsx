@@ -18,7 +18,7 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-	const { user, tournament, errors, errorActions, ui, uiActions } = useAppStore();
+	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
 
 	return (
