@@ -78,16 +78,16 @@ function StatCard({
 	accent?: boolean;
 }) {
 	return (
-		<div className="group relative rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 transition-colors hover:bg-card/60">
+		<div className="group relative rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 transition-all duration-200 ease-out hover:bg-card/60 hover:border-border/50 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5">
 			<div className="flex items-start gap-3">
 				{Icon && (
-					<div className={`rounded-lg p-2 ${accent ? "bg-primary/15 text-primary" : "bg-muted/50 text-muted-foreground"}`}>
+					<div className={`rounded-lg p-2 transition-all duration-200 ${accent ? "bg-primary/15 text-primary group-hover:bg-primary/20 group-hover:scale-110" : "bg-muted/50 text-muted-foreground group-hover:bg-muted/70 group-hover:scale-110"}`}>
 						<Icon size={16} />
 					</div>
 				)}
 				<div className="flex-1 min-w-0">
-					<p className="text-xs font-medium text-muted-foreground mb-1">{label}</p>
-					<p className={`text-xl font-bold tabular-nums ${accent ? "text-primary" : "text-foreground"}`}>
+					<p className="text-xs font-medium text-muted-foreground mb-1 transition-colors duration-200 group-hover:text-muted-foreground/80">{label}</p>
+					<p className={`text-xl font-bold tabular-nums transition-colors duration-200 ${accent ? "text-primary group-hover:text-primary/90" : "text-foreground"}`}>
 						{value}
 					</p>
 				</div>
