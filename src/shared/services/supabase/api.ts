@@ -54,35 +54,6 @@ interface ApplyTournamentMatchParams {
         winnerSide: "left" | "right" | "tie";
 }
 
-interface ApplyTournamentMatchEloArgs {
-        p_user_name: string;
-        p_left_name_ids: string[];
-        p_right_name_ids: string[];
-        p_winner_side: "left" | "right" | "tie";
-}
-
-interface ApplyTournamentMatchEloRow {
-        name_id: string;
-        rating: number | null;
-        wins: number | null;
-        losses: number | null;
-}
-
-interface SaveUserRatingsArgs {
-        p_user_name: string;
-        p_ratings: Array<{ nameId: string; rating: number; wins: number; losses: number }>;
-}
-
-interface SaveUserRatingsResponse {
-        success: boolean;
-        count: number;
-}
-
-type SupabaseClientWithCustomRpcs = {
-        rpc(fn: "apply_tournament_match_elo", args: ApplyTournamentMatchEloArgs): Promise<{ data: ApplyTournamentMatchEloRow[] | null; error: { message: string } | null }>;
-        rpc(fn: "save_user_ratings", args: SaveUserRatingsArgs): Promise<{ data: SaveUserRatingsResponse | null; error: { message: string } | null }>;
-};
-
 const trendingNamesRequests = new Map<string, PendingRequest<NameItem[]>>();
 
 // Field mapping utilities — must be defined before mapNameRow to avoid TDZ errors
@@ -423,8 +394,8 @@ export const ratingsAPI = {
                         throw new Error("Supabase client not available");
                 }
 
-                const typedClient = client as unknown as SupabaseClientWithCustomRpcs;
-                const { data, error } = await typedClient.rpc("apply_tournament_match_elo", {
+                // @ts-expect-error - apply_tournament_match_elo is a custom RPC not yet reflected in generated types
+                const { data, error } = await client.rpc("apply_tournament_match_elo", {
                         p_user_name: userName.trim(),
                         p_left_name_ids: leftNameIds,
                         p_right_name_ids: rightNameIds,
@@ -438,7 +409,12 @@ export const ratingsAPI = {
                 return (data ?? []).reduce(
                         (
                                 acc: Record<string, { rating: number; wins: number; losses: number }>,
-                                row: ApplyTournamentMatchEloRow,
+                                row: {
+                                        name_id: string;
+                                        rating: number | null;
+                                        wins: number | null;
+                                        losses: number | null;
+                                },
                         ) => {
                                 acc[String(row.name_id)] = {
                                         rating: Number(row.rating ?? 1500),
@@ -471,8 +447,8 @@ export const ratingsAPI = {
                         throw new Error('Supabase client not available');
                 }
 
-                const typedClient = client as unknown as SupabaseClientWithCustomRpcs;
-                const { data, error } = await typedClient.rpc('save_user_ratings', {
+                // @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
+                const { data, error } = await client.rpc('save_user_ratings', {
                         p_user_name: userId,
                         p_ratings: ratingsList,
                 });
@@ -481,7 +457,7 @@ export const ratingsAPI = {
                         throw new Error(error.message || 'Failed to save ratings');
                 }
 
-                const response = data as SaveUserRatingsResponse | null;
+                const response = data as { success: boolean; count: number } | null;
                 if (!response?.success) {
                         throw new Error('Failed to save ratings: RPC returned failure');
                 }

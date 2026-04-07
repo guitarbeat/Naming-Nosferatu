@@ -39,7 +39,6 @@ class RealtimeService {
         private dbChannel: RealtimeChannel | null = null;
         private appChannel: RealtimeChannel | null = null;
         private tournamentChannels = new Map<string, RealtimeChannel>();
-        private pendingTournamentChannels = new Map<string, Promise<void>>();
         private connectionState: ConnectionState = "disconnected";
         private nameChangeCallbacks: Array<(payload: unknown) => void> = [];
         private ratingChangeCallbacks: Array<(payload: unknown) => void> = [];
@@ -157,14 +156,13 @@ class RealtimeService {
                 tournamentId: string,
                 callback: (update: TournamentUpdate) => void,
         ): () => void {
+                let channel = this.tournamentChannels.get(tournamentId);
                 let cancelled = false;
 
-                const existingChannel = this.tournamentChannels.get(tournamentId);
-                if (!existingChannel && !this.pendingTournamentChannels.has(tournamentId)) {
-                        const pending = resolveSupabaseClient().then((client) => {
+                if (!channel) {
+                        resolveSupabaseClient().then((client) => {
                                 if (!client || cancelled) return;
-                                if (this.tournamentChannels.has(tournamentId)) return;
-                                const channel = client
+                                channel = client
                                         .channel(`tournament:${tournamentId}`)
                                         .on("broadcast", { event: "tournament_update" }, (payload) => {
                                                 const update = payload.payload as TournamentUpdate;
@@ -174,10 +172,7 @@ class RealtimeService {
                                 if (!cancelled) {
                                         this.tournamentChannels.set(tournamentId, channel as RealtimeChannel);
                                 }
-                        }).finally(() => {
-                                this.pendingTournamentChannels.delete(tournamentId);
                         });
-                        this.pendingTournamentChannels.set(tournamentId, pending);
                 }
 
                 return () => {

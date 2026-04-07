@@ -160,8 +160,8 @@ export const statsAPI = {
 					.gte("created_at", startDate.toISOString()),
 				client
 					.from("user_cat_name_ratings")
-					.select("user_name, updated_at", { count: "exact", head: true })
-					.gte("updated_at", startDate.toISOString()),
+					.select("user_name, created_at", { count: "exact", head: true })
+					.gte("created_at", startDate.toISOString()),
 			]);
 
 			const totalMatches = (

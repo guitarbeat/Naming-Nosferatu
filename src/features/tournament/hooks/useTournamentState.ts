@@ -247,6 +247,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                 namesKey,
                 names.length,
                 tournamentMode,
+                persistentState.bracketEntrants.filter,
                 persistentState.bracketEntrants,
                 persistentState.currentRound,
                 persistentState.matchHistory,
@@ -256,8 +257,9 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
                 persistentState.teams,
                 persistentState.currentMatch,
                 updatePersistentState,
+                names.map,
                 names,
-        ]);
+        ]); // Reduced dependency array
 
         const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
         const teamsById = useMemo(() => createTeamsById(persistentState.teams), [persistentState.teams]);

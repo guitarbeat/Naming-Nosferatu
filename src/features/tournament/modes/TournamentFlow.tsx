@@ -5,9 +5,8 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/app/providers/Providers";
 import { Trophy } from "@/shared/lib/icons";
 import { ratingsAPI } from "@/shared/services/supabase/api";
 import useAppStore from "@/store/appStore";
@@ -17,9 +16,6 @@ import { useTournamentHandlers } from "../hooks";
 export default function TournamentFlow() {
         const { user, tournament, tournamentActions } = useAppStore();
         const navigate = useNavigate();
-        const toast = useToast();
-        const toastRef = useRef(toast);
-        toastRef.current = toast;
 
         const { handleStartNewTournament } = useTournamentHandlers({
                 userName: user.name,
@@ -35,83 +31,68 @@ export default function TournamentFlow() {
                 }) => ratingsAPI.saveRatings(userId, ratings),
         });
 
-        // Stable ref so the effect never re-runs just because the mutation object changed
-        const mutateAsyncRef = useRef(saveRatingsMutation.mutateAsync);
-        mutateAsyncRef.current = saveRatingsMutation.mutateAsync;
-
-        // Guard: only save once per tournament completion; reset when a new tournament begins
-        const hasSavedRef = useRef(false);
-
         useEffect(() => {
-                if (!tournament.isComplete) {
-                        hasSavedRef.current = false;
-                        return;
-                }
-                if (hasSavedRef.current || Object.keys(tournament.ratings).length === 0) {
-                        return;
-                }
+                if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
+                        const userId = user.name || "anonymous";
 
-                hasSavedRef.current = true;
-                const userId = user.name || "anonymous";
+                        // Compute per-name wins and losses from the vote history
+                        const winsByName: Record<string, number> = {};
+                        const lossesByName: Record<string, number> = {};
 
-                // Compute per-name wins and losses from the vote history
-                const winsByName: Record<string, number> = {};
-                const lossesByName: Record<string, number> = {};
+                        // Check if this is a 2v2 tournament by seeing if vote IDs exist in ratings
+                        // For 2v2, vote IDs are team IDs (not in ratings); for 1v1, they're name IDs (in ratings)
+                        const nameIds = new Set(Object.keys(tournament.ratings));
+                        let is2v2Tournament = false;
 
-                // Check if this is a 2v2 tournament by seeing if vote IDs exist in ratings
-                // For 2v2, vote IDs are team IDs (not in ratings); for 1v1, they're name IDs (in ratings)
-                const nameIds = new Set(Object.keys(tournament.ratings));
-                let is2v2Tournament = false;
-
-                for (const vote of tournament.voteHistory) {
-                        const wId = String(vote.winnerId);
-                        const lId = String(vote.loserId);
-
-                        // If neither vote ID is in the ratings, it's likely a 2v2 tournament
-                        if (!nameIds.has(wId) && !nameIds.has(lId)) {
-                                is2v2Tournament = true;
-                                break;
-                        }
-                }
-
-                // Only count wins/losses for 1v1 tournaments
-                // For 2v2, we would need team membership data which is not available here
-                if (!is2v2Tournament) {
                         for (const vote of tournament.voteHistory) {
                                 const wId = String(vote.winnerId);
                                 const lId = String(vote.loserId);
-                                winsByName[wId] = (winsByName[wId] ?? 0) + 1;
-                                lossesByName[lId] = (lossesByName[lId] ?? 0) + 1;
-                        }
-                }
 
-                const ratingsWithStats = Object.entries(tournament.ratings).reduce(
-                        (acc, [nameId, ratingData]) => {
-                                const rating =
-                                        typeof ratingData === "number" ? ratingData : ratingData.rating;
-                                acc[nameId] = {
-                                        rating,
-                                        wins: winsByName[nameId] ?? 0,
-                                        losses: lossesByName[nameId] ?? 0,
-                                };
-                                return acc;
-                        },
-                        {} as Record<string, { rating: number; wins: number; losses: number }>,
-                );
-
-                mutateAsyncRef.current({ userId, ratings: ratingsWithStats })
-                        .then((result) => {
-                                if (result?.success) {
-                                        console.log(`Successfully saved ${result.count} ratings to database`);
+                                // If neither vote ID is in the ratings, it's likely a 2v2 tournament
+                                if (!nameIds.has(wId) && !nameIds.has(lId)) {
+                                        is2v2Tournament = true;
+                                        break;
                                 }
-                        })
-                        .catch((_error) => {
-                                console.warn("Tournament ratings save failed — ratings were not persisted");
-                                toastRef.current.showWarning(
-                                        "Your tournament results could not be saved to the database. Your local rankings are still intact, but they won't appear in the global leaderboard.",
-                                );
-                        });
-        }, [tournament.isComplete, tournament.ratings, user.name]);
+                        }
+
+                        // Only count wins/losses for 1v1 tournaments
+                        // For 2v2, we would need team membership data which is not available here
+                        if (!is2v2Tournament) {
+                                for (const vote of tournament.voteHistory) {
+                                        const wId = String(vote.winnerId);
+                                        const lId = String(vote.loserId);
+                                        winsByName[wId] = (winsByName[wId] ?? 0) + 1;
+                                        lossesByName[lId] = (lossesByName[lId] ?? 0) + 1;
+                                }
+                        }
+
+                        const ratingsWithStats = Object.entries(tournament.ratings).reduce(
+                                (acc, [nameId, ratingData]) => {
+                                        const rating =
+                                                typeof ratingData === "number" ? ratingData : ratingData.rating;
+                                        acc[nameId] = {
+                                                rating,
+                                                wins: winsByName[nameId] ?? 0,
+                                                losses: lossesByName[nameId] ?? 0,
+                                        };
+                                        return acc;
+                                },
+                                {} as Record<string, { rating: number; wins: number; losses: number }>,
+                        );
+
+                        saveRatingsMutation
+                                .mutateAsync({ userId, ratings: ratingsWithStats })
+                                .then((result) => {
+                                        if (result?.success) {
+                                                console.log(`Successfully saved ${result.count} ratings to database`);
+                                        }
+                                })
+                                .catch((_error) => {
+                                        // Error is already logged by ratingsAPI with context
+                                        console.warn("Tournament ratings save failed — ratings were not persisted");
+                                });
+                }
+        }, [saveRatingsMutation, tournament.isComplete, tournament.ratings, user.name]);
 
         return (
                 <div className="w-full flex flex-col gap-2">
