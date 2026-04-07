@@ -20,11 +20,12 @@ import useAppStore from "@/store/appStore";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
 
-type NavSection = "pick" | "suggest";
+type NavSection = "pick" | "suggest" | "profile";
 
 const keyToId: Record<NavSection, string> = {
 	pick: "pick",
 	suggest: "suggest",
+	profile: "profile",
 };
 
 function FloatingNavItem({
