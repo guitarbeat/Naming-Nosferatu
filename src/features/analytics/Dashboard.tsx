@@ -3,7 +3,7 @@
  * @description Dashboard component for analytics and results
  */
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
@@ -22,6 +22,10 @@ import {
 import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase/api";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
+import { RatingDistributionChart } from "./components/RatingDistributionChart";
+import { RatingRadarChart } from "./components/RatingRadarChart";
+import { TopNamesChart } from "./components/TopNamesChart";
+import { WinLossChart } from "./components/WinLossChart";
 import { PersonalResults } from "./PersonalResults";
 
 // ============================================================================
@@ -362,6 +366,41 @@ export function Dashboard({
 					</div>
 				)}
 			</div>
+
+			{/* ── Charts ── */}
+			{leaderboard.length > 0 && (
+				<>
+					<div>
+						<SectionHeader icon={BarChart3} title="Top Names by Rating" />
+						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
+							<TopNamesChart leaderboard={leaderboard} />
+						</div>
+					</div>
+
+					<div>
+						<SectionHeader icon={TrendingUp} title="Win / Loss Breakdown" />
+						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
+							<WinLossChart leaderboard={leaderboard} />
+						</div>
+					</div>
+
+					<div>
+						<SectionHeader icon={Activity} title="Rating Distribution" />
+						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
+							<RatingDistributionChart leaderboard={leaderboard} />
+						</div>
+					</div>
+
+					{leaderboard.length >= 3 && (
+						<div>
+							<SectionHeader icon={Target} title="Name Comparison Radar" />
+							<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
+								<RatingRadarChart leaderboard={leaderboard} />
+							</div>
+						</div>
+					)}
+				</>
+			)}
 
 			{/* ── Site Statistics ── */}
 			{siteStats && (
