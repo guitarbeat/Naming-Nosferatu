@@ -17,24 +17,6 @@ interface AppLayoutProps {
 	children: React.ReactNode;
 }
 
-function ProfileOverlay({ onClose }: { onClose: () => void }) {
-	const { login } = useAuth();
-
-	return (
-		<Modal title="Your Profile" onClose={onClose} maxWidth="max-w-md">
-			<ProfileInner onLogin={(name) => login({ name })} />
-		</Modal>
-	);
-}
-
-function NameSuggestionOverlay({ onClose }: { onClose: () => void }) {
-	return (
-		<Modal title="Suggest a Name" onClose={onClose} maxWidth="max-w-lg">
-			<NameSuggestion variant="modal" isOpen={true} onClose={onClose} />
-		</Modal>
-	);
-}
-
 export function AppLayout({ children }: AppLayoutProps) {
 	const { user, tournament, errors, errorActions, ui, uiActions } = useAppStore();
 	const { isLoggedIn } = user;
