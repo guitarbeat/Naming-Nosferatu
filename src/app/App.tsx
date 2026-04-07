@@ -109,7 +109,8 @@ const GRADIENT_HEADING_CLS =
         "font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter";
 
 function HomeContent() {
-        const namesQuery = useQuery(namesQueryOptions(true));
+	const { login } = useAuth();
+	const namesQuery = useQuery(namesQueryOptions(true));
         const lockedNames = getLockedNames(namesQuery.data?.names);
         const [hoveredWordIdx, setHoveredWordIdx] = useState<number | null>(null);
 

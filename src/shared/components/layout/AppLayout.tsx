@@ -79,8 +79,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 					<ScrollToTopButton isLoggedIn={isLoggedIn} />
 				</main>
 
-				{ui.isProfileOpen && <ProfileOverlay onClose={() => uiActions.setProfileOpen(false)} />}
-				{ui.isSuggestionOpen && <NameSuggestionOverlay onClose={() => uiActions.setSuggestionOpen(false)} />}
 			</div>
 		</ErrorBoundary>
 	);

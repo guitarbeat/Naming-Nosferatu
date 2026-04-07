@@ -160,7 +160,7 @@ export function FloatingNavbar() {
 		}
 
 		let rafId: number | null = null;
-		const sections: NavSection[] = ["pick"];
+		const sections: NavSection[] = ["pick", "suggest", "profile"];
 
 		const handleScroll = () => {
 			if (rafId) {
