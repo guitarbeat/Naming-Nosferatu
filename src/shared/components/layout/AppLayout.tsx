@@ -3,7 +3,6 @@
  * @description Main application layout component with floating primary nav
  */
 
-import { useAuth } from "@/app/providers/Providers";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
 	ErrorBoundary,
@@ -12,9 +11,6 @@ import {
 	OfflineIndicator,
 } from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
-import { Modal } from "@/shared/components/layout/Modal";
-import { ProfileInner } from "@/shared/components/profile/ProfileInner";
-import { NameSuggestion } from "@/features/tournament/components/NameSuggestion";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
