@@ -20,11 +20,12 @@ import useAppStore from "@/store/appStore";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
 
-type NavSection = "pick" | "suggest";
+type NavSection = "pick" | "suggest" | "profile";
 
 const keyToId: Record<NavSection, string> = {
 	pick: "pick",
 	suggest: "suggest",
+	profile: "profile",
 };
 
 function FloatingNavItem({
@@ -134,8 +135,13 @@ export function FloatingNavbar() {
 			return;
 		}
 
-		if (key === "suggest") {
-			uiActions.setSuggestionOpen(true);
+	if (key === "suggest" || key === "profile") {
+			if (!isHomeRoute) {
+				navigate("/");
+				window.setTimeout(() => scrollToSection(key), 120);
+				return;
+			}
+			scrollToSection(key);
 			return;
 		}
 
@@ -154,7 +160,7 @@ export function FloatingNavbar() {
 		}
 
 		let rafId: number | null = null;
-		const sections: NavSection[] = ["pick"];
+		const sections: NavSection[] = ["pick", "suggest", "profile"];
 
 		const handleScroll = () => {
 			if (rafId) {
@@ -311,18 +317,18 @@ export function FloatingNavbar() {
 							onClick={() => handleNavClick("analyze")}
 						/>
 
-						<FloatingNavItem
-							icon={Lightbulb}
-							label="Suggest"
-							isCurrent={ui.isSuggestionOpen}
-							onClick={() => handleNavClick("suggest")}
-						/>
+					<FloatingNavItem
+						icon={Lightbulb}
+						label="Suggest"
+						isCurrent={isHomeRoute && activeSection === "suggest"}
+						onClick={() => handleNavClick("suggest")}
+					/>
 
-						<FloatingNavItem
-							icon={User}
-							label={profileLabel}
-							isCurrent={ui.isProfileOpen}
-							onClick={() => uiActions.setProfileOpen(true)}
+					<FloatingNavItem
+						icon={User}
+						label={profileLabel}
+						isCurrent={isHomeRoute && activeSection === "profile"}
+						onClick={() => handleNavClick("profile")}
 							customIcon={
 								isLoggedIn && avatarUrl ? (
 									<img src={avatarUrl} alt={profileLabel} className="floating-navbar__avatar" />

@@ -27,6 +27,8 @@ import { updateSupabaseUserContext } from "@/shared/services/supabase/runtime";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import { getLockedNames } from "@/shared/lib/basic";
 import { namesQueryOptions } from "@/features/names/queries";
+import { NameSuggestionInner } from "@/features/tournament/components/NameSuggestion";
+import { ProfileInner } from "@/shared/components/profile/ProfileInner";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
@@ -107,7 +109,8 @@ const GRADIENT_HEADING_CLS =
         "font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter";
 
 function HomeContent() {
-        const namesQuery = useQuery(namesQueryOptions(true));
+	const { login } = useAuth();
+	const namesQuery = useQuery(namesQueryOptions(true));
         const lockedNames = getLockedNames(namesQuery.data?.names);
         const [hoveredWordIdx, setHoveredWordIdx] = useState<number | null>(null);
 
@@ -310,13 +313,21 @@ function HomeContent() {
                                 </motion.div>
                         </section>
 
-                        <Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
-                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
-                                        <TournamentFlow />
-                                </Suspense>
-                        </Section>
-                </>
-        );
+		<Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
+				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+					<TournamentFlow />
+				</Suspense>
+			</Section>
+
+			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+				<NameSuggestionInner />
+			</Section>
+
+			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+				<ProfileInner onLogin={(name) => login({ name })} />
+			</Section>
+		</>
+	);
 }
 
 function TournamentContent() {
