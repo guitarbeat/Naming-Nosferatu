@@ -135,8 +135,13 @@ export function FloatingNavbar() {
 			return;
 		}
 
-		if (key === "suggest") {
-			uiActions.setSuggestionOpen(true);
+	if (key === "suggest" || key === "profile") {
+			if (!isHomeRoute) {
+				navigate("/");
+				window.setTimeout(() => scrollToSection(key), 120);
+				return;
+			}
+			scrollToSection(key);
 			return;
 		}
 
