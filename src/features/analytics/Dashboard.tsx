@@ -3,7 +3,7 @@
  * @description Dashboard component for analytics and results
  */
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
