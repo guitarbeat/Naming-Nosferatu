@@ -317,18 +317,18 @@ export function FloatingNavbar() {
 							onClick={() => handleNavClick("analyze")}
 						/>
 
-						<FloatingNavItem
-							icon={Lightbulb}
-							label="Suggest"
-							isCurrent={ui.isSuggestionOpen}
-							onClick={() => handleNavClick("suggest")}
-						/>
+					<FloatingNavItem
+						icon={Lightbulb}
+						label="Suggest"
+						isCurrent={isHomeRoute && activeSection === "suggest"}
+						onClick={() => handleNavClick("suggest")}
+					/>
 
-						<FloatingNavItem
-							icon={User}
-							label={profileLabel}
-							isCurrent={ui.isProfileOpen}
-							onClick={() => uiActions.setProfileOpen(true)}
+					<FloatingNavItem
+						icon={User}
+						label={profileLabel}
+						isCurrent={isHomeRoute && activeSection === "profile"}
+						onClick={() => handleNavClick("profile")}
 							customIcon={
 								isLoggedIn && avatarUrl ? (
 									<img src={avatarUrl} alt={profileLabel} className="floating-navbar__avatar" />
