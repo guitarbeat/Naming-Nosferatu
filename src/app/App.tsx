@@ -27,6 +27,8 @@ import { updateSupabaseUserContext } from "@/shared/services/supabase/runtime";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import { getLockedNames } from "@/shared/lib/basic";
 import { namesQueryOptions } from "@/features/names/queries";
+import { NameSuggestionInner } from "@/features/tournament/components/NameSuggestion";
+import { ProfileInner } from "@/shared/components/profile/ProfileInner";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
