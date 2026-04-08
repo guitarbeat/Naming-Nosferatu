@@ -38,10 +38,6 @@ externalPort = 3001
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 5001
-externalPort = 3000
-
 [userenv]
 
 [userenv.shared]
@@ -54,5 +50,5 @@ ADMIN_API_KEY = "cc98957ac200bbca57dd3edc1cf84b1c43c566c5465880ea0f5f4853d22c2a2
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["pnpm", "run", "start"]
-build = ["pnpm", "run", "build"]
+run = ["node", "./dist/index.cjs"]
+build = ["npm", "run", "build"]
