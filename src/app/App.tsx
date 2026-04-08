@@ -319,13 +319,15 @@ function HomeContent() {
 				</Suspense>
 			</Section>
 
-			<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
-				<NameSuggestionInner />
-			</Section>
+		<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+			<SectionHeading icon={Lightbulb} title="Suggest a Name" subtitle="Have a great cat name idea? Share it!" />
+			<NameSuggestionInner />
+		</Section>
 
-			<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
-				<ProfileInner onLogin={(name) => login({ name })} />
-			</Section>
+		<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+			<SectionHeading icon={User} title="Your Profile" subtitle="Log in to track your ratings and preferences" />
+			<ProfileInner onLogin={(name) => login({ name })} />
+		</Section>
 		</>
 	);
 }
