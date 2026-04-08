@@ -12,7 +12,8 @@ export function getStorageString(key: string, fallback: string | null = null): s
 	}
 
 	try {
-		return window.localStorage.getItem(key);
+		const value = window.localStorage.getItem(key);
+		return value !== null ? value : fallback;
 	} catch (error) {
 		console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		return fallback;
