@@ -55,9 +55,36 @@ async function fetchNamesFromSupabase(includeHidden: boolean): Promise<NameItem[
 	return (data ?? []).map((row) => mapNameRow(row));
 }
 
+export async function fetchHiddenNames(): Promise<NamesQueryResult> {
+	assertAdmin("Admin privileges required to view hidden names");
+	const client = await resolveSupabaseClient();
+	if (!client) {
+		throw new Error("Supabase client not available");
+	}
+
+	const { data, error } = await client
+		.from("cat_names")
+		.select(
+			"id, name, description, pronunciation, avg_rating, global_wins, global_losses, created_at, is_hidden, is_active, locked_in, status, provenance, is_deleted",
+		)
+		.eq("is_hidden", true)
+		.eq("is_active", true)
+		.eq("is_deleted", false)
+		.order("avg_rating", { ascending: false });
+
+	if (error) {
+		throw error;
+	}
+
+	return {
+		names: (data ?? []).map((row) => mapNameRow(row)),
+		source: "supabase",
+	};
+}
+
 export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	const names = await fetchNamesFromSupabase(includeHidden);
-	if (!names) {
+	if (names === null) {
 		throw new Error("Supabase client not available");
 	}
 	return { names, source: "supabase" };
@@ -67,5 +94,12 @@ export const namesQueryOptions = (includeHidden: boolean) =>
 	queryOptions({
 		queryKey: namesQueryKeys.list(includeHidden),
 		queryFn: () => fetchNames(includeHidden),
+		staleTime: 30_000,
+	});
+
+export const hiddenNamesQueryOptions = () =>
+	queryOptions({
+		queryKey: namesQueryKeys.hiddenList(),
+		queryFn: () => fetchHiddenNames(),
 		staleTime: 30_000,
 	});

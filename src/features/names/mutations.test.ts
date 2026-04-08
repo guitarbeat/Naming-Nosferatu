@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { batchUpdateVisibility, softDeleteName, toggleNameHidden, toggleNameLocked } from "./mutations";
+import {
+	batchUpdateVisibility,
+	softDeleteName,
+	toggleNameHidden,
+	toggleNameLocked,
+	unhideAllNames,
+} from "./mutations";
 
 vi.mock("@/store/appStore", () => ({
         default: {
@@ -196,4 +202,58 @@ describe("toggleNameLocked", () => {
                         toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" }),
                 ).rejects.toThrow("Admin privileges required");
         });
+});
+
+describe("unhideAllNames", () => {
+	it("finds all hidden names and unhides them", async () => {
+		const mockSelect = vi.fn();
+		const mockEq = vi.fn();
+		const mockFromWithSelect = {
+			from: vi.fn(() => ({
+				select: mockSelect,
+			})),
+			rpc: mockRpc,
+		};
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(mockFromWithSelect as never);
+		mockSelect.mockReturnValue({ eq: mockEq });
+		mockEq.mockResolvedValueOnce({ data: [{ id: "h1" }, { id: "h2" }], error: null });
+		mockRpc.mockResolvedValueOnce({ data: true, error: null });
+
+		await unhideAllNames();
+
+		expect(mockFromWithSelect.from).toHaveBeenCalledWith("cat_names");
+		expect(mockEq).toHaveBeenCalledWith("is_hidden", true);
+		expect(mockRpc).toHaveBeenCalledWith("batch_update_name_visibility", {
+			p_name_ids: ["h1", "h2"],
+			p_is_hidden: false,
+		});
+	});
+
+	it("does nothing when there are no hidden names", async () => {
+		const mockSelect = vi.fn();
+		const mockEq = vi.fn();
+		const mockFromWithSelect = {
+			from: vi.fn(() => ({
+				select: mockSelect,
+			})),
+			rpc: mockRpc,
+		};
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(mockFromWithSelect as never);
+		mockSelect.mockReturnValue({ eq: mockEq });
+		mockEq.mockResolvedValueOnce({ data: [], error: null });
+
+		await unhideAllNames();
+
+		expect(mockRpc).not.toHaveBeenCalled();
+	});
+
+	it("throws when user is not an admin", async () => {
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+		await expect(unhideAllNames()).rejects.toThrow("Admin privileges required");
+	});
+
+	it("throws when Supabase client is unavailable", async () => {
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null as never);
+		await expect(unhideAllNames()).rejects.toThrow("Supabase client not available");
+	});
 });
