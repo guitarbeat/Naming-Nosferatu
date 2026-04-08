@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Trophy } from "@/shared/lib/icons";
 import { ratingsAPI } from "@/shared/services/supabase/api";
 import useAppStore from "@/store/appStore";
@@ -10,8 +9,6 @@ import { useTournamentHandlers } from "../hooks";
 
 export default function TournamentFlow() {
         const { user, tournament, tournamentActions } = useAppStore();
-        const navigate = useNavigate();
-
         const { handleStartNewTournament } = useTournamentHandlers({
                 userName: user.name,
                 tournamentActions,
@@ -116,7 +113,7 @@ export default function TournamentFlow() {
                                                         </p>
                                                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                                                                 <button
-                                                                        onClick={() => navigate("/analysis")}
+                                                                        onClick={() => document.getElementById("analysis")?.scrollIntoView({ behavior: "smooth", block: "start" })}
                                                                         className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-colors"
                                                                 >
                                                                         Analyze Results

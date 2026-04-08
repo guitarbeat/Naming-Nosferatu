@@ -15,10 +15,12 @@ import useAppStore from "@/store/appStore";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
 
-type NavSection = "pick" | "suggest" | "profile";
+type NavSection = "pick" | "tournament" | "analysis" | "suggest" | "profile";
 
 const keyToId: Record<NavSection, string> = {
         pick: "pick",
+        tournament: "tournament",
+        analysis: "analysis",
         suggest: "suggest",
         profile: "profile",
 };
@@ -93,14 +95,11 @@ export function FloatingNavbar() {
         const navGlassId = useId();
 
         const isHomeRoute = location.pathname === "/";
-        const isAnalysisRoute = location.pathname === "/analysis";
-        const isTournamentRoute = location.pathname === "/tournament";
 
         const selectedCount = selectedNames?.length || 0;
         const isTournamentActive = Boolean(tournament.names);
         const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
-        // On mobile, hide utility toggle (it moves into the picker surface)
-        const primaryItemCount = Number(!isTournamentActive || isTournamentRoute) + 1 + 2;
+        const primaryItemCount = 4;
 
         const scrollToSection = (key: NavSection) => {
                 const id = keyToId[key];
@@ -120,23 +119,22 @@ export function FloatingNavbar() {
                 hapticTournamentStart();
                 if (selectedNames && selectedNames.length >= 2) {
                         tournamentActions.setNames(selectedNames);
-                        navigate("/tournament");
+                        if (!isHomeRoute) {
+                                setPendingScroll("tournament");
+                                navigate("/");
+                        } else {
+                                scrollToSection("tournament");
+                        }
                 }
         };
 
-        const handleNavClick = (key: NavSection | "analyze") => {
+        const handleNavClick = (key: NavSection) => {
                 hapticNavTap();
-                if (key === "analyze") {
-                        navigate("/analysis");
-                        return;
-                }
-
                 if (!isHomeRoute) {
                         setPendingScroll(key);
                         navigate("/");
                         return;
                 }
-
                 scrollToSection(key);
         };
 
@@ -154,7 +152,7 @@ export function FloatingNavbar() {
                 }
 
                 let rafId: number | null = null;
-                const sections: NavSection[] = ["pick", "suggest", "profile"];
+                const sections: NavSection[] = ["pick", "tournament", "analysis", "suggest", "profile"];
 
                 const handleScroll = () => {
                         if (rafId) {
@@ -254,10 +252,6 @@ export function FloatingNavbar() {
                 };
         }, []);
 
-        if (isTournamentRoute) {
-                return null;
-        }
-
         return (
                 <div
                         className={cn(
@@ -280,35 +274,33 @@ export function FloatingNavbar() {
                                                 className="floating-navbar__primary"
                                                 style={{ gridTemplateColumns: `repeat(${primaryItemCount}, minmax(0, 1fr))` }}
                                         >
-                                                {(!isTournamentActive || isTournamentRoute) && (
-                                                        <FloatingNavItem
-                                                                icon={selectedCount >= 2 && !isTournamentRoute ? Trophy : CheckCircle}
-                                                                label={
-                                                                        isTournamentRoute
-                                                                                ? "Home"
-                                                                                : selectedCount >= 2
-                                                                                        ? `Start (${selectedCount})`
-                                                                                        : "Pick Names"
+                                                <FloatingNavItem
+                                                        icon={isTournamentActive ? Trophy : selectedCount >= 2 ? Trophy : CheckCircle}
+                                                        label={
+                                                                isTournamentActive
+                                                                        ? "Tournament"
+                                                                        : selectedCount >= 2
+                                                                                ? `Start (${selectedCount})`
+                                                                                : "Pick Names"
+                                                        }
+                                                        isCurrent={isHomeRoute && (activeSection === "pick" || activeSection === "tournament")}
+                                                        isAccent={isTournamentActive || selectedCount >= 2}
+                                                        onClick={() => {
+                                                                if (isTournamentActive) {
+                                                                        handleNavClick("tournament");
+                                                                } else if (selectedCount >= 2) {
+                                                                        handleStartTournament();
+                                                                } else {
+                                                                        handleNavClick("pick");
                                                                 }
-                                                                isCurrent={isHomeRoute && activeSection === "pick"}
-                                                                isAccent={selectedCount >= 2 && !isTournamentRoute}
-                                                                onClick={() => {
-                                                                        if (isTournamentRoute) {
-                                                                                navigate("/");
-                                                                        } else if (selectedCount >= 2) {
-                                                                                handleStartTournament();
-                                                                        } else {
-                                                                                handleNavClick("pick");
-                                                                        }
-                                                                }}
-                                                        />
-                                                )}
+                                                        }}
+                                                />
 
                                                 <FloatingNavItem
                                                         icon={BarChart3}
                                                         label="Analyze"
-                                                        isCurrent={isAnalysisRoute}
-                                                        onClick={() => handleNavClick("analyze")}
+                                                        isCurrent={isHomeRoute && activeSection === "analysis"}
+                                                        onClick={() => handleNavClick("analysis")}
                                                 />
 
                                         <FloatingNavItem

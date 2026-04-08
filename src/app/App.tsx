@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
@@ -79,15 +79,8 @@ function App() {
                                                 </ErrorBoundary>
                                         }
                                 />
-                                <Route
-                                        path="/tournament"
-                                        element={
-                                                <ErrorBoundary context={errorContexts.tournamentFlow}>
-                                                        <TournamentContent />
-                                                </ErrorBoundary>
-                                        }
-                                />
-                                <Route path="/analysis" element={<AnalysisContent />} />
+                                <Route path="/tournament" element={<Navigate to="/" replace />} />
+                                <Route path="/analysis" element={<Navigate to="/" replace />} />
                                 <Route path="/admin" element={<AdminContent />} />
                         </Routes>
                 </AppLayout>
@@ -99,6 +92,11 @@ function HomeContent() {
         const namesQuery = useQuery(namesQueryOptions(true));
         const lockedNames = getLockedNames(namesQuery.data?.names);
         const [hoveredWordIdx, setHoveredWordIdx] = useState<number | null>(null);
+        const { user, tournament, tournamentActions } = useAppStore();
+        const { handleTournamentComplete, handleStartNewTournament } = useTournamentHandlers({
+                userName: user.name,
+                tournamentActions,
+        });
 
         // Build word list and a parallel map back to the source NameItem (null for "WOODS")
         const wordEntries: Array<{ word: string; name: (typeof lockedNames)[number] | null }> =
@@ -297,35 +295,18 @@ function HomeContent() {
                                 </Suspense>
                         </Section>
 
-                <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
-                        <SectionHeading icon={Lightbulb} title="Suggest a Name" subtitle="Have a great cat name idea? Share it!" />
-                        <NameSuggestionInner />
-                </Section>
-
-                <Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
-                        <SectionHeading icon={User} title="Your Profile" subtitle="Log in to track your ratings and preferences" />
-                        <ProfileInner onLogin={(name) => login({ name })} />
-                </Section>
-                </>
-        );
-}
-
-function TournamentContent() {
-        const { user, tournament, tournamentActions } = useAppStore();
-        const navigate = useNavigate();
-        const { handleTournamentComplete } = useTournamentHandlers({
-                userName: user.name,
-                tournamentActions,
-        });
-
-        return (
                 <Section id="tournament" variant="minimal" padding="compact" maxWidth="full">
                         <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                 {tournament.names && tournament.names.length > 0 ? (
                                         <Tournament
                                                 names={tournament.names}
                                                 existingRatings={tournament.ratings}
-                                                onComplete={handleTournamentComplete}
+                                                onComplete={(ratings) => {
+                                                        handleTournamentComplete(ratings);
+                                                        setTimeout(() => {
+                                                                document.getElementById("analysis")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                                        }, 800);
+                                                }}
                                         />
                                 ) : (
                                         <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-10 text-center">
@@ -333,31 +314,21 @@ function TournamentContent() {
                                                         No contenders yet
                                                 </h2>
                                                 <p className="text-muted-foreground text-pretty">
-                                                        Choose at least two names in the picker to start your tournament bracket.
+                                                        Choose at least two names in the picker above to start your tournament bracket.
                                                 </p>
-                                                <div className="flex flex-wrap items-center justify-center gap-3">
-                                                        <Button variant="glass" onClick={() => navigate("/")}>
-                                                                Go to Name Picker
-                                                        </Button>
-                                                        <Button variant="glass" onClick={() => navigate("/analysis")}>
-                                                                View Analysis
-                                                        </Button>
-                                                </div>
+                                                <Button
+                                                        variant="glass"
+                                                        onClick={() =>
+                                                                document.getElementById("pick")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                                                        }
+                                                >
+                                                        Go to Name Picker
+                                                </Button>
                                         </div>
                                 )}
                         </Suspense>
                 </Section>
-        );
-}
 
-function AnalysisContent() {
-        const { user, tournament, tournamentActions } = useAppStore();
-        const { handleStartNewTournament } = useTournamentHandlers({
-                userName: user.name,
-                tournamentActions,
-        });
-
-        return (
                 <Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
                         <h2 className="gradient-heading mb-8 text-center text-3xl sm:mb-12 md:text-5xl">
                                 The Victors Emerge
@@ -376,6 +347,17 @@ function AnalysisContent() {
                                 </ErrorBoundary>
                         </Suspense>
                 </Section>
+
+                <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+                        <SectionHeading icon={Lightbulb} title="Suggest a Name" subtitle="Have a great cat name idea? Share it!" />
+                        <NameSuggestionInner />
+                </Section>
+
+                <Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+                        <SectionHeading icon={User} title="Your Profile" subtitle="Log in to track your ratings and preferences" />
+                        <ProfileInner onLogin={(name) => login({ name })} />
+                </Section>
+                </>
         );
 }
 
