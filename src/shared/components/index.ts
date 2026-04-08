@@ -9,3 +9,4 @@ export {
 } from "./layout/Feedback";
 
 export { Section } from "./layout/Section";
+export { SectionHeading } from "./layout/SectionHeading";
