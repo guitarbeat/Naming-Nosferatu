@@ -1,8 +1,3 @@
-/**
- * @module ProfileSection
- * @description User profile management section wrapper.
- */
-
 import { Section } from "@/shared/components/layout";
 import { ProfileInner } from "@/shared/components/profile/ProfileInner";
 

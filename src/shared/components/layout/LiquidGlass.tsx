@@ -1,9 +1,3 @@
-/**
- * @module LiquidGlass
- * @description CSS-only glass surface wrapper.
- * Preserves the shared API while replacing runtime SVG displacement with CSS variables.
- */
-
 import React from "react";
 import { cn } from "@/shared/lib/basic";
 

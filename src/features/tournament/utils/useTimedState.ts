@@ -1,8 +1,3 @@
-/**
- * @module useTimedState
- * @description Hook for state that auto-clears after a timeout (DRYs up announcement patterns)
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useTimedState<T>(defaultValue: T) {

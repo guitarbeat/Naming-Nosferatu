@@ -1,8 +1,3 @@
-/**
- * @module TournamentBracket
- * @description Mobile-responsive tournament bracket visualization component
- */
-
 import { useCallback, useMemo, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import {

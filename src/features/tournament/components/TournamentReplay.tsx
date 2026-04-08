@@ -1,8 +1,3 @@
-/**
- * @module TournamentReplay
- * @description Tournament replay and match history viewer component
- */
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";

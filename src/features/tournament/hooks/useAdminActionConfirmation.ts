@@ -1,8 +1,3 @@
-/**
- * @module useAdminActionConfirmation
- * @description Shared confirmation/authorization flow for admin actions.
- */
-
 import { useCallback, useMemo, useState } from "react";
 
 import type { IdType, NameItem } from "@/shared/types";

@@ -1,8 +1,3 @@
-/**
- * @module RatingDistributionChart
- * @description Bar chart showing the distribution of ratings across names
- */
-
 import { useMemo } from "react";
 import {
 	Bar,

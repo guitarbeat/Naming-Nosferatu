@@ -1,9 +1,3 @@
-/**
- * @module Section
- * @description Generic content section with configurable width, padding, and styling.
- * Used throughout the app to create consistent layout structure.
- */
-
 import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/basic";
 

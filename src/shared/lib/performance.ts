@@ -1,20 +1,3 @@
-/**
- * @module performance
- * @description Development-only performance monitoring using standard Web Vitals APIs.
- *
- * Tracks FCP, LCP, CLS, FID, and navigation timing. All observers are cleaned
- * up via `cleanupPerformanceMonitoring()`. In production builds every function
- * is a no-op, so tree-shaking should eliminate the module entirely.
- *
- * @example
- * // In your app entry point:
- * import { initializePerformanceMonitoring, cleanupPerformanceMonitoring } from "./performance";
- *
- * initializePerformanceMonitoring();
- * // on unmount / HMR:
- * cleanupPerformanceMonitoring();
- */
-
 const isDev = import.meta.env?.DEV ?? false;
 
 // ═══════════════════════════════════════════════════════════════════════════════

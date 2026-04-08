@@ -1,8 +1,3 @@
-/**
- * @module RatingRadarChart
- * @description Radar chart comparing top names across rating, wins, and total ratings
- */
-
 import {
 	PolarAngleAxis,
 	PolarGrid,

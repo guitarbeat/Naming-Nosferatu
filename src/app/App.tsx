@@ -1,12 +1,3 @@
-/**
- * @module App
- * @description Main application component with consolidated routing and layout.
- * Routes, auth, and layout are now coordinated here.
- *
- * @component
- * @returns {JSX.Element} The complete application UI
- */
-
 import { Suspense, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";

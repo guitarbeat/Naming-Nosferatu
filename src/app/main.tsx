@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { authAdapter } from "@/services/authAdapter";
+import { supabaseAuthAdapter as authAdapter } from "@/services/supabaseAuthAdapter";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { queryClient } from "@/shared/services/supabase/client";
 import App from "./App";

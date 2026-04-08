@@ -1,8 +1,3 @@
-/**
- * @module AdminDashboard
- * @description Comprehensive admin dashboard for managing names and viewing analytics
- */
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";

@@ -1,8 +1,3 @@
-/**
- * @module SectionHeading
- * @description Decorative section heading with icon, title, subtitle, and divider line.
- */
-
 import type { ElementType, ReactNode } from "react";
 import { cn } from "@/shared/lib/basic";
 

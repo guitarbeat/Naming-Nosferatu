@@ -1,8 +1,3 @@
-/**
- * @module RandomGenerator
- * @description Random cat name generator with favorites persistence.
- */
-
 import { useCallback, useId, useMemo, useState } from "react";
 import { useLocalStorage } from "@/shared/hooks";
 import { Copy, Heart, Shuffle } from "@/shared/lib/icons";

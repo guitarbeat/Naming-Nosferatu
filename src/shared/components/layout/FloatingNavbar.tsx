@@ -1,8 +1,3 @@
-/**
- * @module FloatingNavbar
- * @description Accessible, bottom-fixed primary navigation for key app flows.
- */
-
 import type { ElementType, ReactNode } from "react";
 import { useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";

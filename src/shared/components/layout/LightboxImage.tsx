@@ -1,8 +1,3 @@
-/**
- * @module LightboxImage
- * @description Enhanced image component with loading states and error handling for the lightbox
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface LightboxImageProps {

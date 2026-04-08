@@ -1,8 +1,3 @@
-/**
- * @module Loading
- * @description Loading state indicators with multiple variants (spinner, cat, bongo, skeleton)
- */
-
 import { Skeleton, Spinner } from "@heroui/react";
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";

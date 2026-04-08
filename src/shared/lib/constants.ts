@@ -1,12 +1,3 @@
-/**
- * @module constants
- * @description Centralized application configuration and constants.
- *
- * Every exported object uses `as const` for literal type inference.
- * Organize new constants under the most specific existing section,
- * or add a clearly-labeled new section at the bottom.
- */
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Cat Images
 // ═══════════════════════════════════════════════════════════════════════════════

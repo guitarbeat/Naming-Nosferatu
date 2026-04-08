@@ -1,8 +1,3 @@
-/**
- * @module matchHelpers
- * @description Helpers for extracting match side data
- */
-
 import type { Match, NameItem } from "@/shared/types";
 
 export function getMatchSideId(match: Match, side: "left" | "right"): string {

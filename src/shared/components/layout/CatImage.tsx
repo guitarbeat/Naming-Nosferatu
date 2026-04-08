@@ -1,8 +1,3 @@
-/**
- * @module CatImage
- * @description Cat image component with smart focal detection and fallback support
- */
-
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CAT_IMAGES } from "@/shared/lib/constants";

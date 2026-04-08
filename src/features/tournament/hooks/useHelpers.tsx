@@ -1,9 +1,3 @@
-/**
- * @module useHelpers
- * @description Consolidated tournament helper hooks
- * Combines: useAudioManager, useProfileNotifications
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import {

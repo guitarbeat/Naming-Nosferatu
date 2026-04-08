@@ -1,8 +1,3 @@
-/**
- * @module TournamentComplete
- * @description Shared tournament completion screen
- */
-
 import { useNavigate } from "react-router-dom";
 import { LogOut, Trophy } from "@/shared/lib/icons";
 

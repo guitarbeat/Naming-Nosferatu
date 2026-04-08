@@ -1,8 +1,3 @@
-/**
- * @module ErrorBoundary
- * @description Error boundary and error display components with detailed error information
- */
-
 import React, { Component, type ReactNode, useState } from "react";
 import { cn } from "@/shared/lib/basic";
 import { Copy } from "@/shared/lib/icons";

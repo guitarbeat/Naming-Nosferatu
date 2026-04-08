@@ -1,8 +1,3 @@
-/**
- * @module useWebSocket
- * @description React hook for WebSocket integration
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MatchResult, TournamentUpdate, UserActivity } from "../services/websocketService";
 import { getWebSocketService } from "../services/websocketService";

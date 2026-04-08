@@ -1,8 +1,3 @@
-/**
- * @module AdvancedNameFilter
- * @description Advanced filtering and search component for name selection
- */
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { ChevronDown, Clock, Filter, Search, Star, TrendingUp, X } from "@/shared/lib/icons";

@@ -1,8 +1,3 @@
-/**
- * @module Button
- * @description Simplified button component with direct variant API.
- */
-
 import { cva } from "class-variance-authority";
 import React, { memo } from "react";
 import { cn } from "@/shared/lib/basic";

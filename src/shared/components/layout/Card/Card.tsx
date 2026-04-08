@@ -1,9 +1,3 @@
-/**
- * @module Card
- * @description Reusable card component with flexible styling options
- * Includes sub-components: CardStats and CardName
- */
-
 import { cva } from "class-variance-authority";
 import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/shared/components/layout/CatImage";

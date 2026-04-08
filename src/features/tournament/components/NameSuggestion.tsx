@@ -1,8 +1,3 @@
-/**
- * @module NameSuggestion
- * @description Name suggestion component with inline and modal variants.
- */
-
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef } from "react";
 import { Button, Input, Textarea } from "@/shared/components/layout";

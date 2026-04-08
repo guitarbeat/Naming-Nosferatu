@@ -1,8 +1,3 @@
-/**
- * @module Lightbox
- * @description Image lightbox component for viewing images in fullscreen
- */
-
 import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X, ZoomOut } from "@/shared/lib/icons";

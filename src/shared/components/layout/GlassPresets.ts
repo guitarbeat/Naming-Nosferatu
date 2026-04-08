@@ -1,9 +1,3 @@
-/**
- * @module GlassPresets
- * @description Standardized glass configuration presets for LiquidGlass components.
- * Single source of truth for glassmorphism effects across the app.
- */
-
 interface GlassPreset {
 	radius: number;
 	frost: number;

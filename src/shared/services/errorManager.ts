@@ -1,9 +1,3 @@
-/**
- * @module ErrorManager
- * @description Comprehensive error handling service for the application.
- * Consolidates error handling, logging, retry logic, and circuit breaker patterns.
- */
-
 // ============================================================================
 // Internal Helpers & Scope
 // ============================================================================

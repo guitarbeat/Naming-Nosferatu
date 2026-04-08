@@ -1,8 +1,3 @@
-/**
- * @module sound
- * @description Sound playback management
- */
-
 import { getStorageString, isStorageAvailable } from "@/shared/lib/storage";
 
 interface SoundConfig {

@@ -1,11 +1,3 @@
-/**
- * @module supabaseAuthAdapter
- * @description Supabase authentication adapter for the naming tournament app.
- *
- * This adapter uses Supabase Auth exclusively for authentication, replacing the JWT-based system.
- * It handles user authentication, registration, and role management through Supabase.
- */
-
 import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import {

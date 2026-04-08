@@ -1,8 +1,3 @@
-/**
- * @module useHooks
- * @description Reusable hooks collection.
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
         getStorageString,

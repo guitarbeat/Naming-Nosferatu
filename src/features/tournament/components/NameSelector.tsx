@@ -1,8 +1,3 @@
-/**
- * @module NameSelector
- * @description Name selection component with grid and swipe modes, showing cat images from Supabase
- */
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

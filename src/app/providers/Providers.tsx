@@ -1,28 +1,3 @@
-/**
- * @module Providers
- * @description Application-level React context providers for authentication and
- * toast notifications.
- *
- * ## Design
- *
- * - **Zero external service imports.** Supabase, TanStack Query, etc. are
- *   injected via the `authAdapter` prop so the provider is testable and
- *   framework-agnostic.
- * - **Self-contained toast system.** Includes rendering, auto-dismiss timers,
- *   stacking, and animations — no external toast library needed.
- * - **Single `<Providers>` wrapper.** Composes auth + toast contexts so the
- *   consumer's tree stays clean.
- *
- * @example
- * // main.tsx
- * import { Providers } from "@/app/providers/Providers";
- * import { authAdapter } from "@/services/authAdapter";
- *
- * <Providers auth={{ adapter: authAdapter }}>
- *   <App />
- * </Providers>
- */
-
 import {
         createContext,
         type ReactNode,

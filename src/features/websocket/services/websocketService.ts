@@ -1,9 +1,3 @@
-/**
- * @module websocketService
- * @description Real-time service backed by Supabase Realtime channels.
- * Replaces the legacy WebSocket server integration.
- */
-
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 

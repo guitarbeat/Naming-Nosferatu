@@ -1,8 +1,3 @@
-/**
- * @module AppLayout
- * @description Main application layout component with floating primary nav
- */
-
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
 	ErrorBoundary,

@@ -1,8 +1,3 @@
-/**
- * @module Feedback
- * @description Barrel export for feedback components (Loading, Error, offline status).
- */
-
 export {
 	ErrorBoundary,
 	ErrorComponent,

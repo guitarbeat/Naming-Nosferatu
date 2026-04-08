@@ -1,9 +1,3 @@
-/**
- * @module FormPrimitives
- * @description Unified form system with validated inputs and textareas.
- * Single source of truth for all form components in the application.
- */
-
 import React, { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
 import { cn } from "@/shared/lib/basic";

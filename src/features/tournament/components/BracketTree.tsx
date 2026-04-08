@@ -1,8 +1,3 @@
-/**
- * @module BracketTree
- * @description Visual bracket path indicator for tournament progress
- */
-
 import { useMemo } from "react";
 
 interface BracketTreeProps {

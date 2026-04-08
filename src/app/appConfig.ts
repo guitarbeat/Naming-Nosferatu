@@ -1,12 +1,3 @@
-/**
- * @module appConfig
- * @description Re-exports route and layout configuration from the store.
- *
- * This module exists as a convenience alias so components can import
- * `errorContexts`, `layoutConfig`, etc. from `@/app/appConfig` without
- * coupling directly to the store module.
- */
-
 import { lazy } from "react";
 
 export { errorContexts } from "@/store/appStore";

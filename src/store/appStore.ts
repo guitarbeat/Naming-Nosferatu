@@ -1,33 +1,3 @@
-/**
- * @module appStore
- * @description Centralized Zustand store for the entire application.
- *
- * Combines five concerns into isolated slices:
- *
- * 1. **Tournament** — names, ratings, vote history, selection
- * 2. **User** — identity, login/logout, avatar, admin status
- * 3. **UI** — theme, swipe mode, panels, editing state
- * 4. **Site Settings** — chosen name, feature flags
- * 5. **Errors** — current error, error history
- *
- * Also exports:
- * - Route + layout configuration (`routes`, `layoutConfig`)
- * - Navigation section configuration (`navSections`, `navAnimations`)
- * - Standalone selectors for granular subscriptions
- * - `useAppStoreInitialization` hook for bootstrapping from localStorage
- *
- * ## Design decisions
- *
- * - **No external service imports.** API calls are injected via action
- *   parameters or called by the consumer — keeps the store testable.
- * - **Domain types imported from `@/shared/types`.** The types file is
- *   the single source of truth; this file only adds action interfaces.
- * - **Theme listener is properly scoped.** `setTheme` tears down the
- *   previous `matchMedia` listener before attaching a new one (no leak).
- * - **Selectors are standalone functions.** Use `useAppStore(selectUserName)`
- *   for optimal re-render granularity.
- */
-
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/shared/lib/constants";

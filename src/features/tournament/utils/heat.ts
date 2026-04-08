@@ -1,8 +1,3 @@
-/**
- * @module heat
- * @description Heat/streak visual utilities for tournament UI
- */
-
 export type HeatLevel = "warm" | "hot" | "blazing";
 
 export const STREAK_THRESHOLDS = {

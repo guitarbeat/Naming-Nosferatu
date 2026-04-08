@@ -1,18 +1,3 @@
-/**
- * @module shared/types
- * @description Canonical type definitions for the application.
- *
- * This is the single source of truth for all shared types. Domain types
- * (NameItem, RatingData, etc.) live here; store-specific slice types
- * live in appStore.ts and import from here.
- *
- * ## Guidelines
- * - Keep types that are used across 2+ files here.
- * - Component-local types belong in the component file.
- * - Store action/slice types belong in appStore.ts (they import domain types from here).
- * - Never duplicate a type — import it.
- */
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // Identifiers
 // ═══════════════════════════════════════════════════════════════════════════════

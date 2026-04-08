@@ -1,8 +1,3 @@
-/**
- * @module TournamentFlow
- * @description Main tournament flow component - handles name selection and navigation
- */
-
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";

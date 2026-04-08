@@ -1,9 +1,3 @@
-/**
- * @module mapNameRow
- * @description Canonical mapper from raw Supabase cat_names rows to NameItem.
- * Handles both snake_case (DB) and camelCase (client) field names.
- */
-
 import type { NameItem } from "@/shared/types";
 
 /** Raw row shape — accepts both snake_case and camelCase fields. */

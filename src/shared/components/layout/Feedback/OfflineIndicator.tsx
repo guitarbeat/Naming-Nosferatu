@@ -1,8 +1,3 @@
-/**
- * @module OfflineIndicator
- * @description Network status indicator showing online/offline/slow connection states
- */
-
 import React, { useEffect, useState } from "react";
 import { useBrowserState } from "@/shared/hooks";
 

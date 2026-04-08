@@ -1,8 +1,3 @@
-/**
- * @module MatchSideCard
- * @description Voteable card for one side of a tournament match
- */
-
 import type { KeyboardEvent } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
 import {

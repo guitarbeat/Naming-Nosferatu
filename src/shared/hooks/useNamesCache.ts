@@ -1,8 +1,3 @@
-/**
- * @module useNamesCache
- * @description Hook for caching and managing names data with TTL support
- */
-
 import { useCallback, useEffect, useRef } from "react";
 import { readStorageJson, writeStorageJson } from "@/shared/lib/storage";
 import type { NameItem } from "@/shared/types";

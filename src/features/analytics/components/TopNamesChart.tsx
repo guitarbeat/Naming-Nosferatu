@@ -1,8 +1,3 @@
-/**
- * @module TopNamesChart
- * @description Horizontal bar chart showing top-rated names
- */
-
 import {
 	Bar,
 	BarChart,

@@ -1,8 +1,3 @@
-/**
- * @module Modal
- * @description Reusable modal dialog component with consistent styling and animations.
- */
-
 import React from "react";
 import { X } from "@/shared/lib/icons";
 

@@ -1,8 +1,3 @@
-/**
- * @module WinLossChart
- * @description Stacked bar chart showing wins vs losses for top names
- */
-
 import {
 	Bar,
 	BarChart,
