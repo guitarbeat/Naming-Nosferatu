@@ -96,9 +96,6 @@ function App() {
         );
 }
 
-const GRADIENT_HEADING_CLS =
-        "font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter";
-
 function HomeContent() {
         const { login } = useAuth();
         const namesQuery = useQuery(namesQueryOptions(true));
@@ -155,7 +152,7 @@ function HomeContent() {
                                                                         whileHover={{ filter: "brightness(1.25)" }}
                                                                         transition={{ duration: 0.15 }}
                                                                 >
-                                                                        <span className={GRADIENT_HEADING_CLS}>
+                                                                        <span className="gradient-heading">
                                                                                 {i < wordEntries.length - 1
                                                                                         ? `${word}\u00a0`
                                                                                         : word}
@@ -334,7 +331,7 @@ function TournamentContent() {
                                         />
                                 ) : (
                                         <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-10 text-center">
-                                                <h2 className={`text-2xl sm:text-3xl ${GRADIENT_HEADING_CLS}`}>
+                                                <h2 className="gradient-heading text-2xl sm:text-3xl">
                                                         No contenders yet
                                                 </h2>
                                                 <p className="text-muted-foreground text-pretty">
@@ -364,7 +361,7 @@ function AnalysisContent() {
 
         return (
                 <Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
-                        <h2 className={`mb-8 text-center text-3xl sm:mb-12 md:text-5xl ${GRADIENT_HEADING_CLS}`}>
+                        <h2 className="gradient-heading mb-8 text-center text-3xl sm:mb-12 md:text-5xl">
                                 The Victors Emerge
                         </h2>
                         <Suspense fallback={<Loading variant="skeleton" height={600} />}>
