@@ -7,7 +7,7 @@ import { useAuth } from "@/app/providers/Providers";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section, SectionHeading } from "@/shared/components";
-import { ChevronDown, Lightbulb, User } from "@/shared/lib/icons";
+import { BarChart3, CheckCircle, ChevronDown, Lightbulb, Trophy, User } from "@/shared/lib/icons";
 import {
         cleanupPerformanceMonitoring,
         initializePerformanceMonitoring,
@@ -289,13 +289,23 @@ function HomeContent() {
                                 </motion.div>
                         </section>
 
-                <Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
-                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
-                                        <TournamentFlow />
-                                </Suspense>
-                        </Section>
+                <Section id="pick" variant="minimal" padding="comfortable" maxWidth="xl" centered={true} separator>
+                        <SectionHeading
+                                icon={CheckCircle}
+                                title="Pick Your Favorites"
+                                subtitle="Select the names you love — then send them to battle it out."
+                        />
+                        <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                <TournamentFlow />
+                        </Suspense>
+                </Section>
 
-                <Section id="tournament" variant="minimal" padding="compact" maxWidth="full">
+                <Section id="tournament" variant="minimal" padding="comfortable" maxWidth="full" separator>
+                        <SectionHeading
+                                icon={Trophy}
+                                title="Tournament Bracket"
+                                subtitle="Name versus name — only one can win."
+                        />
                         <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                 {tournament.names && tournament.names.length > 0 ? (
                                         <Tournament
@@ -309,12 +319,9 @@ function HomeContent() {
                                                 }}
                                         />
                                 ) : (
-                                        <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-10 text-center">
-                                                <h2 className="gradient-heading text-2xl sm:text-3xl">
-                                                        No contenders yet
-                                                </h2>
-                                                <p className="text-muted-foreground text-pretty">
-                                                        Choose at least two names in the picker above to start your tournament bracket.
+                                        <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-6 text-center">
+                                                <p className="text-muted-foreground/70 text-pretty text-sm">
+                                                        Pick at least two names above to start the bracket.
                                                 </p>
                                                 <Button
                                                         variant="glass"
@@ -329,10 +336,12 @@ function HomeContent() {
                         </Suspense>
                 </Section>
 
-                <Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
-                        <h2 className="gradient-heading mb-8 text-center text-3xl sm:mb-12 md:text-5xl">
-                                The Victors Emerge
-                        </h2>
+                <Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true} separator>
+                        <SectionHeading
+                                icon={BarChart3}
+                                title="The Victors Emerge"
+                                subtitle="See how names rank globally and in your personal tournament."
+                        />
                         <Suspense fallback={<Loading variant="skeleton" height={600} />}>
                                 <ErrorBoundary context={errorContexts.analysisDashboard}>
                                         <DashboardLazy
@@ -348,12 +357,12 @@ function HomeContent() {
                         </Suspense>
                 </Section>
 
-                <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+                <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true} separator>
                         <SectionHeading icon={Lightbulb} title="Suggest a Name" subtitle="Have a great cat name idea? Share it!" />
                         <NameSuggestionInner />
                 </Section>
 
-                <Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+                <Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true} separator>
                         <SectionHeading icon={User} title="Your Profile" subtitle="Log in to track your ratings and preferences" />
                         <ProfileInner onLogin={(name) => login({ name })} />
                 </Section>
