@@ -15,9 +15,9 @@ import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
-import { AppLayout, Button, ErrorBoundary, Loading, Section } from "@/shared/components";
+import { AppLayout, Button, ErrorBoundary, Loading, Section, SectionHeading } from "@/shared/components";
 import { useOfflineSync } from "@/shared/hooks";
-import { ChevronDown } from "@/shared/lib/icons";
+import { ChevronDown, Lightbulb, User } from "@/shared/lib/icons";
 import {
         cleanupPerformanceMonitoring,
         initializePerformanceMonitoring,
