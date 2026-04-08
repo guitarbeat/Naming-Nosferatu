@@ -69,20 +69,14 @@ export function NameSuggestionInner() {
 
 	return (
 		<form onSubmit={handleLocalSubmit} className="w-full max-w-lg mx-auto space-y-6">
-			<div className="text-center space-y-3">
-				<div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5">
-					<Lightbulb size={14} className="text-primary" />
-					<span className="text-[11px] font-semibold uppercase tracking-widest text-primary">
-						Pitch a Name
-					</span>
-				</div>
-				<h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-					What would you name him?
-				</h2>
-				<p className="text-sm text-muted-foreground">
-					Every suggestion enters the bracket for voting.
-				</p>
-			</div>
+		<div className="text-center space-y-2">
+			<h3 className="text-xl sm:text-2xl font-bold text-foreground">
+				What would you name him?
+			</h3>
+			<p className="text-sm text-muted-foreground">
+				Every suggestion enters the bracket for voting.
+			</p>
+		</div>
 
 			<div className="space-y-2">
 				<div className="flex items-baseline justify-between">
