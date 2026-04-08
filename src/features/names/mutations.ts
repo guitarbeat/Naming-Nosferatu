@@ -1,3 +1,4 @@
+import useAppStore from "@/store/appStore";
 import { isRpcSignatureError } from "@/shared/lib/errors";
 import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType } from "@/shared/types";
@@ -9,24 +10,39 @@ function assertSuccess(data: unknown, message: string): void {
 	}
 }
 
+/** Verifies that the current user has admin privileges. */
+function assertAdmin(): void {
+	const user = useAppStore.getState().user;
+	if (!user?.isAdmin) {
+		throw new Error("Admin privileges required");
+	}
+}
+
 export async function softDeleteName(params: { nameId: IdType }): Promise<void> {
+	assertAdmin();
 	const { nameId } = params;
-	await withSupabase(async (client) => {
+	const result = await withSupabase(async (client) => {
 		// @ts-expect-error - soft_delete_cat_name is a custom RPC not in generated types
 		const { data, error } = await client.rpc("soft_delete_cat_name", {
 			p_name_id: String(nameId),
 		});
 		if (error) throw error;
 		assertSuccess(data, "Failed to delete name");
-	}, undefined as void);
+		return true;
+	}, false);
+
+	if (result === false) {
+		throw new Error("Supabase client not available");
+	}
 }
 
 export async function batchUpdateVisibility(params: {
 	nameIds: IdType[];
 	isHidden: boolean;
 }): Promise<void> {
+	assertAdmin();
 	const { nameIds, isHidden } = params;
-	await withSupabase(async (client) => {
+	const result = await withSupabase(async (client) => {
 		// @ts-expect-error - batch_update_name_visibility is a custom RPC not in generated types
 		const { data, error } = await client.rpc("batch_update_name_visibility", {
 			p_name_ids: nameIds.map(String),
@@ -34,7 +50,12 @@ export async function batchUpdateVisibility(params: {
 		});
 		if (error) throw error;
 		assertSuccess(data, "Failed to batch update name visibility");
-	}, undefined as void);
+		return true;
+	}, false);
+
+	if (result === false) {
+		throw new Error("Supabase client not available");
+	}
 }
 
 export async function toggleNameHidden(params: {
@@ -42,9 +63,10 @@ export async function toggleNameHidden(params: {
 	isCurrentlyHidden: boolean;
 	userName: string;
 }): Promise<void> {
+	assertAdmin();
 	const { isCurrentlyHidden, nameId, userName } = params;
 	const trimmedUserName = userName.trim();
-	await withSupabase(async (client) => {
+	const result = await withSupabase(async (client) => {
 		const { data, error } = await client.rpc("toggle_name_visibility", {
 			p_name_id: String(nameId),
 			p_hide: !isCurrentlyHidden,
@@ -52,7 +74,12 @@ export async function toggleNameHidden(params: {
 		});
 		if (error) throw error;
 		assertSuccess(data, "Failed to update name visibility");
-	}, undefined as void);
+		return true;
+	}, false);
+
+	if (result === false) {
+		throw new Error("Supabase client not available");
+	}
 }
 
 export async function toggleNameLocked(params: {
@@ -60,25 +87,31 @@ export async function toggleNameLocked(params: {
 	isCurrentlyLocked: boolean;
 	userName: string;
 }): Promise<void> {
+	assertAdmin();
 	const { isCurrentlyLocked, nameId, userName } = params;
 	const trimmedUserName = userName.trim();
-	await withSupabase(async (client) => {
+	const result = await withSupabase(async (client) => {
 		const canonicalArgs = {
 			p_name_id: String(nameId),
 			p_locked_in: !isCurrentlyLocked,
 		};
-		let result = await client.rpc("toggle_name_locked_in", canonicalArgs);
+		let rpcResult = await client.rpc("toggle_name_locked_in", canonicalArgs);
 
-		if (result.error && isRpcSignatureError(result.error.message || "")) {
-			result = await client.rpc("toggle_name_locked_in", {
+		if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
+			rpcResult = await client.rpc("toggle_name_locked_in", {
 				...canonicalArgs,
 				p_user_name: trimmedUserName,
 			});
 		}
 
-		if (result.error) {
-			throw new Error(result.error.message || "Failed to toggle locked status");
+		if (rpcResult.error) {
+			throw new Error(rpcResult.error.message || "Failed to toggle locked status");
 		}
-		assertSuccess(result.data, "Failed to toggle locked status");
-	}, undefined as void);
+		assertSuccess(rpcResult.data, "Failed to toggle locked status");
+		return true;
+	}, false);
+
+	if (result === false) {
+		throw new Error("Supabase client not available");
+	}
 }

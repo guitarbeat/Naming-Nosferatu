@@ -1,10 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { batchUpdateVisibility, softDeleteName, toggleNameHidden, toggleNameLocked } from "./mutations";
 
+vi.mock("@/store/appStore", () => ({
+        default: {
+                getState: vi.fn(() => ({
+                        user: { isAdmin: true },
+                })),
+        },
+}));
+
+import useAppStore from "@/store/appStore";
+
 const mockRpc = vi.fn();
 
 vi.mock("@/shared/services/supabase/runtime", () => ({
         resolveSupabaseClient: vi.fn(),
+        withSupabase: vi.fn(async (op, fb) => {
+                const { resolveSupabaseClient } = await import("@/shared/services/supabase/runtime");
+                const client = await resolveSupabaseClient();
+                if (!client) return fb;
+                return op(client);
+        }),
 }));
 
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
@@ -43,6 +59,13 @@ describe("softDeleteName", () => {
                 vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
                 await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow(
                         "Supabase client not available",
+                );
+        });
+
+        it("throws when user is not an admin", async () => {
+                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+                await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow(
+                        "Admin privileges required",
                 );
         });
 });
@@ -90,6 +113,13 @@ describe("batchUpdateVisibility", () => {
                         batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
                 ).rejects.toThrow("Supabase client not available");
         });
+
+        it("throws when user is not an admin", async () => {
+                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+                await expect(
+                        batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
+                ).rejects.toThrow("Admin privileges required");
+        });
 });
 
 describe("toggleNameHidden", () => {
@@ -119,6 +149,13 @@ describe("toggleNameHidden", () => {
                         toggleNameHidden({ nameId: "abc", isCurrentlyHidden: false, userName: "admin" }),
                 ).rejects.toMatchObject({ message: "rpc failed" });
         });
+
+        it("throws when user is not an admin", async () => {
+                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+                await expect(
+                        toggleNameHidden({ nameId: "abc", isCurrentlyHidden: false, userName: "admin" }),
+                ).rejects.toThrow("Admin privileges required");
+        });
 });
 
 describe("toggleNameLocked", () => {
@@ -131,10 +168,32 @@ describe("toggleNameLocked", () => {
                 });
         });
 
+        it("falls back to include p_user_name on signature error", async () => {
+                mockRpc
+                        .mockResolvedValueOnce({ error: { message: "no function matches the given name" } })
+                        .mockResolvedValueOnce({ data: true, error: null });
+
+                await toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" });
+
+                expect(mockRpc).toHaveBeenCalledTimes(2);
+                expect(mockRpc).toHaveBeenNthCalledWith(2, "toggle_name_locked_in", {
+                        p_name_id: "xyz",
+                        p_locked_in: true,
+                        p_user_name: "admin",
+                });
+        });
+
         it("throws when Supabase client unavailable", async () => {
                 vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
                 await expect(
                         toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" }),
                 ).rejects.toThrow("Supabase client not available");
+        });
+
+        it("throws when user is not an admin", async () => {
+                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+                await expect(
+                        toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" }),
+                ).rejects.toThrow("Admin privileges required");
         });
 });
