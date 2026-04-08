@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import useAppStore from "@/store/appStore";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 import { mapNameRow } from "./mapNameRow";
 import type { NameItem } from "@/shared/types";
@@ -17,7 +18,18 @@ export const namesQueryKeys = {
 	hiddenList: () => [...namesQueryKeys.all, "hidden"] as const,
 } as const;
 
+/** Verifies that the current user has admin privileges. */
+function assertAdmin(message = "Admin privileges required"): void {
+	const user = useAppStore.getState().user;
+	if (!user?.isAdmin) {
+		throw new Error(message);
+	}
+}
+
 async function fetchNamesFromSupabase(includeHidden: boolean): Promise<NameItem[] | null> {
+	if (includeHidden) {
+		assertAdmin("Admin privileges required to view hidden names");
+	}
 	const client = await resolveSupabaseClient();
 	if (!client) {
 		return null;

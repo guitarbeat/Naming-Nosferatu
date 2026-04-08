@@ -1,0 +1,238 @@
+diff --git a/src/features/names/mutations.test.ts b/src/features/names/mutations.test.ts
+index 25f8d01d..0b87e571 100644
+--- a/src/features/names/mutations.test.ts
++++ b/src/features/names/mutations.test.ts
+@@ -1,10 +1,26 @@
+ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+ import { batchUpdateVisibility, softDeleteName, toggleNameHidden, toggleNameLocked } from "./mutations";
+
++vi.mock("@/store/appStore", () => ({
++        default: {
++                getState: vi.fn(() => ({
++                        user: { isAdmin: true },
++                })),
++        },
++}));
++
++import useAppStore from "@/store/appStore";
++
+ const mockRpc = vi.fn();
+
+ vi.mock("@/shared/services/supabase/runtime", () => ({
+         resolveSupabaseClient: vi.fn(),
++        withSupabase: vi.fn(async (op, fb) => {
++                const { resolveSupabaseClient } = await import("@/shared/services/supabase/runtime");
++                const client = await resolveSupabaseClient();
++                if (!client) return fb;
++                return op(client);
++        }),
+ }));
+
+ import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
+@@ -45,6 +61,13 @@ describe("softDeleteName", () => {
+                         "Supabase client not available",
+                 );
+         });
++
++        it("throws when user is not an admin", async () => {
++                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
++                await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow(
++                        "Admin privileges required",
++                );
++        });
+ });
+
+ describe("batchUpdateVisibility", () => {
+@@ -90,6 +113,13 @@ describe("batchUpdateVisibility", () => {
+                         batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
+                 ).rejects.toThrow("Supabase client not available");
+         });
++
++        it("throws when user is not an admin", async () => {
++                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
++                await expect(
++                        batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
++                ).rejects.toThrow("Admin privileges required");
++        });
+ });
+
+ describe("toggleNameHidden", () => {
+@@ -119,6 +149,13 @@ describe("toggleNameHidden", () => {
+                         toggleNameHidden({ nameId: "abc", isCurrentlyHidden: false, userName: "admin" }),
+                 ).rejects.toMatchObject({ message: "rpc failed" });
+         });
++
++        it("throws when user is not an admin", async () => {
++                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
++                await expect(
++                        toggleNameHidden({ nameId: "abc", isCurrentlyHidden: false, userName: "admin" }),
++                ).rejects.toThrow("Admin privileges required");
++        });
+ });
+
+ describe("toggleNameLocked", () => {
+@@ -131,10 +168,32 @@ describe("toggleNameLocked", () => {
+                 });
+         });
+
++        it("falls back to include p_user_name on signature error", async () => {
++                mockRpc
++                        .mockResolvedValueOnce({ error: { message: "no function matches the given name" } })
++                        .mockResolvedValueOnce({ data: true, error: null });
++
++                await toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" });
++
++                expect(mockRpc).toHaveBeenCalledTimes(2);
++                expect(mockRpc).toHaveBeenNthCalledWith(2, "toggle_name_locked_in", {
++                        p_name_id: "xyz",
++                        p_locked_in: true,
++                        p_user_name: "admin",
++                });
++        });
++
+         it("throws when Supabase client unavailable", async () => {
+                 vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
+                 await expect(
+                         toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" }),
+                 ).rejects.toThrow("Supabase client not available");
+         });
++
++        it("throws when user is not an admin", async () => {
++                vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
++                await expect(
++                        toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" }),
++                ).rejects.toThrow("Admin privileges required");
++        });
+ });
+diff --git a/src/features/names/mutations.ts b/src/features/names/mutations.ts
+index 0527f3da..cd41877d 100644
+--- a/src/features/names/mutations.ts
++++ b/src/features/names/mutations.ts
+@@ -1,3 +1,4 @@
++import useAppStore from "@/store/appStore";
+ import { isRpcSignatureError } from "@/shared/lib/errors";
+ import { withSupabase } from "@/shared/services/supabase/runtime";
+ import type { IdType } from "@/shared/types";
+@@ -9,24 +10,39 @@ function assertSuccess(data: unknown, message: string): void {
+        }
+ }
+
++/** Verifies that the current user has admin privileges. */
++function assertAdmin(): void {
++       const user = useAppStore.getState().user;
++       if (!user?.isAdmin) {
++               throw new Error("Admin privileges required");
++       }
++}
++
+ export async function softDeleteName(params: { nameId: IdType }): Promise<void> {
++       assertAdmin();
+        const { nameId } = params;
+-       await withSupabase(async (client) => {
++       const result = await withSupabase(async (client) => {
+                // @ts-expect-error - soft_delete_cat_name is a custom RPC not in generated types
+                const { data, error } = await client.rpc("soft_delete_cat_name", {
+                        p_name_id: String(nameId),
+                });
+                if (error) throw error;
+                assertSuccess(data, "Failed to delete name");
+-       }, undefined as void);
++               return true;
++       }, false);
++
++       if (result === false) {
++               throw new Error("Supabase client not available");
++       }
+ }
+
+ export async function batchUpdateVisibility(params: {
+        nameIds: IdType[];
+        isHidden: boolean;
+ }): Promise<void> {
++       assertAdmin();
+        const { nameIds, isHidden } = params;
+-       await withSupabase(async (client) => {
++       const result = await withSupabase(async (client) => {
+                // @ts-expect-error - batch_update_name_visibility is a custom RPC not in generated types
+                const { data, error } = await client.rpc("batch_update_name_visibility", {
+                        p_name_ids: nameIds.map(String),
+@@ -34,7 +50,12 @@ export async function batchUpdateVisibility(params: {
+                });
+                if (error) throw error;
+                assertSuccess(data, "Failed to batch update name visibility");
+-       }, undefined as void);
++               return true;
++       }, false);
++
++       if (result === false) {
++               throw new Error("Supabase client not available");
++       }
+ }
+
+ export async function toggleNameHidden(params: {
+@@ -42,9 +63,10 @@ export async function toggleNameHidden(params: {
+        isCurrentlyHidden: boolean;
+        userName: string;
+ }): Promise<void> {
++       assertAdmin();
+        const { isCurrentlyHidden, nameId, userName } = params;
+        const trimmedUserName = userName.trim();
+-       await withSupabase(async (client) => {
++       const result = await withSupabase(async (client) => {
+                const { data, error } = await client.rpc("toggle_name_visibility", {
+                        p_name_id: String(nameId),
+                        p_hide: !isCurrentlyHidden,
+@@ -52,7 +74,12 @@ export async function toggleNameHidden(params: {
+                });
+                if (error) throw error;
+                assertSuccess(data, "Failed to update name visibility");
+-       }, undefined as void);
++               return true;
++       }, false);
++
++       if (result === false) {
++               throw new Error("Supabase client not available");
++       }
+ }
+
+ export async function toggleNameLocked(params: {
+@@ -60,25 +87,31 @@ export async function toggleNameLocked(params: {
+        isCurrentlyLocked: boolean;
+        userName: string;
+ }): Promise<void> {
++       assertAdmin();
+        const { isCurrentlyLocked, nameId, userName } = params;
+        const trimmedUserName = userName.trim();
+-       await withSupabase(async (client) => {
++       const result = await withSupabase(async (client) => {
+                const canonicalArgs = {
+                        p_name_id: String(nameId),
+                        p_locked_in: !isCurrentlyLocked,
+                };
+-               let result = await client.rpc("toggle_name_locked_in", canonicalArgs);
++               let rpcResult = await client.rpc("toggle_name_locked_in", canonicalArgs);
+
+-               if (result.error && isRpcSignatureError(result.error.message || "")) {
+-                       result = await client.rpc("toggle_name_locked_in", {
++               if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
++                       rpcResult = await client.rpc("toggle_name_locked_in", {
+                                ...canonicalArgs,
+                                p_user_name: trimmedUserName,
+                        });
+                }
+
+-               if (result.error) {
+-                       throw new Error(result.error.message || "Failed to toggle locked status");
++               if (rpcResult.error) {
++                       throw new Error(rpcResult.error.message || "Failed to toggle locked status");
+                }
+-               assertSuccess(result.data, "Failed to toggle locked status");
+-       }, undefined as void);
++               assertSuccess(rpcResult.data, "Failed to toggle locked status");
++               return true;
++       }, false);
++
++       if (result === false) {
++               throw new Error("Supabase client not available");
++       }
+ }
