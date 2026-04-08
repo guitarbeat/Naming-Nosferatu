@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/app/providers/Providers";
 import { toggleNameHidden, toggleNameLocked } from "@/features/names/mutations";
 import { namesQueryKeys, namesQueryOptions } from "@/features/names/queries";
@@ -240,6 +241,7 @@ const getNameOverlayClasses = (variant: "grid" | "swipe") => {
 export function NameSelector() {
         const toast = useToast();
         const queryClient = useQueryClient();
+        const navigate = useNavigate();
         const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
         const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
         const isAdmin = useAppStore((state) => state.user.isAdmin);
@@ -984,8 +986,7 @@ export function NameSelector() {
                                                                                         >
                                                                                                 <Button
                                                                                                         onClick={() => {
-                                                                                                                // Navigate to tournament or next step
-                                                                                                                window.location.href = "/tournament";
+                                                                                                                navigate("/tournament");
                                                                                                         }}
                                                                                                         className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
                                                                                                 >

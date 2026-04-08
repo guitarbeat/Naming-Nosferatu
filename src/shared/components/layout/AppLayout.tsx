@@ -22,12 +22,19 @@ export function AppLayout({ children }: AppLayoutProps) {
                         <div className="app relative min-h-dvh w-full text-foreground">
                                 <OfflineIndicator />
 
-                                <a
-                                        href="#main-content"
+                                <button
+                                        type="button"
                                         className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                                        onClick={() => {
+                                                const main = document.getElementById("main-content");
+                                                if (main) {
+                                                        main.focus();
+                                                        main.scrollIntoView({ behavior: "smooth" });
+                                                }
+                                        }}
                                 >
                                         Skip to main content
-                                </a>
+                                </button>
 
                                 <LiquidGradientBackground />
 
