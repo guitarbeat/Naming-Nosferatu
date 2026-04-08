@@ -13,6 +13,7 @@ import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { useCollapsible } from "@/shared/hooks";
+import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
 import {
         getActiveNames,
         getHiddenNames,
@@ -20,7 +21,6 @@ import {
         getRandomCatImage,
         isNameHidden,
         isNameLocked,
-        matchesNameSearchTerm,
 } from "@/shared/lib/basic";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import {
@@ -227,14 +227,14 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
-	const baseClasses =
-		"absolute flex flex-col pointer-events-none";
-	const gridClasses =
-		"inset-0 p-3 sm:p-4 bg-gradient-to-b from-background/40 via-background/70 to-background/40 justify-center items-center text-center";
-	const swipeClasses =
-		"inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10 justify-center items-center text-center";
+        const baseClasses =
+                "absolute flex flex-col pointer-events-none";
+        const gridClasses =
+                "inset-0 p-3 sm:p-4 bg-gradient-to-b from-background/40 via-background/70 to-background/40 justify-center items-center text-center";
+        const swipeClasses =
+                "inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10 justify-center items-center text-center";
 
-	return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
+        return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
 
 export function NameSelector() {
@@ -583,17 +583,15 @@ export function NameSelector() {
         const availableNames = useMemo(() => getActiveNames(names), [names]);
         const lockedInNames = useMemo(() => getLockedNames(names), [names]);
         const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
+        const hiddenFuzzy = useFuzzySearch(hiddenNamesAll, ["name", "description"], hiddenQuery);
         const hiddenFiltered = useMemo(() => {
-                return hiddenNamesAll.filter((name) => {
+                return hiddenFuzzy.filter((name) => {
                         if (hiddenShowSelectedOnly && !selectedNames.has(name.id)) {
                                 return false;
                         }
-                        if (!hiddenQuery.trim()) {
-                                return true;
-                        }
-                        return matchesNameSearchTerm(name, hiddenQuery);
+                        return true;
                 });
-        }, [hiddenNamesAll, hiddenQuery, hiddenShowSelectedOnly, selectedNames]);
+        }, [hiddenFuzzy, hiddenShowSelectedOnly, selectedNames]);
         const previewItems = useMemo(() => hiddenNamesAll.slice(0, 6), [hiddenNamesAll]);
         const renderItems = useMemo(
                 () => hiddenFiltered.slice(0, hiddenRenderCount),

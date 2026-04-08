@@ -8,6 +8,9 @@ A React + Vite SPA for running tournaments to rank cat names using an Elo rating
 - **Database/Backend**: Supabase (PostgreSQL, Auth, RPCs) — anon key used directly from the frontend
 - **State**: Zustand (global), TanStack Query (server state)
 - **UI**: @heroui/react components, lucide-react icons
+- **Analytics/Math**: `simple-statistics` for ELO percentile rank, std dev, z-scores (`src/shared/lib/ratingStats.ts`)
+- **Date Math**: `date-fns` for clean relative date calculations in analytics (subDays, subWeeks, etc.)
+- **Fuzzy Search**: `fuse.js` via `useFuzzySearch` hook (`src/shared/hooks/useFuzzySearch.ts`) — used in AdvancedNameFilter and hidden names panel
 
 ## Running the App
 

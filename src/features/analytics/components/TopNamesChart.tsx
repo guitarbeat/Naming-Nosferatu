@@ -3,11 +3,13 @@ import {
 	BarChart,
 	CartesianGrid,
 	Cell,
+	ReferenceLine,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
 	YAxis,
 } from "recharts";
+import { computeRatingStats } from "@/shared/lib/ratingStats";
 
 interface TopNamesChartProps {
 	leaderboard: Array<{
@@ -15,6 +17,7 @@ interface TopNamesChartProps {
 		avg_rating: number;
 		wins: number;
 		total_ratings: number;
+		percentile_rank?: number;
 	}>;
 	limit?: number;
 }
@@ -32,9 +35,14 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 		name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
 		rating: Math.round(e.avg_rating),
 		fullName: e.name,
+		percentile: e.percentile_rank ?? null,
 	}));
 
 	if (data.length === 0) return null;
+
+	const allRatings = leaderboard.map((e) => e.avg_rating);
+	const stats = computeRatingStats(allRatings);
+	const meanRating = stats ? Math.round(stats.mean) : null;
 
 	return (
 		<div className="h-52 sm:h-64 w-full">
@@ -64,10 +72,14 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 							fontSize: 12,
 							color: "hsl(var(--foreground))",
 						}}
-						formatter={(value: number, _: string, props: { payload: { fullName: string } }) => [
-							value,
-							props.payload.fullName,
-						]}
+						formatter={(value: number, _: string, props: { payload: { fullName: string; percentile: number | null } }) => {
+							const label = props.payload.fullName;
+							const pct = props.payload.percentile;
+							return [
+								`${value}${pct !== null ? ` (top ${100 - pct}%)` : ""}`,
+								label,
+							];
+						}}
 						cursor={{ fill: "hsl(var(--primary) / 0.06)" }}
 					/>
 					<Bar dataKey="rating" radius={[0, 6, 6, 0]} maxBarSize={28}>
@@ -75,6 +87,20 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 							<Cell key={i} fill={COLORS[i % COLORS.length]} fillOpacity={0.85} />
 						))}
 					</Bar>
+					{meanRating !== null && (
+						<ReferenceLine
+							x={meanRating}
+							stroke="hsl(var(--muted-foreground))"
+							strokeDasharray="4 3"
+							strokeWidth={1.5}
+							label={{
+								value: `avg ${meanRating}`,
+								position: "insideBottomRight",
+								fill: "hsl(var(--muted-foreground))",
+								fontSize: 9,
+							}}
+						/>
+					)}
 				</BarChart>
 			</ResponsiveContainer>
 		</div>
