@@ -95,6 +95,7 @@ export function FloatingNavbar() {
         const navGlassId = useId();
 
         const isHomeRoute = location.pathname === "/";
+        const isTournamentRoute = location.pathname === "/tournament";
 
         const selectedCount = selectedNames?.length || 0;
         const isTournamentActive = Boolean(tournament.names);
@@ -251,6 +252,10 @@ export function FloatingNavbar() {
                         mobileMediaQuery.removeEventListener("change", onViewportChange);
                 };
         }, []);
+
+        if (isTournamentRoute) {
+                return null;
+        }
 
         return (
                 <div

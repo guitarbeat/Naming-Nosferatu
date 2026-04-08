@@ -27,13 +27,34 @@ vi.mock("react-dom/client", () => ({
 	},
 }));
 
-vi.mock("@tanstack/react-query", () => ({
-	QueryClientProvider: ({ children, client }: { children: ReactNode; client: unknown }) => (
-		<div data-testid="query-client-provider" data-has-client={String(Boolean(client))}>
-			{children}
-		</div>
-	),
-}));
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+	const actual = (await importOriginal()) as any;
+	class MockQueryClient {
+		defaultOptions = {
+			queries: {
+				retry: false,
+			},
+		};
+		mount = vi.fn();
+		unmount = vi.fn();
+		isFetching = vi.fn().mockReturnValue(0);
+		isMutating = vi.fn().mockReturnValue(0);
+		getQueryData = vi.fn();
+		ensureQueryData = vi.fn();
+		getMutationCache = vi.fn();
+		getQueryCache = vi.fn();
+		clear = vi.fn();
+	}
+	return {
+		...actual,
+		QueryClient: MockQueryClient,
+		QueryClientProvider: ({ children, client }: { children: ReactNode; client: unknown }) => (
+			<div data-testid="query-client-provider" data-has-client={String(Boolean(client))}>
+				{children}
+			</div>
+		),
+	};
+});
 
 vi.mock("@vercel/analytics/react", () => ({
 	Analytics: () => <div data-testid="analytics" />,

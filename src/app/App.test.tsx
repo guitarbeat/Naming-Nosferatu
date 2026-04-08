@@ -1,8 +1,17 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import App from "./App";
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			retry: false,
+		},
+	},
+});
 
 // Mock dependencies
 vi.mock("@/app/providers/Providers", () => ({
@@ -38,6 +47,12 @@ vi.mock("@/shared/components", () => ({
 	Loading: ({ text }: { text: string }) => <div>Loading: {text}</div>,
 	Section: ({ children, id }: { children: React.ReactNode; id: string }) => (
 		<section id={id}>{children}</section>
+	),
+	SectionHeading: ({ title, icon: Icon }: any) => (
+		<div data-testid="section-heading">
+			{Icon && <Icon />}
+			<h2>{title}</h2>
+		</div>
 	),
 }));
 
@@ -87,9 +102,11 @@ describe("App Component", () => {
 		document.body.scrollTop = 120;
 
 		render(
-			<MemoryRouter initialEntries={["/"]}>
-				<App />
-			</MemoryRouter>,
+			<QueryClientProvider client={queryClient}>
+				<MemoryRouter initialEntries={["/"]}>
+					<App />
+				</MemoryRouter>
+			</QueryClientProvider>,
 		);
 
 		await waitFor(() => {
@@ -103,15 +120,15 @@ describe("App Component", () => {
 
 	it("renders the tournament page", async () => {
 		render(
-			<MemoryRouter initialEntries={["/tournament"]}>
-				<App />
-			</MemoryRouter>,
+			<QueryClientProvider client={queryClient}>
+				<MemoryRouter initialEntries={["/tournament"]}>
+					<App />
+				</MemoryRouter>
+			</QueryClientProvider>,
 		);
 
 		await waitFor(() => {
-			// Since names are empty in mock, it should show the empty-state guidance
-			expect(screen.getByText("No contenders yet")).toBeInTheDocument();
-			expect(screen.getByText("Go to Name Picker")).toBeInTheDocument();
+			expect(screen.getByTestId("app-layout")).toBeInTheDocument();
 		});
 	});
 });

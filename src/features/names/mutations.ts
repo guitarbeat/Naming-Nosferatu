@@ -115,3 +115,33 @@ export async function toggleNameLocked(params: {
 		throw new Error("Supabase client not available");
 	}
 }
+
+export async function unhideAllNames(): Promise<void> {
+	assertAdmin();
+	const result = await withSupabase(async (client) => {
+		// @ts-expect-error - unhide_all_names is a hypothetical RPC we might need
+		// If not available, we use batchUpdateVisibility with all hidden IDs
+		const { data: hiddenData, error: fetchError } = await client
+			.from("cat_names")
+			.select("id")
+			.eq("is_hidden", true);
+
+		if (fetchError) throw fetchError;
+		const hiddenIds = (hiddenData ?? []).map((row) => row.id);
+
+		if (hiddenIds.length === 0) return true;
+
+		// @ts-expect-error - batch_update_name_visibility is a custom RPC
+		const { data, error } = await client.rpc("batch_update_name_visibility", {
+			p_name_ids: hiddenIds.map(String),
+			p_is_hidden: false,
+		});
+		if (error) throw error;
+		assertSuccess(data, "Failed to unhide all names");
+		return true;
+	}, false);
+
+	if (result === false) {
+		throw new Error("Supabase client not available");
+	}
+}

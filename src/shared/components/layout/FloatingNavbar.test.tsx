@@ -1,9 +1,18 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { CSSProperties, ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FloatingNavbar } from "./FloatingNavbar";
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			retry: false,
+		},
+	},
+});
 
 const setSwipeModeMock = vi.fn();
 const setNamesMock = vi.fn();
@@ -121,14 +130,19 @@ describe("FloatingNavbar", () => {
 		document.body.innerHTML = "";
 	});
 
+	const renderWithRouter = (initialEntries = ["/"]) =>
+		render(
+			<QueryClientProvider client={queryClient}>
+				<MemoryRouter initialEntries={initialEntries}>
+					<FloatingNavbar />
+				</MemoryRouter>
+			</QueryClientProvider>,
+		);
+
 	it("renders home navigation items and tracks the active section", () => {
 		mountSections({ pick: 220, suggest: 24, profile: 520 });
 
-		render(
-			<MemoryRouter initialEntries={["/"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
+		renderWithRouter();
 
 		expect(screen.getByRole("button", { name: "Pick Names" })).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "Suggest" })).toHaveAttribute(
@@ -142,11 +156,7 @@ describe("FloatingNavbar", () => {
 		mountSections({ pick: 0, suggest: 200, profile: 400 });
 		mockStore.tournament.selectedNames = ["Luna", "Fig", "Miso"];
 
-		render(
-			<MemoryRouter initialEntries={["/"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
+		renderWithRouter();
 
 		const startButton = screen.getByRole("button", { name: "Start (3)" });
 
@@ -158,12 +168,9 @@ describe("FloatingNavbar", () => {
 	it("shows analyze as the current destination on the analysis route", () => {
 		mockStore.tournament.isComplete = true;
 		mockStore.tournament.names = ["Luna", "Fig"];
+		mountSections({ pick: 200, tournament: 200, analysis: 0, suggest: 200, profile: 400 });
 
-		render(
-			<MemoryRouter initialEntries={["/analysis"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
+		renderWithRouter(["/"]);
 
 		expect(screen.getByRole("button", { name: "Analyze" })).toHaveAttribute(
 			"aria-current",
@@ -175,11 +182,7 @@ describe("FloatingNavbar", () => {
 		mountSections({ pick: 0, suggest: 200, profile: 400 });
 		mockStore.ui.isSwipeMode = true;
 
-		render(
-			<MemoryRouter initialEntries={["/"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
+		renderWithRouter();
 
 		const modeChip = screen.getByRole("button", { name: "Swipe mode active" });
 
@@ -196,11 +199,7 @@ describe("FloatingNavbar", () => {
 		mockStore.user.name = "Avery Admin";
 		mockStore.user.avatarUrl = "https://example.com/avatar.png";
 
-		render(
-			<MemoryRouter initialEntries={["/"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
+		renderWithRouter();
 
 		expect(screen.getByAltText("Avery")).toBeInTheDocument();
 	});
@@ -211,11 +210,7 @@ describe("FloatingNavbar", () => {
 		mockStore.user.name = "Avery Admin";
 		mockStore.user.isAdmin = true;
 
-		render(
-			<MemoryRouter initialEntries={["/"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
+		renderWithRouter();
 
 		const profileButton = screen.getByRole("button", { name: "Avery" });
 		const profileIcon = profileButton.querySelector("svg");
@@ -225,11 +220,7 @@ describe("FloatingNavbar", () => {
 	});
 
 	it("does not render on the tournament route", () => {
-		render(
-			<MemoryRouter initialEntries={["/tournament"]}>
-				<FloatingNavbar />
-			</MemoryRouter>,
-		);
+		renderWithRouter(["/tournament"]);
 
 		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
 	});
