@@ -27,7 +27,10 @@ describe("Supabase Service API", () => {
 		});
 
 		it("returns the fallback value when the Supabase client is unavailable", async () => {
-			mockedWithSupabase.mockResolvedValue({ success: false, error: "Supabase client not available" });
+			mockedWithSupabase.mockResolvedValue({
+				success: false,
+				error: "Supabase client not available",
+			});
 
 			const result = await coreAPI.addName("Ghost", "Spooky");
 
@@ -38,18 +41,16 @@ describe("Supabase Service API", () => {
 
 	describe("coreAPI.getTrendingNames", () => {
 		it("returns names from Supabase when available", async () => {
-			const mockData = [
-				{ id: "uuid-2", name: "Luna", avg_rating: 1600, is_hidden: false },
-			];
+			const mockData = [{ id: "uuid-2", name: "Luna", avg_rating: 1600, is_hidden: false }];
 			const mockQuery = {
 				select: vi.fn().mockReturnThis(),
 				eq: vi.fn().mockReturnThis(),
 				order: vi.fn().mockReturnThis(),
 				limit: vi.fn().mockResolvedValue({ data: mockData, error: null }),
 			};
-			mockedResolveSupabaseClient.mockResolvedValue(
-				{ from: vi.fn().mockReturnValue(mockQuery) } as never,
-			);
+			mockedResolveSupabaseClient.mockResolvedValue({
+				from: vi.fn().mockReturnValue(mockQuery),
+			} as never);
 
 			const result = await coreAPI.getTrendingNames(false);
 
@@ -65,9 +66,9 @@ describe("Supabase Service API", () => {
 				order: vi.fn().mockReturnThis(),
 				limit: vi.fn().mockResolvedValue({ data: mockData, error: null }),
 			};
-			mockedResolveSupabaseClient.mockResolvedValue(
-				{ from: vi.fn().mockReturnValue(mockQuery) } as never,
-			);
+			mockedResolveSupabaseClient.mockResolvedValue({
+				from: vi.fn().mockReturnValue(mockQuery),
+			} as never);
 
 			await coreAPI.getTrendingNames(false);
 
@@ -86,8 +87,7 @@ describe("Supabase Service API", () => {
 
 	describe("coreAPI.hideName", () => {
 		it("calls toggle_name_visibility RPC and returns success", async () => {
-			const mockRpc = vi.fn()
-				.mockResolvedValueOnce({ data: true, error: null }); // toggle_name_visibility
+			const mockRpc = vi.fn().mockResolvedValueOnce({ data: true, error: null }); // toggle_name_visibility
 
 			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
 
@@ -101,8 +101,7 @@ describe("Supabase Service API", () => {
 		});
 
 		it("does not call set_user_context (privilege escalation removed)", async () => {
-			const mockRpc = vi.fn()
-				.mockResolvedValueOnce({ data: true, error: null });
+			const mockRpc = vi.fn().mockResolvedValueOnce({ data: true, error: null });
 
 			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);
 
@@ -112,7 +111,8 @@ describe("Supabase Service API", () => {
 		});
 
 		it("returns an error when the RPC fails (no silent fallback)", async () => {
-			const mockRpc = vi.fn()
+			const mockRpc = vi
+				.fn()
 				.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } });
 
 			mockedResolveSupabaseClient.mockResolvedValue({ rpc: mockRpc } as never);

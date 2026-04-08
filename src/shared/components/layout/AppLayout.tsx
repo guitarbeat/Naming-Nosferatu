@@ -1,82 +1,89 @@
+import { Analytics } from "@vercel/analytics/react";
+import { shouldEnableAnalytics } from "@/app/analytics";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
-        ErrorBoundary,
-        ErrorComponent,
-        Loading,
-        OfflineIndicator,
+	ErrorBoundary,
+	ErrorComponent,
+	Loading,
+	OfflineIndicator,
 } from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
 import { LiquidGradientBackground } from "@/shared/components/layout/LiquidGradientBackground";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
-        children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-        const { user, tournament, errors, errorActions } = useAppStore();
-        const { isLoggedIn } = user;
+	const { user, tournament, errors, errorActions } = useAppStore();
+	const { isLoggedIn } = user;
 
-        return (
-                <ErrorBoundary context="Main Application Layout">
-                        <div className="app relative min-h-dvh w-full text-foreground">
-                                <OfflineIndicator />
+	const analyticsEnabled = shouldEnableAnalytics({
+		hostname: window.location.hostname,
+		isProd: import.meta.env.PROD,
+	});
 
-                                <button
-                                        type="button"
-                                        className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
-                                        onClick={() => {
-                                                const main = document.getElementById("main-content");
-                                                if (main) {
-                                                        main.focus();
-                                                        main.scrollIntoView({ behavior: "smooth" });
-                                                }
-                                        }}
-                                >
-                                        Skip to main content
-                                </button>
+	return (
+		<ErrorBoundary context="Main Application Layout">
+			<div className="app relative min-h-dvh w-full text-foreground">
+				<OfflineIndicator />
+				{analyticsEnabled && <Analytics />}
 
-                                <LiquidGradientBackground />
+				<button
+					type="button"
+					className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+					onClick={() => {
+						const main = document.getElementById("main-content");
+						if (main) {
+							main.focus();
+							main.scrollIntoView({ behavior: "smooth" });
+						}
+					}}
+				>
+					Skip to main content
+				</button>
 
-                                <FloatingNavbar />
+				<LiquidGradientBackground />
 
-                                {/* Main content area with proper spacing */}
-                                <main
-                                        id="main-content"
-                                        className="relative flex w-full flex-col px-3 pb-40 pt-4 sm:px-6 sm:pb-40 sm:pt-6 md:pt-10"
-                                        style={{ minHeight: "100dvh" }}
-                                        tabIndex={-1}
-                                >
-                                        {/* Error banner */}
-                                        {Boolean(errors.current) && (
-                                                <div className="mx-auto mb-4 w-full max-w-4xl">
-                                                        <ErrorComponent
-                                                                error={String(errors.current)}
-                                                                onRetry={() => errorActions.clearError()}
-                                                                onDismiss={() => errorActions.clearError()}
-                                                        />
-                                                </div>
-                                        )}
+				<FloatingNavbar />
 
-                                        {/* Page content */}
-                                        <div className="flex w-full flex-1 flex-col items-center gap-8 sm:gap-12">{children}</div>
+				{/* Main content area with proper spacing */}
+				<main
+					id="main-content"
+					className="relative flex w-full flex-col px-3 pb-40 pt-4 sm:px-6 sm:pb-40 sm:pt-6 md:pt-10"
+					style={{ minHeight: "100dvh" }}
+					tabIndex={-1}
+				>
+					{/* Error banner */}
+					{Boolean(errors.current) && (
+						<div className="mx-auto mb-4 w-full max-w-4xl">
+							<ErrorComponent
+								error={String(errors.current)}
+								onRetry={() => errorActions.clearError()}
+								onDismiss={() => errorActions.clearError()}
+							/>
+						</div>
+					)}
 
-                                        {/* Loading overlay */}
-                                        {tournament.isLoading && (
-                                                <div
-                                                        className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-                                                        role="status"
-                                                        aria-live="polite"
-                                                        aria-busy="true"
-                                                >
-                                                        <Loading variant="spinner" text="Initializing Tournament..." />
-                                                </div>
-                                        )}
+					{/* Page content */}
+					<div className="flex w-full flex-1 flex-col items-center gap-8 sm:gap-12">{children}</div>
 
-                                        <ScrollToTopButton isLoggedIn={isLoggedIn} />
-                                </main>
+					{/* Loading overlay */}
+					{tournament.isLoading && (
+						<div
+							className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+							role="status"
+							aria-live="polite"
+							aria-busy="true"
+						>
+							<Loading variant="spinner" text="Initializing Tournament..." />
+						</div>
+					)}
 
-                        </div>
-                </ErrorBoundary>
-        );
+					<ScrollToTopButton isLoggedIn={isLoggedIn} />
+				</main>
+			</div>
+		</ErrorBoundary>
+	);
 }

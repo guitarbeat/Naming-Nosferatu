@@ -38,7 +38,9 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 		percentile: e.percentile_rank ?? null,
 	}));
 
-	if (data.length === 0) return null;
+	if (data.length === 0) {
+		return null;
+	}
 
 	const allRatings = leaderboard.map((e) => e.avg_rating);
 	const stats = computeRatingStats(allRatings);
@@ -48,7 +50,11 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 		<div className="h-52 sm:h-64 w-full">
 			<ResponsiveContainer width="100%" height="100%">
 				<BarChart data={data} layout="vertical" margin={{ top: 4, right: 12, left: 4, bottom: 0 }}>
-					<CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" horizontal={false} />
+					<CartesianGrid
+						strokeDasharray="3 3"
+						stroke="hsl(var(--border) / 0.2)"
+						horizontal={false}
+					/>
 					<XAxis
 						type="number"
 						tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
@@ -72,13 +78,14 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 							fontSize: 12,
 							color: "hsl(var(--foreground))",
 						}}
-						formatter={(value: number, _: string, props: { payload: { fullName: string; percentile: number | null } }) => {
+						formatter={(
+							value: number,
+							_: string,
+							props: { payload: { fullName: string; percentile: number | null } },
+						) => {
 							const label = props.payload.fullName;
 							const pct = props.payload.percentile;
-							return [
-								`${value}${pct !== null ? ` (top ${100 - pct}%)` : ""}`,
-								label,
-							];
+							return [`${value}${pct !== null ? ` (top ${100 - pct}%)` : ""}`, label];
 						}}
 						cursor={{ fill: "hsl(var(--primary) / 0.06)" }}
 					/>

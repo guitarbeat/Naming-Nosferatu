@@ -20,7 +20,9 @@ interface RatingRadarChartProps {
 
 export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartProps) {
 	const top = leaderboard.slice(0, limit);
-	if (top.length < 3) return null;
+	if (top.length < 3) {
+		return null;
+	}
 
 	const maxRating = Math.max(...top.map((e) => e.avg_rating));
 	const maxWins = Math.max(...top.map((e) => e.wins)) || 1;

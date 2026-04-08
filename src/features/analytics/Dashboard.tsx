@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
@@ -14,9 +14,8 @@ import {
 	User,
 	Users,
 } from "@/shared/lib/icons";
-import { coreAPI, hiddenNamesAPI } from "@/shared/services/supabase/api";
+import { hiddenNamesAPI } from "@/shared/services/supabase/api";
 import type { NameItem, RatingData } from "@/shared/types";
-import { RandomGenerator } from "../tournament/components/RandomGenerator";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
@@ -80,13 +79,19 @@ function StatCard({
 		<div className="group relative rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 transition-all duration-200 ease-out hover:bg-card/60 hover:border-border/50 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5">
 			<div className="flex items-start gap-3">
 				{Icon && (
-					<div className={`rounded-lg p-2 transition-all duration-200 ${accent ? "bg-primary/15 text-primary group-hover:bg-primary/20 group-hover:scale-110" : "bg-muted/50 text-muted-foreground group-hover:bg-muted/70 group-hover:scale-110"}`}>
+					<div
+						className={`rounded-lg p-2 transition-all duration-200 ${accent ? "bg-primary/15 text-primary group-hover:bg-primary/20 group-hover:scale-110" : "bg-muted/50 text-muted-foreground group-hover:bg-muted/70 group-hover:scale-110"}`}
+					>
 						<Icon size={16} />
 					</div>
 				)}
 				<div className="flex-1 min-w-0">
-					<p className="text-xs font-medium text-muted-foreground mb-1 transition-colors duration-200 group-hover:text-muted-foreground/80">{label}</p>
-					<p className={`text-xl font-bold tabular-nums transition-colors duration-200 ${accent ? "text-primary group-hover:text-primary/90" : "text-foreground"}`}>
+					<p className="text-xs font-medium text-muted-foreground mb-1 transition-colors duration-200 group-hover:text-muted-foreground/80">
+						{label}
+					</p>
+					<p
+						className={`text-xl font-bold tabular-nums transition-colors duration-200 ${accent ? "text-primary group-hover:text-primary/90" : "text-foreground"}`}
+					>
 						{value}
 					</p>
 				</div>
@@ -238,10 +243,14 @@ export function Dashboard({
 	}, [isAdmin, showHiddenNames]);
 
 	const handleUnhideName = async (nameId: string | number) => {
-		if (!userName) return;
+		if (!userName) {
+			return;
+		}
 		try {
 			const result = await hiddenNamesAPI.unhideName(userName, nameId);
-			if (!result.success) throw new Error(result.error || "Failed to unhide name");
+			if (!result.success) {
+				throw new Error(result.error || "Failed to unhide name");
+			}
 			setHiddenNames((prev) => prev.filter((n) => n.id !== nameId));
 		} catch (error) {
 			console.error("Failed to unhide name:", error);
@@ -250,7 +259,6 @@ export function Dashboard({
 
 	return (
 		<div className="dashboard-container space-y-8 sm:space-y-10 w-full">
-
 			{/* ── User Profile ── */}
 			{isLoggedIn && userName && (
 				<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-5 sm:p-6">
@@ -289,9 +297,7 @@ export function Dashboard({
 
 			{/* ── Random Generator ── */}
 			<div>
-				<Suspense fallback={<div className="p-4">Loading...</div>}>
-					<RandomGenerator fetchNames={() => coreAPI.getTrendingNames(false)} />
-				</Suspense>
+				<Suspense fallback={<div className="p-4">Loading...</div>}></Suspense>
 			</div>
 
 			{/* ── Your Stats ── */}
@@ -301,8 +307,13 @@ export function Dashboard({
 					<div className="grid grid-cols-2 gap-3">
 						<StatCard label="Ratings" value={userStats.totalRatings} icon={BarChart3} />
 						<StatCard label="Selected" value={userStats.totalSelections} icon={Target} />
-						<StatCard label="Wins" value={userStats.totalWins} icon={Trophy} accent />
-						<StatCard label="Win Rate" value={`${userStats.winRate}%`} icon={TrendingUp} accent />
+						<StatCard label="Wins" value={userStats.totalWins} icon={Trophy} accent={true} />
+						<StatCard
+							label="Win Rate"
+							value={`${userStats.winRate}%`}
+							icon={TrendingUp}
+							accent={true}
+						/>
 					</div>
 				</div>
 			)}
@@ -346,11 +357,14 @@ export function Dashboard({
 								<div className="flex-1 min-w-0">
 									<p className="font-semibold text-foreground text-sm truncate">{entry.name}</p>
 									<p className="text-[11px] text-muted-foreground">
-										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} · {entry.wins} win{entry.wins !== 1 ? "s" : ""}
+										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} ·{" "}
+										{entry.wins} win{entry.wins !== 1 ? "s" : ""}
 									</p>
 								</div>
 								<div className="text-right flex-shrink-0">
-									<p className="text-base font-bold text-primary tabular-nums">{Math.round(entry.avg_rating)}</p>
+									<p className="text-base font-bold text-primary tabular-nums">
+										{Math.round(entry.avg_rating)}
+									</p>
 								</div>
 							</div>
 						))}
@@ -405,7 +419,12 @@ export function Dashboard({
 						<StatCard label="Total Names" value={siteStats.totalNames} icon={Activity} />
 						<StatCard label="Active Names" value={siteStats.activeNames} icon={Target} />
 						<StatCard label="Total Users" value={siteStats.totalUsers} icon={Users} />
-						<StatCard label="Avg Rating" value={Math.round(siteStats.avgRating)} icon={TrendingUp} accent />
+						<StatCard
+							label="Avg Rating"
+							value={Math.round(siteStats.avgRating)}
+							icon={TrendingUp}
+							accent={true}
+						/>
 						{isAdmin && (
 							<StatCard label="Hidden Names" value={siteStats.hiddenNames} icon={EyeOff} />
 						)}
@@ -445,14 +464,44 @@ export function Dashboard({
 
 					<div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
 						<StatCard label="Tournaments" value={engagementMetrics.totalTournaments} icon={Users} />
-						<StatCard label="Completed" value={engagementMetrics.completedTournaments} icon={Trophy} accent />
-						<StatCard label="Avg Duration" value={`${engagementMetrics.averageTournamentTime}m`} icon={Clock} />
+						<StatCard
+							label="Completed"
+							value={engagementMetrics.completedTournaments}
+							icon={Trophy}
+							accent={true}
+						/>
+						<StatCard
+							label="Avg Duration"
+							value={`${engagementMetrics.averageTournamentTime}m`}
+							icon={Clock}
+						/>
 						<StatCard label="Peak Users" value={engagementMetrics.peakActiveUsers} icon={Target} />
-						<StatCard label="Retention" value={`${engagementMetrics.userRetentionRate}%`} icon={Activity} accent />
-						<StatCard label="Bounce Rate" value={`${engagementMetrics.bounceRate}%`} icon={BarChart3} />
-						<StatCard label="Daily Active" value={engagementMetrics.dailyActiveUsers} icon={Users} />
-						<StatCard label="Weekly Active" value={engagementMetrics.weeklyActiveUsers} icon={Users} />
-						<StatCard label="Monthly Active" value={engagementMetrics.monthlyActiveUsers} icon={Users} />
+						<StatCard
+							label="Retention"
+							value={`${engagementMetrics.userRetentionRate}%`}
+							icon={Activity}
+							accent={true}
+						/>
+						<StatCard
+							label="Bounce Rate"
+							value={`${engagementMetrics.bounceRate}%`}
+							icon={BarChart3}
+						/>
+						<StatCard
+							label="Daily Active"
+							value={engagementMetrics.dailyActiveUsers}
+							icon={Users}
+						/>
+						<StatCard
+							label="Weekly Active"
+							value={engagementMetrics.weeklyActiveUsers}
+							icon={Users}
+						/>
+						<StatCard
+							label="Monthly Active"
+							value={engagementMetrics.monthlyActiveUsers}
+							icon={Users}
+						/>
 					</div>
 				</div>
 			)}
@@ -483,11 +532,7 @@ export function Dashboard({
 										className={`flex items-center justify-between px-4 py-3 ${i < hiddenNames.length - 1 ? "border-b border-border/20" : ""}`}
 									>
 										<span className="text-sm font-medium text-foreground">{name.name}</span>
-										<Button
-											variant="ghost"
-											size="small"
-											onClick={() => handleUnhideName(name.id)}
-										>
+										<Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
 											<Eye size={14} className="mr-1" />
 											Unhide
 										</Button>

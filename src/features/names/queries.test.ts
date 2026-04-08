@@ -29,7 +29,9 @@ const mockClient = {
 describe("fetchNames", () => {
 	it("throws when user is not an admin and includeHidden is true", async () => {
 		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
-		await expect(fetchNames(true)).rejects.toThrow("Admin privileges required to view hidden names");
+		await expect(fetchNames(true)).rejects.toThrow(
+			"Admin privileges required to view hidden names",
+		);
 	});
 
 	it("allows non-admin to fetch non-hidden names", async () => {

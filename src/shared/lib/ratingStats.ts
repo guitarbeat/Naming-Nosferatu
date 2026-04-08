@@ -1,11 +1,4 @@
-import {
-	max,
-	mean,
-	median,
-	min,
-	quantileRankSorted,
-	standardDeviation,
-} from "simple-statistics";
+import { max, mean, median, min, quantileRankSorted, standardDeviation } from "simple-statistics";
 
 export interface RatingStats {
 	mean: number;
@@ -24,7 +17,9 @@ export interface EnrichedRating {
 }
 
 export function computeRatingStats(ratings: number[]): RatingStats | null {
-	if (ratings.length < 2) return null;
+	if (ratings.length < 2) {
+		return null;
+	}
 	const sorted = [...ratings].sort((a, b) => a - b);
 	return {
 		mean: mean(ratings),
@@ -37,19 +32,27 @@ export function computeRatingStats(ratings: number[]): RatingStats | null {
 }
 
 export function getPercentileRank(rating: number, allRatings: number[]): number {
-	if (allRatings.length === 0) return 50;
+	if (allRatings.length === 0) {
+		return 50;
+	}
 	const sorted = [...allRatings].sort((a, b) => a - b);
 	return Math.round(quantileRankSorted(sorted, rating) * 100);
 }
 
 export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
-	if (gamesPlayed <= 0) return 0;
-	if (gamesPlayed >= threshold) return 1;
+	if (gamesPlayed <= 0) {
+		return 0;
+	}
+	if (gamesPlayed >= threshold) {
+		return 1;
+	}
 	return gamesPlayed / threshold;
 }
 
 export function getZScore(rating: number, stats: RatingStats): number {
-	if (stats.stdDev === 0) return 0;
+	if (stats.stdDev === 0) {
+		return 0;
+	}
 	return (rating - stats.mean) / stats.stdDev;
 }
 

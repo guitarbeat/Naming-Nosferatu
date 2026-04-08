@@ -33,13 +33,17 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 	const stats = useMemo(() => computeRatingStats(ratings), [ratings]);
 
 	const data = useMemo(() => {
-		if (ratings.length === 0) return [];
+		if (ratings.length === 0) {
+			return [];
+		}
 
 		const minBucket = Math.floor(Math.min(...ratings) / BUCKET_SIZE) * BUCKET_SIZE;
 		const maxBucket = Math.ceil(Math.max(...ratings) / BUCKET_SIZE) * BUCKET_SIZE;
 
 		const buckets: Record<number, number> = {};
-		for (let b = minBucket; b <= maxBucket; b += BUCKET_SIZE) buckets[b] = 0;
+		for (let b = minBucket; b <= maxBucket; b += BUCKET_SIZE) {
+			buckets[b] = 0;
+		}
 		for (const r of ratings) {
 			const bucket = Math.floor(r / BUCKET_SIZE) * BUCKET_SIZE;
 			buckets[bucket] = (buckets[bucket] ?? 0) + 1;
@@ -55,18 +59,24 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 	}, [ratings]);
 
 	const meanBucket = useMemo(() => {
-		if (!stats) return null;
+		if (!stats) {
+			return null;
+		}
 		return Math.floor(stats.mean / BUCKET_SIZE) * BUCKET_SIZE;
 	}, [stats]);
 
 	const stdDevBuckets = useMemo(() => {
-		if (!stats) return null;
+		if (!stats) {
+			return null;
+		}
 		const lo = Math.floor((stats.mean - stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
 		const hi = Math.floor((stats.mean + stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
 		return { lo: bucketLabel(lo), hi: bucketLabel(hi) };
 	}, [stats]);
 
-	if (data.length === 0) return null;
+	if (data.length === 0) {
+		return null;
+	}
 
 	const meanRange = meanBucket !== null ? bucketLabel(meanBucket) : null;
 

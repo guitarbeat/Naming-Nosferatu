@@ -1,7 +1,7 @@
-import useAppStore from "@/store/appStore";
 import { isRpcSignatureError } from "@/shared/lib/errors";
 import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType } from "@/shared/types";
+import useAppStore from "@/store/appStore";
 
 /** Throws when the RPC returns a non-true result. */
 function assertSuccess(data: unknown, message: string): void {
@@ -26,7 +26,9 @@ export async function softDeleteName(params: { nameId: IdType }): Promise<void> 
 		const { data, error } = await client.rpc("soft_delete_cat_name", {
 			p_name_id: String(nameId),
 		});
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		assertSuccess(data, "Failed to delete name");
 		return true;
 	}, false);
@@ -48,7 +50,9 @@ export async function batchUpdateVisibility(params: {
 			p_name_ids: nameIds.map(String),
 			p_is_hidden: isHidden,
 		});
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		assertSuccess(data, "Failed to batch update name visibility");
 		return true;
 	}, false);
@@ -72,7 +76,9 @@ export async function toggleNameHidden(params: {
 			p_hide: !isCurrentlyHidden,
 			p_user_name: trimmedUserName || undefined,
 		});
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		assertSuccess(data, "Failed to update name visibility");
 		return true;
 	}, false);
@@ -126,17 +132,23 @@ export async function unhideAllNames(): Promise<void> {
 			.select("id")
 			.eq("is_hidden", true);
 
-		if (fetchError) throw fetchError;
+		if (fetchError) {
+			throw fetchError;
+		}
 		const hiddenIds = (hiddenData ?? []).map((row) => row.id);
 
-		if (hiddenIds.length === 0) return true;
+		if (hiddenIds.length === 0) {
+			return true;
+		}
 
 		// @ts-expect-error - batch_update_name_visibility is a custom RPC
 		const { data, error } = await client.rpc("batch_update_name_visibility", {
 			p_name_ids: hiddenIds.map(String),
 			p_is_hidden: false,
 		});
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		assertSuccess(data, "Failed to unhide all names");
 		return true;
 	}, false);

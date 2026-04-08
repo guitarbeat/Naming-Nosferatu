@@ -1,7 +1,6 @@
-import { Button as HeroButton } from "@heroui/react";
 import { useToast } from "@/app/providers/Providers";
 import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
-import { Plus, Trophy, Star, Hash } from "@/shared/lib/icons";
+import { Plus } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RankingAdjustment } from "./RankingAdjustment";
 
@@ -29,7 +28,9 @@ function HighlightCard({
 	return (
 		<div className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 text-center">
 			<span className="text-3xl select-none">{emoji}</span>
-			<p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{label}</p>
+			<p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+				{label}
+			</p>
 			<p className="text-lg font-bold text-foreground truncate max-w-full">{value}</p>
 		</div>
 	);
@@ -75,14 +76,14 @@ export const PersonalResults = ({
 			/>
 
 			<div className="flex justify-end">
-				<HeroButton
+				<button
+					type="button"
 					onClick={onStartNew}
-					variant="flat"
-					className="bg-primary/15 hover:bg-primary/25 text-foreground text-sm"
-					startContent={<Plus size={16} />}
+					className="flex items-center gap-2 px-4 py-2 bg-primary/15 hover:bg-primary/25 text-foreground text-sm rounded-medium transition-colors"
 				>
+					<Plus size={16} />
 					New Tournament
-				</HeroButton>
+				</button>
 			</div>
 		</div>
 	);

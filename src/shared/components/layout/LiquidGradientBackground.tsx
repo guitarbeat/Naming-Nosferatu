@@ -2,130 +2,132 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 class TouchTexture {
-        size: number;
-        width: number;
-        height: number;
-        maxAge: number;
-        radius: number;
-        speed: number;
-        trail: Array<{ x: number; y: number; age: number; force: number; vx: number; vy: number }>;
-        last: { x: number; y: number } | null;
-        canvas!: HTMLCanvasElement;
-        ctx!: CanvasRenderingContext2D;
-        texture!: THREE.Texture;
+	size: number;
+	width: number;
+	height: number;
+	maxAge: number;
+	radius: number;
+	speed: number;
+	trail: Array<{ x: number; y: number; age: number; force: number; vx: number; vy: number }>;
+	last: { x: number; y: number } | null;
+	canvas!: HTMLCanvasElement;
+	ctx!: CanvasRenderingContext2D;
+	texture!: THREE.Texture;
 
-        constructor() {
-                this.size = 64;
-                this.width = this.height = this.size;
-                this.maxAge = 64;
-                this.radius = 0.25 * this.size;
-                this.speed = 1 / this.maxAge;
-                this.trail = [];
-                this.last = null;
-                this.initTexture();
-        }
+	constructor() {
+		this.size = 64;
+		this.width = this.height = this.size;
+		this.maxAge = 64;
+		this.radius = 0.25 * this.size;
+		this.speed = 1 / this.maxAge;
+		this.trail = [];
+		this.last = null;
+		this.initTexture();
+	}
 
-        initTexture() {
-                this.canvas = document.createElement("canvas");
-                this.canvas.width = this.width;
-                this.canvas.height = this.height;
-                this.ctx = this.canvas.getContext("2d")!;
-                this.ctx.fillStyle = "black";
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.texture = new THREE.Texture(this.canvas);
-        }
+	initTexture() {
+		this.canvas = document.createElement("canvas");
+		this.canvas.width = this.width;
+		this.canvas.height = this.height;
+		this.ctx = this.canvas.getContext("2d")!;
+		this.ctx.fillStyle = "black";
+		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+		this.texture = new THREE.Texture(this.canvas);
+	}
 
-        update() {
-                this.clear();
-                for (let i = this.trail.length - 1; i >= 0; i--) {
-                        const point = this.trail[i];
-                        const f = point.force * this.speed * (1 - point.age / this.maxAge);
-                        point.x += point.vx * f;
-                        point.y += point.vy * f;
-                        point.age++;
-                        if (point.age > this.maxAge) {
-                                this.trail.splice(i, 1);
-                        } else {
-                                this.drawPoint(point);
-                        }
-                }
-                this.texture.needsUpdate = true;
-        }
+	update() {
+		this.clear();
+		for (let i = this.trail.length - 1; i >= 0; i--) {
+			const point = this.trail[i];
+			const f = point.force * this.speed * (1 - point.age / this.maxAge);
+			point.x += point.vx * f;
+			point.y += point.vy * f;
+			point.age++;
+			if (point.age > this.maxAge) {
+				this.trail.splice(i, 1);
+			} else {
+				this.drawPoint(point);
+			}
+		}
+		this.texture.needsUpdate = true;
+	}
 
-        clear() {
-                this.ctx.fillStyle = "black";
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        }
+	clear() {
+		this.ctx.fillStyle = "black";
+		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+	}
 
-        addTouch(point: { x: number; y: number }) {
-                let force = 0;
-                let vx = 0;
-                let vy = 0;
-                const last = this.last;
-                if (last) {
-                        const dx = point.x - last.x;
-                        const dy = point.y - last.y;
-                        if (dx === 0 && dy === 0) return;
-                        const dd = dx * dx + dy * dy;
-                        const d = Math.sqrt(dd);
-                        vx = dx / d;
-                        vy = dy / d;
-                        force = Math.min(dd * 20000, 2.0);
-                }
-                this.last = { x: point.x, y: point.y };
-                this.trail.push({ x: point.x, y: point.y, age: 0, force, vx, vy });
-        }
+	addTouch(point: { x: number; y: number }) {
+		let force = 0;
+		let vx = 0;
+		let vy = 0;
+		const last = this.last;
+		if (last) {
+			const dx = point.x - last.x;
+			const dy = point.y - last.y;
+			if (dx === 0 && dy === 0) {
+				return;
+			}
+			const dd = dx * dx + dy * dy;
+			const d = Math.sqrt(dd);
+			vx = dx / d;
+			vy = dy / d;
+			force = Math.min(dd * 20000, 2.0);
+		}
+		this.last = { x: point.x, y: point.y };
+		this.trail.push({ x: point.x, y: point.y, age: 0, force, vx, vy });
+	}
 
-        drawPoint(point: { x: number; y: number; age: number; force: number; vx: number; vy: number }) {
-                const pos = {
-                        x: point.x * this.width,
-                        y: (1 - point.y) * this.height,
-                };
-                let intensity = 1;
-                if (point.age < this.maxAge * 0.3) {
-                        intensity = Math.sin((point.age / (this.maxAge * 0.3)) * (Math.PI / 2));
-                } else {
-                        const t = 1 - (point.age - this.maxAge * 0.3) / (this.maxAge * 0.7);
-                        intensity = -t * (t - 2);
-                }
-                intensity *= point.force;
-                const radius = this.radius;
-                const color = `${((point.vx + 1) / 2) * 255}, ${((point.vy + 1) / 2) * 255}, ${intensity * 255}`;
-                const offset = this.size * 5;
-                this.ctx.shadowOffsetX = offset;
-                this.ctx.shadowOffsetY = offset;
-                this.ctx.shadowBlur = radius;
-                this.ctx.shadowColor = `rgba(${color},${0.2 * intensity})`;
-                this.ctx.beginPath();
-                this.ctx.fillStyle = "rgba(255,0,0,1)";
-                this.ctx.arc(pos.x - offset, pos.y - offset, radius, 0, Math.PI * 2);
-                this.ctx.fill();
-        }
+	drawPoint(point: { x: number; y: number; age: number; force: number; vx: number; vy: number }) {
+		const pos = {
+			x: point.x * this.width,
+			y: (1 - point.y) * this.height,
+		};
+		let intensity = 1;
+		if (point.age < this.maxAge * 0.3) {
+			intensity = Math.sin((point.age / (this.maxAge * 0.3)) * (Math.PI / 2));
+		} else {
+			const t = 1 - (point.age - this.maxAge * 0.3) / (this.maxAge * 0.7);
+			intensity = -t * (t - 2);
+		}
+		intensity *= point.force;
+		const radius = this.radius;
+		const color = `${((point.vx + 1) / 2) * 255}, ${((point.vy + 1) / 2) * 255}, ${intensity * 255}`;
+		const offset = this.size * 5;
+		this.ctx.shadowOffsetX = offset;
+		this.ctx.shadowOffsetY = offset;
+		this.ctx.shadowBlur = radius;
+		this.ctx.shadowColor = `rgba(${color},${0.2 * intensity})`;
+		this.ctx.beginPath();
+		this.ctx.fillStyle = "rgba(255,0,0,1)";
+		this.ctx.arc(pos.x - offset, pos.y - offset, radius, 0, Math.PI * 2);
+		this.ctx.fill();
+	}
 
-        dispose() {
-                this.texture.dispose();
-        }
+	dispose() {
+		this.texture.dispose();
+	}
 }
 
 interface Uniforms {
-        uTime: THREE.IUniform<number>;
-        uResolution: THREE.IUniform<THREE.Vector2>;
-        uColor1: THREE.IUniform<THREE.Vector3>;
-        uColor2: THREE.IUniform<THREE.Vector3>;
-        uColor3: THREE.IUniform<THREE.Vector3>;
-        uColor4: THREE.IUniform<THREE.Vector3>;
-        uColor5: THREE.IUniform<THREE.Vector3>;
-        uColor6: THREE.IUniform<THREE.Vector3>;
-        uSpeed: THREE.IUniform<number>;
-        uIntensity: THREE.IUniform<number>;
-        uTouchTexture: THREE.IUniform<THREE.Texture | null>;
-        uGrainIntensity: THREE.IUniform<number>;
-        uZoom: THREE.IUniform<number>;
-        uDarkNavy: THREE.IUniform<THREE.Vector3>;
-        uGradientSize: THREE.IUniform<number>;
-        uGradientCount: THREE.IUniform<number>;
-        uColor1Weight: THREE.IUniform<number>;
-        uColor2Weight: THREE.IUniform<number>;
+	uTime: THREE.IUniform<number>;
+	uResolution: THREE.IUniform<THREE.Vector2>;
+	uColor1: THREE.IUniform<THREE.Vector3>;
+	uColor2: THREE.IUniform<THREE.Vector3>;
+	uColor3: THREE.IUniform<THREE.Vector3>;
+	uColor4: THREE.IUniform<THREE.Vector3>;
+	uColor5: THREE.IUniform<THREE.Vector3>;
+	uColor6: THREE.IUniform<THREE.Vector3>;
+	uSpeed: THREE.IUniform<number>;
+	uIntensity: THREE.IUniform<number>;
+	uTouchTexture: THREE.IUniform<THREE.Texture | null>;
+	uGrainIntensity: THREE.IUniform<number>;
+	uZoom: THREE.IUniform<number>;
+	uDarkNavy: THREE.IUniform<THREE.Vector3>;
+	uGradientSize: THREE.IUniform<number>;
+	uGradientCount: THREE.IUniform<number>;
+	uColor1Weight: THREE.IUniform<number>;
+	uColor2Weight: THREE.IUniform<number>;
 }
 
 const VERTEX_SHADER = `
@@ -284,138 +286,140 @@ void main() {
 `;
 
 export function LiquidGradientBackground() {
-        const containerRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 
-        useEffect(() => {
-                const container = containerRef.current;
-                if (!container) return;
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) {
+			return;
+		}
 
-                // Bail out gracefully when WebGL is unavailable (e.g. headless environments)
-                const testCanvas = document.createElement("canvas");
-                const hasWebGL =
-                        !!testCanvas.getContext("webgl") || !!testCanvas.getContext("webgl2");
-                if (!hasWebGL) return;
+		// Bail out gracefully when WebGL is unavailable (e.g. headless environments)
+		const testCanvas = document.createElement("canvas");
+		const hasWebGL = !!testCanvas.getContext("webgl") || !!testCanvas.getContext("webgl2");
+		if (!hasWebGL) {
+			return;
+		}
 
-                let renderer: THREE.WebGLRenderer;
-                try {
-                        renderer = new THREE.WebGLRenderer({
-                                antialias: true,
-                                powerPreference: "high-performance",
-                                alpha: false,
-                                stencil: false,
-                                depth: false,
-                        });
-                } catch {
-                        return;
-                }
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                container.appendChild(renderer.domElement);
+		let renderer: THREE.WebGLRenderer;
+		try {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true,
+				powerPreference: "high-performance",
+				alpha: false,
+				stencil: false,
+				depth: false,
+			});
+		} catch {
+			return;
+		}
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+		container.appendChild(renderer.domElement);
 
-                const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
-                camera.position.z = 50;
+		const camera = new THREE.PerspectiveCamera(
+			45,
+			window.innerWidth / window.innerHeight,
+			0.1,
+			10000,
+		);
+		camera.position.z = 50;
 
-                const scene = new THREE.Scene();
-                scene.background = new THREE.Color(0x0a0e27);
+		const scene = new THREE.Scene();
+		scene.background = new THREE.Color(0x0a0e27);
 
-                const clock = new THREE.Clock();
+		const clock = new THREE.Clock();
 
-                const getViewSize = () => {
-                        const fovInRadians = (camera.fov * Math.PI) / 180;
-                        const height = Math.abs(camera.position.z * Math.tan(fovInRadians / 2) * 2);
-                        return { width: height * camera.aspect, height };
-                };
+		const getViewSize = () => {
+			const fovInRadians = (camera.fov * Math.PI) / 180;
+			const height = Math.abs(camera.position.z * Math.tan(fovInRadians / 2) * 2);
+			return { width: height * camera.aspect, height };
+		};
 
-                const touchTexture = new TouchTexture();
+		const touchTexture = new TouchTexture();
 
-                const uniforms: Uniforms = {
-                        uTime:          { value: 0 },
-                        uResolution:    { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-                        uColor1:        { value: new THREE.Vector3(0.945, 0.353, 0.133) },
-                        uColor2:        { value: new THREE.Vector3(0.039, 0.055, 0.153) },
-                        uColor3:        { value: new THREE.Vector3(0.945, 0.353, 0.133) },
-                        uColor4:        { value: new THREE.Vector3(0.039, 0.055, 0.153) },
-                        uColor5:        { value: new THREE.Vector3(0.945, 0.353, 0.133) },
-                        uColor6:        { value: new THREE.Vector3(0.039, 0.055, 0.153) },
-                        uSpeed:         { value: 1.5 },
-                        uIntensity:     { value: 1.8 },
-                        uTouchTexture:  { value: touchTexture.texture },
-                        uGrainIntensity:{ value: 0.08 },
-                        uZoom:          { value: 1.0 },
-                        uDarkNavy:      { value: new THREE.Vector3(0.039, 0.055, 0.153) },
-                        uGradientSize:  { value: 0.45 },
-                        uGradientCount: { value: 12.0 },
-                        uColor1Weight:  { value: 0.5 },
-                        uColor2Weight:  { value: 1.8 },
-                };
+		const uniforms: Uniforms = {
+			uTime: { value: 0 },
+			uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+			uColor1: { value: new THREE.Vector3(0.945, 0.353, 0.133) },
+			uColor2: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
+			uColor3: { value: new THREE.Vector3(0.945, 0.353, 0.133) },
+			uColor4: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
+			uColor5: { value: new THREE.Vector3(0.945, 0.353, 0.133) },
+			uColor6: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
+			uSpeed: { value: 1.5 },
+			uIntensity: { value: 1.8 },
+			uTouchTexture: { value: touchTexture.texture },
+			uGrainIntensity: { value: 0.08 },
+			uZoom: { value: 1.0 },
+			uDarkNavy: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
+			uGradientSize: { value: 0.45 },
+			uGradientCount: { value: 12.0 },
+			uColor1Weight: { value: 0.5 },
+			uColor2Weight: { value: 1.8 },
+		};
 
-                const viewSize = getViewSize();
-                const geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height, 1, 1);
-                const material = new THREE.ShaderMaterial({
-                        uniforms,
-                        vertexShader: VERTEX_SHADER,
-                        fragmentShader: FRAGMENT_SHADER,
-                });
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.z = 0;
-                scene.add(mesh);
+		const viewSize = getViewSize();
+		const geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height, 1, 1);
+		const material = new THREE.ShaderMaterial({
+			uniforms,
+			vertexShader: VERTEX_SHADER,
+			fragmentShader: FRAGMENT_SHADER,
+		});
+		const mesh = new THREE.Mesh(geometry, material);
+		mesh.position.z = 0;
+		scene.add(mesh);
 
-                let rafId: number;
+		let rafId: number;
 
-                const tick = () => {
-                        const delta = Math.min(clock.getDelta(), 0.1);
-                        touchTexture.update();
-                        uniforms.uTime.value += delta;
-                        renderer.render(scene, camera);
-                        rafId = requestAnimationFrame(tick);
-                };
-                tick();
+		const tick = () => {
+			const delta = Math.min(clock.getDelta(), 0.1);
+			touchTexture.update();
+			uniforms.uTime.value += delta;
+			renderer.render(scene, camera);
+			rafId = requestAnimationFrame(tick);
+		};
+		tick();
 
-                const onMouseMove = (ev: MouseEvent) => {
-                        touchTexture.addTouch({
-                                x: ev.clientX / window.innerWidth,
-                                y: 1 - ev.clientY / window.innerHeight,
-                        });
-                };
-                const onTouchMove = (ev: TouchEvent) => {
-                        const t = ev.touches[0];
-                        touchTexture.addTouch({
-                                x: t.clientX / window.innerWidth,
-                                y: 1 - t.clientY / window.innerHeight,
-                        });
-                };
-                const onResize = () => {
-                        camera.aspect = window.innerWidth / window.innerHeight;
-                        camera.updateProjectionMatrix();
-                        renderer.setSize(window.innerWidth, window.innerHeight);
-                        uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-                        const vs = getViewSize();
-                        mesh.geometry.dispose();
-                        mesh.geometry = new THREE.PlaneGeometry(vs.width, vs.height, 1, 1);
-                };
+		const onMouseMove = (ev: MouseEvent) => {
+			touchTexture.addTouch({
+				x: ev.clientX / window.innerWidth,
+				y: 1 - ev.clientY / window.innerHeight,
+			});
+		};
+		const onTouchMove = (ev: TouchEvent) => {
+			const t = ev.touches[0];
+			touchTexture.addTouch({
+				x: t.clientX / window.innerWidth,
+				y: 1 - t.clientY / window.innerHeight,
+			});
+		};
+		const onResize = () => {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+			const vs = getViewSize();
+			mesh.geometry.dispose();
+			mesh.geometry = new THREE.PlaneGeometry(vs.width, vs.height, 1, 1);
+		};
 
-                window.addEventListener("mousemove", onMouseMove);
-                window.addEventListener("touchmove", onTouchMove, { passive: true });
-                window.addEventListener("resize", onResize);
+		window.addEventListener("mousemove", onMouseMove);
+		window.addEventListener("touchmove", onTouchMove, { passive: true });
+		window.addEventListener("resize", onResize);
 
-                return () => {
-                        cancelAnimationFrame(rafId);
-                        window.removeEventListener("mousemove", onMouseMove);
-                        window.removeEventListener("touchmove", onTouchMove);
-                        window.removeEventListener("resize", onResize);
-                        mesh.geometry.dispose();
-                        material.dispose();
-                        touchTexture.dispose();
-                        renderer.dispose();
-                        container.removeChild(renderer.domElement);
-                };
-        }, []);
+		return () => {
+			cancelAnimationFrame(rafId);
+			window.removeEventListener("mousemove", onMouseMove);
+			window.removeEventListener("touchmove", onTouchMove);
+			window.removeEventListener("resize", onResize);
+			mesh.geometry.dispose();
+			material.dispose();
+			touchTexture.dispose();
+			renderer.dispose();
+			container.removeChild(renderer.domElement);
+		};
+	}, []);
 
-        return (
-                <div
-                        ref={containerRef}
-                        className="fixed inset-0 -z-10"
-                        aria-hidden="true"
-                />
-        );
+	return <div ref={containerRef} className="fixed inset-0 -z-10" aria-hidden="true" />;
 }

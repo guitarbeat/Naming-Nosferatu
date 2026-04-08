@@ -51,7 +51,8 @@ export function mapNameRow(row: RawNameRow): NameItem {
 				: null;
 
 	const hidden = Boolean(row.is_hidden ?? row.isHidden ?? false);
-	const active = row.is_active == null && row.isActive == null ? true : Boolean(row.is_active ?? row.isActive);
+	const active =
+		row.is_active == null && row.isActive == null ? true : Boolean(row.is_active ?? row.isActive);
 	const locked = Boolean(row.locked_in ?? row.lockedIn ?? false);
 
 	const wins =

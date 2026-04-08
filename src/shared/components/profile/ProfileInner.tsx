@@ -44,7 +44,9 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 	}, [isEditing, user.isLoggedIn]);
 
 	const handleSave = async () => {
-		if (!editedName.trim()) return;
+		if (!editedName.trim()) {
+			return;
+		}
 		setIsSaving(true);
 		try {
 			await onLogin(editedName.trim());
@@ -65,7 +67,10 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 		<div className="flex flex-col items-center gap-5 w-full">
 			{/* Avatar */}
 			<div className="relative mb-1">
-				<div className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50" aria-hidden="true" />
+				<div
+					className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50"
+					aria-hidden="true"
+				/>
 				<div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
 					<img
 						src={avatarSrc}

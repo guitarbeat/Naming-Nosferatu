@@ -15,7 +15,9 @@ describe("imagesAPI", () => {
 		vi.clearAllMocks();
 		mockedWithSupabase.mockImplementation(async (fn, fallback) => {
 			const client = await mockedResolveSupabaseClient();
-			if (!client) return fallback;
+			if (!client) {
+				return fallback;
+			}
 			return fn(client as never);
 		});
 	});

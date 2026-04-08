@@ -1,6 +1,6 @@
+import { mapNameRow, type RawNameRow } from "@/shared/lib/names/mapNameRow";
 import type { NameItem } from "@/shared/types";
 import { resolveSupabaseClient, withSupabase } from "./runtime";
-import { mapNameRow, type RawNameRow } from "@/features/names/mapNameRow";
 
 interface PendingRequest<T> {
 	controller: AbortController;
@@ -67,60 +67,75 @@ export const imagesAPI = {
 			return { path: null, error: "File size exceeds 5MB limit", success: false };
 		}
 		if (!allowedTypes.includes(file.type)) {
-			return { path: null, error: "Only JPEG, PNG, GIF, and WebP images are allowed", success: false };
+			return {
+				path: null,
+				error: "Only JPEG, PNG, GIF, and WebP images are allowed",
+				success: false,
+			};
 		}
 
-		return withSupabase(async (client) => {
-			const fileExt =
-				"name" in file && typeof (file as File).name === "string"
-					? (file as File).name.split(".").pop()
-					: "jpg";
-			const fileName = `${userName}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+		return withSupabase(
+			async (client) => {
+				const fileExt =
+					"name" in file && typeof (file as File).name === "string"
+						? (file as File).name.split(".").pop()
+						: "jpg";
+				const fileName = `${userName}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
 
-			const { error } = await client.storage.from("cat-images").upload(fileName, file, {
-				cacheControl: "3600",
-				upsert: false,
-				contentType: file.type || "image/jpeg",
-			});
+				const { error } = await client.storage.from("cat-images").upload(fileName, file, {
+					cacheControl: "3600",
+					upsert: false,
+					contentType: file.type || "image/jpeg",
+				});
 
-			if (error) {
-				console.error("Upload failed:", error);
-				return { path: null, error: error.message, success: false };
-			}
+				if (error) {
+					console.error("Upload failed:", error);
+					return { path: null, error: error.message, success: false };
+				}
 
-			const { data: { publicUrl } } = client.storage.from("cat-images").getPublicUrl(fileName);
-			return { path: publicUrl, error: null, success: true };
-		}, { path: null, error: "Storage client not available", success: false });
+				const {
+					data: { publicUrl },
+				} = client.storage.from("cat-images").getPublicUrl(fileName);
+				return { path: publicUrl, error: null, success: true };
+			},
+			{ path: null, error: "Storage client not available", success: false },
+		);
 	},
 
 	delete: async (fileName: string): Promise<{ success: boolean; error: string | null }> => {
-		return withSupabase(async (client) => {
-			const { error } = await client.storage.from("cat-images").remove([fileName]);
-			if (error) {
-				console.error("Delete failed:", error);
-				return { success: false, error: error.message };
-			}
-			return { success: true, error: null };
-		}, { success: false, error: "Storage client not available" });
+		return withSupabase(
+			async (client) => {
+				const { error } = await client.storage.from("cat-images").remove([fileName]);
+				if (error) {
+					console.error("Delete failed:", error);
+					return { success: false, error: error.message };
+				}
+				return { success: true, error: null };
+			},
+			{ success: false, error: "Storage client not available" },
+		);
 	},
 };
 
 export const coreAPI = {
 	addName: async (name: string, description: string) => {
-		return withSupabase(async (client) => {
-			const { data, error } = await client.rpc("add_cat_name", {
-				p_name: name,
-				p_description: description || "",
-			});
-			if (error) {
-				return { success: false, error: error.message || "Failed to add name" };
-			}
-			const row = Array.isArray(data) ? data[0] : data;
-			if (!row) {
-				return { success: false, error: "No data returned from add_cat_name" };
-			}
-			return { success: true, data: mapNameRow(row as RawNameRow) };
-		}, { success: false, error: "Supabase client not available" });
+		return withSupabase(
+			async (client) => {
+				const { data, error } = await client.rpc("add_cat_name", {
+					p_name: name,
+					p_description: description || "",
+				});
+				if (error) {
+					return { success: false, error: error.message || "Failed to add name" };
+				}
+				const row = Array.isArray(data) ? data[0] : data;
+				if (!row) {
+					return { success: false, error: "No data returned from add_cat_name" };
+				}
+				return { success: true, data: mapNameRow(row as RawNameRow) };
+			},
+			{ success: false, error: "Supabase client not available" },
+		);
 	},
 
 	getTrendingNames: async (includeHidden: boolean = false) => {
@@ -222,7 +237,6 @@ export const statsAPI = {
 		}, {});
 	},
 };
-
 
 // Validation utilities
 const validateRatingsData = (
@@ -332,7 +346,7 @@ export const ratingsAPI = {
 	): Promise<{ success: boolean; count: number }> => {
 		const validation = validateRatingsData(userId, ratings);
 		if (!validation.isValid) {
-			throw new Error(validation.error || 'Invalid ratings data');
+			throw new Error(validation.error || "Invalid ratings data");
 		}
 
 		const ratingsList = Object.entries(ratings).map(([nameId, data]) => ({
@@ -344,22 +358,22 @@ export const ratingsAPI = {
 
 		const client = await resolveSupabaseClient();
 		if (!client) {
-			throw new Error('Supabase client not available');
+			throw new Error("Supabase client not available");
 		}
 
 		// @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
-		const { data, error } = await client.rpc('save_user_ratings', {
+		const { data, error } = await client.rpc("save_user_ratings", {
 			p_user_name: userId,
 			p_ratings: ratingsList,
 		});
 
 		if (error) {
-			throw new Error(error.message || 'Failed to save ratings');
+			throw new Error(error.message || "Failed to save ratings");
 		}
 
 		const response = data as { success: boolean; count: number } | null;
 		if (!response?.success) {
-			throw new Error('Failed to save ratings: RPC returned failure');
+			throw new Error("Failed to save ratings: RPC returned failure");
 		}
 
 		return response;

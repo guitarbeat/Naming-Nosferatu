@@ -1,122 +1,106 @@
 # Name Nosferatu
 
-A React application for managing cat names and related data, featuring tournament-style voting, analytics, and Supabase integration.
+A modern React application for managing cat names and related data, featuring tournament-style voting, advanced analytics, and Supabase integration.
 
-## 🚀 Getting Started
+## 🚀 Overview
 
-### Prerequisites
+Name Nosferatu provides a platform to discover, vote on, and analyze cat names. It uses a tournament-based system to find the best names and integrates with Supabase for real-time data and authentication.
 
-- **Node.js**: >= 20.19.0
-- **pnpm**: >= 10.26.0
+## 🛠️ Tech Stack
 
-### Installation
+- **Frontend**: [React 19](https://react.dev/), [Vite 7](https://vitejs.dev/), [Tailwind CSS v4](https://tailwindcss.com/)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) (UI state), [TanStack Query](https://tanstack.com/query/latest) (Server state)
+- **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime)
+- **Testing**: [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **Tooling**: [Biome](https://biomejs.dev/) (Linting & Formatting), [TypeScript](https://www.typescriptlang.org/), [pnpm](https://pnpm.io/)
 
-1.  Clone the repository:
+## 📋 Requirements
+
+- **Node.js**: `>= 20.19.0`
+- **pnpm**: `>= 10.26.0`
+
+## ⚙️ Setup & Installation
+
+1.  **Clone the repository**:
     ```bash
     git clone https://github.com/guitarbeat/name-nosferatu.git
     cd name-nosferatu
     ```
 
-2.  Install dependencies:
+2.  **Install dependencies**:
     ```bash
     pnpm install
     ```
 
-3.  Set up environment variables:
-- Copy `config/.env.example` to `.env` (if available) or set up the required Supabase environment variables:
-        - `VITE_SUPABASE_URL`
-        - `VITE_SUPABASE_ANON_KEY`
-        - `DATABASE_URL` (for Drizzle/server operations)
-        - `JWT_SECRET` (required for backend API auth)
+3.  **Configure Environment Variables**:
+    - Copy `config/.env.example` to `.env` in the root directory.
+    - Fill in the required Supabase credentials:
+      - `VITE_SUPABASE_URL`: Your Supabase project URL.
+      - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous public key.
+      - `JWT_SECRET`: (Optional) Required for certain backend operations if applicable.
 
-### Repository layout notes
-
-This repo keeps configuration files under `config/` now:
-
-- `config/biome.json`, `config/knip.json`, `config/tsconfig.json`
-- `config/vite.config.ts`, `config/vitest.config.ts`, `config/vitest.setup.ts`
-- `config/tailwind.config.js`, `config/lefthook.yml`
-- `config/capacitor.config.ts`
-- `config/.env.example`, `config/.npmrc`, `config/.stylelintrc.json`, `config/.replit`
-
-Root `package.json` scripts point to these files explicitly.
+## 🏃 Running the App
 
 ### Development
-
-To start the Vite frontend dev server:
-
+Starts the Vite dev server on port `5000`.
 ```bash
 pnpm dev
 ```
 
-To start the backend API server:
-
+### Build & Preview
+Builds the application for production and previews the build.
 ```bash
-pnpm run dev:server
+pnpm run build
+pnpm run preview
 ```
 
-Run them in separate terminals for full-stack local development. The frontend uses the Vite default port (`5173`) and proxies `/api` requests to the backend on port `3001`. The backend requires `JWT_SECRET` to be set before startup.
+## 🧪 Testing
 
-### Testing
+The project uses Vitest for unit and integration testing. Configuration is located in `config/vitest.config.ts`.
 
-To run the test suite:
+- **Run all tests**: `pnpm test`
+- **Watch mode**: `pnpm run test:watch`
+- **Coverage report**: `pnpm run test:coverage`
 
-```bash
-pnpm test
+## 🧹 Code Quality
+
+- **Lint & Format**: `pnpm run lint` (Checks architecture, code style, and types)
+- **Auto-fix**: `pnpm run fix` (Fixes linting and formatting issues)
+- **Maintenance Checks**: `pnpm run check:maintenance` (Runs specialized architectural and consistency scripts)
+- **Dependency Audit**: `pnpm run check:deps` (Uses Knip to find unused dependencies)
+
+## 📁 Project Structure
+
+All configuration files are centralized in the `config/` directory to keep the root clean.
+
+```text
+├── config/             # Centralized configuration (Vite, Vitest, Biome, etc.)
+├── docs/               # Project documentation and guides
+├── public/             # Static assets
+├── scripts/            # Maintenance and build scripts
+├── shared/             # Code shared across the application
+├── src/                # Main application source
+│   ├── app/            # App core, providers, and main entry
+│   ├── features/       # Feature-based modules (names, tournament, analytics, etc.)
+│   ├── integrations/   # External service integrations (Supabase)
+│   ├── services/       # Application services and adapters
+│   ├── shared/         # Reusable UI components, hooks, and utilities
+│   ├── store/          # Zustand state management
+│   └── styles/         # CSS modules, Tailwind tokens, and global styles
+├── supabase/           # Supabase configuration and migrations
+└── index.html          # Application entry point
 ```
 
-To run tests with coverage:
+## 📚 Additional Documentation
 
-```bash
-pnpm run test:coverage
-```
+- [Contributing Guide](./docs/CONTRIBUTING.md)
+- [Architecture Overview](./docs/ARCHITECTURE.md)
+- [API Reference](./docs/API.md)
+- [Design Tokens](./docs/DESIGN.md)
 
-### Code Quality
+## ⚖️ License
 
--   **Linting**: `pnpm run lint` (checks `src` and `server`)
--   **Fix Linting**: `pnpm run fix` or `pnpm run lint:fix`
--   **Maintenance Suite**: `pnpm run check:maintenance` (runs case-collision, copy-artifact, env, architecture, and circular dependency checks)
--   **Dependency Check**: `pnpm run check:deps` (using Knip)
+This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.
 
-## 📚 Documentation
-
-For more detailed information, please refer to the [docs](./docs) directory:
-
--   [Contributing Guide](./docs/CONTRIBUTING.md): Setup, coding standards, and workflow.
--   [Architecture](./docs/ARCHITECTURE.md): System design and component architecture.
--   [API Reference](./docs/API.md): API endpoints and database schema.
--   [Testing Strategy](./docs/archive/TESTING.md): How to run tests and understand the testing approach.
-
-## 🛠️ Tech Stack
-
--   **Frontend**: React 19, Vite, Tailwind CSS, Zustand, TanStack Query
--   **Backend**: Node.js, Express, Drizzle ORM
--   **Database**: Supabase (PostgreSQL)
--   **Testing**: Vitest, React Testing Library, Supertest
--   **Tooling**: Biome, TypeScript, pnpm
-
-## Root structure
-
-Minimal root directories:
-
-- `.github`
-- `config`
-- `docs`
-- `public`
-- `scripts`
-- `server`
-- `shared`
-- `src`
-- `supabase`
-
-Root files:
-
-- `.biomeignore`
-- `.gitignore`
-- `LICENSE`
-- `README.md`
-- `index.html`
-- `package.json`
-- `pnpm-lock.yaml`
-- `pnpm-workspace.yaml`
-- `vercel.json`
+---
+*Generated by Junie as part of a repository update.*

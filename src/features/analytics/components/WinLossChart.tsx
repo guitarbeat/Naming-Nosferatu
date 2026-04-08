@@ -26,7 +26,9 @@ export function WinLossChart({ leaderboard, limit = 8 }: WinLossChartProps) {
 		losses: Math.max(0, e.total_ratings - e.wins),
 	}));
 
-	if (data.length === 0) return null;
+	if (data.length === 0) {
+		return null;
+	}
 
 	return (
 		<div className="h-52 sm:h-64 w-full">
@@ -55,11 +57,21 @@ export function WinLossChart({ leaderboard, limit = 8 }: WinLossChartProps) {
 						}}
 						cursor={{ fill: "hsl(var(--primary) / 0.06)" }}
 					/>
-					<Legend
-						wrapperStyle={{ fontSize: 11, color: "hsl(var(--muted-foreground))" }}
+					<Legend wrapperStyle={{ fontSize: 11, color: "hsl(var(--muted-foreground))" }} />
+					<Bar
+						dataKey="wins"
+						stackId="a"
+						fill="hsl(var(--chart-2))"
+						radius={[0, 0, 0, 0]}
+						maxBarSize={32}
 					/>
-					<Bar dataKey="wins" stackId="a" fill="hsl(var(--chart-2))" radius={[0, 0, 0, 0]} maxBarSize={32} />
-					<Bar dataKey="losses" stackId="a" fill="hsl(var(--chart-1) / 0.5)" radius={[4, 4, 0, 0]} maxBarSize={32} />
+					<Bar
+						dataKey="losses"
+						stackId="a"
+						fill="hsl(var(--chart-1) / 0.5)"
+						radius={[4, 4, 0, 0]}
+						maxBarSize={32}
+					/>
 				</BarChart>
 			</ResponsiveContainer>
 		</div>

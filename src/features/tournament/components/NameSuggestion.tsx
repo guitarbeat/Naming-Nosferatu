@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef } from "react";
 import { Button, Input, Textarea } from "@/shared/components/layout";
 import { useNameSuggestion } from "@/shared/hooks";
-import { CheckCircle, Lightbulb, X } from "@/shared/lib/icons";
+import { CheckCircle, X } from "@/shared/lib/icons";
 
 // ============================================================================
 // TYPES
@@ -64,14 +64,12 @@ export function NameSuggestionInner() {
 
 	return (
 		<form onSubmit={handleLocalSubmit} className="w-full max-w-lg mx-auto space-y-6">
-		<div className="text-center space-y-2">
-			<h3 className="text-xl sm:text-2xl font-bold text-foreground">
-				What would you name him?
-			</h3>
-			<p className="text-sm text-muted-foreground">
-				Every suggestion enters the bracket for voting.
-			</p>
-		</div>
+			<div className="text-center space-y-2">
+				<h3 className="text-xl sm:text-2xl font-bold text-foreground">What would you name him?</h3>
+				<p className="text-sm text-muted-foreground">
+					Every suggestion enters the bracket for voting.
+				</p>
+			</div>
 
 			<div className="space-y-2">
 				<div className="flex items-baseline justify-between">
@@ -160,28 +158,39 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 	} = useNameSuggestion({
 		onSuccess: () => {
 			setTimeout(() => {
-				if (isMountedRef.current) onClose();
+				if (isMountedRef.current) {
+					onClose();
+				}
 			}, 3000);
 		},
 	});
 
 	useEffect(() => {
 		isMountedRef.current = true;
-		return () => { isMountedRef.current = false; };
+		return () => {
+			isMountedRef.current = false;
+		};
 	}, []);
 
-	useEffect(() => { nameInputRef.current?.focus(); }, []);
+	useEffect(() => {
+		nameInputRef.current?.focus();
+	}, []);
 
 	useEffect(() => {
 		const handleEscape = (e: KeyboardEvent) => {
-			if (e.key === "Escape") { reset(); onClose(); }
+			if (e.key === "Escape") {
+				reset();
+				onClose();
+			}
 		};
 		window.addEventListener("keydown", handleEscape);
 		return () => window.removeEventListener("keydown", handleEscape);
 	}, [onClose, reset]);
 
 	const handleClose = useCallback(() => {
-		if (isSubmitting) return;
+		if (isSubmitting) {
+			return;
+		}
 		reset();
 		setGlobalError("");
 		onClose();
@@ -189,7 +198,10 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 
 	return (
 		<form
-			onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}
+			onSubmit={(e) => {
+				e.preventDefault();
+				void handleSubmit();
+			}}
 			className="flex flex-col gap-4"
 		>
 			<p className="text-sm text-muted-foreground leading-relaxed">
@@ -205,7 +217,9 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 					value={values.name}
 					onChange={(e) => {
 						handleChange("name", e.target.value);
-						if (globalError) setGlobalError("");
+						if (globalError) {
+							setGlobalError("");
+						}
 					}}
 					onBlur={() => handleBlur("name")}
 					placeholder="e.g., Whiskers, Sir Meowsalot"
@@ -221,7 +235,9 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 					value={values.description}
 					onChange={(e) => {
 						handleChange("description", e.target.value);
-						if (globalError) setGlobalError("");
+						if (globalError) {
+							setGlobalError("");
+						}
 					}}
 					onBlur={() => handleBlur("description")}
 					placeholder="What makes it special?"
@@ -257,10 +273,7 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 // UNIFIED EXPORT
 // ============================================================================
 
-export function NameSuggestion({
-	variant = "inline",
-	onClose,
-}: NameSuggestionProps) {
+export function NameSuggestion({ variant = "inline", onClose }: NameSuggestionProps) {
 	if (variant === "modal") {
 		return <ModalNameSuggestionContent onClose={onClose || (() => {})} />;
 	}

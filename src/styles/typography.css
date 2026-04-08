@@ -11,27 +11,27 @@
 h1,
 h2,
 h3 {
-        font-family: var(--font-sans);
-        font-weight: var(--pw-heading-weight, var(--font-weight-bold));
-        letter-spacing: var(--pw-heading-tracking, var(--tracking-wide));
-        text-wrap: balance;
+	font-family: var(--font-sans);
+	font-weight: var(--pw-heading-weight, var(--font-weight-bold));
+	letter-spacing: var(--pw-heading-tracking, var(--tracking-wide));
+	text-wrap: balance;
 }
 
 h1 {
-        font-size: var(--pw-heading-1-size, var(--text-4xl));
-        line-height: 1.08;
-        text-transform: var(--pw-heading-transform, uppercase);
+	font-size: var(--pw-heading-1-size, var(--text-4xl));
+	line-height: 1.08;
+	text-transform: var(--pw-heading-transform, uppercase);
 }
 
 h2 {
-        font-size: var(--pw-heading-2-size, var(--text-3xl));
-        line-height: 1.14;
-        text-transform: var(--pw-heading-transform, uppercase);
+	font-size: var(--pw-heading-2-size, var(--text-3xl));
+	line-height: 1.14;
+	text-transform: var(--pw-heading-transform, uppercase);
 }
 
 h3 {
-        font-size: var(--pw-heading-3-size, var(--text-2xl));
-        line-height: 1.2;
+	font-size: var(--pw-heading-3-size, var(--text-2xl));
+	line-height: 1.2;
 }
 
 /* ==========================================================================
@@ -39,10 +39,10 @@ h3 {
    ========================================================================== */
 
 .label {
-        font-size: var(--text-sm);
-        font-weight: var(--font-weight-medium);
-        line-height: var(--leading-normal);
-        letter-spacing: var(--tracking-wide);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	line-height: var(--leading-normal);
+	letter-spacing: var(--tracking-wide);
 }
 
 /* ==========================================================================
@@ -50,72 +50,72 @@ h3 {
    ========================================================================== */
 
 .indicator {
-        font-size: var(--text-sm);
-        font-weight: var(--font-weight-medium);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
 }
 
 .scroll-to-top {
-        font-size: var(--text-lg);
-        font-weight: var(--font-weight-bold);
+	font-size: var(--text-lg);
+	font-weight: var(--font-weight-bold);
 }
 
 .random-generator-button {
-        font-size: 0.95rem;
-        font-weight: var(--font-weight-extrabold);
-        letter-spacing: 0.01em;
+	font-size: 0.95rem;
+	font-weight: var(--font-weight-extrabold);
+	letter-spacing: 0.01em;
 }
 
 .name-lock-tooltip {
-        font-size: 0.78rem;
-        line-height: 1.45;
-        letter-spacing: 0.01em;
+	font-size: 0.78rem;
+	line-height: 1.45;
+	letter-spacing: 0.01em;
 }
 
 .name-lock-tooltip__label {
-        font-size: 0.6rem;
-        font-weight: var(--font-weight-extrabold);
-        text-transform: uppercase;
-        letter-spacing: var(--tracking-caps);
+	font-size: 0.6rem;
+	font-weight: var(--font-weight-extrabold);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-caps);
 }
 
 .name-lock-tooltip__pronunciation {
-        font-size: 0.75rem;
-        font-style: italic;
-        font-weight: var(--font-weight-bold);
+	font-size: 0.75rem;
+	font-style: italic;
+	font-weight: var(--font-weight-bold);
 }
 
 .fancy-button-wrap {
-        font-size: var(--text-base);
+	font-size: var(--text-base);
 }
 
 .fancy-button > .fancy-button-content {
-        font-family: var(--font-ui);
-        letter-spacing: var(--tracking-tight);
-        font-weight: var(--font-weight-semibold);
-        font-size: 1em;
-        line-height: 1;
+	font-family: var(--font-ui);
+	letter-spacing: var(--tracking-tight);
+	font-weight: var(--font-weight-semibold);
+	font-size: 1em;
+	line-height: 1;
 }
 
 .fancy-button--small > .fancy-button-content {
-        font-size: 0.78rem;
+	font-size: 0.78rem;
 }
 
 .fancy-button--medium > .fancy-button-content {
-        font-size: 0.9rem;
+	font-size: 0.9rem;
 }
 
 .fancy-button--large > .fancy-button-content {
-        font-size: 0.98rem;
+	font-size: 0.98rem;
 }
 
 .fancy-button--xl > .fancy-button-content {
-        font-size: 1.05rem;
+	font-size: 1.05rem;
 }
 
 .liquid-glass-button {
-        font-weight: var(--font-weight-bold);
-        letter-spacing: var(--tracking-wider);
-        text-transform: uppercase;
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-wider);
+	text-transform: uppercase;
 }
 
 /* ==========================================================================
@@ -125,14 +125,14 @@ h3 {
    ========================================================================== */
 
 .gradient-heading {
-        font-weight: var(--font-weight-bold);
-        text-wrap: balance;
-        background: linear-gradient(to right, var(--color-primary), var(--color-accent));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        text-transform: uppercase;
-        letter-spacing: -0.05em;
+	font-weight: var(--font-weight-bold);
+	text-wrap: balance;
+	background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	text-transform: uppercase;
+	letter-spacing: -0.05em;
 }
 
 /* ==========================================================================
@@ -140,44 +140,44 @@ h3 {
    ========================================================================== */
 
 @media (max-width: 640px) {
-        .indicator {
-                font-size: var(--text-xs);
-        }
+	.indicator {
+		font-size: var(--text-xs);
+	}
 }
 
 @media (width <= 768px) {
-        .nav-menu button,
-        .input {
-                font-size: var(--text-base);
-        }
+	.nav-menu button,
+	.input {
+		font-size: var(--text-base);
+	}
 
-        .nav-menu button {
-                font-weight: var(--font-weight-semibold);
-        }
+	.nav-menu button {
+		font-weight: var(--font-weight-semibold);
+	}
 }
 
 @media (width <= 430px) {
-        h1 {
-                font-size: var(--text-2xl);
-        }
+	h1 {
+		font-size: var(--text-2xl);
+	}
 
-        h2 {
-                font-size: var(--text-xl);
-        }
+	h2 {
+		font-size: var(--text-xl);
+	}
 
-        h3 {
-                font-size: var(--text-lg);
-        }
+	h3 {
+		font-size: var(--text-lg);
+	}
 
-        .mobile-readable-card .mobile-readable-title {
-                line-height: 1.15;
-        }
+	.mobile-readable-card .mobile-readable-title {
+		line-height: 1.15;
+	}
 
-        .mobile-readable-card .mobile-readable-meta {
-                line-height: 1.2;
-        }
+	.mobile-readable-card .mobile-readable-meta {
+		line-height: 1.2;
+	}
 
-        .mobile-readable-card .mobile-readable-description {
-                line-height: 1.3;
-        }
+	.mobile-readable-card .mobile-readable-description {
+		line-height: 1.3;
+	}
 }

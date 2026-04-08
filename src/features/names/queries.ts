@@ -1,8 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
-import useAppStore from "@/store/appStore";
+import { mapNameRow } from "@/shared/lib/names/mapNameRow";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
-import { mapNameRow } from "./mapNameRow";
 import type { NameItem } from "@/shared/types";
+import useAppStore from "@/store/appStore";
 
 export type NamesDataSource = "supabase";
 

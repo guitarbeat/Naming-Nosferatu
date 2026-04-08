@@ -18,12 +18,14 @@ export function useFuzzySearch<T>(
 				...options,
 			}),
 		// biome-ignore lint/correctness/useExhaustiveDependencies: options is intentionally stable
-		[items, keys],
+		[items, keys, options],
 	);
 
 	return useMemo(() => {
 		const trimmed = query.trim();
-		if (!trimmed) return items;
+		if (!trimmed) {
+			return items;
+		}
 		return fuse.search(trimmed).map((r) => r.item);
 	}, [fuse, items, query]);
 }
