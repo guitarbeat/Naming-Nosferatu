@@ -100,8 +100,8 @@ const GRADIENT_HEADING_CLS =
         "font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter";
 
 function HomeContent() {
-	const { login } = useAuth();
-	const namesQuery = useQuery(namesQueryOptions(true));
+        const { login } = useAuth();
+        const namesQuery = useQuery(namesQueryOptions(true));
         const lockedNames = getLockedNames(namesQuery.data?.names);
         const [hoveredWordIdx, setHoveredWordIdx] = useState<number | null>(null);
 
@@ -124,28 +124,20 @@ function HomeContent() {
         return (
                 <>
                         {/* Hero — bleeds edge-to-edge, full viewport height */}
-			<section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
-				{/* Radial glow behind name */}
-				<div
-					className="pointer-events-none absolute inset-0 -z-10"
-					aria-hidden="true"
-				>
-					<div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
-				</div>
+                        <section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
+                                {/* Label */}
+                                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-base md:text-lg">
+                                        My cat's name is
+                                </p>
 
-				{/* Label */}
-				<p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-base md:text-lg">
-					My cat's name is
-				</p>
+                                {/* Decorative line */}
+                                <div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6 sm:w-16" />
 
-				{/* Decorative line */}
-				<div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6 sm:w-16" />
-
-				{/* Name — fluid sizing that respects container padding */}
-				<h1
-					className="max-w-full font-black uppercase leading-[0.85] tracking-tighter"
-					style={{ fontSize: "clamp(1.75rem, 9vw, 9rem)" }}
-				>
+                                {/* Name — fluid sizing that respects container padding */}
+                                <h1
+                                        className="max-w-full font-black uppercase leading-[0.85] tracking-tighter"
+                                        style={{ fontSize: "clamp(1.75rem, 9vw, 9rem)" }}
+                                >
                                         {wordEntries.length > 0 ? (
                                                 <span>
                                                         {wordEntries.map(({ word }, i) => (
@@ -177,18 +169,18 @@ function HomeContent() {
                                 </h1>
 
                                 {/* Subtitle — swaps to a stats card when hovering a name word */}
-				<div className="mt-6 flex min-h-[3.5rem] items-center justify-center sm:mt-10 sm:min-h-[4.5rem]">
-					<AnimatePresence mode="wait">
-						{!hoveredEntry ? (
-							<motion.p
-								key="default"
-								className="max-w-[85vw] text-xs leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
-								initial={{ opacity: 0, y: 6 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: -4 }}
-								transition={{ duration: 0.18 }}
-							>
-								I'm indecisive — scroll down, pick your favorites, and help me decide!
+                                <div className="mt-6 flex min-h-[3.5rem] items-center justify-center sm:mt-10 sm:min-h-[4.5rem]">
+                                        <AnimatePresence mode="wait">
+                                                {!hoveredEntry ? (
+                                                        <motion.p
+                                                                key="default"
+                                                                className="max-w-[85vw] text-xs leading-relaxed text-muted-foreground/70 sm:max-w-md sm:text-base"
+                                                                initial={{ opacity: 0, y: 6 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                exit={{ opacity: 0, y: -4 }}
+                                                                transition={{ duration: 0.18 }}
+                                                        >
+                                                                I'm indecisive — scroll down, pick your favorites, and help me decide!
                                                         </motion.p>
                                                 ) : !hoveredEntry.name ? (
                                                         <motion.p
@@ -304,23 +296,23 @@ function HomeContent() {
                                 </motion.div>
                         </section>
 
-		<Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
-				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-					<TournamentFlow />
-				</Suspense>
-			</Section>
+                <Section id="pick" variant="minimal" padding="compact" maxWidth="xl" centered={true}>
+                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                        <TournamentFlow />
+                                </Suspense>
+                        </Section>
 
-		<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
-			<SectionHeading icon={Lightbulb} title="Suggest a Name" subtitle="Have a great cat name idea? Share it!" />
-			<NameSuggestionInner />
-		</Section>
+                <Section id="suggest" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+                        <SectionHeading icon={Lightbulb} title="Suggest a Name" subtitle="Have a great cat name idea? Share it!" />
+                        <NameSuggestionInner />
+                </Section>
 
-		<Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
-			<SectionHeading icon={User} title="Your Profile" subtitle="Log in to track your ratings and preferences" />
-			<ProfileInner onLogin={(name) => login({ name })} />
-		</Section>
-		</>
-	);
+                <Section id="profile" variant="minimal" padding="comfortable" maxWidth="md" centered={true}>
+                        <SectionHeading icon={User} title="Your Profile" subtitle="Log in to track your ratings and preferences" />
+                        <ProfileInner onLogin={(name) => login({ name })} />
+                </Section>
+                </>
+        );
 }
 
 function TournamentContent() {
@@ -364,32 +356,32 @@ function TournamentContent() {
 }
 
 function AnalysisContent() {
-	const { user, tournament, tournamentActions } = useAppStore();
-	const { handleStartNewTournament } = useTournamentHandlers({
-		userName: user.name,
-		tournamentActions,
-	});
+        const { user, tournament, tournamentActions } = useAppStore();
+        const { handleStartNewTournament } = useTournamentHandlers({
+                userName: user.name,
+                tournamentActions,
+        });
 
-	return (
-		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
-			<h2 className={`mb-8 text-center text-3xl sm:mb-12 md:text-5xl ${GRADIENT_HEADING_CLS}`}>
-				The Victors Emerge
-			</h2>
-			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-				<ErrorBoundary context={errorContexts.analysisDashboard}>
-					<DashboardLazy
-						personalRatings={tournament.ratings}
-						currentTournamentNames={tournament.names ?? undefined}
-						onStartNew={handleStartNewTournament}
-						userName={user.name ?? ""}
-						isAdmin={user.isAdmin}
-						isLoggedIn={user.isLoggedIn}
-						avatarUrl={user.avatarUrl}
-					/>
-				</ErrorBoundary>
-			</Suspense>
-		</Section>
-	);
+        return (
+                <Section id="analysis" variant="minimal" padding="comfortable" maxWidth="2xl" centered={true}>
+                        <h2 className={`mb-8 text-center text-3xl sm:mb-12 md:text-5xl ${GRADIENT_HEADING_CLS}`}>
+                                The Victors Emerge
+                        </h2>
+                        <Suspense fallback={<Loading variant="skeleton" height={600} />}>
+                                <ErrorBoundary context={errorContexts.analysisDashboard}>
+                                        <DashboardLazy
+                                                personalRatings={tournament.ratings}
+                                                currentTournamentNames={tournament.names ?? undefined}
+                                                onStartNew={handleStartNewTournament}
+                                                userName={user.name ?? ""}
+                                                isAdmin={user.isAdmin}
+                                                isLoggedIn={user.isLoggedIn}
+                                                avatarUrl={user.avatarUrl}
+                                        />
+                                </ErrorBoundary>
+                        </Suspense>
+                </Section>
+        );
 }
 
 function AdminContent() {
