@@ -7,8 +7,9 @@
    4. Typography utilities
    5. Layout primitives & responsive
    6. Component styles (modular)
-   7. Motion & animation system
-   8. Glass morphism effects
+   7. Navbar (floating bottom navigation)
+   8. Motion & animation system
+   9. Glass morphism effects
 */
 
 @import "./base.css";
@@ -18,5 +19,6 @@
 @import "./layout.css";
 @import "./indicators.css";
 @import "./components.css";
+@import "./navbar.css";
 @import "./motion.css";
 @import "./liquid-glass.css";
