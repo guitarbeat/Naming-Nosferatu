@@ -91,35 +91,6 @@ export function AdvancedNameFilter({
                 });
         }, [fuzzyResults, filters]);
 
-        // Sort filtered names
-        const _sortedNames = useMemo(() => {
-                const sorted = [...filteredNames];
-
-                sorted.sort((a, b) => {
-                        let comparison = 0;
-
-                        switch (filters.sortBy) {
-                                case "name":
-                                        comparison = a.name.localeCompare(b.name);
-                                        break;
-                                case "rating":
-                                        comparison = (a.avgRating || 1500) - (b.avgRating || 1500);
-                                        break;
-                                case "wins":
-                                        comparison = (a.wins || 0) - (b.wins || 0);
-                                        break;
-                                case "recent":
-                                        comparison =
-                                                new Date(b.lastActiveAt || "0").getTime() - new Date(a.lastActiveAt || "0").getTime();
-                                        break;
-                        }
-
-                        return filters.sortOrder === "desc" ? -comparison : comparison;
-                });
-
-                return sorted;
-        }, [filteredNames, filters.sortBy, filters.sortOrder]);
-
         const updateFilter = useCallback((key: keyof FilterOptions, value: any) => {
                 setFilters((prev) => ({ ...prev, [key]: value }));
         }, []);

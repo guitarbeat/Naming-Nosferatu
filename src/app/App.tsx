@@ -7,7 +7,6 @@ import { useAuth } from "@/app/providers/Providers";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import Tournament from "@/features/tournament/Tournament";
 import { AppLayout, Button, ErrorBoundary, Loading, Section, SectionHeading } from "@/shared/components";
-import { useOfflineSync } from "@/shared/hooks";
 import { ChevronDown, Lightbulb, User } from "@/shared/lib/icons";
 import {
         cleanupPerformanceMonitoring,
@@ -60,7 +59,6 @@ function App() {
                 updateSupabaseUserContext(name, null);
         }, []);
         useAppStoreInitialization(handleUserContext);
-        useOfflineSync();
 
         if (!isInitialized) {
                 return (
