@@ -59,10 +59,12 @@ export function AdvancedNameFilter({
 
 	// Apply remaining filters on top of the fuzzy-searched base set
 	const filteredNames = useMemo(() => {
+		const filterCategoriesSet = new Set(filters.categories);
+
 		return fuzzyResults.filter((name) => {
 			// Category filter
-			if (filters.categories.length > 0) {
-				if (!name.categories || !filters.categories.some((cat) => name.categories.includes(cat))) {
+			if (filterCategoriesSet.size > 0) {
+				if (!name.categories || !name.categories.some((cat) => filterCategoriesSet.has(cat))) {
 					return false;
 				}
 			}
