@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
 import {
+	batchUpdateLocked,
 	batchUpdateVisibility,
 	softDeleteName,
 	toggleNameHidden,
@@ -180,12 +181,20 @@ export function AdminDashboard() {
 		},
 	});
 
+	const batchLockedMutation = useMutation({
+		mutationFn: ({ nameIds, isLocked }: { nameIds: string[]; isLocked: boolean }) =>
+			batchUpdateLocked({ nameIds, isLocked }),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
+		},
+	});
+
 	const filteredNames = useMemo(
 		() => filterNamesByStatusAndSearch(names, filterStatus, searchTerm),
 		[names, filterStatus, searchTerm],
 	);
 
-	const nameById = useMemo(() => {
+	const _nameById = useMemo(() => {
 		const map = new Map<string, NameWithStats>();
 		for (const name of names) {
 			map.set(String(name.id), name);
@@ -247,21 +256,17 @@ export function AdminDashboard() {
 						isHidden: action === "hide",
 					});
 				} else {
-					for (const nameId of ids) {
-						const name = nameById.get(nameId);
-						if (!name) {
-							continue;
-						}
-						await handleToggleLocked(name.id, action === "unlock", { skipRefresh: true });
-					}
-					await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
+					await batchLockedMutation.mutateAsync({
+						nameIds: ids,
+						isLocked: action === "lock",
+					});
 				}
 				setSelectedNames(new Set());
 			} catch (error) {
 				console.error("Failed to perform bulk action:", error);
 			}
 		},
-		[batchVisibilityMutation, handleToggleLocked, nameById, queryClient, selectedNames],
+		[batchLockedMutation, batchVisibilityMutation, selectedNames],
 	);
 
 	const handleSoftDelete = useCallback(
