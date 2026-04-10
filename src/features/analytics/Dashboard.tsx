@@ -1,4 +1,5 @@
-import { Suspense, useCallback, useEffect, useState } from "react";
+import type { ElementType, ReactNode } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
@@ -21,10 +22,6 @@ import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
 import { WinLossChart } from "./components/WinLossChart";
 import { PersonalResults } from "./PersonalResults";
-
-// ============================================================================
-// TYPES
-// ============================================================================
 
 interface DashboardProps {
 	personalRatings?: Record<string, RatingData>;
@@ -60,11 +57,23 @@ interface EngagementMetrics {
 	bounceRate: number;
 }
 
-// ============================================================================
-// STAT CARD
-// ============================================================================
+function Panel({
+	children,
+	className = "",
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
+	return (
+		<section
+			className={`rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_16px_40px_rgba(4,10,20,0.14)] backdrop-blur-xl sm:p-6 ${className}`}
+		>
+			{children}
+		</section>
+	);
+}
 
-function StatCard({
+function StatTile({
 	label,
 	value,
 	icon: Icon,
@@ -72,61 +81,60 @@ function StatCard({
 }: {
 	label: string;
 	value: string | number;
-	icon?: React.ElementType;
+	icon?: ElementType;
 	accent?: boolean;
 }) {
 	return (
-		<div className="group relative rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-4 transition-all duration-200 ease-out hover:bg-card/60 hover:border-border/50 hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5">
-			<div className="flex items-start gap-3">
+		<div className="rounded-2xl border border-white/10 bg-black/15 px-4 py-4">
+			<div className="flex items-start justify-between gap-3">
+				<div>
+					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+						{label}
+					</p>
+					<p className={`mt-2 text-2xl font-semibold ${accent ? "text-primary" : "text-foreground"}`}>
+						{value}
+					</p>
+				</div>
 				{Icon && (
 					<div
-						className={`rounded-lg p-2 transition-all duration-200 ${accent ? "bg-primary/15 text-primary group-hover:bg-primary/20 group-hover:scale-110" : "bg-muted/50 text-muted-foreground group-hover:bg-muted/70 group-hover:scale-110"}`}
+						className={`rounded-2xl border p-2.5 ${
+							accent
+								? "border-primary/20 bg-primary/12 text-primary"
+								: "border-white/10 bg-white/[0.04] text-white/65"
+						}`}
 					>
 						<Icon size={16} />
 					</div>
 				)}
-				<div className="flex-1 min-w-0">
-					<p className="text-xs font-medium text-muted-foreground mb-1 transition-colors duration-200 group-hover:text-muted-foreground/80">
-						{label}
-					</p>
-					<p
-						className={`text-xl font-bold tabular-nums transition-colors duration-200 ${accent ? "text-primary group-hover:text-primary/90" : "text-foreground"}`}
-					>
-						{value}
-					</p>
-				</div>
 			</div>
 		</div>
 	);
 }
 
-// ============================================================================
-// SECTION HEADER
-// ============================================================================
-
 function SectionHeader({
 	icon: Icon,
 	title,
+	subtitle,
 	action,
 }: {
-	icon: React.ElementType;
+	icon: ElementType;
 	title: string;
-	action?: React.ReactNode;
+	subtitle?: string;
+	action?: ReactNode;
 }) {
 	return (
-		<div className="flex items-center justify-between mb-4">
-			<div className="flex items-center gap-2.5">
-				<Icon size={18} className="text-primary" />
-				<h3 className="text-base font-semibold text-foreground tracking-tight">{title}</h3>
+		<div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+			<div className="space-y-2">
+				<div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
+					<Icon size={14} className="text-primary" />
+					<span>{title}</span>
+				</div>
+				{subtitle && <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">{subtitle}</p>}
 			</div>
 			{action}
 		</div>
 	);
 }
-
-// ============================================================================
-// DASHBOARD
-// ============================================================================
 
 export function Dashboard({
 	userName = "",
@@ -162,7 +170,7 @@ export function Dashboard({
 		winRate: number;
 	} | null>(null);
 	const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
-	const [_isLoadingStats, setIsLoadingStats] = useState(true);
+	const [isLoadingStats, setIsLoadingStats] = useState(true);
 	const [hiddenNames, setHiddenNames] = useState<Array<{ id: string | number; name: string }>>([]);
 	const [showHiddenNames, setShowHiddenNames] = useState(false);
 	const [engagementMetrics, setEngagementMetrics] = useState<EngagementMetrics | null>(null);
@@ -251,270 +259,294 @@ export function Dashboard({
 			if (!result.success) {
 				throw new Error(result.error || "Failed to unhide name");
 			}
-			setHiddenNames((prev) => prev.filter((n) => n.id !== nameId));
+			setHiddenNames((prev) => prev.filter((name) => name.id !== nameId));
 		} catch (error) {
 			console.error("Failed to unhide name:", error);
 		}
 	};
 
+	const quickStats = userName && userStats
+		? [
+				{ label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
+				{ label: "Selected", value: userStats.totalSelections, icon: Target },
+				{ label: "Wins", value: userStats.totalWins, icon: Trophy, accent: true },
+				{ label: "Win rate", value: `${userStats.winRate}%`, icon: TrendingUp, accent: true },
+			]
+		: siteStats
+			? [
+					{ label: "Total names", value: siteStats.totalNames, icon: Activity },
+					{ label: "Active names", value: siteStats.activeNames, icon: Target },
+					{ label: "Users", value: siteStats.totalUsers, icon: Users },
+					{ label: "Average rating", value: Math.round(siteStats.avgRating), icon: TrendingUp, accent: true },
+				]
+			: [];
+
 	return (
-		<div className="dashboard-container space-y-8 sm:space-y-10 w-full">
-			{/* ── User Profile ── */}
-			{isLoggedIn && userName && (
-				<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-5 sm:p-6">
-					<div className="flex items-center gap-4">
-						{avatarUrl ? (
-							<img
-								src={avatarUrl}
-								alt={userName}
-								className="size-14 rounded-full object-cover ring-2 ring-primary/20 ring-offset-2 ring-offset-card"
-							/>
-						) : (
-							<div className="size-14 rounded-full bg-primary/10 ring-2 ring-primary/20 ring-offset-2 ring-offset-card flex items-center justify-center">
-								<User size={22} className="text-primary" />
+		<div className="w-full space-y-8 sm:space-y-10">
+			{(isLoggedIn || quickStats.length > 0) && (
+				<div className="grid gap-4 xl:grid-cols-[minmax(0,20rem)_1fr]">
+					{isLoggedIn && userName && (
+						<Panel>
+							<div className="flex items-center gap-4">
+								{avatarUrl ? (
+									<img
+										src={avatarUrl}
+										alt={userName}
+										className="size-16 rounded-full border border-white/10 object-cover"
+									/>
+								) : (
+									<div className="flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-primary">
+										<User size={22} />
+									</div>
+								)}
+								<div className="min-w-0">
+									<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/65">
+										Profile
+									</p>
+									<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
+									<p className="mt-1 text-sm text-muted-foreground/75">
+										{isAdmin ? "Administrator" : "Tournament participant"}
+									</p>
+								</div>
 							</div>
-						)}
-						<div className="flex-1 min-w-0">
-							<h2 className="text-xl sm:text-2xl font-bold text-foreground truncate">{userName}</h2>
-							<p className="text-xs text-muted-foreground mt-0.5">
-								{isAdmin ? "Administrator" : "Tournament Participant"}
-							</p>
-						</div>
-					</div>
+						</Panel>
+					)}
+
+					{quickStats.length > 0 && (
+						<Panel>
+							<SectionHeader
+								icon={BarChart3}
+								title={userStats ? "Your Snapshot" : "Community Snapshot"}
+								subtitle={
+									userStats
+										? "Your latest tournament totals, selection habits, and head-to-head performance."
+										: "A quick read on how the naming pool is performing across the site."
+								}
+							/>
+							<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+								{quickStats.map((item) => (
+									<StatTile
+										key={item.label}
+										label={item.label}
+										value={item.value}
+										icon={item.icon}
+										accent={Boolean(item.accent)}
+									/>
+								))}
+							</div>
+						</Panel>
+					)}
 				</div>
 			)}
 
-			{/* ── Personal Results ── */}
 			{personalRatings && Object.keys(personalRatings).length > 0 && onUpdateRatings && (
-				<PersonalResults
-					personalRatings={personalRatings}
-					currentTournamentNames={currentTournamentNames}
-					onStartNew={onStartNew || (() => {})}
-					onUpdateRatings={onUpdateRatings}
-					userName={userName}
-				/>
+				<Panel>
+					<SectionHeader
+						icon={Trophy}
+						title="Your Rankings"
+						subtitle="Adjust your personal order, save changes, or jump straight into another run."
+					/>
+					<PersonalResults
+						personalRatings={personalRatings}
+						currentTournamentNames={currentTournamentNames}
+						onStartNew={onStartNew || (() => {})}
+						onUpdateRatings={onUpdateRatings}
+						userName={userName}
+					/>
+				</Panel>
 			)}
 
-			{/* ── Random Generator ── */}
-			<div>
-				<Suspense fallback={<div className="p-4">Loading...</div>}></Suspense>
-			</div>
+			<div className="grid gap-6 xl:grid-cols-[minmax(0,22rem)_1fr]">
+				<Panel>
+					<SectionHeader
+						icon={Trophy}
+						title="Leaderboard"
+						subtitle="The ten names with the strongest average ratings right now."
+						action={
+							onStartNew ? (
+								<Button variant="outline" size="small" onClick={onStartNew}>
+									New Tournament
+								</Button>
+							) : undefined
+						}
+					/>
 
-			{/* ── Your Stats ── */}
-			{userName && userStats && (
-				<div>
-					<SectionHeader icon={BarChart3} title="Your Stats" />
-					<div className="grid grid-cols-2 gap-3">
-						<StatCard label="Ratings" value={userStats.totalRatings} icon={BarChart3} />
-						<StatCard label="Selected" value={userStats.totalSelections} icon={Target} />
-						<StatCard label="Wins" value={userStats.totalWins} icon={Trophy} accent={true} />
-						<StatCard
-							label="Win Rate"
-							value={`${userStats.winRate}%`}
-							icon={TrendingUp}
-							accent={true}
-						/>
-					</div>
-				</div>
-			)}
-
-			{/* ── Global Leaderboard ── */}
-			<div>
-				<SectionHeader
-					icon={Trophy}
-					title="Top Names"
-					action={
-						onStartNew ? (
-							<Button variant="ghost" size="small" onClick={onStartNew}>
-								New Tournament
-							</Button>
-						) : undefined
-					}
-				/>
-
-				{isLoadingLeaderboard ? (
-					<Loading variant="skeleton" height={300} />
-				) : leaderboard.length > 0 ? (
-					<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm overflow-hidden">
-						{leaderboard.map((entry, index) => (
-							<div
-								key={entry.name}
-								className={`flex items-center gap-3 sm:gap-4 px-4 py-3 transition-colors hover:bg-foreground/[0.03] ${index < leaderboard.length - 1 ? "border-b border-border/20" : ""}`}
-							>
+					{isLoadingLeaderboard ? (
+						<Loading variant="skeleton" height={320} />
+					) : leaderboard.length > 0 ? (
+						<div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
+							{leaderboard.map((entry, index) => (
 								<div
-									className={`flex-shrink-0 size-8 rounded-full flex items-center justify-center text-sm font-bold ${
-										index === 0
-											? "bg-chart-4/20 text-chart-4 ring-1 ring-chart-4/30"
-											: index === 1
-												? "bg-secondary/30 text-secondary-foreground"
-												: index === 2
-													? "bg-chart-1/20 text-chart-1"
-													: "bg-muted/50 text-muted-foreground"
+									key={entry.name}
+									className={`flex items-center gap-3 px-4 py-3 ${
+										index < leaderboard.length - 1 ? "border-b border-white/10" : ""
 									}`}
 								>
-									{index + 1}
+									<div className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-foreground">
+										{index + 1}
+									</div>
+									<div className="min-w-0 flex-1">
+										<p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
+										<p className="text-xs text-muted-foreground/70">
+											{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} •{" "}
+											{entry.wins} win{entry.wins !== 1 ? "s" : ""}
+										</p>
+									</div>
+									<div className="text-right">
+										<p className="text-lg font-semibold text-primary">
+											{Math.round(entry.avg_rating)}
+										</p>
+									</div>
 								</div>
-								<div className="flex-1 min-w-0">
-									<p className="font-semibold text-foreground text-sm truncate">{entry.name}</p>
-									<p className="text-[11px] text-muted-foreground">
-										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} ·{" "}
-										{entry.wins} win{entry.wins !== 1 ? "s" : ""}
-									</p>
-								</div>
-								<div className="text-right flex-shrink-0">
-									<p className="text-base font-bold text-primary tabular-nums">
-										{Math.round(entry.avg_rating)}
-									</p>
-								</div>
-							</div>
-						))}
-					</div>
-				) : (
-					<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-8 text-center">
-						<p className="text-sm text-muted-foreground">No ratings yet. Start a tournament!</p>
-					</div>
-				)}
-			</div>
-
-			{/* ── Charts ── */}
-			{leaderboard.length > 0 && (
-				<>
-					<div>
-						<SectionHeader icon={BarChart3} title="Top Names by Rating" />
-						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
-							<TopNamesChart leaderboard={leaderboard} />
+							))}
 						</div>
-					</div>
-
-					<div>
-						<SectionHeader icon={TrendingUp} title="Win / Loss Breakdown" />
-						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
-							<WinLossChart leaderboard={leaderboard} />
-						</div>
-					</div>
-
-					<div>
-						<SectionHeader icon={Activity} title="Rating Distribution" />
-						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
-							<RatingDistributionChart leaderboard={leaderboard} />
-						</div>
-					</div>
-
-					{leaderboard.length >= 3 && (
-						<div>
-							<SectionHeader icon={Target} title="Name Comparison Radar" />
-							<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-4">
-								<RatingRadarChart leaderboard={leaderboard} />
-							</div>
+					) : (
+						<div className="rounded-2xl border border-white/10 bg-black/15 px-4 py-8 text-center text-sm text-muted-foreground/75">
+							No ratings yet. Start a tournament to create the first leaderboard.
 						</div>
 					)}
-				</>
-			)}
+				</Panel>
 
-			{/* ── Site Statistics ── */}
-			{siteStats && (
-				<div>
-					<SectionHeader icon={BarChart3} title="Site Statistics" />
-					<div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-						<StatCard label="Total Names" value={siteStats.totalNames} icon={Activity} />
-						<StatCard label="Active Names" value={siteStats.activeNames} icon={Target} />
-						<StatCard label="Total Users" value={siteStats.totalUsers} icon={Users} />
-						<StatCard
-							label="Avg Rating"
-							value={Math.round(siteStats.avgRating)}
-							icon={TrendingUp}
-							accent={true}
-						/>
-						{isAdmin && (
-							<StatCard label="Hidden Names" value={siteStats.hiddenNames} icon={EyeOff} />
-						)}
-					</div>
+				<div className="grid gap-6">
+					{leaderboard.length > 0 && (
+						<>
+							<div className="grid gap-6 xl:grid-cols-2">
+								<Panel>
+									<SectionHeader
+										icon={BarChart3}
+										title="Top Names by Rating"
+										subtitle="A quick comparison of the names leading the pack."
+									/>
+									<TopNamesChart leaderboard={leaderboard} />
+								</Panel>
+
+								<Panel>
+									<SectionHeader
+										icon={TrendingUp}
+										title="Win and Loss Breakdown"
+										subtitle="How each top name is converting matchups into wins."
+									/>
+									<WinLossChart leaderboard={leaderboard} />
+								</Panel>
+							</div>
+
+							<div className="grid gap-6 xl:grid-cols-2">
+								<Panel>
+									<SectionHeader
+										icon={Activity}
+										title="Rating Distribution"
+										subtitle="See how tightly clustered or spread the current scores are."
+									/>
+									<RatingDistributionChart leaderboard={leaderboard} />
+								</Panel>
+
+								{leaderboard.length >= 3 && (
+									<Panel>
+										<SectionHeader
+											icon={Target}
+											title="Comparison Radar"
+											subtitle="A relative look at how the top names stack up against each other."
+										/>
+										<RatingRadarChart leaderboard={leaderboard} />
+									</Panel>
+								)}
+							</div>
+						</>
+					)}
+
+					{siteStats && (
+						<Panel>
+							<SectionHeader
+								icon={Users}
+								title="Site Statistics"
+								subtitle="High-level activity totals for the overall naming pool."
+							/>
+							<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+								<StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
+								<StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
+								<StatTile label="Users" value={siteStats.totalUsers} icon={Users} />
+								<StatTile label="Ratings" value={siteStats.totalRatings} icon={BarChart3} />
+								<StatTile
+									label="Average rating"
+									value={Math.round(siteStats.avgRating)}
+									icon={TrendingUp}
+									accent={true}
+								/>
+							</div>
+						</Panel>
+					)}
 				</div>
-			)}
+			</div>
 
-			{/* ── Engagement Metrics ── */}
 			{engagementMetrics && (
-				<div>
+				<Panel>
 					<SectionHeader
 						icon={TrendingUp}
 						title="Engagement"
+						subtitle="A read on tournament completion, usage frequency, and session quality."
 						action={
-							<div className="flex gap-2">
+							<div className="flex items-center gap-2">
 								<select
 									value={timeframe}
-									onChange={(e) => setTimeframe(e.target.value as "day" | "week" | "month")}
-									className="px-2.5 py-1.5 border border-border/40 rounded-lg bg-card/60 text-foreground text-xs backdrop-blur-sm"
+									onChange={(event) => setTimeframe(event.target.value as "day" | "week" | "month")}
+									className="rounded-xl border border-white/10 bg-black/15 px-3 py-2 text-sm text-foreground"
 								>
-									<option value="day">24h</option>
+									<option value="day">24 hours</option>
 									<option value="week">Week</option>
 									<option value="month">Month</option>
 								</select>
 								<Button
-									variant="ghost"
+									variant="outline"
 									size="small"
 									onClick={() => fetchEngagementMetrics()}
-									disabled={_isLoadingStats}
+									disabled={isLoadingStats}
 								>
-									<Activity size={14} className="mr-1" />
+									<Activity size={14} />
 									Refresh
 								</Button>
 							</div>
 						}
 					/>
-
-					<div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-						<StatCard label="Tournaments" value={engagementMetrics.totalTournaments} icon={Users} />
-						<StatCard
+					<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+						<StatTile label="Tournaments" value={engagementMetrics.totalTournaments} icon={Users} />
+						<StatTile
 							label="Completed"
 							value={engagementMetrics.completedTournaments}
 							icon={Trophy}
 							accent={true}
 						/>
-						<StatCard
-							label="Avg Duration"
+						<StatTile
+							label="Avg duration"
 							value={`${engagementMetrics.averageTournamentTime}m`}
 							icon={Clock}
 						/>
-						<StatCard label="Peak Users" value={engagementMetrics.peakActiveUsers} icon={Target} />
-						<StatCard
+						<StatTile label="Peak users" value={engagementMetrics.peakActiveUsers} icon={Target} />
+						<StatTile
 							label="Retention"
 							value={`${engagementMetrics.userRetentionRate}%`}
 							icon={Activity}
 							accent={true}
 						/>
-						<StatCard
-							label="Bounce Rate"
+						<StatTile
+							label="Bounce rate"
 							value={`${engagementMetrics.bounceRate}%`}
 							icon={BarChart3}
 						/>
-						<StatCard
-							label="Daily Active"
-							value={engagementMetrics.dailyActiveUsers}
-							icon={Users}
-						/>
-						<StatCard
-							label="Weekly Active"
-							value={engagementMetrics.weeklyActiveUsers}
-							icon={Users}
-						/>
-						<StatCard
-							label="Monthly Active"
-							value={engagementMetrics.monthlyActiveUsers}
-							icon={Users}
-						/>
+						<StatTile label="Daily active" value={engagementMetrics.dailyActiveUsers} icon={Users} />
+						<StatTile label="Weekly active" value={engagementMetrics.weeklyActiveUsers} icon={Users} />
 					</div>
-				</div>
+				</Panel>
 			)}
 
-			{/* ── Admin: Hidden Names ── */}
 			{isAdmin && (
-				<div>
+				<Panel>
 					<SectionHeader
 						icon={EyeOff}
 						title="Hidden Names"
+						subtitle="Review names that are currently removed from the public pool."
 						action={
 							<Button
-								variant="ghost"
+								variant="outline"
 								size="small"
 								onClick={() => setShowHiddenNames(!showHiddenNames)}
 							>
@@ -522,28 +554,35 @@ export function Dashboard({
 							</Button>
 						}
 					/>
-
-					{showHiddenNames && (
-						<div className="rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm overflow-hidden">
+					{showHiddenNames ? (
+						<div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
 							{hiddenNames.length > 0 ? (
-								hiddenNames.map((name, i) => (
+								hiddenNames.map((name, index) => (
 									<div
 										key={name.id}
-										className={`flex items-center justify-between px-4 py-3 ${i < hiddenNames.length - 1 ? "border-b border-border/20" : ""}`}
+										className={`flex items-center justify-between gap-3 px-4 py-3 ${
+											index < hiddenNames.length - 1 ? "border-b border-white/10" : ""
+										}`}
 									>
 										<span className="text-sm font-medium text-foreground">{name.name}</span>
 										<Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
-											<Eye size={14} className="mr-1" />
+											<Eye size={14} />
 											Unhide
 										</Button>
 									</div>
 								))
 							) : (
-								<p className="text-center text-sm text-muted-foreground py-6">No hidden names</p>
+								<div className="px-4 py-8 text-center text-sm text-muted-foreground/75">
+									No hidden names.
+								</div>
 							)}
 						</div>
+					) : (
+						<div className="rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-8 text-center text-sm text-muted-foreground/75">
+							Open the list to review and restore hidden names.
+						</div>
 					)}
-				</div>
+				</Panel>
 			)}
 		</div>
 	);
