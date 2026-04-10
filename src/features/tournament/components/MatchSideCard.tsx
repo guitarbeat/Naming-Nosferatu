@@ -26,12 +26,12 @@ export interface MatchSideCardProps {
 	animationDelay?: string;
 }
 
-function StreakFlames({
+function StreakMarkers({
 	count,
 	side,
 	name,
 	streak,
-	className = "animate-flame text-sm sm:text-base",
+	className = "h-1.5 w-5 rounded-full bg-current opacity-75 sm:h-2 sm:w-6",
 }: {
 	count: number;
 	side: string;
@@ -40,15 +40,13 @@ function StreakFlames({
 	className?: string;
 }) {
 	return (
-		<div className="flex gap-0.5">
+		<div className="flex items-center gap-1">
 			{Array.from({ length: count }).map((_, i) => (
 				<span
 					key={`${side}-flame-${name}-${streak}-${i}`}
 					className={className}
 					style={{ animationDelay: `${i * 60}ms` }}
-				>
-					🔥
-				</span>
+				/>
 			))}
 		</div>
 	);
@@ -124,12 +122,12 @@ export function MatchSideCard({
 								isRight ? "right-4" : "left-4"
 							} inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 backdrop-blur-md`}
 						>
-							<StreakFlames
+							<StreakMarkers
 								count={streakBadgeCount}
 								side={side}
 								name={name}
 								streak={streak}
-								className="animate-flame text-xs"
+								className="h-1.5 w-4 rounded-full bg-amber-300/85"
 							/>
 							<span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/75">
 								{streak} straight

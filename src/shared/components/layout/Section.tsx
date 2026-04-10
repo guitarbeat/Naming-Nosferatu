@@ -14,8 +14,8 @@ interface SectionProps {
 }
 
 const paddingClasses = {
-	comfortable: "py-6 sm:py-8 md:py-10 px-4 sm:px-6",
-	compact: "py-4 sm:py-6 px-4 sm:px-6",
+	comfortable: "px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12",
+	compact: "px-4 py-5 sm:px-6 sm:py-7 md:px-8",
 	none: "",
 } as const;
 
@@ -52,9 +52,9 @@ export function Section({
 				paddingClasses[padding],
 				maxWidthClasses[maxWidth],
 				variantClasses[variant],
-				separator && "mt-8 border-t border-border pt-8",
-				scrollMargin && "scroll-mt-20",
-				centered && "flex flex-col items-center w-full",
+				separator && "border-t border-white/10 pt-10 sm:pt-12",
+				scrollMargin && "scroll-mt-24 sm:scroll-mt-16",
+				centered && "flex w-full flex-col items-center",
 				className,
 			)}
 		>

@@ -278,7 +278,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	if (!matchData) {
 		return (
-			<div className="flex min-h-screen items-center justify-center">
+			<div className="flex min-h-[50vh] items-center justify-center">
 				<div className="text-muted-foreground">Loading tournament...</div>
 			</div>
 		);
@@ -304,7 +304,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const progressWidth = progress || (currentMatchNumber / totalMatches) * 100;
 
 	return (
-		<div className="relative flex min-h-[100dvh] w-full flex-col overflow-x-hidden overflow-y-auto font-display text-foreground selection:bg-primary/30">
+		<div className="relative flex min-h-[82dvh] w-full flex-col overflow-x-hidden overflow-y-auto font-display text-foreground selection:bg-primary/30 sm:min-h-[88dvh]">
 			<header className="px-2 pb-2 pt-2 sm:px-4 sm:pt-4">
 				<div className="mx-auto flex w-full max-w-5xl flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-slate-950/60 px-4 py-4 shadow-[0_20px_55px_rgba(2,8,18,0.24)] backdrop-blur-xl sm:px-5">
 					<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -315,9 +315,13 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							<div className="space-y-1">
 								<div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
 									<span>Round {roundNumber}</span>
-									<span className="text-white/25">•</span>
+									<span className="text-white/25" aria-hidden="true">
+										&middot;
+									</span>
 									<span>{bracketStage}</span>
-									<span className="text-white/25">•</span>
+									<span className="text-white/25" aria-hidden="true">
+										&middot;
+									</span>
 									<span>{tournamentMode === "2v2" ? "Team mode" : "Head to head"}</span>
 								</div>
 								<h2 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
@@ -433,7 +437,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								<span
 									className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${getHeatTextClasses(dominantStreak.heatLevel)}`}
 								>
-									🔥 {dominantStreak.name} x{dominantStreak.streak}
+									<span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px]">HOT</span>
+									<span>
+										{dominantStreak.name} x{dominantStreak.streak}
+									</span>
 								</span>
 							)}
 						</div>
@@ -500,21 +507,19 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								className={`rounded-2xl border px-4 py-3 shadow-[0_0_40px_rgba(249,115,22,0.35)] backdrop-blur-lg ${getHeatTextClasses(streakBurst.value.heatLevel)}`}
 							>
 								<p className="text-[10px] uppercase tracking-[0.22em] opacity-80 sm:text-xs">
-									Streak ignited
+									Hot streak
 								</p>
 								<p className="text-base font-black tracking-tight sm:text-lg">
 									{streakBurst.value.winnerName} x{streakBurst.value.streak}
 								</p>
-								<div className="mt-1 flex gap-1">
+								<div className="mt-2 flex gap-1.5">
 									{Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map(
 										(_, i) => (
 											<span
 												key={`streak-flame-${streakBurst.value.key}-${i}`}
-												className="animate-flame text-sm sm:text-base"
+												className="h-1.5 w-5 animate-pulse rounded-full bg-current opacity-80 sm:h-2 sm:w-6"
 												style={{ animationDelay: `${i * 80}ms` }}
-											>
-												🔥
-											</span>
+											/>
 										),
 									)}
 								</div>
@@ -538,17 +543,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 								exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
 								transition={{ duration: prefersReducedMotion ? 0.01 : 0.3 }}
-								className="relative overflow-hidden rounded-2xl border border-purple-300/40 bg-slate-900/80 px-5 py-5 text-center shadow-[0_0_80px_rgba(168,85,247,0.35)] backdrop-blur-xl sm:px-8 sm:py-6"
+								className="relative overflow-hidden rounded-2xl border border-primary/35 bg-slate-900/80 px-5 py-5 text-center shadow-[0_0_80px_rgba(39,135,153,0.25)] backdrop-blur-xl sm:px-8 sm:py-6"
 							>
-								<div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-fuchsia-500/10 to-blue-500/20" />
+								<div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/10 to-chart-4/20" />
 								<div className="relative">
-									<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-purple-200/70 sm:text-xs sm:tracking-[0.3em]">
+									<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-primary/70 sm:text-xs sm:tracking-[0.3em]">
 										Next stage
 									</p>
 									<p className="text-2xl font-black tracking-tight text-white sm:text-3xl md:text-4xl">
 										Round {roundAnnouncement.value}
 									</p>
-									<p className="mt-1 text-xs text-purple-100/80 sm:text-sm">
+									<p className="mt-1 text-xs text-white/72 sm:text-sm">
 										New head-to-head matchups ready
 									</p>
 								</div>

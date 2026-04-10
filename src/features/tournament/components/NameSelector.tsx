@@ -244,7 +244,7 @@ export function NameSelector() {
 	>([]);
 	const deferredSync = useDeferredSync();
 	const namesQuery = useQuery({
-		...namesQueryOptions(true),
+		...namesQueryOptions(isAdmin),
 		retry: 2,
 	});
 	const names = namesQuery.data?.names ?? [];
@@ -255,6 +255,7 @@ export function NameSelector() {
 			: namesQuery.error
 				? "Failed to load names"
 				: null;
+	const isSupabaseUnavailable = error === "Supabase client not available";
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
@@ -645,16 +646,40 @@ export function NameSelector() {
 	if (error) {
 		return (
 			<div className="mx-auto w-full">
-				<div className="flex flex-col items-center justify-center py-20 space-y-4">
-					<div className="isolate text-center">
-						<p className="blend-difference-text text-lg font-medium text-white">
-							Failed to load names
+				<div className="flex flex-col items-center justify-center py-20">
+					<div className="flex max-w-xl flex-col items-center gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-6 py-8 text-center shadow-[0_18px_40px_rgba(2,8,18,0.16)] backdrop-blur-md">
+						<p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary/80">
+							Picker unavailable
 						</p>
-						<p className="blend-difference-text mt-1 text-sm text-white">{error}</p>
+						<div className="space-y-2">
+							<p className="font-display text-2xl leading-[0.96] tracking-[-0.04em] text-white">
+								{isSupabaseUnavailable
+									? "Connect Supabase to load the name pool."
+									: "We couldn&apos;t load the current shortlist."}
+							</p>
+							<p className="text-sm leading-relaxed text-white/68">
+								{isSupabaseUnavailable
+									? "The UI is ready, but local data needs `VITE_SUPABASE_URL` and a publishable key before names can appear here."
+									: error}
+							</p>
+						</div>
+						<div className="flex flex-wrap items-center justify-center gap-3">
+							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+								Try Again
+							</Button>
+							<Button
+								onClick={() =>
+									document
+										.getElementById("suggest")
+										?.scrollIntoView({ behavior: "smooth", block: "start" })
+								}
+								variant="outline"
+								size="small"
+							>
+								Suggest Instead
+							</Button>
+						</div>
 					</div>
-					<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
-						Try Again
-					</Button>
 				</div>
 			</div>
 		);

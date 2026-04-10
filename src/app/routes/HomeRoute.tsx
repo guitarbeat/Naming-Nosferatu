@@ -30,9 +30,9 @@ const DashboardLazy = routeComponents.DashboardLazy;
 
 export default function HomeRoute() {
 	const { login } = useAuth();
-	const namesQuery = useQuery(namesQueryOptions(true));
-	const lockedNames = getLockedNames(namesQuery.data?.names);
 	const { user, tournament, tournamentActions } = useAppStore();
+	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
+	const lockedNames = getLockedNames(namesQuery.data?.names);
 	const totalNameCount = namesQuery.data?.names?.length ?? 0;
 	const selectedCount = tournament.selectedNames?.length ?? 0;
 	const { handleTournamentComplete, handleStartNewTournament } = useTournamentHandlers({

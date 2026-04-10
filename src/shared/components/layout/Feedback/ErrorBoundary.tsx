@@ -1,5 +1,4 @@
 import React, { Component, type ReactNode, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { cn } from "@/shared/lib/basic";
 import { Copy } from "@/shared/lib/icons";
 import { ErrorManager } from "@/shared/services/errorManager";
@@ -123,10 +122,18 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 }) => {
 	const [copySuccess, setCopySuccess] = useState(false);
 	const [showFullStack, setShowFullStack] = useState(false);
-	const navigate = useNavigate();
 
 	const diagnostics = collectDiagnostics(error);
 	const parsedStack = error?.stack ? parseStackTrace(error.stack) : [];
+
+	const handleGoHome = () => {
+		resetError();
+		if (window.location.pathname === "/") {
+			window.location.reload();
+			return;
+		}
+		window.location.assign("/");
+	};
 
 	const copyErrorToClipboard = async () => {
 		const diagText = diagnostics.map((d) => `${d.label}: ${d.value}`).join("\n");
@@ -296,8 +303,7 @@ ${error?.stack || "No stack trace available"}
 					</button>
 					<button
 						onClick={() => {
-							resetError();
-							navigate("/");
+							handleGoHome();
 						}}
 						className="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-foreground font-medium rounded-xl transition-all duration-200"
 					>
@@ -442,7 +448,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
 								aria-label="Dismiss error"
 								type="button"
 							>
-								×
+								x
 							</button>
 						)}
 					</div>
@@ -475,7 +481,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 			)}
 			role="alert"
 		>
-			<span className="text-lg leading-none select-none">⚠️</span>
+			<span className="text-lg leading-none select-none">!</span>
 			<span className="font-medium pt-0.5 leading-tight">{msg}</span>
 		</div>
 	);

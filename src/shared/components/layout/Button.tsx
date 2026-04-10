@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 import React, { memo } from "react";
 import { cn } from "@/shared/lib/basic";
-import { Loader2 } from "@/shared/lib/icons";
+import { ChevronDown, Loader2 } from "@/shared/lib/icons";
 import "./FancyButton.css";
 
 /**
@@ -255,7 +255,7 @@ const ScrollToTopButton = ({
 			aria-label="Scroll to top"
 			tabIndex={0}
 		>
-			↑
+			<ChevronDown className="size-5 -rotate-180" aria-hidden="true" />
 		</button>
 	);
 };
