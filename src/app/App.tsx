@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect } from "react";
-import { useAuth } from "@/app/providers/Providers";
 import { AppBootScreen } from "@/app/components/AppBootScreen";
+import { useAuth } from "@/app/providers/Providers";
 import {
 	cleanupPerformanceMonitoring,
 	initializePerformanceMonitoring,

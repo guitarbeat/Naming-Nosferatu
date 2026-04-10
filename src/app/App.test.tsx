@@ -32,7 +32,9 @@ vi.mock("@/app/AppShell", () => ({
 
 vi.mock("@/app/components/AppBootScreen", () => ({
 	AppBootScreen: ({ message, visible = true }: { message?: string; visible?: boolean }) =>
-		visible ? <div data-testid="boot-screen">{message ?? "Preparing the tournament..."}</div> : null,
+		visible ? (
+			<div data-testid="boot-screen">{message ?? "Preparing the tournament..."}</div>
+		) : null,
 }));
 
 vi.mock("@/shared/lib/performance", () => ({

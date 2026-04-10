@@ -1,4 +1,4 @@
-import { Suspense, lazy, useLayoutEffect } from "react";
+import { lazy, Suspense, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppLayout } from "@/shared/components/layout/AppLayout";
 import { Loading } from "@/shared/components/layout/Feedback";

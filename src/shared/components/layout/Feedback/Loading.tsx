@@ -37,7 +37,11 @@ function SpinnerCircle({
 	className?: string;
 }) {
 	const dimensions =
-		size === "large" ? "h-12 w-12 border-4" : size === "small" ? "h-6 w-6 border-2" : "h-8 w-8 border-4";
+		size === "large"
+			? "h-12 w-12 border-4"
+			: size === "small"
+				? "h-6 w-6 border-2"
+				: "h-8 w-8 border-4";
 
 	return (
 		<div
@@ -51,13 +55,7 @@ function SpinnerCircle({
 	);
 }
 
-function SkeletonBlock({
-	className,
-	style,
-}: {
-	className?: string;
-	style?: React.CSSProperties;
-}) {
+function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
 	return (
 		<div
 			className={cn(
@@ -220,7 +218,9 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{resolvedText && <div className="pt-2 text-center text-xs text-white/50">{resolvedText}</div>}
+					{resolvedText && (
+						<div className="pt-2 text-center text-xs text-white/50">{resolvedText}</div>
+					)}
 				</div>
 			);
 		}

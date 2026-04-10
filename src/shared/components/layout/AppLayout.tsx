@@ -1,5 +1,5 @@
-import { lazy, Suspense, type ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { lazy, type ReactNode, Suspense } from "react";
 import { shouldEnableAnalytics } from "@/app/analytics";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import {
