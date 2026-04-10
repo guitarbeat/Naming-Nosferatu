@@ -80,7 +80,7 @@ export const imagesAPI = {
 					"name" in file && typeof (file as File).name === "string"
 						? (file as File).name.split(".").pop()
 						: "jpg";
-				const fileName = `${userName}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+				const fileName = `${userName}_${Date.now()}_${crypto.randomUUID()}.${fileExt}`;
 
 				const { error } = await client.storage.from("cat-images").upload(fileName, file, {
 					cacheControl: "3600",

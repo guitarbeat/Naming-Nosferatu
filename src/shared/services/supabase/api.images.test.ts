@@ -77,7 +77,11 @@ describe("imagesAPI", () => {
 
 			expect(mockFrom).toHaveBeenCalledWith("cat-images");
 			expect(mockUpload).toHaveBeenCalledWith(
-				expect.stringMatching(new RegExp(`^${userName}_\\d+_\\w+\\.jpg$`)),
+				expect.stringMatching(
+					new RegExp(
+						`^${userName}_\\d+_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\.jpg$`,
+					),
+				),
 				mockFile,
 				expect.objectContaining({ upsert: false }),
 			);

@@ -62,6 +62,30 @@ export async function batchUpdateVisibility(params: {
 	}
 }
 
+export async function batchUpdateLocked(params: {
+	nameIds: IdType[];
+	isLocked: boolean;
+}): Promise<void> {
+	assertAdmin();
+	const { nameIds, isLocked } = params;
+	const result = await withSupabase(async (client) => {
+		// @ts-expect-error - batch_update_name_locked is a custom RPC not in generated types
+		const { data, error } = await client.rpc("batch_update_name_locked", {
+			p_name_ids: nameIds.map(String),
+			p_is_locked: isLocked,
+		});
+		if (error) {
+			throw error;
+		}
+		assertSuccess(data, "Failed to batch update name locked status");
+		return true;
+	}, false);
+
+	if (result === false) {
+		throw new Error("Supabase client not available");
+	}
+}
+
 export async function toggleNameHidden(params: {
 	nameId: IdType;
 	isCurrentlyHidden: boolean;

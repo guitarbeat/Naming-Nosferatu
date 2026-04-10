@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+	batchUpdateLocked,
 	batchUpdateVisibility,
 	softDeleteName,
 	toggleNameHidden,
@@ -257,5 +258,57 @@ describe("unhideAllNames", () => {
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null as never);
 		await expect(unhideAllNames()).rejects.toThrow("Supabase client not available");
+	});
+});
+
+describe("batchUpdateLocked", () => {
+	it("calls batch_update_name_locked RPC with p_is_locked=true to lock names", async () => {
+		mockRpc.mockResolvedValueOnce({ data: true, error: null });
+		await expect(
+			batchUpdateLocked({ nameIds: ["id-1", "id-2"], isLocked: true }),
+		).resolves.toBeUndefined();
+		expect(mockRpc).toHaveBeenCalledWith("batch_update_name_locked", {
+			p_name_ids: ["id-1", "id-2"],
+			p_is_locked: true,
+		});
+	});
+
+	it("calls batch_update_name_locked RPC with p_is_locked=false to unlock names", async () => {
+		mockRpc.mockResolvedValueOnce({ data: true, error: null });
+		await expect(
+			batchUpdateLocked({ nameIds: ["id-3"], isLocked: false }),
+		).resolves.toBeUndefined();
+		expect(mockRpc).toHaveBeenCalledWith("batch_update_name_locked", {
+			p_name_ids: ["id-3"],
+			p_is_locked: false,
+		});
+	});
+
+	it("throws when the RPC returns an error", async () => {
+		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } });
+		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toMatchObject({
+			message: "permission denied",
+		});
+	});
+
+	it("throws when RPC returns data !== true", async () => {
+		mockRpc.mockResolvedValueOnce({ data: false, error: null });
+		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
+			"Failed to batch update name locked status",
+		);
+	});
+
+	it("throws when Supabase client is unavailable", async () => {
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
+		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
+			"Supabase client not available",
+		);
+	});
+
+	it("throws when user is not an admin", async () => {
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
+			"Admin privileges required",
+		);
 	});
 });
