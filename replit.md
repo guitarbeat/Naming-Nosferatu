@@ -72,3 +72,4 @@ Key RPCs: `apply_tournament_match_elo`, `save_user_ratings`, `get_leaderboard_st
 - This is a pure frontend SPA — all data operations go through Supabase RPCs
 - The app works in "demo mode" if Supabase is unavailable (graceful fallbacks)
 - Supabase anon key is a public key — safe to expose in frontend code
+- Layout sizing is centralized in `src/styles/tokens.css` and consumed by `layout.css`: navbar safe area, app bottom padding, section spacing, hero height, and analytics chart heights should be changed through those tokens rather than hardcoded Tailwind sizes.
