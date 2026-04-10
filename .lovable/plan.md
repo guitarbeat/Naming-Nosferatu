@@ -1,37 +1,35 @@
 
 
-## Plan: Profile as a modal/overlay triggered from navbar
+## Plan: Add mix-blend-mode difference to section headings for background contrast
 
-### What changes
+### Problem
+Text in section headings (and potentially other overlaid text) can become hard to read against the animated, colorful background layers (gradient, moire, soft-blur). The user wants text to automatically invert/contrast against whatever background is behind it.
 
-The profile section currently lives inline on the home page. Instead, it will become a slide-up panel/modal that opens when the user clicks "Profile" in the FloatingNavbar, and the inline profile section will be removed from the home page.
+### Approach
+Apply `mix-blend-mode: difference` with white text color to key heading elements so they always remain visible regardless of background color changes. This CSS property inverts the text color relative to the background beneath it.
 
-### Implementation
+### Changes
 
-**1. Add `isProfileOpen` to UIState** (`src/shared/types/index.ts`)
-- Add `isProfileOpen: boolean` to the `UIState` interface.
+**1. `src/shared/components/layout/SectionHeading.tsx`**
+- Add `mix-blend-mode: difference` and white text color to the heading container
+- The `h2` title and subtitle `p` get `text-white` so the difference blend produces visible inverted colors
+- Add an `isolation: isolate` wrapper if needed to scope the blend
 
-**2. Add toggle action to the UI slice** (`src/store/appStore.ts`)
-- Initialize `isProfileOpen: false`.
-- Add `toggleProfile` and `setProfileOpen` to `uiActions`.
+**2. `src/styles/components.css` or `src/styles/layout.css`** (whichever holds component styles)
+- Add a reusable `.blend-difference-text` utility class:
+  ```css
+  .blend-difference-text {
+    mix-blend-mode: difference;
+    color: white;
+  }
+  ```
+- This can be applied to any text element that needs to stay visible against changing backgrounds
 
-**3. Update FloatingNavbar** (`src/shared/components/layout/FloatingNavbar.tsx`)
-- Change the Profile nav item's `onClick` to call `uiActions.setProfileOpen(true)` instead of scrolling to the `#profile` section.
-- Remove `"profile"` from the `NavSection` type and scroll-tracking logic since it's no longer a page section.
+**3. `src/features/tournament/components/NameSelector.tsx`** (error/heading text)
+- Apply the blend-difference class to the "Failed to load names" heading and any other prominent text that overlays the background directly
 
-**4. Create a Profile overlay panel** (`src/shared/components/layout/AppLayout.tsx`)
-- Render a modal/slide-up panel (using existing motion patterns) that shows `<ProfileInner>` when `ui.isProfileOpen` is true.
-- Include a close button and backdrop click to dismiss.
-- Positioned above the navbar with proper z-indexing.
-
-**5. Remove inline profile section from HomeContent** (`src/app/App.tsx`)
-- Delete the `<Section id="profile">` block containing `<SectionHeading>` and `<ProfileInner>`.
-- Remove the `ProfileInner` import if no longer used here (it moves to AppLayout).
-
-### Files modified
-- `src/shared/types/index.ts` — add `isProfileOpen`
-- `src/store/appStore.ts` — add state + actions
-- `src/shared/components/layout/FloatingNavbar.tsx` — update Profile click handler, remove profile scroll tracking
-- `src/shared/components/layout/AppLayout.tsx` — render profile overlay panel
-- `src/app/App.tsx` — remove inline profile section
+### Technical notes
+- `mix-blend-mode: difference` with white text effectively inverts the background color for the text pixels, guaranteeing contrast
+- Parent elements with `backdrop-filter` or `overflow: hidden` can create new stacking contexts that limit blend scope -- will ensure the blend targets are positioned correctly relative to the background layers
+- The icon container in `SectionHeading` will keep its current styling (the circular badge) since blending icons can look odd
 
