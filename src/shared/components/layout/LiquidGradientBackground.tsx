@@ -29,7 +29,11 @@ class TouchTexture {
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
-		this.ctx = this.canvas.getContext("2d")!;
+		const context = this.canvas.getContext("2d");
+		if (!context) {
+			throw new Error("2D canvas context is unavailable.");
+		}
+		this.ctx = context;
 		this.ctx.fillStyle = "black";
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 		this.texture = new THREE.Texture(this.canvas);

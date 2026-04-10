@@ -57,13 +57,7 @@ interface EngagementMetrics {
 	bounceRate: number;
 }
 
-function Panel({
-	children,
-	className = "",
-}: {
-	children: ReactNode;
-	className?: string;
-}) {
+function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
 	return (
 		<section
 			className={`rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_16px_40px_rgba(4,10,20,0.14)] backdrop-blur-xl sm:p-6 ${className}`}
@@ -91,7 +85,9 @@ function StatTile({
 					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
 						{label}
 					</p>
-					<p className={`mt-2 text-2xl font-semibold ${accent ? "text-primary" : "text-foreground"}`}>
+					<p
+						className={`mt-2 text-2xl font-semibold ${accent ? "text-primary" : "text-foreground"}`}
+					>
 						{value}
 					</p>
 				</div>
@@ -129,7 +125,9 @@ function SectionHeader({
 					<Icon size={14} className="text-primary" />
 					<span>{title}</span>
 				</div>
-				{subtitle && <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">{subtitle}</p>}
+				{subtitle && (
+					<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">{subtitle}</p>
+				)}
 			</div>
 			{action}
 		</div>
@@ -175,6 +173,7 @@ export function Dashboard({
 	const [showHiddenNames, setShowHiddenNames] = useState(false);
 	const [engagementMetrics, setEngagementMetrics] = useState<EngagementMetrics | null>(null);
 	const [timeframe, setTimeframe] = useState<"day" | "week" | "month">("week");
+	const handleStartNew = onStartNew ?? (() => undefined);
 
 	useEffect(() => {
 		const fetchLeaderboard = async () => {
@@ -265,21 +264,45 @@ export function Dashboard({
 		}
 	};
 
-	const quickStats = userName && userStats
-		? [
-				{ label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
-				{ label: "Selected", value: userStats.totalSelections, icon: Target },
-				{ label: "Wins", value: userStats.totalWins, icon: Trophy, accent: true },
-				{ label: "Win rate", value: `${userStats.winRate}%`, icon: TrendingUp, accent: true },
-			]
-		: siteStats
+	const quickStats =
+		userName && userStats
 			? [
-					{ label: "Total names", value: siteStats.totalNames, icon: Activity },
-					{ label: "Active names", value: siteStats.activeNames, icon: Target },
-					{ label: "Users", value: siteStats.totalUsers, icon: Users },
-					{ label: "Average rating", value: Math.round(siteStats.avgRating), icon: TrendingUp, accent: true },
+					{ label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
+					{ label: "Selected", value: userStats.totalSelections, icon: Target },
+					{
+						label: "Wins",
+						value: userStats.totalWins,
+						icon: Trophy,
+						accent: true,
+					},
+					{
+						label: "Win rate",
+						value: `${userStats.winRate}%`,
+						icon: TrendingUp,
+						accent: true,
+					},
 				]
-			: [];
+			: siteStats
+				? [
+						{
+							label: "Total names",
+							value: siteStats.totalNames,
+							icon: Activity,
+						},
+						{
+							label: "Active names",
+							value: siteStats.activeNames,
+							icon: Target,
+						},
+						{ label: "Users", value: siteStats.totalUsers, icon: Users },
+						{
+							label: "Average rating",
+							value: Math.round(siteStats.avgRating),
+							icon: TrendingUp,
+							accent: true,
+						},
+					]
+				: [];
 
 	return (
 		<div className="w-full space-y-8 sm:space-y-10">
@@ -303,7 +326,9 @@ export function Dashboard({
 									<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/65">
 										Profile
 									</p>
-									<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
+									<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">
+										{userName}
+									</h2>
 									<p className="mt-1 text-sm text-muted-foreground/75">
 										{isAdmin ? "Administrator" : "Tournament participant"}
 									</p>
@@ -349,7 +374,7 @@ export function Dashboard({
 					<PersonalResults
 						personalRatings={personalRatings}
 						currentTournamentNames={currentTournamentNames}
-						onStartNew={onStartNew || (() => {})}
+						onStartNew={handleStartNew}
 						onUpdateRatings={onUpdateRatings}
 						userName={userName}
 					/>
@@ -388,8 +413,9 @@ export function Dashboard({
 									<div className="min-w-0 flex-1">
 										<p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
 										<p className="text-xs text-muted-foreground/70">
-											{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} •{" "}
-											{entry.wins} win{entry.wins !== 1 ? "s" : ""}
+											{entry.total_ratings} rating
+											{entry.total_ratings !== 1 ? "s" : ""} • {entry.wins} win
+											{entry.wins !== 1 ? "s" : ""}
 										</p>
 									</div>
 									<div className="text-right">
@@ -532,8 +558,16 @@ export function Dashboard({
 							value={`${engagementMetrics.bounceRate}%`}
 							icon={BarChart3}
 						/>
-						<StatTile label="Daily active" value={engagementMetrics.dailyActiveUsers} icon={Users} />
-						<StatTile label="Weekly active" value={engagementMetrics.weeklyActiveUsers} icon={Users} />
+						<StatTile
+							label="Daily active"
+							value={engagementMetrics.dailyActiveUsers}
+							icon={Users}
+						/>
+						<StatTile
+							label="Weekly active"
+							value={engagementMetrics.weeklyActiveUsers}
+							icon={Users}
+						/>
 					</div>
 				</Panel>
 			)}

@@ -143,7 +143,9 @@ export function MatchSideCard({
 						<p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45">
 							{isTeam ? "Team" : "Name"}
 						</p>
-						<h3 className={`max-w-[18rem] break-words font-display text-3xl leading-[0.92] text-white sm:text-4xl ${textAlign}`}>
+						<h3
+							className={`max-w-[18rem] break-words font-display text-3xl leading-[0.92] text-white sm:text-4xl ${textAlign}`}
+						>
 							{name}
 						</h3>
 						{pronunciation && (
@@ -152,7 +154,9 @@ export function MatchSideCard({
 							</span>
 						)}
 						{isTeam ? (
-							<div className={`mt-1 flex flex-wrap gap-1.5 ${isRight ? "justify-start sm:justify-end" : "justify-start"}`}>
+							<div
+								className={`mt-1 flex flex-wrap gap-1.5 ${isRight ? "justify-start sm:justify-end" : "justify-start"}`}
+							>
 								{members.map((member) => (
 									<span
 										key={`${side}-member-${member}`}
@@ -163,7 +167,9 @@ export function MatchSideCard({
 								))}
 							</div>
 						) : description ? (
-							<p className={`mt-1 max-w-[22rem] text-sm leading-relaxed text-white/72 ${textAlign}`}>
+							<p
+								className={`mt-1 max-w-[22rem] text-sm leading-relaxed text-white/72 ${textAlign}`}
+							>
 								{description}
 							</p>
 						) : null}

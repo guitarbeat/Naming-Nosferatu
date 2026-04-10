@@ -17,7 +17,6 @@ export function useFuzzySearch<T>(
 				minMatchCharLength: 1,
 				...options,
 			}),
-		// biome-ignore lint/correctness/useExhaustiveDependencies: options is intentionally stable
 		[items, keys, options],
 	);
 

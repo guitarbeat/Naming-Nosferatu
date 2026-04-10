@@ -216,6 +216,7 @@ export function NameSelector() {
 	const queryClient = useQueryClient();
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
+	const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
@@ -796,7 +797,7 @@ export function NameSelector() {
 									Swipe Mode
 								</Button>
 								<Button
-									variant={!isSwipeMode ? "primary" : "outline"}
+									variant={isSwipeMode ? "outline" : "primary"}
 									size="small"
 									onClick={() => setSwipeMode(false)}
 								>

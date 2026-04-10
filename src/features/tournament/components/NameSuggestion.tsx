@@ -274,8 +274,10 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 // ============================================================================
 
 export function NameSuggestion({ variant = "inline", onClose }: NameSuggestionProps) {
+	const handleClose = onClose ?? (() => undefined);
+
 	if (variant === "modal") {
-		return <ModalNameSuggestionContent onClose={onClose || (() => {})} />;
+		return <ModalNameSuggestionContent onClose={handleClose} />;
 	}
 	return <NameSuggestionInner />;
 }

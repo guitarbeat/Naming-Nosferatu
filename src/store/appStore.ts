@@ -53,6 +53,7 @@ interface UserActions {
 interface UIActions {
 	setTheme: (theme: ThemePreference) => void;
 	initializeTheme: () => void;
+	setBootLoading: (loading: boolean) => void;
 	setMatrixMode: (enabled: boolean) => void;
 	setGlobalAnalytics: (show: boolean) => void;
 	setSwipeMode: (enabled: boolean) => void;
@@ -320,6 +321,7 @@ const createUserAndSettingsSlice: StateCreator<
 
 	ui: {
 		...getInitialTheme(),
+		isBootLoading: true,
 		showGlobalAnalytics: false,
 		showUserComparison: false,
 		matrixMode: false,
@@ -367,6 +369,7 @@ const createUserAndSettingsSlice: StateCreator<
 			get().uiActions.setTheme(pref);
 		},
 
+		setBootLoading: (loading) => patch(set, "ui", { isBootLoading: loading }),
 		setMatrixMode: (enabled) => patch(set, "ui", { matrixMode: enabled }),
 		setGlobalAnalytics: (show) => patch(set, "ui", { showGlobalAnalytics: show }),
 

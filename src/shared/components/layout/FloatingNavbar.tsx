@@ -1,5 +1,5 @@
 import type { ElementType, ReactNode } from "react";
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/shared/lib/basic";
 import {
@@ -102,19 +102,22 @@ export function FloatingNavbar() {
 	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
 	const primaryItemCount = 4;
 
-	const scrollToSection = (key: NavSection) => {
-		const id = keyToId[key];
-		const target = document.getElementById(id);
-		if (!target) {
-			window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
-			return;
-		}
+	const scrollToSection = useCallback(
+		(key: NavSection) => {
+			const id = keyToId[key];
+			const target = document.getElementById(id);
+			if (!target) {
+				window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+				return;
+			}
 
-		target.scrollIntoView({
-			behavior: prefersReducedMotion ? "auto" : "smooth",
-			block: "start",
-		});
-	};
+			target.scrollIntoView({
+				behavior: prefersReducedMotion ? "auto" : "smooth",
+				block: "start",
+			});
+		},
+		[prefersReducedMotion],
+	);
 
 	const handleStartTournament = () => {
 		hapticTournamentStart();

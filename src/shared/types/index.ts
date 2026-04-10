@@ -215,6 +215,7 @@ export type ThemePreference = "light" | "dark" | "system";
 export interface UIState {
 	theme: ThemeValue;
 	themePreference: ThemePreference;
+	isBootLoading: boolean;
 	showGlobalAnalytics: boolean;
 	showUserComparison: boolean;
 	matrixMode: boolean;

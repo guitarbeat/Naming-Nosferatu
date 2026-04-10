@@ -60,7 +60,11 @@ export const PersonalResults = ({
 		<div className="space-y-6">
 			<div className="grid gap-3 sm:grid-cols-3">
 				<HighlightCard label="Champion" value={rankings[0]?.name || "—"} icon={Trophy} />
-				<HighlightCard label="Top rating" value={String(rankings[0]?.rating || 1500)} icon={BarChart3} />
+				<HighlightCard
+					label="Top rating"
+					value={String(rankings[0]?.rating || 1500)}
+					icon={BarChart3}
+				/>
 				<HighlightCard label="Ranked names" value={rankings.length} icon={Trophy} />
 			</div>
 
@@ -71,7 +75,8 @@ export const PersonalResults = ({
 							Adjustment table
 						</p>
 						<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">
-							Reorder your results if you want a final manual pass before saving the bracket back to your profile.
+							Reorder your results if you want a final manual pass before saving the bracket back to
+							your profile.
 						</p>
 					</div>
 					<Button variant="outline" size="small" onClick={onStartNew}>

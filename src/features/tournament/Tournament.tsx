@@ -506,15 +506,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									{streakBurst.value.winnerName} x{streakBurst.value.streak}
 								</p>
 								<div className="mt-1 flex gap-1">
-									{Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map((_, i) => (
-										<span
-											key={`streak-flame-${streakBurst.value.key}-${i}`}
-											className="animate-flame text-sm sm:text-base"
-											style={{ animationDelay: `${i * 80}ms` }}
-										>
-											🔥
-										</span>
-									))}
+									{Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map(
+										(_, i) => (
+											<span
+												key={`streak-flame-${streakBurst.value.key}-${i}`}
+												className="animate-flame text-sm sm:text-base"
+												style={{ animationDelay: `${i * 80}ms` }}
+											>
+												🔥
+											</span>
+										),
+									)}
 								</div>
 							</div>
 						</motion.div>
