@@ -51,13 +51,13 @@ export function AppLayout({ children }: AppLayoutProps) {
 				{/* Main content area with proper spacing */}
 				<main
 					id="main-content"
-					className="relative flex w-full flex-col px-3 pb-40 pt-4 sm:px-6 sm:pb-40 sm:pt-6 md:pt-10"
+					className="relative flex w-full flex-col pb-40 pt-0 sm:pb-40"
 					style={{ minHeight: "100dvh" }}
 					tabIndex={-1}
 				>
 					{/* Error banner */}
 					{Boolean(errors.current) && (
-						<div className="mx-auto mb-4 w-full max-w-4xl">
+						<div className="mx-auto mb-4 w-full max-w-4xl px-3 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
 							<ErrorComponent
 								error={String(errors.current)}
 								onRetry={() => errorActions.clearError()}
@@ -67,7 +67,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 					)}
 
 					{/* Page content */}
-					<div className="flex w-full flex-1 flex-col items-center gap-8 sm:gap-12">{children}</div>
+					<div className="flex w-full flex-1 flex-col items-stretch gap-8 sm:gap-10 md:gap-14">
+						{children}
+					</div>
 
 					{/* Loading overlay */}
 					{tournament.isLoading && (

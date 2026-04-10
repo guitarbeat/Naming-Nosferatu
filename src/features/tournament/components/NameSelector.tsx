@@ -93,16 +93,16 @@ const NameContent = ({
 }) => {
 	const isGrid = variant === "grid";
 	const nameClasses = isGrid
-		? "font-black text-foreground text-2xl sm:text-3xl leading-none tracking-tight drop-shadow-lg w-full break-words"
-		: "font-whimsical text-4xl lg:text-5xl text-foreground tracking-wide drop-shadow-2xl break-words w-full text-center";
+		? "w-full break-words font-display text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem]"
+		: "w-full break-words font-display text-4xl leading-[0.92] tracking-tight text-white lg:text-5xl";
 
 	const pronunciationClasses = isGrid
-		? "text-warning/90 text-xs sm:text-sm leading-tight font-bold italic drop-shadow-md"
-		: "text-warning text-2xl lg:text-3xl font-bold italic opacity-90";
+		? "text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70"
+		: "text-xs font-semibold uppercase tracking-[0.28em] text-white/65";
 
 	const descriptionClasses = isGrid
-		? "text-foreground/75 text-[11px] sm:text-xs leading-snug line-clamp-2 mt-0.5 drop-shadow-sm font-medium"
-		: "text-foreground/90 text-sm md:text-base leading-relaxed max-w-md mt-3 drop-shadow-sm line-clamp-3 text-center";
+		? "mt-2 line-clamp-2 text-xs leading-relaxed text-white/72 sm:text-sm"
+		: "mt-3 max-w-md line-clamp-3 text-sm leading-relaxed text-white/72 md:text-base";
 
 	return (
 		<>
@@ -191,22 +191,22 @@ const AdminActionButton = ({
 // Card styles utility
 const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 	const baseClasses =
-		"mobile-readable-card relative group rounded-xl sm:rounded-2xl border-2 cursor-pointer transition-all duration-300";
+		"mobile-readable-card relative group overflow-hidden rounded-[1.35rem] border cursor-pointer transition-all duration-300";
 	const selectedClasses = isSelected
-		? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 shadow-xl shadow-primary/20 ring-4 ring-primary/30 scale-[1.02] z-10"
-		: "border-border/20 bg-gradient-to-br from-foreground/5 to-foreground/0 hover:border-border/40 hover:bg-gradient-to-br hover:from-foreground/10 hover:to-foreground/5 hover:shadow-xl hover:shadow-foreground/10";
-	const lockedClasses = isLocked ? "opacity-60 cursor-not-allowed" : "";
+		? "z-10 border-primary/45 bg-gradient-to-br from-primary/14 to-white/[0.04] shadow-[0_20px_45px_rgba(39,135,153,0.2)] ring-1 ring-primary/25"
+		: "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(6,12,24,0.18)]";
+	const lockedClasses = isLocked ? "cursor-not-allowed opacity-55 saturate-50" : "";
 
 	return `${baseClasses} ${selectedClasses} ${lockedClasses}`;
 };
 
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
-	const baseClasses = "absolute flex flex-col pointer-events-none";
+	const baseClasses = "absolute inset-0 flex flex-col justify-end pointer-events-none";
 	const gridClasses =
-		"inset-0 p-3 sm:p-4 bg-gradient-to-b from-background/40 via-background/70 to-background/40 justify-center items-center text-center";
+		"p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-left";
 	const swipeClasses =
-		"inset-0 p-8 bg-gradient-to-t from-background/95 via-background/40 to-transparent z-10 justify-center items-center text-center";
+		"z-10 p-6 sm:p-8 bg-gradient-to-t from-slate-950/96 via-slate-950/48 to-transparent text-left";
 
 	return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
@@ -556,7 +556,7 @@ export function NameSelector() {
 	const cardsToRender = useMemo(() => visibleCards.slice(0, 3), [visibleCards]);
 
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
-	const _lockedInNames = useMemo(() => getLockedNames(names), [names]);
+	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
 	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
 	const hiddenFuzzy = useFuzzySearch(hiddenNamesAll, ["name", "description"], hiddenQuery);
 	const hiddenFiltered = useMemo(() => {
@@ -576,7 +576,7 @@ export function NameSelector() {
 		const ids = new Set(selectedNames);
 		return ids;
 	}, [selectedNames]);
-	const _selectedAvailableCount = useMemo(() => {
+	const selectedAvailableCount = useMemo(() => {
 		const availableIds = new Set(availableNames.map((n) => n.id));
 		let count = 0;
 		selectedNames.forEach((id) => {
@@ -586,7 +586,7 @@ export function NameSelector() {
 		});
 		return count;
 	}, [availableNames, selectedNames]);
-	const _selectedHiddenCount = useMemo(() => {
+	const selectedHiddenCount = useMemo(() => {
 		let count = 0;
 		hiddenNamesAll.forEach((name) => {
 			if (selectedIdsSet.has(name.id)) {
@@ -595,11 +595,13 @@ export function NameSelector() {
 		});
 		return count;
 	}, [hiddenNamesAll, selectedIdsSet]);
-	const _canSelectAllAvailable = useMemo(
+	const canSelectAllAvailable = useMemo(
 		() => availableNames.some((name) => !selectedIdsSet.has(name.id)),
 		[availableNames, selectedIdsSet],
 	);
-	const _hasAnySelection = selectedIdsSet.size > 0;
+	const hasAnySelection = selectedIdsSet.size > 0;
+	const canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
+	const selectionFloor = lockedInNames.length;
 
 	// Keyboard navigation for swipe mode
 	useEffect(() => {
@@ -657,6 +659,13 @@ export function NameSelector() {
 		},
 		[names],
 	);
+
+	const startTournament = useCallback(() => {
+		if (storeSelectedNames && storeSelectedNames.length >= 2) {
+			tournamentActions.setNames(storeSelectedNames);
+		}
+		document.getElementById("tournament")?.scrollIntoView({ behavior: "smooth", block: "start" });
+	}, [storeSelectedNames, tournamentActions]);
 
 	const _handleSelectAllAvailable = useCallback(() => {
 		setSelectedNames((prev) => {
@@ -721,9 +730,11 @@ export function NameSelector() {
 		return (
 			<div className="mx-auto w-full">
 				<div className="flex flex-col items-center justify-center py-20 space-y-4">
-					<div className="text-destructive text-center">
-						<p className="text-lg font-medium">Failed to load names</p>
-						<p className="text-sm opacity-75 mt-1">{error}</p>
+					<div className="isolate text-center">
+						<p className="blend-difference-text text-lg font-medium text-white">
+							Failed to load names
+						</p>
+						<p className="blend-difference-text mt-1 text-sm text-white">{error}</p>
 					</div>
 					<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
 						Try Again
@@ -736,6 +747,106 @@ export function NameSelector() {
 	return (
 		<div className="mx-auto w-full">
 			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
+				<div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl sm:p-5">
+					<div className="flex flex-col gap-5">
+						<div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+							<div className="space-y-3">
+								<p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
+									Selection deck
+								</p>
+								<div className="space-y-2">
+									<h3 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">
+										{isSwipeMode ? "Swipe through the contenders" : "Build your bracket shortlist"}
+									</h3>
+									<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75 sm:text-base">
+										{isSwipeMode
+											? "Flick right to keep a name, left to skip it, then start the tournament once at least two names make the cut."
+											: "Tap the names that deserve a slot in the tournament. Locked names stay selected automatically, and hidden names stay available below when you need them."}
+									</p>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+								{[
+									{ label: "Selected", value: selectedIdsSet.size },
+									{ label: "Available", value: availableNames.length },
+									{ label: "Locked", value: lockedInNames.length },
+									{ label: "Hidden", value: hiddenNamesAll.length },
+								].map((item) => (
+									<div
+										key={item.label}
+										className="rounded-2xl border border-white/10 bg-black/15 px-4 py-3"
+									>
+										<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+											{item.label}
+										</p>
+										<p className="mt-2 text-2xl font-semibold text-foreground">{item.value}</p>
+									</div>
+								))}
+							</div>
+						</div>
+
+						<div className="flex flex-col gap-3 border-t border-white/10 pt-4 xl:flex-row xl:items-center xl:justify-between">
+							<div className="flex flex-wrap gap-2">
+								<Button
+									variant={isSwipeMode ? "primary" : "outline"}
+									size="small"
+									onClick={() => setSwipeMode(true)}
+								>
+									Swipe Mode
+								</Button>
+								<Button
+									variant={!isSwipeMode ? "primary" : "outline"}
+									size="small"
+									onClick={() => setSwipeMode(false)}
+								>
+									Grid Mode
+								</Button>
+								<Button
+									variant="ghost"
+									size="small"
+									onClick={_handleSelectRandomAvailable}
+									disabled={availableNames.length === 0}
+								>
+									Pick 8 Random
+								</Button>
+								<Button
+									variant="ghost"
+									size="small"
+									onClick={_handleSelectAllAvailable}
+									disabled={!canSelectAllAvailable}
+								>
+									Select All Visible
+								</Button>
+								<Button
+									variant="ghost"
+									size="small"
+									onClick={_handleClearSelection}
+									disabled={!hasAnySelection || selectedIdsSet.size <= selectionFloor}
+								>
+									Clear Back to Locked
+								</Button>
+							</div>
+
+							<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+								<p className="text-xs leading-relaxed text-muted-foreground/70">
+									{isSwipeMode
+										? "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe."
+										: `${selectedAvailableCount} active picks and ${selectedHiddenCount} hidden picks are ready for the bracket.`}
+								</p>
+								<Button
+									size="large"
+									onClick={startTournament}
+									disabled={!canStartTournament}
+									className="min-w-[12rem]"
+								>
+									Start Tournament
+								</Button>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				{isSwipeMode ? (
 					<>
 						<div
@@ -942,11 +1053,11 @@ export function NameSelector() {
 											>
 												<Check size={40} className="text-success-foreground" strokeWidth={3} />
 											</motion.div>
-											<div className="space-y-3">
-												<h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+											<div className="isolate space-y-3">
+												<h2 className="blend-difference-text text-3xl font-bold text-white sm:text-4xl">
 													All done!
 												</h2>
-												<p className="text-muted-foreground text-lg leading-relaxed">
+												<p className="blend-difference-text text-lg leading-relaxed text-white">
 													You've reviewed all names. Ready to start the tournament?
 												</p>
 											</div>
@@ -956,17 +1067,7 @@ export function NameSelector() {
 												transition={{ delay: 0.4 }}
 												className="pt-4"
 											>
-												<Button
-													onClick={() => {
-														if (storeSelectedNames && storeSelectedNames.length >= 2) {
-															tournamentActions.setNames(storeSelectedNames);
-														}
-														document
-															.getElementById("tournament")
-															?.scrollIntoView({ behavior: "smooth", block: "start" });
-													}}
-													className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-95"
-												>
+												<Button onClick={startTournament} className="min-w-[12rem]">
 													Start Tournament
 												</Button>
 											</motion.div>

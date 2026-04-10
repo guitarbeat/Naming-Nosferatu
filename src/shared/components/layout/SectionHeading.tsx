@@ -11,23 +11,27 @@ interface SectionHeadingProps {
 
 export function SectionHeading({ icon: Icon, title, subtitle, className }: SectionHeadingProps) {
 	return (
-		<div className={cn("flex flex-col items-center gap-3 py-1 mb-6 sm:mb-8", className)}>
-			{/* Decorative divider */}
-			<div className="flex w-full items-center gap-4" aria-hidden="true">
-				<div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
-				{Icon && (
-					<div className="flex h-9 w-9 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary shadow-sm">
-						<Icon className="h-4 w-4" />
-					</div>
-				)}
-				<div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
-			</div>
+		<div
+			className={cn(
+				"mb-6 flex w-full max-w-3xl flex-col items-center gap-4 px-4 py-1 text-center sm:mb-8",
+				className,
+			)}
+		>
+			{Icon && (
+				<div
+					className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-primary shadow-[0_12px_30px_rgba(4,11,20,0.18)]"
+					aria-hidden="true"
+				>
+					<Icon className="h-4 w-4" />
+				</div>
+			)}
 
-			{/* Text */}
-			<div className="text-center">
-				<h2 className="gradient-heading text-xl sm:text-2xl">{title}</h2>
+			<div className="isolate space-y-3">
+				<h2 className="blend-difference-text text-2xl tracking-[-0.05em] text-white sm:text-3xl">
+					{title}
+				</h2>
 				{subtitle && (
-					<p className="mt-2 text-sm text-muted-foreground/70 max-w-sm mx-auto leading-relaxed">
+					<p className="blend-difference-text mx-auto max-w-2xl text-sm leading-relaxed text-white sm:text-base">
 						{subtitle}
 					</p>
 				)}

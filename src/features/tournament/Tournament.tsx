@@ -7,7 +7,6 @@ import { CAT_IMAGES } from "@/shared/lib/constants";
 import {
 	Clock,
 	Gamepad2,
-	LogOut,
 	Medal,
 	Music,
 	PawPrint,
@@ -79,7 +78,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const streakBurst = useTimedState<StreakBurst | null>(null);
 	const previousRoundRef = useRef(roundNumber);
 
-	// Calculate winning streaks
 	const calculateWinStreak = useCallback(
 		(contestantId: string | number | null | undefined) => {
 			if (!contestantId || matchHistory.length === 0) {
@@ -119,21 +117,20 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
 	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
 
-	// Vote adapter for external onVote callback
 	const handleVoteAdapter = useCallback(
 		async (winnerId: string, _loserId: string) => {
 			if (!onVote || !currentMatch) {
 				return;
 			}
 			const sideData = (side: "left" | "right") => {
-				const p = currentMatch[side];
-				const id = typeof p === "object" ? String(p.id) : String(p);
+				const participant = currentMatch[side];
+				const id = typeof participant === "object" ? String(participant.id) : String(participant);
 				const name =
 					currentMatch.mode === "2v2"
 						? (currentMatch[side] as any).memberNames.join(" + ")
-						: typeof p === "object"
-							? p.name
-							: String(p);
+						: typeof participant === "object"
+							? participant.name
+							: String(participant);
 				return { name, id, description: "", outcome: winnerId === id ? "winner" : "loser" };
 			};
 			try {
@@ -189,7 +186,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		setSelectedSide(null);
 	}, [currentMatch, streakBurst.set]);
 
-	// Round change announcements
 	useEffect(() => {
 		if (isComplete) {
 			previousRoundRef.current = roundNumber;
@@ -246,9 +242,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	);
 
 	const handleKeyDown = useCallback(
-		(e: KeyboardEvent<HTMLElement>, side: "left" | "right") => {
-			if (e.key === "Enter" || e.key === " ") {
-				e.preventDefault();
+		(event: KeyboardEvent<HTMLElement>, side: "left" | "right") => {
+			if (event.key === "Enter" || event.key === " ") {
+				event.preventDefault();
 				handleVoteForSide(side);
 			}
 		},
@@ -270,7 +266,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		navigate("/");
 	}, [handleQuit, tournamentActions, navigate]);
 
-	// Completion screen
 	if (isComplete) {
 		return (
 			<TournamentComplete
@@ -283,7 +278,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	if (!matchData) {
 		return (
-			<div className="flex items-center justify-center min-h-screen">
+			<div className="flex min-h-screen items-center justify-center">
 				<div className="text-muted-foreground">Loading tournament...</div>
 			</div>
 		);
@@ -306,131 +301,156 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					}
 				: null;
 
+	const progressWidth = progress || (currentMatchNumber / totalMatches) * 100;
+
 	return (
-		<div className="relative min-h-[100dvh] w-full overflow-x-hidden overflow-y-auto sm:overflow-hidden flex flex-col font-display text-foreground selection:bg-primary/30">
-			<header className="px-2 sm:px-4 pt-1.5 sm:pt-2 pb-1 flex-shrink-0 space-y-1 sm:space-y-1.5">
-				{/* Row 1: Round info, progress bar, match count, controls */}
-				<div className="flex items-center gap-2 sm:gap-3">
-					<div className="shrink-0 px-2.5 py-1 rounded-full flex items-center gap-1.5 bg-foreground/10 backdrop-blur-md border border-border/20">
-						<Gamepad2 className="text-primary size-3" />
-						<span className="text-[10px] sm:text-xs font-bold tracking-wider uppercase text-foreground/90 whitespace-nowrap">
-							R{roundNumber}/{totalRounds} · {bracketStage}
-						</span>
-						<span className="text-[10px] sm:text-xs text-foreground/50">·</span>
-						<span className="text-[10px] sm:text-xs font-bold tracking-wider uppercase text-foreground/70">
-							{tournamentMode === "2v2" ? "2v2" : "1v1"}
-						</span>
-					</div>
+		<div className="relative flex min-h-[100dvh] w-full flex-col overflow-x-hidden overflow-y-auto font-display text-foreground selection:bg-primary/30">
+			<header className="px-2 pb-2 pt-2 sm:px-4 sm:pt-4">
+				<div className="mx-auto flex w-full max-w-5xl flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-slate-950/60 px-4 py-4 shadow-[0_20px_55px_rgba(2,8,18,0.24)] backdrop-blur-xl sm:px-5">
+					<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+						<div className="flex items-start gap-3">
+							<div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-primary">
+								<Gamepad2 className="size-4" />
+							</div>
+							<div className="space-y-1">
+								<div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
+									<span>Round {roundNumber}</span>
+									<span className="text-white/25">•</span>
+									<span>{bracketStage}</span>
+									<span className="text-white/25">•</span>
+									<span>{tournamentMode === "2v2" ? "Team mode" : "Head to head"}</span>
+								</div>
+								<h2 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
+									Match {currentMatchNumber} of {totalMatches}
+								</h2>
+								<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
+									<span>{totalRounds} rounds total</span>
+									{etaMinutes > 0 && (
+										<span className="inline-flex items-center gap-1">
+											<Clock className="size-3" />
+											About {etaMinutes} minutes left
+										</span>
+									)}
+								</div>
+							</div>
+						</div>
 
-					<div className="flex-1 h-1.5 bg-foreground/5 rounded-full overflow-hidden min-w-0">
-						<div
-							className={
-								"h-full rounded-full transition-all duration-500 bg-primary shadow-[0_0_10px_#a65eed]"
-							}
-							style={{ width: `${progress || (currentMatchNumber / totalMatches) * 100}%` }}
-						/>
-					</div>
-
-					<div className="shrink-0 flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-foreground/70">
-						<Medal className="text-accent size-3.5" />
-						<span>
-							{currentMatchNumber}/{totalMatches}
-						</span>
-						{etaMinutes > 0 && (
-							<>
-								<Clock className="size-3 text-muted-foreground" />
-								<span className="text-muted-foreground">~{etaMinutes}m</span>
-							</>
-						)}
-					</div>
-
-					{/* Controls - wrap on mobile */}
-					<div className="shrink-0 flex flex-wrap items-center gap-1">
-						{(
-							[
-								{
-									action: audioManager.handleToggleMute,
-									icon: audioManager.isMuted ? VolumeX : Volume2,
-									label: audioManager.isMuted ? "Unmute" : "Mute",
-								},
-								{
-									action: audioManager.toggleBackgroundMusic,
-									icon: Music,
-									label: audioManager.backgroundMusicEnabled ? "Stop music" : "Play music",
-									active: audioManager.backgroundMusicEnabled,
-								},
-								{
-									action: () => setCatPictures(!showCatPictures),
-									icon: PawPrint,
-									label: showCatPictures ? "Names only" : "Show cats",
-									active: showCatPictures,
-								},
-							] as const
-						).map(({ action, icon: Icon, label, active }) => (
+						<div className="flex flex-wrap items-center gap-2">
+							{(
+								[
+									{
+										action: audioManager.handleToggleMute,
+										icon: audioManager.isMuted ? VolumeX : Volume2,
+										label: audioManager.isMuted ? "Unmute" : "Mute",
+									},
+									{
+										action: audioManager.toggleBackgroundMusic,
+										icon: Music,
+										label: audioManager.backgroundMusicEnabled ? "Stop music" : "Play music",
+										active: audioManager.backgroundMusicEnabled,
+									},
+									{
+										action: () => setCatPictures(!showCatPictures),
+										icon: PawPrint,
+										label: showCatPictures ? "Names only" : "Show cats",
+										active: showCatPictures,
+									},
+								] as const
+							).map(({ action, icon: Icon, label, active }) => (
+								<button
+									key={label}
+									type="button"
+									onClick={action}
+									className={`inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm transition-colors ${
+										active
+											? "border-primary/30 bg-primary/15 text-primary"
+											: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
+									}`}
+									aria-label={label}
+								>
+									<Icon className="size-4" />
+								</button>
+							))}
 							<button
-								key={label}
 								type="button"
-								onClick={action}
-								className={`size-7 sm:size-8 flex items-center justify-center rounded-lg transition-colors ${
-									active
-										? "bg-primary/20 text-primary"
-										: "bg-foreground/5 text-muted-foreground hover:text-foreground"
-								}`}
-								aria-label={label}
+								onClick={audioManager.handlePreviousTrack}
+								className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
+								aria-label="Previous track"
 							>
-								<Icon className="size-3" />
+								<SkipBack className="size-4" />
 							</button>
-						))}
-						{/* Track controls hidden on mobile to save space */}
-						<button
-							type="button"
-							onClick={audioManager.handlePreviousTrack}
-							className="hidden sm:flex size-8 items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors"
-							aria-label="Previous track"
-						>
-							<SkipBack className="size-3" />
-						</button>
-						<button
-							type="button"
-							onClick={audioManager.handleNextTrack}
-							className="hidden sm:flex size-8 items-center justify-center rounded-lg bg-foreground/5 text-muted-foreground hover:text-foreground transition-colors"
-							aria-label="Next track"
-						>
-							<SkipForward className="size-3" />
-						</button>
-						{handleQuit && (
 							<button
 								type="button"
-								onClick={handleQuit}
-								className="size-7 sm:size-8 flex items-center justify-center rounded-lg bg-destructive/20 text-destructive hover:text-destructive/80 transition-colors"
+								onClick={audioManager.handleNextTrack}
+								className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
+								aria-label="Next track"
+							>
+								<SkipForward className="size-4" />
+							</button>
+							<button
+								type="button"
+								onClick={() => handleUndo()}
+								className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
+									canUndo
+										? "border-primary/30 bg-primary/12 text-primary hover:bg-primary/18"
+										: "cursor-not-allowed border-white/10 bg-white/[0.03] text-white/35"
+								}`}
+								aria-label="Undo last vote"
+								disabled={!canUndo}
+							>
+								<Undo2 className="size-4" />
+								<span className="hidden sm:inline">Undo</span>
+							</button>
+							<button
+								type="button"
+								onClick={quitTournament}
+								className="inline-flex h-10 items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/12 px-3 text-sm text-destructive transition-colors hover:bg-destructive/18"
 								aria-label="Quit tournament"
 							>
-								<X className="size-3.5" />
+								<X className="size-4" />
+								<span className="hidden sm:inline">Exit</span>
 							</button>
-						)}
+						</div>
 					</div>
-				</div>
 
-				{/* Row 2: Bracket path + streak (hidden on mobile) */}
-				<div className="hidden sm:flex items-center justify-between gap-2">
-					<BracketTree round={roundNumber} totalRounds={totalRounds} />
-					{dominantStreak && (
-						<span
-							className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold tracking-wide ${getHeatTextClasses(dominantStreak.heatLevel)}`}
-						>
-							🔥 {dominantStreak.name} x{dominantStreak.streak}
-						</span>
-					)}
+					<div className="space-y-3">
+						<div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+							<div
+								className="h-full rounded-full bg-primary transition-all duration-500 shadow-[0_0_18px_rgba(39,135,153,0.45)]"
+								style={{ width: `${progressWidth}%` }}
+							/>
+						</div>
+
+						<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+							<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
+								<span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1">
+									<Medal className="size-3.5 text-accent" />
+									{currentMatchNumber}/{totalMatches}
+								</span>
+								<span>Pick the side that should advance.</span>
+							</div>
+							{dominantStreak && (
+								<span
+									className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${getHeatTextClasses(dominantStreak.heatLevel)}`}
+								>
+									🔥 {dominantStreak.name} x{dominantStreak.streak}
+								</span>
+							)}
+						</div>
+
+						<div className="hidden sm:block">
+							<BracketTree round={roundNumber} totalRounds={totalRounds} />
+						</div>
+					</div>
 				</div>
 			</header>
 
-			<main className="relative flex flex-1 flex-col items-center justify-start px-1 py-2 min-h-0 sm:px-4 sm:py-2 sm:justify-center">
-				{/* Animated blob backgrounds - smaller on mobile */}
-				<div className="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block">
-					<div className="absolute top-0 left-0 w-32 h-32 bg-primary/20 rounded-full animate-blob animation-delay-2000" />
-					<div className="absolute top-1/4 right-0 w-24 h-24 bg-stardust/20 rounded-full animate-blob" />
-					<div className="absolute bottom-1/4 left-1/4 w-28 h-28 bg-primary/15 rounded-full animate-blob animation-delay-4000" />
-					<div className="absolute bottom-0 right-1/3 w-36 h-36 bg-stardust/15 rounded-full animate-blob animation-delay-2000" />
+			<main className="relative flex min-h-0 flex-1 flex-col items-center justify-start px-1 py-3 sm:px-4 sm:py-5 sm:justify-center">
+				<div className="pointer-events-none absolute inset-0 hidden overflow-hidden sm:block">
+					<div className="absolute left-0 top-0 h-32 w-32 rounded-full bg-primary/20 animate-blob animation-delay-2000" />
+					<div className="absolute right-0 top-1/4 h-24 w-24 rounded-full bg-stardust/20 animate-blob" />
+					<div className="absolute bottom-1/4 left-1/4 h-28 w-28 rounded-full bg-primary/15 animate-blob animation-delay-4000" />
+					<div className="absolute bottom-0 right-1/3 h-36 w-36 rounded-full bg-stardust/15 animate-blob animation-delay-2000" />
 				</div>
 
 				<div className="sr-only" aria-live="polite">
@@ -440,7 +460,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						`${streakBurst.value.winnerName} is on a ${streakBurst.value.streak} win streak.`}
 				</div>
 
-				{/* Vote announcement overlay */}
 				<AnimatePresence>
 					{voteAnnouncement.value && (
 						<motion.div
@@ -449,12 +468,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
 							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
 							transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
-							className="pointer-events-none absolute top-2 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-1.5rem)] sm:w-auto max-w-full"
+							className="pointer-events-none absolute left-1/2 top-2 z-30 w-[calc(100%-1.5rem)] max-w-full -translate-x-1/2 sm:w-auto"
 						>
-							<div className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-3 sm:px-4 py-2 backdrop-blur-md shadow-[0_0_40px_rgba(16,185,129,0.35)]">
+							<div className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-3 py-2 shadow-[0_0_40px_rgba(16,185,129,0.35)] backdrop-blur-md sm:px-4">
 								<div className="flex items-center gap-2 text-emerald-100">
-									<Trophy className="text-emerald-300 size-4" />
-									<span className="text-xs sm:text-sm font-bold tracking-wide truncate">
+									<Trophy className="size-4 text-emerald-300" />
+									<span className="truncate text-xs font-bold tracking-wide sm:text-sm">
 										{voteAnnouncement.value} advances
 									</span>
 								</div>
@@ -463,7 +482,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					)}
 				</AnimatePresence>
 
-				{/* Streak burst overlay */}
 				<AnimatePresence>
 					{streakBurst.value && (
 						<motion.div
@@ -472,40 +490,37 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
 							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 1.03 }}
 							transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
-							className={`pointer-events-none absolute z-30 top-[20%] ${
+							className={`pointer-events-none absolute top-[20%] z-30 ${
 								streakBurst.value.side === "left"
 									? "left-3 sm:left-6"
-									: "right-3 sm:right-6 text-right"
+									: "right-3 text-right sm:right-6"
 							}`}
 						>
 							<div
-								className={`rounded-2xl border px-4 py-3 backdrop-blur-lg shadow-[0_0_40px_rgba(249,115,22,0.35)] ${getHeatTextClasses(streakBurst.value.heatLevel)}`}
+								className={`rounded-2xl border px-4 py-3 shadow-[0_0_40px_rgba(249,115,22,0.35)] backdrop-blur-lg ${getHeatTextClasses(streakBurst.value.heatLevel)}`}
 							>
-								<p className="text-[10px] sm:text-xs uppercase tracking-[0.22em] opacity-80">
-									Streak Ignited
+								<p className="text-[10px] uppercase tracking-[0.22em] opacity-80 sm:text-xs">
+									Streak ignited
 								</p>
-								<p className="text-base sm:text-lg font-black tracking-tight">
+								<p className="text-base font-black tracking-tight sm:text-lg">
 									{streakBurst.value.winnerName} x{streakBurst.value.streak}
 								</p>
-								<div className="flex gap-1 mt-1">
-									{Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map(
-										(_, i) => (
-											<span
-												key={`streak-flame-${streakBurst.value?.key}-${i}`}
-												className="text-sm sm:text-base animate-flame"
-												style={{ animationDelay: `${i * 80}ms` }}
-											>
-												🔥
-											</span>
-										),
-									)}
+								<div className="mt-1 flex gap-1">
+									{Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map((_, i) => (
+										<span
+											key={`streak-flame-${streakBurst.value.key}-${i}`}
+											className="animate-flame text-sm sm:text-base"
+											style={{ animationDelay: `${i * 80}ms` }}
+										>
+											🔥
+										</span>
+									))}
 								</div>
 							</div>
 						</motion.div>
 					)}
 				</AnimatePresence>
 
-				{/* Round announcement overlay */}
 				<AnimatePresence>
 					{roundAnnouncement.value !== null && (
 						<motion.div
@@ -521,17 +536,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 								exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
 								transition={{ duration: prefersReducedMotion ? 0.01 : 0.3 }}
-								className="relative overflow-hidden rounded-2xl border border-purple-300/40 bg-slate-900/80 px-5 sm:px-8 py-5 sm:py-6 text-center shadow-[0_0_80px_rgba(168,85,247,0.35)] backdrop-blur-xl"
+								className="relative overflow-hidden rounded-2xl border border-purple-300/40 bg-slate-900/80 px-5 py-5 text-center shadow-[0_0_80px_rgba(168,85,247,0.35)] backdrop-blur-xl sm:px-8 sm:py-6"
 							>
 								<div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-fuchsia-500/10 to-blue-500/20" />
 								<div className="relative">
-									<p className="text-[11px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-purple-200/70 mb-2">
-										Next Stage
+									<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-purple-200/70 sm:text-xs sm:tracking-[0.3em]">
+										Next stage
 									</p>
-									<p className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
+									<p className="text-2xl font-black tracking-tight text-white sm:text-3xl md:text-4xl">
 										Round {roundAnnouncement.value}
 									</p>
-									<p className="text-xs sm:text-sm text-purple-100/80 mt-1">
+									<p className="mt-1 text-xs text-purple-100/80 sm:text-sm">
 										New head-to-head matchups ready
 									</p>
 								</div>
@@ -540,7 +555,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					)}
 				</AnimatePresence>
 
-				{/* Match cards */}
 				<AnimatePresence mode="wait" initial={false}>
 					<motion.div
 						key={currentMatchKey}
@@ -569,43 +583,20 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							members={matchData.leftMembers}
 							description={matchData.leftDescription}
 							pronunciation={matchData.leftPronunciation}
-							onKeyDown={(e) => handleKeyDown(e, "left")}
+							onKeyDown={(event) => handleKeyDown(event, "left")}
 							onVote={() => handleVoteForSide("left")}
 						/>
 
-						{/* VS Indicator */}
-						<div className="flex flex-row sm:flex-col items-center justify-center gap-3 sm:gap-2 py-1 w-full sm:w-20">
-							<div className="w-10 h-10 sm:w-16 sm:h-16 rounded-full flex items-center justify-center border-2 border-border/30 bg-primary/20 backdrop-blur-md shadow-lg flex-shrink-0">
-								<span className="font-bold text-sm sm:text-2xl italic tracking-tighter">VS</span>
+						<div className="flex w-full flex-row items-center justify-center gap-3 py-1 sm:w-24 sm:flex-col sm:gap-3">
+							<div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-bold italic tracking-tight shadow-lg sm:h-16 sm:w-16 sm:text-2xl">
+								VS
 							</div>
-							{dominantStreak && (
-								<div
-									className={`rounded-full border px-2.5 py-1 text-[10px] sm:text-[11px] font-black tracking-wider uppercase ${getHeatTextClasses(dominantStreak.heatLevel)}`}
-								>
-									🔥 x{dominantStreak.streak}
-								</div>
-							)}
-							<div className="flex flex-row sm:flex-col gap-1.5 w-auto sm:w-full">
-								<button
-									type="button"
-									onClick={() => handleUndo()}
-									className={`glass-panel py-1.5 px-3 sm:px-2 rounded-full flex items-center justify-center border border-primary/20 transition-colors ${
-										canUndo ? "cursor-pointer hover:bg-white/5" : "cursor-not-allowed opacity-40"
-									}`}
-									aria-label="Undo last vote"
-									disabled={!canUndo}
-								>
-									<Undo2 className="size-3.5 text-primary" />
-								</button>
-								<button
-									type="button"
-									onClick={quitTournament}
-									className="glass-panel py-1.5 px-3 sm:px-2 rounded-full flex items-center justify-center border border-destructive/20 cursor-pointer hover:bg-destructive/10 transition-colors"
-									aria-label="Quit tournament"
-								>
-									<LogOut className="size-3.5 text-destructive" />
-								</button>
+							<div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60 sm:text-[11px]">
+								{dominantStreak ? `Hot streak x${dominantStreak.streak}` : "Choose one"}
 							</div>
+							<p className="hidden max-w-[7rem] text-center text-[11px] leading-relaxed text-white/50 sm:block">
+								Tap a card or press Enter to send it forward.
+							</p>
 						</div>
 
 						<MatchSideCard
@@ -621,7 +612,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							members={matchData.rightMembers}
 							description={matchData.rightDescription}
 							pronunciation={matchData.rightPronunciation}
-							onKeyDown={(e) => handleKeyDown(e, "right")}
+							onKeyDown={(event) => handleKeyDown(event, "right")}
 							onVote={() => handleVoteForSide("right")}
 							animationDelay="2s"
 						/>
@@ -629,8 +620,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				</AnimatePresence>
 			</main>
 
-			<div className="absolute top-[-10%] left-[-10%] w-40 h-40 sm:size-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
-			<div className="absolute bottom-[-10%] right-[-10%] w-40 h-40 sm:size-64 bg-stardust/10 rounded-full blur-[100px] -z-10" />
+			<div className="absolute left-[-10%] top-[-10%] -z-10 h-40 w-40 rounded-full bg-primary/10 blur-[100px] sm:size-64" />
+			<div className="absolute bottom-[-10%] right-[-10%] -z-10 h-40 w-40 rounded-full bg-stardust/10 blur-[100px] sm:size-64" />
 		</div>
 	);
 }

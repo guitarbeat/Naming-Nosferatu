@@ -21,7 +21,7 @@ export interface MatchSideCardProps {
 	members: string[];
 	description?: string;
 	pronunciation?: string;
-	onKeyDown: (e: KeyboardEvent<HTMLElement>) => void;
+	onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
 	onVote: () => void;
 	animationDelay?: string;
 }
@@ -31,7 +31,7 @@ function StreakFlames({
 	side,
 	name,
 	streak,
-	className = "text-sm sm:text-base animate-flame",
+	className = "animate-flame text-sm sm:text-base",
 }: {
 	count: number;
 	side: string;
@@ -72,23 +72,22 @@ export function MatchSideCard({
 	animationDelay,
 }: MatchSideCardProps) {
 	const isRight = side === "right";
-	const textAlign = isRight ? "text-left sm:text-right" : "";
-	const headingWrap = isRight ? "justify-end sm:justify-end" : "";
-	const pronunciationPad = isRight ? "mr-2" : "ml-2";
-	const memberWrap = isRight ? "justify-start sm:justify-end" : "";
+	const textAlign = isRight ? "text-left sm:text-right" : "text-left";
+	const bodyAlignment = isRight ? "items-start sm:items-end" : "items-start";
 	const selectionClass = isSelected
-		? "ring-2 ring-emerald-400/80 shadow-[0_0_45px_rgba(16,185,129,0.35)] scale-[1.02]"
+		? "ring-2 ring-emerald-400/70 shadow-[0_0_45px_rgba(16,185,129,0.28)]"
 		: hasSelectionFeedback
-			? "opacity-[0.55] scale-[0.98]"
+			? "scale-[0.985] opacity-60"
 			: "";
 
 	const showStreak = streak >= STREAK_THRESHOLDS.warm;
+	const streakBadgeCount = Math.min(getFlameCount(streak), 4);
 
 	return (
-		<div className="flex-1 flex flex-col min-h-[250px] sm:min-h-0">
+		<div className="flex min-h-[18rem] flex-1 flex-col sm:min-h-[26rem]">
 			<div
-				className={`relative overflow-hidden rounded-xl group cursor-pointer flex-1 animate-float transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
-					isVoting ? "pointer-events-none" : ""
+				className={`group relative flex-1 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/30 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+					isVoting ? "pointer-events-none" : "cursor-pointer"
 				} ${getHeatCardClasses(heatLevel)} ${selectionClass}`}
 				style={animationDelay ? { animationDelay } : undefined}
 				role="button"
@@ -98,17 +97,17 @@ export function MatchSideCard({
 				onKeyDown={onKeyDown}
 				onClick={onVote}
 			>
-				<div className="relative w-full h-full flex items-center justify-center bg-foreground/10">
+				<div className="relative flex h-full w-full items-center justify-center bg-foreground/10">
 					{img ? (
 						<CatImage
 							src={img}
 							alt={name}
 							objectFit="cover"
-							containerClassName="w-full h-full"
-							imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+							containerClassName="h-full w-full"
+							imageClassName="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
 						/>
 					) : (
-						<span className="text-foreground/20 text-6xl font-bold select-none">
+						<span className="select-none text-6xl font-bold text-foreground/20">
 							{name[0]?.toUpperCase() || "?"}
 						</span>
 					)}
@@ -116,67 +115,55 @@ export function MatchSideCard({
 					{heatLevel && (
 						<div className="pointer-events-none absolute inset-0 z-10">
 							<div className={`absolute inset-0 ${getHeatGradientClasses(heatLevel)}`} />
-							<div className="absolute bottom-14 left-0 right-0 flex justify-center gap-0.5 opacity-90">
-								<StreakFlames
-									count={getFlameCount(streak)}
-									side={side}
-									name={name}
-									streak={streak}
-								/>
-							</div>
+						</div>
+					)}
+
+					{showStreak && (
+						<div
+							className={`absolute top-4 z-20 ${
+								isRight ? "right-4" : "left-4"
+							} inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 backdrop-blur-md`}
+						>
+							<StreakFlames
+								count={streakBadgeCount}
+								side={side}
+								name={name}
+								streak={streak}
+								className="animate-flame text-xs"
+							/>
+							<span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/75">
+								{streak} straight
+							</span>
 						</div>
 					)}
 
 					<div
-						className={`absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-background/90 via-background/40 to-transparent z-20 flex flex-col justify-end pointer-events-none ${textAlign}`}
+						className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-gradient-to-t from-slate-950/96 via-slate-950/60 to-transparent p-5 sm:p-6 ${bodyAlignment} ${textAlign}`}
 					>
-						<div className={`flex items-center gap-2 flex-wrap ${headingWrap}`}>
-							{isRight && showStreak && (
-								<StreakFlames
-									count={Math.min(streak, 6)}
-									side={side}
-									name={name}
-									streak={streak}
-									className="text-lg sm:text-2xl animate-pulse"
-								/>
-							)}
-							<h3
-								className={`font-whimsical text-2xl sm:text-3xl text-foreground tracking-wide break-words drop-shadow-md leading-tight ${isRight ? "text-left sm:text-right" : ""}`}
-							>
-								{name}
-							</h3>
-							{!isRight && showStreak && (
-								<StreakFlames
-									count={Math.min(streak, 6)}
-									side={side}
-									name={name}
-									streak={streak}
-									className="text-lg sm:text-2xl animate-pulse"
-								/>
-							)}
-						</div>
+						<p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45">
+							{isTeam ? "Team" : "Name"}
+						</p>
+						<h3 className={`max-w-[18rem] break-words font-display text-3xl leading-[0.92] text-white sm:text-4xl ${textAlign}`}>
+							{name}
+						</h3>
 						{pronunciation && (
-							<span
-								className={`${pronunciationPad} text-amber-400 text-lg sm:text-xl font-bold italic opacity-90`}
-							>
+							<span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65">
 								[{pronunciation}]
 							</span>
 						)}
 						{isTeam ? (
-							<div className={`mt-2 flex flex-wrap gap-1.5 ${memberWrap}`}>
+							<div className={`mt-1 flex flex-wrap gap-1.5 ${isRight ? "justify-start sm:justify-end" : "justify-start"}`}>
 								{members.map((member) => (
 									<span
 										key={`${side}-member-${member}`}
-										className="rounded-full border border-border/30 bg-background/35 px-2 py-0.5 text-[10px] sm:text-xs font-bold tracking-wide"
+										className="rounded-full border border-white/12 bg-white/[0.08] px-2.5 py-1 text-[11px] font-medium text-white/80"
 									>
 										{member}
 									</span>
 								))}
 							</div>
 						) : description ? (
-							<p
-								className={`text-xs sm:text-sm text-foreground/90 italic line-clamp-2 mt-1 drop-shadow-sm ${textAlign}`}
-							>
+							<p className={`mt-1 max-w-[22rem] text-sm leading-relaxed text-white/72 ${textAlign}`}>
 								{description}
 							</p>
 						) : null}
