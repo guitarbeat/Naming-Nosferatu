@@ -3,6 +3,7 @@
 	"version": 2,
 	"framework": "vite",
 	"installCommand": "pnpm install --no-frozen-lockfile",
+	"ignoreCommand": null,
 	"buildCommand": "pnpm run build",
 	"outputDirectory": "dist",
 	"git": {
