@@ -1,6 +1,5 @@
-import type { ElementType, ReactNode } from "react";
-import { useCallback, useEffect, useState } from "react";
-import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
+import type { ElementType } from "react";
+import type { SiteStats, UserStats } from "@/features/analytics/services/analyticsService";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import {
@@ -15,12 +14,13 @@ import {
 	User,
 	Users,
 } from "@/shared/lib/icons";
-import { hiddenNamesAPI } from "@/shared/services/supabase/api";
 import type { NameItem, RatingData } from "@/shared/types";
+import { Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
 import { WinLossChart } from "./components/WinLossChart";
+import { type DashboardTimeframe, useDashboardData } from "./hooks/useDashboardData";
 import { PersonalResults } from "./PersonalResults";
 
 interface DashboardProps {
@@ -40,98 +40,64 @@ interface DashboardProps {
 	onNameHidden?: (nameId: string) => void;
 }
 
-interface EngagementMetrics {
-	totalTournaments: number;
-	completedTournaments: number;
-	averageTournamentTime: number;
-	totalMatches: number;
-	peakActiveUsers: number;
-	dailyActiveUsers: number;
-	weeklyActiveUsers: number;
-	monthlyActiveUsers: number;
-	mostActiveHour: string;
-	mostActiveDay: string;
-	userRetentionRate: number;
-	averageSessionDuration: number;
-	totalPageViews: number;
-	bounceRate: number;
-}
-
-function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
-	return (
-		<section
-			className={`rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_16px_40px_rgba(4,10,20,0.14)] backdrop-blur-xl sm:p-6 ${className}`}
-		>
-			{children}
-		</section>
-	);
-}
-
-function StatTile({
-	label,
-	value,
-	icon: Icon,
-	accent = false,
-}: {
+interface QuickStat {
+	accent?: boolean;
+	icon: ElementType;
 	label: string;
 	value: string | number;
-	icon?: ElementType;
-	accent?: boolean;
-}) {
-	return (
-		<div className="rounded-2xl border border-white/10 bg-black/15 px-4 py-4">
-			<div className="flex items-start justify-between gap-3">
-				<div>
-					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-						{label}
-					</p>
-					<p
-						className={`mt-2 text-2xl font-semibold ${accent ? "text-primary" : "text-foreground"}`}
-					>
-						{value}
-					</p>
-				</div>
-				{Icon && (
-					<div
-						className={`rounded-2xl border p-2.5 ${
-							accent
-								? "border-primary/20 bg-primary/12 text-primary"
-								: "border-white/10 bg-white/[0.04] text-white/65"
-						}`}
-					>
-						<Icon size={16} />
-					</div>
-				)}
-			</div>
-		</div>
-	);
 }
 
-function SectionHeader({
-	icon: Icon,
-	title,
-	subtitle,
-	action,
+function getQuickStats({
+	siteStats,
+	userName,
+	userStats,
 }: {
-	icon: ElementType;
-	title: string;
-	subtitle?: string;
-	action?: ReactNode;
-}) {
-	return (
-		<div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-			<div className="space-y-2">
-				<div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
-					<Icon size={14} className="text-primary" />
-					<span>{title}</span>
-				</div>
-				{subtitle && (
-					<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">{subtitle}</p>
-				)}
-			</div>
-			{action}
-		</div>
-	);
+	siteStats: SiteStats | null;
+	userName: string;
+	userStats: UserStats | null;
+}): QuickStat[] {
+	if (userName && userStats) {
+		return [
+			{ label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
+			{ label: "Selected", value: userStats.totalSelections, icon: Target },
+			{
+				label: "Wins",
+				value: userStats.totalWins,
+				icon: Trophy,
+				accent: true,
+			},
+			{
+				label: "Win rate",
+				value: `${userStats.winRate}%`,
+				icon: TrendingUp,
+				accent: true,
+			},
+		];
+	}
+
+	if (siteStats) {
+		return [
+			{
+				label: "Total names",
+				value: siteStats.totalNames,
+				icon: Activity,
+			},
+			{
+				label: "Active names",
+				value: siteStats.activeNames,
+				icon: Target,
+			},
+			{ label: "Users", value: siteStats.totalUsers, icon: Users },
+			{
+				label: "Average rating",
+				value: Math.round(siteStats.avgRating),
+				icon: TrendingUp,
+				accent: true,
+			},
+		];
+	}
+
+	return [];
 }
 
 export function Dashboard({
@@ -144,165 +110,23 @@ export function Dashboard({
 	personalRatings,
 	currentTournamentNames,
 }: DashboardProps) {
-	const [leaderboard, setLeaderboard] = useState<
-		Array<{
-			name: string;
-			avg_rating: number;
-			wins: number;
-			total_ratings: number;
-		}>
-	>([]);
-	const [siteStats, setSiteStats] = useState<{
-		totalNames: number;
-		activeNames: number;
-		hiddenNames: number;
-		totalUsers: number;
-		totalRatings: number;
-		totalSelections: number;
-		avgRating: number;
-	} | null>(null);
-	const [userStats, setUserStats] = useState<{
-		totalRatings: number;
-		totalSelections: number;
-		totalWins: number;
-		winRate: number;
-	} | null>(null);
-	const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
-	const [isLoadingStats, setIsLoadingStats] = useState(true);
-	const [hiddenNames, setHiddenNames] = useState<Array<{ id: string | number; name: string }>>([]);
-	const [showHiddenNames, setShowHiddenNames] = useState(false);
-	const [engagementMetrics, setEngagementMetrics] = useState<EngagementMetrics | null>(null);
-	const [timeframe, setTimeframe] = useState<"day" | "week" | "month">("week");
 	const handleStartNew = onStartNew ?? (() => undefined);
-
-	useEffect(() => {
-		const fetchLeaderboard = async () => {
-			setIsLoadingLeaderboard(true);
-			try {
-				const data = await leaderboardAPI.getLeaderboard(10);
-				setLeaderboard(data);
-			} catch (error) {
-				console.error("Failed to fetch leaderboard:", error);
-			} finally {
-				setIsLoadingLeaderboard(false);
-			}
-		};
-		fetchLeaderboard();
-	}, []);
-
-	const fetchEngagementMetrics = useCallback(async () => {
-		setIsLoadingStats(true);
-		try {
-			const metrics = await statsAPI.getEngagementMetrics(timeframe);
-			setEngagementMetrics(metrics);
-		} catch (error) {
-			console.error("Failed to fetch engagement metrics:", error);
-		} finally {
-			setIsLoadingStats(false);
-		}
-	}, [timeframe]);
-
-	useEffect(() => {
-		fetchEngagementMetrics();
-	}, [fetchEngagementMetrics]);
-
-	useEffect(() => {
-		const fetchStats = async () => {
-			setIsLoadingStats(true);
-			try {
-				const [site, user] = await Promise.all([
-					statsAPI.getSiteStats(),
-					userName ? statsAPI.getUserStats(userName) : Promise.resolve(null),
-				]);
-				if (site) {
-					setSiteStats({
-						totalNames: site.totalNames || 0,
-						activeNames: site.activeNames || 0,
-						hiddenNames: site.hiddenNames || 0,
-						totalUsers: site.totalUsers || 0,
-						totalRatings: site.totalRatings || 0,
-						totalSelections: site.totalSelections || 0,
-						avgRating: site.avgRating || 0,
-					});
-				}
-				setUserStats(user);
-			} catch (error) {
-				console.error("Failed to fetch stats:", error);
-			} finally {
-				setIsLoadingStats(false);
-			}
-		};
-		fetchStats();
-	}, [userName]);
-
-	useEffect(() => {
-		if (isAdmin && showHiddenNames) {
-			const fetchHidden = async () => {
-				try {
-					const data = await hiddenNamesAPI.getHiddenNames();
-					setHiddenNames(data);
-				} catch (error) {
-					console.error("Failed to fetch hidden names:", error);
-				}
-			};
-			fetchHidden();
-		}
-	}, [isAdmin, showHiddenNames]);
-
-	const handleUnhideName = async (nameId: string | number) => {
-		if (!userName) {
-			return;
-		}
-		try {
-			const result = await hiddenNamesAPI.unhideName(userName, nameId);
-			if (!result.success) {
-				throw new Error(result.error || "Failed to unhide name");
-			}
-			setHiddenNames((prev) => prev.filter((name) => name.id !== nameId));
-		} catch (error) {
-			console.error("Failed to unhide name:", error);
-		}
-	};
-
-	const quickStats =
-		userName && userStats
-			? [
-					{ label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
-					{ label: "Selected", value: userStats.totalSelections, icon: Target },
-					{
-						label: "Wins",
-						value: userStats.totalWins,
-						icon: Trophy,
-						accent: true,
-					},
-					{
-						label: "Win rate",
-						value: `${userStats.winRate}%`,
-						icon: TrendingUp,
-						accent: true,
-					},
-				]
-			: siteStats
-				? [
-						{
-							label: "Total names",
-							value: siteStats.totalNames,
-							icon: Activity,
-						},
-						{
-							label: "Active names",
-							value: siteStats.activeNames,
-							icon: Target,
-						},
-						{ label: "Users", value: siteStats.totalUsers, icon: Users },
-						{
-							label: "Average rating",
-							value: Math.round(siteStats.avgRating),
-							icon: TrendingUp,
-							accent: true,
-						},
-					]
-				: [];
+	const {
+		engagementMetrics,
+		handleUnhideName,
+		hiddenNames,
+		isLoadingEngagement,
+		isLoadingLeaderboard,
+		leaderboard,
+		refreshEngagementMetrics,
+		setTimeframe,
+		showHiddenNames,
+		siteStats,
+		timeframe,
+		toggleHiddenNames,
+		userStats,
+	} = useDashboardData({ isAdmin, userName });
+	const quickStats = getQuickStats({ siteStats, userName, userStats });
 
 	return (
 		<div className="w-full space-y-8 sm:space-y-10">
@@ -414,7 +238,7 @@ export function Dashboard({
 										<p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
 										<p className="text-xs text-muted-foreground/70">
 											{entry.total_ratings} rating
-											{entry.total_ratings !== 1 ? "s" : ""} • {entry.wins} win
+											{entry.total_ratings !== 1 ? "s" : ""} | {entry.wins} win
 											{entry.wins !== 1 ? "s" : ""}
 										</p>
 									</div>
@@ -514,7 +338,7 @@ export function Dashboard({
 							<div className="flex items-center gap-2">
 								<select
 									value={timeframe}
-									onChange={(event) => setTimeframe(event.target.value as "day" | "week" | "month")}
+									onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
 									className="rounded-xl border border-white/10 bg-black/15 px-3 py-2 text-sm text-foreground"
 								>
 									<option value="day">24 hours</option>
@@ -524,8 +348,8 @@ export function Dashboard({
 								<Button
 									variant="outline"
 									size="small"
-									onClick={() => fetchEngagementMetrics()}
-									disabled={isLoadingStats}
+									onClick={() => refreshEngagementMetrics()}
+									disabled={isLoadingEngagement}
 								>
 									<Activity size={14} />
 									Refresh
@@ -579,11 +403,7 @@ export function Dashboard({
 						title="Hidden Names"
 						subtitle="Review names that are currently removed from the public pool."
 						action={
-							<Button
-								variant="outline"
-								size="small"
-								onClick={() => setShowHiddenNames(!showHiddenNames)}
-							>
+							<Button variant="outline" size="small" onClick={toggleHiddenNames}>
 								{showHiddenNames ? "Hide List" : "Show List"}
 							</Button>
 						}

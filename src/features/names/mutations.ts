@@ -1,3 +1,5 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 import { isRpcSignatureError } from "@/shared/lib/errors";
 import { withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType } from "@/shared/types";
@@ -18,72 +20,77 @@ function assertAdmin(): void {
 	}
 }
 
-export async function softDeleteName(params: { nameId: IdType }): Promise<void> {
+const SUPABASE_UNAVAILABLE = Symbol("SUPABASE_UNAVAILABLE");
+
+async function runAdminMutation<T>(
+	operation: (client: SupabaseClient<Database>) => Promise<T>,
+): Promise<T> {
 	assertAdmin();
-	const { nameId } = params;
-	const result = await withSupabase(async (client) => {
-		// @ts-expect-error - soft_delete_cat_name is a custom RPC not in generated types
-		const { data, error } = await client.rpc("soft_delete_cat_name", {
-			p_name_id: String(nameId),
-		});
+
+	const result = await withSupabase<T | typeof SUPABASE_UNAVAILABLE>(
+		operation,
+		SUPABASE_UNAVAILABLE,
+	);
+
+	if (result === SUPABASE_UNAVAILABLE) {
+		throw new Error("Supabase client not available");
+	}
+
+	return result;
+}
+
+async function runBooleanAdminRpc(
+	rpcName: string,
+	args: Record<string, unknown>,
+	errorMessage: string,
+): Promise<void> {
+	await runAdminMutation(async (client) => {
+		// @ts-expect-error - custom RPCs are not in generated types
+		const { data, error } = await client.rpc(rpcName, args);
 		if (error) {
 			throw error;
 		}
-		assertSuccess(data, "Failed to delete name");
-		return true;
-	}, false);
+		assertSuccess(data, errorMessage);
+	});
+}
 
-	if (result === false) {
-		throw new Error("Supabase client not available");
-	}
+export async function softDeleteName(params: { nameId: IdType }): Promise<void> {
+	const { nameId } = params;
+	await runBooleanAdminRpc(
+		"soft_delete_cat_name",
+		{ p_name_id: String(nameId) },
+		"Failed to delete name",
+	);
 }
 
 export async function batchUpdateVisibility(params: {
 	nameIds: IdType[];
 	isHidden: boolean;
 }): Promise<void> {
-	assertAdmin();
 	const { nameIds, isHidden } = params;
-	const result = await withSupabase(async (client) => {
-		// @ts-expect-error - batch_update_name_visibility is a custom RPC not in generated types
-		const { data, error } = await client.rpc("batch_update_name_visibility", {
+	await runBooleanAdminRpc(
+		"batch_update_name_visibility",
+		{
 			p_name_ids: nameIds.map(String),
 			p_is_hidden: isHidden,
-		});
-		if (error) {
-			throw error;
-		}
-		assertSuccess(data, "Failed to batch update name visibility");
-		return true;
-	}, false);
-
-	if (result === false) {
-		throw new Error("Supabase client not available");
-	}
+		},
+		"Failed to batch update name visibility",
+	);
 }
 
 export async function batchUpdateLocked(params: {
 	nameIds: IdType[];
 	isLocked: boolean;
 }): Promise<void> {
-	assertAdmin();
 	const { nameIds, isLocked } = params;
-	const result = await withSupabase(async (client) => {
-		// @ts-expect-error - batch_update_name_locked is a custom RPC not in generated types
-		const { data, error } = await client.rpc("batch_update_name_locked", {
+	await runBooleanAdminRpc(
+		"batch_update_name_locked",
+		{
 			p_name_ids: nameIds.map(String),
 			p_is_locked: isLocked,
-		});
-		if (error) {
-			throw error;
-		}
-		assertSuccess(data, "Failed to batch update name locked status");
-		return true;
-	}, false);
-
-	if (result === false) {
-		throw new Error("Supabase client not available");
-	}
+		},
+		"Failed to batch update name locked status",
+	);
 }
 
 export async function toggleNameHidden(params: {
@@ -91,10 +98,10 @@ export async function toggleNameHidden(params: {
 	isCurrentlyHidden: boolean;
 	userName: string;
 }): Promise<void> {
-	assertAdmin();
 	const { isCurrentlyHidden, nameId, userName } = params;
 	const trimmedUserName = userName.trim();
-	const result = await withSupabase(async (client) => {
+	await runAdminMutation(async (client) => {
+		// @ts-expect-error - toggle_name_visibility is a custom RPC not in generated types
 		const { data, error } = await client.rpc("toggle_name_visibility", {
 			p_name_id: String(nameId),
 			p_hide: !isCurrentlyHidden,
@@ -104,12 +111,7 @@ export async function toggleNameHidden(params: {
 			throw error;
 		}
 		assertSuccess(data, "Failed to update name visibility");
-		return true;
-	}, false);
-
-	if (result === false) {
-		throw new Error("Supabase client not available");
-	}
+	});
 }
 
 export async function toggleNameLocked(params: {
@@ -117,10 +119,9 @@ export async function toggleNameLocked(params: {
 	isCurrentlyLocked: boolean;
 	userName: string;
 }): Promise<void> {
-	assertAdmin();
 	const { isCurrentlyLocked, nameId, userName } = params;
 	const trimmedUserName = userName.trim();
-	const result = await withSupabase(async (client) => {
+	await runAdminMutation(async (client) => {
 		const canonicalArgs = {
 			p_name_id: String(nameId),
 			p_locked_in: !isCurrentlyLocked,
@@ -138,17 +139,11 @@ export async function toggleNameLocked(params: {
 			throw new Error(rpcResult.error.message || "Failed to toggle locked status");
 		}
 		assertSuccess(rpcResult.data, "Failed to toggle locked status");
-		return true;
-	}, false);
-
-	if (result === false) {
-		throw new Error("Supabase client not available");
-	}
+	});
 }
 
 export async function unhideAllNames(): Promise<void> {
-	assertAdmin();
-	const result = await withSupabase(async (client) => {
+	await runAdminMutation(async (client) => {
 		// @ts-expect-error - unhide_all_names is a hypothetical RPC we might need
 		// If not available, we use batchUpdateVisibility with all hidden IDs
 		const { data: hiddenData, error: fetchError } = await client
@@ -174,10 +169,5 @@ export async function unhideAllNames(): Promise<void> {
 			throw error;
 		}
 		assertSuccess(data, "Failed to unhide all names");
-		return true;
-	}, false);
-
-	if (result === false) {
-		throw new Error("Supabase client not available");
-	}
+	});
 }

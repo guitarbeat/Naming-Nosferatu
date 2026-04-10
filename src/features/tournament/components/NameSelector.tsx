@@ -1,10 +1,19 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { toggleNameHidden, toggleNameLocked } from "@/features/names/mutations";
-import { namesQueryKeys, namesQueryOptions } from "@/features/names/queries";
+import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
+import { namesQueryOptions } from "@/features/names/queries";
 import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
+import {
+	addIdsToSet,
+	addIdToSet,
+	buildNameCardImages,
+	countSelectedItems,
+	pickRandomItemIds,
+	removeIdFromSet,
+	toggleIdInSet,
+} from "@/features/tournament/utils/nameSelection";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
@@ -18,11 +27,9 @@ import {
 	getActiveNames,
 	getHiddenNames,
 	getLockedNames,
-	getRandomCatImage,
 	isNameHidden,
 	isNameLocked,
 } from "@/shared/lib/basic";
-import { CAT_IMAGES } from "@/shared/lib/constants";
 import {
 	Check,
 	CheckCircle,
@@ -213,7 +220,6 @@ const getNameOverlayClasses = (variant: "grid" | "swipe") => {
 
 export function NameSelector() {
 	const toast = useToast();
-	const queryClient = useQueryClient();
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
 	const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
@@ -221,6 +227,7 @@ export function NameSelector() {
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
 	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
 	const [dragOffset, setDragOffset] = useState(0);
@@ -258,17 +265,7 @@ export function NameSelector() {
 	);
 
 	// Memoize cat images and build an id->image lookup map
-	const { catImages, catImageById } = useMemo(() => {
-		const images = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
-		const byId = new Map<IdType, string>();
-		names.forEach((nameItem, index) => {
-			const img = images[index];
-			if (img) {
-				byId.set(nameItem.id, img);
-			}
-		});
-		return { catImages: images, catImageById: byId };
-	}, [names]);
+	const { catImages, catImageById } = useMemo(() => buildNameCardImages(names), [names]);
 
 	const showWarningRef = useRef(toast.showWarning);
 	useEffect(() => {
@@ -285,33 +282,20 @@ export function NameSelector() {
 			return;
 		}
 		setSelectedNames((prev) => {
-			let changed = false;
-			const next = new Set(prev);
-			lockedInIds.forEach((id) => {
-				if (!next.has(id)) {
-					next.add(id);
-					changed = true;
-				}
-			});
-			if (changed) {
+			const next = addIdsToSet(prev, lockedInIds);
+			if (next.size !== prev.size) {
 				deferredSync(() => syncSelectionToStore(next));
+				return next;
 			}
-			return changed ? next : prev;
+			return prev;
 		});
 	}, [deferredSync, names, syncSelectionToStore]);
 
 	const toggleName = useCallback(
 		(nameId: IdType) => {
 			setSelectedNames((prev) => {
-				const next = new Set(prev);
-				if (next.has(nameId)) {
-					next.delete(nameId);
-				} else {
-					next.add(nameId);
-				}
-
+				const next = toggleIdInSet(prev, nameId);
 				syncSelectionToStore(next);
-
 				return next;
 			});
 		},
@@ -349,11 +333,7 @@ export function NameSelector() {
 	);
 
 	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
-		setSwipedIds((prev) => {
-			const next = new Set(prev);
-			next.add(nameId);
-			return next;
-		});
+		setSwipedIds((prev) => addIdToSet(prev, nameId));
 		setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
 	}, []);
 
@@ -361,8 +341,7 @@ export function NameSelector() {
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
 			if (direction === "right") {
 				setSelectedNames((prev) => {
-					const next = new Set(prev);
-					next.add(nameId);
+					const next = addIdToSet(prev, nameId);
 					// Use deferred sync to prevent render cycle issue
 					deferredSync(() => syncSelectionToStore(next));
 					return next;
@@ -425,17 +404,12 @@ export function NameSelector() {
 		}
 
 		setSwipeHistory((prev) => prev.slice(0, -1));
-		setSwipedIds((prev) => {
-			const next = new Set(prev);
-			next.delete(lastSwipe.id);
-			return next;
-		});
+		setSwipedIds((prev) => removeIdFromSet(prev, lastSwipe.id));
 
 		// If it was a right swipe, remove from selected names and sync with store
 		if (lastSwipe.direction === "right") {
 			setSelectedNames((prev) => {
-				const next = new Set(prev);
-				next.delete(lastSwipe.id);
+				const next = removeIdFromSet(prev, lastSwipe.id);
 				// Use deferred sync to prevent render cycle issue
 				deferredSync(() => syncSelectionToStore(next));
 				return next;
@@ -445,53 +419,26 @@ export function NameSelector() {
 		triggerHaptic();
 	}, [swipeHistory, syncSelectionToStore, triggerHaptic, deferredSync]);
 
-	const toggleHiddenMutation = useMutation({
-		mutationFn: ({ nameId, isCurrentlyHidden }: { nameId: IdType; isCurrentlyHidden: boolean }) =>
-			toggleNameHidden({ nameId, isCurrentlyHidden, userName }),
-		onSuccess: async (_data, variables) => {
-			await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
-			toast.showSuccess(
-				variables.isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
-			);
-		},
-	});
-
-	const toggleLockedMutation = useMutation({
-		mutationFn: ({ nameId, isCurrentlyLocked }: { nameId: IdType; isCurrentlyLocked: boolean }) =>
-			toggleNameLocked({ nameId, isCurrentlyLocked, userName }),
-		onSuccess: async (_data, variables) => {
-			await queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
-			toast.showSuccess(variables.isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
-		},
-	});
-
 	const handleToggleHidden = useCallback(
 		async (nameId: IdType, isCurrentlyHidden: boolean) => {
 			if (!isAdmin || !userName?.trim()) {
 				return;
 			}
 
-			setTogglingHidden((prev) => {
-				const next = new Set(prev);
-				next.add(nameId);
-				return next;
-			});
+			setTogglingHidden((prev) => addIdToSet(prev, nameId));
 
 			try {
-				await toggleHiddenMutation.mutateAsync({ nameId, isCurrentlyHidden });
+				await toggleHidden({ nameId, isCurrentlyHidden });
+				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
 			} catch (error) {
 				console.error("Failed to toggle hidden status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
 			} finally {
-				setTogglingHidden((prev) => {
-					const next = new Set(prev);
-					next.delete(nameId);
-					return next;
-				});
+				setTogglingHidden((prev) => removeIdFromSet(prev, nameId));
 			}
 		},
-		[isAdmin, toast, toggleHiddenMutation, userName],
+		[isAdmin, toast, toggleHidden, userName],
 	);
 
 	const handleToggleLocked = useCallback(
@@ -500,27 +447,20 @@ export function NameSelector() {
 				return;
 			}
 
-			setTogglingLocked((prev) => {
-				const next = new Set(prev);
-				next.add(nameId);
-				return next;
-			});
+			setTogglingLocked((prev) => addIdToSet(prev, nameId));
 
 			try {
-				await toggleLockedMutation.mutateAsync({ nameId, isCurrentlyLocked });
+				await toggleLocked({ nameId, isCurrentlyLocked });
+				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
 			} catch (error) {
 				console.error("Failed to toggle locked status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
 			} finally {
-				setTogglingLocked((prev) => {
-					const next = new Set(prev);
-					next.delete(nameId);
-					return next;
-				});
+				setTogglingLocked((prev) => removeIdFromSet(prev, nameId));
 			}
 		},
-		[isAdmin, toast, toggleLockedMutation, userName],
+		[isAdmin, toast, toggleLocked, userName],
 	);
 
 	const {
@@ -573,29 +513,15 @@ export function NameSelector() {
 		() => hiddenFiltered.slice(0, hiddenRenderCount),
 		[hiddenFiltered, hiddenRenderCount],
 	);
-	const selectedIdsSet = useMemo(() => {
-		const ids = new Set(selectedNames);
-		return ids;
-	}, [selectedNames]);
-	const selectedAvailableCount = useMemo(() => {
-		const availableIds = new Set(availableNames.map((n) => n.id));
-		let count = 0;
-		selectedNames.forEach((id) => {
-			if (availableIds.has(id)) {
-				count += 1;
-			}
-		});
-		return count;
-	}, [availableNames, selectedNames]);
-	const selectedHiddenCount = useMemo(() => {
-		let count = 0;
-		hiddenNamesAll.forEach((name) => {
-			if (selectedIdsSet.has(name.id)) {
-				count += 1;
-			}
-		});
-		return count;
-	}, [hiddenNamesAll, selectedIdsSet]);
+	const selectedIdsSet = selectedNames;
+	const selectedAvailableCount = useMemo(
+		() => countSelectedItems(availableNames, selectedNames),
+		[availableNames, selectedNames],
+	);
+	const selectedHiddenCount = useMemo(
+		() => countSelectedItems(hiddenNamesAll, selectedNames),
+		[hiddenNamesAll, selectedNames],
+	);
 	const canSelectAllAvailable = useMemo(
 		() => availableNames.some((name) => !selectedIdsSet.has(name.id)),
 		[availableNames, selectedIdsSet],
@@ -670,10 +596,10 @@ export function NameSelector() {
 
 	const _handleSelectAllAvailable = useCallback(() => {
 		setSelectedNames((prev) => {
-			const next = new Set(prev);
-			availableNames.forEach((name) => {
-				next.add(name.id);
-			});
+			const next = addIdsToSet(
+				prev,
+				availableNames.map((name) => name.id),
+			);
 			// Use deferred sync to prevent render cycle issue
 			deferredSync(() => syncSelectionToStore(next));
 			return next;
@@ -695,20 +621,9 @@ export function NameSelector() {
 		}
 
 		const targetCount = Math.min(8, availableNames.length);
-		const pool = [...availableNames];
-		for (let i = pool.length - 1; i > 0; i -= 1) {
-			const j = Math.floor(Math.random() * (i + 1));
-			const temp = pool[i];
-			pool[i] = pool[j] as NameItem;
-			pool[j] = temp as NameItem;
-		}
-
-		const randomIds = new Set(pool.slice(0, targetCount).map((name) => name.id));
+		const randomIds = pickRandomItemIds(availableNames, targetCount);
 		setSelectedNames((prev) => {
-			const next = new Set(prev);
-			randomIds.forEach((id) => {
-				next.add(id);
-			});
+			const next = addIdsToSet(prev, randomIds);
 			// Use deferred sync to prevent render cycle issue
 			deferredSync(() => syncSelectionToStore(next));
 			return next;
@@ -857,8 +772,7 @@ export function NameSelector() {
 							<AnimatePresence mode="popLayout">
 								{visibleCards.length > 0 ? (
 									cardsToRender.map((nameItem, index) => {
-										const catImage =
-											catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
+										const catImage = catImageById.get(nameItem.id) ?? "";
 										return (
 											<motion.div
 												key={nameItem.id}
@@ -1152,8 +1066,7 @@ export function NameSelector() {
 									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
 										{activeNames.map((nameItem) => {
 											const isSelected = selectedNames.has(nameItem.id);
-											const catImage =
-												catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
+											const catImage = catImageById.get(nameItem.id) ?? "";
 											return (
 												<motion.div
 													key={nameItem.id}
@@ -1285,7 +1198,7 @@ export function NameSelector() {
 										{hiddenPanel.isCollapsed && (
 											<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
 												{previewItems.map((n) => {
-													const img = catImageById.get(n.id) ?? getRandomCatImage(n.id, CAT_IMAGES);
+													const img = catImageById.get(n.id) ?? "";
 													return (
 														<div
 															key={n.id}
@@ -1354,9 +1267,7 @@ export function NameSelector() {
 											<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
 												{renderItems.map((nameItem) => {
 													const isSelected = selectedNames.has(nameItem.id);
-													const catImage =
-														catImageById.get(nameItem.id) ??
-														getRandomCatImage(nameItem.id, CAT_IMAGES);
+													const catImage = catImageById.get(nameItem.id) ?? "";
 													return (
 														<div
 															key={nameItem.id}
