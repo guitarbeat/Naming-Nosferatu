@@ -1,75 +1,38 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import App from "./App";
 
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			retry: false,
-		},
-	},
-});
+const authState = {
+	user: { id: "1", name: "Test User", isAdmin: false },
+	isLoading: false,
+};
 
-// Mock dependencies
+const storeState = {
+	userActions: { setAdminStatus: vi.fn() },
+	ui: { isBootLoading: false },
+	uiActions: { setBootLoading: vi.fn() },
+};
+
 vi.mock("@/app/providers/Providers", () => ({
-	useAuth: () => ({
-		user: { id: "1", isAdmin: false },
-		isLoading: false,
-	}),
+	useAuth: () => authState,
 }));
 
 vi.mock("@/store/appStore", () => ({
-	default: () => ({
-		user: { name: "Test User", isAdmin: false },
-		userActions: { setAdminStatus: vi.fn() },
-		tournament: { names: [], ratings: [] },
-		tournamentActions: {},
-	}),
+	__esModule: true,
+	default: (selector?: (state: typeof storeState) => unknown) =>
+		selector ? selector(storeState) : storeState,
 	useAppStoreInitialization: vi.fn(),
 }));
 
-vi.mock("@/features/tournament/hooks", () => ({
-	useTournamentHandlers: () => ({
-		handleTournamentComplete: vi.fn(),
-		handleStartNewTournament: vi.fn(),
-	}),
+vi.mock("@/app/AppShell", () => ({
+	__esModule: true,
+	default: () => <div data-testid="app-shell">App shell</div>,
 }));
 
-vi.mock("@/shared/components", () => ({
-	AppLayout: ({ children }: { children: React.ReactNode }) => (
-		<div data-testid="app-layout">{children}</div>
-	),
-	Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
-	ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-	Loading: ({ text }: { text: string }) => <div>Loading: {text}</div>,
-	Section: ({ children, id }: { children: React.ReactNode; id: string }) => (
-		<section id={id}>{children}</section>
-	),
-	SectionHeading: ({ title, icon: Icon }: any) => (
-		<div data-testid="section-heading">
-			{Icon && <Icon />}
-			<h2>{title}</h2>
-		</div>
-	),
-}));
-
-vi.mock("@/features/tournament/Tournament", () => ({
-	default: () => <div>Tournament Component</div>,
-}));
-
-vi.mock("@/shared/hooks", () => ({
-	useOfflineSync: vi.fn(),
-	useNameSuggestion: () => ({
-		values: { name: "", description: "" },
-		isSubmitting: false,
-		handleChange: vi.fn(),
-		handleSubmit: vi.fn(),
-		globalError: null,
-		successMessage: null,
-	}),
+vi.mock("@/app/components/AppBootScreen", () => ({
+	AppBootScreen: ({ message, visible = true }: { message?: string; visible?: boolean }) =>
+		visible ? <div data-testid="boot-screen">{message ?? "Preparing the tournament..."}</div> : null,
 }));
 
 vi.mock("@/shared/lib/performance", () => ({
@@ -83,52 +46,26 @@ vi.mock("@/shared/services/errorManager", () => ({
 	},
 }));
 
-// Mock lazy components using the alias
-vi.mock("@/app/appConfig", () => ({
-	errorContexts: {
-		tournamentFlow: "tournamentFlow",
-		analysisDashboard: "analysisDashboard",
-	},
-	routeComponents: {
-		TournamentFlow: () => <div data-testid="tournament-flow">Tournament Flow</div>,
-		DashboardLazy: () => <div data-testid="dashboard">Dashboard</div>,
-		AdminDashboardLazy: () => <div data-testid="admin-dashboard">Admin Dashboard</div>,
-	},
+vi.mock("@/shared/services/supabase/runtime", () => ({
+	updateSupabaseUserContext: vi.fn(),
 }));
 
-describe("App Component", () => {
-	it("renders the tournament flow on home route", async () => {
-		document.documentElement.scrollTop = 120;
-		document.body.scrollTop = 120;
+describe("App", () => {
+	it("renders the boot screen while the app is still initializing", () => {
+		authState.isLoading = true;
+		storeState.ui.isBootLoading = true;
 
-		render(
-			<QueryClientProvider client={queryClient}>
-				<MemoryRouter initialEntries={["/"]}>
-					<App />
-				</MemoryRouter>
-			</QueryClientProvider>,
-		);
+		render(<App />);
 
-		await waitFor(() => {
-			expect(screen.getByTestId("app-layout")).toBeInTheDocument();
-			expect(screen.getByTestId("tournament-flow")).toBeInTheDocument();
-		});
-
-		expect(document.documentElement.scrollTop).toBe(0);
-		expect(document.body.scrollTop).toBe(0);
+		expect(screen.getByTestId("boot-screen")).toHaveTextContent("Preparing the tournament...");
 	});
 
-	it("renders the tournament page", async () => {
-		render(
-			<QueryClientProvider client={queryClient}>
-				<MemoryRouter initialEntries={["/tournament"]}>
-					<App />
-				</MemoryRouter>
-			</QueryClientProvider>,
-		);
+	it("renders the lazy app shell after boot completes", async () => {
+		authState.isLoading = false;
+		storeState.ui.isBootLoading = false;
 
-		await waitFor(() => {
-			expect(screen.getByTestId("app-layout")).toBeInTheDocument();
-		});
+		render(<App />);
+
+		expect(await screen.findByTestId("app-shell")).toBeInTheDocument();
 	});
 });

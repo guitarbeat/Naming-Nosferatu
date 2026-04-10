@@ -1,3 +1,4 @@
+import { lazy, Suspense, type ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { shouldEnableAnalytics } from "@/app/analytics";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
@@ -8,12 +9,17 @@ import {
 	OfflineIndicator,
 } from "@/shared/components/layout/Feedback";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
-import { LiquidGradientBackground } from "@/shared/components/layout/LiquidGradientBackground";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
-	children: React.ReactNode;
+	children: ReactNode;
 }
+
+const LiquidGradientBackground = lazy(() =>
+	import("@/shared/components/layout/LiquidGradientBackground").then((module) => ({
+		default: module.LiquidGradientBackground,
+	})),
+);
 
 export function AppLayout({ children }: AppLayoutProps) {
 	const { user, tournament, errors, errorActions } = useAppStore();
@@ -44,7 +50,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 					Skip to main content
 				</button>
 
-				<LiquidGradientBackground />
+				<Suspense fallback={null}>
+					<LiquidGradientBackground />
+				</Suspense>
 
 				<FloatingNavbar />
 
