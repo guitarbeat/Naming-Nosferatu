@@ -17,7 +17,6 @@
 			"@/app/*": ["./src/app/*"],
 			"@/features/*": ["./src/features/*"],
 			"@/shared/*": ["./src/shared/*"],
-			"@/services/*": ["./src/services/*"],
 			"@/*": ["./src/*"]
 		},
 		"skipLibCheck": true,
@@ -28,8 +27,6 @@
 	},
 	"include": [
 		"src",
-		"server",
-		"shared",
 		"../scripts/*.ts",
 		"vite.config.ts",
 		"vitest.config.ts",

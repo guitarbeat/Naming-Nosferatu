@@ -53,7 +53,6 @@ export default defineConfig(({ command }) => ({
                         "@/app": path.resolve(__dirname, "..", "src/app"),
                         "@/features": path.resolve(__dirname, "..", "src/features"),
                         "@/shared": path.resolve(__dirname, "..", "src/shared"),
-                        "@/services": path.resolve(__dirname, "..", "src/services"),
                 },
         },
 }));

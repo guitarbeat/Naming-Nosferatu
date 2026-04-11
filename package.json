@@ -52,7 +52,6 @@
     "test:coverage": "vitest --coverage --config config/vitest.config.ts"
   },
   "dependencies": {
-    "@capacitor/cli": "8.2.0",
     "@hello-pangea/dnd": "^18.0.1",
     "@heroui/react": "^2.8.10",
     "@sentry/react": "^8.45.0",
@@ -145,7 +144,6 @@
     "tough-cookie": "^4.1.3",
     "fetch-blob": "^3.2.0",
     "tar": "^7.5.11",
-    "@capacitor/cli>tar": "^7.5.11",
     "esbuild": "^0.27.3",
     "@esbuild-kit/core-utils>esbuild": "^0.27.3",
     "@isaacs/brace-expansion": ">=5.0.1",
