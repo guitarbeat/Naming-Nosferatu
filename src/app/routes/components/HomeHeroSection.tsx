@@ -46,7 +46,7 @@ export function HomeHeroSection({
         const candidateNames = lockedNames.map((n) => n.name);
 
         return (
-                <section className="home-hero-section relative flex min-h-dvh w-full items-center justify-center overflow-hidden border-b border-white/10">
+                <section className="home-hero-section relative flex min-h-dvh w-full items-center justify-center overflow-hidden">
                         <div
                                 className="relative z-10 px-6 text-center"
                                 style={{ mixBlendMode: "difference" }}
