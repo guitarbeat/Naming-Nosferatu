@@ -46,8 +46,11 @@ export function HomeHeroSection({
         const candidateNames = lockedNames.map((n) => n.name);
 
         return (
-                <section className="home-hero-section relative flex w-full items-center overflow-hidden border-b border-white/10">
-                        <div className="home-hero-inner relative z-10 mx-auto w-full" style={{ mixBlendMode: "difference" }}>
+                <section className="home-hero-section relative flex min-h-dvh w-full items-center justify-center overflow-hidden border-b border-white/10">
+                        <div
+                                className="relative z-10 px-6 text-center"
+                                style={{ mixBlendMode: "difference" }}
+                        >
                                 <p className="text-xl font-medium text-white sm:text-2xl">
                                         My cat&apos;s name is
                                 </p>
