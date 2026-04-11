@@ -30,7 +30,7 @@
     "pnpm": ">=10.26.0"
   },
   "scripts": {
-    "dev": "vite --config config/vite.config.ts --port 5000 --host 0.0.0.0",
+    "dev": "vite --config config/vite.config.ts",
     "build": "vite build --config config/vite.config.ts",
     "build:dev": "vite build --config config/vite.config.ts --mode development",
     "preview": "vite preview --config config/vite.config.ts",
