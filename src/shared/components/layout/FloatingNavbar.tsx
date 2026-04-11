@@ -207,17 +207,15 @@ export function FloatingNavbar() {
                         setIsPastHero(true);
                         return;
                 }
-                setIsPastHero(false);
-                const checkHero = () => {
-                        const hero = document.querySelector(".home-hero-section");
-                        if (hero) {
-                                const heroBottom = hero.getBoundingClientRect().bottom;
-                                setIsPastHero(heroBottom < 80);
-                        }
+                const check = () => {
+                        setIsPastHero(window.scrollY > window.innerHeight * 0.85);
                 };
-                checkHero();
-                window.addEventListener("scroll", checkHero, { passive: true });
-                return () => window.removeEventListener("scroll", checkHero);
+                check();
+                window.addEventListener("scroll", check, { passive: true });
+                return () => {
+                        window.removeEventListener("scroll", check);
+                        setIsPastHero(false);
+                };
         }, [isHomeRoute]);
 
         useEffect(() => {
