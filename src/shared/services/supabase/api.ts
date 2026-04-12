@@ -16,6 +16,28 @@ interface ApplyTournamentMatchParams {
 
 const trendingNamesRequests = new Map<string, PendingRequest<NameItem[]>>();
 
+// ─── private helpers ────────────────────────────────────────────────────────
+
+/** Like `withSupabase` but throws when the client is unavailable (for callers that prefer exceptions). */
+async function withSupabaseOrThrow<T>(
+	operation: (client: NonNullable<Awaited<ReturnType<typeof resolveSupabaseClient>>>) => Promise<T>,
+): Promise<T> {
+	const client = await resolveSupabaseClient();
+	if (!client) {
+		throw new Error("Supabase client not available");
+	}
+	return operation(client);
+}
+
+/** Throws a descriptive Error when a Supabase RPC returns an error object. */
+function throwOnError(error: { message?: string } | null, fallbackMsg: string): void {
+	if (error) {
+		throw new Error(error.message || fallbackMsg);
+	}
+}
+
+// ─── implementation ──────────────────────────────────────────────────────────
+
 async function getNamesFromSupabase(includeHidden: boolean): Promise<NameItem[]> {
 	const client = await resolveSupabaseClient();
 	if (!client) {
@@ -188,26 +210,23 @@ export const coreAPI = {
 
 	hideName: async (_userName: string, nameId: string | number, isHidden: boolean) => {
 		const userName = _userName?.trim();
-
-		const client = await resolveSupabaseClient();
-		if (!client) {
-			return { success: false, error: "Supabase client not available" };
-		}
-
-		const rpcResult = await client.rpc("toggle_name_visibility", {
-			p_name_id: String(nameId),
-			p_hide: isHidden,
-			p_user_name: userName || undefined,
-		});
-
-		if (rpcResult.error) {
-			return {
-				success: false,
-				error: rpcResult.error.message || `Failed to ${isHidden ? "hide" : "unhide"} name`,
-			};
-		}
-
-		return { success: true };
+		return withSupabase(
+			async (client) => {
+				const { error } = await client.rpc("toggle_name_visibility", {
+					p_name_id: String(nameId),
+					p_hide: isHidden,
+					p_user_name: userName || undefined,
+				});
+				if (error) {
+					return {
+						success: false,
+						error: error.message || `Failed to ${isHidden ? "hide" : "unhide"} name`,
+					};
+				}
+				return { success: true };
+			},
+			{ success: false, error: "Supabase client not available" },
+		);
 	},
 };
 
@@ -303,43 +322,39 @@ export const ratingsAPI = {
 		rightNameIds,
 		winnerSide,
 	}: ApplyTournamentMatchParams) => {
-		const client = await resolveSupabaseClient();
-		if (!client) {
-			throw new Error("Supabase client not available");
-		}
+		return withSupabaseOrThrow(async (client) => {
+			// @ts-expect-error - apply_tournament_match_elo is a custom RPC not yet reflected in generated types
+			const { data, error } = await client.rpc("apply_tournament_match_elo", {
+				p_user_name: userName.trim(),
+				p_left_name_ids: leftNameIds,
+				p_right_name_ids: rightNameIds,
+				p_winner_side: winnerSide,
+			});
 
-		// @ts-expect-error - apply_tournament_match_elo is a custom RPC not yet reflected in generated types
-		const { data, error } = await client.rpc("apply_tournament_match_elo", {
-			p_user_name: userName.trim(),
-			p_left_name_ids: leftNameIds,
-			p_right_name_ids: rightNameIds,
-			p_winner_side: winnerSide,
-		});
+			throwOnError(error, "Failed to apply tournament Elo update");
 
-		if (error) {
-			throw new Error(error.message || "Failed to apply tournament Elo update");
-		}
-
-		return (data ?? []).reduce(
-			(
-				acc: Record<string, { rating: number; wins: number; losses: number }>,
-				row: {
-					name_id: string;
-					rating: number | null;
-					wins: number | null;
-					losses: number | null;
+			return (data ?? []).reduce(
+				(
+					acc: Record<string, { rating: number; wins: number; losses: number }>,
+					row: {
+						name_id: string;
+						rating: number | null;
+						wins: number | null;
+						losses: number | null;
+					},
+				) => {
+					acc[String(row.name_id)] = {
+						rating: Number(row.rating ?? 1500),
+						wins: Number(row.wins ?? 0),
+						losses: Number(row.losses ?? 0),
+					};
+					return acc;
 				},
-			) => {
-				acc[String(row.name_id)] = {
-					rating: Number(row.rating ?? 1500),
-					wins: Number(row.wins ?? 0),
-					losses: Number(row.losses ?? 0),
-				};
-				return acc;
-			},
-			{},
-		);
+				{},
+			);
+		});
 	},
+
 	saveRatings: async (
 		userId: string,
 		ratings: Record<string, { rating: number; wins: number; losses: number }>,
@@ -356,26 +371,21 @@ export const ratingsAPI = {
 			losses: data.losses,
 		}));
 
-		const client = await resolveSupabaseClient();
-		if (!client) {
-			throw new Error("Supabase client not available");
-		}
+		return withSupabaseOrThrow(async (client) => {
+			// @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
+			const { data, error } = await client.rpc("save_user_ratings", {
+				p_user_name: userId,
+				p_ratings: ratingsList,
+			});
 
-		// @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
-		const { data, error } = await client.rpc("save_user_ratings", {
-			p_user_name: userId,
-			p_ratings: ratingsList,
+			throwOnError(error, "Failed to save ratings");
+
+			const response = data as { success: boolean; count: number } | null;
+			if (!response?.success) {
+				throw new Error("Failed to save ratings: RPC returned failure");
+			}
+
+			return response;
 		});
-
-		if (error) {
-			throw new Error(error.message || "Failed to save ratings");
-		}
-
-		const response = data as { success: boolean; count: number } | null;
-		if (!response?.success) {
-			throw new Error("Failed to save ratings: RPC returned failure");
-		}
-
-		return response;
 	},
 };
