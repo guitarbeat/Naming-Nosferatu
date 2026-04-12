@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import {
 	playBackgroundMusic,
@@ -91,47 +91,31 @@ export function useAudioManager(): UseAudioManagerResult {
 		setBackgroundMusicVolume(backgroundMusicVolume);
 	}, [backgroundMusicVolume]);
 
-	const playVoteSound = useCallback(() => {
-		if (!isMuted) {
-			playSound("vote", { volume });
-		}
-	}, [isMuted, volume]);
-
-	const playUndoSound = useCallback(() => {
-		if (!isMuted) {
-			playSound("undo", { volume });
-		}
-	}, [isMuted, volume]);
-
-	const playStreakSound = useCallback(
-		(streakSize = 2) => {
-			if (isMuted) {
-				return;
-			}
-
-			const streakBoost = Math.min(0.28, Math.max(0, streakSize - 1) * 0.04);
-			playStreakCue({ volume: Math.min(1, volume + streakBoost) });
-		},
+	const soundEffects = useMemo(
+		() => ({
+			playVoteSound: () => {
+				if (!isMuted) playSound("vote", { volume });
+			},
+			playUndoSound: () => {
+				if (!isMuted) playSound("undo", { volume });
+			},
+			playStreakSound: (streakSize = 2) => {
+				if (isMuted) return;
+				const streakBoost = Math.min(0.28, Math.max(0, streakSize - 1) * 0.04);
+				playStreakCue({ volume: Math.min(1, volume + streakBoost) });
+			},
+			playLevelUpSound: () => {
+				if (!isMuted) playLevelUpSound({ volume });
+			},
+			playWowSound: () => {
+				if (!isMuted) playWowSound({ volume });
+			},
+			playSurpriseSound: () => {
+				if (!isMuted) playSurpriseSound({ volume });
+			},
+		}),
 		[isMuted, volume],
 	);
-
-	const playLevelUpEffect = useCallback(() => {
-		if (!isMuted) {
-			playLevelUpSound({ volume });
-		}
-	}, [isMuted, volume]);
-
-	const playWowEffect = useCallback(() => {
-		if (!isMuted) {
-			playWowSound({ volume });
-		}
-	}, [isMuted, volume]);
-
-	const playSurpriseEffect = useCallback(() => {
-		if (!isMuted) {
-			playSurpriseSound({ volume });
-		}
-	}, [isMuted, volume]);
 
 	const handleToggleMute = useCallback(() => {
 		setIsMuted((previous) => {
@@ -183,27 +167,14 @@ export function useAudioManager(): UseAudioManagerResult {
 		});
 	}, [isMuted]);
 
-	const handleNextTrack = useCallback(() => {
-		playNextTrack();
-	}, []);
-
-	const handlePreviousTrack = useCallback(() => {
-		playPreviousTrack();
-	}, []);
-
 	return {
 		isMuted,
 		handleToggleMute,
-		handleNextTrack,
-		handlePreviousTrack,
-		playVoteSound,
-		playUndoSound,
-		playStreakSound,
+		handleNextTrack: playNextTrack,
+		handlePreviousTrack: playPreviousTrack,
 		backgroundMusicEnabled,
 		toggleBackgroundMusic,
-		playLevelUpSound: playLevelUpEffect,
-		playWowSound: playWowEffect,
-		playSurpriseSound: playSurpriseEffect,
 		primeAudioExperience,
+		...soundEffects,
 	};
 }
