@@ -1,48 +1,47 @@
+import type { ElementType } from "react";
 import { BarChart3, Eye, EyeOff, Lock } from "@/shared/lib/icons";
 
 interface AdminStatsGridProps {
-	stats: {
-		totalNames: number;
-		activeNames: number;
-		hiddenNames: number;
-		lockedInNames: number;
-	};
+        stats: {
+                totalNames: number;
+                activeNames: number;
+                hiddenNames: number;
+                lockedInNames: number;
+        };
+}
+
+interface StatCell {
+        icon: ElementType;
+        colorClass: string;
+        label: string;
+        value: number;
+}
+
+function StatCell({ icon: Icon, colorClass, label, value }: StatCell) {
+        return (
+                <div className="p-3 sm:p-6">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+                                <Icon className={colorClass} size={18} />
+                                <h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>{label}</h3>
+                        </div>
+                        <p className="text-2xl sm:text-3xl font-bold text-foreground">{value}</p>
+                </div>
+        );
 }
 
 export function AdminStatsGrid({ stats }: AdminStatsGridProps) {
-	return (
-		<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
-			<div className="p-3 sm:p-6">
-				<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-					<BarChart3 className="text-primary" size={18} />
-					<h3 className="text-sm sm:text-lg font-semibold text-primary">Total</h3>
-				</div>
-				<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.totalNames}</p>
-			</div>
+        const cells: StatCell[] = [
+                { icon: BarChart3, colorClass: "text-primary", label: "Total", value: stats.totalNames },
+                { icon: Eye, colorClass: "text-chart-2", label: "Active", value: stats.activeNames },
+                { icon: Lock, colorClass: "text-chart-4", label: "Locked", value: stats.lockedInNames },
+                { icon: EyeOff, colorClass: "text-destructive", label: "Hidden", value: stats.hiddenNames },
+        ];
 
-			<div className="p-3 sm:p-6">
-				<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-					<Eye className="text-chart-2" size={18} />
-					<h3 className="text-sm sm:text-lg font-semibold text-chart-2">Active</h3>
-				</div>
-				<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.activeNames}</p>
-			</div>
-
-			<div className="p-3 sm:p-6">
-				<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-					<Lock className="text-chart-4" size={18} />
-					<h3 className="text-sm sm:text-lg font-semibold text-chart-4">Locked</h3>
-				</div>
-				<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.lockedInNames}</p>
-			</div>
-
-			<div className="p-3 sm:p-6">
-				<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-					<EyeOff className="text-destructive" size={18} />
-					<h3 className="text-sm sm:text-lg font-semibold text-destructive">Hidden</h3>
-				</div>
-				<p className="text-2xl sm:text-3xl font-bold text-foreground">{stats.hiddenNames}</p>
-			</div>
-		</div>
-	);
+        return (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
+                        {cells.map((cell) => (
+                                <StatCell key={cell.label} {...cell} />
+                        ))}
+                </div>
+        );
 }

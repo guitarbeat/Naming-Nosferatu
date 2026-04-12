@@ -1,8 +1,8 @@
-import type { ElementType } from "react";
 import { useToast } from "@/app/providers/Providers";
 import Button from "@/shared/components/layout/Button";
 import { BarChart3, Plus, Trophy } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
+import { StatTile } from "./components/DashboardPrimitives";
 import { usePersonalResults } from "./hooks/usePersonalResults";
 import { RankingAdjustment } from "./RankingAdjustment";
 
@@ -16,32 +16,6 @@ interface PersonalResultsProps {
 			| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
 	) => void;
 	userName?: string;
-}
-
-function HighlightCard({
-	label,
-	value,
-	icon: Icon,
-}: {
-	label: string;
-	value: string | number;
-	icon: ElementType;
-}) {
-	return (
-		<div className="rounded-2xl border border-white/10 bg-black/15 px-4 py-4">
-			<div className="flex items-start justify-between gap-3">
-				<div>
-					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-						{label}
-					</p>
-					<p className="mt-2 text-2xl font-semibold text-foreground">{value}</p>
-				</div>
-				<div className="rounded-2xl border border-primary/20 bg-primary/12 p-2.5 text-primary">
-					<Icon size={16} />
-				</div>
-			</div>
-		</div>
-	);
 }
 
 export const PersonalResults = ({
@@ -59,13 +33,9 @@ export const PersonalResults = ({
 	return (
 		<div className="space-y-6">
 			<div className="grid gap-3 sm:grid-cols-3">
-				<HighlightCard label="Champion" value={rankings[0]?.name || "—"} icon={Trophy} />
-				<HighlightCard
-					label="Top rating"
-					value={String(rankings[0]?.rating || 1500)}
-					icon={BarChart3}
-				/>
-				<HighlightCard label="Ranked names" value={rankings.length} icon={Trophy} />
+				<StatTile label="Champion" value={rankings[0]?.name || "—"} icon={Trophy} accent />
+				<StatTile label="Top rating" value={String(rankings[0]?.rating || 1500)} icon={BarChart3} accent />
+				<StatTile label="Ranked names" value={rankings.length} icon={Trophy} accent />
 			</div>
 
 			<div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-4 sm:p-5">

@@ -8,6 +8,16 @@ import {
         type ReactNode,
 } from "react";
 
+export const CHART_TOOLTIP_STYLE = {
+        background: "hsl(var(--card))",
+        border: "1px solid hsl(var(--border) / 0.3)",
+        borderRadius: 12,
+        fontSize: 12,
+        color: "hsl(var(--foreground))",
+} as const;
+
+export const CHART_CURSOR = { fill: "hsl(var(--primary) / 0.06)" } as const;
+
 export function ChartFrame({
         children,
         variant = "default",
