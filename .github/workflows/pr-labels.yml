@@ -1,4 +1,4 @@
-name: PR Size Labeler
+name: PR Labels
 
 on:
   pull_request_target:
@@ -9,10 +9,15 @@ permissions:
   pull-requests: write
 
 jobs:
-  size-label:
+  label:
     runs-on: ubuntu-latest
     steps:
-      - name: Apply size label
+      - name: Label by changed files
+        uses: actions/labeler@v6
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Label by diff size
         uses: codelytv/pr-size-labeler@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

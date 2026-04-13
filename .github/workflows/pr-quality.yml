@@ -1,4 +1,4 @@
-name: PR Hygiene
+name: PR Quality
 
 on:
   pull_request_target:
@@ -8,10 +8,36 @@ permissions:
   pull-requests: write
 
 jobs:
+  title-lint:
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title (Conventional Commits)
+        uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            test
+            docs
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+          subjectPattern: ^[a-z].+
+          subjectPatternError: "Use lower-case imperative subject, e.g. 'fix(auth): handle expired token'."
+          headerPattern: '^([a-z]+)(?:\(([^)]+)\))?!?: (.+)$'
+          headerPatternCorrespondence: type, scope, subject
+
   checklist:
     runs-on: ubuntu-latest
     steps:
-      - name: Comment missing PR sections
+      - name: Comment missing PR template sections
         uses: actions/github-script@v8
         with:
           script: |
