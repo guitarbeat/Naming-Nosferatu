@@ -56,3 +56,10 @@ Configured for Replit autoscale deployment. Build command: `npm run build`. Run 
 - Tables were renamed: `cat_name_options` → `cat_names`, `cat_name_ratings` → `user_cat_name_ratings`
 - `cat_tournament_selections` was dropped; global win/loss counters are now on `cat_names`
 - Key RPCs: `apply_tournament_match_elo`, `save_user_ratings`, `get_leaderboard_stats`, `get_site_stats`, `add_cat_name`, `soft_delete_cat_name`
+
+## Bug Fixes Applied
+
+- **Win/Loss stats always zero**: `tournament.voteHistory` in the global store was never populated. Added `recordVote` and `clearVoteHistory` actions to `tournamentSlice`, called from `useTournamentState.handleVote` and `handleQuit`.
+- **2v2 win/loss attribution**: Added `winnerMemberIds`/`loserMemberIds` to vote records so `TournamentFlow` can expand team votes to individual name wins/losses correctly.
+- **Null crash on 2v2 `memberNames`**: Added optional-chaining fallback in `Tournament.tsx` `handleVoteAdapter` so missing `memberNames` doesn't throw.
+- **Stuck tournament on corrupt history**: `deriveBracketState` in `tournamentLogic.ts` now skips invalid history records (where winner doesn't match either side) instead of looping forever, and clears the stale cache entry.

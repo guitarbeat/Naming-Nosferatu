@@ -225,7 +225,13 @@ export function deriveBracketState(
                                 winners.push(record.winner);
                                 cursor += 1;
                         } else {
-                                return makePendingResult(totalMatches, cursor, round, totalRounds, activeRoundSize, left, right);
+                                // The recorded winner doesn't match either side — the history is corrupt
+                                // for this slot. Skip the invalid record to avoid an infinite loop,
+                                // clear the cache so this bad entry doesn't get persisted, and treat
+                                // the match as pending so the user can re-vote it.
+                                cursor += 1;
+                                bracketStateCache.delete(cacheKey);
+                                return makePendingResult(totalMatches, cursor - 1, round, totalRounds, activeRoundSize, left, right);
                         }
                 }
 
