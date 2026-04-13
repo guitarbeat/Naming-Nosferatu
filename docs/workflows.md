@@ -6,20 +6,18 @@
 
 ## Overview
 
-This repository uses **7 GitHub Actions workflows** organized into two categories: continuous integration and pull request quality gates. Together they enforce code health, semantic PR conventions, automated dependency management, and repository hygiene.
+This repository uses **5 GitHub Actions workflows** organized into two categories: continuous integration and pull request quality gates.
 
 ```
 .github/
 ├── workflows/
-│   ├── ci.yml                  # Build + test on push/PR
+│   ├── ci.yml                     # Build + test on push/PR
 │   ├── auto-merge-dependabot.yml  # Auto-merge safe Dependabot PRs
-│   ├── pr-hygiene.yml          # Enforce PR template sections
-│   ├── pr-labeler.yml          # Label PRs by changed files
-│   ├── pr-size-labeler.yml     # Label PRs by diff size
-│   ├── pr-title-lint.yml       # Enforce conventional commits on PR titles
-│   └── stale.yml               # Mark + close stale issues/PRs
-├── dependabot.yml              # Dependabot schedule + grouping
-└── labeler.yml                 # File-path → label mapping
+│   ├── pr-labels.yml              # Area + size labels on PRs
+│   ├── pr-quality.yml             # Title lint + template checklist
+│   └── stale.yml                  # Mark + close inactive issues/PRs
+├── dependabot.yml                 # Dependabot schedule + grouping
+└── labeler.yml                    # File-path → label mapping
 ```
 
 ---
@@ -42,50 +40,35 @@ Paths that skip this workflow: `**/*.md`, `**/*.mdx`, `**/*.txt`, `docs/**`
 - Dependencies are installed with `--frozen-lockfile` to catch lockfile drift.
 - Concurrent runs on the same ref are cancelled to save CI minutes (`cancel-in-progress: true`).
 - `NODE_OPTIONS=--max-old-space-size=4096` prevents OOM on large builds.
+- The two jobs run **in parallel** — neither blocks the other.
 
 ---
 
 ### 2. `auto-merge-dependabot.yml` — Auto-Merge Dependabot PRs
 
-**Triggers:** `pull_request` (opened/synchronize/reopened), `check_suite` (completed), `workflow_dispatch`
+**Triggers:** `pull_request` (opened/synchronize/reopened), `workflow_dispatch`
 
 **Guard:** Only runs when `github.actor == 'dependabot[bot]'`.
 
 **What it does:**
 1. Fetches Dependabot PR metadata via `dependabot/fetch-metadata@v2`.
-2. If the update is **not a major semver bump**, enables auto-merge (squash) via `peter-evans/enable-pull-request-automerge@v3`.
+2. If the update is **not a major semver bump**, enables GitHub's native auto-merge (squash) via `peter-evans/enable-pull-request-automerge@v3`.
 
-Major version updates are intentionally left for manual review to avoid unintentional breaking changes.
+Major version updates are intentionally left for manual review to avoid unintentional breaking changes. Concurrency uses `cancel-in-progress: false` so that in-flight enables are never aborted.
 
-Concurrency uses `cancel-in-progress: false` so that in-flight merges are never aborted.
-
----
-
-### 3. `pr-hygiene.yml` — PR Template Enforcement
-
-**Triggers:** `pull_request_target` (opened/edited/synchronize/reopened)
-
-Checks that the PR body contains all three required sections:
-
-| Section | Purpose |
-|---------|---------|
-| `## Summary` | What the PR does and why |
-| `## Validation` | How the change was verified |
-| `## Rollout + Revert Plan` | Safe deployment and rollback strategy |
-
-**Behavior:**
-- A bot comment is posted (or updated in place via a `<!-- pr-hygiene-bot -->` marker) listing any missing sections.
-- If all sections are present, no comment is posted and an existing warning comment is silently updated to reflect the resolved state.
-
-Uses `actions/github-script@v8` with inline JavaScript — no third-party action dependency.
+> **Note:** This workflow only **enables** GitHub's auto-merge flag once per PR open/update. GitHub itself handles the actual merge once all required checks pass — no `check_suite` polling needed.
 
 ---
 
-### 4. `pr-labeler.yml` — File-Path Label Assignment
+### 3. `pr-labels.yml` — PR Label Assignment *(merged)*
+
+> Consolidation of the former `pr-labeler.yml` and `pr-size-labeler.yml` into a single workflow on one runner.
 
 **Triggers:** `pull_request_target` (opened/synchronize/reopened)
 
-Applies area labels automatically using `actions/labeler@v6`, driven by `.github/labeler.yml`:
+Two steps run sequentially in one job:
+
+#### Step 1 — Area labels (via `actions/labeler@v6` + `labeler.yml`)
 
 | Label | Files matched |
 |-------|--------------|
@@ -95,13 +78,7 @@ Applies area labels automatically using `actions/labeler@v6`, driven by `.github
 | `ci-cd` | `.github/**` |
 | `docs` | `docs/**`, `**/*.md` |
 
----
-
-### 5. `pr-size-labeler.yml` — Diff Size Labels
-
-**Triggers:** `pull_request_target` (opened/synchronize/reopened)
-
-Uses `codelytv/pr-size-labeler@v1` to apply a size label based on total lines changed:
+#### Step 2 — Diff size labels (via `codelytv/pr-size-labeler@v1`)
 
 | Label | Max lines changed |
 |-------|-----------------|
@@ -111,19 +88,19 @@ Uses `codelytv/pr-size-labeler@v1` to apply a size label based on total lines ch
 | `size/l` | ≤ 800 |
 | `size/xl` | > 800 |
 
-Useful for identifying PRs that are too large to review effectively.
-
 ---
 
-### 6. `pr-title-lint.yml` — Conventional Commit Title Enforcement
+### 4. `pr-quality.yml` — PR Quality Gates *(merged)*
 
-**Triggers:** `pull_request` (opened/edited/synchronize/reopened)
+> Consolidation of the former `pr-hygiene.yml` and `pr-title-lint.yml` into a single workflow with two parallel jobs.
 
-**Skip conditions:**
-- Actor is `dependabot[bot]`
-- PR title starts with `🎨 Palette:` (design/palette auto-PRs)
+**Triggers:** `pull_request_target` (opened/edited/synchronize/reopened)
+
+#### Job 1 — `title-lint`
 
 Validates PR titles against the **Conventional Commits** spec using `amannn/action-semantic-pull-request@v6`.
+
+**Skipped for:** `dependabot[bot]` actor and PRs whose title starts with `🎨 Palette:`.
 
 **Allowed types:**
 
@@ -140,14 +117,24 @@ Validates PR titles against the **Conventional Commits** spec using `amannn/acti
 | `chore` | Maintenance tasks |
 | `revert` | Reverting a commit |
 
-**Format rules:**
-- Header pattern: `<type>(<optional-scope>)!?: <subject>`
-- Subject must begin with a lowercase letter
-- Example valid title: `fix(auth): handle expired token`
+Format: `<type>(<optional-scope>)!?: <lowercase-subject>`
+Example: `fix(auth): handle expired token`
+
+#### Job 2 — `checklist`
+
+Checks that the PR body contains all three required sections:
+
+| Section | Purpose |
+|---------|---------|
+| `## Summary` | What the PR does and why |
+| `## Validation` | How the change was verified |
+| `## Rollout + Revert Plan` | Safe deployment and rollback strategy |
+
+A bot comment (keyed by `<!-- pr-hygiene-bot -->`) is posted or updated in place listing any missing sections.
 
 ---
 
-### 7. `stale.yml` — Stale Issue & PR Triage
+### 5. `stale.yml` — Stale Issue & PR Triage
 
 **Triggers:** Schedule (`cron: "30 15 * * 1"` — every Monday at 3:30 PM UTC), `workflow_dispatch`
 
@@ -159,8 +146,6 @@ Uses `actions/stale@v10` with the following policy:
 | Close after stale | 14 days | 14 days |
 | Stale label | `status/stale` | `status/stale` |
 | Exempt labels | `p0`, `security`, `planned` | `work-in-progress`, `do-not-close` |
-
-Messages are contextual — stale issues get a different prompt than stale PRs.
 
 ---
 
@@ -187,19 +172,22 @@ Two update ecosystems are configured, both running **weekly on Mondays**:
 ## Workflow Interaction Map
 
 ```
-Push to main/develop ──────► ci.yml (quality + test)
+Push to main/develop ──────► ci.yml (quality + test, parallel)
 
 PR opened/updated:
-  ├── pr-title-lint.yml   (enforce conventional commits)
-  ├── pr-labeler.yml      (area labels from file paths)
-  ├── pr-size-labeler.yml (xs/s/m/l/xl size label)
-  └── pr-hygiene.yml      (enforce required PR sections)
+  ├── pr-quality.yml
+  │     ├── title-lint   (enforce conventional commits)
+  │     └── checklist    (enforce required PR sections)
+  │         (both jobs run in parallel)
+  └── pr-labels.yml
+        ├── step: area labels (by file path)
+        └── step: size label (xs/s/m/l/xl)
 
 Dependabot PR:
   ├── ci.yml              (runs normally)
-  ├── pr-labeler.yml      (skipped — dependabot actor)
-  ├── pr-title-lint.yml   (skipped — dependabot actor)
-  └── auto-merge-dependabot.yml (auto-squash if non-major)
+  ├── pr-quality.yml      (title-lint job skipped; checklist runs)
+  ├── pr-labels.yml       (runs normally)
+  └── auto-merge-dependabot.yml (enables auto-squash if non-major)
 
 Every Monday:
   └── stale.yml           (triage inactive issues + PRs)
@@ -213,8 +201,6 @@ Every Monday:
 |----------|-----------|----------------|---------|
 | `ci.yml` | read | — | — |
 | `auto-merge-dependabot.yml` | **write** | **write** | — |
-| `pr-hygiene.yml` | — | **write** | — |
-| `pr-labeler.yml` | read | **write** | — |
-| `pr-size-labeler.yml` | read | **write** | — |
-| `pr-title-lint.yml` | — | read | — |
+| `pr-labels.yml` | read | **write** | — |
+| `pr-quality.yml` | — | **write** | — |
 | `stale.yml` | — | **write** | **write** |
