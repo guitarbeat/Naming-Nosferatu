@@ -12,7 +12,7 @@ import type {
 } from "@/features/websocket/services/websocketService";
 import { useLocalStorage } from "@/shared/hooks";
 import { TIMING } from "@/shared/lib/constants";
-import { ratingsAPI } from "@/shared/services/supabase/api";
+import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import type {
 	Match,
 	MatchRecord,
@@ -29,7 +29,7 @@ import {
 	deriveBracketState,
 	type HistoryEntry,
 	resolveCurrentMatch,
-} from "./tournamentEngine";
+} from "../utils/tournamentLogic";
 import {
 	buildInitialRatings,
 	createBracketEntrants,

@@ -1,7 +1,8 @@
 import type { ElementType, ReactNode } from "react";
 import { useCallback, useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { cn, hapticNavTap, hapticTournamentStart } from "@/shared/lib/basic";
+import { cn } from "@/shared/lib/utils";
+import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptics";
 import {
         BarChart3,
         CheckCircle,

@@ -1,5 +1,5 @@
 import type { ElementType } from "react";
-import type { SiteStats, UserStats } from "@/features/analytics/services/analyticsService";
+import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback";

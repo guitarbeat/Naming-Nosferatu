@@ -1,16 +1,11 @@
-import { getRandomCatImage, shuffleArray } from "@/shared/lib/basic";
+import { shuffleArray } from "@/shared/lib/utils";
+import { getRandomCatImage } from "@/shared/lib/media";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
 import type { IdType, NameItem } from "@/shared/types";
 
 type ItemWithId<TId> = {
 	id: TId;
 };
-
-export const addIdToSet = addToSet;
-export const addIdsToSet = addManyToSet;
-export const removeIdFromSet = removeFromSet;
-export const toggleIdInSet = toggleInSet;
 
 export function countSelectedItems<TId>(
 	items: ReadonlyArray<ItemWithId<TId>>,

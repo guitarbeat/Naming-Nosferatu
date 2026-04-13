@@ -76,3 +76,15 @@ export const TIMING = {
 	VOTE_COOLDOWN_MS: 500,
 	TOURNAMENT_INIT_DELAY_MS: 16, // One frame for requestAnimationFrame
 } as const;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Audio & Sound
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const AUDIO = {
+	DEFAULT_EFFECTS_VOLUME: 0.3,
+	DEFAULT_MUSIC_VOLUME: 0.1,
+	FALLBACK_LOOP_MIN_DURATION_MS: 650,
+	FALLBACK_LOOP_OVERLAP_MS: 35,
+	MAX_RETRIES: 3,
+} as const;

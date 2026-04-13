@@ -1,4 +1,4 @@
-import { applyEloMatchUpdate } from "@/features/tournament/services/pureElo";
+import { applyEloMatchUpdate } from "@/shared/lib/elo";
 import { getBracketStageLabel } from "@/features/tournament/services/tournament";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/shared/types";
 
@@ -196,7 +196,7 @@ export function deriveBracketState(
                         }
                         if (!left) {
                                 if (right) {
-                                        winners.push(right);
+                                         winners.push(right);
                                 }
                                 continue;
                         }

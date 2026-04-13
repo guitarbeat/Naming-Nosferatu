@@ -1,11 +1,11 @@
 import { ELO_RATING } from "@/shared/lib/constants";
-import type { Team, TeamMatch, TournamentMode } from "@/shared/types";
 import {
 	applyEloMatchUpdate,
 	calculatePairEloUpdate,
 	getExpectedEloScore,
 	updateEloRating,
-} from "./pureElo";
+} from "@/shared/lib/elo";
+import type { Team, TeamMatch, TournamentMode } from "@/shared/types";
 export class EloRating {
 	constructor(
 		public defaultRating: number = ELO_RATING.DEFAULT_RATING,
@@ -152,6 +152,7 @@ export function applyTeamMatchElo({
 		},
 	}).ratings;
 }
+
 
 export function getBracketStageLabel(round: number, totalRounds: number): string {
 	const safeRound = Math.max(1, round);

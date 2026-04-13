@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { leaderboardAPI } from "@/features/analytics/services/analyticsService";
-import { withSupabase } from "@/shared/services/supabase/runtime";
+import { leaderboardAPI } from "./statsService";
+import { withSupabase } from "./runtime";
 
-vi.mock("@/shared/services/supabase/runtime", () => ({
+vi.mock("./runtime", () => ({
 	withSupabase: vi.fn(),
 	resolveSupabaseClient: vi.fn(),
 }));
@@ -41,8 +41,8 @@ describe("leaderboardAPI", () => {
 				avg_rating: Number(row.avg_rating ?? 0),
 				wins: Number(row.wins ?? 0),
 				total_ratings: Number(row.total_ratings ?? 0),
-				created_at: (row as { created_at?: string }).created_at ?? null,
-				date_submitted: (row as { date_submitted?: string }).date_submitted ?? null,
+				created_at: row.created_at ?? null,
+				date_submitted: row.date_submitted ?? null,
 			})),
 		);
 

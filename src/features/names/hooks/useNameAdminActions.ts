@@ -3,12 +3,12 @@ import { useCallback } from "react";
 import {
 	batchUpdateLocked,
 	batchUpdateVisibility,
+	namesQueryKeys,
 	softDeleteName,
 	toggleNameHidden,
 	toggleNameLocked,
-} from "@/features/names/mutations";
-import { namesQueryKeys } from "@/features/names/queries";
-import { imagesAPI } from "@/shared/services/supabase/api";
+} from "@/features/names/api";
+import { imagesAPI } from "@/shared/services/supabase/imageService";
 import type { IdType } from "@/shared/types";
 
 export interface ToggleHiddenInput {

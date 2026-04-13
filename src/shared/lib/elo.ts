@@ -1,4 +1,6 @@
-export interface PureEloConfig {
+import { ELO_RATING } from "./constants";
+
+export interface EloConfig {
 	defaultRating?: number;
 	kFactor?: number;
 	minRating?: number;
@@ -8,19 +10,19 @@ export interface PureEloConfig {
 	newPlayerKMultiplier?: number;
 }
 
-export interface PureEloStats {
+export interface EloStats {
 	wins?: number;
 	losses?: number;
 }
 
-export interface PureEloParticipantResult {
+export interface EloParticipantResult {
 	rating: number;
 	wins: number;
 	losses: number;
 	delta: number;
 }
 
-export interface PureEloPairResult {
+export interface EloPairResult {
 	newRatingA: number;
 	newRatingB: number;
 	winsA: number;
@@ -31,49 +33,49 @@ export interface PureEloPairResult {
 	expectedScoreB: number;
 }
 
-export interface PureEloMatchResult {
+export interface EloMatchResult {
 	ratings: Record<string, number>;
 	stats: Record<string, { wins: number; losses: number }>;
-	participants: Record<string, PureEloParticipantResult>;
+	participants: Record<string, EloParticipantResult>;
 	leftAverageRating: number;
 	rightAverageRating: number;
 }
 
-export type PureEloOutcome = "left" | "right" | "tie";
+export type EloOutcome = "left" | "right" | "tie";
 
-const DEFAULT_ELO_CONFIG: Required<PureEloConfig> = {
-	defaultRating: 1500,
-	kFactor: 40,
-	minRating: 800,
-	maxRating: 2400,
-	ratingDivisor: 400,
-	newPlayerGameThreshold: 15,
-	newPlayerKMultiplier: 2,
+const DEFAULT_ELO_CONFIG: Required<EloConfig> = {
+	defaultRating: ELO_RATING.DEFAULT_RATING,
+	kFactor: ELO_RATING.DEFAULT_K_FACTOR,
+	minRating: ELO_RATING.MIN_RATING,
+	maxRating: ELO_RATING.MAX_RATING,
+	ratingDivisor: ELO_RATING.RATING_DIVISOR,
+	newPlayerGameThreshold: ELO_RATING.NEW_PLAYER_GAME_THRESHOLD,
+	newPlayerKMultiplier: ELO_RATING.NEW_PLAYER_K_MULTIPLIER,
 };
 
-function resolveConfig(config?: PureEloConfig): Required<PureEloConfig> {
+function resolveConfig(config?: EloConfig): Required<EloConfig> {
 	return {
 		...DEFAULT_ELO_CONFIG,
 		...config,
 	};
 }
 
-function clampRating(rating: number, config: Required<PureEloConfig>): number {
+function clampRating(rating: number, config: Required<EloConfig>): number {
 	return Math.max(config.minRating, Math.min(config.maxRating, rating));
 }
 
-function normalizeRating(rating: number | undefined, config: Required<PureEloConfig>): number {
+function normalizeRating(rating: number | undefined, config: Required<EloConfig>): number {
 	return typeof rating === "number" && Number.isFinite(rating) ? rating : config.defaultRating;
 }
 
-function normalizeStats(stats?: PureEloStats): { wins: number; losses: number } {
+function normalizeStats(stats?: EloStats): { wins: number; losses: number } {
 	return {
 		wins: typeof stats?.wins === "number" && Number.isFinite(stats.wins) ? stats.wins : 0,
 		losses: typeof stats?.losses === "number" && Number.isFinite(stats.losses) ? stats.losses : 0,
 	};
 }
 
-function getActualScores(outcome: PureEloOutcome): { left: number; right: number } {
+function getActualScores(outcome: EloOutcome): { left: number; right: number } {
 	if (outcome === "left") {
 		return { left: 1, right: 0 };
 	}
@@ -94,7 +96,7 @@ function average(values: number[]): number {
 export function getExpectedEloScore(
 	currentRating: number,
 	opponentRating: number,
-	config?: PureEloConfig,
+	config?: EloConfig,
 ): number {
 	const resolved = resolveConfig(config);
 	return 1 / (1 + 10 ** ((opponentRating - currentRating) / resolved.ratingDivisor));
@@ -111,7 +113,7 @@ export function updateEloRating({
 	expectedScore: number;
 	actualScore: number;
 	gamesPlayed?: number;
-	config?: PureEloConfig;
+	config?: EloConfig;
 }): number {
 	const resolved = resolveConfig(config);
 	const multiplier =
@@ -132,11 +134,11 @@ export function calculatePairEloUpdate({
 }: {
 	leftRating: number;
 	rightRating: number;
-	outcome: PureEloOutcome;
-	leftStats?: PureEloStats;
-	rightStats?: PureEloStats;
-	config?: PureEloConfig;
-}): PureEloPairResult {
+	outcome: EloOutcome;
+	leftStats?: EloStats;
+	rightStats?: EloStats;
+	config?: EloConfig;
+}): EloPairResult {
 	const resolved = resolveConfig(config);
 	const normalizedLeftStats = normalizeStats(leftStats);
 	const normalizedRightStats = normalizeStats(rightStats);
@@ -179,10 +181,10 @@ export function applyEloMatchUpdate({
 	ratings: Record<string, number>;
 	leftParticipantIds: string[];
 	rightParticipantIds: string[];
-	winnerSide: PureEloOutcome;
-	stats?: Record<string, PureEloStats>;
-	config?: PureEloConfig;
-}): PureEloMatchResult {
+	winnerSide: EloOutcome;
+	stats?: Record<string, EloStats>;
+	config?: EloConfig;
+}): EloMatchResult {
 	const resolved = resolveConfig(config);
 	const leftRatings = leftParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
 	const rightRatings = rightParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
@@ -220,7 +222,7 @@ export function applyEloMatchUpdate({
 	const rightDelta = pairUpdate.newRatingB - rightAverageRating;
 	const nextRatings = { ...ratings };
 	const nextStats = { ...(stats ?? {}) };
-	const participants: Record<string, PureEloParticipantResult> = {};
+	const participants: Record<string, EloParticipantResult> = {};
 	const actualScores = getActualScores(winnerSide);
 	const leftOutcome = actualScores.left;
 	const rightOutcome = actualScores.right;

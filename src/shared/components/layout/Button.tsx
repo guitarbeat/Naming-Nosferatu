@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 import React, { memo } from "react";
-import { cn } from "@/shared/lib/basic";
+import { cn } from "@/shared/lib/utils";
 import { ChevronDown, Loader2 } from "@/shared/lib/icons";
 import "./FancyButton.css";
 

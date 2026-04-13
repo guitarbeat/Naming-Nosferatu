@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
+import { AUDIO, STORAGE_KEYS } from "@/shared/lib/constants";
 import {
+	AudioEffects,
 	playBackgroundMusic,
-	playLevelUpSound,
 	playNextTrack,
 	playPreviousTrack,
 	playSound,
-	playStreakSound as playStreakCue,
-	playSurpriseSound,
-	playWowSound,
 	setBackgroundMusicVolume,
 	stopBackgroundMusic,
 } from "@/shared/lib/sound";
@@ -35,8 +32,6 @@ interface UseAudioManagerResult {
 }
 
 const BACKGROUND_MUSIC_ENABLED_KEY = "tournamentBackgroundMusicEnabled";
-const DEFAULT_EFFECTS_VOLUME = 0.3;
-const DEFAULT_MUSIC_VOLUME = 0.1;
 
 function readStoredNumber(key: string, fallback: number): number {
 	if (!isStorageAvailable()) {
@@ -76,14 +71,14 @@ export function useAudioManager(): UseAudioManagerResult {
 		return !storedEnabled;
 	});
 	const [volume, _setVolume] = useState(() =>
-		readStoredNumber(STORAGE_KEYS.EFFECTS_VOLUME, DEFAULT_EFFECTS_VOLUME),
+		readStoredNumber(STORAGE_KEYS.EFFECTS_VOLUME, AUDIO.DEFAULT_EFFECTS_VOLUME),
 	);
 	const [backgroundMusicEnabled, setBackgroundMusicEnabled] = useState(() => {
 		const stored = readStoredBoolean(BACKGROUND_MUSIC_ENABLED_KEY);
 		return stored ?? false;
 	});
 	const [backgroundMusicVolume, _setBackgroundMusicVolumeState] = useState(() =>
-		readStoredNumber(STORAGE_KEYS.MUSIC_VOLUME, DEFAULT_MUSIC_VOLUME),
+		readStoredNumber(STORAGE_KEYS.MUSIC_VOLUME, AUDIO.DEFAULT_MUSIC_VOLUME),
 	);
 	const audioPrimedRef = useRef(false);
 
@@ -94,24 +89,24 @@ export function useAudioManager(): UseAudioManagerResult {
 	const soundEffects = useMemo(
 		() => ({
 			playVoteSound: () => {
-				if (!isMuted) playSound("vote", { volume });
+				if (!isMuted) AudioEffects.playVote({ volume });
 			},
 			playUndoSound: () => {
-				if (!isMuted) playSound("undo", { volume });
+				if (!isMuted) AudioEffects.playUndo({ volume });
 			},
 			playStreakSound: (streakSize = 2) => {
 				if (isMuted) return;
 				const streakBoost = Math.min(0.28, Math.max(0, streakSize - 1) * 0.04);
-				playStreakCue({ volume: Math.min(1, volume + streakBoost) });
+				AudioEffects.playStreak({ volume: Math.min(1, volume + streakBoost) });
 			},
 			playLevelUpSound: () => {
-				if (!isMuted) playLevelUpSound({ volume });
+				if (!isMuted) AudioEffects.playLevelUp({ volume });
 			},
 			playWowSound: () => {
-				if (!isMuted) playWowSound({ volume });
+				if (!isMuted) AudioEffects.playWow({ volume });
 			},
 			playSurpriseSound: () => {
-				if (!isMuted) playSurpriseSound({ volume });
+				if (!isMuted) AudioEffects.playSurprise({ volume });
 			},
 		}),
 		[isMuted, volume],

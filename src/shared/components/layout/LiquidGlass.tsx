@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/shared/lib/basic";
+import { cn } from "@/shared/lib/utils";
 
 interface LiquidGlassProps extends React.HTMLAttributes<HTMLDivElement> {
 	children: React.ReactNode;

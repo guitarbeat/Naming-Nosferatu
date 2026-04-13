@@ -1,5 +1,5 @@
 import React, { Component, type ReactNode, useState } from "react";
-import { cn } from "@/shared/lib/basic";
+import { cn } from "@/shared/lib/utils";
 import { Copy } from "@/shared/lib/icons";
 import { ErrorManager } from "@/shared/services/errorManager";
 

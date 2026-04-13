@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
-import { cn } from "@/shared/lib/basic";
+import { cn } from "@/shared/lib/utils";
 
 // ============================================================================
 // TYPES

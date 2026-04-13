@@ -1,7 +1,7 @@
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
-import { isNameHidden, isNameLocked } from "@/shared/lib/basic";
+import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
 import { Eye, EyeOff, Loader2, Lock, Trash2 } from "@/shared/lib/icons";
 import type { NameItem } from "@/shared/types";
 

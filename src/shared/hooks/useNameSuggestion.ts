@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { coreAPI } from "@/shared/services/supabase/client";
+import { addName } from "@/features/names/api";
 
 interface UseNameSuggestionProps {
 	onSuccess?: () => void;
@@ -62,10 +62,7 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 		setSuccessMessage("");
 
 		try {
-			const result = await coreAPI.addName(values.name, values.description);
-			if (!result.success) {
-				throw new Error(result.error || "Failed to submit suggestion");
-			}
+			await addName({ name: values.name, description: values.description });
 
 			setSuccessMessage("Name suggestion submitted successfully!");
 			setValues({ name: "", description: "" });

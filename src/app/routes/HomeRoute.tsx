@@ -4,12 +4,12 @@ import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import { HomeHeroSection } from "@/app/routes/components/HomeHeroSection";
 import { TournamentBracketSection } from "@/app/routes/components/TournamentBracketSection";
-import { namesQueryOptions } from "@/features/names/queries";
+import { namesQueryOptions } from "@/features/names/api";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
-import { getLockedNames } from "@/shared/lib/basic";
+import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
 const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));

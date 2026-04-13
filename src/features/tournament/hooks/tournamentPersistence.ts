@@ -1,4 +1,4 @@
-import { shuffleArray } from "@/shared/lib/basic";
+import { shuffleArray } from "@/shared/lib/utils";
 import { ELO_RATING } from "@/shared/lib/constants";
 import type {
 	NameItem,

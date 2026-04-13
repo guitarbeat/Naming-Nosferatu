@@ -3,16 +3,18 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
-import { namesQueryOptions } from "@/features/names/queries";
+import { namesQueryOptions } from "@/features/names/api";
 import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
 import {
-	addIdsToSet,
-	addIdToSet,
+	addToSet,
+	addManyToSet,
+	removeFromSet,
+	toggleInSet,
+} from "@/shared/lib/setUtils";
+import {
 	buildNameCardImages,
 	countSelectedItems,
 	pickRandomItemIds,
-	removeIdFromSet,
-	toggleIdInSet,
 } from "@/features/tournament/utils/nameSelection";
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card";
@@ -29,7 +31,7 @@ import {
 	getLockedNames,
 	isNameHidden,
 	isNameLocked,
-} from "@/shared/lib/basic";
+} from "@/shared/lib/names/nameFilters";
 import {
 	Check,
 	CheckCircle,
@@ -283,7 +285,7 @@ export function NameSelector() {
 			return;
 		}
 		setSelectedNames((prev) => {
-			const next = addIdsToSet(prev, lockedInIds);
+			const next = addManyToSet(prev, lockedInIds);
 			if (next.size !== prev.size) {
 				deferredSync(() => syncSelectionToStore(next));
 				return next;
@@ -295,7 +297,7 @@ export function NameSelector() {
 	const toggleName = useCallback(
 		(nameId: IdType) => {
 			setSelectedNames((prev) => {
-				const next = toggleIdInSet(prev, nameId);
+				const next = toggleInSet(prev, nameId);
 				syncSelectionToStore(next);
 				return next;
 			});
@@ -334,7 +336,7 @@ export function NameSelector() {
 	);
 
 	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
-		setSwipedIds((prev) => addIdToSet(prev, nameId));
+		setSwipedIds((prev) => addToSet(prev, nameId));
 		setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
 	}, []);
 
@@ -342,7 +344,7 @@ export function NameSelector() {
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
 			if (direction === "right") {
 				setSelectedNames((prev) => {
-					const next = addIdToSet(prev, nameId);
+					const next = addToSet(prev, nameId);
 					// Use deferred sync to prevent render cycle issue
 					deferredSync(() => syncSelectionToStore(next));
 					return next;
@@ -405,12 +407,12 @@ export function NameSelector() {
 		}
 
 		setSwipeHistory((prev) => prev.slice(0, -1));
-		setSwipedIds((prev) => removeIdFromSet(prev, lastSwipe.id));
+		setSwipedIds((prev) => removeFromSet(prev, lastSwipe.id));
 
 		// If it was a right swipe, remove from selected names and sync with store
 		if (lastSwipe.direction === "right") {
 			setSelectedNames((prev) => {
-				const next = removeIdFromSet(prev, lastSwipe.id);
+				const next = removeFromSet(prev, lastSwipe.id);
 				// Use deferred sync to prevent render cycle issue
 				deferredSync(() => syncSelectionToStore(next));
 				return next;
@@ -426,7 +428,7 @@ export function NameSelector() {
 				return;
 			}
 
-			setTogglingHidden((prev) => addIdToSet(prev, nameId));
+			setTogglingHidden((prev) => addToSet(prev, nameId));
 
 			try {
 				await toggleHidden({ nameId, isCurrentlyHidden });
@@ -436,7 +438,7 @@ export function NameSelector() {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
 			} finally {
-				setTogglingHidden((prev) => removeIdFromSet(prev, nameId));
+				setTogglingHidden((prev) => removeFromSet(prev, nameId));
 			}
 		},
 		[isAdmin, toast, toggleHidden, userName],
@@ -448,7 +450,7 @@ export function NameSelector() {
 				return;
 			}
 
-			setTogglingLocked((prev) => addIdToSet(prev, nameId));
+			setTogglingLocked((prev) => addToSet(prev, nameId));
 
 			try {
 				await toggleLocked({ nameId, isCurrentlyLocked });
@@ -458,7 +460,7 @@ export function NameSelector() {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
 			} finally {
-				setTogglingLocked((prev) => removeIdFromSet(prev, nameId));
+				setTogglingLocked((prev) => removeFromSet(prev, nameId));
 			}
 		},
 		[isAdmin, toast, toggleLocked, userName],
@@ -597,7 +599,7 @@ export function NameSelector() {
 
 	const _handleSelectAllAvailable = useCallback(() => {
 		setSelectedNames((prev) => {
-			const next = addIdsToSet(
+			const next = addManyToSet(
 				prev,
 				availableNames.map((name) => name.id),
 			);
@@ -624,7 +626,7 @@ export function NameSelector() {
 		const targetCount = Math.min(8, availableNames.length);
 		const randomIds = pickRandomItemIds(availableNames, targetCount);
 		setSelectedNames((prev) => {
-			const next = addIdsToSet(prev, randomIds);
+			const next = addManyToSet(prev, randomIds);
 			// Use deferred sync to prevent render cycle issue
 			deferredSync(() => syncSelectionToStore(next));
 			return next;

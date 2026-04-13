@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { Trophy } from "@/shared/lib/icons";
-import { ratingsAPI } from "@/shared/services/supabase/api";
+import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
 import { useTournamentHandlers } from "../hooks";

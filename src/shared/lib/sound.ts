@@ -1,15 +1,17 @@
 import { getStorageString, isStorageAvailable } from "@/shared/lib/storage";
+import { AUDIO, STORAGE_KEYS } from "@/shared/lib/constants";
+import { 
+	BACKGROUND_TRACKS, 
+	SOUND_EFFECTS, 
+	FALLBACK_MUSIC_PATTERNS, 
+	getFallbackEffectPattern,
+	type SynthNote 
+} from "./sound/resources";
+import { synthEngine } from "./sound/synthEngine";
 
 interface SoundConfig {
 	volume?: number;
 	preload?: boolean;
-}
-
-interface SynthNote {
-	frequency: number;
-	duration: number;
-	gain?: number;
-	wave?: OscillatorType;
 }
 
 class SoundManager {
@@ -20,76 +22,10 @@ class SoundManager {
 	private fallbackMusicActive = false;
 	private backgroundMusicRequested = false;
 	private failedAssets: Set<string> = new Set();
-	private defaultVolume = 0.3;
-	private backgroundMusicVolume = 0.1;
+	private defaultVolume = AUDIO.DEFAULT_EFFECTS_VOLUME;
+	private backgroundMusicVolume = AUDIO.DEFAULT_MUSIC_VOLUME;
 	private currentTrackIndex = 0;
 	private readonly isBrowser = isStorageAvailable();
-
-	// Songs (large files, >1MB) - for background music
-	private backgroundTracks = [
-		"Main Menu 1 (Ruins)",
-		"AdhesiveWombat - Night Shade",
-		"Lemon Demon - The Ultimate Showdown (8-Bit Remix)",
-		"what-is-love",
-		"MiseryBusiness",
-	];
-
-	// Sound effects (small files, <200KB) - for actions/events
-	private soundEffects = ["vote", "undo", "level-up", "wow", "surprise", "streak"];
-
-	// Synth fallback patterns when files are missing or unavailable
-	private fallbackMusicPatterns: SynthNote[][] = [
-		[
-			{ frequency: 261.63, duration: 0.18 },
-			{ frequency: 329.63, duration: 0.18 },
-			{ frequency: 392, duration: 0.18 },
-			{ frequency: 523.25, duration: 0.18 },
-			{ frequency: 392, duration: 0.18 },
-			{ frequency: 329.63, duration: 0.18 },
-			{ frequency: 293.66, duration: 0.18 },
-			{ frequency: 349.23, duration: 0.18 },
-		],
-		[
-			{ frequency: 220, duration: 0.18 },
-			{ frequency: 293.66, duration: 0.18 },
-			{ frequency: 329.63, duration: 0.18 },
-			{ frequency: 440, duration: 0.18 },
-			{ frequency: 392, duration: 0.18 },
-			{ frequency: 329.63, duration: 0.18 },
-			{ frequency: 293.66, duration: 0.18 },
-			{ frequency: 261.63, duration: 0.18 },
-		],
-		[
-			{ frequency: 174.61, duration: 0.18 },
-			{ frequency: 220, duration: 0.18 },
-			{ frequency: 261.63, duration: 0.18 },
-			{ frequency: 349.23, duration: 0.18 },
-			{ frequency: 392, duration: 0.18 },
-			{ frequency: 349.23, duration: 0.18 },
-			{ frequency: 261.63, duration: 0.18 },
-			{ frequency: 220, duration: 0.18 },
-		],
-		[
-			{ frequency: 196, duration: 0.18 },
-			{ frequency: 246.94, duration: 0.18 },
-			{ frequency: 293.66, duration: 0.18 },
-			{ frequency: 392, duration: 0.18 },
-			{ frequency: 329.63, duration: 0.18 },
-			{ frequency: 293.66, duration: 0.18 },
-			{ frequency: 246.94, duration: 0.18 },
-			{ frequency: 220, duration: 0.18 },
-		],
-		[
-			{ frequency: 233.08, duration: 0.18 },
-			{ frequency: 293.66, duration: 0.18 },
-			{ frequency: 349.23, duration: 0.18 },
-			{ frequency: 466.16, duration: 0.18 },
-			{ frequency: 392, duration: 0.18 },
-			{ frequency: 349.23, duration: 0.18 },
-			{ frequency: 293.66, duration: 0.18 },
-			{ frequency: 261.63, duration: 0.18 },
-		],
-	];
 
 	constructor() {
 		if (!this.isBrowser) {
@@ -140,10 +76,6 @@ class SoundManager {
 		}
 
 		const context = this.audioContext;
-		if (!context) {
-			return null;
-		}
-
 		if (context.state === "suspended") {
 			context.resume().catch(() => {
 				/* ignore browser policy errors */
@@ -153,99 +85,12 @@ class SoundManager {
 		return context;
 	}
 
-	private scheduleSynthNote(
-		context: AudioContext,
-		note: SynthNote,
-		startAt: number,
-		volume: number,
-	) {
-		if (note.frequency <= 0) {
-			return;
-		}
-
-		const oscillator = context.createOscillator();
-		const gainNode = context.createGain();
-		const noteVolume = Math.max(0.001, Math.min(1, volume * (note.gain ?? 1)));
-		const attack = Math.min(0.02, note.duration * 0.2);
-		const release = Math.min(0.08, note.duration * 0.45);
-		const releaseStart = Math.max(startAt + attack + 0.01, startAt + note.duration - release);
-
-		oscillator.type = note.wave ?? "triangle";
-		oscillator.frequency.setValueAtTime(note.frequency, startAt);
-
-		gainNode.gain.setValueAtTime(0.0001, startAt);
-		gainNode.gain.exponentialRampToValueAtTime(noteVolume, startAt + attack);
-		gainNode.gain.exponentialRampToValueAtTime(0.0001, releaseStart);
-
-		oscillator.connect(gainNode);
-		gainNode.connect(context.destination);
-		oscillator.start(startAt);
-		oscillator.stop(startAt + note.duration + 0.03);
-	}
-
-	private playSynthSequence(notes: SynthNote[], volume: number): number {
-		const context = this.getAudioContext();
-		if (!context) {
-			return 0;
-		}
-
-		const startTime = context.currentTime + 0.01;
-		let cursor = 0;
-		for (const note of notes) {
-			this.scheduleSynthNote(context, note, startTime + cursor, volume);
-			cursor += note.duration;
-		}
-		return cursor;
-	}
-
-	private getFallbackEffectPattern(soundName: string): SynthNote[] | null {
-		switch (soundName) {
-			case "vote":
-				return [
-					{ frequency: 523.25, duration: 0.05 },
-					{ frequency: 659.25, duration: 0.08 },
-				];
-			case "undo":
-				return [
-					{ frequency: 659.25, duration: 0.06 },
-					{ frequency: 523.25, duration: 0.08 },
-				];
-			case "level-up":
-				return [
-					{ frequency: 392, duration: 0.08 },
-					{ frequency: 523.25, duration: 0.08 },
-					{ frequency: 659.25, duration: 0.08 },
-					{ frequency: 783.99, duration: 0.12 },
-				];
-			case "wow":
-				return [
-					{ frequency: 440, duration: 0.09, wave: "sawtooth" },
-					{ frequency: 554.37, duration: 0.09, wave: "triangle" },
-					{ frequency: 659.25, duration: 0.18, wave: "triangle" },
-				];
-			case "surprise":
-				return [
-					{ frequency: 220, duration: 0.06, wave: "sine" },
-					{ frequency: 440, duration: 0.06, wave: "square" },
-					{ frequency: 880, duration: 0.12, wave: "triangle" },
-				];
-			case "streak":
-				return [
-					{ frequency: 587.33, duration: 0.06 },
-					{ frequency: 739.99, duration: 0.06 },
-					{ frequency: 880, duration: 0.08 },
-				];
-			default:
-				return null;
-		}
-	}
-
 	private playFallbackEffect(soundName: string, volume: number) {
-		const pattern = this.getFallbackEffectPattern(soundName);
+		const pattern = getFallbackEffectPattern(soundName);
 		if (!pattern) {
 			return;
 		}
-		this.playSynthSequence(pattern, volume);
+		synthEngine.playSequence(this.getAudioContext(), pattern, volume);
 	}
 
 	private stopFallbackMusic() {
@@ -269,13 +114,14 @@ class SoundManager {
 				return;
 			}
 
-			const pattern =
-				this.fallbackMusicPatterns[this.currentTrackIndex % this.fallbackMusicPatterns.length] ??
-				this.fallbackMusicPatterns[0];
+			const pattern = FALLBACK_MUSIC_PATTERNS[this.currentTrackIndex % FALLBACK_MUSIC_PATTERNS.length] ?? FALLBACK_MUSIC_PATTERNS[0];
 			if (!pattern) {
 				return;
 			}
-			const leadDuration = this.playSynthSequence(
+			
+			const context = this.getAudioContext();
+			const leadDuration = synthEngine.playSequence(
+				context,
 				pattern,
 				Math.max(0.04, this.backgroundMusicVolume * 0.7),
 			);
@@ -289,40 +135,39 @@ class SoundManager {
 					gain: 0.5,
 					wave: "sine" as OscillatorType,
 				}));
-			const bassDuration = this.playSynthSequence(
+			const bassDuration = synthEngine.playSequence(
+				context,
 				bassPattern,
 				Math.max(0.03, this.backgroundMusicVolume * 0.5),
 			);
 
 			const loopDurationMs = Math.max(
-				650,
+				AUDIO.FALLBACK_LOOP_MIN_DURATION_MS,
 				Math.round(Math.max(leadDuration, bassDuration, 1.35) * 1000),
 			);
-			this.fallbackMusicTimeout = window.setTimeout(playLoop, loopDurationMs - 35);
+			this.fallbackMusicTimeout = window.setTimeout(playLoop, loopDurationMs - AUDIO.FALLBACK_LOOP_OVERLAP_MS);
 		};
 
 		playLoop();
 	}
 
 	private preloadSounds() {
-		// Preload only sound effects (small files)
-		this.soundEffects.forEach((soundName) => {
+		SOUND_EFFECTS.forEach((soundName) => {
 			const audio = this.createAudioElement(soundName);
-			if (!audio) {
-				return;
+			if (audio) {
+				audio.volume = this.defaultVolume;
+				this.audioCache.set(soundName, audio);
 			}
-			audio.volume = this.defaultVolume;
-			this.audioCache.set(soundName, audio);
 		});
 	}
 
 	private preloadBackgroundMusic() {
-		this.loadBackgroundTrack(this.backgroundTracks[this.currentTrackIndex] ?? "");
+		this.loadBackgroundTrack(BACKGROUND_TRACKS[this.currentTrackIndex] ?? "");
 	}
 
 	playNextTrack() {
-		this.currentTrackIndex = (this.currentTrackIndex + 1) % this.backgroundTracks.length;
-		const nextTrack = this.backgroundTracks[this.currentTrackIndex];
+		this.currentTrackIndex = (this.currentTrackIndex + 1) % BACKGROUND_TRACKS.length;
+		const nextTrack = BACKGROUND_TRACKS[this.currentTrackIndex];
 		if (nextTrack) {
 			this.loadBackgroundTrack(nextTrack);
 			if (this.backgroundMusicRequested) {
@@ -332,9 +177,8 @@ class SoundManager {
 	}
 
 	playPreviousTrack() {
-		this.currentTrackIndex =
-			(this.currentTrackIndex - 1 + this.backgroundTracks.length) % this.backgroundTracks.length;
-		const prevTrack = this.backgroundTracks[this.currentTrackIndex];
+		this.currentTrackIndex = (this.currentTrackIndex - 1 + BACKGROUND_TRACKS.length) % BACKGROUND_TRACKS.length;
+		const prevTrack = BACKGROUND_TRACKS[this.currentTrackIndex];
 		if (prevTrack) {
 			this.loadBackgroundTrack(prevTrack);
 			if (this.backgroundMusicRequested) {
@@ -360,23 +204,23 @@ class SoundManager {
 	}
 
 	getCurrentTrack(): string {
-		return this.backgroundTracks[this.currentTrackIndex] || "Unknown Track";
+		return BACKGROUND_TRACKS[this.currentTrackIndex] || "Unknown Track";
 	}
 
 	getAvailableSongs(): string[] {
-		return [...this.backgroundTracks];
+		return [...BACKGROUND_TRACKS];
 	}
 
 	getAvailableSoundEffects(): string[] {
-		return [...this.soundEffects];
+		return [...SOUND_EFFECTS];
 	}
 
 	isSong(soundName: string): boolean {
-		return this.backgroundTracks.includes(soundName);
+		return BACKGROUND_TRACKS.includes(soundName);
 	}
 
 	isSoundEffect(soundName: string): boolean {
-		return this.soundEffects.includes(soundName);
+		return SOUND_EFFECTS.includes(soundName);
 	}
 
 	play(soundName: string, config: SoundConfig = {}) {
@@ -392,13 +236,7 @@ class SoundManager {
 				return;
 			}
 
-			// Try to get from cache first
-			let audio: HTMLAudioElement | null = this.audioCache.get(soundName) ?? null;
-
-			// If not in cache, try to create it on-demand
-			if (!audio) {
-				audio = this.createAudioElement(soundName);
-			}
+			let audio: HTMLAudioElement | null = this.audioCache.get(soundName) ?? this.createAudioElement(soundName);
 
 			if (!audio) {
 				this.failedAssets.add(soundName);
@@ -422,20 +260,16 @@ class SoundManager {
 			);
 
 			const playPromise = soundInstance.play();
-
 			if (playPromise !== undefined) {
 				playPromise.catch((error) => {
 					if (this.isAutoplayError(error)) {
-						console.debug("Sound playback blocked by browser policy:", error);
 						return;
 					}
-
 					this.failedAssets.add(soundName);
 					this.playFallbackEffect(soundName, volume);
 				});
 			}
 		} catch (error) {
-			console.warn(`Error playing sound "${soundName}":`, error);
 			this.playFallbackEffect(soundName, config.volume ?? this.defaultVolume);
 		}
 	}
@@ -450,7 +284,7 @@ class SoundManager {
 			return;
 		}
 
-		const trackName = this.backgroundTracks[this.currentTrackIndex];
+		const trackName = BACKGROUND_TRACKS[this.currentTrackIndex];
 		if (!trackName || this.failedAssets.has(trackName) || !this.backgroundMusic) {
 			this.startFallbackMusic();
 			return;
@@ -460,25 +294,19 @@ class SoundManager {
 		this.backgroundMusic.currentTime = 0;
 		this.backgroundMusic.play().catch((error) => {
 			if (this.isAutoplayError(error)) {
-				console.debug("Background music playback blocked:", error);
 				return;
 			}
-
 			this.failedAssets.add(trackName);
 			this.startFallbackMusic();
 		});
 	}
 
-	private stopNativeBackgroundMusic() {
+	stopBackgroundMusic() {
+		this.backgroundMusicRequested = false;
 		if (this.backgroundMusic) {
 			this.backgroundMusic.pause();
 			this.backgroundMusic.currentTime = 0;
 		}
-	}
-
-	stopBackgroundMusic() {
-		this.backgroundMusicRequested = false;
-		this.stopNativeBackgroundMusic();
 		this.stopFallbackMusic();
 	}
 
@@ -493,9 +321,7 @@ class SoundManager {
 		if (!this.isBrowser) {
 			return false;
 		}
-
-		// Support both historical and current key names.
-		const soundEnabled = getStorageString("soundEnabled") ?? getStorageString("sound-enabled");
+		const soundEnabled = getStorageString(STORAGE_KEYS.SOUND_ENABLED) ?? getStorageString("sound-enabled");
 		return soundEnabled !== "false";
 	}
 }
@@ -503,7 +329,7 @@ class SoundManager {
 const soundManager = new SoundManager();
 
 /**
- * Play a sound if audio is enabled
+ * Core Audio Service Exports
  */
 export const playSound = (soundName: string, config?: SoundConfig) => {
 	if (soundManager.canPlaySounds()) {
@@ -511,25 +337,21 @@ export const playSound = (soundName: string, config?: SoundConfig) => {
 	}
 };
 
-/**
- * Background music controls
- */
 export const playBackgroundMusic = () => soundManager.playBackgroundMusic();
 export const stopBackgroundMusic = () => soundManager.stopBackgroundMusic();
-export const setBackgroundMusicVolume = (volume: number) =>
-	soundManager.setBackgroundMusicVolume(volume);
+export const setBackgroundMusicVolume = (volume: number) => soundManager.setBackgroundMusicVolume(volume);
 export const playNextTrack = () => soundManager.playNextTrack();
 export const playPreviousTrack = () => soundManager.playPreviousTrack();
 export const getCurrentTrack = () => soundManager.getCurrentTrack();
 
 /**
- * Audio organization helpers
+ * Consolidated Sound Effects
  */
-
-/**
- * Additional sound effects
- */
-export const playLevelUpSound = (config?: SoundConfig) => playSound("level-up", config);
-export const playWowSound = (config?: SoundConfig) => playSound("wow", config);
-export const playSurpriseSound = (config?: SoundConfig) => playSound("surprise", config);
-export const playStreakSound = (config?: SoundConfig) => playSound("streak", config);
+export const AudioEffects = {
+	playLevelUp: (config?: SoundConfig) => playSound("level-up", config),
+	playWow: (config?: SoundConfig) => playSound("wow", config),
+	playSurprise: (config?: SoundConfig) => playSound("surprise", config),
+	playStreak: (config?: SoundConfig) => playSound("streak", config),
+	playVote: (config?: SoundConfig) => playSound("vote", config),
+	playUndo: (config?: SoundConfig) => playSound("undo", config),
+};

@@ -1,5 +1,5 @@
 import type { ElementType, ReactNode } from "react";
-import { cn } from "@/shared/lib/basic";
+import { cn } from "@/shared/lib/utils";
 
 interface EmptyStateProps {
 	icon?: ElementType;

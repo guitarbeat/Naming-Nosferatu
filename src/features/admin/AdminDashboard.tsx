@@ -7,16 +7,16 @@ import { AdminPlaceholderTab } from "@/features/admin/components/AdminPlaceholde
 import { AdminStatsGrid } from "@/features/admin/components/AdminStatsGrid";
 import { AdminTabNav } from "@/features/admin/components/AdminTabNav";
 import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
-import { namesQueryOptions } from "@/features/names/queries";
+import { namesQueryOptions } from "@/features/names/api";
 import { Loading } from "@/shared/components/layout/Feedback";
 import {
 	getActiveNames,
 	getHiddenNames,
 	getLockedNames,
 	matchesNameSearchTerm,
-} from "@/shared/lib/basic";
+} from "@/shared/lib/names/nameFilters";
 import { addToSet, removeFromSet } from "@/shared/lib/setUtils";
-import { statsAPI } from "@/shared/services/supabase/api";
+import { statsAPI } from "@/shared/services/supabase/statsService";
 import type { NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 

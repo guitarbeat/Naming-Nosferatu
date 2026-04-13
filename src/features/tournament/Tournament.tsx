@@ -2,7 +2,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { type KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ErrorComponent } from "@/shared/components/layout/Feedback";
-import { getRandomCatImage, getVisibleNames } from "@/shared/lib/basic";
+import { getRandomCatImage } from "@/shared/lib/media";
+import { getVisibleNames } from "@/shared/lib/names/nameFilters";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import {
 	Clock,

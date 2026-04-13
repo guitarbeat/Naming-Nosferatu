@@ -1,10 +1,10 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { leaderboardAPI, statsAPI } from "@/features/analytics/services/analyticsService";
-import { hiddenNamesAPI } from "@/shared/services/supabase/api";
+import { leaderboardAPI, statsAPI } from "@/shared/services/supabase/statsService";
+import { fetchHiddenNames, unhideName } from "@/features/names/api";
 import { useDashboardData } from "./useDashboardData";
 
-vi.mock("@/features/analytics/services/analyticsService", () => ({
+vi.mock("@/shared/services/supabase/statsService", () => ({
 	leaderboardAPI: {
 		getLeaderboard: vi.fn(),
 	},
@@ -15,11 +15,9 @@ vi.mock("@/features/analytics/services/analyticsService", () => ({
 	},
 }));
 
-vi.mock("@/shared/services/supabase/api", () => ({
-	hiddenNamesAPI: {
-		getHiddenNames: vi.fn(),
-		unhideName: vi.fn(),
-	},
+vi.mock("@/features/names/api", () => ({
+	fetchHiddenNames: vi.fn(),
+	unhideName: vi.fn(),
 }));
 
 describe("useDashboardData", () => {
@@ -66,10 +64,13 @@ describe("useDashboardData", () => {
 			totalPageViews: 99,
 			bounceRate: 24,
 		});
-		vi.mocked(hiddenNamesAPI.getHiddenNames).mockResolvedValue([{ id: "hidden-1", name: "Ghost" }]);
-		vi.mocked(hiddenNamesAPI.unhideName).mockResolvedValue({
+		vi.mocked(fetchHiddenNames).mockResolvedValue({
+			names: [{ id: "hidden-1", name: "Ghost" }],
+			source: "supabase",
+		});
+		vi.mocked(unhideName).mockResolvedValue({
 			success: true,
-			error: null,
+			error: undefined,
 		});
 	});
 
@@ -109,7 +110,7 @@ describe("useDashboardData", () => {
 		});
 
 		await waitFor(() => {
-			expect(hiddenNamesAPI.getHiddenNames).toHaveBeenCalledTimes(1);
+			expect(fetchHiddenNames).toHaveBeenCalledTimes(1);
 		});
 		expect(result.current.hiddenNames).toEqual([{ id: "hidden-1", name: "Ghost" }]);
 
@@ -117,7 +118,7 @@ describe("useDashboardData", () => {
 			await result.current.handleUnhideName("hidden-1");
 		});
 
-		expect(hiddenNamesAPI.unhideName).toHaveBeenCalledWith("Ada", "hidden-1");
+		expect(unhideName).toHaveBeenCalledWith("Ada", "hidden-1");
 		expect(result.current.hiddenNames).toEqual([]);
 	});
 

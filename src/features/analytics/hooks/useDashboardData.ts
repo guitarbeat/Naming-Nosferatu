@@ -6,8 +6,8 @@ import {
 	type SiteStats,
 	statsAPI,
 	type UserStats,
-} from "@/features/analytics/services/analyticsService";
-import { hiddenNamesAPI } from "@/shared/services/supabase/api";
+} from "@/shared/services/supabase/statsService";
+import { fetchHiddenNames, unhideName } from "@/features/names/api";
 
 export type DashboardTimeframe = "day" | "week" | "month";
 
@@ -36,7 +36,7 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 	useEffect(() => {
 		let isActive = true;
 
-		const fetchLeaderboard = async () => {
+		const fetchLeaderboardData = async () => {
 			setIsLoadingLeaderboard(true);
 			try {
 				const data = await leaderboardAPI.getLeaderboard(10);
@@ -52,7 +52,7 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 			}
 		};
 
-		void fetchLeaderboard();
+		void fetchLeaderboardData();
 
 		return () => {
 			isActive = false;
@@ -62,7 +62,7 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 	const refreshEngagementMetrics = useCallback(async () => {
 		setIsLoadingEngagement(true);
 		try {
-			const metrics = await statsAPI.getEngagementMetrics(timeframe);
+			const metrics = await statsAPI.getEngagementMetrics(timeframe as any);
 			setEngagementMetrics(metrics);
 		} catch (error) {
 			console.error("Failed to fetch engagement metrics:", error);
@@ -108,18 +108,18 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 
 		let isActive = true;
 
-		const fetchHiddenNames = async () => {
+		const fetchNames = async () => {
 			try {
-				const data = await hiddenNamesAPI.getHiddenNames();
+				const result = await fetchHiddenNames();
 				if (isActive) {
-					setHiddenNames(data);
+					setHiddenNames(result.names);
 				}
 			} catch (error) {
 				console.error("Failed to fetch hidden names:", error);
 			}
 		};
 
-		void fetchHiddenNames();
+		void fetchNames();
 
 		return () => {
 			isActive = false;
@@ -137,7 +137,7 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 			}
 
 			try {
-				const result = await hiddenNamesAPI.unhideName(normalizedUserName, nameId);
+				const result = await unhideName(normalizedUserName, String(nameId));
 				if (!result.success) {
 					throw new Error(result.error || "Failed to unhide name");
 				}

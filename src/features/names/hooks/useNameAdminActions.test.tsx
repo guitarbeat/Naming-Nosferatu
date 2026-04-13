@@ -5,23 +5,20 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	batchUpdateLocked,
 	batchUpdateVisibility,
+	namesQueryKeys,
 	softDeleteName,
 	toggleNameHidden,
 	toggleNameLocked,
-} from "@/features/names/mutations";
-import { namesQueryKeys } from "@/features/names/queries";
+} from "@/features/names/api";
 import { imagesAPI } from "@/shared/services/supabase/api";
 import { useNameAdminActions } from "./useNameAdminActions";
 
-vi.mock("@/features/names/mutations", () => ({
+vi.mock("@/features/names/api", () => ({
 	batchUpdateLocked: vi.fn(),
 	batchUpdateVisibility: vi.fn(),
 	softDeleteName: vi.fn(),
 	toggleNameHidden: vi.fn(),
 	toggleNameLocked: vi.fn(),
-}));
-
-vi.mock("@/features/names/queries", () => ({
 	namesQueryKeys: {
 		all: ["names"],
 	},
