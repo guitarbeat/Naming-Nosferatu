@@ -28,7 +28,9 @@ declare global {
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
 
 export function shouldWarnMissingSupabaseCredentials(hostname: string): boolean {
-        return !LOCAL_HOSTS.has(hostname);
+        if (LOCAL_HOSTS.has(hostname)) return false;
+        if (hostname.endsWith(".replit.dev") || hostname.endsWith(".repl.co")) return false;
+        return true;
 }
 
 function getCurrentHostname(): string {

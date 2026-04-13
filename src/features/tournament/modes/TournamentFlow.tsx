@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Trophy } from "@/shared/lib/icons";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import useAppStore from "@/store/appStore";
@@ -22,6 +22,9 @@ export default function TournamentFlow() {
                         ratings: Record<string, { rating: number; wins: number; losses: number }>;
                 }) => ratingsAPI.saveRatings(userId, ratings),
         });
+
+        const mutateAsyncRef = useRef(saveRatingsMutation.mutateAsync);
+        mutateAsyncRef.current = saveRatingsMutation.mutateAsync;
 
         useEffect(() => {
                 if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
@@ -64,8 +67,7 @@ export default function TournamentFlow() {
                                 {} as Record<string, { rating: number; wins: number; losses: number }>,
                         );
 
-                        saveRatingsMutation
-                                .mutateAsync({ userId, ratings: ratingsWithStats })
+                        mutateAsyncRef.current({ userId, ratings: ratingsWithStats })
                                 .then((result) => {
                                         if (result?.success) {
                                                 console.log(`Successfully saved ${result.count} ratings to database`);
@@ -77,7 +79,6 @@ export default function TournamentFlow() {
                                 });
                 }
         }, [
-                saveRatingsMutation,
                 tournament.isComplete,
                 tournament.ratings,
                 user.name,
