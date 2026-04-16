@@ -38,8 +38,28 @@ export function TournamentBracketSection({
 			<SectionHeading
 				icon={Trophy}
 				title="Tournament Bracket"
-				subtitle="Head-to-head matchups, one winner at a time."
+				subtitle="Play through your live bracket here. This session sharpens your personal ordering while the wider site stats accumulate across everyone."
 			/>
+			<div className="mx-auto mb-5 grid w-full max-w-5xl gap-3 md:grid-cols-2">
+				<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+						Session Scope
+					</p>
+					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
+						Each bracket run helps shape your current ranking session, including the personal
+						results panel and saved ordering you see later in the dashboard.
+					</p>
+				</div>
+				<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+						Community Scope
+					</p>
+					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
+						Leaderboard and site stats summarize broader activity across the whole app, so treat
+						them as a wider signal rather than a mirror of a single bracket run.
+					</p>
+				</div>
+			</div>
 			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 				{names && names.length > 0 ? (
 					<LazyTournament names={names} existingRatings={ratings} onComplete={onComplete} />

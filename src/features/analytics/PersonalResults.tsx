@@ -33,9 +33,14 @@ export const PersonalResults = ({
 	return (
 		<div className="space-y-6">
 			<div className="grid gap-3 sm:grid-cols-3">
-				<StatTile label="Champion" value={rankings[0]?.name || "—"} icon={Trophy} accent />
-				<StatTile label="Top rating" value={String(rankings[0]?.rating || 1500)} icon={BarChart3} accent />
-				<StatTile label="Ranked names" value={rankings.length} icon={Trophy} accent />
+				<StatTile label="Champion" value={rankings[0]?.name || "—"} icon={Trophy} accent={true} />
+				<StatTile
+					label="Top rating"
+					value={String(rankings[0]?.rating || 1500)}
+					icon={BarChart3}
+					accent={true}
+				/>
+				<StatTile label="Ranked names" value={rankings.length} icon={Trophy} accent={true} />
 			</div>
 
 			<div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-4 sm:p-5">
@@ -47,6 +52,10 @@ export const PersonalResults = ({
 						<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">
 							Reorder your results if you want a final manual pass before saving the bracket back to
 							your profile.
+						</p>
+						<p className="max-w-2xl text-xs leading-relaxed text-muted-foreground/60">
+							This panel is your personal ordering layer. It helps you tune your saved bracket
+							without reframing the broader community averages by itself.
 						</p>
 					</div>
 					<Button variant="outline" size="small" onClick={onStartNew}>
