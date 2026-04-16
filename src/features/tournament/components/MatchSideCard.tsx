@@ -14,6 +14,9 @@ export interface MatchSideCardProps {
 	img: string | null;
 	heatLevel: HeatLevel | null;
 	streak: number;
+	rating: number;
+	isFavored: boolean;
+	shortcutHint: string;
 	isVoting: boolean;
 	isSelected: boolean;
 	hasSelectionFeedback: boolean;
@@ -58,6 +61,9 @@ export function MatchSideCard({
 	img,
 	heatLevel,
 	streak,
+	rating,
+	isFavored,
+	shortcutHint,
 	isVoting,
 	isSelected,
 	hasSelectionFeedback,
@@ -80,6 +86,7 @@ export function MatchSideCard({
 
 	const showStreak = streak >= STREAK_THRESHOLDS.warm;
 	const streakBadgeCount = Math.min(getFlameCount(streak), 4);
+	const metaBadgeSide = isRight ? "left-4" : "right-4";
 
 	return (
 		<div className="flex min-h-[18rem] flex-1 flex-col sm:min-h-[26rem]">
@@ -134,6 +141,20 @@ export function MatchSideCard({
 							</span>
 						</div>
 					)}
+
+					<div
+						className={`absolute top-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/55 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/75 backdrop-blur-md ${metaBadgeSide}`}
+					>
+						<span className="text-white/55">{shortcutHint}</span>
+						<span className="h-1 w-1 rounded-full bg-white/25" />
+						<span>{Math.round(rating)}</span>
+						{isFavored && (
+							<>
+								<span className="h-1 w-1 rounded-full bg-emerald-300/70" />
+								<span className="text-emerald-200">Favored</span>
+							</>
+						)}
+					</div>
 
 					<div
 						className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-gradient-to-t from-slate-950/96 via-slate-950/60 to-transparent p-5 sm:p-6 ${bodyAlignment} ${textAlign}`}
