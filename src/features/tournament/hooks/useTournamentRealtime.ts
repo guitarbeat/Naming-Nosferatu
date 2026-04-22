@@ -1,4 +1,5 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useCallback, useEffect, useRef } from "react";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
 export interface TournamentUpdate {
@@ -27,19 +28,18 @@ export interface UserActivity {
 }
 
 type ConnectionState = "connecting" | "connected" | "disconnected" | "error";
-type MessageHandler = (message: { data: unknown }) => void;
 
-class RealtimeService {
+class TournamentRealtimeService {
 	private dbChannel: RealtimeChannel | null = null;
-	private appChannel: RealtimeChannel | null = null;
 	private tournamentChannels = new Map<string, RealtimeChannel>();
 	private connectionState: ConnectionState = "disconnected";
-	private nameChangeCallbacks: Array<(payload: unknown) => void> = [];
 	private ratingChangeCallbacks: Array<(payload: unknown) => void> = [];
-	private messageHandlers = new Map<string, Set<MessageHandler>>();
 
 	async connect(): Promise<void> {
-		if (this.connectionState === "connected" || this.connectionState === "connecting") {
+		if (
+			this.connectionState === "connected" ||
+			this.connectionState === "connecting"
+		) {
 			return;
 		}
 		this.connectionState = "connecting";
@@ -53,17 +53,12 @@ class RealtimeService {
 
 			this.dbChannel = client
 				.channel("db-changes")
-				.on("postgres_changes", { event: "*", schema: "public", table: "cat_names" }, (payload) => {
-					for (const cb of this.nameChangeCallbacks) {
-						cb(payload);
-					}
-				})
 				.on(
 					"postgres_changes",
 					{ event: "INSERT", schema: "public", table: "user_cat_name_ratings" },
 					(payload) => {
-						for (const cb of this.ratingChangeCallbacks) {
-							cb(payload);
+						for (const callback of this.ratingChangeCallbacks) {
+							callback(payload);
 						}
 					},
 				)
@@ -74,21 +69,8 @@ class RealtimeService {
 						this.connectionState = "disconnected";
 					}
 				});
-
-			this.appChannel = client
-				.channel("app-broadcast")
-				.on("broadcast", { event: "*" }, (payload) => {
-					const type = payload.event as string;
-					const handlers = this.messageHandlers.get(type);
-					if (handlers) {
-						for (const handler of handlers) {
-							handler({ data: payload.payload });
-						}
-					}
-				})
-				.subscribe();
 		} catch (error) {
-			console.warn("[RealtimeService] Failed to connect:", error);
+			console.warn("[TournamentRealtimeService] Failed to connect:", error);
 			this.connectionState = "error";
 		}
 	}
@@ -96,54 +78,11 @@ class RealtimeService {
 	disconnect(): void {
 		this.dbChannel?.unsubscribe();
 		this.dbChannel = null;
-		this.appChannel?.unsubscribe();
-		this.appChannel = null;
-		for (const ch of this.tournamentChannels.values()) {
-			ch.unsubscribe();
+		for (const channel of this.tournamentChannels.values()) {
+			channel.unsubscribe();
 		}
 		this.tournamentChannels.clear();
 		this.connectionState = "disconnected";
-	}
-
-	getConnectionState(): ConnectionState {
-		return this.connectionState;
-	}
-
-	isConnected(): boolean {
-		return this.connectionState === "connected";
-	}
-
-	onNameChange(callback: (payload: unknown) => void): () => void {
-		this.nameChangeCallbacks.push(callback);
-		return () => {
-			this.nameChangeCallbacks = this.nameChangeCallbacks.filter((cb) => cb !== callback);
-		};
-	}
-
-	onRatingChange(callback: (payload: unknown) => void): () => void {
-		this.ratingChangeCallbacks.push(callback);
-		return () => {
-			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter((cb) => cb !== callback);
-		};
-	}
-
-	onMessage(type: string, handler: MessageHandler): void {
-		if (!this.messageHandlers.has(type)) {
-			this.messageHandlers.set(type, new Set());
-		}
-		this.messageHandlers.get(type)?.add(handler);
-	}
-
-	offMessage(type: string): void {
-		this.messageHandlers.delete(type);
-	}
-
-	sendMessage(message: unknown): void {
-		this.appChannel?.send({
-			type: "broadcast",
-			event: "message",
-			payload: message,
-		});
 	}
 
 	subscribeToTournament(
@@ -158,6 +97,7 @@ class RealtimeService {
 				if (!client || cancelled) {
 					return;
 				}
+
 				channel = client
 					.channel(`tournament:${tournamentId}`)
 					.on("broadcast", { event: "tournament_update" }, (payload) => {
@@ -167,6 +107,7 @@ class RealtimeService {
 						}
 					})
 					.subscribe();
+
 				if (!cancelled) {
 					this.tournamentChannels.set(tournamentId, channel as RealtimeChannel);
 				}
@@ -175,9 +116,9 @@ class RealtimeService {
 
 		return () => {
 			cancelled = true;
-			const ch = this.tournamentChannels.get(tournamentId);
-			if (ch) {
-				ch.unsubscribe();
+			const activeChannel = this.tournamentChannels.get(tournamentId);
+			if (activeChannel) {
+				activeChannel.unsubscribe();
 				this.tournamentChannels.delete(tournamentId);
 			}
 		};
@@ -189,22 +130,30 @@ class RealtimeService {
 			if (!record) {
 				return;
 			}
+
 			const result: MatchResult = {
 				tournamentId: String(record.user_name ?? ""),
 				matchId: String(record.name_id ?? ""),
 				winnerId: String(record.name_id ?? ""),
 				loserId: "",
-				newRatings: { [String(record.name_id ?? "")]: Number(record.rating ?? 1500) },
+				newRatings: {
+					[String(record.name_id ?? "")]: Number(record.rating ?? 1500),
+				},
 			};
 			callback(result);
 		};
+
 		this.ratingChangeCallbacks.push(handler);
 		return () => {
-			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter((cb) => cb !== handler);
+			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter(
+				(cb) => cb !== handler,
+			);
 		};
 	}
 
-	subscribeToUserActivity(callback: (activity: UserActivity) => void): () => void {
+	subscribeToUserActivity(
+		callback: (activity: UserActivity) => void,
+	): () => void {
 		let presenceChannel: RealtimeChannel | null = null;
 		let cancelled = false;
 
@@ -212,13 +161,15 @@ class RealtimeService {
 			if (!client || cancelled) {
 				return;
 			}
+
 			presenceChannel = client
 				.channel("user-presence")
 				.on("presence", { event: "join" }, ({ newPresences }) => {
 					for (const presence of newPresences) {
 						callback({
 							userId: String(
-								(presence as Record<string, unknown>).user_id ?? presence.presence_ref,
+								(presence as Record<string, unknown>).user_id ??
+									presence.presence_ref,
 							),
 							action: "joined",
 							timestamp: Date.now(),
@@ -229,7 +180,8 @@ class RealtimeService {
 					for (const presence of leftPresences) {
 						callback({
 							userId: String(
-								(presence as Record<string, unknown>).user_id ?? presence.presence_ref,
+								(presence as Record<string, unknown>).user_id ??
+									presence.presence_ref,
 							),
 							action: "left",
 							timestamp: Date.now(),
@@ -251,11 +203,68 @@ class RealtimeService {
 	}
 }
 
-let serviceInstance: RealtimeService | null = null;
+let serviceInstance: TournamentRealtimeService | null = null;
 
-export function getWebSocketService(_url?: string): RealtimeService {
+function getTournamentRealtimeService(): TournamentRealtimeService {
 	if (!serviceInstance) {
-		serviceInstance = new RealtimeService();
+		serviceInstance = new TournamentRealtimeService();
 	}
 	return serviceInstance;
+}
+
+interface UseTournamentRealtimeOptions {
+	autoConnect?: boolean;
+}
+
+export function useTournamentRealtime(
+	options: UseTournamentRealtimeOptions = {},
+) {
+	const serviceRef = useRef<TournamentRealtimeService | null>(null);
+
+	useEffect(() => {
+		if (!serviceRef.current) {
+			serviceRef.current = getTournamentRealtimeService();
+
+			if (options.autoConnect) {
+				serviceRef.current.connect().catch(console.error);
+			}
+		}
+
+		return () => {
+			serviceRef.current?.disconnect();
+			serviceRef.current = null;
+		};
+	}, [options.autoConnect]);
+
+	const subscribeToTournament = useCallback(
+		(tournamentId: string, callback: (update: TournamentUpdate) => void) => {
+			return serviceRef.current?.subscribeToTournament(tournamentId, callback);
+		},
+		[],
+	);
+
+	const subscribeToMatches = useCallback(
+		(callback: (result: MatchResult) => void) => {
+			return serviceRef.current?.subscribeToMatches(callback);
+		},
+		[],
+	);
+
+	const subscribeToUserActivity = useCallback(
+		(callback: (activity: UserActivity) => void) => {
+			return serviceRef.current?.subscribeToUserActivity(callback);
+		},
+		[],
+	);
+
+	const cleanup = useCallback(() => {
+		serviceRef.current?.cleanup();
+	}, []);
+
+	return {
+		subscribeToTournament,
+		subscribeToMatches,
+		subscribeToUserActivity,
+		cleanup,
+	};
 }

@@ -4,12 +4,11 @@ import {
 	generateRandomTeams,
 	resolveTournamentMode,
 } from "@/features/tournament/services/tournament";
-import { useWebSocket } from "@/features/websocket/hooks/useWebSocket";
 import type {
 	MatchResult,
 	TournamentUpdate,
 	UserActivity,
-} from "@/features/websocket/services/websocketService";
+} from "@/features/tournament/hooks/useTournamentRealtime";
 import { useLocalStorage } from "@/shared/hooks";
 import { TIMING } from "@/shared/lib/constants";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
@@ -39,6 +38,7 @@ import {
 	createTournamentId,
 	sanitizePersistentState,
 } from "./tournamentPersistence";
+import { useTournamentRealtime } from "./useTournamentRealtime";
 import { useAudioManager } from "./useHelpers";
 
 interface UseTournamentStateResult {
@@ -66,7 +66,9 @@ interface UseTournamentStateResult {
 		callback: (update: TournamentUpdate) => void,
 	) => void;
 	subscribeToMatchResults?: (callback: (result: MatchResult) => void) => void;
-	subscribeToUserActivity?: (callback: (activity: UserActivity) => void) => void;
+	subscribeToUserActivity?: (
+		callback: (activity: UserActivity) => void,
+	) => void;
 }
 
 const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
@@ -80,38 +82,48 @@ function haveSameIds(a: string[], b: string[]): boolean {
 	return left.every((id, index) => id === right[index]);
 }
 
-export function useTournamentState(names: NameItem[], userName?: string): UseTournamentStateResult {
+export function useTournamentState(
+	names: NameItem[],
+	userName?: string,
+): UseTournamentStateResult {
 	const toast = useToast();
 	const audioManager = useAudioManager();
 	const [isVoting, setIsVoting] = useState(false);
 	const [ratings, setRatings] = useState<Record<string, number>>({});
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
 	const [refreshKey, setRefreshKey] = useState(0);
-	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
+	const tournamentMode = useMemo(
+		() => resolveTournamentMode(names.length),
+		[names.length],
+	);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
-	const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
+	const tournamentId = useMemo(
+		() => createTournamentId(names, userName),
+		[names, userName],
+	);
 
-	const webSocket = useWebSocket({ autoConnect: true });
+	const realtime = useTournamentRealtime({ autoConnect: true });
 
 	const defaultPersistentState = useMemo(
 		() => createDefaultPersistentState(userName || "anonymous"),
 		[userName],
 	);
 
-	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
-		tournamentId,
-		defaultPersistentState,
-		{
-			debounceWait: 1000,
-			onError: () => {
-				toast.showWarning(
-					"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
-				);
+	const [persistentStateRaw, setPersistentState] =
+		useLocalStorage<PersistentTournamentState>(
+			tournamentId,
+			defaultPersistentState,
+			{
+				debounceWait: 1000,
+				onError: () => {
+					toast.showWarning(
+						"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
+					);
+				},
 			},
-		},
-	);
+		);
 
 	const persistentState = useMemo(
 		(): PersistentTournamentState =>
@@ -123,10 +135,13 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		(
 			updates:
 				| Partial<PersistentTournamentState>
-				| ((prev: PersistentTournamentState) => Partial<PersistentTournamentState>),
+				| ((
+						prev: PersistentTournamentState,
+				  ) => Partial<PersistentTournamentState>),
 		) => {
 			setPersistentState((prev) => {
-				const delta = typeof updates === "function" ? updates(prev) || {} : updates || {};
+				const delta =
+					typeof updates === "function" ? updates(prev) || {} : updates || {};
 				return { ...prev, ...delta };
 			});
 		},
@@ -144,11 +159,11 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	// Cleanup WebSocket connections on unmount
 	useEffect(() => {
 		return () => {
-			if (webSocket && typeof webSocket.cleanup === "function") {
-				webSocket.cleanup();
+			if (realtime && typeof realtime.cleanup === "function") {
+				realtime.cleanup();
 			}
 		};
-	}, [webSocket]);
+	}, [realtime]);
 
 	useEffect(() => {
 		ratingsRef.current = ratings;
@@ -172,7 +187,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		// Batch all state updates to prevent race conditions
 		const initializeTournament = () => {
 			const hasValidPersistence =
-				persistentState.namesKey === namesKey && persistentState.mode === tournamentMode;
+				persistentState.namesKey === namesKey &&
+				persistentState.mode === tournamentMode;
 			const initialRatings = buildInitialRatings(names);
 
 			let teams = persistentState.teams;
@@ -190,7 +206,9 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				!hasValidPersistence ||
 				persistentState.bracketEntrants.length === 0 ||
 				!haveSameIds(
-					persistentState.bracketEntrants.filter((id) => !id.startsWith("__BYE__")),
+					persistentState.bracketEntrants.filter(
+						(id) => !id.startsWith("__BYE__"),
+					),
 					participantIds,
 				);
 			const bracketEntrants = shouldResetBracket
@@ -219,7 +237,9 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				shouldResetBracket ||
 				(tournamentMode === "2v2" && teams !== persistentState.teams)
 			) {
-				stateUpdates.ratings = shouldResetBracket ? initialRatings : persistentState.ratings;
+				stateUpdates.ratings = shouldResetBracket
+					? initialRatings
+					: persistentState.ratings;
 			}
 
 			// Update ratings and persistent state atomically.
@@ -273,9 +293,16 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	]); // Reduced dependency array
 
 	const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
-	const teamsById = useMemo(() => createTeamsById(persistentState.teams), [persistentState.teams]);
+	const teamsById = useMemo(
+		() => createTeamsById(persistentState.teams),
+		[persistentState.teams],
+	);
 	const bracketDerived = useMemo(
-		() => deriveBracketState(persistentState.bracketEntrants, persistentState.matchHistory),
+		() =>
+			deriveBracketState(
+				persistentState.bracketEntrants,
+				persistentState.matchHistory,
+			),
 		[persistentState.bracketEntrants, persistentState.matchHistory],
 	);
 
@@ -287,7 +314,13 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			teamsById,
 			idToNameMap,
 		});
-	}, [refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
+	}, [
+		refreshKey,
+		idToNameMap,
+		tournamentMode,
+		bracketDerived.pendingMatchIds,
+		teamsById,
+	]);
 	const openingEntrants = useMemo(
 		() =>
 			persistentState.bracketEntrants
@@ -319,8 +352,15 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			}),
 		[bracketDerived],
 	);
-	const { totalMatches, matchNumber, round, totalRounds, stageLabel, progress, etaMinutes } =
-		metrics;
+	const {
+		totalMatches,
+		matchNumber,
+		round,
+		totalRounds,
+		stageLabel,
+		progress,
+		etaMinutes,
+	} = metrics;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -343,7 +383,9 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			// Fire-and-forget: update global win/loss counters per match.
 			// Errors are non-fatal — the local Elo update already happened.
 			const leftIds =
-				currentMatch.mode === "2v2" ? currentMatch.left.memberIds : [String(currentMatch.left.id)];
+				currentMatch.mode === "2v2"
+					? currentMatch.left.memberIds
+					: [String(currentMatch.left.id)];
 			const rightIds =
 				currentMatch.mode === "2v2"
 					? currentMatch.right.memberIds
@@ -369,7 +411,10 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 					winnerSide,
 				})
 				.catch((err: unknown) => {
-					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
+					console.warn(
+						"[tournament] apply_tournament_match_elo failed (non-fatal):",
+						err,
+					);
 				});
 
 			const matchRecord: MatchRecord = createMatchRecord({
@@ -501,8 +546,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		isVoting,
 		handleVoteWithAnimation,
 		matchHistory: persistentState.matchHistory,
-		subscribeToTournamentUpdates: webSocket.subscribeToTournament,
-		subscribeToMatchResults: webSocket.subscribeToMatches,
-		subscribeToUserActivity: webSocket.subscribeToUserActivity,
+		subscribeToTournamentUpdates: realtime.subscribeToTournament,
+		subscribeToMatchResults: realtime.subscribeToMatches,
+		subscribeToUserActivity: realtime.subscribeToUserActivity,
 	};
 }
