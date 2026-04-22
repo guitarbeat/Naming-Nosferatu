@@ -1,20 +1,16 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useNameSuggestion } from "@/shared/hooks";
-import { coreAPI } from "@/shared/services/supabase/client";
+import { useNameSuggestion } from "./useNameSuggestion";
 
-// Mock the dependencies
-vi.mock("@/shared/services/supabase/client", () => ({
-	coreAPI: {
-		addName: vi.fn(),
-	},
+const mockAddName = vi.fn();
+
+vi.mock("@/features/names/api", () => ({
+	addName: (...args: unknown[]) => mockAddName(...args),
 }));
 
 describe("useNameSuggestion", () => {
-	const mockedCoreAPI = vi.mocked(coreAPI);
-
 	beforeEach(() => {
-		vi.clearAllMocks();
+		mockAddName.mockReset();
 	});
 
 	it("initializes with default values", () => {
@@ -27,7 +23,7 @@ describe("useNameSuggestion", () => {
 		expect(result.current.successMessage).toBe("");
 	});
 
-	it("validates input", () => {
+	it("validates input", async () => {
 		const { result } = renderHook(() => useNameSuggestion());
 
 		act(() => {
@@ -35,9 +31,8 @@ describe("useNameSuggestion", () => {
 			result.current.handleBlur("name");
 		});
 
-		// Trigger validation by trying to submit
-		act(() => {
-			result.current.handleSubmit();
+		await act(async () => {
+			await result.current.handleSubmit();
 		});
 
 		expect(result.current.errors.name).toBe("Name is required");
@@ -48,10 +43,9 @@ describe("useNameSuggestion", () => {
 		const onSuccessMock = vi.fn();
 		const { result } = renderHook(() => useNameSuggestion({ onSuccess: onSuccessMock }));
 
-		// Setup mock success response
-		mockedCoreAPI.addName.mockResolvedValue({
-			success: true,
-			data: { id: "123", name: "Test Cat" },
+		mockAddName.mockResolvedValue({
+			id: "123",
+			name: "Test Cat",
 		});
 
 		act(() => {
@@ -63,17 +57,19 @@ describe("useNameSuggestion", () => {
 			await result.current.handleSubmit();
 		});
 
-		expect(coreAPI.addName).toHaveBeenCalledWith("Test Cat", "A cute test cat");
+		expect(mockAddName).toHaveBeenCalledWith({
+			name: "Test Cat",
+			description: "A cute test cat",
+		});
 		expect(result.current.successMessage).toBe("Name suggestion submitted successfully!");
 		expect(result.current.values).toEqual({ name: "", description: "" });
-		expect(onSuccessMock).toHaveBeenCalled();
+		expect(onSuccessMock).toHaveBeenCalledTimes(1);
 	});
 
 	it("handles submission error", async () => {
 		const { result } = renderHook(() => useNameSuggestion());
 
-		// Setup mock error response
-		mockedCoreAPI.addName.mockResolvedValue({ success: false, error: "Duplicate name" });
+		mockAddName.mockRejectedValue(new Error("Duplicate name"));
 
 		act(() => {
 			result.current.handleChange("name", "Duplicate Cat");
@@ -84,28 +80,8 @@ describe("useNameSuggestion", () => {
 			await result.current.handleSubmit();
 		});
 
-		expect(coreAPI.addName).toHaveBeenCalled();
-		// In my implementation plan, if success is false, I throw, so globalError should be set
+		expect(mockAddName).toHaveBeenCalledTimes(1);
 		expect(result.current.globalError).toBe("Duplicate name");
 		expect(result.current.successMessage).toBe("");
-	});
-
-	it("handles exception during submission", async () => {
-		const { result } = renderHook(() => useNameSuggestion());
-
-		// Setup mock exception
-		mockedCoreAPI.addName.mockRejectedValue(new Error("Network error"));
-
-		act(() => {
-			result.current.handleChange("name", "Error Cat");
-			result.current.handleChange("description", "Cat causing error");
-		});
-
-		await act(async () => {
-			await result.current.handleSubmit();
-		});
-
-		expect(coreAPI.addName).toHaveBeenCalled();
-		expect(result.current.globalError).toBe("Network error");
 	});
 });

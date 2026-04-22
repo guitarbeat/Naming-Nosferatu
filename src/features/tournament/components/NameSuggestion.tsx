@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef } from "react";
+import { useNameSuggestion } from "@/features/tournament/hooks";
 import { Button, Input, Textarea } from "@/shared/components/layout";
-import { useNameSuggestion } from "@/shared/hooks";
 import { CheckCircle, X } from "@/shared/lib/icons";
 
 // ============================================================================
