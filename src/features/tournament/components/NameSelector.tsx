@@ -746,9 +746,9 @@ export function NameSelector() {
 	return (
 		<div className="mx-auto w-full">
 			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
-				<div className="rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl sm:p-5">
-					<div className="flex flex-col gap-5">
-						<div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+				<div className="rounded-[1.85rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl sm:p-5">
+					<div className="flex flex-col gap-4 sm:gap-5">
+						<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 							<div className="space-y-3">
 								<p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
 									Selection deck
@@ -767,7 +767,7 @@ export function NameSelector() {
 								</div>
 							</div>
 
-							<div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+							<div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
 								{[
 									{ label: "Selected", value: selectedIdsSet.size },
 									{ label: "Available", value: availableNames.length },
@@ -776,7 +776,7 @@ export function NameSelector() {
 								].map((item) => (
 									<div
 										key={item.label}
-										className="rounded-2xl border border-white/10 bg-black/15 px-4 py-3"
+										className="rounded-2xl border border-white/10 bg-black/15 px-3 py-3 sm:px-4"
 									>
 										<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
 											{item.label}
@@ -789,63 +789,80 @@ export function NameSelector() {
 							</div>
 						</div>
 
-						<div className="flex flex-col gap-3 border-t border-white/10 pt-4 xl:flex-row xl:items-center xl:justify-between">
-							<div className="flex flex-wrap gap-2">
-								<Button
-									variant={isSwipeMode ? "primary" : "outline"}
-									size="small"
-									onClick={() => setSwipeMode(true)}
-								>
-									Swipe Mode
-								</Button>
-								<Button
-									variant={isSwipeMode ? "outline" : "primary"}
-									size="small"
-									onClick={() => setSwipeMode(false)}
-								>
-									Grid Mode
-								</Button>
-								<Button
-									variant="ghost"
-									size="small"
-									onClick={_handleSelectRandomAvailable}
-									disabled={availableNames.length === 0}
-								>
-									Pick 8 Random
-								</Button>
-								<Button
-									variant="ghost"
-									size="small"
-									onClick={_handleSelectAllAvailable}
-									disabled={!canSelectAllAvailable}
-								>
-									Select All Visible
-								</Button>
-								<Button
-									variant="ghost"
-									size="small"
-									onClick={_handleClearSelection}
-									disabled={
-										!hasAnySelection || selectedIdsSet.size <= selectionFloor
-									}
-								>
-									Clear Back to Locked
-								</Button>
+						<div className="flex flex-col gap-3 border-t border-white/10 pt-4">
+							<div className="-mx-1 overflow-x-auto pb-1 sm:mx-0 sm:overflow-visible sm:pb-0">
+								<div className="flex min-w-max gap-2 px-1 sm:min-w-0 sm:flex-wrap sm:px-0">
+									<Button
+										variant={isSwipeMode ? "primary" : "outline"}
+										size="small"
+										onClick={() => setSwipeMode(true)}
+									>
+										Swipe Mode
+									</Button>
+									<Button
+										variant={isSwipeMode ? "outline" : "primary"}
+										size="small"
+										onClick={() => setSwipeMode(false)}
+									>
+										Grid Mode
+									</Button>
+									<Button
+										variant="ghost"
+										size="small"
+										onClick={_handleSelectRandomAvailable}
+										disabled={availableNames.length === 0}
+									>
+										Pick 8 Random
+									</Button>
+									<Button
+										variant="ghost"
+										size="small"
+										onClick={_handleSelectAllAvailable}
+										disabled={!canSelectAllAvailable}
+									>
+										Select All Visible
+									</Button>
+									<Button
+										variant="ghost"
+										size="small"
+										onClick={_handleClearSelection}
+										disabled={
+											!hasAnySelection || selectedIdsSet.size <= selectionFloor
+										}
+									>
+										Clear Back to Locked
+									</Button>
+								</div>
 							</div>
 
-							<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-								<p className="text-xs leading-relaxed text-muted-foreground/70">
-									{isSwipeMode
-										? hiddenNamesAll.length > 0
-											? "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe. Hidden names stay available below."
-											: "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe."
-										: `${selectedAvailableCount} active picks and ${selectedHiddenCount} hidden picks are ready for the bracket.`}
-								</p>
+							<div className="grid gap-3 rounded-[1.35rem] border border-white/10 bg-black/15 p-3.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-4">
+								<div className="space-y-2">
+									<div className="flex flex-wrap items-center gap-2">
+										<span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/80">
+											{canStartTournament
+												? `${selectedIdsSet.size} names ready`
+												: `Pick ${Math.max(0, 2 - selectedIdsSet.size)} more`}
+										</span>
+										{selectedHiddenCount > 0 && (
+											<span className="rounded-full border border-warning/20 bg-warning/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
+												{selectedHiddenCount} hidden selected
+											</span>
+										)}
+									</div>
+									<p className="text-xs leading-relaxed text-muted-foreground/70 sm:text-sm">
+										{isSwipeMode
+											? hiddenNamesAll.length > 0
+												? "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe. Hidden names stay available below."
+												: "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe."
+											: `${selectedAvailableCount} active picks and ${selectedHiddenCount} hidden picks are ready for the bracket.`}
+									</p>
+								</div>
+
 								<Button
 									size="large"
 									onClick={startTournament}
 									disabled={!canStartTournament}
-									className="min-w-[12rem]"
+									className="w-full sm:min-w-[12rem] sm:w-auto"
 								>
 									Start Tournament
 								</Button>
@@ -1316,9 +1333,7 @@ export function NameSelector() {
 										</span>
 									</div>
 									<span className="text-[11px] sm:text-xs text-muted-foreground">
-										{hiddenPanel.isCollapsed
-											? "Click to expand"
-											: "Click to collapse"}
+										{hiddenPanel.isCollapsed ? "Show panel" : "Hide panel"}
 									</span>
 								</button>
 

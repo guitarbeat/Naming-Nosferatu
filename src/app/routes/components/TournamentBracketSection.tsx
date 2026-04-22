@@ -27,6 +27,19 @@ export function TournamentBracketSection({
 	onComplete,
 	onGoToPicker,
 }: TournamentBracketSectionProps) {
+	const scopePanels = [
+		{
+			label: "Session Scope",
+			description:
+				"Each bracket run shapes your current ranking session, including the personal results panel and saved ordering you see later in the dashboard.",
+		},
+		{
+			label: "Community Scope",
+			description:
+				"Leaderboard and site stats summarize broader activity across the whole app, so treat them as a wider signal rather than a mirror of a single bracket run.",
+		},
+	] as const;
+
 	return (
 		<Section
 			id="tournament"
@@ -40,29 +53,27 @@ export function TournamentBracketSection({
 				title="Tournament Bracket"
 				subtitle="Play through your live bracket here. This session sharpens your personal ordering while the wider site stats accumulate across everyone."
 			/>
-			<div className="mx-auto mb-5 grid w-full max-w-5xl gap-3 md:grid-cols-2">
-				<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-						Session Scope
-					</p>
-					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-						Each bracket run helps shape your current ranking session, including the personal
-						results panel and saved ordering you see later in the dashboard.
-					</p>
-				</div>
-				<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-						Community Scope
-					</p>
-					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-						Leaderboard and site stats summarize broader activity across the whole app, so treat
-						them as a wider signal rather than a mirror of a single bracket run.
-					</p>
+			<div className="mx-auto mb-5 w-full max-w-5xl overflow-hidden rounded-[1.65rem] border border-white/10 bg-white/[0.03] backdrop-blur-sm">
+				<div className="grid gap-px bg-white/10 md:grid-cols-2">
+					{scopePanels.map((panel) => (
+						<div key={panel.label} className="bg-black/10 p-4 sm:p-5">
+							<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+								{panel.label}
+							</p>
+							<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
+								{panel.description}
+							</p>
+						</div>
+					))}
 				</div>
 			</div>
 			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 				{names && names.length > 0 ? (
-					<LazyTournament names={names} existingRatings={ratings} onComplete={onComplete} />
+					<LazyTournament
+						names={names}
+						existingRatings={ratings}
+						onComplete={onComplete}
+					/>
 				) : (
 					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-6 text-center">
 						<p className="text-pretty text-sm text-muted-foreground/70">
