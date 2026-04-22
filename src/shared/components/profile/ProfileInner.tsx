@@ -6,14 +6,16 @@ import useAppStore from "@/store/appStore";
 
 interface ProfileInnerProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;
+	onLogout: () => Promise<void>;
 }
 
-export function ProfileInner({ onLogin }: ProfileInnerProps) {
-	const { user, userActions } = useAppStore();
+export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
+	const { user } = useAppStore();
 	const defaultAvatar = CAT_IMAGES[0] ?? "";
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const [editedName, setEditedName] = useState(user.name || "");
 	const [isSaving, setIsSaving] = useState(false);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [isEditing, setIsEditing] = useState(!user.isLoggedIn);
 	const [avatarSrc, setAvatarSrc] = useState(user.avatarUrl || defaultAvatar);
 	const previousLoginStateRef = useRef(user.isLoggedIn);
@@ -58,9 +60,16 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 		}
 	};
 
-	const handleLogout = () => {
-		userActions.logout();
-		setIsEditing(true);
+	const handleLogout = async () => {
+		setIsLoggingOut(true);
+		try {
+			await onLogout();
+			setIsEditing(true);
+		} catch (err) {
+			console.error("Failed to logout:", err);
+		} finally {
+			setIsLoggingOut(false);
+		}
 	};
 
 	return (
@@ -85,8 +94,12 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 				<div className="w-full space-y-4 animate-in fade-in duration-200">
 					{!user.isLoggedIn && (
 						<div className="text-center space-y-1 mb-2">
-							<h3 className="text-lg font-bold text-foreground tracking-tight">Join the Council</h3>
-							<p className="text-sm text-muted-foreground">Enter your name to track rankings</p>
+							<h3 className="text-lg font-bold text-foreground tracking-tight">
+								Join the Council
+							</h3>
+							<p className="text-sm text-muted-foreground">
+								Enter your name to track rankings
+							</p>
 						</div>
 					)}
 
@@ -147,11 +160,12 @@ export function ProfileInner({ onLogin }: ProfileInnerProps) {
 
 					<button
 						type="button"
-						onClick={handleLogout}
+						onClick={() => void handleLogout()}
+						disabled={isLoggingOut}
 						className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
 					>
 						<LogOut size={13} />
-						Logout
+						{isLoggingOut ? "Logging out..." : "Logout"}
 					</button>
 				</div>
 			)}
