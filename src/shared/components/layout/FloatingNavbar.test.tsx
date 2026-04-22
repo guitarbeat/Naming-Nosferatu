@@ -144,13 +144,26 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
-		expect(screen.getByRole("button", { name: "Pick Names" })).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "Pick Names" }),
+		).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "Suggest" })).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
 		expect(screen.getByRole("button", { name: "Profile" })).toBeInTheDocument();
 	}, 10000);
+
+	it("renders an admin shortcut for admin users", () => {
+		mountSections({ pick: 220, suggest: 24, profile: 520 });
+		mockStore.user.isLoggedIn = true;
+		mockStore.user.name = "Avery Admin";
+		mockStore.user.isAdmin = true;
+
+		renderWithRouter();
+
+		expect(screen.getByRole("button", { name: "Admin" })).toBeInTheDocument();
+	});
 
 	it("promotes the first item to a highlighted start action when enough names are selected", () => {
 		mountSections({ pick: 0, suggest: 200, profile: 400 });
@@ -162,13 +175,21 @@ describe("FloatingNavbar", () => {
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("floating-navbar__item--accent");
-		expect(screen.queryByRole("button", { name: "Pick Names" })).not.toBeInTheDocument();
+		expect(
+			screen.queryByRole("button", { name: "Pick Names" }),
+		).not.toBeInTheDocument();
 	});
 
 	it("shows analyze as the current destination on the analysis route", () => {
 		mockStore.tournament.isComplete = true;
 		mockStore.tournament.names = ["Luna", "Fig"];
-		mountSections({ pick: 200, tournament: 200, analysis: 0, suggest: 200, profile: 400 });
+		mountSections({
+			pick: 200,
+			tournament: 200,
+			analysis: 0,
+			suggest: 200,
+			profile: 400,
+		});
 
 		renderWithRouter(["/"]);
 
@@ -222,6 +243,21 @@ describe("FloatingNavbar", () => {
 	it("does not render on the tournament route", () => {
 		renderWithRouter(["/tournament"]);
 
-		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
+		expect(
+			screen.queryByRole("navigation", { name: "Primary" }),
+		).not.toBeInTheDocument();
+	});
+
+	it("marks the admin shortcut as current on the admin route", () => {
+		mockStore.user.isLoggedIn = true;
+		mockStore.user.name = "Avery Admin";
+		mockStore.user.isAdmin = true;
+
+		renderWithRouter(["/admin"]);
+
+		expect(screen.getByRole("button", { name: "Admin" })).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
 	});
 });
