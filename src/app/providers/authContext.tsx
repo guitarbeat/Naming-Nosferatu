@@ -8,12 +8,46 @@ import {
 	useRef,
 	useState,
 } from "react";
-import type {
-	AuthAdapter,
-	AuthContextValue,
-	LoginCredentials,
-	RegisterData,
-} from "@/app/providers/providerTypes";
+
+export type UserRole = "user" | "moderator" | "admin";
+
+export interface AuthUser {
+	id: string;
+	name: string;
+	email?: string;
+	isAdmin: boolean;
+	role?: UserRole;
+}
+
+export interface LoginCredentials {
+	email?: string;
+	password?: string;
+	name?: string;
+}
+
+export interface RegisterData {
+	email: string;
+	password: string;
+	name: string;
+}
+
+export interface AuthAdapter {
+	getCurrentUser: () => Promise<AuthUser | null>;
+	login: (credentials: LoginCredentials) => Promise<boolean>;
+	logout: () => Promise<void>;
+	register: (data: RegisterData) => Promise<void>;
+	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
+}
+
+export interface AuthContextValue {
+	user: AuthUser | null;
+	isLoading: boolean;
+	isAuthenticated: boolean;
+	login: (credentials: LoginCredentials) => Promise<boolean>;
+	logout: () => Promise<void>;
+	register: (data: RegisterData) => Promise<void>;
+	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
+}
 
 const noopAdapter: AuthAdapter = {
 	getCurrentUser: async () => null,
@@ -70,19 +104,22 @@ function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
 		};
 	}, []);
 
-	const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
-		try {
-			const success = await adapterRef.current.login(credentials);
-			if (success) {
-				const updatedUser = await adapterRef.current.getCurrentUser();
-				setUser(updatedUser);
+	const login = useCallback(
+		async (credentials: LoginCredentials): Promise<boolean> => {
+			try {
+				const success = await adapterRef.current.login(credentials);
+				if (success) {
+					const updatedUser = await adapterRef.current.getCurrentUser();
+					setUser(updatedUser);
+				}
+				return success;
+			} catch (error) {
+				console.error("[Providers] Login failed:", error);
+				throw error;
 			}
-			return success;
-		} catch (error) {
-			console.error("[Providers] Login failed:", error);
-			throw error;
-		}
-	}, []);
+		},
+		[],
+	);
 
 	const logout = useCallback(async () => {
 		try {
@@ -121,7 +158,10 @@ interface AuthProviderProps {
 	adapter?: AuthAdapter;
 }
 
-export function AuthProvider({ children, adapter = noopAdapter }: AuthProviderProps) {
+export function AuthProvider({
+	children,
+	adapter = noopAdapter,
+}: AuthProviderProps) {
 	const value = useAuthProvider(adapter);
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,12 +1,22 @@
 import type { ReactNode } from "react";
-import { AuthProvider, useAuth } from "@/app/providers/authContext";
-import type { AuthAdapter, ToastPosition } from "@/app/providers/providerTypes";
-import { ToastProvider, useToast } from "@/app/providers/toastContext";
+import {
+	AuthProvider,
+	type AuthAdapter,
+	type AuthUser,
+	type LoginCredentials,
+	type RegisterData,
+	useAuth,
+} from "@/app/providers/authContext";
+import {
+	ToastProvider,
+	type ToastPosition,
+	useToast,
+} from "@/app/providers/toastContext";
 
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;
 
-export type { AuthAdapter, AuthUser, LoginCredentials, RegisterData } from "./providerTypes";
+export type { AuthAdapter, AuthUser, LoginCredentials, RegisterData };
 
 interface ProvidersProps {
 	children: ReactNode;
