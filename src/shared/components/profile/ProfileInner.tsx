@@ -14,6 +14,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 	const defaultAvatar = CAT_IMAGES[0] ?? "";
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const [editedName, setEditedName] = useState(user.name || "");
+	const [saveError, setSaveError] = useState<string | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [isEditing, setIsEditing] = useState(!user.isLoggedIn);
@@ -50,11 +51,17 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 			return;
 		}
 		setIsSaving(true);
+		setSaveError(null);
 		try {
-			await onLogin(editedName.trim());
+			const didLogin = await onLogin(editedName.trim());
+			if (didLogin === false) {
+				setSaveError("We couldn't log you in with that name. Try again.");
+				return;
+			}
 			setIsEditing(false);
 		} catch (err) {
 			console.error("Failed to update name:", err);
+			setSaveError("We couldn't log you in right now. Try again.");
 		} finally {
 			setIsSaving(false);
 		}
@@ -109,12 +116,23 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 							ref={nameInputRef}
 							type="text"
 							value={editedName}
-							onChange={(e) => setEditedName(e.target.value)}
+							onChange={(e) => {
+								setEditedName(e.target.value);
+								if (saveError) {
+									setSaveError(null);
+								}
+							}}
 							placeholder="Who are you?"
 							onKeyDown={(e) => e.key === "Enter" && handleSave()}
 							className="w-full h-11 pl-10 pr-4 text-sm"
 						/>
 					</div>
+
+					{saveError && (
+						<p role="alert" className="text-sm text-destructive">
+							{saveError}
+						</p>
+					)}
 
 					<div className="flex gap-2">
 						{user.isLoggedIn && (
