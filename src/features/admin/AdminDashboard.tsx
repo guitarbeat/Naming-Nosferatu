@@ -1,14 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { type ChangeEvent, useCallback, useMemo, useState } from "react";
+import {
+	type ChangeEvent,
+	type ElementType,
+	useCallback,
+	useMemo,
+	useState,
+} from "react";
 import { AdminNamesTab } from "@/features/admin/components/AdminNamesTab";
-import { AdminOverviewTab } from "@/features/admin/components/AdminOverviewTab";
-import { AdminPlaceholderTab } from "@/features/admin/components/AdminPlaceholderTab";
-import { AdminStatsGrid } from "@/features/admin/components/AdminStatsGrid";
-import { AdminTabNav } from "@/features/admin/components/AdminTabNav";
 import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
 import { namesQueryOptions } from "@/features/names/api";
 import { Loading } from "@/shared/components/layout/Feedback";
+import { BarChart3, Eye, EyeOff, Lock } from "@/shared/lib/icons";
 import {
 	getActiveNames,
 	getHiddenNames,
@@ -44,6 +47,35 @@ interface SiteStatsLike {
 	totalRatings?: unknown;
 }
 
+interface AdminTabNavProps<TTab extends string> {
+	activeTab: TTab;
+	tabs: readonly { id: TTab; label: string }[];
+	onTabChange: (tab: TTab) => void;
+}
+
+interface AdminOverviewTabProps {
+	onImageUpload: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+interface AdminPlaceholderTabProps {
+	title: string;
+	message: string;
+}
+
+interface AdminStatsGridProps {
+	stats: Pick<
+		AdminStats,
+		"totalNames" | "activeNames" | "hiddenNames" | "lockedInNames"
+	>;
+}
+
+interface StatCell {
+	icon: ElementType;
+	colorClass: string;
+	label: string;
+	value: number;
+}
+
 const ADMIN_TABS: readonly { id: DashboardTab; label: string }[] = [
 	{ id: "overview", label: "Overview" },
 	{ id: "names", label: "Names" },
@@ -72,7 +104,10 @@ function mapNameToDisplay(name: NameItem): NameWithStats {
 	};
 }
 
-function buildAdminStats(names: NameWithStats[], siteStats: SiteStatsLike | null): AdminStats {
+function buildAdminStats(
+	names: NameWithStats[],
+	siteStats: SiteStatsLike | null,
+): AdminStats {
 	return {
 		totalNames: names.length,
 		activeNames: getActiveNames(names).length,
@@ -103,7 +138,118 @@ function filterNamesByStatusAndSearch(
 		return filtered;
 	}
 
-	return filtered.filter((name) => matchesNameSearchTerm(name, normalizedSearch));
+	return filtered.filter((name) =>
+		matchesNameSearchTerm(name, normalizedSearch),
+	);
+}
+
+function AdminTabNav<TTab extends string>({
+	activeTab,
+	tabs,
+	onTabChange,
+}: AdminTabNavProps<TTab>) {
+	return (
+		<div className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 border-b border-border/10 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+			{tabs.map((tab) => (
+				<button
+					key={tab.id}
+					onClick={() => onTabChange(tab.id)}
+					className={`px-3 sm:px-4 py-2 font-medium text-sm whitespace-nowrap transition-colors ${
+						activeTab === tab.id
+							? "text-foreground border-b-2 border-primary"
+							: "text-muted-foreground hover:text-foreground"
+					}`}
+				>
+					{tab.label}
+				</button>
+			))}
+		</div>
+	);
+}
+
+function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
+	return (
+		<div className="p-6">
+			<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div>
+					<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
+					<input
+						type="file"
+						accept="image/*"
+						onChange={onImageUpload}
+						className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+					/>
+				</div>
+				<div>
+					<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
+					<p className="text-muted-foreground">
+						Activity tracking coming soon...
+					</p>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function AdminPlaceholderTab({ title, message }: AdminPlaceholderTabProps) {
+	return (
+		<div className="p-6">
+			<h2 className="text-2xl font-bold mb-4">{title}</h2>
+			<p className="text-muted-foreground">{message}</p>
+		</div>
+	);
+}
+
+function AdminStatCell({ icon: Icon, colorClass, label, value }: StatCell) {
+	return (
+		<div className="p-3 sm:p-6">
+			<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+				<Icon className={colorClass} size={18} />
+				<h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>
+					{label}
+				</h3>
+			</div>
+			<p className="text-2xl sm:text-3xl font-bold text-foreground">{value}</p>
+		</div>
+	);
+}
+
+function AdminStatsGrid({ stats }: AdminStatsGridProps) {
+	const cells: StatCell[] = [
+		{
+			icon: BarChart3,
+			colorClass: "text-primary",
+			label: "Total",
+			value: stats.totalNames,
+		},
+		{
+			icon: Eye,
+			colorClass: "text-chart-2",
+			label: "Active",
+			value: stats.activeNames,
+		},
+		{
+			icon: Lock,
+			colorClass: "text-chart-4",
+			label: "Locked",
+			value: stats.lockedInNames,
+		},
+		{
+			icon: EyeOff,
+			colorClass: "text-destructive",
+			label: "Hidden",
+			value: stats.hiddenNames,
+		},
+	];
+
+	return (
+		<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
+			{cells.map((cell) => (
+				<AdminStatCell key={cell.label} {...cell} />
+			))}
+		</div>
+	);
 }
 
 export function AdminDashboard() {
@@ -146,7 +292,10 @@ export function AdminDashboard() {
 	const handleToggleHidden = useCallback(
 		async (nameId: string | number, isHidden: boolean) => {
 			try {
-				await toggleHidden({ nameId: String(nameId), isCurrentlyHidden: isHidden });
+				await toggleHidden({
+					nameId: String(nameId),
+					isCurrentlyHidden: isHidden,
+				});
 			} catch (error) {
 				console.error("Failed to toggle hidden status:", error);
 			}
@@ -198,7 +347,9 @@ export function AdminDashboard() {
 
 	const handleSoftDelete = useCallback(
 		async (nameId: string | number) => {
-			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
+			if (
+				!window.confirm("Permanently delete this name? This cannot be undone.")
+			) {
 				return;
 			}
 			try {
@@ -231,24 +382,32 @@ export function AdminDashboard() {
 		[uploadImage],
 	);
 
-	const handleSelectionChange = useCallback((nameId: string, checked: boolean) => {
-		setSelectedNames((prevSelectedNames) => {
-			return checked
-				? addToSet(prevSelectedNames, nameId)
-				: removeFromSet(prevSelectedNames, nameId);
-		});
-	}, []);
+	const handleSelectionChange = useCallback(
+		(nameId: string, checked: boolean) => {
+			setSelectedNames((prevSelectedNames) => {
+				return checked
+					? addToSet(prevSelectedNames, nameId)
+					: removeFromSet(prevSelectedNames, nameId);
+			});
+		},
+		[],
+	);
 
 	const handleTabChange = useCallback((tab: DashboardTab) => {
 		setActiveTab(tab);
 	}, []);
 
-	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
-		if (option) {
-			setFilterStatus(option.value);
-		}
-	}, []);
+	const handleFilterChange = useCallback(
+		(event: ChangeEvent<HTMLSelectElement>) => {
+			const option = FILTER_OPTIONS.find(
+				(item) => item.value === event.target.value,
+			);
+			if (option) {
+				setFilterStatus(option.value);
+			}
+		},
+		[],
+	);
 
 	const handleRefresh = useCallback(() => {
 		void Promise.all([namesQuery.refetch(), siteStatsQuery.refetch()]);
@@ -272,12 +431,18 @@ export function AdminDashboard() {
 				<h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
+				<p className="text-sm text-muted-foreground">
+					Manage names and monitor activity
+				</p>
 			</div>
 
 			{stats && <AdminStatsGrid stats={stats} />}
 
-			<AdminTabNav activeTab={activeTab} tabs={ADMIN_TABS} onTabChange={handleTabChange} />
+			<AdminTabNav
+				activeTab={activeTab}
+				tabs={ADMIN_TABS}
+				onTabChange={handleTabChange}
+			/>
 
 			<AnimatePresence mode="wait">
 				<motion.div
@@ -299,8 +464,12 @@ export function AdminDashboard() {
 							onClearSelection={handleClearSelection}
 							filteredNames={filteredNames}
 							onSelectionChange={handleSelectionChange}
-							onToggleHidden={(nameId, hidden) => void handleToggleHidden(nameId, hidden)}
-							onToggleLocked={(nameId, locked) => void handleToggleLocked(nameId, locked)}
+							onToggleHidden={(nameId, hidden) =>
+								void handleToggleHidden(nameId, hidden)
+							}
+							onToggleLocked={(nameId, locked) =>
+								void handleToggleLocked(nameId, locked)
+							}
 							onDelete={(nameId) => void handleSoftDelete(nameId)}
 						/>
 					) : activeTab === "overview" ? (
