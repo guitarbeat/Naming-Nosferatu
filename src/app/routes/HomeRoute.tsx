@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense, useCallback } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import {
@@ -9,6 +9,7 @@ import {
 import { namesQueryOptions } from "@/features/names/api";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
+import { useMediaQuery } from "@/shared/hooks/useBrowserState";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
@@ -33,24 +34,67 @@ export default function HomeRoute() {
 	const { login, logout } = useAuth();
 	const { user, tournament, tournamentActions } = useAppStore();
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
-	const lockedNames = getLockedNames(namesQuery.data?.names);
-	const totalNameCount = namesQuery.data?.names?.length ?? 0;
+	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+	const pendingAnalysisScrollRef = useRef<number | null>(null);
+	const hasNamesData = typeof namesQuery.data !== "undefined";
+	const heroState =
+		!hasNamesData && namesQuery.isPending
+			? "loading"
+			: !hasNamesData && namesQuery.isError
+				? "error"
+				: "ready";
+	const names = namesQuery.data?.names ?? [];
+	const lockedNames = heroState === "ready" ? getLockedNames(names) : [];
+	const totalNameCount = heroState === "ready" ? names.length : null;
 	const selectedCount = tournament.selectedNames?.length ?? 0;
-	const { handleTournamentComplete, handleStartNewTournament } =
+	const { handleTournamentComplete, handleStartNewTournament: startNewTournament } =
 		useTournamentHandlers({
 			userName: user.name,
 			tournamentActions,
 		});
 
-	const scrollToSection = useCallback((id: string) => {
+	const clearPendingAnalysisScroll = useCallback(() => {
+		if (pendingAnalysisScrollRef.current === null) {
+			return;
+		}
+
+		window.clearTimeout(pendingAnalysisScrollRef.current);
+		pendingAnalysisScrollRef.current = null;
+	}, []);
+
+	const performSectionScroll = useCallback((id: string) => {
 		document
 			.getElementById(id)
-			?.scrollIntoView({ behavior: "smooth", block: "start" });
-	}, []);
+			?.scrollIntoView({
+				behavior: prefersReducedMotion ? "auto" : "smooth",
+				block: "start",
+			});
+	}, [prefersReducedMotion]);
+
+	const scrollToSection = useCallback((id: string) => {
+		clearPendingAnalysisScroll();
+		performSectionScroll(id);
+	}, [clearPendingAnalysisScroll, performSectionScroll]);
+
+	const scheduleAnalysisScroll = useCallback(() => {
+		clearPendingAnalysisScroll();
+		pendingAnalysisScrollRef.current = window.setTimeout(() => {
+			pendingAnalysisScrollRef.current = null;
+			performSectionScroll("analysis");
+		}, 800);
+	}, [clearPendingAnalysisScroll, performSectionScroll]);
+
+	const handleStartNewTournament = useCallback(() => {
+		clearPendingAnalysisScroll();
+		startNewTournament();
+	}, [clearPendingAnalysisScroll, startNewTournament]);
+
+	useEffect(() => clearPendingAnalysisScroll, [clearPendingAnalysisScroll]);
 
 	return (
 		<>
 			<HomeHeroSection
+				state={heroState}
 				lockedNames={lockedNames}
 				selectedCount={selectedCount}
 				totalNameCount={totalNameCount}
@@ -81,11 +125,7 @@ export default function HomeRoute() {
 				ratings={tournament.ratings}
 				onComplete={(ratings) => {
 					handleTournamentComplete(ratings);
-					setTimeout(() => {
-						document
-							.getElementById("analysis")
-							?.scrollIntoView({ behavior: "smooth", block: "start" });
-					}, 800);
+					scheduleAnalysisScroll();
 				}}
 				onGoToPicker={() => scrollToSection("pick")}
 			/>

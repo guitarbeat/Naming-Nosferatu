@@ -11,9 +11,17 @@ const lockedNames: NameItem[] = [
 ];
 
 async function renderHomeHeroSection({
+	state = "ready",
+	lockedNamesOverride = lockedNames,
+	selectedCount = 6,
+	totalNameCount = 24,
 	onStartPicking,
 	onSeeResults,
 }: {
+	state?: "loading" | "ready" | "error";
+	lockedNamesOverride?: NameItem[];
+	selectedCount?: number;
+	totalNameCount?: number | null;
 	onStartPicking: () => void;
 	onSeeResults: () => void;
 }) {
@@ -21,9 +29,10 @@ async function renderHomeHeroSection({
 
 	return render(
 		<HomeHeroSection
-			lockedNames={lockedNames}
-			selectedCount={6}
-			totalNameCount={24}
+			state={state}
+			lockedNames={lockedNamesOverride}
+			selectedCount={selectedCount}
+			totalNameCount={totalNameCount}
 			onStartPicking={onStartPicking}
 			onSeeResults={onSeeResults}
 		/>,
@@ -53,15 +62,66 @@ describe("HomeHeroSection", () => {
 
 		await renderHomeHeroSection({ onStartPicking, onSeeResults });
 
-		expect(screen.getByText("Locked Into Every Bracket")).toBeInTheDocument();
+		expect(
+			screen.getByRole("heading", {
+				name: "Choose the shortlist. Run the bracket.",
+			}),
+		).toBeInTheDocument();
+		expect(screen.getByText("Locked Names")).toBeInTheDocument();
 		expect(screen.getByText("Selected")).toBeInTheDocument();
 		expect(screen.getByText("Pool")).toBeInTheDocument();
-		expect(screen.getByText("+1 more")).toBeInTheDocument();
+		expect(screen.getByText("Juniper")).toBeInTheDocument();
 
 		fireEvent.click(screen.getByRole("button", { name: "Start Picking" }));
 		fireEvent.click(screen.getByRole("button", { name: "See Results" }));
 
 		expect(onStartPicking).toHaveBeenCalledTimes(1);
 		expect(onSeeResults).toHaveBeenCalledTimes(1);
+	});
+
+	it("keeps an empty ready state honest instead of inventing a locked name", async () => {
+		await renderHomeHeroSection({
+			state: "ready",
+			lockedNamesOverride: [],
+			selectedCount: 0,
+			totalNameCount: 0,
+			onStartPicking: vi.fn(),
+			onSeeResults: vi.fn(),
+		});
+
+		expect(screen.getByText(/No names are locked yet\./i)).toBeInTheDocument();
+		expect(screen.queryByText("Woods")).not.toBeInTheDocument();
+	});
+
+	it("renders a loading state without empty-state fallback copy", async () => {
+		await renderHomeHeroSection({
+			state: "loading",
+			lockedNamesOverride: [],
+			totalNameCount: null,
+			onStartPicking: vi.fn(),
+			onSeeResults: vi.fn(),
+		});
+
+		expect(screen.getByText("Loading Shortlist")).toBeInTheDocument();
+		expect(
+			screen.getByText(/reflects live bracket data instead of a fake empty state/i),
+		).toBeInTheDocument();
+		expect(screen.queryByText("No names are locked yet.")).not.toBeInTheDocument();
+	});
+
+	it("renders an error state without pretending the pool is empty", async () => {
+		await renderHomeHeroSection({
+			state: "error",
+			lockedNamesOverride: [],
+			totalNameCount: null,
+			onStartPicking: vi.fn(),
+			onSeeResults: vi.fn(),
+		});
+
+		expect(screen.getByText("Live Pool Unavailable")).toBeInTheDocument();
+		expect(
+			screen.getByText(/waiting on fresh data instead of pretending there are zero locked names/i),
+		).toBeInTheDocument();
+		expect(screen.queryByText("No names are locked yet.")).not.toBeInTheDocument();
 	});
 });
