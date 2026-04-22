@@ -6,7 +6,7 @@ import {
 	toggleNameHidden,
 	toggleNameLocked,
 	unhideAllNames,
-} from "./mutations";
+} from "./api";
 
 vi.mock("@/store/appStore", () => ({
 	default: {
@@ -23,7 +23,9 @@ const mockRpc = vi.fn();
 vi.mock("@/shared/services/supabase/runtime", () => ({
 	resolveSupabaseClient: vi.fn(),
 	withSupabase: vi.fn(async (op, fb) => {
-		const { resolveSupabaseClient } = await import("@/shared/services/supabase/runtime");
+		const { resolveSupabaseClient } = await import(
+			"@/shared/services/supabase/runtime"
+		);
 		const client = await resolveSupabaseClient();
 		if (!client) {
 			return fb;
@@ -48,12 +50,19 @@ afterEach(() => {
 describe("softDeleteName", () => {
 	it("calls soft_delete_cat_name RPC and resolves on success", async () => {
 		mockRpc.mockResolvedValueOnce({ data: true, error: null });
-		await expect(softDeleteName({ nameId: "abc-123" })).resolves.toBeUndefined();
-		expect(mockRpc).toHaveBeenCalledWith("soft_delete_cat_name", { p_name_id: "abc-123" });
+		await expect(
+			softDeleteName({ nameId: "abc-123" }),
+		).resolves.toBeUndefined();
+		expect(mockRpc).toHaveBeenCalledWith("soft_delete_cat_name", {
+			p_name_id: "abc-123",
+		});
 	});
 
 	it("throws when the RPC returns an error", async () => {
-		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "not admin" } });
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: { message: "not admin" },
+		});
 		await expect(softDeleteName({ nameId: "abc-123" })).rejects.toMatchObject({
 			message: "not admin",
 		});
@@ -61,7 +70,9 @@ describe("softDeleteName", () => {
 
 	it("throws when RPC returns data !== true", async () => {
 		mockRpc.mockResolvedValueOnce({ data: false, error: null });
-		await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow("Failed to delete name");
+		await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow(
+			"Failed to delete name",
+		);
 	});
 
 	it("throws when Supabase client is unavailable", async () => {
@@ -72,7 +83,9 @@ describe("softDeleteName", () => {
 	});
 
 	it("throws when user is not an admin", async () => {
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({
+			user: { isAdmin: false },
+		} as never);
 		await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow(
 			"Admin privileges required",
 		);
@@ -103,7 +116,10 @@ describe("batchUpdateVisibility", () => {
 	});
 
 	it("throws when the RPC returns an error", async () => {
-		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } });
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: { message: "permission denied" },
+		});
 		await expect(
 			batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
 		).rejects.toMatchObject({ message: "permission denied" });
@@ -111,30 +127,36 @@ describe("batchUpdateVisibility", () => {
 
 	it("throws when RPC returns data !== true", async () => {
 		mockRpc.mockResolvedValueOnce({ data: false, error: null });
-		await expect(batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true })).rejects.toThrow(
-			"Failed to batch update name visibility",
-		);
+		await expect(
+			batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
+		).rejects.toThrow("Failed to batch update name visibility");
 	});
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true })).rejects.toThrow(
-			"Supabase client not available",
-		);
+		await expect(
+			batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
+		).rejects.toThrow("Supabase client not available");
 	});
 
 	it("throws when user is not an admin", async () => {
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
-		await expect(batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true })).rejects.toThrow(
-			"Admin privileges required",
-		);
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({
+			user: { isAdmin: false },
+		} as never);
+		await expect(
+			batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
+		).rejects.toThrow("Admin privileges required");
 	});
 });
 
 describe("toggleNameHidden", () => {
 	it("calls toggle_name_visibility with p_hide=true to hide a name", async () => {
 		mockRpc.mockResolvedValueOnce({ data: true, error: null });
-		await toggleNameHidden({ nameId: "abc", isCurrentlyHidden: false, userName: "admin" });
+		await toggleNameHidden({
+			nameId: "abc",
+			isCurrentlyHidden: false,
+			userName: "admin",
+		});
 		expect(mockRpc).toHaveBeenCalledWith("toggle_name_visibility", {
 			p_name_id: "abc",
 			p_hide: true,
@@ -144,7 +166,11 @@ describe("toggleNameHidden", () => {
 
 	it("calls toggle_name_visibility with p_hide=false to unhide a name", async () => {
 		mockRpc.mockResolvedValueOnce({ data: true, error: null });
-		await toggleNameHidden({ nameId: "abc", isCurrentlyHidden: true, userName: "admin" });
+		await toggleNameHidden({
+			nameId: "abc",
+			isCurrentlyHidden: true,
+			userName: "admin",
+		});
 		expect(mockRpc).toHaveBeenCalledWith("toggle_name_visibility", {
 			p_name_id: "abc",
 			p_hide: false,
@@ -153,16 +179,29 @@ describe("toggleNameHidden", () => {
 	});
 
 	it("throws on RPC error", async () => {
-		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "rpc failed" } });
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: { message: "rpc failed" },
+		});
 		await expect(
-			toggleNameHidden({ nameId: "abc", isCurrentlyHidden: false, userName: "admin" }),
+			toggleNameHidden({
+				nameId: "abc",
+				isCurrentlyHidden: false,
+				userName: "admin",
+			}),
 		).rejects.toMatchObject({ message: "rpc failed" });
 	});
 
 	it("throws when user is not an admin", async () => {
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({
+			user: { isAdmin: false },
+		} as never);
 		await expect(
-			toggleNameHidden({ nameId: "abc", isCurrentlyHidden: false, userName: "admin" }),
+			toggleNameHidden({
+				nameId: "abc",
+				isCurrentlyHidden: false,
+				userName: "admin",
+			}),
 		).rejects.toThrow("Admin privileges required");
 	});
 });
@@ -170,7 +209,11 @@ describe("toggleNameHidden", () => {
 describe("toggleNameLocked", () => {
 	it("calls toggle_name_locked_in RPC to lock a name", async () => {
 		mockRpc.mockResolvedValueOnce({ data: true, error: null });
-		await toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" });
+		await toggleNameLocked({
+			nameId: "xyz",
+			isCurrentlyLocked: false,
+			userName: "admin",
+		});
 		expect(mockRpc).toHaveBeenCalledWith("toggle_name_locked_in", {
 			p_name_id: "xyz",
 			p_locked_in: true,
@@ -179,10 +222,16 @@ describe("toggleNameLocked", () => {
 
 	it("falls back to include p_user_name on signature error", async () => {
 		mockRpc
-			.mockResolvedValueOnce({ error: { message: "no function matches the given name" } })
+			.mockResolvedValueOnce({
+				error: { message: "no function matches the given name" },
+			})
 			.mockResolvedValueOnce({ data: true, error: null });
 
-		await toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" });
+		await toggleNameLocked({
+			nameId: "xyz",
+			isCurrentlyLocked: false,
+			userName: "admin",
+		});
 
 		expect(mockRpc).toHaveBeenCalledTimes(2);
 		expect(mockRpc).toHaveBeenNthCalledWith(2, "toggle_name_locked_in", {
@@ -195,14 +244,24 @@ describe("toggleNameLocked", () => {
 	it("throws when Supabase client unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
 		await expect(
-			toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" }),
+			toggleNameLocked({
+				nameId: "xyz",
+				isCurrentlyLocked: false,
+				userName: "admin",
+			}),
 		).rejects.toThrow("Supabase client not available");
 	});
 
 	it("throws when user is not an admin", async () => {
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({
+			user: { isAdmin: false },
+		} as never);
 		await expect(
-			toggleNameLocked({ nameId: "xyz", isCurrentlyLocked: false, userName: "admin" }),
+			toggleNameLocked({
+				nameId: "xyz",
+				isCurrentlyLocked: false,
+				userName: "admin",
+			}),
 		).rejects.toThrow("Admin privileges required");
 	});
 });
@@ -217,9 +276,14 @@ describe("unhideAllNames", () => {
 			})),
 			rpc: mockRpc,
 		};
-		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(mockFromWithSelect as never);
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(
+			mockFromWithSelect as never,
+		);
 		mockSelect.mockReturnValue({ eq: mockEq });
-		mockEq.mockResolvedValueOnce({ data: [{ id: "h1" }, { id: "h2" }], error: null });
+		mockEq.mockResolvedValueOnce({
+			data: [{ id: "h1" }, { id: "h2" }],
+			error: null,
+		});
 		mockRpc.mockResolvedValueOnce({ data: true, error: null });
 
 		await unhideAllNames();
@@ -241,7 +305,9 @@ describe("unhideAllNames", () => {
 			})),
 			rpc: mockRpc,
 		};
-		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(mockFromWithSelect as never);
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(
+			mockFromWithSelect as never,
+		);
 		mockSelect.mockReturnValue({ eq: mockEq });
 		mockEq.mockResolvedValueOnce({ data: [], error: null });
 
@@ -251,13 +317,17 @@ describe("unhideAllNames", () => {
 	});
 
 	it("throws when user is not an admin", async () => {
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({
+			user: { isAdmin: false },
+		} as never);
 		await expect(unhideAllNames()).rejects.toThrow("Admin privileges required");
 	});
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null as never);
-		await expect(unhideAllNames()).rejects.toThrow("Supabase client not available");
+		await expect(unhideAllNames()).rejects.toThrow(
+			"Supabase client not available",
+		);
 	});
 });
 
@@ -285,30 +355,37 @@ describe("batchUpdateLocked", () => {
 	});
 
 	it("throws when the RPC returns an error", async () => {
-		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "permission denied" } });
-		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toMatchObject({
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: { message: "permission denied" },
+		});
+		await expect(
+			batchUpdateLocked({ nameIds: ["id-1"], isLocked: true }),
+		).rejects.toMatchObject({
 			message: "permission denied",
 		});
 	});
 
 	it("throws when RPC returns data !== true", async () => {
 		mockRpc.mockResolvedValueOnce({ data: false, error: null });
-		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
-			"Failed to batch update name locked status",
-		);
+		await expect(
+			batchUpdateLocked({ nameIds: ["id-1"], isLocked: true }),
+		).rejects.toThrow("Failed to batch update name locked status");
 	});
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
-			"Supabase client not available",
-		);
+		await expect(
+			batchUpdateLocked({ nameIds: ["id-1"], isLocked: true }),
+		).rejects.toThrow("Supabase client not available");
 	});
 
 	it("throws when user is not an admin", async () => {
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({ user: { isAdmin: false } } as never);
-		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
-			"Admin privileges required",
-		);
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({
+			user: { isAdmin: false },
+		} as never);
+		await expect(
+			batchUpdateLocked({ nameIds: ["id-1"], isLocked: true }),
+		).rejects.toThrow("Admin privileges required");
 	});
 });

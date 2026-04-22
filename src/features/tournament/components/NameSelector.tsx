@@ -117,17 +117,29 @@ const NameContent = ({
 		<>
 			<span className={nameClasses}>{nameItem.name}</span>
 			{nameItem.pronunciation && (
-				<span className={isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`}>
+				<span
+					className={
+						isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`
+					}
+				>
 					[{nameItem.pronunciation}]
 				</span>
 			)}
-			{nameItem.description && <p className={descriptionClasses}>{nameItem.description}</p>}
+			{nameItem.description && (
+				<p className={descriptionClasses}>{nameItem.description}</p>
+			)}
 		</>
 	);
 };
 
 // Zoom button component
-const ZoomButton = ({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) => (
+const ZoomButton = ({
+	nameId,
+	onClick,
+}: {
+	nameId: IdType;
+	onClick: (id: IdType) => void;
+}) => (
 	<button
 		type="button"
 		onClick={(e) => {
@@ -204,14 +216,17 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 	const selectedClasses = isSelected
 		? "z-10 border-primary/45 bg-gradient-to-br from-primary/14 to-white/[0.04] shadow-[0_20px_45px_rgba(39,135,153,0.2)] ring-1 ring-primary/25"
 		: "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(6,12,24,0.18)]";
-	const lockedClasses = isLocked ? "cursor-not-allowed opacity-55 saturate-50" : "";
+	const lockedClasses = isLocked
+		? "cursor-not-allowed opacity-55 saturate-50"
+		: "";
 
 	return `${baseClasses} ${selectedClasses} ${lockedClasses}`;
 };
 
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
-	const baseClasses = "absolute inset-0 flex flex-col justify-end pointer-events-none";
+	const baseClasses =
+		"absolute inset-0 flex flex-col justify-end pointer-events-none";
 	const gridClasses =
 		"p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-left";
 	const swipeClasses =
@@ -228,10 +243,14 @@ export function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
-	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const storeSelectedNames = useAppStore(
+		(state) => state.tournament.selectedNames,
+	);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
-	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
+	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(
+		null,
+	);
 	const [dragOffset, setDragOffset] = useState(0);
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
@@ -261,14 +280,19 @@ export function NameSelector() {
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
-			const selectedNameItems = names.filter((nameItem) => nextSelectedIds.has(nameItem.id));
+			const selectedNameItems = names.filter((nameItem) =>
+				nextSelectedIds.has(nameItem.id),
+			);
 			tournamentActions.setSelection(selectedNameItems);
 		},
 		[names, tournamentActions],
 	);
 
 	// Memoize cat images and build an id->image lookup map
-	const { catImages, catImageById } = useMemo(() => buildNameCardImages(names), [names]);
+	const { catImages, catImageById } = useMemo(
+		() => buildNameCardImages(names),
+		[names],
+	);
 
 	const showWarningRef = useRef(toast.showWarning);
 	useEffect(() => {
@@ -280,7 +304,9 @@ export function NameSelector() {
 		if (names.length === 0) {
 			return;
 		}
-		const lockedInIds = new Set(getLockedNames(names).map((nameItem) => nameItem.id));
+		const lockedInIds = new Set(
+			getLockedNames(names).map((nameItem) => nameItem.id),
+		);
 		if (lockedInIds.size === 0) {
 			return;
 		}
@@ -335,10 +361,16 @@ export function NameSelector() {
 		[],
 	);
 
-	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
-		setSwipedIds((prev) => addToSet(prev, nameId));
-		setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
-	}, []);
+	const markSwiped = useCallback(
+		(nameId: IdType, direction: "left" | "right") => {
+			setSwipedIds((prev) => addToSet(prev, nameId));
+			setSwipeHistory((prev) => [
+				...prev,
+				{ id: nameId, direction, timestamp: Date.now() },
+			]);
+		},
+		[],
+	);
 
 	const handleSwipe = useCallback(
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
@@ -386,7 +418,8 @@ export function NameSelector() {
 			}
 
 			// Determine direction based on offset and velocity
-			const isRightSwipe = offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
+			const isRightSwipe =
+				offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
 			const direction = isRightSwipe ? "right" : "left";
 
 			updateDragState(0, direction);
@@ -432,7 +465,9 @@ export function NameSelector() {
 
 			try {
 				await toggleHidden({ nameId, isCurrentlyHidden });
-				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
+				toast.showSuccess(
+					isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
+				);
 			} catch (error) {
 				console.error("Failed to toggle hidden status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
@@ -454,7 +489,9 @@ export function NameSelector() {
 
 			try {
 				await toggleLocked({ nameId, isCurrentlyLocked });
-				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
+				toast.showSuccess(
+					isCurrentlyLocked ? "Name unlocked." : "Name locked in.",
+				);
 			} catch (error) {
 				console.error("Failed to toggle locked status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
@@ -502,7 +539,11 @@ export function NameSelector() {
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
 	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
 	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
-	const hiddenFuzzy = useFuzzySearch(hiddenNamesAll, ["name", "description"], hiddenQuery);
+	const hiddenFuzzy = useFuzzySearch(
+		hiddenNamesAll,
+		["name", "description"],
+		hiddenQuery,
+	);
 	const hiddenFiltered = useMemo(() => {
 		return hiddenFuzzy.filter((name) => {
 			if (hiddenShowSelectedOnly && !selectedNames.has(name.id)) {
@@ -511,7 +552,10 @@ export function NameSelector() {
 			return true;
 		});
 	}, [hiddenFuzzy, hiddenShowSelectedOnly, selectedNames]);
-	const previewItems = useMemo(() => hiddenNamesAll.slice(0, 6), [hiddenNamesAll]);
+	const previewItems = useMemo(
+		() => hiddenNamesAll.slice(0, 6),
+		[hiddenNamesAll],
+	);
 	const renderItems = useMemo(
 		() => hiddenFiltered.slice(0, hiddenRenderCount),
 		[hiddenFiltered, hiddenRenderCount],
@@ -594,7 +638,9 @@ export function NameSelector() {
 		if (storeSelectedNames && storeSelectedNames.length >= 2) {
 			tournamentActions.setNames(storeSelectedNames);
 		}
-		document.getElementById("tournament")?.scrollIntoView({ behavior: "smooth", block: "start" });
+		document
+			.getElementById("tournament")
+			?.scrollIntoView({ behavior: "smooth", block: "start" });
 	}, [storeSelectedNames, tournamentActions]);
 
 	const _handleSelectAllAvailable = useCallback(() => {
@@ -633,7 +679,13 @@ export function NameSelector() {
 		});
 		triggerHaptic();
 		toast.showSuccess(`Added ${targetCount} random names.`);
-	}, [availableNames, syncSelectionToStore, toast, triggerHaptic, deferredSync]);
+	}, [
+		availableNames,
+		syncSelectionToStore,
+		toast,
+		triggerHaptic,
+		deferredSync,
+	]);
 
 	if (isLoading) {
 		return (
@@ -666,7 +718,11 @@ export function NameSelector() {
 							</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+							<Button
+								onClick={() => void namesQuery.refetch()}
+								variant="glass"
+								size="small"
+							>
 								Try Again
 							</Button>
 							<Button
@@ -699,11 +755,13 @@ export function NameSelector() {
 								</p>
 								<div className="space-y-2">
 									<h3 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">
-										{isSwipeMode ? "Swipe through the contenders" : "Build your bracket shortlist"}
+										{isSwipeMode
+											? "Swipe through the contenders"
+											: "Build your bracket shortlist"}
 									</h3>
 									<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75 sm:text-base">
 										{isSwipeMode
-											? "Flick right to keep a name, left to skip it, then start the tournament once at least two names make the cut."
+											? "Flick right to keep a name, left to skip it, then start the tournament once at least two names make the cut. Hidden names stay out of the swipe stack, but you can still review them below."
 											: "Tap the names that deserve a slot in the tournament. Locked names stay selected automatically, and hidden names stay available below when you need them."}
 									</p>
 								</div>
@@ -723,7 +781,9 @@ export function NameSelector() {
 										<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
 											{item.label}
 										</p>
-										<p className="mt-2 text-2xl font-semibold text-foreground">{item.value}</p>
+										<p className="mt-2 text-2xl font-semibold text-foreground">
+											{item.value}
+										</p>
 									</div>
 								))}
 							</div>
@@ -765,7 +825,9 @@ export function NameSelector() {
 									variant="ghost"
 									size="small"
 									onClick={_handleClearSelection}
-									disabled={!hasAnySelection || selectedIdsSet.size <= selectionFloor}
+									disabled={
+										!hasAnySelection || selectedIdsSet.size <= selectionFloor
+									}
 								>
 									Clear Back to Locked
 								</Button>
@@ -774,7 +836,9 @@ export function NameSelector() {
 							<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 								<p className="text-xs leading-relaxed text-muted-foreground/70">
 									{isSwipeMode
-										? "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe."
+										? hiddenNamesAll.length > 0
+											? "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe. Hidden names stay available below."
+											: "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe."
 										: `${selectedAvailableCount} active picks and ${selectedHiddenCount} hidden picks are ready for the bracket.`}
 								</p>
 								<Button
@@ -867,7 +931,10 @@ export function NameSelector() {
 																	}}
 																>
 																	<div className="flex items-center gap-2 px-6 py-3 bg-destructive/90 backdrop-blur-md rounded-full border-2 border-destructive shadow-lg rotate-[-20deg]">
-																		<X size={24} className="text-destructive-foreground" />
+																		<X
+																			size={24}
+																			className="text-destructive-foreground"
+																		/>
 																		<span className="text-destructive-foreground font-black text-lg uppercase">
 																			Nope
 																		</span>
@@ -922,7 +989,10 @@ export function NameSelector() {
 															{/* Name and Info Overlay */}
 															<div className={getNameOverlayClasses("swipe")}>
 																<div className="flex flex-col gap-1.5 max-w-full">
-																	<NameContent nameItem={nameItem} variant="swipe" />
+																	<NameContent
+																		nameItem={nameItem}
+																		variant="swipe"
+																	/>
 																</div>
 
 																{isAdmin && (
@@ -933,7 +1003,8 @@ export function NameSelector() {
 																			requestAdminAction({
 																				type: "toggle-hidden",
 																				nameId: nameItem.id,
-																				isCurrentlyEnabled: isNameHidden(nameItem),
+																				isCurrentlyEnabled:
+																					isNameHidden(nameItem),
 																			});
 																		}}
 																		disabled={togglingHidden.has(nameItem.id)}
@@ -965,7 +1036,10 @@ export function NameSelector() {
 																{selectedNames.has(nameItem.id) && (
 																	<div className="flex mt-4">
 																		<div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20">
-																			<Check size={16} className="text-success" />
+																			<Check
+																				size={16}
+																				className="text-success"
+																			/>
 																			<span className="text-success font-black text-xs tracking-[0.2em] uppercase">
 																				Selected
 																			</span>
@@ -990,17 +1064,27 @@ export function NameSelector() {
 											<motion.div
 												initial={{ scale: 0 }}
 												animate={{ scale: 1 }}
-												transition={{ delay: 0.2, type: "spring", stiffness: 400, damping: 25 }}
+												transition={{
+													delay: 0.2,
+													type: "spring",
+													stiffness: 400,
+													damping: 25,
+												}}
 												className="mx-auto w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center shadow-xl shadow-success/30"
 											>
-												<Check size={40} className="text-success-foreground" strokeWidth={3} />
+												<Check
+													size={40}
+													className="text-success-foreground"
+													strokeWidth={3}
+												/>
 											</motion.div>
 											<div className="isolate space-y-3">
 												<h2 className="blend-difference-text text-3xl font-bold text-white sm:text-4xl">
 													All done!
 												</h2>
 												<p className="blend-difference-text text-lg leading-relaxed text-white">
-													You've reviewed all names. Ready to start the tournament?
+													You've reviewed all names. Ready to start the
+													tournament?
 												</p>
 											</div>
 											<motion.div
@@ -1009,7 +1093,10 @@ export function NameSelector() {
 												transition={{ delay: 0.4 }}
 												className="pt-4"
 											>
-												<Button onClick={startTournament} className="min-w-[12rem]">
+												<Button
+													onClick={startTournament}
+													className="min-w-[12rem]"
+												>
 													Start Tournament
 												</Button>
 											</motion.div>
@@ -1045,7 +1132,9 @@ export function NameSelector() {
 										</div>
 									</Button>
 									<div className="text-center mt-2">
-										<span className="text-xs text-muted-foreground font-medium">Skip</span>
+										<span className="text-xs text-muted-foreground font-medium">
+											Skip
+										</span>
 									</div>
 								</motion.div>
 
@@ -1078,7 +1167,9 @@ export function NameSelector() {
 										</div>
 									</Button>
 									<div className="text-center mt-2">
-										<span className="text-xs text-muted-foreground font-medium">Select</span>
+										<span className="text-xs text-muted-foreground font-medium">
+											Select
+										</span>
 									</div>
 								</motion.div>
 							</div>
@@ -1108,8 +1199,15 @@ export function NameSelector() {
 													tabIndex={0}
 													whileHover={{ scale: 1.03, y: -2 }}
 													whileTap={{ scale: 0.97 }}
-													transition={{ type: "spring", stiffness: 400, damping: 25 }}
-													className={getCardStyles(isSelected, isNameLocked(nameItem))}
+													transition={{
+														type: "spring",
+														stiffness: 400,
+														damping: 25,
+													}}
+													className={getCardStyles(
+														isSelected,
+														isNameLocked(nameItem),
+													)}
 												>
 													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden rounded-xl sm:rounded-2xl">
 														<CatImage
@@ -1126,12 +1224,18 @@ export function NameSelector() {
 														{/* Enhanced Name Overlay */}
 														<div className={getNameOverlayClasses("grid")}>
 															<div className="flex flex-col gap-1.5 max-w-full">
-																<NameContent nameItem={nameItem} variant="grid" />
+																<NameContent
+																	nameItem={nameItem}
+																	variant="grid"
+																/>
 															</div>
 														</div>
 
 														{/* Enhanced Zoom Button */}
-														<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+														<ZoomButton
+															nameId={nameItem.id}
+															onClick={handleOpenLightbox}
+														/>
 													</div>
 													{isAdmin && !isSwipeMode && (
 														<motion.div
@@ -1174,257 +1278,263 @@ export function NameSelector() {
 								)
 							);
 						})()}
-
-						{(() => {
-							if (hiddenNamesAll.length === 0) {
-								return null;
-							}
-
-							if (isSwipeMode) {
-								return (
-									<div className="mt-6 text-center text-muted-foreground text-sm">
-										Hidden names available in Grid mode
-									</div>
-								);
-							}
-
-							return (
-								<div className="mt-6">
-									<div className="select-none">
-										<button
-											type="button"
-											onClick={() => {
-												if (!hiddenPanel.isCollapsed) {
-													hiddenPanel.collapse();
-													return;
-												}
-												hiddenPanel.expand();
-												setHiddenRenderCount(24);
-											}}
-											aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
-											aria-controls="hidden-names-panel"
-											className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
-										>
-											<div className="flex items-center gap-2">
-												<span className="text-muted-foreground">
-													{hiddenPanel.isCollapsed ? (
-														<ChevronRight size={20} />
-													) : (
-														<ChevronDown size={20} />
-													)}
-												</span>
-												<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
-													Hidden Names ({hiddenNamesAll.length})
-												</span>
-											</div>
-											<span className="text-[11px] sm:text-xs text-muted-foreground">
-												{hiddenPanel.isCollapsed ? "Click to expand" : "Click to collapse"}
-											</span>
-										</button>
-
-										{hiddenPanel.isCollapsed && (
-											<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
-												{previewItems.map((n) => {
-													const img = catImageById.get(n.id) ?? "";
-													return (
-														<div
-															key={n.id}
-															className="relative aspect-square overflow-hidden border border-border/10"
-														>
-															<CatImage
-																src={img}
-																alt="Hidden name"
-																containerClassName="w-full h-full"
-																imageClassName="w-full h-full object-cover opacity-20"
-															/>
-															<div className="absolute inset-0 flex items-center justify-center">
-																<span className="text-muted-foreground/50 text-sm font-bold">
-																	?
-																</span>
-															</div>
-														</div>
-													);
-												})}
-											</div>
-										)}
-									</div>
-
-									<CollapsibleContent id="hidden-names-panel" isCollapsed={hiddenPanel.isCollapsed}>
-										<div className="mt-4">
-											<div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between mb-3">
-												<input
-													value={hiddenQuery}
-													onChange={(e) => {
-														setHiddenQuery(e.target.value);
-														setHiddenRenderCount(24);
-													}}
-													placeholder="Search hidden names"
-													className="w-full sm:max-w-sm px-3 py-2 bg-foreground/5 border border-border/10 text-foreground text-sm"
-												/>
-												<div className="flex items-center justify-between sm:justify-end gap-3">
-													{hiddenQuery.trim().length > 0 && (
-														<button
-															type="button"
-															onClick={() => {
-																setHiddenQuery("");
-																setHiddenRenderCount(24);
-															}}
-															className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
-														>
-															Clear search
-														</button>
-													)}
-													<button
-														type="button"
-														onClick={() => setHiddenShowSelectedOnly((v) => !v)}
-														className={`px-3 py-2 border text-xs font-medium ${
-															hiddenShowSelectedOnly
-																? "bg-primary/20 border-primary/40 text-foreground"
-																: "bg-foreground/5 border-border/10 text-foreground/80"
-														}`}
-													>
-														Selected only
-													</button>
-													<span className="text-xs text-muted-foreground">
-														{hiddenFiltered.length} / {hiddenNamesAll.length}
-													</span>
-												</div>
-											</div>
-
-											<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
-												{renderItems.map((nameItem) => {
-													const isSelected = selectedNames.has(nameItem.id);
-													const catImage = catImageById.get(nameItem.id) ?? "";
-													return (
-														<div
-															key={nameItem.id}
-															onClick={() => handleToggleName(nameItem.id)}
-															onKeyDown={(e) => {
-																if (e.key === "Enter" || e.key === " ") {
-																	e.preventDefault();
-																	handleToggleName(nameItem.id);
-																}
-															}}
-															role="button"
-															tabIndex={0}
-															className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
-																isSelected
-																	? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
-																	: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
-															}`}
-														>
-															<div className="aspect-[5/4] sm:aspect-[4/3] w-full relative group/hidden">
-																<CatImage
-																	src={catImage}
-																	alt={nameItem.name}
-																	objectFit="cover"
-																	containerClassName="w-full h-full"
-																	imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-																/>
-
-																{/* Hidden Grid Name Overlay */}
-																<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
-																	<div className="flex flex-col gap-0.5">
-																		<div className="flex items-center justify-between gap-2">
-																			<span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
-																				{nameItem.name}
-																			</span>
-																			{isSelected && (
-																				<motion.div
-																					initial={{ scale: 0, opacity: 0 }}
-																					animate={{ scale: 1, opacity: 1 }}
-																					className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
-																				>
-																					<Check size={10} className="text-primary-foreground" />
-																				</motion.div>
-																			)}
-																		</div>
-																		{nameItem.pronunciation && (
-																			<span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
-																				[{nameItem.pronunciation}]
-																			</span>
-																		)}
-																		{nameItem.description && (
-																			<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
-																				{nameItem.description}
-																			</p>
-																		)}
-																	</div>
-																</div>
-
-																<button
-																	type="button"
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		handleOpenLightbox(nameItem.id);
-																	}}
-																	className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
-																	aria-label="View full size"
-																>
-																	<ZoomIn size={14} />
-																</button>
-															</div>
-															{isAdmin && (
-																<div className="px-3 pb-3">
-																	<button
-																		type="button"
-																		onClick={(e) => {
-																			e.stopPropagation();
-																			requestAdminAction({
-																				type: "toggle-hidden",
-																				nameId: nameItem.id,
-																				isCurrentlyEnabled: true,
-																			});
-																		}}
-																		disabled={togglingHidden.has(nameItem.id)}
-																		className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-success hover:bg-success/80 text-success-foreground ${
-																			togglingHidden.has(nameItem.id)
-																				? "opacity-50 cursor-not-allowed"
-																				: ""
-																		}`}
-																	>
-																		{togglingHidden.has(nameItem.id) ? (
-																			<div className="flex items-center justify-center gap-1">
-																				<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-																				<span>Processing...</span>
-																			</div>
-																		) : (
-																			<>
-																				<Eye size={12} className="mr-1 inline" />
-																				Unhide
-																			</>
-																		)}
-																	</button>
-																</div>
-															)}
-														</div>
-													);
-												})}
-											</div>
-											{hiddenFiltered.length === 0 && (
-												<div className="mt-4 rounded-xl border border-border/10 bg-foreground/5 px-4 py-6 text-center text-sm text-foreground/70">
-													No hidden names match this filter.
-												</div>
-											)}
-
-											{hiddenFiltered.length > hiddenRenderCount && (
-												<div className="mt-4 flex justify-center">
-													<Button
-														onClick={() => setHiddenRenderCount((c) => c + 24)}
-														variant="glass"
-														size="small"
-													>
-														Load more
-													</Button>
-												</div>
-											)}
-										</div>
-									</CollapsibleContent>
-								</div>
-							);
-						})()}
 					</div>
 				)}
+
+				{(() => {
+					if (hiddenNamesAll.length === 0) {
+						return null;
+					}
+
+					return (
+						<div className={isSwipeMode ? "" : "mt-2"}>
+							<div className="select-none">
+								<button
+									type="button"
+									onClick={() => {
+										if (!hiddenPanel.isCollapsed) {
+											hiddenPanel.collapse();
+											return;
+										}
+										hiddenPanel.expand();
+										setHiddenRenderCount(24);
+									}}
+									aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
+									aria-controls="hidden-names-panel"
+									className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
+								>
+									<div className="flex items-center gap-2">
+										<span className="text-muted-foreground">
+											{hiddenPanel.isCollapsed ? (
+												<ChevronRight size={20} />
+											) : (
+												<ChevronDown size={20} />
+											)}
+										</span>
+										<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
+											Hidden Names ({hiddenNamesAll.length})
+										</span>
+									</div>
+									<span className="text-[11px] sm:text-xs text-muted-foreground">
+										{hiddenPanel.isCollapsed
+											? "Click to expand"
+											: "Click to collapse"}
+									</span>
+								</button>
+
+								{hiddenPanel.isCollapsed && (
+									<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
+										{previewItems.map((n) => {
+											const img = catImageById.get(n.id) ?? "";
+											return (
+												<div
+													key={n.id}
+													className="relative aspect-square overflow-hidden border border-border/10"
+												>
+													<CatImage
+														src={img}
+														alt="Hidden name"
+														containerClassName="w-full h-full"
+														imageClassName="w-full h-full object-cover opacity-20"
+													/>
+													<div className="absolute inset-0 flex items-center justify-center">
+														<span className="text-muted-foreground/50 text-sm font-bold">
+															?
+														</span>
+													</div>
+												</div>
+											);
+										})}
+									</div>
+								)}
+							</div>
+
+							<CollapsibleContent
+								id="hidden-names-panel"
+								isCollapsed={hiddenPanel.isCollapsed}
+							>
+								<div className="mt-4">
+									{isSwipeMode && (
+										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
+											Hidden names stay out of the swipe deck, but you can still
+											inspect and select them here without leaving swipe mode.
+										</p>
+									)}
+
+									<div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between mb-3">
+										<input
+											value={hiddenQuery}
+											onChange={(e) => {
+												setHiddenQuery(e.target.value);
+												setHiddenRenderCount(24);
+											}}
+											placeholder="Search hidden names"
+											className="w-full sm:max-w-sm px-3 py-2 bg-foreground/5 border border-border/10 text-foreground text-sm"
+										/>
+										<div className="flex items-center justify-between sm:justify-end gap-3">
+											{hiddenQuery.trim().length > 0 && (
+												<button
+													type="button"
+													onClick={() => {
+														setHiddenQuery("");
+														setHiddenRenderCount(24);
+													}}
+													className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
+												>
+													Clear search
+												</button>
+											)}
+											<button
+												type="button"
+												onClick={() => setHiddenShowSelectedOnly((v) => !v)}
+												className={`px-3 py-2 border text-xs font-medium ${
+													hiddenShowSelectedOnly
+														? "bg-primary/20 border-primary/40 text-foreground"
+														: "bg-foreground/5 border-border/10 text-foreground/80"
+												}`}
+											>
+												Selected only
+											</button>
+											<span className="text-xs text-muted-foreground">
+												{hiddenFiltered.length} / {hiddenNamesAll.length}
+											</span>
+										</div>
+									</div>
+
+									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
+										{renderItems.map((nameItem) => {
+											const isSelected = selectedNames.has(nameItem.id);
+											const catImage = catImageById.get(nameItem.id) ?? "";
+											return (
+												<div
+													key={nameItem.id}
+													onClick={() => handleToggleName(nameItem.id)}
+													onKeyDown={(e) => {
+														if (e.key === "Enter" || e.key === " ") {
+															e.preventDefault();
+															handleToggleName(nameItem.id);
+														}
+													}}
+													role="button"
+													tabIndex={0}
+													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+														isSelected
+															? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
+															: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
+													}`}
+												>
+													<div className="aspect-[5/4] sm:aspect-[4/3] w-full relative group/hidden">
+														<CatImage
+															src={catImage}
+															alt={nameItem.name}
+															objectFit="cover"
+															containerClassName="w-full h-full"
+															imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+														/>
+
+														<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
+															<div className="flex flex-col gap-0.5">
+																<div className="flex items-center justify-between gap-2">
+																	<span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
+																		{nameItem.name}
+																	</span>
+																	{isSelected && (
+																		<motion.div
+																			initial={{ scale: 0, opacity: 0 }}
+																			animate={{ scale: 1, opacity: 1 }}
+																			className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
+																		>
+																			<Check
+																				size={10}
+																				className="text-primary-foreground"
+																			/>
+																		</motion.div>
+																	)}
+																</div>
+																{nameItem.pronunciation && (
+																	<span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+																		[{nameItem.pronunciation}]
+																	</span>
+																)}
+																{nameItem.description && (
+																	<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
+																		{nameItem.description}
+																	</p>
+																)}
+															</div>
+														</div>
+
+														<button
+															type="button"
+															onClick={(e) => {
+																e.stopPropagation();
+																handleOpenLightbox(nameItem.id);
+															}}
+															className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
+															aria-label="View full size"
+														>
+															<ZoomIn size={14} />
+														</button>
+													</div>
+													{isAdmin && (
+														<div className="px-3 pb-3">
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	requestAdminAction({
+																		type: "toggle-hidden",
+																		nameId: nameItem.id,
+																		isCurrentlyEnabled: true,
+																	});
+																}}
+																disabled={togglingHidden.has(nameItem.id)}
+																className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-success hover:bg-success/80 text-success-foreground ${
+																	togglingHidden.has(nameItem.id)
+																		? "opacity-50 cursor-not-allowed"
+																		: ""
+																}`}
+															>
+																{togglingHidden.has(nameItem.id) ? (
+																	<div className="flex items-center justify-center gap-1">
+																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																		<span>Processing...</span>
+																	</div>
+																) : (
+																	<>
+																		<Eye size={12} className="mr-1 inline" />
+																		Unhide
+																	</>
+																)}
+															</button>
+														</div>
+													)}
+												</div>
+											);
+										})}
+									</div>
+									{hiddenFiltered.length === 0 && (
+										<div className="mt-4 rounded-xl border border-border/10 bg-foreground/5 px-4 py-6 text-center text-sm text-foreground/70">
+											No hidden names match this filter.
+										</div>
+									)}
+
+									{hiddenFiltered.length > hiddenRenderCount && (
+										<div className="mt-4 flex justify-center">
+											<Button
+												onClick={() => setHiddenRenderCount((c) => c + 24)}
+												variant="glass"
+												size="small"
+											>
+												Load more
+											</Button>
+										</div>
+									)}
+								</div>
+							</CollapsibleContent>
+						</div>
+					);
+				})()}
 			</div>
 
 			{lightboxOpen && (
