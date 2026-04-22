@@ -13,6 +13,7 @@ const AppShell = lazy(() => import("@/app/AppShell"));
 
 function App() {
 	const { user: authUser, isLoading } = useAuth();
+	const isStoreLoggedIn = useAppStore((state) => state.user.isLoggedIn);
 	const userActions = useAppStore((state) => state.userActions);
 	const isBootLoading = useAppStore((state) => state.ui.isBootLoading);
 	const setBootLoading = useAppStore((state) => state.uiActions.setBootLoading);
@@ -22,6 +23,10 @@ function App() {
 	}, [isLoading, setBootLoading]);
 
 	useEffect(() => {
+		if (isLoading) {
+			return;
+		}
+
 		if (authUser) {
 			userActions.setUser({
 				id: authUser.id,
@@ -29,9 +34,11 @@ function App() {
 				isLoggedIn: true,
 				isAdmin: Boolean(authUser.isAdmin),
 			});
+		} else if (isStoreLoggedIn) {
+			userActions.logout();
 		}
 		updateSupabaseUserContext(authUser?.name ?? null, authUser?.id ?? null);
-	}, [authUser, userActions]);
+	}, [authUser, isLoading, isStoreLoggedIn, userActions]);
 
 	useEffect(() => {
 		initializePerformanceMonitoring();

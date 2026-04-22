@@ -9,7 +9,12 @@ const authState = {
 };
 
 const storeState = {
-	userActions: { setAdminStatus: vi.fn(), setUser: vi.fn() },
+	user: { isLoggedIn: false },
+	userActions: {
+		setAdminStatus: vi.fn(),
+		setUser: vi.fn(),
+		logout: vi.fn(),
+	},
 	ui: { isBootLoading: false },
 	uiActions: { setBootLoading: vi.fn() },
 };
@@ -63,6 +68,8 @@ vi.mock("@/shared/services/supabase/runtime", () => ({
 describe("App", () => {
 	it("renders the boot screen while the app is still initializing", () => {
 		authState.isLoading = true;
+		authState.user = null as never;
+		storeState.user.isLoggedIn = true;
 		storeState.ui.isBootLoading = true;
 
 		render(<App />);
@@ -74,6 +81,8 @@ describe("App", () => {
 
 	it("renders the lazy app shell after boot completes", async () => {
 		authState.isLoading = false;
+		authState.user = { id: "1", name: "Test User", isAdmin: false };
+		storeState.user.isLoggedIn = false;
 		storeState.ui.isBootLoading = false;
 
 		render(<App />);
@@ -84,6 +93,7 @@ describe("App", () => {
 	it("syncs the authenticated user into the store", () => {
 		authState.isLoading = false;
 		authState.user = { id: "7", name: "Ada", isAdmin: true };
+		storeState.user.isLoggedIn = false;
 		storeState.ui.isBootLoading = false;
 
 		render(<App />);
@@ -94,5 +104,16 @@ describe("App", () => {
 			isLoggedIn: true,
 			isAdmin: true,
 		});
+	});
+
+	it("logs the store out when auth has no active user after boot", () => {
+		authState.isLoading = false;
+		authState.user = null as never;
+		storeState.user.isLoggedIn = true;
+		storeState.ui.isBootLoading = false;
+
+		render(<App />);
+
+		expect(storeState.userActions.logout).toHaveBeenCalledTimes(1);
 	});
 });
