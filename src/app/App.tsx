@@ -23,7 +23,12 @@ function App() {
 
 	useEffect(() => {
 		if (authUser) {
-			userActions.setAdminStatus(Boolean(authUser.isAdmin));
+			userActions.setUser({
+				id: authUser.id,
+				name: authUser.name,
+				isLoggedIn: true,
+				isAdmin: Boolean(authUser.isAdmin),
+			});
 		}
 		updateSupabaseUserContext(authUser?.name ?? null, authUser?.id ?? null);
 	}, [authUser, userActions]);
@@ -48,7 +53,9 @@ function App() {
 	}
 
 	return (
-		<Suspense fallback={<AppBootScreen visible={true} message="Opening the app..." />}>
+		<Suspense
+			fallback={<AppBootScreen visible={true} message="Opening the app..." />}
+		>
 			<AppShell />
 		</Suspense>
 	);

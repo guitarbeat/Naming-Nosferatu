@@ -9,7 +9,7 @@ const authState = {
 };
 
 const storeState = {
-	userActions: { setAdminStatus: vi.fn() },
+	userActions: { setAdminStatus: vi.fn(), setUser: vi.fn() },
 	ui: { isBootLoading: false },
 	uiActions: { setBootLoading: vi.fn() },
 };
@@ -31,9 +31,17 @@ vi.mock("@/app/AppShell", () => ({
 }));
 
 vi.mock("@/app/components/AppBootScreen", () => ({
-	AppBootScreen: ({ message, visible = true }: { message?: string; visible?: boolean }) =>
+	AppBootScreen: ({
+		message,
+		visible = true,
+	}: {
+		message?: string;
+		visible?: boolean;
+	}) =>
 		visible ? (
-			<div data-testid="boot-screen">{message ?? "Preparing the tournament..."}</div>
+			<div data-testid="boot-screen">
+				{message ?? "Preparing the tournament..."}
+			</div>
 		) : null,
 }));
 
@@ -59,7 +67,9 @@ describe("App", () => {
 
 		render(<App />);
 
-		expect(screen.getByTestId("boot-screen")).toHaveTextContent("Preparing the tournament...");
+		expect(screen.getByTestId("boot-screen")).toHaveTextContent(
+			"Preparing the tournament...",
+		);
 	});
 
 	it("renders the lazy app shell after boot completes", async () => {
@@ -69,5 +79,20 @@ describe("App", () => {
 		render(<App />);
 
 		expect(await screen.findByTestId("app-shell")).toBeInTheDocument();
+	});
+
+	it("syncs the authenticated user into the store", () => {
+		authState.isLoading = false;
+		authState.user = { id: "7", name: "Ada", isAdmin: true };
+		storeState.ui.isBootLoading = false;
+
+		render(<App />);
+
+		expect(storeState.userActions.setUser).toHaveBeenCalledWith({
+			id: "7",
+			name: "Ada",
+			isLoggedIn: true,
+			isAdmin: true,
+		});
 	});
 });

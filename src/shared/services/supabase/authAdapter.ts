@@ -1,11 +1,15 @@
-import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
+import type {
+	AuthAdapter,
+	AuthUser,
+	LoginCredentials,
+} from "@/app/providers/Providers";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
+import { isStorageAvailable } from "@/shared/lib/storage";
 import {
-	getStorageString,
-	isStorageAvailable,
-	removeStorageItem,
-	setStorageString,
-} from "@/shared/lib/storage";
+	clearStoredUserSnapshot,
+	readStoredUserSnapshot,
+	writeStoredUserSnapshot,
+} from "@/shared/lib/userStorage";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
 /**
@@ -18,6 +22,21 @@ function sanitizeNameForEmail(name: string): string {
 		.replace(/[^a-z0-9._-]/g, "") // Keep only alphanumeric, dots, underscores, hyphens
 		.replace(/^[.-]+|[.-]+$/g, "") // Remove leading/trailing dots or hyphens
 		.slice(0, 64); // Email local-part max length is 64 chars
+}
+
+function buildAuthUserFromStoredSnapshot(): AuthUser | null {
+	const storedUser = readStoredUserSnapshot();
+	if (!storedUser) {
+		return null;
+	}
+
+	return {
+		id: storedUser.id || storedUser.name,
+		name: storedUser.name,
+		email: storedUser.email,
+		isAdmin: Boolean(storedUser.isAdmin),
+		role: storedUser.isAdmin ? "admin" : "user",
+	};
 }
 
 export const supabaseAuthAdapter: AuthAdapter = {
@@ -33,21 +52,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 		try {
 			const client = await resolveSupabaseClient();
 			if (!client) {
-				// Fallback to localStorage for demo mode
-				const userName = getStorageString(STORAGE_KEYS.USER);
-				const userId = getStorageString(STORAGE_KEYS.USER_ID);
-
-				if (!userName) {
-					return null;
-				}
-
-				return {
-					id: userId || userName,
-					name: userName,
-					email: undefined,
-					isAdmin: false, // Default to false for demo mode
-					role: "user",
-				};
+				return buildAuthUserFromStoredSnapshot();
 			}
 
 			const {
@@ -60,14 +65,23 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 			// Check if user has admin role
 			const isAdmin = await this.checkAdminStatus(user.id);
-
-			return {
+			const authUser = {
 				id: user.id,
 				name: user.user_metadata?.user_name || user.email || "Unknown",
 				email: user.email,
 				isAdmin,
 				role: isAdmin ? "admin" : "user",
-			};
+			} satisfies AuthUser;
+
+			writeStoredUserSnapshot({
+				...readStoredUserSnapshot(),
+				id: authUser.id,
+				name: authUser.name,
+				email: authUser.email,
+				isAdmin: authUser.isAdmin,
+			});
+
+			return authUser;
 		} catch (error) {
 			console.error("Error getting current user:", error);
 			return null;
@@ -84,15 +98,22 @@ export const supabaseAuthAdapter: AuthAdapter = {
 		}
 
 		try {
+			const trimmedName = name.trim();
 			const client = await resolveSupabaseClient();
 			if (!client) {
 				// Fallback to localStorage for demo mode
-				setStorageString(STORAGE_KEYS.USER, name.trim());
+				const storedUser = readStoredUserSnapshot();
+				writeStoredUserSnapshot({
+					...storedUser,
+					name: trimmedName,
+					isAdmin:
+						storedUser?.name === trimmedName ? storedUser.isAdmin : false,
+				});
 				return true;
 			}
 
 			// Sign in with Supabase
-			const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
+			const sanitizedEmail = `${sanitizeNameForEmail(trimmedName)}@demo.local`;
 			const { data, error } = await client.auth.signInWithPassword({
 				email: sanitizedEmail,
 				password: "demo-password", // Demo password
@@ -105,12 +126,17 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 			// Store user info in localStorage for compatibility
 			if (data.user) {
-				setStorageString(STORAGE_KEYS.USER, data.user.user_metadata?.user_name || name.trim());
-				setStorageString(STORAGE_KEYS.USER_ID, data.user.id);
+				const storedUser = readStoredUserSnapshot();
+				writeStoredUserSnapshot({
+					...storedUser,
+					id: data.user.id,
+					name: data.user.user_metadata?.user_name || trimmedName,
+					email: data.user.email,
+				});
 
 				// Link auth.uid() to user_roles row (idempotent — no-op if already linked)
 				try {
-					await client.rpc("link_auth_uid" as never);
+					await client.rpc("link_auth_uid");
 				} catch {
 					// Non-critical: is_admin() falls back to JWT user_metadata check
 				}
@@ -127,7 +153,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
 	 * Register new user with Supabase Auth
 	 */
 	async register(): Promise<void> {
-		throw new Error("Registration not implemented. Please use Supabase Auth directly.");
+		throw new Error(
+			"Registration not implemented. Please use Supabase Auth directly.",
+		);
 	},
 
 	/**
@@ -142,8 +170,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 			// Clear localStorage
 			if (isStorageAvailable()) {
-				removeStorageItem(STORAGE_KEYS.USER);
-				removeStorageItem(STORAGE_KEYS.USER_ID);
+				clearStoredUserSnapshot();
 			}
 		} catch (error) {
 			console.error("Logout error:", error);
@@ -157,7 +184,12 @@ export const supabaseAuthAdapter: AuthAdapter = {
 		try {
 			const client = await resolveSupabaseClient();
 			if (!client) {
-				return false;
+				return Boolean(readStoredUserSnapshot()?.isAdmin);
+			}
+
+			const { data: isAdmin, error: rpcError } = await client.rpc("is_admin");
+			if (!rpcError && typeof isAdmin === "boolean") {
+				return isAdmin;
 			}
 
 			const { data, error } = await client
@@ -165,13 +197,29 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				.select("role")
 				.eq("user_id", userId)
 				.eq("role", "admin")
-				.single();
+				.maybeSingle();
 
-			if (error || !data) {
+			if (data) {
+				return true;
+			}
+
+			const storedUserName = readStoredUserSnapshot()?.name;
+			if (!storedUserName) {
 				return false;
 			}
 
-			return true;
+			const { data: fallbackData, error: fallbackError } = await client
+				.from("cat_user_roles")
+				.select("role")
+				.eq("user_name", storedUserName)
+				.eq("role", "admin")
+				.maybeSingle();
+
+			if (error || fallbackError) {
+				return false;
+			}
+
+			return Boolean(fallbackData);
 		} catch (error) {
 			console.error("Error checking admin status:", error);
 			return false;
