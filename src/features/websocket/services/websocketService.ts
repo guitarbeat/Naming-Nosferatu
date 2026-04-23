@@ -34,8 +34,8 @@ class RealtimeService {
 	private appChannel: RealtimeChannel | null = null;
 	private tournamentChannels = new Map<string, RealtimeChannel>();
 	private connectionState: ConnectionState = "disconnected";
-	private nameChangeCallbacks: Array<(payload: unknown) => void> = [];
-	private ratingChangeCallbacks: Array<(payload: unknown) => void> = [];
+	private nameChangeCallbacks = new Set<(payload: unknown) => void>();
+	private ratingChangeCallbacks = new Set<(payload: unknown) => void>();
 	private messageHandlers = new Map<string, Set<MessageHandler>>();
 
 	async connect(): Promise<void> {
@@ -114,16 +114,16 @@ class RealtimeService {
 	}
 
 	onNameChange(callback: (payload: unknown) => void): () => void {
-		this.nameChangeCallbacks.push(callback);
+		this.nameChangeCallbacks.add(callback);
 		return () => {
-			this.nameChangeCallbacks = this.nameChangeCallbacks.filter((cb) => cb !== callback);
+			this.nameChangeCallbacks.delete(callback);
 		};
 	}
 
 	onRatingChange(callback: (payload: unknown) => void): () => void {
-		this.ratingChangeCallbacks.push(callback);
+		this.ratingChangeCallbacks.add(callback);
 		return () => {
-			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter((cb) => cb !== callback);
+			this.ratingChangeCallbacks.delete(callback);
 		};
 	}
 
@@ -198,9 +198,9 @@ class RealtimeService {
 			};
 			callback(result);
 		};
-		this.ratingChangeCallbacks.push(handler);
+		this.ratingChangeCallbacks.add(handler);
 		return () => {
-			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter((cb) => cb !== handler);
+			this.ratingChangeCallbacks.delete(handler);
 		};
 	}
 
