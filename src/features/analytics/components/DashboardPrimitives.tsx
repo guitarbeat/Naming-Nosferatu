@@ -84,30 +84,26 @@ export function StatTile({
         accent?: boolean;
 }) {
         return (
-                <div className="rounded-2xl border border-white/10 bg-black/15 px-4 py-4">
-                        <div className="flex items-start justify-between gap-3">
-                                <div>
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                {label}
-                                        </p>
-                                        <p
-                                                className={`mt-2 text-2xl font-semibold ${accent ? "text-primary" : "text-foreground"}`}
-                                        >
-                                                {value}
-                                        </p>
+                <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-black/15 px-4 py-5 text-center">
+                        {Icon && (
+                                <div
+                                        className={`rounded-2xl border p-2.5 ${
+                                                accent
+                                                        ? "border-primary/20 bg-primary/12 text-primary"
+                                                        : "border-white/10 bg-white/[0.04] text-white/65"
+                                        }`}
+                                >
+                                        <Icon size={16} />
                                 </div>
-                                {Icon && (
-                                        <div
-                                                className={`rounded-2xl border p-2.5 ${
-                                                        accent
-                                                                ? "border-primary/20 bg-primary/12 text-primary"
-                                                                : "border-white/10 bg-white/[0.04] text-white/65"
-                                                }`}
-                                        >
-                                                <Icon size={16} />
-                                        </div>
-                                )}
-                        </div>
+                        )}
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+                                {label}
+                        </p>
+                        <p
+                                className={`text-2xl font-semibold leading-none ${accent ? "text-primary" : "text-foreground"}`}
+                        >
+                                {value}
+                        </p>
                 </div>
         );
 }
