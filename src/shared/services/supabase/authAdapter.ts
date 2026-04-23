@@ -93,9 +93,18 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 			// Sign in with Supabase
 			const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
+			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
+
+			if (!demoPassword) {
+				console.error(
+					"[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.",
+				);
+				return false;
+			}
+
 			const { data, error } = await client.auth.signInWithPassword({
 				email: sanitizedEmail,
-				password: "demo-password", // Demo password
+				password: demoPassword,
 			});
 
 			if (error) {
