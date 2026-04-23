@@ -128,106 +128,205 @@ function runDiagnostics(): DiagnosticResult[] {
 	return results;
 }
 
-function renderDiagnostics(diagnostics: DiagnosticResult[]): string {
+function renderDiagnostics(diagnostics: DiagnosticResult[]): HTMLElement | null {
 	if (!diagnostics || diagnostics.length === 0) {
-		return "";
+		return null;
 	}
 
-	const statusIcons: Record<string, string> = {
-		ok: '<span style="color:#22c55e">&#10003;</span>',
-		warning: '<span style="color:#eab308">&#9888;</span>',
-		error: '<span style="color:#ef4444">&#10007;</span>',
-		unknown: '<span style="color:#6b7280">?</span>',
+	const section = document.createElement("div");
+	section.className = "deployment-error__section";
+	section.style.background = "#fafafa";
+	section.style.borderLeftColor = "#3b82f6";
+
+	const title = document.createElement("h3");
+	title.className = "deployment-error__section-title";
+	title.style.display = "flex";
+	title.style.alignItems = "center";
+	title.style.gap = "8px";
+
+	const titleText = document.createElement("span");
+	titleText.style.fontSize = "16px";
+	titleText.textContent = "Diagnostics";
+	title.appendChild(titleText);
+	section.appendChild(title);
+
+	const table = document.createElement("table");
+	table.style.width = "100%";
+	table.style.borderCollapse = "collapse";
+	table.style.fontSize = "14px";
+	table.style.marginTop = "8px";
+
+	const thead = document.createElement("thead");
+	const headerRow = document.createElement("tr");
+	headerRow.style.background = "#f3f4f6";
+	headerRow.style.textAlign = "left";
+
+	for (const text of ["Check", "Status", "Value", "Hint"]) {
+		const th = document.createElement("th");
+		th.style.padding = "8px 12px";
+		if (text === "Status") {
+			th.style.textAlign = "center";
+		}
+		th.textContent = text;
+		headerRow.appendChild(th);
+	}
+	thead.appendChild(headerRow);
+	table.appendChild(thead);
+
+	const tbody = document.createElement("tbody");
+
+	const statusIcons: Record<string, { char: string; color: string }> = {
+		ok: { char: "\u2713", color: "#22c55e" },
+		warning: { char: "\u26A0", color: "#eab308" },
+		error: { char: "\u2717", color: "#ef4444" },
+		unknown: { char: "?", color: "#6b7280" },
 	};
 
-	const rows = diagnostics
-		.map(
-			(d) => `
-                <tr style="border-bottom:1px solid #e5e7eb">
-                        <td style="padding:8px 12px;font-weight:500">${d.name}</td>
-                        <td style="padding:8px 12px;text-align:center">${statusIcons[d.status]}</td>
-                        <td style="padding:8px 12px;font-family:monospace;font-size:12px">${d.value || "-"}</td>
-                        <td style="padding:8px 12px;color:#6b7280;font-size:12px">${d.hint || ""}</td>
-                </tr>
-        `,
-		)
-		.join("");
+	for (const d of diagnostics) {
+		const tr = document.createElement("tr");
+		tr.style.borderBottom = "1px solid #e5e7eb";
 
-	return `
-                <div class="deployment-error__section" style="background:#fafafa;border-left-color:#3b82f6">
-                        <h3 class="deployment-error__section-title" style="display:flex;align-items:center;gap:8px">
-                                <span style="font-size:16px">Diagnostics</span>
-                        </h3>
-                        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px">
-                                <thead>
-                                        <tr style="background:#f3f4f6;text-align:left">
-                                                <th style="padding:8px 12px">Check</th>
-                                                <th style="padding:8px 12px;text-align:center">Status</th>
-                                                <th style="padding:8px 12px">Value</th>
-                                                <th style="padding:8px 12px">Hint</th>
-                                        </tr>
-                                </thead>
-                                <tbody>${rows}</tbody>
-                        </table>
-                </div>
-        `;
+		const nameTd = document.createElement("td");
+		nameTd.style.padding = "8px 12px";
+		nameTd.style.fontWeight = "500";
+		nameTd.textContent = d.name;
+		tr.appendChild(nameTd);
+
+		const statusTd = document.createElement("td");
+		statusTd.style.padding = "8px 12px";
+		statusTd.style.textAlign = "center";
+		const icon = statusIcons[d.status] || statusIcons.unknown;
+		const iconSpan = document.createElement("span");
+		iconSpan.style.color = icon.color;
+		iconSpan.textContent = icon.char;
+		statusTd.appendChild(iconSpan);
+		tr.appendChild(statusTd);
+
+		const valueTd = document.createElement("td");
+		valueTd.style.padding = "8px 12px";
+		valueTd.style.fontFamily = "monospace";
+		valueTd.style.fontSize = "12px";
+		valueTd.textContent = d.value || "-";
+		tr.appendChild(valueTd);
+
+		const hintTd = document.createElement("td");
+		hintTd.style.padding = "8px 12px";
+		hintTd.style.color = "#6b7280";
+		hintTd.style.fontSize = "12px";
+		hintTd.textContent = d.hint || "";
+		tr.appendChild(hintTd);
+
+		tbody.appendChild(tr);
+	}
+	table.appendChild(tbody);
+	section.appendChild(table);
+
+	return section;
 }
 
-function renderConsoleErrors(errors: string[]): string {
+function renderConsoleErrors(errors: string[]): HTMLElement | null {
 	if (!errors || errors.length === 0) {
-		return "";
+		return null;
 	}
 
-	const errorItems = errors
-		.slice(0, 10) // Limit to 10 most recent
-		.map(
-			(err) => `
-                <div style="background:#1f2937;padding:8px 12px;border-radius:4px;margin-bottom:4px;font-family:monospace;font-size:11px;color:#f87171;white-space:pre-wrap;word-break:break-all;max-height:80px;overflow:auto">${escapeHtml(err)}</div>
-        `,
-		)
-		.join("");
+	const section = document.createElement("div");
+	section.className = "deployment-error__section";
+	section.style.background = "#fef2f2";
+	section.style.borderLeftColor = "#ef4444";
 
-	return `
-                <div class="deployment-error__section" style="background:#fef2f2;border-left-color:#ef4444">
-                        <h3 class="deployment-error__section-title" style="color:#dc2626;display:flex;align-items:center;justify-content:between">
-                                <span>Console Errors (${errors.length})</span>
-                                <button 
-                                        type="button" 
-                                        onclick="copyErrorsToClipboard()"
-                                        style="margin-left:auto;padding:4px 12px;font-size:12px;background:#dc2626;color:white;border:none;border-radius:4px;cursor:pointer"
-                                >
-                                        Copy All
-                                </button>
-                        </h3>
-                        <div style="max-height:200px;overflow-y:auto;margin-top:8px">${errorItems}</div>
-                        ${errors.length > 10 ? `<p style="color:#6b7280;font-size:12px;margin-top:8px">Showing first 10 of ${errors.length} errors</p>` : ""}
-                </div>
-        `;
-}
+	const title = document.createElement("h3");
+	title.className = "deployment-error__section-title";
+	title.style.color = "#dc2626";
+	title.style.display = "flex";
+	title.style.alignItems = "center";
+	title.style.justifyContent = "space-between";
 
-function escapeHtml(text: string): string {
-	const div = document.createElement("div");
-	div.textContent = text;
-	return div.innerHTML;
+	const titleText = document.createElement("span");
+	titleText.textContent = `Console Errors (${errors.length})`;
+	title.appendChild(titleText);
+
+	const copyBtn = document.createElement("button");
+	copyBtn.type = "button";
+	copyBtn.className = "copy-errors-button";
+	copyBtn.style.marginLeft = "auto";
+	copyBtn.style.padding = "4px 12px";
+	copyBtn.style.fontSize = "12px";
+	copyBtn.style.background = "#dc2626";
+	copyBtn.style.color = "white";
+	copyBtn.style.border = "none";
+	copyBtn.style.borderRadius = "4px";
+	copyBtn.style.cursor = "pointer";
+	copyBtn.textContent = "Copy All";
+	copyBtn.addEventListener("click", () => {
+		(window as unknown as { copyErrorsToClipboard: () => void }).copyErrorsToClipboard();
+	});
+	title.appendChild(copyBtn);
+	section.appendChild(title);
+
+	const errorContainer = document.createElement("div");
+	errorContainer.style.maxHeight = "200px";
+	errorContainer.style.overflowY = "auto";
+	errorContainer.style.marginTop = "8px";
+
+	for (const err of errors.slice(0, 10)) {
+		const errorItem = document.createElement("div");
+		errorItem.style.background = "#1f2937";
+		errorItem.style.padding = "8px 12px";
+		errorItem.style.borderRadius = "4px";
+		errorItem.style.marginBottom = "4px";
+		errorItem.style.fontFamily = "monospace";
+		errorItem.style.fontSize = "11px";
+		errorItem.style.color = "#f87171";
+		errorItem.style.whiteSpace = "pre-wrap";
+		errorItem.style.wordBreak = "break-all";
+		errorItem.style.maxHeight = "80px";
+		errorItem.style.overflow = "auto";
+		errorItem.textContent = err;
+		errorContainer.appendChild(errorItem);
+	}
+	section.appendChild(errorContainer);
+
+	if (errors.length > 10) {
+		const moreInfo = document.createElement("p");
+		moreInfo.style.color = "#6b7280";
+		moreInfo.style.fontSize = "12px";
+		moreInfo.style.marginTop = "8px";
+		moreInfo.textContent = `Showing first 10 of ${errors.length} errors`;
+		section.appendChild(moreInfo);
+	}
+
+	return section;
 }
 
 function renderDeploymentList(
-	title: string,
+	titleText: string,
 	items: string[] | undefined,
 	listTag: "ol" | "ul",
-): string {
+): HTMLElement | null {
 	if (!items || items.length === 0) {
-		return "";
+		return null;
 	}
 
-	return `
-                <div class="deployment-error__section">
-                        <h3 class="deployment-error__section-title">${title}</h3>
-                        <${listTag} class="deployment-error__list">
-                                ${items.map((item) => `<li class="deployment-error__list-item">${item}</li>`).join("")}
-                        </${listTag}>
-                </div>
-        `;
+	const section = document.createElement("div");
+	section.className = "deployment-error__section";
+
+	const title = document.createElement("h3");
+	title.className = "deployment-error__section-title";
+	title.textContent = titleText;
+	section.appendChild(title);
+
+	const list = document.createElement(listTag);
+	list.className = "deployment-error__list";
+
+	for (const item of items) {
+		const li = document.createElement("li");
+		li.className = "deployment-error__list-item";
+		li.textContent = item;
+		list.appendChild(li);
+	}
+	section.appendChild(list);
+
+	return section;
 }
 
 // Expose copy function globally for the button
@@ -254,7 +353,7 @@ ${errorText || "No errors captured"}
 	navigator.clipboard.writeText(fullReport).then(
 		() => {
 			const btn = document.querySelector(
-				'#deployment-error-display button[onclick="copyErrorsToClipboard()"]',
+				`#${ErrorDisplayId} .copy-errors-button`,
 			) as HTMLButtonElement;
 			if (btn) {
 				const original = btn.textContent;
@@ -290,22 +389,64 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
 	content.style.maxHeight = "90vh";
 	content.style.overflowY = "auto";
 
-	content.innerHTML = `
-                <div class="deployment-error__icon" aria-hidden="true">🐾</div>
-                <h2 class="deployment-error__title">${errorInfo.title}</h2>
-                <p class="deployment-error__message">${errorInfo.message}</p>
-                ${renderDiagnostics(diagnostics)}
-                ${renderConsoleErrors(consoleErrors)}
-                ${renderDeploymentList("What happened", errorInfo.details, "ul")}
-                ${renderDeploymentList("Try this", errorInfo.suggestions, "ol")}
-                <div class="deployment-error__button-row">
-                        <button type="button" class="deployment-error__button" onclick="window.location.reload()">Try again</button>
-                        <button type="button" class="deployment-error__button" style="background:rgba(255,255,255,0.08);color:#94a3b8" onclick="document.getElementById('deployment-error-display').remove()">Dismiss</button>
-                </div>
-                <p style="text-align:center;color:#475569;font-size:11px;margin-top:16px">
-                        Open DevTools (F12) for more details
-                </p>
-        `;
+	const icon = document.createElement("div");
+	icon.className = "deployment-error__icon";
+	icon.setAttribute("aria-hidden", "true");
+	icon.textContent = "🐾";
+	content.appendChild(icon);
+
+	const title = document.createElement("h2");
+	title.className = "deployment-error__title";
+	title.textContent = errorInfo.title;
+	content.appendChild(title);
+
+	const message = document.createElement("p");
+	message.className = "deployment-error__message";
+	message.textContent = errorInfo.message;
+	content.appendChild(message);
+
+	const diagnosticsEl = renderDiagnostics(diagnostics);
+	if (diagnosticsEl) content.appendChild(diagnosticsEl);
+
+	const consoleErrorsEl = renderConsoleErrors(consoleErrors);
+	if (consoleErrorsEl) content.appendChild(consoleErrorsEl);
+
+	const whatHappenedEl = renderDeploymentList("What happened", errorInfo.details, "ul");
+	if (whatHappenedEl) content.appendChild(whatHappenedEl);
+
+	const tryThisEl = renderDeploymentList("Try this", errorInfo.suggestions, "ol");
+	if (tryThisEl) content.appendChild(tryThisEl);
+
+	const buttonRow = document.createElement("div");
+	buttonRow.className = "deployment-error__button-row";
+
+	const tryAgainBtn = document.createElement("button");
+	tryAgainBtn.type = "button";
+	tryAgainBtn.className = "deployment-error__button";
+	tryAgainBtn.textContent = "Try again";
+	tryAgainBtn.addEventListener("click", () => window.location.reload());
+	buttonRow.appendChild(tryAgainBtn);
+
+	const dismissBtn = document.createElement("button");
+	dismissBtn.type = "button";
+	dismissBtn.className = "deployment-error__button";
+	dismissBtn.style.background = "rgba(255,255,255,0.08)";
+	dismissBtn.style.color = "#94a3b8";
+	dismissBtn.textContent = "Dismiss";
+	dismissBtn.addEventListener("click", () => {
+		const display = document.getElementById(ErrorDisplayId);
+		if (display) display.remove();
+	});
+	buttonRow.appendChild(dismissBtn);
+	content.appendChild(buttonRow);
+
+	const footer = document.createElement("p");
+	footer.style.textAlign = "center";
+	footer.style.color = "#475569";
+	footer.style.fontSize = "11px";
+	footer.style.marginTop = "16px";
+	footer.textContent = "Open DevTools (F12) for more details";
+	content.appendChild(footer);
 
 	errorDiv.appendChild(content);
 	document.body.appendChild(errorDiv);
