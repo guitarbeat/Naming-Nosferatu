@@ -436,6 +436,7 @@ export function FloatingNavbar() {
                 {isProfileOpen && (
                         <Modal
                                 title="Your Profile"
+                                hideTitle
                                 isOpen={isProfileOpen}
                                 onClose={() => setIsProfileOpen(false)}
                                 maxWidth="max-w-md"

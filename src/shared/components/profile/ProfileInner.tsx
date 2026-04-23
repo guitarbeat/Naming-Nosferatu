@@ -136,7 +136,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                                                 )}
                                                 <Button
                                                         type="submit"
-                                                        variant="glass"
+                                                        variant="gradient"
                                                         size="large"
                                                         onClick={handleSave}
                                                         disabled={!editedName.trim() || isSaving}
