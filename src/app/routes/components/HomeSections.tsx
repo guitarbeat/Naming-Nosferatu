@@ -3,7 +3,6 @@ import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
-import { BarChart3, Target, Trophy } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
@@ -11,8 +10,6 @@ type HomeHeroState = "loading" | "ready" | "error";
 interface HomeHeroSectionProps {
         state: HomeHeroState;
         lockedNames: NameItem[];
-        selectedCount: number;
-        totalNameCount: number | null;
         onStartPicking: () => void;
         onSeeResults: () => void;
 }
@@ -75,91 +72,18 @@ function HeroNameMarquee({
         );
 }
 
-function LockedNameSummary({
-        state,
-        lockedNames,
-}: {
-        state: HomeHeroState;
-        lockedNames: NameItem[];
-}) {
-        const lockedPreview = lockedNames.slice(0, 4).map((name) => name.name);
-
-        if (state === "loading") {
-                return (
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                Loading…
-                        </p>
-                );
-        }
-
-        if (state === "error") {
-                return (
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                Pool Unavailable
-                        </p>
-                );
-        }
-
-        if (lockedPreview.length === 0) {
-                return (
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                No Locked Names Yet
-                        </p>
-                );
-        }
-
-        return (
-                <>
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                Locked Names
-                        </p>
-                        <div className="flex flex-wrap justify-center gap-2 pt-1">
-                                {lockedPreview.map((name) => (
-                                        <span
-                                                key={name}
-                                                className="rounded-full border border-border/70 px-3 py-1 text-sm font-medium text-foreground"
-                                        >
-                                                {name}
-                                        </span>
-                                ))}
-                                {lockedNames.length > lockedPreview.length && (
-                                        <span className="rounded-full border border-border/60 px-3 py-1 text-sm text-muted-foreground">
-                                                +{lockedNames.length - lockedPreview.length} more
-                                        </span>
-                                )}
-                        </div>
-                </>
-        );
-}
-
 export function HomeHeroSection({
         state,
         lockedNames,
-        selectedCount,
-        totalNameCount,
         onStartPicking,
         onSeeResults,
 }: HomeHeroSectionProps) {
-        const isReady = state === "ready";
         const heroCopy =
                 state === "loading"
                         ? "Loading shortlist…"
                         : state === "error"
                                 ? "Live pool unavailable."
                                 : "Pick. Lock. Bracket.";
-        const heroStats = [
-                { icon: Target, label: "Selected", value: String(selectedCount) },
-                {
-                        icon: Trophy,
-                        label: "Locked",
-                        value: isReady ? String(lockedNames.length) : "--",
-                },
-                {
-                        icon: BarChart3,
-                        label: "Pool",
-                        value: isReady && totalNameCount !== null ? String(totalNameCount) : "--",
-                },
-        ] as const;
 
         return (
                 <section className="relative overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top_left,rgba(48,120,138,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]">
@@ -193,28 +117,6 @@ export function HomeHeroSection({
                                         </Button>
                                 </div>
 
-                                <div className="flex w-full max-w-4xl flex-col items-center gap-6 border-t border-border/60 pt-6 text-center">
-                                        <div className="flex flex-col items-center space-y-3">
-                                                <LockedNameSummary state={state} lockedNames={lockedNames} />
-                                        </div>
-
-                                        <dl className="grid w-full max-w-2xl grid-cols-3 gap-4">
-                                                {heroStats.map(({ icon: Icon, label, value }) => (
-                                                        <div
-                                                                key={label}
-                                                                className="flex flex-col items-center border-t border-border/60 pt-3 text-center"
-                                                        >
-                                                                <div className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                                        <Icon className="h-4 w-4" />
-                                                                        <dt>{label}</dt>
-                                                                </div>
-                                                                <dd className="mt-2 text-2xl font-semibold leading-none text-foreground sm:text-3xl">
-                                                                        {value}
-                                                                </dd>
-                                                        </div>
-                                                ))}
-                                        </dl>
-                                </div>
                         </div>
                 </section>
         );

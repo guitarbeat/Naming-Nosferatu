@@ -1,0 +1,28 @@
+=== Error Report ===
+Generated: 2026-04-23T02:52:09.104Z
+URL: https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/
+
+=== Error Info ===
+Error ID: error_4c2ca6cf-0f24-4a0d-8a39-fcfbefe77f8b
+Context: Main Application Layout
+Message: Target is not defined
+
+=== Diagnostics ===
+Browser: Chrome/147.0.0.0 Safari/537.36
+Network: Online
+Memory: 53MB / 2144MB (2%)
+Error Type: Reference Error
+Route: /
+
+=== Stack Trace ===
+ReferenceError: Target is not defined
+    at HomeHeroSection (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/src/app/routes/components/HomeSections.tsx?t=1776912726333:73:13)
+    at Object.react_stack_bottom_frame (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:18509:20)
+    at renderWithHooks (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:5654:24)
+    at updateFunctionComponent (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:7475:21)
+    at beginWork (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:8525:20)
+    at runWithFiberInDEV (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:997:72)
+    at performUnitOfWork (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:12561:98)
+    at workLoopSync (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:12424:43)
+    at renderRootSync (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:12408:13)
+    at performWorkOnRoot (https://21db6a75-45bc-4cd0-810c-e94075d78a78-00-1p949cakourb3.picard.replit.dev/node_modules/.vite/deps/react-dom_client.js?v=ac091af8:11827:37)

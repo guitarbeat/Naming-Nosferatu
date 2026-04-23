@@ -38,8 +38,6 @@ export default function HomeRoute() {
                                 : "ready";
         const names = namesQuery.data?.names ?? [];
         const lockedNames = heroState === "ready" ? getLockedNames(names) : [];
-        const totalNameCount = heroState === "ready" ? names.length : null;
-        const selectedCount = tournament.selectedNames?.length ?? 0;
         const { handleTournamentComplete, handleStartNewTournament: startNewTournament } =
                 useTournamentHandlers({
                         userName: user.name,
@@ -89,8 +87,6 @@ export default function HomeRoute() {
                         <HomeHeroSection
                                 state={heroState}
                                 lockedNames={lockedNames}
-                                selectedCount={selectedCount}
-                                totalNameCount={totalNameCount}
                                 onStartPicking={() => scrollToSection("pick")}
                                 onSeeResults={() => scrollToSection("analysis")}
                         />
