@@ -30,9 +30,7 @@ export default function TournamentFlow() {
                         ratingsAPI
                                 .saveRatings(userName, ratingsSnapshot)
                                 .then(async (result) => {
-                                        if (result?.success) {
-                                                console.log(`Successfully saved ${result.count} ratings to database`);
-                                        } else {
+                                        if (!result?.success) {
                                                 // Save failed (e.g. offline) — enqueue for later sync
                                                 const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
                                                         name_id: nameId,

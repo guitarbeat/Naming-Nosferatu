@@ -29,9 +29,7 @@ export function useTournamentHandlers({ userName, tournamentActions }: UseTourna
                         ratingsAPI
                                 .saveRatings(uName, ratings)
                                 .then(async (result) => {
-                                        if (result?.success) {
-                                                console.log(`Saved ${result.count} ratings to database`);
-                                        } else {
+                                        if (!result?.success) {
                                                 await enqueueRatingsMutation(records);
                                                 console.warn("Ratings save failed; queued for offline sync");
                                         }
