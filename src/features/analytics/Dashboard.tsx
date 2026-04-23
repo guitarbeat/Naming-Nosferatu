@@ -127,7 +127,7 @@ function DashboardEmptyState({
                                                 Personal Layer
                                         </p>
                                         <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-                                                Your completed bracket creates a saved order you can adjust and revisit.
+                                                Your saved order.
                                         </p>
                                 </div>
                                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
@@ -135,7 +135,7 @@ function DashboardEmptyState({
                                                 Community Layer
                                         </p>
                                         <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-                                                Leaderboard and site stats summarize shared activity across everyone using the app.
+                                                Aggregate site stats.
                                         </p>
                                 </div>
                         </div>
@@ -431,7 +431,7 @@ export function Dashboard({
                                         <SectionHeader
                                                 icon={EyeOff}
                                                 title="Hidden Names"
-                                                subtitle="Review names that are currently removed from the public pool."
+                                                subtitle="Hidden from the pool."
                                                 action={
                                                         <Button variant="outline" size="small" onClick={toggleHiddenNames}>
                                                                 {showHiddenNames ? "Hide List" : "Show List"}
