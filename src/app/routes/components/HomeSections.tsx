@@ -107,14 +107,6 @@ export function HomeHeroSection({
                                         >
                                                 Start Picking
                                         </Button>
-                                        <Button
-                                                variant="outline"
-                                                size="xl"
-                                                onClick={onSeeResults}
-                                                className="w-full sm:w-auto"
-                                        >
-                                                See Results
-                                        </Button>
                                 </div>
 
                         </div>
