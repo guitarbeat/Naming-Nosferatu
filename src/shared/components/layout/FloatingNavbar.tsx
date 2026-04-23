@@ -1,5 +1,5 @@
 import type { ElementType, ReactNode } from "react";
-import { lazy, Suspense, useCallback, useEffect, useId, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
 import { Modal } from "@/shared/components/layout/Modal";
@@ -109,6 +109,10 @@ export function FloatingNavbar() {
         const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
         const [pendingScroll, setPendingScroll] = useState<NavSection | null>(null);
         const [isProfileOpen, setIsProfileOpen] = useState(false);
+        const profileButtonRef = useRef<HTMLDivElement | null>(null);
+        const [profileOriginRect, setProfileOriginRect] = useState<
+                { x: number; y: number; width: number; height: number } | null
+        >(null);
         const navGlassId = useId();
 
         const isHomeRoute = location.pathname === "/";
@@ -391,12 +395,23 @@ export function FloatingNavbar() {
                                                         />
                                                 )}
 
+                                                <div ref={profileButtonRef} className="contents">
                                                 <FloatingNavItem
                                                         icon={User}
                                                         label={profileLabel}
                                                         isCurrent={isProfileOpen}
                                                         onClick={() => {
                                                                 hapticNavTap();
+                                                                const buttonEl = profileButtonRef.current?.querySelector("button");
+                                                                if (buttonEl) {
+                                                                        const rect = buttonEl.getBoundingClientRect();
+                                                                        setProfileOriginRect({
+                                                                                x: rect.left,
+                                                                                y: rect.top,
+                                                                                width: rect.width,
+                                                                                height: rect.height,
+                                                                        });
+                                                                }
                                                                 setIsProfileOpen(true);
                                                         }}
                                                         customIcon={
@@ -441,6 +456,7 @@ export function FloatingNavbar() {
                                 onClose={() => setIsProfileOpen(false)}
                                 maxWidth="max-w-md"
                                 description="Sign in to save your rankings."
+                                originRect={profileOriginRect}
                         >
                                 <Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
                                         <LazyProfileInner

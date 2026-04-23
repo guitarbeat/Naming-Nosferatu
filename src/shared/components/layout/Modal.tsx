@@ -1,5 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { X } from "@/shared/lib/icons";
+
+interface OriginRect {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+}
 
 interface ModalProps {
         title: string;
@@ -10,7 +17,10 @@ interface ModalProps {
         closeDisabled?: boolean;
         description?: string;
         hideTitle?: boolean;
+        originRect?: OriginRect | null;
 }
+
+const GENIE_DURATION_MS = 480;
 
 export function Modal({
         title,
@@ -21,11 +31,55 @@ export function Modal({
         closeDisabled = false,
         description,
         hideTitle = false,
+        originRect = null,
 }: ModalProps) {
         const modalRef = useRef<HTMLDivElement>(null);
+        const [isClosing, setIsClosing] = useState(false);
+        const [shouldRender, setShouldRender] = useState(isOpen);
+        const [genieVars, setGenieVars] = useState<React.CSSProperties | null>(null);
 
         useEffect(() => {
-                if (!isOpen) {
+                if (isOpen) {
+                        setShouldRender(true);
+                        setIsClosing(false);
+                        return;
+                }
+                if (!shouldRender) {
+                        return;
+                }
+                setIsClosing(true);
+                const timer = window.setTimeout(() => {
+                        setShouldRender(false);
+                        setIsClosing(false);
+                }, GENIE_DURATION_MS);
+                return () => window.clearTimeout(timer);
+        }, [isOpen, shouldRender]);
+
+        const requestClose = () => {
+                if (closeDisabled) {
+                        return;
+                }
+                onClose();
+        };
+
+        useLayoutEffect(() => {
+                if (!shouldRender || !originRect || !modalRef.current) {
+                        setGenieVars(null);
+                        return;
+                }
+                const rect = modalRef.current.getBoundingClientRect();
+                const modalCenterX = rect.left + rect.width / 2;
+                const modalCenterY = rect.top + rect.height / 2;
+                const originCenterX = originRect.x + originRect.width / 2;
+                const originCenterY = originRect.y + originRect.height / 2;
+                setGenieVars({
+                        ["--genie-x" as never]: `${originCenterX - modalCenterX}px`,
+                        ["--genie-y" as never]: `${originCenterY - modalCenterY}px`,
+                });
+        }, [shouldRender, originRect]);
+
+        useEffect(() => {
+                if (!isOpen || isClosing) {
                         return;
                 }
 
@@ -56,7 +110,7 @@ export function Modal({
                 const handleKeyDown = (e: KeyboardEvent) => {
                         if (e.key === "Escape" && !closeDisabled) {
                                 e.preventDefault();
-                                onClose();
+                                requestClose();
                                 return;
                         }
 
@@ -97,19 +151,31 @@ export function Modal({
                                 previouslyFocusedElement.focus();
                         }
                 };
-        }, [isOpen, onClose, closeDisabled]);
+        }, [isOpen, isClosing, onClose, closeDisabled]);
 
-        if (!isOpen) {
+        if (!shouldRender) {
                 return null;
         }
 
+        const useGenie = Boolean(originRect);
+        const surfaceAnimation = useGenie
+                ? isClosing
+                        ? "motion-safe:animate-[genie-out_460ms_cubic-bezier(0.7,0,0.84,0)_forwards]"
+                        : "motion-safe:animate-[genie-in_460ms_cubic-bezier(0.16,1,0.3,1)_both]"
+                : isClosing
+                        ? "motion-safe:animate-[fadeIn_180ms_ease-out_reverse_forwards]"
+                        : "motion-safe:animate-[surface-enter_220ms_var(--ease-out-expo)]";
+        const overlayAnimation = isClosing
+                ? "motion-safe:animate-[fadeIn_220ms_ease-out_reverse_forwards]"
+                : "motion-safe:animate-[fadeIn_180ms_ease-out]";
+
         return (
-                <div className="fixed inset-0 z-40 flex items-center justify-center px-4 pb-24 sm:pb-4 motion-safe:animate-[fadeIn_180ms_ease-out]">
+                <div className={`fixed inset-0 z-40 flex items-center justify-center px-4 pb-24 sm:pb-4 ${overlayAnimation}`}>
                         <div
                                 className="absolute inset-0 bg-background/60 backdrop-blur-sm"
                                 onClick={() => {
                                         if (!closeDisabled) {
-                                                onClose();
+                                                requestClose();
                                         }
                                 }}
                                 aria-hidden="true"
@@ -122,7 +188,8 @@ export function Modal({
                                 aria-labelledby="modal-title"
                                 aria-describedby={description ? "modal-description" : undefined}
                                 tabIndex={-1}
-                                className={`glass-surface relative z-50 w-full ${maxWidth} overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl motion-safe:animate-[surface-enter_220ms_var(--ease-out-expo)]`}
+                                style={genieVars ?? undefined}
+                                className={`glass-surface relative z-50 w-full ${maxWidth} overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
                         >
                                 {/* Header */}
                                 {hideTitle ? (
@@ -132,7 +199,7 @@ export function Modal({
                                                 </h2>
                                                 <button
                                                         type="button"
-                                                        onClick={onClose}
+                                                        onClick={requestClose}
                                                         disabled={closeDisabled}
                                                         className="absolute top-3 right-3 z-10 rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                         aria-label={`Close ${title.toLowerCase()}`}
@@ -147,7 +214,7 @@ export function Modal({
                                                 </h2>
                                                 <button
                                                         type="button"
-                                                        onClick={onClose}
+                                                        onClick={requestClose}
                                                         disabled={closeDisabled}
                                                         className="rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                         aria-label={`Close ${title.toLowerCase()}`}
