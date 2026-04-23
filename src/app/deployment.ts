@@ -128,106 +128,202 @@ function runDiagnostics(): DiagnosticResult[] {
 	return results;
 }
 
-function renderDiagnostics(diagnostics: DiagnosticResult[]): string {
+function renderDiagnostics(diagnostics: DiagnosticResult[]): HTMLElement | null {
 	if (!diagnostics || diagnostics.length === 0) {
-		return "";
+		return null;
 	}
 
-	const statusIcons: Record<string, string> = {
-		ok: '<span style="color:#22c55e">&#10003;</span>',
-		warning: '<span style="color:#eab308">&#9888;</span>',
-		error: '<span style="color:#ef4444">&#10007;</span>',
-		unknown: '<span style="color:#6b7280">?</span>',
-	};
+	const section = document.createElement("div");
+	section.className = "deployment-error__section";
+	section.style.background = "#fafafa";
+	section.style.borderLeftColor = "#3b82f6";
 
-	const rows = diagnostics
-		.map(
-			(d) => `
-		<tr style="border-bottom:1px solid #e5e7eb">
-			<td style="padding:8px 12px;font-weight:500">${d.name}</td>
-			<td style="padding:8px 12px;text-align:center">${statusIcons[d.status]}</td>
-			<td style="padding:8px 12px;font-family:monospace;font-size:12px">${d.value || "-"}</td>
-			<td style="padding:8px 12px;color:#6b7280;font-size:12px">${d.hint || ""}</td>
-		</tr>
-	`,
-		)
-		.join("");
+	const title = document.createElement("h3");
+	title.className = "deployment-error__section-title";
+	title.style.display = "flex";
+	title.style.alignItems = "center";
+	title.style.gap = "8px";
 
-	return `
-		<div class="deployment-error__section" style="background:#fafafa;border-left-color:#3b82f6">
-			<h3 class="deployment-error__section-title" style="display:flex;align-items:center;gap:8px">
-				<span style="font-size:16px">Diagnostics</span>
-			</h3>
-			<table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px">
-				<thead>
-					<tr style="background:#f3f4f6;text-align:left">
-						<th style="padding:8px 12px">Check</th>
-						<th style="padding:8px 12px;text-align:center">Status</th>
-						<th style="padding:8px 12px">Value</th>
-						<th style="padding:8px 12px">Hint</th>
-					</tr>
-				</thead>
-				<tbody>${rows}</tbody>
-			</table>
-		</div>
-	`;
+	const titleSpan = document.createElement("span");
+	titleSpan.style.fontSize = "16px";
+	titleSpan.textContent = "Diagnostics";
+	title.appendChild(titleSpan);
+	section.appendChild(title);
+
+	const table = document.createElement("table");
+	table.style.width = "100%";
+	table.style.borderCollapse = "collapse";
+	table.style.fontSize = "14px";
+	table.style.marginTop = "8px";
+
+	const thead = document.createElement("thead");
+	const headRow = document.createElement("tr");
+	headRow.style.background = "#f3f4f6";
+	headRow.style.textAlign = "left";
+
+	["Check", "Status", "Value", "Hint"].forEach((text, i) => {
+		const th = document.createElement("th");
+		th.style.padding = "8px 12px";
+		if (i === 1) th.style.textAlign = "center";
+		th.textContent = text;
+		headRow.appendChild(th);
+	});
+	thead.appendChild(headRow);
+	table.appendChild(thead);
+
+	const tbody = document.createElement("tbody");
+	for (const d of diagnostics) {
+		const tr = document.createElement("tr");
+		tr.style.borderBottom = "1px solid #e5e7eb";
+
+		const nameTd = document.createElement("td");
+		nameTd.style.padding = "8px 12px";
+		nameTd.style.fontWeight = "500";
+		nameTd.textContent = d.name;
+		tr.appendChild(nameTd);
+
+		const statusTd = document.createElement("td");
+		statusTd.style.padding = "8px 12px";
+		statusTd.style.textAlign = "center";
+		const statusSpan = document.createElement("span");
+		if (d.status === "ok") {
+			statusSpan.style.color = "#22c55e";
+			statusSpan.textContent = "\u2713"; // ✓
+		} else if (d.status === "warning") {
+			statusSpan.style.color = "#eab308";
+			statusSpan.textContent = "\u26A0"; // ⚠
+		} else if (d.status === "error") {
+			statusSpan.style.color = "#ef4444";
+			statusSpan.textContent = "\u2717"; // ✕
+		} else {
+			statusSpan.style.color = "#6b7280";
+			statusSpan.textContent = "?";
+		}
+		statusTd.appendChild(statusSpan);
+		tr.appendChild(statusTd);
+
+		const valueTd = document.createElement("td");
+		valueTd.style.padding = "8px 12px";
+		valueTd.style.fontFamily = "monospace";
+		valueTd.style.fontSize = "12px";
+		valueTd.textContent = d.value || "-";
+		tr.appendChild(valueTd);
+
+		const hintTd = document.createElement("td");
+		hintTd.style.padding = "8px 12px";
+		hintTd.style.color = "#6b7280";
+		hintTd.style.fontSize = "12px";
+		hintTd.textContent = d.hint || "";
+		tr.appendChild(hintTd);
+
+		tbody.appendChild(tr);
+	}
+	table.appendChild(tbody);
+	section.appendChild(table);
+
+	return section;
 }
 
-function renderConsoleErrors(errors: string[]): string {
+function renderConsoleErrors(errors: string[]): HTMLElement | null {
 	if (!errors || errors.length === 0) {
-		return "";
+		return null;
 	}
 
-	const errorItems = errors
-		.slice(0, 10) // Limit to 10 most recent
-		.map(
-			(err) => `
-		<div style="background:#1f2937;padding:8px 12px;border-radius:4px;margin-bottom:4px;font-family:monospace;font-size:11px;color:#f87171;white-space:pre-wrap;word-break:break-all;max-height:80px;overflow:auto">${escapeHtml(err)}</div>
-	`,
-		)
-		.join("");
+	const section = document.createElement("div");
+	section.className = "deployment-error__section";
+	section.style.background = "#fef2f2";
+	section.style.borderLeftColor = "#ef4444";
 
-	return `
-		<div class="deployment-error__section" style="background:#fef2f2;border-left-color:#ef4444">
-			<h3 class="deployment-error__section-title" style="color:#dc2626;display:flex;align-items:center;justify-content:between">
-				<span>Console Errors (${errors.length})</span>
-				<button 
-					type="button" 
-					onclick="copyErrorsToClipboard()"
-					style="margin-left:auto;padding:4px 12px;font-size:12px;background:#dc2626;color:white;border:none;border-radius:4px;cursor:pointer"
-				>
-					Copy All
-				</button>
-			</h3>
-			<div style="max-height:200px;overflow-y:auto;margin-top:8px">${errorItems}</div>
-			${errors.length > 10 ? `<p style="color:#6b7280;font-size:12px;margin-top:8px">Showing first 10 of ${errors.length} errors</p>` : ""}
-		</div>
-	`;
-}
+	const title = document.createElement("h3");
+	title.className = "deployment-error__section-title";
+	title.style.color = "#dc2626";
+	title.style.display = "flex";
+	title.style.alignItems = "center";
+	title.style.justifyContent = "space-between";
 
-function escapeHtml(text: string): string {
-	const div = document.createElement("div");
-	div.textContent = text;
-	return div.innerHTML;
+	const titleSpan = document.createElement("span");
+	titleSpan.textContent = `Console Errors (${errors.length})`;
+	title.appendChild(titleSpan);
+
+	const copyBtn = document.createElement("button");
+	copyBtn.type = "button";
+	copyBtn.textContent = "Copy All";
+	copyBtn.style.marginLeft = "auto";
+	copyBtn.style.padding = "4px 12px";
+	copyBtn.style.fontSize = "12px";
+	copyBtn.style.background = "#dc2626";
+	copyBtn.style.color = "white";
+	copyBtn.style.border = "none";
+	copyBtn.style.borderRadius = "4px";
+	copyBtn.style.cursor = "pointer";
+	copyBtn.setAttribute("onclick", "copyErrorsToClipboard()");
+	title.appendChild(copyBtn);
+	section.appendChild(title);
+
+	const container = document.createElement("div");
+	container.style.maxHeight = "200px";
+	container.style.overflowY = "auto";
+	container.style.marginTop = "8px";
+
+	for (const err of errors.slice(0, 10)) {
+		const errDiv = document.createElement("div");
+		errDiv.style.background = "#1f2937";
+		errDiv.style.padding = "8px 12px";
+		errDiv.style.borderRadius = "4px";
+		errDiv.style.marginBottom = "4px";
+		errDiv.style.fontFamily = "monospace";
+		errDiv.style.fontSize = "11px";
+		errDiv.style.color = "#f87171";
+		errDiv.style.whiteSpace = "pre-wrap";
+		errDiv.style.wordBreak = "break-all";
+		errDiv.style.maxHeight = "80px";
+		errDiv.style.overflow = "auto";
+		errDiv.textContent = err;
+		container.appendChild(errDiv);
+	}
+	section.appendChild(container);
+
+	if (errors.length > 10) {
+		const moreMsg = document.createElement("p");
+		moreMsg.style.color = "#6b7280";
+		moreMsg.style.fontSize = "12px";
+		moreMsg.style.marginTop = "8px";
+		moreMsg.textContent = `Showing first 10 of ${errors.length} errors`;
+		section.appendChild(moreMsg);
+	}
+
+	return section;
 }
 
 function renderDeploymentList(
 	title: string,
 	items: string[] | undefined,
 	listTag: "ol" | "ul",
-): string {
+): HTMLElement | null {
 	if (!items || items.length === 0) {
-		return "";
+		return null;
 	}
 
-	return `
-		<div class="deployment-error__section">
-			<h3 class="deployment-error__section-title">${title}</h3>
-			<${listTag} class="deployment-error__list">
-				${items.map((item) => `<li class="deployment-error__list-item">${item}</li>`).join("")}
-			</${listTag}>
-		</div>
-	`;
+	const section = document.createElement("div");
+	section.className = "deployment-error__section";
+
+	const h3 = document.createElement("h3");
+	h3.className = "deployment-error__section-title";
+	h3.textContent = title;
+	section.appendChild(h3);
+
+	const list = document.createElement(listTag);
+	list.className = "deployment-error__list";
+
+	for (const item of items) {
+		const li = document.createElement("li");
+		li.className = "deployment-error__list-item";
+		li.textContent = item;
+		list.appendChild(li);
+	}
+	section.appendChild(list);
+
+	return section;
 }
 
 // Expose copy function globally for the button
@@ -290,22 +386,64 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
 	content.style.maxHeight = "90vh";
 	content.style.overflowY = "auto";
 
-	content.innerHTML = `
-		<div class="deployment-error__icon" aria-hidden="true">&#9888;</div>
-		<h2 class="deployment-error__title">${errorInfo.title}</h2>
-		<p class="deployment-error__message">${errorInfo.message}</p>
-		${renderDiagnostics(diagnostics)}
-		${renderConsoleErrors(consoleErrors)}
-		${renderDeploymentList("Details:", errorInfo.details, "ul")}
-		${renderDeploymentList("How to Fix:", errorInfo.suggestions, "ol")}
-		<div class="deployment-error__button-row">
-			<button type="button" class="deployment-error__button" onclick="window.location.reload()">Reload Page</button>
-			<button type="button" class="deployment-error__button" style="background:#6b7280" onclick="document.getElementById('deployment-error-display').remove()">Dismiss</button>
-		</div>
-		<p style="text-align:center;color:#9ca3af;font-size:11px;margin-top:16px">
-			Press F12 to open browser DevTools for more details
-		</p>
-	`;
+	const icon = document.createElement("div");
+	icon.className = "deployment-error__icon";
+	icon.setAttribute("aria-hidden", "true");
+	icon.textContent = "\u26A0"; // ⚠
+	content.appendChild(icon);
+
+	const h2 = document.createElement("h2");
+	h2.className = "deployment-error__title";
+	h2.textContent = errorInfo.title;
+	content.appendChild(h2);
+
+	const p = document.createElement("p");
+	p.className = "deployment-error__message";
+	p.textContent = errorInfo.message;
+	content.appendChild(p);
+
+	const diagSection = renderDiagnostics(diagnostics);
+	if (diagSection) content.appendChild(diagSection);
+
+	const errorSection = renderConsoleErrors(consoleErrors);
+	if (errorSection) content.appendChild(errorSection);
+
+	const detailsList = renderDeploymentList("Details:", errorInfo.details, "ul");
+	if (detailsList) content.appendChild(detailsList);
+
+	const fixList = renderDeploymentList("How to Fix:", errorInfo.suggestions, "ol");
+	if (fixList) content.appendChild(fixList);
+
+	const buttonRow = document.createElement("div");
+	buttonRow.className = "deployment-error__button-row";
+
+	const reloadBtn = document.createElement("button");
+	reloadBtn.type = "button";
+	reloadBtn.className = "deployment-error__button";
+	reloadBtn.textContent = "Reload Page";
+	reloadBtn.onclick = () => window.location.reload();
+	buttonRow.appendChild(reloadBtn);
+
+	const dismissBtn = document.createElement("button");
+	dismissBtn.type = "button";
+	dismissBtn.className = "deployment-error__button";
+	dismissBtn.style.background = "#6b7280";
+	dismissBtn.textContent = "Dismiss";
+	dismissBtn.onclick = () => {
+		const display = document.getElementById(ErrorDisplayId);
+		if (display) display.remove();
+	};
+	buttonRow.appendChild(dismissBtn);
+
+	content.appendChild(buttonRow);
+
+	const footer = document.createElement("p");
+	footer.style.textAlign = "center";
+	footer.style.color = "#9ca3af";
+	footer.style.fontSize = "11px";
+	footer.style.marginTop = "16px";
+	footer.textContent = "Press F12 to open browser DevTools for more details";
+	content.appendChild(footer);
 
 	errorDiv.appendChild(content);
 	document.body.appendChild(errorDiv);
