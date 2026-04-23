@@ -112,11 +112,7 @@ function DashboardEmptyState({
                         <SectionHeader
                                 icon={BarChart3}
                                 title="Nothing Ranked Yet"
-                                subtitle={
-                                        isLoggedIn
-                                                ? "Your personal bracket has not produced any saved rankings yet. Run a tournament to generate a private ordering, then compare it with the community layer below."
-                                                : "The dashboard wakes up after the first completed tournament. Start a bracket to generate personal rankings and unlock the richer comparisons."
-                                }
+                                subtitle={isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
                                 action={
                                         onStartNew ? (
                                                 <Button variant="outline" size="small" onClick={onStartNew}>
@@ -217,11 +213,7 @@ export function Dashboard({
                                                         <SectionHeader
                                                                 icon={BarChart3}
                                                                 title={userStats ? "Your Snapshot" : "Community Snapshot"}
-                                                                subtitle={
-                                                                        userStats
-                                                                                ? "Your latest tournament totals, selection habits, and head-to-head performance."
-                                                                                : "A quick read on how the naming pool is performing across the site."
-                                                                }
+                                                                subtitle={userStats ? "Your totals." : "Pool totals."}
                                                         />
                                                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                                                                 {quickStats.map((item) => (
@@ -248,7 +240,7 @@ export function Dashboard({
                                         <SectionHeader
                                                 icon={Trophy}
                                                 title="Your Rankings"
-                                                subtitle="Your saved bracket order. Adjust it, save it, or jump straight into another run."
+                                                subtitle="Your saved order."
                                                 action={<ContextBadge label="Personal" tone="accent" />}
                                         />
                                         <PersonalResults
@@ -266,7 +258,7 @@ export function Dashboard({
                                         <SectionHeader
                                                 icon={Trophy}
                                                 title="Leaderboard"
-                                                subtitle="Community-wide averages across the strongest names in the pool right now."
+                                                subtitle="Top of the pool."
                                                 action={
                                                         <div className="flex items-center gap-2">
                                                                 <ContextBadge label="Community" />
@@ -326,7 +318,7 @@ export function Dashboard({
                                                                         <SectionHeader
                                                                                 icon={BarChart3}
                                                                                 title="Top Names by Rating"
-                                                                                subtitle="A quick comparison of the names leading the pack."
+                                                                                subtitle="Top scores."
                                                                         />
                                                                         <TopNamesChart leaderboard={leaderboard} />
                                                                 </Panel>
@@ -335,7 +327,7 @@ export function Dashboard({
                                                                         <SectionHeader
                                                                                 icon={TrendingUp}
                                                                                 title="Win and Loss Breakdown"
-                                                                                subtitle="How each top name is converting matchups into wins."
+                                                                                subtitle="Wins vs losses."
                                                                         />
                                                                         <WinLossChart leaderboard={leaderboard} />
                                                                 </Panel>
@@ -346,7 +338,7 @@ export function Dashboard({
                                                                         <SectionHeader
                                                                                 icon={Activity}
                                                                                 title="Rating Distribution"
-                                                                                subtitle="See how tightly clustered or spread the current scores are."
+                                                                                subtitle="Score spread."
                                                                         />
                                                                         <RatingDistributionChart leaderboard={leaderboard} />
                                                                 </Panel>
@@ -356,7 +348,7 @@ export function Dashboard({
                                                                                 <SectionHeader
                                                                                         icon={Target}
                                                                                         title="Comparison Radar"
-                                                                                        subtitle="A relative look at how the top names stack up against each other."
+                                                                                        subtitle="Side by side."
                                                                                 />
                                                                                 <RatingRadarChart leaderboard={leaderboard} />
                                                                         </Panel>
@@ -370,7 +362,7 @@ export function Dashboard({
                                                         <SectionHeader
                                                                 icon={Users}
                                                                 title="Site Statistics"
-                                                                subtitle="High-level activity totals for the overall naming pool."
+                                                                subtitle="Pool totals."
                                                         />
                                                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                                                                 <StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
@@ -394,7 +386,7 @@ export function Dashboard({
                                         <SectionHeader
                                                 icon={TrendingUp}
                                                 title="Recent Activity"
-                                                subtitle="Live signal from rating activity in the selected window."
+                                                subtitle="Last window."
                                                 action={
                                                         <div className="flex items-center gap-2">
                                                                 <select
