@@ -67,16 +67,9 @@ export default function TournamentFlow() {
                                 {} as Record<string, { rating: number; wins: number; losses: number }>,
                         );
 
-                        mutateAsyncRef.current({ userId, ratings: ratingsWithStats })
-                                .then((result) => {
-                                        if (result?.success) {
-                                                console.log(`Successfully saved ${result.count} ratings to database`);
-                                        }
-                                })
-                                .catch((_error) => {
-                                        // Error is already logged by ratingsAPI with context
-                                        console.warn("Tournament ratings save failed — ratings were not persisted");
-                                });
+                        mutateAsyncRef.current({ userId, ratings: ratingsWithStats }).catch(() => {
+                                // Error is already logged by ratingsAPI with context
+                        });
                 }
         }, [
                 tournament.isComplete,
