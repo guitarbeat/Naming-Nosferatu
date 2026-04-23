@@ -10,6 +10,8 @@ interface OriginRect {
 
 interface ModalProps {
         title: string;
+        open?: boolean;
+        /** @deprecated Use `open` instead. */
         isOpen?: boolean;
         onClose: () => void;
         children: React.ReactNode;
@@ -24,7 +26,8 @@ const GENIE_DURATION_MS = 480;
 
 export function Modal({
         title,
-        isOpen = true,
+        open,
+        isOpen,
         onClose,
         children,
         maxWidth = "max-w-md",
@@ -33,13 +36,14 @@ export function Modal({
         hideTitle = false,
         originRect = null,
 }: ModalProps) {
+        const isOpenResolved = open ?? isOpen ?? true;
         const modalRef = useRef<HTMLDivElement>(null);
         const [isClosing, setIsClosing] = useState(false);
-        const [shouldRender, setShouldRender] = useState(isOpen);
+        const [shouldRender, setShouldRender] = useState(isOpenResolved);
         const [genieVars, setGenieVars] = useState<React.CSSProperties | null>(null);
 
         useEffect(() => {
-                if (isOpen) {
+                if (isOpenResolved) {
                         setShouldRender(true);
                         setIsClosing(false);
                         return;
@@ -53,7 +57,7 @@ export function Modal({
                         setIsClosing(false);
                 }, GENIE_DURATION_MS);
                 return () => window.clearTimeout(timer);
-        }, [isOpen, shouldRender]);
+        }, [isOpenResolved, shouldRender]);
 
         const requestClose = () => {
                 if (closeDisabled) {
@@ -79,7 +83,7 @@ export function Modal({
         }, [shouldRender, originRect]);
 
         useEffect(() => {
-                if (!isOpen || isClosing) {
+                if (!isOpenResolved || isClosing) {
                         return;
                 }
 
@@ -151,7 +155,7 @@ export function Modal({
                                 previouslyFocusedElement.focus();
                         }
                 };
-        }, [isOpen, isClosing, onClose, closeDisabled]);
+        }, [isOpenResolved, isClosing, onClose, closeDisabled]);
 
         if (!shouldRender) {
                 return null;

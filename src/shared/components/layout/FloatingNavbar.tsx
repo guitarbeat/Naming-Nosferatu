@@ -453,7 +453,7 @@ export function FloatingNavbar() {
                         <Modal
                                 title="Your Profile"
                                 hideTitle
-                                isOpen={isProfileOpen}
+                                open={isProfileOpen}
                                 onClose={() => setIsProfileOpen(false)}
                                 maxWidth="max-w-md"
                                 description="Sign in to save your rankings."
