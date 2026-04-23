@@ -185,8 +185,8 @@ export function HomeHeroSection({
 
         return (
                 <section className="relative overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top_left,rgba(48,120,138,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]">
-                        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:gap-10">
-                                <div className="max-w-3xl space-y-4">
+                        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-4 py-10 text-center sm:px-6 sm:py-14 lg:gap-10">
+                                <div className="mx-auto max-w-3xl space-y-4">
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground/75">
                                                 Naming Nosferatu
                                         </p>
@@ -194,7 +194,7 @@ export function HomeHeroSection({
                                                 My cat's name is{" "}
                                                 <HeroNameMarquee state={state} lockedNames={lockedNames} />
                                         </h1>
-                                        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                                        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                                                 {heroCopy}
                                         </p>
                                 </div>
@@ -218,15 +218,18 @@ export function HomeHeroSection({
                                         </Button>
                                 </div>
 
-                                <div className="grid gap-6 border-t border-border/60 pt-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.9fr)] lg:items-start">
-                                        <div className="space-y-3">
+                                <div className="flex w-full max-w-4xl flex-col items-center gap-6 border-t border-border/60 pt-6 text-center">
+                                        <div className="flex flex-col items-center space-y-3">
                                                 <LockedNameSummary state={state} lockedNames={lockedNames} />
                                         </div>
 
-                                        <dl className="grid grid-cols-3 gap-4">
+                                        <dl className="grid w-full max-w-2xl grid-cols-3 gap-4">
                                                 {heroStats.map(({ icon: Icon, label, value }) => (
-                                                        <div key={label} className="border-t border-border/60 pt-3">
-                                                                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+                                                        <div
+                                                                key={label}
+                                                                className="flex flex-col items-center border-t border-border/60 pt-3 text-center"
+                                                        >
+                                                                <div className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
                                                                         <Icon className="h-4 w-4" />
                                                                         <dt>{label}</dt>
                                                                 </div>
