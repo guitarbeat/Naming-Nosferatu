@@ -9,6 +9,7 @@ export interface LeaderboardItem {
         name: string;
         avg_rating: number;
         wins: number;
+        losses: number;
         total_ratings: number;
         percentile_rank?: number;
         confidence?: number;
@@ -77,6 +78,7 @@ function mapLeaderboardRow(row: Record<string, unknown>): LeaderboardItem {
                 name: String(row.name ?? ""),
                 avg_rating: toNumber(row.avg_rating),
                 wins: toNumber(row.wins),
+                losses: toNumber(row.losses),
                 total_ratings: toNumber(row.total_ratings),
                 created_at: (row.created_at as string | null | undefined) ?? null,
                 date_submitted: (row.date_submitted as string | null | undefined) ?? null,
