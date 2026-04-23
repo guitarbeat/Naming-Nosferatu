@@ -39,15 +39,18 @@ export function buildNameCardImages(names: readonly NameItem[]): {
 	catImages: string[];
 	catImageById: Map<IdType, string>;
 } {
-	const catImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
+	const count = names.length;
+	const catImages = new Array<string>(count);
 	const catImageById = new Map<IdType, string>();
 
-	names.forEach((nameItem, index) => {
-		const image = catImages[index];
+	for (let i = 0; i < count; i++) {
+		const nameItem = names[i];
+		const image = getRandomCatImage(nameItem.id, CAT_IMAGES);
+		catImages[i] = image;
 		if (image) {
 			catImageById.set(nameItem.id, image);
 		}
-	});
+	}
 
 	return { catImages, catImageById };
 }
