@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
-import { useAuth } from "@/app/providers/Providers";
 import {
         HomeHeroSection,
         TournamentBracketSection,
@@ -21,17 +20,11 @@ const LazyNameSuggestionInner = lazy(() =>
                 default: module.NameSuggestionInner,
         })),
 );
-const LazyProfileInner = lazy(() =>
-        import("@/shared/components/profile/ProfileInner").then((module) => ({
-                default: module.ProfileInner,
-        })),
-);
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
 
 export default function HomeRoute() {
-        const { login, logout } = useAuth();
         const { user, tournament, tournamentActions } = useAppStore();
         const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
         const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
@@ -171,26 +164,6 @@ export default function HomeRoute() {
                                 />
                                 <Suspense fallback={<Loading variant="card-skeleton" height={340} />}>
                                         <LazyNameSuggestionInner />
-                                </Suspense>
-                        </Section>
-
-                        <Section
-                                id="profile"
-                                variant="minimal"
-                                padding="comfortable"
-                                maxWidth="md"
-                                centered={true}
-                                separator={true}
-                        >
-                                <SectionHeading
-                                        title="Your Profile"
-                                        subtitle="Sign in to save."
-                                />
-                                <Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-                                        <LazyProfileInner
-                                                onLogin={(name) => login({ name })}
-                                                onLogout={logout}
-                                        />
                                 </Suspense>
                         </Section>
                 </>
