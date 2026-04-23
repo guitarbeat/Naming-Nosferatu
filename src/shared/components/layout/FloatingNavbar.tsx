@@ -432,6 +432,7 @@ export function FloatingNavbar() {
                                                                 )
                                                         }
                                                 />
+                                                </div>
                                         </div>
 
                                         {/* Utility toggle hidden on mobile via CSS, moved into picker surface */}
