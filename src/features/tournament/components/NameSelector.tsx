@@ -17,6 +17,7 @@ import {
         pickRandomItemIds,
 } from "@/features/tournament/utils/nameSelection";
 import Button from "@/shared/components/layout/Button";
+import { Surface } from "@/shared/components/layout/Surface";
 import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
@@ -735,7 +736,7 @@ export function NameSelector() {
         return (
                 <div className="mx-auto w-full">
                         <div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
-                                <div className="rounded-[1.85rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl sm:p-5">
+                                <Surface as="div" radius="xl" padding="compact" className="sm:p-5">
                                         <div className="flex flex-col gap-4 sm:gap-5">
                                                 <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                                                         <div className="space-y-3">
@@ -858,7 +859,7 @@ export function NameSelector() {
                                                         </div>
                                                 </div>
                                         </div>
-                                </div>
+                                </Surface>
 
                                 {isSwipeMode ? (
                                         <>

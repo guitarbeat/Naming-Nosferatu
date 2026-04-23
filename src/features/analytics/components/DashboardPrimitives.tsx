@@ -7,6 +7,7 @@ import {
         useRef,
         useState,
 } from "react";
+import { Surface } from "@/shared/components/layout/Surface";
 
 export const CHART_TOOLTIP_STYLE = {
         background: "rgba(20, 26, 36, 0.96)",
@@ -64,11 +65,9 @@ export function ChartFrame({
 
 export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
         return (
-                <section
-                        className={`rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-4 shadow-[0_16px_40px_rgba(4,10,20,0.14)] backdrop-blur-xl sm:p-6 ${className}`}
-                >
+                <Surface radius="lg" elevated className={className}>
                         {children}
-                </section>
+                </Surface>
         );
 }
 
