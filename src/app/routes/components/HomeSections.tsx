@@ -94,27 +94,14 @@ export function HomeHeroSection({
                                 <p className="mx-auto max-w-xl text-balance text-sm leading-relaxed text-muted-foreground sm:text-base">
                                         {heroCopy}
                                 </p>
-                                <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-                                        <Button
-                                                variant="glass"
-                                                size="xl"
-                                                onClick={onStartPicking}
-                                                className="w-full sm:w-auto"
-                                        >
-                                                Start Picking
-                                        </Button>
-                                        <Button
-                                                variant="outline"
-                                                size="xl"
-                                                onClick={onSeeResults}
-                                                className="w-full sm:w-auto"
-                                        >
-                                                See Results
-                                        </Button>
-                                </div>
-                                <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.4em] text-muted-foreground/50">
-                                        scroll
-                                </p>
+                                <Button
+                                        variant="glass"
+                                        size="xl"
+                                        onClick={onStartPicking}
+                                        className="mt-2"
+                                >
+                                        Wanna help me decide?
+                                </Button>
                         </div>
                 </section>
         );
