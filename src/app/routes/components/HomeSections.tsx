@@ -83,17 +83,14 @@ export function HomeHeroSection({
                                 : "I'm indecisive — scroll down, pick your favorites, and help me decide!";
 
         return (
-                <section className="relative flex min-h-[88vh] items-center justify-center overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top_left,rgba(48,120,138,0.18),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(229,118,74,0.12),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]">
-                        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-6 py-20 text-center sm:px-10 sm:py-28 lg:gap-10 lg:py-32">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.4em] text-muted-foreground/70 sm:text-xs">
+                <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden border-b border-border/60 bg-background bg-[radial-gradient(circle_at_top_left,rgba(48,120,138,0.18),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(229,118,74,0.12),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]">
+                        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-6 text-center sm:px-10 lg:gap-12">
+                                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white mix-blend-difference sm:text-sm">
                                         My cat's name is
                                 </p>
                                 <h1 className="font-display text-balance text-5xl font-bold uppercase leading-[0.95] tracking-[-0.03em] text-foreground sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7.5rem]">
                                         <HeroNameMarquee state={state} lockedNames={lockedNames} />
                                 </h1>
-                                <p className="mx-auto max-w-xl text-balance text-sm leading-relaxed text-muted-foreground sm:text-base">
-                                        {heroCopy}
-                                </p>
                                 <Button
                                         variant="glass"
                                         size="xl"
