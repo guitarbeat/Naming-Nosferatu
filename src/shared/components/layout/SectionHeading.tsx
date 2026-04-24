@@ -12,7 +12,7 @@ export function SectionHeading({ title, subtitle, className }: SectionHeadingPro
         return (
                 <div
                         className={cn(
-                                "mb-8 flex w-full max-w-2xl flex-col items-center gap-4 py-1 text-center sm:mb-10",
+                                "mx-auto mb-8 flex w-full max-w-2xl flex-col items-center gap-4 py-1 text-center sm:mb-10",
                                 className,
                         )}
                 >

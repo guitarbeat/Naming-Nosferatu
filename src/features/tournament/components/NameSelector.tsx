@@ -227,11 +227,11 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
         const baseClasses =
-                "absolute inset-0 flex flex-col justify-end pointer-events-none";
+                "absolute inset-0 flex flex-col items-center justify-end pointer-events-none";
         const gridClasses =
-                "p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-left";
+                "p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-center";
         const swipeClasses =
-                "z-10 p-6 sm:p-8 bg-gradient-to-t from-slate-950/96 via-slate-950/48 to-transparent text-left";
+                "z-10 p-6 sm:p-8 bg-gradient-to-t from-slate-950/96 via-slate-950/48 to-transparent text-center";
 
         return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
@@ -1230,7 +1230,7 @@ export function NameSelector() {
 
                                                                                                                 {/* Enhanced Name Overlay */}
                                                                                                                 <div className={getNameOverlayClasses("grid")}>
-                                                                                                                        <div className="flex flex-col gap-1.5 max-w-full">
+                                                                                                                        <div className="flex flex-col items-center gap-1.5 max-w-full">
                                                                                                                                 <NameContent
                                                                                                                                         nameItem={nameItem}
                                                                                                                                         variant="grid"
