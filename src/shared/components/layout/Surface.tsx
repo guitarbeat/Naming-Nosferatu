@@ -64,4 +64,3 @@ export function Surface({
         );
 }
 
-export default Surface;

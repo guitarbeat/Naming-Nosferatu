@@ -27,7 +27,7 @@ export default function AdminRoute() {
 				variant="minimal"
 				padding="comfortable"
 				maxWidth="md"
-				centered={true}
+
 			>
 				<div className="flex flex-col items-center gap-4 py-10 text-center">
 					<h2 className="text-3xl font-bold text-destructive">Access Denied</h2>

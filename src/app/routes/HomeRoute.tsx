@@ -96,7 +96,7 @@ export default function HomeRoute() {
                                 variant="minimal"
                                 padding="comfortable"
                                 maxWidth="xl"
-                                centered={true}
+
                                 separator={true}
                         >
                                 <SectionHeading
@@ -124,7 +124,7 @@ export default function HomeRoute() {
                                 variant="minimal"
                                 padding="comfortable"
                                 maxWidth="2xl"
-                                centered={true}
+
                                 separator={true}
                         >
                                 <SectionHeading
@@ -151,7 +151,7 @@ export default function HomeRoute() {
                                 variant="minimal"
                                 padding="comfortable"
                                 maxWidth="2xl"
-                                centered={true}
+
                                 separator={true}
                         >
                                 <SectionHeading

@@ -43,7 +43,7 @@ export function Section({
         className = "",
         separator = false,
         scrollMargin = true,
-        centered = false,
+        centered = true,
 }: SectionProps) {
         return (
                 <section

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Button, Input } from "@/shared/components/layout";
+import Button from "@/shared/components/layout/Button";
+import { Input } from "@/shared/components/layout/FormPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { LogOut, Pencil, User } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
