@@ -133,6 +133,7 @@ export function TournamentBracketSection({
                         variant="minimal"
                         padding="comfortable"
                         maxWidth="2xl"
+                        centered={true}
                         separator={true}
                 >
                         <SectionHeading

@@ -1,0 +1,133 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Space Grotesk",
+      "role": "unknown"
+    },
+    {
+      "family": "Segoe UI",
+      "role": "unknown"
+    },
+    {
+      "family": "Roboto",
+      "role": "unknown"
+    },
+    {
+      "family": "Helvetica Neue",
+      "role": "unknown"
+    },
+    {
+      "family": "Noto Sans",
+      "role": "unknown"
+    }
+  ],
+  "colors": {
+    "primary": "#1F2633",
+    "secondary": "#545964",
+    "accent": "#5E646D",
+    "background": "#F2F3F5",
+    "textPrimary": "#5E646D",
+    "link": "#5E646D"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Space Grotesk",
+      "heading": "Space Grotesk"
+    },
+    "fontStacks": {
+      "heading": [
+        "Space Grotesk",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "blinkmacsystemfont",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "arial",
+        "Noto Sans",
+        "sans-serif"
+      ],
+      "body": [
+        "Space Grotesk",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "blinkmacsystemfont",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "arial",
+        "Noto Sans",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "Space Grotesk",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "blinkmacsystemfont",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "arial",
+        "Noto Sans",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "144px",
+      "h2": "144px",
+      "body": "18px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "29px"
+  },
+  "components": {},
+  "images": {
+    "logo": null,
+    "favicon": "File saved at: attached_assets/favicon.png",
+    "ogImage": "/assets/images/IMG_4844.avif"
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "All buttons have a transparent background, making it difficult to identify a primary CTA based on color or text."
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "No distinct secondary button can be identified as all buttons share the same transparent background and similar styling."
+    },
+    "confidence": 0.5
+  },
+  "personality": {
+    "tone": "playful",
+    "energy": "medium",
+    "targetAudience": "cat enthusiasts"
+  },
+  "designSystem": {
+    "framework": "tailwind",
+    "componentLibrary": ""
+  },
+  "confidence": {
+    "buttons": 0.5,
+    "colors": 0.8,
+    "overall": 0.65
+  },
+  "__llm_metadata": {
+    "logoSelection": {
+      "llmCalled": false,
+      "llmSucceeded": false,
+      "finalSource": "none"
+    },
+    "buttonClassification": {
+      "llmCalled": true,
+      "llmSucceeded": true
+    }
+  }
+}
