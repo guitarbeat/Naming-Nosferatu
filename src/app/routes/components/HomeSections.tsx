@@ -29,43 +29,38 @@ interface TournamentBracketSectionProps {
         onGoToPicker: () => void;
 }
 
-const HERO_NAME_COLORS = [
-        "#3FB8B0",
-        "#E5764A",
-        "#D4B483",
-        "#5BA8E8",
-        "#9F7AEA",
-        "#E26E9D",
-];
+const GRADIENT_HEADING_CLS =
+        "font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter";
 
-function HeroNameMarquee({
+function HeroNameWords({
         state,
         lockedNames,
 }: {
         state: HomeHeroState;
         lockedNames: NameItem[];
 }) {
-        const names = lockedNames.map((item) => item.name);
-
         if (state === "loading") {
-                return <span className="text-muted-foreground/60">…</span>;
+                return <span className="text-muted-foreground/40">________</span>;
         }
-        if (state === "error" || names.length === 0) {
-                return <span className="text-muted-foreground/60">Nosferatu</span>;
+        if (state === "error" || lockedNames.length === 0) {
+                return <span className={GRADIENT_HEADING_CLS}>Nosferatu</span>;
         }
+
+        const words = [
+                ...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
+                "WOODS",
+        ];
 
         return (
-                <>
-                        {names.map((name, i) => (
-                                <span
-                                        key={`${name}-${i}`}
-                                        style={{ color: HERO_NAME_COLORS[i % HERO_NAME_COLORS.length] }}
-                                        className="mx-[0.35em] inline-block"
-                                >
-                                        {name}
+                <span>
+                        {words.map((word, i) => (
+                                <span key={`${word}-${i}`} className="block sm:inline-block">
+                                        <span className={GRADIENT_HEADING_CLS}>
+                                                {i < words.length - 1 ? `${word}\u00a0` : word}
+                                        </span>
                                 </span>
                         ))}
-                </>
+                </span>
         );
 }
 
@@ -73,33 +68,37 @@ export function HomeHeroSection({
         state,
         lockedNames,
         onStartPicking,
-        onSeeResults,
 }: HomeHeroSectionProps) {
-        const heroCopy =
-                state === "loading"
-                        ? "Loading shortlist…"
-                        : state === "error"
-                                ? "Live pool unavailable."
-                                : "I'm indecisive — scroll down, pick your favorites, and help me decide!";
-
         return (
-                <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden border-b border-border/60 bg-background bg-[radial-gradient(circle_at_top_left,rgba(48,120,138,0.18),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(229,118,74,0.12),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]">
-                        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-6 text-center sm:px-10 lg:gap-12">
-                                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white mix-blend-difference sm:text-sm">
-                                        My cat's name is
-                                </p>
-                                <h1 className="font-display text-balance text-5xl font-bold uppercase leading-[0.95] tracking-[-0.03em] text-foreground sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7.5rem]">
-                                        <HeroNameMarquee state={state} lockedNames={lockedNames} />
-                                </h1>
-                                <Button
-                                        variant="glass"
-                                        size="xl"
-                                        onClick={onStartPicking}
-                                        className="mt-2"
-                                >
-                                        Wanna help me decide?
-                                </Button>
+                <section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
+                        <div
+                                className="pointer-events-none absolute inset-0 -z-10"
+                                aria-hidden="true"
+                        >
+                                <div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
                         </div>
+
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-base md:text-lg">
+                                My cat's name is
+                        </p>
+
+                        <div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6 sm:w-16" />
+
+                        <h1
+                                className="max-w-full font-black uppercase leading-[0.85] tracking-tighter"
+                                style={{ fontSize: "clamp(1.75rem, 9vw, 9rem)" }}
+                        >
+                                <HeroNameWords state={state} lockedNames={lockedNames} />
+                        </h1>
+
+                        <Button
+                                variant="glass"
+                                size="xl"
+                                onClick={onStartPicking}
+                                className="mt-10 sm:mt-14"
+                        >
+                                Wanna help me decide?
+                        </Button>
                 </section>
         );
 }
