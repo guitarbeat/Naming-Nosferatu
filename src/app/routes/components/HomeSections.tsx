@@ -1,4 +1,4 @@
-import { type ComponentType, type LazyExoticComponent, Suspense, useEffect, useState } from "react";
+import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
@@ -29,6 +29,15 @@ interface TournamentBracketSectionProps {
         onGoToPicker: () => void;
 }
 
+const HERO_NAME_COLORS = [
+        "#3FB8B0",
+        "#E5764A",
+        "#D4B483",
+        "#5BA8E8",
+        "#9F7AEA",
+        "#E26E9D",
+];
+
 function HeroNameMarquee({
         state,
         lockedNames,
@@ -37,39 +46,26 @@ function HeroNameMarquee({
         lockedNames: NameItem[];
 }) {
         const names = lockedNames.map((item) => item.name);
-        const [index, setIndex] = useState(0);
-
-        useEffect(() => {
-                if (names.length < 2) {
-                        return;
-                }
-                const id = window.setInterval(() => {
-                        setIndex((current) => (current + 1) % names.length);
-                }, 2200);
-                return () => window.clearInterval(id);
-        }, [names.length]);
-
-        useEffect(() => {
-                if (index >= names.length) {
-                        setIndex(0);
-                }
-        }, [index, names.length]);
 
         if (state === "loading") {
-                return <span className="text-muted-foreground/70">…</span>;
+                return <span className="text-muted-foreground/60">…</span>;
         }
         if (state === "error" || names.length === 0) {
-                return <span className="text-muted-foreground/70">Nosferatu</span>;
+                return <span className="text-muted-foreground/60">Nosferatu</span>;
         }
 
-        const current = names[index] ?? names[0];
         return (
-                <span
-                        key={current}
-                        className="inline-block bg-gradient-to-r from-teal-300 via-sky-300 to-purple-300 bg-clip-text text-transparent animate-[fadeIn_300ms_ease-out]"
-                >
-                        {current}
-                </span>
+                <>
+                        {names.map((name, i) => (
+                                <span
+                                        key={`${name}-${i}`}
+                                        style={{ color: HERO_NAME_COLORS[i % HERO_NAME_COLORS.length] }}
+                                        className="mx-[0.35em] inline-block"
+                                >
+                                        {name}
+                                </span>
+                        ))}
+                </>
         );
 }
 
@@ -84,22 +80,21 @@ export function HomeHeroSection({
                         ? "Loading shortlist…"
                         : state === "error"
                                 ? "Live pool unavailable."
-                                : "Pick. Lock. Bracket.";
+                                : "I'm indecisive — scroll down, pick your favorites, and help me decide!";
 
         return (
-                <section className="relative overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top_left,rgba(48,120,138,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]">
-                        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-4 py-10 text-center sm:px-6 sm:py-14 lg:gap-10">
-                                <div className="mx-auto max-w-3xl space-y-4">
-                                        <h1 className="font-display text-balance text-4xl leading-[0.95] tracking-[-0.045em] text-foreground sm:text-5xl lg:text-[4.5rem]">
-                                                My cat's name is{" "}
-                                                <HeroNameMarquee state={state} lockedNames={lockedNames} />
-                                        </h1>
-                                        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                                                {heroCopy}
-                                        </p>
-                                </div>
-
-                                <div className="flex flex-col gap-3 sm:flex-row">
+                <section className="relative flex min-h-[88vh] items-center justify-center overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top_left,rgba(48,120,138,0.18),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(229,118,74,0.12),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_55%)]">
+                        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-6 py-20 text-center sm:px-10 sm:py-28 lg:gap-10 lg:py-32">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.4em] text-muted-foreground/70 sm:text-xs">
+                                        My cat's name is
+                                </p>
+                                <h1 className="font-display text-balance text-5xl font-bold uppercase leading-[0.95] tracking-[-0.03em] text-foreground sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7.5rem]">
+                                        <HeroNameMarquee state={state} lockedNames={lockedNames} />
+                                </h1>
+                                <p className="mx-auto max-w-xl text-balance text-sm leading-relaxed text-muted-foreground sm:text-base">
+                                        {heroCopy}
+                                </p>
+                                <div className="flex flex-col gap-3 pt-2 sm:flex-row">
                                         <Button
                                                 variant="glass"
                                                 size="xl"
@@ -108,8 +103,18 @@ export function HomeHeroSection({
                                         >
                                                 Start Picking
                                         </Button>
+                                        <Button
+                                                variant="outline"
+                                                size="xl"
+                                                onClick={onSeeResults}
+                                                className="w-full sm:w-auto"
+                                        >
+                                                See Results
+                                        </Button>
                                 </div>
-
+                                <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.4em] text-muted-foreground/50">
+                                        scroll
+                                </p>
                         </div>
                 </section>
         );
