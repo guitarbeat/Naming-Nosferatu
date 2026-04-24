@@ -2,6 +2,7 @@ import { type ComponentType, type LazyExoticComponent, Suspense, useEffect, useS
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
+import { Surface } from "@/shared/components/layout/Surface";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import type { NameItem, RatingData } from "@/shared/types";
 
@@ -131,26 +132,29 @@ export function TournamentBracketSection({
                         id="tournament"
                         variant="minimal"
                         padding="comfortable"
-                        maxWidth="full"
+                        maxWidth="2xl"
                         separator={true}
                 >
                         <SectionHeading
                                 title="Tournament Bracket"
                                 subtitle="Run the bracket."
                         />
-                        <div className="mx-auto mb-5 w-full max-w-5xl overflow-hidden rounded-[1.65rem] border border-white/10 bg-white/[0.03] backdrop-blur-sm">
-                                <div className="grid gap-px bg-white/10 md:grid-cols-2">
-                                        {scopePanels.map((panel) => (
-                                                <div key={panel.label} className="bg-black/10 p-4 sm:p-5">
-                                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                                {panel.label}
-                                                        </p>
-                                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-                                                                {panel.description}
-                                                        </p>
-                                                </div>
-                                        ))}
-                                </div>
+                        <div className="mx-auto mb-6 grid w-full max-w-3xl gap-3 sm:grid-cols-2 sm:gap-4">
+                                {scopePanels.map((panel) => (
+                                        <Surface
+                                                key={panel.label}
+                                                radius="md"
+                                                padding="compact"
+                                                className="text-center sm:text-left"
+                                        >
+                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+                                                        {panel.label}
+                                                </p>
+                                                <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
+                                                        {panel.description}
+                                                </p>
+                                        </Surface>
+                                ))}
                         </div>
                         <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                 {names && names.length > 0 ? (
