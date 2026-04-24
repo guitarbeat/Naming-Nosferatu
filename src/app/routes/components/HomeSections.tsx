@@ -29,8 +29,8 @@ interface TournamentBracketSectionProps {
         onGoToPicker: () => void;
 }
 
-const GRADIENT_HEADING_CLS =
-        "font-bold text-balance bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter";
+const HEADING_CLS =
+        "font-bold text-balance text-white uppercase tracking-tighter";
 
 function HeroNameWords({
         state,
@@ -40,10 +40,10 @@ function HeroNameWords({
         lockedNames: NameItem[];
 }) {
         if (state === "loading") {
-                return <span className="text-muted-foreground/40">________</span>;
+                return <span className="text-white/40">________</span>;
         }
         if (state === "error" || lockedNames.length === 0) {
-                return <span className={GRADIENT_HEADING_CLS}>Nosferatu</span>;
+                return <span className={HEADING_CLS}>Nosferatu</span>;
         }
 
         const words = [
@@ -55,7 +55,7 @@ function HeroNameWords({
                 <span>
                         {words.map((word, i) => (
                                 <span key={`${word}-${i}`} className="block sm:inline-block">
-                                        <span className={GRADIENT_HEADING_CLS}>
+                                        <span className={HEADING_CLS}>
                                                 {i < words.length - 1 ? `${word}\u00a0` : word}
                                         </span>
                                 </span>
@@ -70,22 +70,23 @@ export function HomeHeroSection({
         onStartPicking,
 }: HomeHeroSectionProps) {
         return (
-                <section className="relative -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
+                <section className="relative isolate -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
                         <div
                                 className="pointer-events-none absolute inset-0 -z-10"
                                 aria-hidden="true"
                         >
-                                <div className="absolute left-1/2 top-1/2 h-[60vw] w-[80vw] max-h-[500px] max-w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[80px]" />
+                                <div className="absolute left-1/4 top-1/3 h-[60vw] w-[60vw] max-h-[600px] max-w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/40 blur-[120px]" />
+                                <div className="absolute right-1/4 bottom-1/3 h-[55vw] w-[55vw] max-h-[550px] max-w-[550px] translate-x-1/2 translate-y-1/2 rounded-full bg-accent/40 blur-[120px]" />
                         </div>
 
-                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground sm:mb-5 sm:text-base md:text-lg">
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-white mix-blend-difference sm:mb-5 sm:text-base md:text-lg">
                                 My cat's name is
                         </p>
 
-                        <div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-border to-transparent sm:mb-6 sm:w-16" />
+                        <div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-white/40 to-transparent mix-blend-difference sm:mb-6 sm:w-16" />
 
                         <h1
-                                className="max-w-full font-black uppercase leading-[0.85] tracking-tighter"
+                                className="max-w-full font-black uppercase leading-[0.85] tracking-tighter mix-blend-difference"
                                 style={{ fontSize: "clamp(1.75rem, 9vw, 9rem)" }}
                         >
                                 <HeroNameWords state={state} lockedNames={lockedNames} />
