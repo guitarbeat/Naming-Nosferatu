@@ -1,4 +1,5 @@
 import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
+import { motion } from "framer-motion";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
@@ -72,11 +73,33 @@ export function HomeHeroSection({
         return (
                 <section className="relative isolate -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
                         <div
-                                className="pointer-events-none absolute inset-0 -z-10"
+                                className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
                                 aria-hidden="true"
                         >
-                                <div className="absolute left-1/4 top-1/3 h-[60vw] w-[60vw] max-h-[600px] max-w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/40 blur-[120px]" />
-                                <div className="absolute right-1/4 bottom-1/3 h-[55vw] w-[55vw] max-h-[550px] max-w-[550px] translate-x-1/2 translate-y-1/2 rounded-full bg-accent/40 blur-[120px]" />
+                                <motion.div
+                                        className="absolute h-[70vw] w-[70vw] max-h-[700px] max-w-[700px] rounded-full bg-primary blur-[120px] opacity-70"
+                                        animate={{
+                                                x: ["-20%", "60%", "10%", "-20%"],
+                                                y: ["-10%", "30%", "60%", "-10%"],
+                                        }}
+                                        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+                                />
+                                <motion.div
+                                        className="absolute right-0 bottom-0 h-[65vw] w-[65vw] max-h-[650px] max-w-[650px] rounded-full bg-accent blur-[120px] opacity-70"
+                                        animate={{
+                                                x: ["10%", "-50%", "0%", "10%"],
+                                                y: ["10%", "-40%", "20%", "10%"],
+                                        }}
+                                        transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
+                                />
+                                <motion.div
+                                        className="absolute left-1/2 top-1/2 h-[55vw] w-[55vw] max-h-[550px] max-w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-secondary blur-[120px] opacity-60"
+                                        animate={{
+                                                x: ["-30%", "30%", "-10%", "-30%"],
+                                                y: ["20%", "-20%", "40%", "20%"],
+                                        }}
+                                        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+                                />
                         </div>
 
                         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-white mix-blend-difference sm:mb-5 sm:text-base md:text-lg">
