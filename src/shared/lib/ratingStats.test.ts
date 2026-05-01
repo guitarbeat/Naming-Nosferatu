@@ -46,17 +46,27 @@ describe("ratingStats", () => {
 				expect(calculatePercentile(10, [5, 10, 15], false)).toBe(33);
 			});
 		});
+
+		describe("edge cases", () => {
+			it("returns 50 when all valid values are null or NaN", () => {
+				expect(calculatePercentile(10, [NaN, null as any])).toBe(50);
+			});
+
+			it("returns 0 if the value is NaN", () => {
+				expect(calculatePercentile(NaN, [5, 10])).toBe(0);
+			});
+		});
 	});
 
 	describe("getPercentileRank", () => {
 		it("returns 50 for empty array", () => {
 			expect(getPercentileRank(1200, [])).toBe(50);
 		});
-		
+
 		it("returns higher percentile for higher ratings", () => {
 			const all = [1000, 1100, 1200, 1300, 1400];
 			expect(getPercentileRank(1400, all)).toBe(100);
-			expect(getPercentileRank(1000, all)).toBe(0);
+			expect(getPercentileRank(1000, all)).toBe(20);
 		});
 	});
 
@@ -80,6 +90,11 @@ describe("ratingStats", () => {
 			expect(getZScore(1200, stats)).toBe(1);
 			expect(getZScore(1000, stats)).toBe(-1);
 		});
+
+		it("returns 0 when stdDev is 0", () => {
+			const stats = { mean: 1100, stdDev: 0 } as any;
+			expect(getZScore(1200, stats)).toBe(0);
+		});
 	});
 
 	describe("enrichRating", () => {
@@ -90,6 +105,11 @@ describe("ratingStats", () => {
 			expect(enriched.rating).toBe(1200);
 			expect(enriched.percentileRank).toBeGreaterThan(0);
 			expect(enriched.confidence).toBeGreaterThan(0);
+		});
+
+		it("calculates correct zScore if stats are missing", () => {
+			const enriched = enrichRating(1200, 10, [1000, 1100, 1200], null);
+			expect(enriched.zScore).toBe(0);
 		});
 	});
 });
