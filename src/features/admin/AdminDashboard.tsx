@@ -180,6 +180,7 @@ function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 						onChange={onImageUpload}
 						className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
 					/>
+					<p className="text-xs text-muted-foreground mt-2">Check console for upload status</p>
 				</div>
 				<div>
 					<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
@@ -370,9 +371,7 @@ export function AdminDashboard() {
 
 			try {
 				const result = await uploadImage(file);
-				if (result.success) {
-					console.log("Image uploaded successfully:", result.path);
-				} else {
+				if (!result.success) {
 					console.error("Upload failed:", result.error);
 				}
 			} catch (error) {

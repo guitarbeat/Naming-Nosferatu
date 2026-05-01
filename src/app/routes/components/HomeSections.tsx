@@ -13,7 +13,6 @@ interface HomeHeroSectionProps {
         state: HomeHeroState;
         lockedNames: NameItem[];
         onStartPicking: () => void;
-        onSeeResults: () => void;
 }
 
 interface TournamentBracketSectionProps {
