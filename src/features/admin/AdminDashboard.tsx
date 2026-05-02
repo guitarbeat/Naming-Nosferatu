@@ -180,7 +180,7 @@ function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 						onChange={onImageUpload}
 						className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
 					/>
-					<p className="text-xs text-muted-foreground mt-2">Check console for upload status</p>
+					<p className="text-xs text-muted-foreground mt-2">Upload errors will appear in the console.</p>
 				</div>
 				<div>
 					<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
