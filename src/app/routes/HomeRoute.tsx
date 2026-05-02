@@ -99,8 +99,8 @@ export default function HomeRoute() {
                                 separator={true}
                         >
                                 <SectionHeading
-                                        title="Pick Your Favorites"
-                                        subtitle="Tap to select."
+                                        title="Narrow It Down"
+                                        subtitle="Select your top picks."
                                 />
                                 <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                         <TournamentFlow />
@@ -127,8 +127,8 @@ export default function HomeRoute() {
                                 separator={true}
                         >
                                 <SectionHeading
-                                        title="Results and Rankings"
-                                        subtitle="Leaderboard and stats."
+                                        title="Your Rankings"
+                                        subtitle="Final scores."
                                 />
                                 <Suspense fallback={<Loading variant="skeleton" height={600} />}>
                                         <ErrorBoundary context={errorContexts.analysisDashboard}>
@@ -154,8 +154,8 @@ export default function HomeRoute() {
                                 separator={true}
                         >
                                 <SectionHeading
-                                        title="Suggest a Name"
-                                        subtitle="Add a name."
+                                        title="Have a Suggestion?"
+                                        subtitle="Submit a name."
                                 />
                                 <Suspense fallback={<Loading variant="card-skeleton" height={340} />}>
                                         <LazyNameSuggestionInner />

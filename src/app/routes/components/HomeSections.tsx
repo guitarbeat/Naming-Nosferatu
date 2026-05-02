@@ -133,11 +133,6 @@ export function TournamentBracketSection({
         onComplete,
         onGoToPicker,
 }: TournamentBracketSectionProps) {
-        const scopePanels = [
-                { label: "Session", description: "Your personal ranking." },
-                { label: "Community", description: "Aggregate site stats." },
-        ] as const;
-
         return (
                 <Section
                         id="tournament"
@@ -148,26 +143,9 @@ export function TournamentBracketSection({
                         separator={true}
                 >
                         <SectionHeading
-                                title="Tournament Bracket"
-                                subtitle="Run the bracket."
+                                title="Bracket"
+                                subtitle="Head-to-head matchups."
                         />
-                        <div className="mx-auto mb-6 grid w-full max-w-3xl gap-3 sm:grid-cols-2 sm:gap-4">
-                                {scopePanels.map((panel) => (
-                                        <Surface
-                                                key={panel.label}
-                                                radius="md"
-                                                padding="compact"
-                                                className="text-center sm:text-left"
-                                        >
-                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                        {panel.label}
-                                                </p>
-                                                <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-                                                        {panel.description}
-                                                </p>
-                                        </Surface>
-                                ))}
-                        </div>
                         <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                 {names && names.length > 0 ? (
                                         <LazyTournament
@@ -176,12 +154,12 @@ export function TournamentBracketSection({
                                                 onComplete={onComplete}
                                         />
                                 ) : (
-                                        <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-6 text-center">
+                                        <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
                                                 <p className="text-pretty text-sm text-muted-foreground/70">
-                                                        Pick at least two names above to start the bracket.
+                                                        Select at least two names to begin.
                                                 </p>
                                                 <Button variant="glass" onClick={onGoToPicker}>
-                                                        Go to Picker
+                                                        Go Back
                                                 </Button>
                                         </div>
                                 )}
