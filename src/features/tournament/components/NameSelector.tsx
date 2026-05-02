@@ -1041,16 +1041,14 @@ export function NameSelector() {
                                                                                                                                 )}
 
                                                                                                                                 {selectedNames.has(nameItem.id) && (
-                                                                                                                                        <div className="flex mt-4">
-                                                                                                                                                <div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20">
-                                                                                                                                                        <Check
-                                                                                                                                                                size={16}
-                                                                                                                                                                className="text-success"
-                                                                                                                                                        />
-                                                                                                                                                        <span className="text-success font-black text-xs tracking-[0.2em] uppercase">
-                                                                                                                                                                Selected
-                                                                                                                                                        </span>
-                                                                                                                                                </div>
+                                                                                                                                        <div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20 mt-4">
+                                                                                                                                                <Check
+                                                                                                                                                        size={16}
+                                                                                                                                                        className="text-success"
+                                                                                                                                                />
+                                                                                                                                                <span className="text-success font-black text-xs tracking-[0.2em] uppercase">
+                                                                                                                                                        Selected
+                                                                                                                                                </span>
                                                                                                                                         </div>
                                                                                                                                 )}
                                                                                                                         </div>

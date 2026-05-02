@@ -1,11 +1,9 @@
-import type { ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 
 interface SectionHeadingProps {
         title: string;
         subtitle?: string;
         className?: string;
-        children?: ReactNode;
 }
 
 export function SectionHeading({ title, subtitle, className }: SectionHeadingProps) {
