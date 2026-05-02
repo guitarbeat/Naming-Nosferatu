@@ -23,9 +23,7 @@ export function TournamentComplete({
 
 			<div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
 				<div className="max-w-2xl w-full text-center p-8">
-					<div className="mb-6 flex justify-center">
-						<Trophy className="size-16 text-green-400" />
-					</div>
+					<Trophy className="size-16 text-green-400 mx-auto mb-6" />
 					<h1 className="font-whimsical text-4xl text-foreground tracking-wide mb-4">
 						Tournament Complete!
 					</h1>

@@ -62,7 +62,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                         setIsEditing(false);
                 } catch (err) {
                         console.error("Failed to update name:", err);
-                        setSaveError("We couldn't log you in right now. Try again.");
+                        setSaveError("We couldn't save your name right now. Try again.");
                 } finally {
                         setIsSaving(false);
                 }

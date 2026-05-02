@@ -88,7 +88,6 @@ export default function HomeRoute() {
                                 state={heroState}
                                 lockedNames={lockedNames}
                                 onStartPicking={() => scrollToSection("pick")}
-                                onSeeResults={() => scrollToSection("analysis")}
                         />
 
                         <Section
