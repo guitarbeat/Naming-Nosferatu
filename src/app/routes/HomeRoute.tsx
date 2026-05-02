@@ -3,7 +3,6 @@ import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import {
         HomeHeroSection,
-        TournamentBracketSection,
 } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/features/names/api";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
@@ -11,6 +10,7 @@ import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
 import { useMediaQuery } from "@/shared/hooks/useBrowserState";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
+import Button from "@/shared/components/layout/Button";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
@@ -95,7 +95,7 @@ export default function HomeRoute() {
                                 variant="minimal"
                                 padding="comfortable"
                                 maxWidth="xl"
-
+                                fullpage={true}
                                 separator={true}
                         >
                                 <SectionHeading
@@ -107,23 +107,47 @@ export default function HomeRoute() {
                                 </Suspense>
                         </Section>
 
-                        <TournamentBracketSection
-                                LazyTournament={LazyTournament}
-                                names={tournament.names}
-                                ratings={tournament.ratings}
-                                onComplete={(ratings) => {
-                                        handleTournamentComplete(ratings);
-                                        scheduleAnalysisScroll();
-                                }}
-                                onGoToPicker={() => scrollToSection("pick")}
-                        />
+                        <Section
+                                id="tournament"
+                                variant="minimal"
+                                padding="comfortable"
+                                maxWidth="2xl"
+                                fullpage={true}
+                                separator={true}
+                        >
+                                <SectionHeading
+                                        title="Bracket"
+                                        subtitle="Head-to-head matchups."
+                                />
+                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                        {tournament.names && tournament.names.length > 0 ? (
+                                                <LazyTournament
+                                                        names={tournament.names}
+                                                        existingRatings={tournament.ratings}
+                                                        onComplete={(ratings) => {
+                                                                handleTournamentComplete(ratings);
+                                                                scheduleAnalysisScroll();
+                                                        }}
+                                                />
+                                        ) : (
+                                                <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
+                                                        <p className="text-pretty text-sm text-muted-foreground/70">
+                                                                Select at least two names to begin.
+                                                        </p>
+                                                        <Button variant="glass" onClick={() => scrollToSection("pick")}>
+                                                                Go Back
+                                                        </Button>
+                                                </div>
+                                        )}
+                                </Suspense>
+                        </Section>
 
                         <Section
                                 id="analysis"
                                 variant="minimal"
                                 padding="comfortable"
                                 maxWidth="2xl"
-
+                                fullpage={true}
                                 separator={true}
                         >
                                 <SectionHeading
@@ -150,7 +174,7 @@ export default function HomeRoute() {
                                 variant="minimal"
                                 padding="comfortable"
                                 maxWidth="2xl"
-
+                                fullpage={true}
                                 separator={true}
                         >
                                 <SectionHeading

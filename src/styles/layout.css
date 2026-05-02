@@ -41,6 +41,15 @@
 
 .app-section--comfortable {
         padding: var(--app-section-padding-block) var(--app-section-padding-inline);
+        min-height: auto;
+}
+
+.app-section--comfortable.app-section--fullpage {
+        padding: var(--app-section-padding-block-fullpage) var(--app-section-padding-inline);
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
 }
 
 .app-section--compact {
