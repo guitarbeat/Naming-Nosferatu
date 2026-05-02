@@ -1,6 +1,7 @@
 import { subDays, subMonths, subWeeks, subYears } from "date-fns";
 import { computeRatingStats, getPercentileRank } from "@/shared/lib/ratingStats";
 import { withSupabase } from "./runtime";
+import { throwOnRpcError } from "./errorUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import { mapNameRow, type RawNameRow } from "@/shared/lib/names/mapNameRow";
 
@@ -91,10 +92,7 @@ export const leaderboardAPI = {
                         const { data, error } = await client.rpc("get_leaderboard_stats", {
                                 limit_count: limit ?? 50,
                         });
-                        if (error) {
-                                console.warn("[statsService] get_leaderboard_stats failed:", error.message);
-                                return [];
-                        }
+                        throwOnRpcError(error, "Failed to fetch leaderboard stats");
                         const rows = ((data as Array<Record<string, unknown>>) ?? []).map(mapLeaderboardRow);
 
                         const allRatings = rows.map((r) => r.avg_rating);
@@ -113,10 +111,7 @@ export const statsAPI = {
         getSiteStats: async (): Promise<SiteStats | null> => {
                 return withSupabase(async (client) => {
                         const { data, error } = await client.rpc("get_site_stats");
-                        if (error || !data) {
-                                console.warn("[statsService] get_site_stats failed:", error?.message);
-                                return null;
-                        }
+                        throwOnRpcError(error, "Failed to fetch site stats");
                         const stats = data as Partial<SiteStats>;
                         return {
                                 totalNames: toNumber(stats.totalNames),
@@ -187,10 +182,7 @@ export const statsAPI = {
                         const { data, error } = await client.rpc("get_user_stats", {
                                 p_user_name: userName,
                         });
-                        if (error || !data) {
-                                console.warn("[statsService] get_user_stats failed:", error?.message);
-                                return null;
-                        }
+                        throwOnRpcError(error, "Failed to fetch user stats");
                         const stats = data as Partial<DetailedUserStats>;
                         return {
                                 totalRatings: toNumber(stats.totalRatings),
@@ -207,10 +199,7 @@ export const statsAPI = {
                         const { data, error } = await client.rpc("get_user_stats", {
                                 p_user_name: userName,
                         });
-                        if (error || !data) {
-                                console.warn("[statsService] get_user_stats failed:", error?.message);
-                                return null;
-                        }
+                        throwOnRpcError(error, "Failed to fetch user stats");
                         const stats = data as Partial<UserStats>;
                         return {
                                 totalRatings: toNumber(stats.totalRatings),

@@ -199,9 +199,26 @@ None identified - codebase is well-organized with minimal duplication.
 
 ---
 
-## Recommendations
+## Changes Made
 
-1. **Extract statsService error handling** to use consistent `throwOnError()` pattern
-2. **Consider error logging middleware** for centralized error tracking
-3. **Create admin validation utility** to replace inline checks
-4. **Document storage tier hierarchy** for future developers
+### ✅ Consolidated Error Handling Utilities
+**Created:** `src/shared/services/supabase/errorUtils.ts`
+
+Merged error handling patterns into a single shared utility:
+- `throwOnRpcError()` - Centralized from `ratingService.ts`
+- `throwOnMissingData()` - For null/missing data checks
+- `throwOnFailureResponse()` - For boolean RPC responses
+
+**Updated:**
+- `src/shared/services/supabase/ratingService.ts` - Now imports and uses `throwOnRpcError`
+- `src/shared/services/supabase/statsService.ts` - Replaced 4 inline `console.warn` checks with `throwOnRpcError` calls
+
+**Result:** Consistent error handling across Supabase services. Errors now throw instead of silently logging, preventing data loss.
+
+---
+
+## Remaining Recommendations
+
+1. **Extract admin validation utility** - `assertAdmin()` is defined locally in `features/names/api.ts` but could be shared
+2. **Centralize error logging** - Consider using error manager for app-wide error tracking
+3. **Document storage tier hierarchy** for future developers
