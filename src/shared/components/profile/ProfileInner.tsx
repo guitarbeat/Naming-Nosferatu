@@ -81,14 +81,14 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
         };
 
         return (
-                <div className="flex flex-col items-center gap-6 w-full">
+                <div className="flex flex-col items-center gap-8 w-full">
                         {/* Avatar with Glow */}
                         <div className="relative">
                                 <div
                                         className="absolute -inset-4 rounded-full bg-gradient-to-br from-primary/40 to-accent/30 blur-xl opacity-60 animate-pulse"
                                         aria-hidden="true"
                                 />
-                                <div className="relative size-28 rounded-full overflow-hidden ring-3 ring-primary/50 ring-offset-4 ring-offset-card bg-gradient-to-br from-primary/20 to-accent/10 shadow-2xl">
+                                <div className="relative size-32 rounded-full overflow-hidden ring-4 ring-primary/60 ring-offset-6 ring-offset-card bg-gradient-to-br from-primary/20 to-accent/10 shadow-2xl">
                                         <img
                                                 src={avatarSrc}
                                                 alt="Your profile photo"
@@ -99,14 +99,14 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                         </div>
 
                         {isEditing ? (
-                                <div className="w-full space-y-4 animate-in fade-in duration-250">
-                                        <div className="text-center">
-                                                <h2 className="text-2xl font-bold text-foreground mb-1">Who are you?</h2>
-                                                <p className="text-xs text-muted-foreground">Your name helps track your preferences.</p>
+                                <div className="w-full max-w-sm space-y-5 animate-in fade-in duration-250">
+                                        <div className="text-center space-y-2">
+                                                <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">Who are you?</h2>
+                                                <p className="text-sm text-muted-foreground/80">Your name helps us track your preferences.</p>
                                         </div>
 
                                         <div className="relative group">
-                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-primary/60 pointer-events-none transition-colors group-focus-within:text-primary" />
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-primary/50 pointer-events-none transition-colors group-focus-within:text-primary" />
                                                 <Input
                                                         ref={nameInputRef}
                                                         type="text"
@@ -119,22 +119,23 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                                                         }}
                                                         placeholder="Enter your name"
                                                         onKeyDown={(e) => e.key === "Enter" && handleSave()}
-                                                        className="w-full h-12 pl-12 pr-4 text-base rounded-xl bg-background/60 border border-primary/30 focus:border-primary/60 transition-colors"
+                                                        className="w-full h-14 pl-14 pr-4 text-base font-medium rounded-2xl bg-background/80 border border-primary/30 focus:border-primary/70 focus:bg-background/95 focus:outline-none transition-all"
                                                         autoFocus
                                                 />
                                         </div>
 
                                         {saveError && (
-                                                <div role="alert" className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
+                                                <div role="alert" className="p-4 rounded-xl bg-destructive/15 border border-destructive/40 text-sm text-destructive font-medium">
                                                         {saveError}
                                                 </div>
                                         )}
 
-                                        <div className="flex gap-2 pt-2">
+                                        <div className="flex gap-3 pt-3">
                                                 {user.isLoggedIn && (
                                                         <Button
                                                                 type="button"
                                                                 variant="ghost"
+                                                                size="large"
                                                                 onClick={() => setIsEditing(false)}
                                                                 className="flex-1"
                                                         >
@@ -155,33 +156,35 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                                         </div>
                                 </div>
                         ) : (
-                                <div className="w-full flex flex-col items-center gap-4 animate-in fade-in duration-250">
-                                        <div className="text-center">
-                                                <h2 className="text-2xl font-bold text-foreground">{user.name}</h2>
-                                                <p className="text-xs text-muted-foreground/70 mt-1">
+                                <div className="w-full max-w-sm flex flex-col items-center gap-6 animate-in fade-in duration-250">
+                                        <div className="text-center space-y-2">
+                                                <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">{user.name}</h2>
+                                                <p className="text-sm text-muted-foreground/70">
                                                         Your preferences are saved.
                                                 </p>
                                         </div>
 
-                                        <button
-                                                type="button"
-                                                onClick={() => setIsEditing(true)}
-                                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary/80 hover:text-primary hover:bg-primary/10 transition-colors"
-                                                aria-label="Edit name"
-                                        >
-                                                <Pencil size={14} />
-                                                Edit
-                                        </button>
+                                        <div className="flex flex-col gap-2 w-full">
+                                                <button
+                                                        type="button"
+                                                        onClick={() => setIsEditing(true)}
+                                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-primary hover:text-primary hover:bg-primary/15 transition-colors"
+                                                        aria-label="Edit name"
+                                                >
+                                                        <Pencil size={16} />
+                                                        Edit
+                                                </button>
 
-                                        <button
-                                                type="button"
-                                                onClick={() => void handleLogout()}
-                                                disabled={isLoggingOut}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/60 hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                                <LogOut size={13} />
-                                                {isLoggingOut ? "Logging out..." : "Logout"}
-                                        </button>
+                                                <button
+                                                        type="button"
+                                                        onClick={() => void handleLogout()}
+                                                        disabled={isLoggingOut}
+                                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-destructive/70 hover:text-destructive hover:bg-destructive/15 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                        <LogOut size={16} />
+                                                        {isLoggingOut ? "Logging out..." : "Logout"}
+                                                </button>
+                                        </div>
                                 </div>
                         )}
                 </div>
