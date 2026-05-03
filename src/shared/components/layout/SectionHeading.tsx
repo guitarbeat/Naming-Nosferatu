@@ -15,7 +15,7 @@ export function SectionHeading({ title, subtitle, className }: SectionHeadingPro
                                 className,
                         )}
                 >
-                        <h2 className="font-display text-[clamp(1.9rem,4vw,3rem)] leading-[0.96] tracking-[-0.045em] text-white">
+                        <h2 className="font-display leading-[0.96] tracking-[-0.045em] text-white">
                                 {title}
                         </h2>
                         {subtitle && (

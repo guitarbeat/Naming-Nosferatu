@@ -409,9 +409,17 @@
         --pw-transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
         /* Heading treatment */
-        --pw-heading-1-size: clamp(2.15rem, 4.4vw, 3.65rem);
-        --pw-heading-2-size: clamp(1.7rem, 3vw, 2.55rem);
-        --pw-heading-3-size: clamp(1.35rem, 2.1vw, 1.95rem);
+        /*
+         * Golden-ratio type scale (φ = 1.618).
+         * Each heading's min = previous heading's max:
+         *   h3 range: φ⁰ → φ¹  (1rem     → 1.618rem)
+         *   h2 range: φ¹ → φ²  (1.618rem → 2.618rem)  h2_min = h3_max
+         *   h1 range: φ² → φ³  (2.618rem → 4.236rem)  h1_min = h2_max
+         * Fluid slopes derived so each heading reaches max at ~1440px.
+         */
+        --pw-heading-1-size: clamp(var(--space-phi-4), 2.31vw + 2.156rem, var(--space-phi-5));
+        --pw-heading-2-size: clamp(var(--space-phi-3), 1.43vw + 1.333rem, var(--space-phi-4));
+        --pw-heading-3-size: clamp(var(--space-phi-2), 0.88vw + 0.82rem,  var(--space-phi-3));
         --pw-heading-weight: 700;
         --pw-heading-tracking: 0.02em;
         --pw-heading-transform: uppercase;
