@@ -26,21 +26,21 @@ import LiquidGlass from "./LiquidGlass";
 type NavSection = "pick" | "tournament" | "analysis";
 
 const keyToId: Record<NavSection, string> = {
-	pick: "pick",
-	tournament: "tournament",
-	analysis: "analysis",
+        pick: "pick",
+        tournament: "tournament",
+        analysis: "analysis",
 };
 
 const LazyProfileInner = lazy(() =>
-	import("@/shared/components/profile/ProfileInner").then((module) => ({
-		default: module.ProfileInner,
-	})),
+        import("@/shared/components/profile/ProfileInner").then((module) => ({
+                default: module.ProfileInner,
+        })),
 );
 
 const LazyNameSuggestion = lazy(() =>
-	import("@/features/tournament/components/NameSuggestion").then((module) => ({
-		default: module.NameSuggestion,
-	})),
+        import("@/features/tournament/components/NameSuggestion").then((module) => ({
+                default: module.NameSuggestion,
+        })),
 );
 
 function FloatingNavItem({
@@ -50,6 +50,7 @@ function FloatingNavItem({
         isCurrent = false,
         isPressed = false,
         isAccent = false,
+        hasBadge = false,
         onClick,
         customIcon,
         className,
@@ -61,6 +62,7 @@ function FloatingNavItem({
         isCurrent?: boolean;
         isPressed?: boolean;
         isAccent?: boolean;
+        hasBadge?: boolean;
         onClick: () => void;
         customIcon?: ReactNode;
         className?: string;
@@ -85,6 +87,7 @@ function FloatingNavItem({
                 >
                         <span className="floating-navbar__icon" aria-hidden="true">
                                 {customIcon || <Icon className="h-5 w-5 sm:h-6 sm:w-6" />}
+                                {hasBadge && <span className="floating-navbar__badge" />}
                         </span>
                         <span
                                 className={cn(
@@ -384,6 +387,7 @@ export function FloatingNavbar() {
                                                         icon={BarChart3}
                                                         label="Analyze"
                                                         isCurrent={isHomeRoute && activeSection === "analysis"}
+                                                        hasBadge={Object.keys(tournament.ratings).length > 0 && activeSection !== "analysis"}
                                                         onClick={() => handleNavClick("analysis")}
                                                 />
 

@@ -113,9 +113,11 @@ export default function HomeRoute() {
                                 variant="minimal"
                                 padding="comfortable"
                                 maxWidth="2xl"
-
                                 separator={true}
                         >
+                                <p className="mb-8 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/25">
+                                        Analysis
+                                </p>
                                 <Suspense fallback={<Loading variant="skeleton" height={600} />}>
                                         <ErrorBoundary context={errorContexts.analysisDashboard}>
                                                 <DashboardLazy
