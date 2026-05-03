@@ -88,11 +88,7 @@ export function Dashboard({
                                 </Panel>
                         )}
 
-                        {leaderboard.length > 0 && (
-                                <Panel className="p-5 sm:p-6">
-                                        <WordCloudChart leaderboard={leaderboard} />
-                                </Panel>
-                        )}
+                        {leaderboard.length > 0 && <WordCloudChart leaderboard={leaderboard} />}
 
                         {isAdmin && (
                                 <Panel className="p-5 sm:p-6">
