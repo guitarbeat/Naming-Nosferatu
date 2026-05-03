@@ -1,21 +1,11 @@
-import type { ElementType } from "react";
+import type { ElementType, ReactNode } from "react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback";
-import {
-        Activity,
-        BarChart3,
-        Eye,
-        EyeOff,
-        Target,
-        TrendingUp,
-        Trophy,
-        User,
-        Users,
-} from "@/shared/lib/icons";
+import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, User, Users } from "@/shared/lib/icons";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
-import { ContextBadge, Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
+import { ContextBadge, Panel, StatTile } from "./components/DashboardPrimitives";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
@@ -45,6 +35,15 @@ interface QuickStat {
         icon: ElementType;
         label: string;
         value: string | number;
+}
+
+function PanelTitle({ title, action }: { title: string; action?: ReactNode }) {
+        return (
+                <div className="mb-4 flex items-center justify-between gap-4">
+                        <h3 className="text-sm font-medium text-foreground/50">{title}</h3>
+                        {action}
+                </div>
+        );
 }
 
 function getQuickStats({
@@ -86,10 +85,8 @@ function DashboardEmptyState({
 }) {
         return (
                 <Panel className="border-dashed bg-black/10">
-                        <SectionHeader
-                                icon={BarChart3}
+                        <PanelTitle
                                 title="Nothing Ranked Yet"
-                                subtitle={isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
                                 action={
                                         onStartNew ? (
                                                 <Button variant="outline" size="small" onClick={onStartNew}>
@@ -98,22 +95,21 @@ function DashboardEmptyState({
                                         ) : undefined
                                 }
                         />
+                        <p className="mb-4 text-sm text-muted-foreground/60">
+                                {isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
+                        </p>
                         <div className="grid gap-3 md:grid-cols-2">
                                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
                                                 Personal Layer
                                         </p>
-                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-                                                Your saved order.
-                                        </p>
+                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">Your saved order.</p>
                                 </div>
                                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
                                                 Community Layer
                                         </p>
-                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
-                                                Aggregate site stats.
-                                        </p>
+                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">Aggregate site stats.</p>
                                 </div>
                         </div>
                 </Panel>
@@ -149,8 +145,7 @@ export function Dashboard({
         const quickStats = getQuickStats({ siteStats, userName, userStats });
         const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
         const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
-        const shouldShowDashboardPrimer =
-                !hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
+        const shouldShowDashboardPrimer = !hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
 
         return (
                 <div className="w-full space-y-6">
@@ -188,11 +183,7 @@ export function Dashboard({
 
                                         {quickStats.length > 0 && (
                                                 <Panel>
-                                                        <SectionHeader
-                                                                icon={BarChart3}
-                                                                title={userStats ? "Your Snapshot" : "Community Snapshot"}
-                                                                subtitle={userStats ? "Your totals." : "Pool totals."}
-                                                        />
+                                                        <PanelTitle title={userStats ? "Your Snapshot" : "Community Snapshot"} />
                                                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                                                                 {quickStats.map((item) => (
                                                                         <StatTile
@@ -215,10 +206,8 @@ export function Dashboard({
 
                         {hasPersonalRatings && onUpdateRatings && (
                                 <Panel>
-                                        <SectionHeader
-                                                icon={Trophy}
+                                        <PanelTitle
                                                 title="Your Rankings"
-                                                subtitle="Your saved order."
                                                 action={<ContextBadge label="Personal" tone="accent" />}
                                         />
                                         <PersonalResults
@@ -233,10 +222,8 @@ export function Dashboard({
 
                         {/* Leaderboard */}
                         <Panel>
-                                <SectionHeader
-                                        icon={Trophy}
+                                <PanelTitle
                                         title="Leaderboard"
-                                        subtitle="Top of the pool."
                                         action={
                                                 <div className="flex items-center gap-2">
                                                         <ContextBadge label="Community" />
@@ -287,20 +274,20 @@ export function Dashboard({
                         {leaderboard.length > 0 && (
                                 <div className="grid gap-6 sm:grid-cols-2">
                                         <Panel>
-                                                <SectionHeader icon={BarChart3} title="Top Names by Rating" subtitle="Top scores." />
+                                                <PanelTitle title="Top Names by Rating" />
                                                 <TopNamesChart leaderboard={leaderboard} />
                                         </Panel>
                                         <Panel>
-                                                <SectionHeader icon={TrendingUp} title="Win and Loss Breakdown" subtitle="Wins vs losses." />
+                                                <PanelTitle title="Win and Loss Breakdown" />
                                                 <WinLossChart leaderboard={leaderboard} />
                                         </Panel>
                                         <Panel>
-                                                <SectionHeader icon={Activity} title="Rating Distribution" subtitle="Score spread." />
+                                                <PanelTitle title="Rating Distribution" />
                                                 <RatingDistributionChart leaderboard={leaderboard} />
                                         </Panel>
                                         {leaderboard.length >= 3 && (
                                                 <Panel>
-                                                        <SectionHeader icon={Target} title="Comparison Radar" subtitle="Side by side." />
+                                                        <PanelTitle title="Comparison Radar" />
                                                         <RatingRadarChart leaderboard={leaderboard} />
                                                 </Panel>
                                         )}
@@ -310,7 +297,7 @@ export function Dashboard({
                         {/* Site stats */}
                         {siteStats && (
                                 <Panel>
-                                        <SectionHeader icon={Users} title="Site Statistics" subtitle="Pool totals." />
+                                        <PanelTitle title="Site Statistics" />
                                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                                                 <StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
                                                 <StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
@@ -324,10 +311,8 @@ export function Dashboard({
                         {/* Engagement */}
                         {engagementMetrics && (
                                 <Panel>
-                                        <SectionHeader
-                                                icon={TrendingUp}
+                                        <PanelTitle
                                                 title="Recent Activity"
-                                                subtitle="Last window."
                                                 action={
                                                         <div className="flex items-center gap-2">
                                                                 <select
@@ -361,10 +346,8 @@ export function Dashboard({
                         {/* Admin: hidden names */}
                         {isAdmin && (
                                 <Panel>
-                                        <SectionHeader
-                                                icon={EyeOff}
+                                        <PanelTitle
                                                 title="Hidden Names"
-                                                subtitle="Hidden from the pool."
                                                 action={
                                                         <Button variant="outline" size="small" onClick={toggleHiddenNames}>
                                                                 {showHiddenNames ? "Hide List" : "Show List"}
@@ -387,25 +370,22 @@ export function Dashboard({
                                                                                                 <p className="truncate text-xs text-muted-foreground/70">{name.description}</p>
                                                                                         )}
                                                                                 </div>
-                                                                                <Button
-                                                                                        variant="ghost"
-                                                                                        size="small"
-                                                                                        onClick={() => handleUnhideName(name.id)}
-                                                                                >
+                                                                                <Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
                                                                                         <Eye size={13} />
                                                                                         Unhide
                                                                                 </Button>
                                                                         </div>
                                                                 ))
                                                         ) : (
-                                                                <p className="px-4 py-6 text-center text-sm text-muted-foreground/60">
-                                                                        No hidden names.
-                                                                </p>
+                                                                <p className="px-4 py-6 text-center text-sm text-muted-foreground/60">No hidden names.</p>
                                                         )}
                                                 </div>
                                         )}
                                 </Panel>
                         )}
+
+                        {/* Admin: hidden names (picker panel duplicate — kept for parity) */}
+                        {isAdmin && hiddenNames.length > 0 && !showHiddenNames && null}
                 </div>
         );
 }
