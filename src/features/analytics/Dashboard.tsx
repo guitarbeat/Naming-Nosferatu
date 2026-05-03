@@ -100,7 +100,7 @@ export function Dashboard({
                                         <PanelTitle
                                                 title="Recent Activity"
                                                 action={
-                                                        <div className="flex items-center gap-2">
+                                                        <div className="flex flex-wrap items-center gap-2">
                                                                 <select
                                                                         value={timeframe}
                                                                         onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
@@ -122,12 +122,12 @@ export function Dashboard({
                                                         </div>
                                                 }
                                         />
-                                        <div className="flex gap-8 text-sm">
-                                                <div>
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+                                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-4">
                                                         <p className="text-2xl font-semibold text-primary">{engagementMetrics.peakActiveUsers}</p>
                                                         <p className="mt-1 text-xs text-muted-foreground/60">Active raters</p>
                                                 </div>
-                                                <div>
+                                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-4">
                                                         <p className="text-2xl font-semibold text-foreground/80">{engagementMetrics.totalMatches}</p>
                                                         <p className="mt-1 text-xs text-muted-foreground/60">Matches played</p>
                                                 </div>
