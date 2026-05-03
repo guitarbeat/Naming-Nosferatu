@@ -94,46 +94,6 @@ export function Dashboard({
                                 </Panel>
                         )}
 
-                        {engagementMetrics && (
-                                <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-5 sm:p-6">
-                                        <PanelTitle
-                                                title="Recent Activity"
-                                                action={
-                                                        <div className="flex flex-wrap items-center gap-2">
-                                                                <select
-                                                                        value={timeframe}
-                                                                        onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
-                                                                        className="rounded-xl border border-white/10 bg-black/15 px-3 py-2 text-sm text-foreground"
-                                                                >
-                                                                        <option value="day">24 hours</option>
-                                                                        <option value="week">Week</option>
-                                                                        <option value="month">Month</option>
-                                                                </select>
-                                                                <Button
-                                                                        variant="outline"
-                                                                        size="small"
-                                                                        onClick={() => refreshEngagementMetrics()}
-                                                                        disabled={isLoadingEngagement}
-                                                                >
-                                                                        <Activity size={14} />
-                                                                        Refresh
-                                                                </Button>
-                                                        </div>
-                                                }
-                                        />
-                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-                                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-4">
-                                                        <p className="text-2xl font-semibold text-primary">{engagementMetrics.peakActiveUsers}</p>
-                                                        <p className="mt-1 text-xs text-muted-foreground/60">Active raters</p>
-                                                </div>
-                                                <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-4">
-                                                        <p className="text-2xl font-semibold text-foreground/80">{engagementMetrics.totalMatches}</p>
-                                                        <p className="mt-1 text-xs text-muted-foreground/60">Matches played</p>
-                                                </div>
-                                        </div>
-                                </div>
-                        )}
-
                         {isAdmin && (
                                 <Panel className="p-5 sm:p-6">
                                         <PanelTitle
