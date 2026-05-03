@@ -1,35 +1,92 @@
+import { useEffect, useState } from "react";
 import useAppStore from "@/store/appStore";
 
+const CAT_NAMES = ["NOSFERATU", "SMEEMO", "ORBIT", "NOVA", "NEDJEM", "WOODS", "LUNA"];
+
 interface AppBootScreenProps {
-	message?: string;
-	visible?: boolean;
+        message?: string;
+        visible?: boolean;
 }
 
-export function AppBootScreen({
-	message = "Preparing the tournament...",
-	visible,
-}: AppBootScreenProps) {
-	const isBootLoading = useAppStore((state) => state.ui.isBootLoading);
-	const shouldRender = visible ?? isBootLoading;
+export function AppBootScreen({ message = "Preparing the tournament...", visible }: AppBootScreenProps) {
+        const isBootLoading = useAppStore((state) => state.ui.isBootLoading);
+        const shouldRender = visible ?? isBootLoading;
 
-	if (!shouldRender) {
-		return null;
-	}
+        const [nameIdx, setNameIdx] = useState(0);
+        const [nameVisible, setNameVisible] = useState(true);
 
-	return (
-		<div className="fixed inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_top,rgba(39,135,153,0.18),transparent_40%),linear-gradient(180deg,rgba(8,12,18,0.98),rgba(8,12,18,0.94))]">
-			<div className="flex flex-col items-center gap-4 rounded-[1.75rem] border border-white/10 bg-white/[0.03] px-8 py-7 text-center shadow-[0_24px_70px_rgba(2,8,18,0.35)] backdrop-blur-xl">
-				<div className="relative h-12 w-12">
-					<div className="absolute inset-0 rounded-full border-4 border-white/10" />
-					<div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-primary border-r-primary/60" />
-				</div>
-				<div className="space-y-2">
-					<p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/45">
-						Naming Nosferatu
-					</p>
-					<p className="text-sm font-medium text-white/75">{message}</p>
-				</div>
-			</div>
-		</div>
-	);
+        useEffect(() => {
+                if (!shouldRender) return;
+                const id = setInterval(() => {
+                        setNameVisible(false);
+                        setTimeout(() => {
+                                setNameIdx((i) => (i + 1) % CAT_NAMES.length);
+                                setNameVisible(true);
+                        }, 320);
+                }, 1500);
+                return () => clearInterval(id);
+        }, [shouldRender]);
+
+        if (!shouldRender) return null;
+
+        return (
+                <div
+                        className="fixed inset-0 z-[10000] flex flex-col items-center justify-center overflow-hidden"
+                        style={{ background: "#080c12" }}
+                        role="status"
+                        aria-label="Loading application"
+                >
+                        {/* Animated gradient blobs — same palette as the hero */}
+                        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                                <div className="boot-blob-1 absolute h-[70vw] w-[70vw] max-h-[700px] max-w-[700px] rounded-full bg-primary blur-[130px] opacity-[0.32]" />
+                                <div className="boot-blob-2 absolute right-0 bottom-0 h-[65vw] w-[65vw] max-h-[650px] max-w-[650px] rounded-full bg-accent blur-[130px] opacity-[0.32]" />
+                        </div>
+
+                        {/* Main content */}
+                        <div className="relative z-10 flex flex-col items-center px-6 text-center">
+                                {/* Cat GIF */}
+                                <img
+                                        src="/assets/images/cat.gif"
+                                        alt=""
+                                        aria-hidden="true"
+                                        className="mb-8 h-24 w-24 select-none object-contain drop-shadow-[0_0_28px_rgba(39,135,153,0.45)]"
+                                />
+
+                                {/* "My cat's name is" label */}
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/40">
+                                        My cat's name is
+                                </p>
+
+                                {/* Thin divider */}
+                                <div className="my-4 h-px w-12 bg-gradient-to-r from-transparent via-white/28 to-transparent" />
+
+                                {/* Cycling cat name */}
+                                <p
+                                        className="font-display font-black uppercase text-white"
+                                        style={{
+                                                fontSize: "clamp(2.618rem, 9vw, 5.5rem)",
+                                                lineHeight: 0.88,
+                                                letterSpacing: "-0.045em",
+                                                opacity: nameVisible ? 1 : 0,
+                                                transition: "opacity 0.3s ease",
+                                        }}
+                                        aria-live="polite"
+                                        aria-atomic="true"
+                                >
+                                        {CAT_NAMES[nameIdx]}
+                                </p>
+
+                                {/* Spinner + status message */}
+                                <div className="mt-12 flex flex-col items-center gap-3">
+                                        <div className="relative h-5 w-5" aria-hidden="true">
+                                                <div className="absolute inset-0 rounded-full border-2 border-white/10" />
+                                                <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-primary border-r-primary/50" />
+                                        </div>
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
+                                                {message}
+                                        </p>
+                                </div>
+                        </div>
+                </div>
+        );
 }
