@@ -40,11 +40,6 @@ function buildAuthUserFromStoredSnapshot(): AuthUser | null {
 
 export const supabaseAuthAdapter: AuthAdapter = {
         async getCurrentUser(): Promise<AuthUser | null> {
-                if (!isStorageAvailable()) {
-                        return null;
-                }
-
-                // Try to get current user from Supabase first
                 try {
                         const client = await resolveSupabaseClient();
                         if (!client) {
@@ -54,27 +49,23 @@ export const supabaseAuthAdapter: AuthAdapter = {
                         const {
                                 data: { user },
                         } = await client.auth.getUser();
-
                         if (!user) {
                                 return null;
                         }
 
-                        // Check if user has admin role
-                        const isAdmin = await this.checkAdminStatus(user.id);
                         const authUser = {
                                 id: user.id,
                                 name: user.user_metadata?.user_name || user.email || "Unknown",
                                 email: user.email,
-                                isAdmin,
-                                role: isAdmin ? "admin" : "user",
+                                isAdmin: false,
+                                role: "user",
                         } satisfies AuthUser;
 
                         writeStoredUserSnapshot({
-                                ...readStoredUserSnapshot(),
                                 id: authUser.id,
                                 name: authUser.name,
                                 email: authUser.email,
-                                isAdmin: authUser.isAdmin,
+                                isAdmin: false,
                         });
 
                         return authUser;
@@ -97,12 +88,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
                         const trimmedName = name.trim();
                         const client = await resolveSupabaseClient();
                         if (!client) {
-                                const storedUser = readStoredUserSnapshot();
                                 writeStoredUserSnapshot({
-                                        ...storedUser,
                                         name: trimmedName,
-                                        isAdmin:
-                                                storedUser?.name === trimmedName ? storedUser.isAdmin : false,
+                                        isAdmin: false,
                                 });
                                 return true;
                         }
@@ -148,12 +136,11 @@ export const supabaseAuthAdapter: AuthAdapter = {
                         }
 
                         if (authUser) {
-                                const storedUser = readStoredUserSnapshot();
                                 writeStoredUserSnapshot({
-                                        ...storedUser,
                                         id: authUser.id,
                                         name: authUser.user_metadata?.user_name || trimmedName,
                                         email: authUser.email,
+                                        isAdmin: false,
                                 });
 
                                 try {
@@ -196,19 +183,11 @@ export const supabaseAuthAdapter: AuthAdapter = {
                 }
         },
 
-        /**
-         * Check if a user is admin based on Supabase roles
-         */
         async checkAdminStatus(userId: string): Promise<boolean> {
                 try {
                         const client = await resolveSupabaseClient();
                         if (!client) {
                                 return Boolean(readStoredUserSnapshot()?.isAdmin);
-                        }
-
-                        const { data: isAdmin } = await client.rpc("is_admin");
-                        if (typeof isAdmin === "boolean") {
-                                return isAdmin;
                         }
 
                         const { data } = await client
@@ -217,24 +196,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 .eq("user_id", userId)
                                 .eq("role", "admin")
                                 .maybeSingle();
-
-                        if (data) {
-                                return true;
-                        }
-
-                        const storedUserName = readStoredUserSnapshot()?.name;
-                        if (!storedUserName) {
-                                return false;
-                        }
-
-                        const { data: fallbackData } = await client
-                                .from("cat_user_roles")
-                                .select("role")
-                                .eq("user_name", storedUserName)
-                                .eq("role", "admin")
-                                .maybeSingle();
-
-                        return Boolean(fallbackData);
+                        return Boolean(data);
                 } catch (error) {
                         console.error("[Auth] Error checking admin status:", error);
                         return false;
