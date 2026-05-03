@@ -112,26 +112,54 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 return true;
                         }
 
-                        // Sign in with Supabase
                         const sanitizedEmail = `${sanitizeNameForEmail(trimmedName)}@demo.local`;
-                        const { data, error } = await client.auth.signInWithPassword({
+                        const DEMO_PASSWORD = "demo-password";
+
+                        // Try signing in first; if no account exists, sign up automatically
+                        let authUser: import("@supabase/supabase-js").User | null = null;
+
+                        const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
                                 email: sanitizedEmail,
-                                password: "demo-password", // Demo password
+                                password: DEMO_PASSWORD,
                         });
 
-                        if (error) {
-                                console.error("Supabase login failed:", error);
-                                return false;
+                        if (signInError) {
+                                // Account doesn't exist yet — create it
+                                const isInvalidCredentials =
+                                        signInError.message?.toLowerCase().includes("invalid login") ||
+                                        signInError.status === 400;
+
+                                if (!isInvalidCredentials) {
+                                        console.error("Supabase login failed:", signInError);
+                                        return false;
+                                }
+
+                                const { data: signUpData, error: signUpError } = await client.auth.signUp({
+                                        email: sanitizedEmail,
+                                        password: DEMO_PASSWORD,
+                                        options: {
+                                                data: { user_name: trimmedName },
+                                        },
+                                });
+
+                                if (signUpError) {
+                                        console.error("Supabase sign-up failed:", signUpError);
+                                        return false;
+                                }
+
+                                authUser = signUpData.user;
+                        } else {
+                                authUser = signInData.user;
                         }
 
                         // Store user info in localStorage for compatibility
-                        if (data.user) {
+                        if (authUser) {
                                 const storedUser = readStoredUserSnapshot();
                                 writeStoredUserSnapshot({
                                         ...storedUser,
-                                        id: data.user.id,
-                                        name: data.user.user_metadata?.user_name || trimmedName,
-                                        email: data.user.email,
+                                        id: authUser.id,
+                                        name: authUser.user_metadata?.user_name || trimmedName,
+                                        email: authUser.email,
                                 });
 
                                 // Link auth.uid() to user_roles row (idempotent — no-op if already linked)
