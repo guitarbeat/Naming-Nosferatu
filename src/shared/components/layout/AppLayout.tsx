@@ -34,7 +34,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <ErrorBoundary context="Main Application Layout">
                         <div className="app relative min-h-dvh w-full text-foreground">
                                 <OfflineIndicator />
-                                {analyticsEnabled && <Analytics />}
+                                {analyticsEnabled && import.meta.env.VITE_VERCEL_ANALYTICS === "true" && <Analytics />}
 
                                 <button
                                         type="button"

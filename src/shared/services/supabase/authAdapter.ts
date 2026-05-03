@@ -124,9 +124,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
                         });
 
                         if (signInError) {
-                                // Account doesn't exist yet — create it
                                 const isInvalidCredentials =
                                         signInError.message?.toLowerCase().includes("invalid login") ||
+                                        signInError.message?.toLowerCase().includes("invalid credentials") ||
                                         signInError.status === 400;
 
                                 if (!isInvalidCredentials) {
