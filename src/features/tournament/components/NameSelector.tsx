@@ -738,61 +738,14 @@ export function NameSelector() {
                         <div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
                                 <Surface as="div" radius="xl" padding="compact" className="sm:p-5">
                                         <div className="flex flex-col gap-4 sm:gap-5">
-                                                <div className="flex flex-col gap-3">
-                                                        <div className="-mx-1 overflow-x-auto pb-1 sm:mx-0 sm:overflow-visible sm:pb-0">
-                                                                <div className="flex min-w-max gap-2 px-1 sm:min-w-0 sm:flex-wrap sm:px-0">
-                                                                        <Button
-                                                                                variant={isSwipeMode ? "primary" : "outline"}
-                                                                                size="small"
-                                                                                onClick={() => setSwipeMode(true)}
-                                                                        >
-                                                                                Swipe Mode
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant={isSwipeMode ? "outline" : "primary"}
-                                                                                size="small"
-                                                                                onClick={() => setSwipeMode(false)}
-                                                                        >
-                                                                                Grid Mode
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="small"
-                                                                                onClick={_handleSelectRandomAvailable}
-                                                                                disabled={availableNames.length === 0}
-                                                                        >
-                                                                                Pick 8 Random
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="small"
-                                                                                onClick={_handleSelectAllAvailable}
-                                                                                disabled={!canSelectAllAvailable}
-                                                                        >
-                                                                                Select All Visible
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="small"
-                                                                                onClick={_handleClearSelection}
-                                                                                disabled={
-                                                                                        !hasAnySelection || selectedIdsSet.size <= selectionFloor
-                                                                                }
-                                                                        >
-                                                                                Clear Back to Locked
-                                                                        </Button>
-                                                                </div>
-                                                        </div>
-
-                                                        <Button
-                                                                        size="large"
-                                                                        onClick={startTournament}
-                                                                        disabled={!canStartTournament}
-                                                                        className="w-full"
-                                                                >
-                                                                        Start Tournament
-                                                                </Button>
-                                                </div>
+                                                <Button
+                                                        size="large"
+                                                        onClick={startTournament}
+                                                        disabled={!canStartTournament}
+                                                        className="w-full"
+                                                >
+                                                        Start Tournament
+                                                </Button>
                                         </div>
                                 </Surface>
 
