@@ -11,7 +11,6 @@ interface OriginRect {
 interface ModalProps {
         title: string;
         open?: boolean;
-        /** @deprecated Use `open` instead. */
         isOpen?: boolean;
         onClose: () => void;
         children: React.ReactNode;
