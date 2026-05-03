@@ -64,6 +64,7 @@ function FloatingNavItem({
         isAccent?: boolean;
         hasBadge?: boolean;
         onClick: () => void;
+        variant?: "primary" | "utility";
         customIcon?: ReactNode;
         className?: string;
         ariaLabel?: string;
