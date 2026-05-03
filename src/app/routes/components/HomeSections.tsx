@@ -70,10 +70,14 @@ export function HomeHeroSection({
         onStartPicking,
 }: HomeHeroSectionProps) {
         return (
-                <section className="relative isolate -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center overflow-x-clip px-4 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
+                <section className="relative isolate -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center overflow-hidden px-4 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
                         <div
-                                className="pointer-events-none absolute inset-x-0 -z-10 top-0 bottom-0"
+                                className="pointer-events-none absolute inset-0 -z-10"
                                 aria-hidden="true"
+                                style={{
+                                        maskImage: "linear-gradient(to bottom, black 55%, transparent 100%)",
+                                        WebkitMaskImage: "linear-gradient(to bottom, black 55%, transparent 100%)",
+                                }}
                         >
                                 <motion.div
                                         className="absolute h-[70vw] w-[70vw] max-h-[700px] max-w-[700px] rounded-full bg-primary blur-[120px] opacity-70"
