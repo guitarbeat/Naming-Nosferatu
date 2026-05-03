@@ -109,7 +109,6 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                                                                 }
                                                         }}
                                                         placeholder="Who are you?"
-                                                        onKeyDown={(e) => e.key === "Enter" && handleSave()}
                                                         className="w-full h-11 px-4 text-sm"
                                                 />
                                         </div>

@@ -529,14 +529,6 @@ const CardNameBase = memo(function CardName({
                                                         }
                                                 }}
                                                 role={onImageClick ? "button" : undefined}
-                                                tabIndex={onImageClick ? 0 : undefined}
-                                                onKeyDown={(e) => {
-                                                        if (onImageClick && (e.key === "Enter" || e.key === " ")) {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                onImageClick(e as unknown as React.MouseEvent);
-                                                        }
-                                                }}
                                                 aria-label={onImageClick ? "Zoom image" : undefined}
                                         >
                                                 <CatImage
