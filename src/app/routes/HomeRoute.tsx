@@ -10,7 +10,6 @@ import { useTournamentHandlers } from "@/features/tournament/hooks";
 import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
 import { useMediaQuery } from "@/shared/hooks/useBrowserState";
 import { Section } from "@/shared/components/layout/Section";
-import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
@@ -93,11 +92,7 @@ export default function HomeRoute() {
 
                                 separator={true}
                         >
-                                <SectionHeading
-                                        title="Pick Your Favorites"
-                                        subtitle="Tap to select."
-                                />
-                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                        <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                         <TournamentFlow />
                                 </Suspense>
                         </Section>
@@ -121,10 +116,6 @@ export default function HomeRoute() {
 
                                 separator={true}
                         >
-                                <SectionHeading
-                                        title="Results and Rankings"
-                                        subtitle="Leaderboard and stats."
-                                />
                                 <Suspense fallback={<Loading variant="skeleton" height={600} />}>
                                         <ErrorBoundary context={errorContexts.analysisDashboard}>
                                                 <DashboardLazy
