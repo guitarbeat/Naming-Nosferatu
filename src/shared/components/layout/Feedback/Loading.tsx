@@ -229,18 +229,11 @@ export const Loading: React.FC<LoadingProps> = memo(
                         return (
                                 <div className={containerClasses} role="status" aria-label="Loading">
                                         <img
-                                                src="/assets/images/cat.gif"
+                                                src={randomAsset}
                                                 alt=""
                                                 aria-hidden="true"
-                                                className="h-16 w-16 select-none object-contain opacity-75"
+                                                className="h-44 w-auto select-none object-contain opacity-95"
                                         />
-                                        <div className="flex flex-col items-center gap-3">
-                                                <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/40">
-                                                        My cat's name is
-                                                </p>
-                                                <div className="h-px w-10 bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-                                        </div>
-                                        <SpinnerCircle size={size} />
                                         {resolvedText && (
                                                 <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
                                                         {resolvedText}

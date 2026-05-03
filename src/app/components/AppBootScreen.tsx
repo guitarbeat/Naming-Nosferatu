@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useAppStore from "@/store/appStore";
 import { SpinnerCircle } from "@/shared/components/layout/Feedback/Loading";
+import loadingPreview from "@assets/image_1777773918924.png";
 
 const CAT_NAMES = ["NOSFERATU", "SMEEMO", "ORBIT", "NOVA", "NEDJEM", "WOODS", "LUNA"];
 
@@ -10,7 +11,7 @@ interface AppBootScreenProps {
 }
 
 export function AppBootScreen({ message = "Preparing the tournament...", visible }: AppBootScreenProps) {
-        const isBootLoading = useAppStore((state) => state.ui.isBootLoading);
+        const isBootLoading = useAppStore((state: { ui: { isBootLoading: boolean } }) => state.ui.isBootLoading);
         const shouldRender = visible ?? isBootLoading;
 
         const [nameIdx, setNameIdx] = useState(0);
@@ -32,12 +33,10 @@ export function AppBootScreen({ message = "Preparing the tournament...", visible
 
         return (
                 <div
-                        className="fixed inset-0 z-[10000] flex flex-col items-center justify-center overflow-hidden"
-                        style={{ background: "#080c12" }}
+                        className="fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden bg-[#080c12] px-6"
                         role="status"
                         aria-label="Loading application"
                 >
-                        {/* Subtle static gradient */}
                         <div
                                 className="pointer-events-none absolute inset-0"
                                 aria-hidden="true"
@@ -49,25 +48,19 @@ export function AppBootScreen({ message = "Preparing the tournament...", visible
                                 }}
                         />
 
-                        {/* Main content */}
-                        <div className="relative z-10 flex flex-col items-center px-6 text-center">
-                                {/* Cat GIF */}
+                        <div className="relative z-10 flex max-w-3xl flex-col items-center text-center">
                                 <img
-                                        src="/assets/images/cat.gif"
-                                        alt=""
-                                        aria-hidden="true"
-                                        className="mb-8 h-24 w-24 select-none object-contain drop-shadow-[0_0_28px_rgba(39,135,153,0.45)]"
+                                        src={loadingPreview}
+                                        alt="Loading screen preview"
+                                        className="mb-8 w-full max-w-[22rem] select-none object-contain"
                                 />
 
-                                {/* "My cat's name is" label */}
                                 <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/40">
                                         My cat's name is
                                 </p>
 
-                                {/* Thin divider */}
                                 <div className="my-4 h-px w-12 bg-gradient-to-r from-transparent via-white/28 to-transparent" />
 
-                                {/* Cycling cat name */}
                                 <p
                                         className="font-display font-black uppercase text-white"
                                         style={{
@@ -83,7 +76,6 @@ export function AppBootScreen({ message = "Preparing the tournament...", visible
                                         {CAT_NAMES[nameIdx]}
                                 </p>
 
-                                {/* Spinner + status message */}
                                 <div className="mt-12 flex flex-col items-center gap-3">
                                         <SpinnerCircle size="small" />
                                         <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
