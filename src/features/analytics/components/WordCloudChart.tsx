@@ -29,7 +29,7 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
         }
 
         return (
-                <div className="flex min-h-[22rem] flex-wrap items-center justify-center gap-x-3 gap-y-4 px-2 py-4 text-center sm:min-h-[26rem]">
+                <div className="flex min-h-[22rem] flex-wrap items-center justify-center gap-x-3 gap-y-4 px-4 py-8 text-center sm:min-h-[26rem] sm:px-8 sm:py-10">
                         {items.map((item) => (
                                 <span
                                         key={item.name}

@@ -62,9 +62,9 @@ export function Dashboard({
         const shouldShowEmptyState = !hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
 
         return (
-                <div className="w-full space-y-6">
+                <div className="w-full space-y-8 px-1 sm:space-y-10 sm:px-2 lg:px-4">
                         {shouldShowEmptyState && (
-                                <Panel className="border-dashed bg-black/10">
+                                <Panel className="border-dashed bg-black/10 p-5 sm:p-6">
                                         <PanelTitle title="Nothing ranked yet" />
                                         <p className="text-sm text-muted-foreground/55">
                                                 {isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
@@ -73,7 +73,7 @@ export function Dashboard({
                         )}
 
                         {hasPersonalRatings && onUpdateRatings && (
-                                <Panel>
+                                <Panel className="p-5 sm:p-6">
                                         <PanelTitle
                                                 title="Your Rankings"
                                                 action={<ContextBadge label="Personal" tone="accent" />}
@@ -89,14 +89,14 @@ export function Dashboard({
                         )}
 
                         {leaderboard.length > 0 && (
-                                <Panel>
+                                <Panel className="p-5 sm:p-6">
                                         <PanelTitle title="Word Cloud" action={<ContextBadge label="All names" />} />
                                         <WordCloudChart leaderboard={leaderboard} />
                                 </Panel>
                         )}
 
                         {engagementMetrics && (
-                                <div>
+                                <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-5 sm:p-6">
                                         <PanelTitle
                                                 title="Recent Activity"
                                                 action={
@@ -122,7 +122,7 @@ export function Dashboard({
                                                         </div>
                                                 }
                                         />
-                                        <div className="flex gap-6 text-sm">
+                                        <div className="flex gap-8 text-sm">
                                                 <div>
                                                         <p className="text-2xl font-semibold text-primary">{engagementMetrics.peakActiveUsers}</p>
                                                         <p className="mt-1 text-xs text-muted-foreground/60">Active raters</p>
@@ -136,7 +136,7 @@ export function Dashboard({
                         )}
 
                         {isAdmin && (
-                                <Panel>
+                                <Panel className="p-5 sm:p-6">
                                         <PanelTitle
                                                 title="Hidden Names"
                                                 action={
@@ -147,7 +147,7 @@ export function Dashboard({
                                         />
                                         {showHiddenNames && (
                                                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
-                                                {hiddenNames.length > 0 ? (
+                                                        {hiddenNames.length > 0 ? (
                                                                 hiddenNames.map((name, index) => (
                                                                         <div
                                                                                 key={name.id}
