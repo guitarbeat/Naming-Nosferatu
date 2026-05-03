@@ -86,7 +86,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                                                 </div>
                                         )}
 
-                                        <ScrollToTopButton isLoggedIn={isLoggedIn} />
+                                        <ScrollToTopButton />
                                 </main>
                         </div>
                 </ErrorBoundary>
