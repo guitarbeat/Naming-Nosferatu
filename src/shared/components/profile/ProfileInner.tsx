@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import { LogOut, Pencil, User } from "@/shared/lib/icons";
+import { LogOut, Pencil } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
 
 interface ProfileInnerProps {
@@ -81,27 +81,23 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
         };
 
         return (
-                <div className="flex flex-col items-center gap-5 w-full">
+                <div className="flex flex-col items-center gap-6 w-full pt-2">
                         {/* Avatar */}
-                        <div className="relative mb-1">
-                                <div
-                                        className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50"
-                                        aria-hidden="true"
+                        <div className="size-20 rounded-full overflow-hidden border border-white/10 bg-muted shadow-md flex-shrink-0">
+                                <img
+                                        src={avatarSrc}
+                                        alt="Profile"
+                                        className="size-full object-cover"
+                                        onError={() => setAvatarSrc(defaultAvatar)}
                                 />
-                                <div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
-                                        <img
-                                                src={avatarSrc}
-                                                alt="Profile"
-                                                className="size-full object-cover"
-                                                onError={() => setAvatarSrc(defaultAvatar)}
-                                        />
-                                </div>
                         </div>
 
                         {isEditing ? (
                                 <div className="w-full space-y-4 animate-in fade-in duration-200">
-                                        <div className="relative">
-                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none" />
+                                        <div className="space-y-1.5">
+                                                <label className="text-xs font-medium tracking-widest uppercase text-muted-foreground/60">
+                                                        Your name
+                                                </label>
                                                 <Input
                                                         ref={nameInputRef}
                                                         type="text"
@@ -114,17 +110,17 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                                                         }}
                                                         placeholder="Who are you?"
                                                         onKeyDown={(e) => e.key === "Enter" && handleSave()}
-                                                        className="w-full h-11 pl-10 pr-4 text-sm"
+                                                        className="w-full h-11 px-4 text-sm"
                                                 />
                                         </div>
 
                                         {saveError && (
-                                                <p role="alert" className="text-sm text-destructive">
+                                                <p role="alert" className="text-sm text-destructive/90">
                                                         {saveError}
                                                 </p>
                                         )}
 
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 pt-1">
                                                 {user.isLoggedIn && (
                                                         <Button
                                                                 type="button"
@@ -137,7 +133,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                                                 )}
                                                 <Button
                                                         type="submit"
-                                                        variant="glass"
+                                                        variant="primary"
                                                         size="large"
                                                         onClick={handleSave}
                                                         disabled={!editedName.trim() || isSaving}
@@ -149,31 +145,34 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
                                         </div>
                                 </div>
                         ) : (
-                                <div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
-                                        <div className="flex items-center gap-2">
-                                                <h3 className="text-xl font-bold text-foreground">{user.name}</h3>
-                                                <button
-                                                        type="button"
-                                                        onClick={() => setIsEditing(true)}
-                                                        className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
-                                                        aria-label="Edit name"
-                                                >
-                                                        <Pencil size={14} />
-                                                </button>
+                                <div className="w-full flex flex-col items-center gap-4 animate-in fade-in duration-200">
+                                        <div className="flex flex-col items-center gap-1">
+                                                <div className="flex items-center gap-2">
+                                                        <h3 className="text-xl font-bold text-foreground tracking-tight">
+                                                                {user.name}
+                                                        </h3>
+                                                        <button
+                                                                type="button"
+                                                                onClick={() => setIsEditing(true)}
+                                                                className="p-1 rounded-full text-muted-foreground/50 hover:text-foreground hover:bg-muted/60 transition-colors"
+                                                                aria-label="Edit name"
+                                                        >
+                                                                <Pencil size={13} />
+                                                        </button>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground/60">
+                                                        Rankings saved to your profile.
+                                                </p>
                                         </div>
-
-                                        <p className="text-xs text-muted-foreground/80">
-                                                Your preferences are saved for ranking.
-                                        </p>
 
                                         <button
                                                 type="button"
                                                 onClick={() => void handleLogout()}
                                                 disabled={isLoggingOut}
-                                                className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-colors"
                                         >
-                                                <LogOut size={13} />
-                                                {isLoggingOut ? "Logging out..." : "Logout"}
+                                                <LogOut size={12} />
+                                                {isLoggingOut ? "Logging out…" : "Log out"}
                                         </button>
                                 </div>
                         )}
