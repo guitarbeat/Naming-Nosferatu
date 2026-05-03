@@ -48,12 +48,15 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 					>
 						{item.name}
 					</span>
-					<div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-max -translate-x-1/2 translate-y-1 rounded-[1.35rem] border border-white/12 bg-slate-950/98 px-4 py-3 text-left text-[11px] leading-tight text-white opacity-0 shadow-[0_18px_48px_rgba(0,0,0,0.5)] transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100">
-						<div className="text-sm font-semibold text-white">{item.name}</div>
-						<div className="mt-1 text-white/78">Avg rating {Math.round(item.avg_rating)}</div>
-						<div className="mt-1 flex gap-3 text-white/58">
-							<span>{item.wins} wins</span>
-							<span>{item.total_ratings} ratings</span>
+					<div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 translate-y-1 opacity-0 transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100">
+						<div className="relative rounded-[1.15rem] border border-white/12 bg-slate-950/98 px-3.5 py-2.5 text-left text-[11px] leading-tight text-white shadow-[0_18px_48px_rgba(0,0,0,0.5)]">
+							<div className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-l border-t border-white/12 bg-slate-950/98" />
+							<div className="text-sm font-semibold text-white">{item.name}</div>
+							<div className="mt-1 text-white/72">Avg rating {Math.round(item.avg_rating)}</div>
+							<div className="mt-1 flex gap-3 text-white/56">
+								<span>{item.wins} wins</span>
+								<span>{item.total_ratings} ratings</span>
+							</div>
 						</div>
 					</div>
 				</div>
