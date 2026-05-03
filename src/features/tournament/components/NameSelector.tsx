@@ -736,19 +736,6 @@ export function NameSelector() {
         return (
                 <div className="mx-auto w-full">
                         <div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
-                                <Surface as="div" radius="xl" padding="compact" className="sm:p-5">
-                                        <div className="flex flex-col gap-4 sm:gap-5">
-                                                <Button
-                                                        size="large"
-                                                        onClick={startTournament}
-                                                        disabled={!canStartTournament}
-                                                        className="w-full"
-                                                >
-                                                        Start Tournament
-                                                </Button>
-                                        </div>
-                                </Surface>
-
                                 {isSwipeMode ? (
                                         <>
                                                 <div
