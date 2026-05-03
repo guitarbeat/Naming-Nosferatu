@@ -39,9 +39,6 @@ function buildAuthUserFromStoredSnapshot(): AuthUser | null {
 }
 
 export const supabaseAuthAdapter: AuthAdapter = {
-        /**
-         * Get current user from Supabase auth or localStorage fallback
-         */
         async getCurrentUser(): Promise<AuthUser | null> {
                 if (!isStorageAvailable()) {
                         return null;
@@ -209,14 +206,12 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 return Boolean(readStoredUserSnapshot()?.isAdmin);
                         }
 
-                        const { data: { user: sessionUser } } = await client.auth.getUser();
-
-                        const { data: isAdmin, error: rpcError } = await client.rpc("is_admin");
-                        if (!rpcError && typeof isAdmin === "boolean") {
+                        const { data: isAdmin } = await client.rpc("is_admin");
+                        if (typeof isAdmin === "boolean") {
                                 return isAdmin;
                         }
 
-                        const { data, error } = await client
+                        const { data } = await client
                                 .from("cat_user_roles")
                                 .select("role")
                                 .eq("user_id", userId)
@@ -232,16 +227,12 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 return false;
                         }
 
-                        const { data: fallbackData, error: fallbackError } = await client
+                        const { data: fallbackData } = await client
                                 .from("cat_user_roles")
                                 .select("role")
                                 .eq("user_name", storedUserName)
                                 .eq("role", "admin")
                                 .maybeSingle();
-
-                        if (error || fallbackError) {
-                                return false;
-                        }
 
                         return Boolean(fallbackData);
                 } catch (error) {
