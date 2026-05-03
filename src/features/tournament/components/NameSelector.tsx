@@ -784,38 +784,14 @@ export function NameSelector() {
                                                                 </div>
                                                         </div>
 
-                                                        <div className="grid gap-3 rounded-[1.35rem] border border-white/10 bg-black/15 p-3.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-4">
-                                                                <div className="space-y-2">
-                                                                        <div className="flex flex-wrap items-center gap-2">
-                                                                                <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/80">
-                                                                                        {canStartTournament
-                                                                                                ? `${selectedIdsSet.size} names ready`
-                                                                                                : `Pick ${Math.max(0, 2 - selectedIdsSet.size)} more`}
-                                                                                </span>
-                                                                                {selectedHiddenCount > 0 && (
-                                                                                        <span className="rounded-full border border-warning/20 bg-warning/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
-                                                                                                {selectedHiddenCount} hidden selected
-                                                                                        </span>
-                                                                                )}
-                                                                        </div>
-                                                                        <p className="text-xs leading-relaxed text-muted-foreground/70 sm:text-sm">
-                                                                                {isSwipeMode
-                                                                                        ? hiddenNamesAll.length > 0
-                                                                                                ? "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe. Hidden names stay available below."
-                                                                                                : "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe."
-                                                                                        : `${selectedAvailableCount} active picks and ${selectedHiddenCount} hidden picks are ready for the bracket.`}
-                                                                        </p>
-                                                                </div>
-
-                                                                <Button
+                                                        <Button
                                                                         size="large"
                                                                         onClick={startTournament}
                                                                         disabled={!canStartTournament}
-                                                                        className="w-full sm:min-w-[12rem] sm:w-auto"
+                                                                        className="w-full"
                                                                 >
                                                                         Start Tournament
                                                                 </Button>
-                                                        </div>
                                                 </div>
                                         </div>
                                 </Surface>
