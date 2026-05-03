@@ -90,7 +90,6 @@ export function Dashboard({
 
                         {leaderboard.length > 0 && (
                                 <Panel className="p-5 sm:p-6">
-                                        <PanelTitle title="Word Cloud" action={<ContextBadge label="All names" />} />
                                         <WordCloudChart leaderboard={leaderboard} />
                                 </Panel>
                         )}
