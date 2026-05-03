@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import Button from "@/shared/components/layout/Button";
-import { Loading } from "@/shared/components/layout/Feedback";
-import { Activity, Eye, EyeOff } from "@/shared/lib/icons";
+import { Activity, Eye } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 import { ContextBadge, Panel } from "./components/DashboardPrimitives";
 import { type DashboardTimeframe, useDashboardData } from "./hooks/useDashboardData";

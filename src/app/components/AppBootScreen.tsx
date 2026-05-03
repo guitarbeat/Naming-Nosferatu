@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useAppStore from "@/store/appStore";
 import { SpinnerCircle } from "@/shared/components/layout/Feedback/Loading";
-import loadingPreview from "@assets/image_1777773918924.png";
+const LOADING_PREVIEW = "/assets/images/loading-preview.png";
 
 const CAT_NAMES = ["NOSFERATU", "SMEEMO", "ORBIT", "NOVA", "NEDJEM", "WOODS", "LUNA"];
 
@@ -50,7 +50,7 @@ export function AppBootScreen({ message = "Preparing the tournament...", visible
 
                         <div className="relative z-10 flex max-w-3xl flex-col items-center text-center">
                                 <img
-                                        src={loadingPreview}
+                                        src={LOADING_PREVIEW}
                                         alt="Loading screen preview"
                                         className="mb-8 w-full max-w-[22rem] select-none object-contain"
                                 />
