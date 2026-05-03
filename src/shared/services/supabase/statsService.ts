@@ -57,16 +57,6 @@ export interface EngagementMetrics {
         [key: string]: unknown;
 }
 
-export interface DetailedUserStats extends UserStats {
-        lastActiveAt?: string;
-        totalTournaments?: number;
-        completedTournaments?: number;
-        averageTournamentTime?: number;
-        favoriteNames?: string[];
-        preferredCategories?: string[];
-        engagementScore?: number;
-        [key: string]: unknown;
-}
 
 function toNumber(value: unknown, fallback = 0): number {
         const numeric = Number(value);
@@ -173,23 +163,6 @@ export const statsAPI = {
                                 averageSessionDuration: 0,
                                 totalPageViews: 0,
                                 bounceRate: 0,
-                        };
-                }, null);
-        },
-
-        getDetailedUserStats: async (userName: string): Promise<DetailedUserStats | null> => {
-                return withSupabase(async (client) => {
-                        const { data, error } = await client.rpc("get_user_stats", {
-                                p_user_name: userName,
-                        });
-                        throwOnRpcError(error, "Failed to fetch user stats");
-                        const stats = data as Partial<DetailedUserStats>;
-                        return {
-                                totalRatings: toNumber(stats.totalRatings),
-                                totalSelections: toNumber(stats.totalSelections),
-                                totalWins: toNumber(stats.totalWins),
-                                totalLosses: toNumber(stats.totalLosses),
-                                winRate: toNumber(stats.winRate),
                         };
                 }, null);
         },
