@@ -1,15 +1,12 @@
-import type { ElementType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback";
-import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, User, Users } from "@/shared/lib/icons";
-import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
+import { Activity, BarChart3, Eye, EyeOff, Trophy, Users } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
-import { ContextBadge, Panel, StatTile } from "./components/DashboardPrimitives";
+import { ContextBadge, Panel } from "./components/DashboardPrimitives";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
-import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
-import { WinLossChart } from "./components/WinLossChart";
 import { type DashboardTimeframe, useDashboardData } from "./hooks/useDashboardData";
 import { PersonalResults } from "./PersonalResults";
 
@@ -30,13 +27,6 @@ interface DashboardProps {
         onNameHidden?: (nameId: string) => void;
 }
 
-interface QuickStat {
-        accent?: boolean;
-        icon: ElementType;
-        label: string;
-        value: string | number;
-}
-
 function PanelTitle({ title, action }: { title: string; action?: ReactNode }) {
         return (
                 <div className="mb-4 flex items-center justify-between gap-4">
@@ -46,81 +36,10 @@ function PanelTitle({ title, action }: { title: string; action?: ReactNode }) {
         );
 }
 
-function getQuickStats({
-        siteStats,
-        userName,
-        userStats,
-}: {
-        siteStats: SiteStats | null;
-        userName: string;
-        userStats: UserStats | null;
-}): QuickStat[] {
-        if (userName && userStats) {
-                return [
-                        { label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
-                        { label: "Selected", value: userStats.totalSelections, icon: Target },
-                        { label: "Wins", value: userStats.totalWins, icon: Trophy, accent: true },
-                        { label: "Win rate", value: `${userStats.winRate}%`, icon: TrendingUp, accent: true },
-                ];
-        }
-
-        if (siteStats) {
-                return [
-                        { label: "Total names", value: siteStats.totalNames, icon: Activity },
-                        { label: "Active names", value: siteStats.activeNames, icon: Target },
-                        { label: "Users", value: siteStats.totalUsers, icon: Users },
-                        { label: "Average rating", value: Math.round(siteStats.avgRating), icon: TrendingUp, accent: true },
-                ];
-        }
-
-        return [];
-}
-
-function DashboardEmptyState({
-        isLoggedIn,
-        onStartNew,
-}: {
-        isLoggedIn: boolean;
-        onStartNew?: () => void;
-}) {
-        return (
-                <Panel className="border-dashed bg-black/10">
-                        <PanelTitle
-                                title="Nothing Ranked Yet"
-                                action={
-                                        onStartNew ? (
-                                                <Button variant="outline" size="small" onClick={onStartNew}>
-                                                        Start Tournament
-                                                </Button>
-                                        ) : undefined
-                                }
-                        />
-                        <p className="mb-4 text-sm text-muted-foreground/60">
-                                {isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
-                        </p>
-                        <div className="grid gap-3 md:grid-cols-2">
-                                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                Personal Layer
-                                        </p>
-                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">Your saved order.</p>
-                                </div>
-                                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                Community Layer
-                                        </p>
-                                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">Aggregate site stats.</p>
-                                </div>
-                        </div>
-                </Panel>
-        );
-}
-
 export function Dashboard({
         userName = "",
         isAdmin = false,
         isLoggedIn = false,
-        avatarUrl,
         onStartNew,
         onUpdateRatings,
         personalRatings,
@@ -137,73 +56,36 @@ export function Dashboard({
                 refreshEngagementMetrics,
                 setTimeframe,
                 showHiddenNames,
-                siteStats,
                 timeframe,
                 toggleHiddenNames,
-                userStats,
         } = useDashboardData({ isAdmin, userName });
-        const quickStats = getQuickStats({ siteStats, userName, userStats });
+
         const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
-        const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
-        const shouldShowDashboardPrimer = !hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
+        const hasCommunityData = leaderboard.length > 0;
+        const shouldShowEmptyState = !hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
 
         return (
                 <div className="w-full space-y-6">
-                        {/* Profile + snapshot */}
-                        {(isLoggedIn || quickStats.length > 0) && (
-                                <div className="grid gap-4 xl:grid-cols-[minmax(0,20rem)_1fr]">
-                                        {isLoggedIn && userName && (
-                                                <Panel>
-                                                        <div className="flex items-center gap-4">
-                                                                {avatarUrl ? (
-                                                                        <img
-                                                                                src={avatarUrl}
-                                                                                alt={userName}
-                                                                                className="size-16 rounded-full border border-white/10 object-cover"
-                                                                        />
-                                                                ) : (
-                                                                        <div className="flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-primary">
-                                                                                <User size={22} />
-                                                                        </div>
-                                                                )}
-                                                                <div className="min-w-0">
-                                                                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/65">
-                                                                                Profile
-                                                                        </p>
-                                                                        <h2 className="mt-2 truncate text-2xl font-semibold text-foreground">
-                                                                                {userName}
-                                                                        </h2>
-                                                                        <p className="mt-1 text-sm text-muted-foreground/75">
-                                                                                {isAdmin ? "Administrator" : "Tournament participant"}
-                                                                        </p>
-                                                                </div>
-                                                        </div>
-                                                </Panel>
-                                        )}
-
-                                        {quickStats.length > 0 && (
-                                                <Panel>
-                                                        <PanelTitle title={userStats ? "Your Snapshot" : "Community Snapshot"} />
-                                                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                                                {quickStats.map((item) => (
-                                                                        <StatTile
-                                                                                key={item.label}
-                                                                                label={item.label}
-                                                                                value={item.value}
-                                                                                icon={item.icon}
-                                                                                accent={Boolean(item.accent)}
-                                                                        />
-                                                                ))}
-                                                        </div>
-                                                </Panel>
-                                        )}
-                                </div>
+                        {/* Empty state */}
+                        {shouldShowEmptyState && (
+                                <Panel className="border-dashed bg-black/10">
+                                        <PanelTitle
+                                                title="Nothing ranked yet"
+                                                action={
+                                                        onStartNew ? (
+                                                                <Button variant="outline" size="small" onClick={onStartNew}>
+                                                                        Start Tournament
+                                                                </Button>
+                                                        ) : undefined
+                                                }
+                                        />
+                                        <p className="text-sm text-muted-foreground/55">
+                                                {isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
+                                        </p>
+                                </Panel>
                         )}
 
-                        {shouldShowDashboardPrimer && (
-                                <DashboardEmptyState isLoggedIn={isLoggedIn} onStartNew={onStartNew} />
-                        )}
-
+                        {/* Personal rankings */}
                         {hasPersonalRatings && onUpdateRatings && (
                                 <Panel>
                                         <PanelTitle
@@ -252,7 +134,7 @@ export function Dashboard({
                                                                 <div className="min-w-0 flex-1">
                                                                         <p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
                                                                         <p className="text-xs text-muted-foreground/70">
-                                                                                {entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} | {entry.wins} win{entry.wins !== 1 ? "s" : ""}
+                                                                                {entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} · {entry.wins} win{entry.wins !== 1 ? "s" : ""}
                                                                         </p>
                                                                 </div>
                                                                 <p className="text-lg font-semibold text-primary">
@@ -270,45 +152,21 @@ export function Dashboard({
                                 )}
                         </Panel>
 
-                        {/* Charts — flat 2-col grid */}
+                        {/* Charts — 2 cols, only when there's data */}
                         {leaderboard.length > 0 && (
                                 <div className="grid gap-6 sm:grid-cols-2">
                                         <Panel>
-                                                <PanelTitle title="Top Names by Rating" />
+                                                <PanelTitle title="Top Names" />
                                                 <TopNamesChart leaderboard={leaderboard} />
                                         </Panel>
                                         <Panel>
-                                                <PanelTitle title="Win and Loss Breakdown" />
-                                                <WinLossChart leaderboard={leaderboard} />
-                                        </Panel>
-                                        <Panel>
-                                                <PanelTitle title="Rating Distribution" />
+                                                <PanelTitle title="Score Distribution" />
                                                 <RatingDistributionChart leaderboard={leaderboard} />
                                         </Panel>
-                                        {leaderboard.length >= 3 && (
-                                                <Panel>
-                                                        <PanelTitle title="Comparison Radar" />
-                                                        <RatingRadarChart leaderboard={leaderboard} />
-                                                </Panel>
-                                        )}
                                 </div>
                         )}
 
-                        {/* Site stats */}
-                        {siteStats && (
-                                <Panel>
-                                        <PanelTitle title="Site Statistics" />
-                                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                                                <StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
-                                                <StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
-                                                <StatTile label="Users" value={siteStats.totalUsers} icon={Users} />
-                                                <StatTile label="Ratings" value={siteStats.totalRatings} icon={BarChart3} />
-                                                <StatTile label="Average rating" value={Math.round(siteStats.avgRating)} icon={TrendingUp} accent={true} />
-                                        </div>
-                                </Panel>
-                        )}
-
-                        {/* Engagement */}
+                        {/* Engagement — admin only */}
                         {engagementMetrics && (
                                 <Panel>
                                         <PanelTitle
@@ -336,21 +194,27 @@ export function Dashboard({
                                                         </div>
                                                 }
                                         />
-                                        <div className="grid gap-3 sm:grid-cols-2">
-                                                <StatTile label="Active raters" value={engagementMetrics.peakActiveUsers} icon={Users} accent={true} />
-                                                <StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
+                                        <div className="flex gap-6 text-sm">
+                                                <div>
+                                                        <p className="text-2xl font-semibold text-primary">{engagementMetrics.peakActiveUsers}</p>
+                                                        <p className="mt-1 text-xs text-muted-foreground/60">Active raters</p>
+                                                </div>
+                                                <div>
+                                                        <p className="text-2xl font-semibold text-foreground/80">{engagementMetrics.totalMatches}</p>
+                                                        <p className="mt-1 text-xs text-muted-foreground/60">Matches played</p>
+                                                </div>
                                         </div>
                                 </Panel>
                         )}
 
-                        {/* Admin: hidden names */}
+                        {/* Hidden names — admin only */}
                         {isAdmin && (
                                 <Panel>
                                         <PanelTitle
                                                 title="Hidden Names"
                                                 action={
                                                         <Button variant="outline" size="small" onClick={toggleHiddenNames}>
-                                                                {showHiddenNames ? "Hide List" : "Show List"}
+                                                                {showHiddenNames ? "Hide" : "Show"}
                                                         </Button>
                                                 }
                                         />
@@ -383,9 +247,6 @@ export function Dashboard({
                                         )}
                                 </Panel>
                         )}
-
-                        {/* Admin: hidden names (picker panel duplicate — kept for parity) */}
-                        {isAdmin && hiddenNames.length > 0 && !showHiddenNames && null}
                 </div>
         );
 }
