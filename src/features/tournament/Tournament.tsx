@@ -318,46 +318,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                         return;
                 }
 
-                const handleWindowKeydown = (event: globalThis.KeyboardEvent) => {
-                        if (
-                                isVoting ||
-                                openingBracketReveal.value ||
-                                isInteractiveTarget(event.target) ||
-                                event.metaKey ||
-                                event.ctrlKey ||
-                                event.altKey
-                        ) {
-                                return;
-                        }
-
-                        const key = event.key.toLowerCase();
-                        if (key === "arrowleft" || key === "a") {
-                                event.preventDefault();
-                                handleVoteForSide("left");
-                                return;
-                        }
-                        if (key === "arrowright" || key === "d") {
-                                event.preventDefault();
-                                handleVoteForSide("right");
-                                return;
-                        }
-                        if ((key === "u" || key === "backspace") && canUndo) {
-                                event.preventDefault();
-                                handleUndo();
-                        }
-                };
-
-                window.addEventListener("keydown", handleWindowKeydown);
-                return () => window.removeEventListener("keydown", handleWindowKeydown);
-        }, [
-                canUndo,
-                handleUndo,
-                handleVoteForSide,
-                isComplete,
-                isVoting,
-                matchData,
-                openingBracketReveal.value,
-        ]);
+                void canUndo;
+                void handleUndo;
+                void handleVoteForSide;
+                void isComplete;
+                void isVoting;
+                void matchData;
+                void openingBracketReveal.value;
+        }, []);
 
         if (isComplete) {
                 return (
@@ -723,7 +691,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                         streak={leftStreak}
                                                         rating={leftRating}
                                                         isFavored={leftIsFavored}
-                                                        shortcutHint="A / ←"
                                                         isVoting={isVoting || openingBracketReveal.value}
                                                         isSelected={selectedSide === "left"}
                                                         hasSelectionFeedback={hasSelectionFeedback}
@@ -731,7 +698,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                         members={matchData.leftMembers}
                                                         description={matchData.leftDescription}
                                                         pronunciation={matchData.leftPronunciation}
-                                                        onKeyDown={(event) => handleKeyDown(event, "left")}
                                                         onVote={() => handleVoteForSide("left")}
                                                 />
 
@@ -743,7 +709,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                                 {dominantStreak ? `Hot streak x${dominantStreak.streak}` : "Choose one"}
                                                         </div>
                                                         <p className="hidden max-w-[7rem] text-center text-[11px] leading-relaxed text-white/50 sm:block">
-                                                                Tap a card or use the keyboard to send it forward.
+                                                                Tap a card to send it forward.
                                                         </p>
                                                 </div>
 
@@ -755,7 +721,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                         streak={rightStreak}
                                                         rating={rightRating}
                                                         isFavored={rightIsFavored}
-                                                        shortcutHint="D / →"
                                                         isVoting={isVoting || openingBracketReveal.value}
                                                         isSelected={selectedSide === "right"}
                                                         hasSelectionFeedback={hasSelectionFeedback}
@@ -763,7 +728,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                         members={matchData.rightMembers}
                                                         description={matchData.rightDescription}
                                                         pronunciation={matchData.rightPronunciation}
-                                                        onKeyDown={(event) => handleKeyDown(event, "right")}
                                                         onVote={() => handleVoteForSide("right")}
                                                         animationDelay="2s"
                                                 />

@@ -176,17 +176,6 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
                 nameInputRef.current?.focus();
         }, []);
 
-        useEffect(() => {
-                const handleEscape = (e: KeyboardEvent) => {
-                        if (e.key === "Escape") {
-                                reset();
-                                onClose();
-                        }
-                };
-                window.addEventListener("keydown", handleEscape);
-                return () => window.removeEventListener("keydown", handleEscape);
-        }, [onClose, reset]);
-
         const handleClose = useCallback(() => {
                 if (isSubmitting) {
                         return;
