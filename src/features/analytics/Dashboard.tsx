@@ -96,7 +96,7 @@ export function Dashboard({
                         )}
 
                         {engagementMetrics && (
-                                <Panel>
+                                <div>
                                         <PanelTitle
                                                 title="Recent Activity"
                                                 action={
@@ -132,7 +132,7 @@ export function Dashboard({
                                                         <p className="mt-1 text-xs text-muted-foreground/60">Matches played</p>
                                                 </div>
                                         </div>
-                                </Panel>
+                                </div>
                         )}
 
                         {isAdmin && (
