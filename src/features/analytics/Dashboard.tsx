@@ -60,40 +60,17 @@ function getQuickStats({
                 return [
                         { label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
                         { label: "Selected", value: userStats.totalSelections, icon: Target },
-                        {
-                                label: "Wins",
-                                value: userStats.totalWins,
-                                icon: Trophy,
-                                accent: true,
-                        },
-                        {
-                                label: "Win rate",
-                                value: `${userStats.winRate}%`,
-                                icon: TrendingUp,
-                                accent: true,
-                        },
+                        { label: "Wins", value: userStats.totalWins, icon: Trophy, accent: true },
+                        { label: "Win rate", value: `${userStats.winRate}%`, icon: TrendingUp, accent: true },
                 ];
         }
 
         if (siteStats) {
                 return [
-                        {
-                                label: "Total names",
-                                value: siteStats.totalNames,
-                                icon: Activity,
-                        },
-                        {
-                                label: "Active names",
-                                value: siteStats.activeNames,
-                                icon: Target,
-                        },
+                        { label: "Total names", value: siteStats.totalNames, icon: Activity },
+                        { label: "Active names", value: siteStats.activeNames, icon: Target },
                         { label: "Users", value: siteStats.totalUsers, icon: Users },
-                        {
-                                label: "Average rating",
-                                value: Math.round(siteStats.avgRating),
-                                icon: TrendingUp,
-                                accent: true,
-                        },
+                        { label: "Average rating", value: Math.round(siteStats.avgRating), icon: TrendingUp, accent: true },
                 ];
         }
 
@@ -176,7 +153,8 @@ export function Dashboard({
                 !hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
 
         return (
-                <div className="w-full space-y-8 sm:space-y-10">
+                <div className="w-full space-y-6">
+                        {/* Profile + snapshot */}
                         {(isLoggedIn || quickStats.length > 0) && (
                                 <div className="grid gap-4 xl:grid-cols-[minmax(0,20rem)_1fr]">
                                         {isLoggedIn && userName && (
@@ -253,134 +231,97 @@ export function Dashboard({
                                 </Panel>
                         )}
 
-                        <div className="grid gap-6 xl:grid-cols-[minmax(0,22rem)_1fr]">
-                                <Panel>
-                                        <SectionHeader
-                                                icon={Trophy}
-                                                title="Leaderboard"
-                                                subtitle="Top of the pool."
-                                                action={
-                                                        <div className="flex items-center gap-2">
-                                                                <ContextBadge label="Community" />
-                                                                {onStartNew ? (
-                                                                        <Button variant="outline" size="small" onClick={onStartNew}>
-                                                                                New Tournament
-                                                                        </Button>
-                                                                ) : undefined}
-                                                        </div>
-                                                }
-                                        />
-
-                                        {isLoadingLeaderboard ? (
-                                                <Loading variant="skeleton" height={320} />
-                                        ) : leaderboard.length > 0 ? (
-                                                <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
-                                                        {leaderboard.map((entry, index) => (
-                                                                <div
-                                                                        key={entry.name}
-                                                                        className={`flex items-center gap-3 px-4 py-3 ${
-                                                                                index < leaderboard.length - 1 ? "border-b border-white/10" : ""
-                                                                        }`}
-                                                                >
-                                                                        <div className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-foreground">
-                                                                                {index + 1}
-                                                                        </div>
-                                                                        <div className="min-w-0 flex-1">
-                                                                                <p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
-                                                                                <p className="text-xs text-muted-foreground/70">
-                                                                                        {entry.total_ratings} rating
-                                                                                        {entry.total_ratings !== 1 ? "s" : ""} | {entry.wins} win
-                                                                                        {entry.wins !== 1 ? "s" : ""}
-                                                                                </p>
-                                                                        </div>
-                                                                        <div className="text-right">
-                                                                                <p className="text-lg font-semibold text-primary">
-                                                                                        {Math.round(entry.avg_rating)}
-                                                                                </p>
-                                                                        </div>
-                                                                </div>
-                                                        ))}
+                        {/* Leaderboard */}
+                        <Panel>
+                                <SectionHeader
+                                        icon={Trophy}
+                                        title="Leaderboard"
+                                        subtitle="Top of the pool."
+                                        action={
+                                                <div className="flex items-center gap-2">
+                                                        <ContextBadge label="Community" />
+                                                        {onStartNew && (
+                                                                <Button variant="outline" size="small" onClick={onStartNew}>
+                                                                        New Tournament
+                                                                </Button>
+                                                        )}
                                                 </div>
-                                        ) : (
-                                                <EmptyState
-                                                        variant="box"
-                                                        title="No community ratings yet."
-                                                        description="Complete a few tournament sessions to start separating the personal bracket layer from the shared leaderboard."
-                                                />
-                                        )}
-                                </Panel>
-
-                                <div className="grid gap-6">
-                                        {leaderboard.length > 0 && (
-                                                <>
-                                                        <div className="grid gap-6 xl:grid-cols-2">
-                                                                <Panel>
-                                                                        <SectionHeader
-                                                                                icon={BarChart3}
-                                                                                title="Top Names by Rating"
-                                                                                subtitle="Top scores."
-                                                                        />
-                                                                        <TopNamesChart leaderboard={leaderboard} />
-                                                                </Panel>
-
-                                                                <Panel>
-                                                                        <SectionHeader
-                                                                                icon={TrendingUp}
-                                                                                title="Win and Loss Breakdown"
-                                                                                subtitle="Wins vs losses."
-                                                                        />
-                                                                        <WinLossChart leaderboard={leaderboard} />
-                                                                </Panel>
+                                        }
+                                />
+                                {isLoadingLeaderboard ? (
+                                        <Loading variant="skeleton" height={320} />
+                                ) : leaderboard.length > 0 ? (
+                                        <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
+                                                {leaderboard.map((entry, index) => (
+                                                        <div
+                                                                key={entry.name}
+                                                                className={`flex items-center gap-3 px-4 py-3 ${
+                                                                        index < leaderboard.length - 1 ? "border-b border-white/10" : ""
+                                                                }`}
+                                                        >
+                                                                <div className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-foreground">
+                                                                        {index + 1}
+                                                                </div>
+                                                                <div className="min-w-0 flex-1">
+                                                                        <p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
+                                                                        <p className="text-xs text-muted-foreground/70">
+                                                                                {entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} | {entry.wins} win{entry.wins !== 1 ? "s" : ""}
+                                                                        </p>
+                                                                </div>
+                                                                <p className="text-lg font-semibold text-primary">
+                                                                        {Math.round(entry.avg_rating)}
+                                                                </p>
                                                         </div>
+                                                ))}
+                                        </div>
+                                ) : (
+                                        <EmptyState
+                                                variant="box"
+                                                title="No community ratings yet."
+                                                description="Complete a few tournament sessions to populate the leaderboard."
+                                        />
+                                )}
+                        </Panel>
 
-                                                        <div className="grid gap-6 xl:grid-cols-2">
-                                                                <Panel>
-                                                                        <SectionHeader
-                                                                                icon={Activity}
-                                                                                title="Rating Distribution"
-                                                                                subtitle="Score spread."
-                                                                        />
-                                                                        <RatingDistributionChart leaderboard={leaderboard} />
-                                                                </Panel>
-
-                                                                {leaderboard.length >= 3 && (
-                                                                        <Panel>
-                                                                                <SectionHeader
-                                                                                        icon={Target}
-                                                                                        title="Comparison Radar"
-                                                                                        subtitle="Side by side."
-                                                                                />
-                                                                                <RatingRadarChart leaderboard={leaderboard} />
-                                                                        </Panel>
-                                                                )}
-                                                        </div>
-                                                </>
-                                        )}
-
-                                        {siteStats && (
+                        {/* Charts — flat 2-col grid */}
+                        {leaderboard.length > 0 && (
+                                <div className="grid gap-6 sm:grid-cols-2">
+                                        <Panel>
+                                                <SectionHeader icon={BarChart3} title="Top Names by Rating" subtitle="Top scores." />
+                                                <TopNamesChart leaderboard={leaderboard} />
+                                        </Panel>
+                                        <Panel>
+                                                <SectionHeader icon={TrendingUp} title="Win and Loss Breakdown" subtitle="Wins vs losses." />
+                                                <WinLossChart leaderboard={leaderboard} />
+                                        </Panel>
+                                        <Panel>
+                                                <SectionHeader icon={Activity} title="Rating Distribution" subtitle="Score spread." />
+                                                <RatingDistributionChart leaderboard={leaderboard} />
+                                        </Panel>
+                                        {leaderboard.length >= 3 && (
                                                 <Panel>
-                                                        <SectionHeader
-                                                                icon={Users}
-                                                                title="Site Statistics"
-                                                                subtitle="Pool totals."
-                                                        />
-                                                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                                                                <StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
-                                                                <StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
-                                                                <StatTile label="Users" value={siteStats.totalUsers} icon={Users} />
-                                                                <StatTile label="Ratings" value={siteStats.totalRatings} icon={BarChart3} />
-                                                                <StatTile
-                                                                        label="Average rating"
-                                                                        value={Math.round(siteStats.avgRating)}
-                                                                        icon={TrendingUp}
-                                                                        accent={true}
-                                                                />
-                                                        </div>
+                                                        <SectionHeader icon={Target} title="Comparison Radar" subtitle="Side by side." />
+                                                        <RatingRadarChart leaderboard={leaderboard} />
                                                 </Panel>
                                         )}
                                 </div>
-                        </div>
+                        )}
 
+                        {/* Site stats */}
+                        {siteStats && (
+                                <Panel>
+                                        <SectionHeader icon={Users} title="Site Statistics" subtitle="Pool totals." />
+                                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                                                <StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
+                                                <StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
+                                                <StatTile label="Users" value={siteStats.totalUsers} icon={Users} />
+                                                <StatTile label="Ratings" value={siteStats.totalRatings} icon={BarChart3} />
+                                                <StatTile label="Average rating" value={Math.round(siteStats.avgRating)} icon={TrendingUp} accent={true} />
+                                        </div>
+                                </Panel>
+                        )}
+
+                        {/* Engagement */}
                         {engagementMetrics && (
                                 <Panel>
                                         <SectionHeader
@@ -411,21 +352,13 @@ export function Dashboard({
                                                 }
                                         />
                                         <div className="grid gap-3 sm:grid-cols-2">
-                                                <StatTile
-                                                        label="Active raters"
-                                                        value={engagementMetrics.peakActiveUsers}
-                                                        icon={Users}
-                                                        accent={true}
-                                                />
-                                                <StatTile
-                                                        label="Matches played"
-                                                        value={engagementMetrics.totalMatches}
-                                                        icon={Trophy}
-                                                />
+                                                <StatTile label="Active raters" value={engagementMetrics.peakActiveUsers} icon={Users} accent={true} />
+                                                <StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
                                         </div>
                                 </Panel>
                         )}
 
+                        {/* Admin: hidden names */}
                         {isAdmin && (
                                 <Panel>
                                         <SectionHeader
@@ -438,33 +371,38 @@ export function Dashboard({
                                                         </Button>
                                                 }
                                         />
-                                        {showHiddenNames ? (
+                                        {showHiddenNames && (
                                                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
                                                         {hiddenNames.length > 0 ? (
                                                                 hiddenNames.map((name, index) => (
                                                                         <div
                                                                                 key={name.id}
-                                                                                className={`flex items-center justify-between gap-3 px-4 py-3 ${
+                                                                                className={`flex items-center gap-3 px-4 py-3 ${
                                                                                         index < hiddenNames.length - 1 ? "border-b border-white/10" : ""
                                                                                 }`}
                                                                         >
-                                                                                <span className="text-sm font-medium text-foreground">{name.name}</span>
-                                                                                <Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
-                                                                                        <Eye size={14} />
+                                                                                <div className="min-w-0 flex-1">
+                                                                                        <p className="truncate text-sm font-semibold text-foreground">{name.name}</p>
+                                                                                        {name.description && (
+                                                                                                <p className="truncate text-xs text-muted-foreground/70">{name.description}</p>
+                                                                                        )}
+                                                                                </div>
+                                                                                <Button
+                                                                                        variant="ghost"
+                                                                                        size="small"
+                                                                                        onClick={() => handleUnhideName(name.id)}
+                                                                                >
+                                                                                        <Eye size={13} />
                                                                                         Unhide
                                                                                 </Button>
                                                                         </div>
                                                                 ))
                                                         ) : (
-                                                                <EmptyState variant="inline" title="No hidden names." />
+                                                                <p className="px-4 py-6 text-center text-sm text-muted-foreground/60">
+                                                                        No hidden names.
+                                                                </p>
                                                         )}
                                                 </div>
-                                        ) : (
-                                                <EmptyState
-                                                        variant="box"
-                                                        title="Open the list to review and restore hidden names."
-                                                        className="border-dashed bg-black/10"
-                                                />
                                         )}
                                 </Panel>
                         )}
