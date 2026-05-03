@@ -102,7 +102,7 @@
 
 .app-section--separator {
         padding-top: var(--app-section-separator-padding);
-        border-top: 1px solid rgb(255 255 255 / 10%);
+        border-top: 1px solid rgb(255 255 255 / 6%);
 }
 
 .app-section--centered {

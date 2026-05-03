@@ -37,11 +37,17 @@ export function AppBootScreen({ message = "Preparing the tournament...", visible
                         role="status"
                         aria-label="Loading application"
                 >
-                        {/* Animated gradient blobs — same palette as the hero */}
-                        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-                                <div className="boot-blob-1 absolute h-[70vw] w-[70vw] max-h-[700px] max-w-[700px] rounded-full bg-primary blur-[130px] opacity-[0.32]" />
-                                <div className="boot-blob-2 absolute right-0 bottom-0 h-[65vw] w-[65vw] max-h-[650px] max-w-[650px] rounded-full bg-accent blur-[130px] opacity-[0.32]" />
-                        </div>
+                        {/* Subtle static gradient */}
+                        <div
+                                className="pointer-events-none absolute inset-0"
+                                aria-hidden="true"
+                                style={{
+                                        background: `
+                                                radial-gradient(ellipse 70% 50% at 20% 15%, hsl(190 55% 18% / 0.28) 0%, transparent 60%),
+                                                radial-gradient(ellipse 55% 45% at 85% 80%, hsl(16 71% 22% / 0.18) 0%, transparent 55%)
+                                        `,
+                                }}
+                        />
 
                         {/* Main content */}
                         <div className="relative z-10 flex flex-col items-center px-6 text-center">

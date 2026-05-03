@@ -110,34 +110,6 @@
 }
 
 /* ==========================================================================
-   BOOT SCREEN BLOB ANIMATIONS
-   ========================================================================== */
-
-@keyframes boot-blob-1 {
-        0%,
-        100% { transform: translate(-15%, -15%); }
-        33%  { transform: translate(10%, 8%); }
-        66%  { transform: translate(-8%, 18%); }
-}
-
-@keyframes boot-blob-2 {
-        0%,
-        100% { transform: translate(15%, 15%); }
-        33%  { transform: translate(-12%, -8%); }
-        66%  { transform: translate(6%, -18%); }
-}
-
-.boot-blob-1 {
-        animation: boot-blob-1 14s ease-in-out infinite;
-        top: -10%;
-        left: -10%;
-}
-
-.boot-blob-2 {
-        animation: boot-blob-2 17s ease-in-out infinite;
-}
-
-/* ==========================================================================
    ANIMATION UTILITY CLASSES
    ========================================================================== */
 

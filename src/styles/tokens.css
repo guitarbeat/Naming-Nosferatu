@@ -457,20 +457,20 @@
         --primary-color: hsl(var(--pw-sage-hsl));
         --primary-light: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 68%, white);
         --primary-dark: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 76%, black);
-        --background: hsl(222deg 30% 9%);
-        --foreground: hsl(210deg 35% 96%);
-        --card: hsl(221deg 25% 13%);
-        --card-foreground: hsl(210deg 35% 96%);
-        --popover: hsl(221deg 25% 13%);
-        --popover-foreground: hsl(210deg 35% 96%);
+        --background: hsl(224deg 28% 7%);
+        --foreground: hsl(210deg 30% 94%);
+        --card: hsl(222deg 24% 10%);
+        --card-foreground: hsl(210deg 30% 94%);
+        --popover: hsl(222deg 24% 10%);
+        --popover-foreground: hsl(210deg 30% 94%);
         --primary: hsl(var(--pw-sage-hsl));
         --primary-foreground: hsl(0deg 0% 100%);
-        --secondary: hsl(217deg 21% 20%);
-        --secondary-foreground: hsl(210deg 35% 96%);
+        --secondary: hsl(218deg 20% 16%);
+        --secondary-foreground: hsl(210deg 30% 94%);
         --accent: hsl(var(--pw-coral-hsl));
         --accent-foreground: hsl(0deg 0% 100%);
-        --border: hsl(217deg 21% 31%);
-        --input: hsl(217deg 21% 31%);
+        --border: hsl(220deg 18% 22%);
+        --input: hsl(220deg 18% 22%);
         --ring: hsl(var(--pw-sage-hsl));
 
         /* Surface colors */
@@ -509,16 +509,16 @@
         --overlay-darker: color-mix(in srgb, var(--surface-muted) 76%, transparent);
 
         /* Glass surface tokens */
-        --glass-bg: color-mix(in srgb, var(--surface-muted) 58%, transparent);
-        --glass-bg-light: color-mix(in srgb, var(--surface-muted) 32%, transparent);
-        --glass-bg-strong: color-mix(in srgb, var(--surface-muted) 74%, transparent);
-        --glass-border: color-mix(in srgb, var(--pw-text-strong) 12%, transparent);
-        --glass-border-hover: color-mix(in srgb, var(--pw-text-strong) 22%, transparent);
-        --glass-blur: 8px;
-        --glass-shadow: var(--pw-shadow-lg);
+        --glass-bg: color-mix(in srgb, var(--surface-muted) 50%, transparent);
+        --glass-bg-light: color-mix(in srgb, var(--surface-muted) 24%, transparent);
+        --glass-bg-strong: color-mix(in srgb, var(--surface-muted) 68%, transparent);
+        --glass-border: color-mix(in srgb, var(--pw-text-strong) 9%, transparent);
+        --glass-border-hover: color-mix(in srgb, var(--pw-text-strong) 16%, transparent);
+        --glass-blur: 12px;
+        --glass-shadow: var(--pw-shadow-md);
         --glass-shadow-colored:
-                0 18px 40px color-mix(in srgb, var(--color-neon-cyan) 16%, transparent),
-                0 14px 32px color-mix(in srgb, var(--color-hot-pink) 12%, transparent);
+                0 18px 40px color-mix(in srgb, var(--color-neon-cyan) 10%, transparent),
+                0 14px 32px color-mix(in srgb, var(--color-hot-pink) 8%, transparent);
 
         /* Shadow utilities (theme-specific) */
         --shadow-sm: var(--pw-shadow-sm);
@@ -559,9 +559,9 @@
         --muted-foreground: #c8d2de;
 
         /* Navigation tokens */
-        --nav-bg: color-mix(in srgb, var(--surface-muted) 88%, transparent);
+        --nav-bg: color-mix(in srgb, var(--surface-muted) 80%, transparent);
         --nav-text: var(--pw-text-strong);
-        --nav-text-muted: var(--pw-text-base);
+        --nav-text-muted: color-mix(in srgb, var(--pw-text-base) 70%, transparent);
         --nav-highlight: hsl(var(--pw-sage-hsl));
         --nav-accent: hsl(var(--pw-coral-hsl));
         --nav-shell-bg: color-mix(in srgb, var(--surface-floating-bg) 84%, transparent);

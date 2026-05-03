@@ -17,8 +17,8 @@ interface SurfaceProps {
 }
 
 const toneClasses: Record<SurfaceTone, string> = {
-        glass: "bg-white/[0.04] backdrop-blur-xl",
-        muted: "bg-black/15",
+        glass: "bg-white/[0.03] backdrop-blur-xl",
+        muted: "bg-black/10",
         transparent: "bg-transparent",
 };
 
