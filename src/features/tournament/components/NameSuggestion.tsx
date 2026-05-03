@@ -11,7 +11,6 @@ import { CheckCircle, X } from "@/shared/lib/icons";
 
 interface NameSuggestionProps {
         variant?: "inline" | "modal";
-        isOpen?: boolean;
         onClose?: () => void;
 }
 

@@ -11,7 +11,6 @@ interface OriginRect {
 interface ModalProps {
         title: string;
         open?: boolean;
-        isOpen?: boolean;
         onClose: () => void;
         children: React.ReactNode;
         maxWidth?: "max-w-sm" | "max-w-md" | "max-w-lg" | "max-w-xl" | "max-w-2xl";
@@ -26,7 +25,6 @@ const GENIE_DURATION_MS = 480;
 export function Modal({
         title,
         open,
-        isOpen,
         onClose,
         children,
         maxWidth = "max-w-md",
@@ -35,7 +33,7 @@ export function Modal({
         hideTitle = false,
         originRect = null,
 }: ModalProps) {
-        const isOpenResolved = open ?? isOpen ?? true;
+        const isOpenResolved = open ?? true;
         const modalRef = useRef<HTMLDivElement>(null);
         const [isClosing, setIsClosing] = useState(false);
         const [shouldRender, setShouldRender] = useState(isOpenResolved);
