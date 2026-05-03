@@ -2,8 +2,6 @@ import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
-import { Surface } from "@/shared/components/layout/Surface";
-import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
@@ -79,11 +77,7 @@ export function HomeHeroSection({
 			</h1>
 
 			<div className="mt-10">
-				<Button
-					variant="glass"
-					size="xl"
-					onClick={onStartPicking}
-				>
+				<Button variant="glass" size="xl" onClick={onStartPicking}>
 					Wanna help me decide?
 				</Button>
 			</div>
@@ -100,11 +94,6 @@ export function TournamentBracketSection({
 	onComplete,
 	onGoToPicker,
 }: TournamentBracketSectionProps) {
-	const scopePanels = [
-		{ label: "Session", description: "Your personal ranking." },
-		{ label: "Community", description: "Aggregate site stats." },
-	] as const;
-
 	return (
 		<Section
 			id="tournament"
@@ -113,27 +102,6 @@ export function TournamentBracketSection({
 			maxWidth="2xl"
 			separator={true}
 		>
-			<SectionHeading
-				title="Tournament Bracket"
-				subtitle="Run the bracket."
-			/>
-			<div className="mx-auto mb-6 grid w-full max-w-3xl gap-3 sm:grid-cols-2 sm:gap-4">
-				{scopePanels.map((panel) => (
-					<Surface
-						key={panel.label}
-						radius="md"
-						padding="compact"
-						className="text-center sm:text-left"
-					>
-						<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/40">
-							{panel.label}
-						</p>
-						<p className="mt-2 text-sm leading-relaxed text-white/55">
-							{panel.description}
-						</p>
-					</Surface>
-				))}
-			</div>
 			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 				{names && names.length > 0 ? (
 					<LazyTournament
