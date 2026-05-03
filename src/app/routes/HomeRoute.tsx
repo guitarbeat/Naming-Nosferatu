@@ -15,11 +15,6 @@ import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
 const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
-const LazyNameSuggestionInner = lazy(() =>
-        import("@/features/tournament/components/NameSuggestion").then((module) => ({
-                default: module.NameSuggestionInner,
-        })),
-);
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
@@ -142,23 +137,6 @@ export default function HomeRoute() {
                                                         avatarUrl={user.avatarUrl}
                                                 />
                                         </ErrorBoundary>
-                                </Suspense>
-                        </Section>
-
-                        <Section
-                                id="suggest"
-                                variant="minimal"
-                                padding="comfortable"
-                                maxWidth="2xl"
-
-                                separator={true}
-                        >
-                                <SectionHeading
-                                        title="Suggest a Name"
-                                        subtitle="Add a name."
-                                />
-                                <Suspense fallback={<Loading variant="card-skeleton" height={340} />}>
-                                        <LazyNameSuggestionInner />
                                 </Suspense>
                         </Section>
                 </>
