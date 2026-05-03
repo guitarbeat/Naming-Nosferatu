@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
-import { Activity, Eye, EyeOff, Trophy } from "@/shared/lib/icons";
+import { Activity, Eye, EyeOff } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 import { ContextBadge, Panel } from "./components/DashboardPrimitives";
 import { type DashboardTimeframe, useDashboardData } from "./hooks/useDashboardData";
@@ -64,7 +64,6 @@ export function Dashboard({
 
         return (
                 <div className="w-full space-y-6">
-                        {/* Empty state */}
                         {shouldShowEmptyState && (
                                 <Panel className="border-dashed bg-black/10">
                                         <PanelTitle title="Nothing ranked yet" />
@@ -74,7 +73,6 @@ export function Dashboard({
                                 </Panel>
                         )}
 
-                        {/* Personal rankings */}
                         {hasPersonalRatings && onUpdateRatings && (
                                 <Panel>
                                         <PanelTitle
@@ -91,63 +89,13 @@ export function Dashboard({
                                 </Panel>
                         )}
 
-                        {/* Leaderboard */}
-                        <Panel>
-                                <PanelTitle
-                                        title="Leaderboard"
-                                        action={
-                                                <div className="flex items-center gap-2">
-                                                        <ContextBadge label="Community" />
-                                                        {onStartNew && (
-                                                                <Button variant="outline" size="small" onClick={onStartNew}>
-                                                                        New Tournament
-                                                                </Button>
-                                                        )}
-                                                </div>
-                                        }
-                                />
-                                {isLoadingLeaderboard ? (
-                                        <Loading variant="skeleton" height={320} />
-                                ) : leaderboard.length > 0 ? (
-                                        <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
-                                                {leaderboard.map((entry, index) => (
-                                                        <div
-                                                                key={entry.name}
-                                                                className={`flex items-center gap-3 px-4 py-3 ${
-                                                                        index < leaderboard.length - 1 ? "border-b border-white/10" : ""
-                                                                }`}
-                                                        >
-                                                                <div className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-foreground">
-                                                                        {index + 1}
-                                                                </div>
-                                                                <div className="min-w-0 flex-1">
-                                                                        <p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
-                                                                        <p className="text-xs text-muted-foreground/70">
-                                                                                {entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} · {entry.wins} win{entry.wins !== 1 ? "s" : ""}
-                                                                        </p>
-                                                                </div>
-                                                                <p className="text-lg font-semibold text-primary">
-                                                                        {Math.round(entry.avg_rating)}
-                                                                </p>
-                                                        </div>
-                                                ))}
-                                        </div>
-                                ) : (
-                                        <p className="py-6 text-sm text-muted-foreground/55">
-                                                No community ratings yet.
-                                        </p>
-                                )}
-                        </Panel>
-
-                        {/* Word cloud */}
                         {leaderboard.length > 0 && (
                                 <Panel>
-                                        <PanelTitle title="Word Cloud" />
+                                        <PanelTitle title="Word Cloud" action={<ContextBadge label="All names" />} />
                                         <WordCloudChart leaderboard={leaderboard} />
                                 </Panel>
                         )}
 
-                        {/* Engagement — admin only */}
                         {engagementMetrics && (
                                 <Panel>
                                         <PanelTitle
@@ -188,7 +136,6 @@ export function Dashboard({
                                 </Panel>
                         )}
 
-                        {/* Hidden names — admin only */}
                         {isAdmin && (
                                 <Panel>
                                         <PanelTitle
@@ -201,7 +148,7 @@ export function Dashboard({
                                         />
                                         {showHiddenNames && (
                                                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
-                                                        {hiddenNames.length > 0 ? (
+                                                {hiddenNames.length > 0 ? (
                                                                 hiddenNames.map((name, index) => (
                                                                         <div
                                                                                 key={name.id}
@@ -211,9 +158,6 @@ export function Dashboard({
                                                                         >
                                                                                 <div className="min-w-0 flex-1">
                                                                                         <p className="truncate text-sm font-semibold text-foreground">{name.name}</p>
-                                                                                        {name.description && (
-                                                                                                <p className="truncate text-xs text-muted-foreground/70">{name.description}</p>
-                                                                                        )}
                                                                                 </div>
                                                                                 <Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
                                                                                         <Eye size={13} />

@@ -5,20 +5,18 @@ interface WordCloudChartProps {
                 wins: number;
                 total_ratings: number;
         }>;
-        limit?: number;
 }
 
 function clamp(value: number, min: number, max: number) {
         return Math.min(max, Math.max(min, value));
 }
 
-export function WordCloudChart({ leaderboard, limit = 12 }: WordCloudChartProps) {
+export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
         const items = [...leaderboard]
                 .sort((a, b) => b.avg_rating - a.avg_rating)
-                .slice(0, limit)
                 .map((entry, index) => {
-                        const size = clamp(0.9 + (entry.avg_rating - 1000) / 700, 0.9, 2.2);
-                        const tone = index % 3 === 0 ? "text-primary" : index % 3 === 1 ? "text-white/80" : "text-white/55";
+                        const size = clamp(0.82 + (entry.avg_rating - 900) / 820, 0.82, 2.4);
+                        const tone = index % 4 === 0 ? "text-primary" : index % 4 === 1 ? "text-white/80" : index % 4 === 2 ? "text-white/62" : "text-white/48";
                         return {
                                 ...entry,
                                 size,
@@ -31,7 +29,7 @@ export function WordCloudChart({ leaderboard, limit = 12 }: WordCloudChartProps)
         }
 
         return (
-                <div className="flex min-h-[18rem] flex-wrap items-center justify-center gap-x-3 gap-y-4 px-2 py-4 text-center">
+                <div className="flex min-h-[22rem] flex-wrap items-center justify-center gap-x-3 gap-y-4 px-2 py-4 text-center sm:min-h-[26rem]">
                         {items.map((item) => (
                                 <span
                                         key={item.name}
