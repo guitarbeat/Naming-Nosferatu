@@ -5,13 +5,13 @@ import { describe, expect, it, vi } from "vitest";
 import { Modal } from "./Modal";
 
 function ModalHarness() {
-        const [isOpen, setIsOpen] = useState(false);
+        const [open, setOpen] = useState(false);
         return (
                 <>
-                        <button type="button" onClick={() => setIsOpen(true)}>
+                        <button type="button" onClick={() => setOpen(true)}>
                                 Open Modal
                         </button>
-                        <Modal title="Test Modal" open={isOpen} onClose={() => setIsOpen(false)}>
+                        <Modal title="Test Modal" open={open} onClose={() => setOpen(false)}>
                                 <div className="p-4">
                                         <button type="button">First Action</button>
                                         <button type="button">Second Action</button>
