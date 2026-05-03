@@ -7,119 +7,110 @@ import type { NameItem, RatingData } from "@/shared/types";
 type HomeHeroState = "loading" | "ready" | "error";
 
 interface HomeHeroSectionProps {
-	state: HomeHeroState;
-	lockedNames: NameItem[];
-	onStartPicking: () => void;
+        state: HomeHeroState;
+        lockedNames: NameItem[];
+        onStartPicking: () => void;
 }
 
 interface TournamentBracketSectionProps {
-	LazyTournament: LazyExoticComponent<
-		ComponentType<{
-			names: NameItem[];
-			existingRatings?: Record<string, RatingData>;
-			onComplete: (ratings: Record<string, RatingData>) => void;
-		}>
-	>;
-	names: NameItem[] | null | undefined;
-	ratings: Record<string, RatingData>;
-	onComplete: (ratings: Record<string, RatingData>) => void;
-	onGoToPicker: () => void;
+        LazyTournament: LazyExoticComponent<
+                ComponentType<{
+                        names: NameItem[];
+                        existingRatings?: Record<string, RatingData>;
+                        onComplete: (ratings: Record<string, RatingData>) => void;
+                }>
+        >;
+        names: NameItem[] | null | undefined;
+        ratings: Record<string, RatingData>;
+        onComplete: (ratings: Record<string, RatingData>) => void;
+        onGoToPicker: () => void;
 }
 
 function HeroNameWords({
-	state,
-	lockedNames,
+        state,
+        lockedNames,
 }: {
-	state: HomeHeroState;
-	lockedNames: NameItem[];
+        state: HomeHeroState;
+        lockedNames: NameItem[];
 }) {
-	if (state === "loading") {
-		return <span className="text-white/20">________</span>;
-	}
-	if (state === "error" || lockedNames.length === 0) {
-		return <span>Nosferatu</span>;
-	}
+        if (state === "loading") {
+                return <span className="text-white/20">________</span>;
+        }
+        if (state === "error" || lockedNames.length === 0) {
+                return <span>Nosferatu</span>;
+        }
 
-	const words = [
-		...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
-		"WOODS",
-	];
+        const words = [
+                ...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
+                "WOODS",
+        ];
 
-	return (
-		<span>
-			{words.map((word, i) => (
-				<span key={`${word}-${i}`} className="block sm:inline-block">
-					{i < words.length - 1 ? `${word}\u00a0` : word}
-				</span>
-			))}
-		</span>
-	);
+        return (
+                <span>
+                        {words.map((word, i) => (
+                                <span key={`${word}-${i}`} className="block sm:inline-block">
+                                        {i < words.length - 1 ? `${word}\u00a0` : word}
+                                </span>
+                        ))}
+                </span>
+        );
 }
 
 export function HomeHeroSection({
-	state,
-	lockedNames,
-	onStartPicking,
+        state,
+        lockedNames,
+        onStartPicking,
 }: HomeHeroSectionProps) {
-	return (
-		<section className="relative isolate flex min-h-[100dvh] flex-col items-center justify-center px-6 text-center">
-			<div aria-hidden="true" className="flex-[0.55]" />
+        return (
+                <section className="relative isolate flex min-h-[100dvh] flex-col items-center justify-center px-6 text-center">
+                        <div aria-hidden="true" className="flex-[0.55]" />
 
-			<p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/40">
-				My cat's name is
-			</p>
+                        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/40">
+                                My cat's name is
+                        </p>
 
-			<h1
-				className="font-black uppercase leading-[0.88] tracking-tighter text-white"
-				style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}
-			>
-				<HeroNameWords state={state} lockedNames={lockedNames} />
-			</h1>
+                        <h1
+                                className="font-black uppercase leading-[0.88] tracking-tighter text-white"
+                                style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}
+                        >
+                                <HeroNameWords state={state} lockedNames={lockedNames} />
+                        </h1>
 
-			<div className="mt-10">
-				<Button variant="glass" size="xl" onClick={onStartPicking}>
-					Wanna help me decide?
-				</Button>
-			</div>
+                        <div className="mt-10">
+                                <Button variant="glass" size="xl" onClick={onStartPicking}>
+                                        Wanna help me decide?
+                                </Button>
+                        </div>
 
-			<div aria-hidden="true" className="flex-1" />
-		</section>
-	);
+                        <div aria-hidden="true" className="flex-1" />
+                </section>
+        );
 }
 
 export function TournamentBracketSection({
-	LazyTournament,
-	names,
-	ratings,
-	onComplete,
-	onGoToPicker,
+        LazyTournament,
+        names,
+        ratings,
+        onComplete,
+        onGoToPicker,
 }: TournamentBracketSectionProps) {
-	return (
-		<Section
-			id="tournament"
-			variant="minimal"
-			padding="comfortable"
-			maxWidth="2xl"
-			separator={true}
-		>
-			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-				{names && names.length > 0 ? (
-					<LazyTournament
-						names={names}
-						existingRatings={ratings}
-						onComplete={onComplete}
-					/>
-				) : (
-					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-6 text-center">
-						<p className="text-pretty text-sm text-white/45">
-							Pick at least two names above to start the bracket.
-						</p>
-						<Button variant="glass" onClick={onGoToPicker}>
-							Go to Picker
-						</Button>
-					</div>
-				)}
-			</Suspense>
-		</Section>
-	);
+        return (
+                <Section
+                        id="tournament"
+                        variant="minimal"
+                        padding="comfortable"
+                        maxWidth="2xl"
+                        separator={true}
+                >
+                        <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                {names && names.length > 0 ? (
+                                        <LazyTournament
+                                                names={names}
+                                                existingRatings={ratings}
+                                                onComplete={onComplete}
+                                        />
+                                ) : null}
+                        </Suspense>
+                </Section>
+        );
 }
