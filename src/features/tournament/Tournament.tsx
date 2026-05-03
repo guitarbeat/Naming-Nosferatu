@@ -143,7 +143,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                         currentMatch.mode === "2v2"
                                                 ? ((currentMatch[side] as any).memberNames ?? []).join(" + ") ||
                                                         String((currentMatch[side] as any).id)
-                                                : typeof participant === "object"
+                                                : typeof participant === "object" && "name" in participant
                                                         ? participant.name
                                                         : String(participant);
                                 return { name, id, description: "", outcome: winnerId === id ? "winner" : "loser" };
@@ -560,7 +560,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                 <AnimatePresence>
                                         {streakBurst.value && (
                                                 <motion.div
-                                                        key={`streak-burst-${streakBurst.value.key}`}
+                                                        key={`streak-burst-${streakBurst.value?.key}`}
                                                         initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.94 }}
                                                         animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
                                                         exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 1.03 }}
@@ -584,7 +584,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                                                         {Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map(
                                                                                 (_, i) => (
                                                                                         <span
-                                                                                                key={`streak-flame-${streakBurst.value.key}-${i}`}
+                                                                                key={`streak-flame-${streakBurst.value?.key}-${i}`}
                                                                                                 className="h-1.5 w-5 animate-pulse rounded-full bg-current opacity-80 sm:h-2 sm:w-6"
                                                                                                 style={{ animationDelay: `${i * 80}ms` }}
                                                                                         />

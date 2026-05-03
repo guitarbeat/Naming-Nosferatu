@@ -236,7 +236,6 @@ const ScrollToTopButton = ({ className = "" }: { className?: string }) => {
                         className={`scroll-to-top visible ${className}`.trim()}
                         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                         aria-label="Scroll to top"
-                        tabIndex={0}
                 >
                         <ChevronDown className="size-5 -rotate-180" aria-hidden="true" />
                 </button>

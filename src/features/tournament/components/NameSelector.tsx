@@ -1020,11 +1020,11 @@ export function NameSelector() {
                                                                                         const isSelected = selectedNames.has(nameItem.id);
                                                                                         const catImage = catImageById.get(nameItem.id) ?? "";
                                                                                         return (
-                                                                                                <motion.div
+                                                                                                <motion.button
                                                                                                         key={nameItem.id}
+                                                                                                        type="button"
                                                                                                         onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        role="button"
-                                                                                                        tabIndex={0}
+                                                                                                        aria-pressed={isSelected}
                                                                                                         whileHover={{ scale: 1.03, y: -2 }}
                                                                                                         whileTap={{ scale: 0.97 }}
                                                                                                         transition={{
@@ -1099,7 +1099,7 @@ export function NameSelector() {
                                                                                                                         />
                                                                                                                 </motion.div>
                                                                                                         )}
-                                                                                                </motion.div>
+                                                                                                </motion.button>
                                                                                         );
                                                                                 })}
                                                                         </div>
@@ -1232,12 +1232,12 @@ export function NameSelector() {
                                                                                         const isSelected = selectedNames.has(nameItem.id);
                                                                                         const catImage = catImageById.get(nameItem.id) ?? "";
                                                                                         return (
-                                                                                                <div
+                                                                                                <button
+                                                                                                        type="button"
                                                                                                         key={nameItem.id}
                                                                                                         onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        role="button"
-                                                                                                        tabIndex={0}
-                                                                                                        className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+                                                                                                        aria-pressed={isSelected}
+                                                                                                        className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
                                                                                                                 isSelected
                                                                                                                         ? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
                                                                                                                         : "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
@@ -1329,7 +1329,7 @@ export function NameSelector() {
                                                                                                                         </button>
                                                                                                                 </div>
                                                                                                         )}
-                                                                                                </div>
+                                                                                                </button>
                                                                                         );
                                                                                 })}
                                                                         </div>
