@@ -15,7 +15,7 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 	const items = [...leaderboard]
 		.sort((a, b) => b.avg_rating - a.avg_rating)
 		.map((entry, index) => {
-			const size = clamp(1.6 + (entry.avg_rating - 900) / 280, 1.6, 5.2);
+			const size = clamp(1.8 + (entry.avg_rating - 900) / 230, 1.8, 5.8);
 			const tone =
 				index % 5 === 0
 					? "text-primary"
@@ -38,20 +38,20 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 	}
 
 	return (
-		<div className="flex min-h-[24rem] flex-wrap items-center justify-center gap-x-4 gap-y-5 px-4 py-8 text-center sm:min-h-[30rem] sm:px-8 sm:py-10">
+		<div className="flex min-h-[26rem] flex-wrap items-center justify-center gap-x-2 gap-y-2 px-3 py-6 text-center sm:min-h-[32rem] sm:px-6 sm:py-8">
 			{items.map((item) => (
-				<div key={item.name} className="group relative flex items-center justify-center">
+				<div key={item.name} className="group relative flex items-center justify-center px-1 py-1">
 					<span
-						className={`cursor-default font-black tracking-tight transition-all duration-200 ${item.tone} group-hover:scale-110 group-hover:drop-shadow-[0_0_24px_rgba(255,255,255,0.22)]`}
-						style={{ fontSize: `${item.size}rem`, lineHeight: 0.98 }}
+						className={`cursor-default font-black tracking-tight transition-all duration-200 ${item.tone} group-hover:scale-110 group-hover:drop-shadow-[0_0_28px_rgba(255,255,255,0.26)]`}
+						style={{ fontSize: `${item.size}rem`, lineHeight: 0.92 }}
 						aria-label={`${item.name}: average rating ${Math.round(item.avg_rating)}, ${item.wins} wins, ${item.total_ratings} ratings`}
 					>
 						{item.name}
 					</span>
-					<div className="pointer-events-none absolute left-1/2 top-full z-20 mt-4 w-max -translate-x-1/2 translate-y-1 rounded-[1.25rem] border border-white/10 bg-slate-950/96 px-4 py-3 text-left text-[11px] leading-tight text-white opacity-0 shadow-[0_20px_50px_rgba(0,0,0,0.45)] transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100">
+					<div className="pointer-events-none absolute left-1/2 top-full z-20 mt-3 w-max -translate-x-1/2 translate-y-1 rounded-[1.35rem] border border-white/12 bg-slate-950/98 px-4 py-3 text-left text-[11px] leading-tight text-white opacity-0 shadow-[0_18px_48px_rgba(0,0,0,0.5)] transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100">
 						<div className="text-sm font-semibold text-white">{item.name}</div>
-						<div className="mt-1 text-white/72">Avg rating {Math.round(item.avg_rating)}</div>
-						<div className="mt-1 flex gap-3 text-white/56">
+						<div className="mt-1 text-white/78">Avg rating {Math.round(item.avg_rating)}</div>
+						<div className="mt-1 flex gap-3 text-white/58">
 							<span>{item.wins} wins</span>
 							<span>{item.total_ratings} ratings</span>
 						</div>
