@@ -3,7 +3,6 @@ import type {
         AuthUser,
         LoginCredentials,
 } from "@/app/providers/Providers";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { isStorageAvailable } from "@/shared/lib/storage";
 import {
         clearStoredUserSnapshot,
@@ -101,7 +100,6 @@ export const supabaseAuthAdapter: AuthAdapter = {
                         const trimmedName = name.trim();
                         const client = await resolveSupabaseClient();
                         if (!client) {
-                                // Fallback to localStorage for demo mode
                                 const storedUser = readStoredUserSnapshot();
                                 writeStoredUserSnapshot({
                                         ...storedUser,
@@ -152,7 +150,6 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 authUser = signInData.user;
                         }
 
-                        // Store user info in localStorage for compatibility
                         if (authUser) {
                                 const storedUser = readStoredUserSnapshot();
                                 writeStoredUserSnapshot({
@@ -162,11 +159,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                         email: authUser.email,
                                 });
 
-                                // Link auth.uid() to user_roles row (idempotent — no-op if already linked)
                                 try {
                                         await client.rpc("link_auth_uid");
                                 } catch {
-                                        // Non-critical: is_admin() falls back to JWT user_metadata check
                                 }
                         }
 
@@ -196,7 +191,6 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 await client.auth.signOut();
                         }
 
-                        // Clear localStorage
                         if (isStorageAvailable()) {
                                 clearStoredUserSnapshot();
                         }
@@ -212,21 +206,16 @@ export const supabaseAuthAdapter: AuthAdapter = {
                 try {
                         const client = await resolveSupabaseClient();
                         if (!client) {
-                                console.warn("[Auth] No Supabase client — falling back to localStorage isAdmin");
                                 return Boolean(readStoredUserSnapshot()?.isAdmin);
                         }
 
-                        // Check Supabase auth session
                         const { data: { user: sessionUser } } = await client.auth.getUser();
-                        console.debug("[Auth] checkAdminStatus — session user:", sessionUser?.id ?? "none (not authenticated via Supabase Auth)");
 
                         const { data: isAdmin, error: rpcError } = await client.rpc("is_admin");
-                        console.debug("[Auth] is_admin() RPC result:", isAdmin, "error:", rpcError?.message ?? "none");
                         if (!rpcError && typeof isAdmin === "boolean") {
                                 return isAdmin;
                         }
 
-                        console.warn("[Auth] is_admin() RPC failed, falling back to direct table query");
                         const { data, error } = await client
                                 .from("cat_user_roles")
                                 .select("role")
@@ -234,14 +223,12 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 .eq("role", "admin")
                                 .maybeSingle();
 
-                        console.debug("[Auth] cat_user_roles by user_id:", data, "error:", error?.message ?? "none");
                         if (data) {
                                 return true;
                         }
 
                         const storedUserName = readStoredUserSnapshot()?.name;
                         if (!storedUserName) {
-                                console.warn("[Auth] No stored user name — cannot check by user_name");
                                 return false;
                         }
 
@@ -251,8 +238,6 @@ export const supabaseAuthAdapter: AuthAdapter = {
                                 .eq("user_name", storedUserName)
                                 .eq("role", "admin")
                                 .maybeSingle();
-
-                        console.debug("[Auth] cat_user_roles by user_name (", storedUserName, "):", fallbackData, "error:", fallbackError?.message ?? "none");
 
                         if (error || fallbackError) {
                                 return false;
