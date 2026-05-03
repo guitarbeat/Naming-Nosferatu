@@ -738,48 +738,7 @@ export function NameSelector() {
                         <div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
                                 <Surface as="div" radius="xl" padding="compact" className="sm:p-5">
                                         <div className="flex flex-col gap-4 sm:gap-5">
-                                                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                                                        <div className="space-y-3">
-                                                                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
-                                                                        Selection deck
-                                                                </p>
-                                                                <div className="space-y-2">
-                                                                        <h3 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">
-                                                                                {isSwipeMode
-                                                                                        ? "Swipe through the contenders"
-                                                                                        : "Build your bracket shortlist"}
-                                                                        </h3>
-                                                                        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75 sm:text-base">
-                                                                                {isSwipeMode
-                                                                                        ? "Flick right to keep a name, left to skip it, then start the tournament once at least two names make the cut. Hidden names stay out of the swipe stack, but you can still review them below."
-                                                                                        : "Tap the names that deserve a slot in the tournament. Locked names stay selected automatically, and hidden names stay available below when you need them."}
-                                                                        </p>
-                                                                </div>
-                                                        </div>
-
-                                                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-                                                                {[
-                                                                        { label: "Selected", value: selectedIdsSet.size },
-                                                                        { label: "Available", value: availableNames.length },
-                                                                        { label: "Locked", value: lockedInNames.length },
-                                                                        { label: "Hidden", value: hiddenNamesAll.length },
-                                                                ].map((item) => (
-                                                                        <div
-                                                                                key={item.label}
-                                                                                className="rounded-2xl border border-white/10 bg-black/15 px-3 py-3 sm:px-4"
-                                                                        >
-                                                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                                                        {item.label}
-                                                                                </p>
-                                                                                <p className="mt-2 text-2xl font-semibold text-foreground">
-                                                                                        {item.value}
-                                                                                </p>
-                                                                        </div>
-                                                                ))}
-                                                        </div>
-                                                </div>
-
-                                                <div className="flex flex-col gap-3 border-t border-white/10 pt-4">
+                                                <div className="flex flex-col gap-3">
                                                         <div className="-mx-1 overflow-x-auto pb-1 sm:mx-0 sm:overflow-visible sm:pb-0">
                                                                 <div className="flex min-w-max gap-2 px-1 sm:min-w-0 sm:flex-wrap sm:px-0">
                                                                         <Button
