@@ -1,14 +1,12 @@
 import type { ReactNode } from "react";
 import Button from "@/shared/components/layout/Button";
-import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback";
-import { Activity, BarChart3, Eye, EyeOff, Trophy, Users } from "@/shared/lib/icons";
+import { Activity, Eye, EyeOff, Trophy } from "@/shared/lib/icons";
 import type { NameItem, RatingData } from "@/shared/types";
 import { ContextBadge, Panel } from "./components/DashboardPrimitives";
-import { RatingDistributionChart } from "./components/RatingDistributionChart";
-import { TopNamesChart } from "./components/TopNamesChart";
 import { type DashboardTimeframe, useDashboardData } from "./hooks/useDashboardData";
 import { PersonalResults } from "./PersonalResults";
+import { WordCloudChart } from "./components/WordCloudChart";
 
 interface DashboardProps {
         personalRatings?: Record<string, RatingData>;
@@ -69,16 +67,7 @@ export function Dashboard({
                         {/* Empty state */}
                         {shouldShowEmptyState && (
                                 <Panel className="border-dashed bg-black/10">
-                                        <PanelTitle
-                                                title="Nothing ranked yet"
-                                                action={
-                                                        onStartNew ? (
-                                                                <Button variant="outline" size="small" onClick={onStartNew}>
-                                                                        Start Tournament
-                                                                </Button>
-                                                        ) : undefined
-                                                }
-                                        />
+                                        <PanelTitle title="Nothing ranked yet" />
                                         <p className="text-sm text-muted-foreground/55">
                                                 {isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
                                         </p>
@@ -144,26 +133,18 @@ export function Dashboard({
                                                 ))}
                                         </div>
                                 ) : (
-                                        <EmptyState
-                                                variant="box"
-                                                title="No community ratings yet."
-                                                description="Complete a few tournament sessions to populate the leaderboard."
-                                        />
+                                        <p className="py-6 text-sm text-muted-foreground/55">
+                                                No community ratings yet.
+                                        </p>
                                 )}
                         </Panel>
 
-                        {/* Charts — 2 cols, only when there's data */}
+                        {/* Word cloud */}
                         {leaderboard.length > 0 && (
-                                <div className="grid gap-6 sm:grid-cols-2">
-                                        <Panel>
-                                                <PanelTitle title="Top Names" />
-                                                <TopNamesChart leaderboard={leaderboard} />
-                                        </Panel>
-                                        <Panel>
-                                                <PanelTitle title="Score Distribution" />
-                                                <RatingDistributionChart leaderboard={leaderboard} />
-                                        </Panel>
-                                </div>
+                                <Panel>
+                                        <PanelTitle title="Word Cloud" />
+                                        <WordCloudChart leaderboard={leaderboard} />
+                                </Panel>
                         )}
 
                         {/* Engagement — admin only */}
