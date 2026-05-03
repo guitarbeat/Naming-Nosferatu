@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useAppStore from "@/store/appStore";
+import { SpinnerCircle } from "@/shared/components/layout/Feedback/Loading";
 
 const CAT_NAMES = ["NOSFERATU", "SMEEMO", "ORBIT", "NOVA", "NEDJEM", "WOODS", "LUNA"];
 
@@ -78,10 +79,7 @@ export function AppBootScreen({ message = "Preparing the tournament...", visible
 
                                 {/* Spinner + status message */}
                                 <div className="mt-12 flex flex-col items-center gap-3">
-                                        <div className="relative h-5 w-5" aria-hidden="true">
-                                                <div className="absolute inset-0 rounded-full border-2 border-white/10" />
-                                                <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-primary border-r-primary/50" />
-                                        </div>
+                                        <SpinnerCircle size="small" />
                                         <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
                                                 {message}
                                         </p>
