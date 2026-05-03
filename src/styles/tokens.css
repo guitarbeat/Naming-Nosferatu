@@ -151,6 +151,22 @@
 }
 
 /* ==========================================================================
+   GOLDEN RATIO
+   ========================================================================== */
+:root {
+        --phi: 1.618;
+        --phi-inv: 0.618;
+
+        /* φ-derived spacing: each step = previous × φ */
+        --space-phi-1: 0.618rem;  /* 1rem ÷ φ   */
+        --space-phi-2: 1rem;      /* base        */
+        --space-phi-3: 1.618rem;  /* 1rem × φ    */
+        --space-phi-4: 2.618rem;  /* 1rem × φ²   */
+        --space-phi-5: 4.236rem;  /* 1rem × φ³   */
+        --space-phi-6: 6.854rem;  /* 1rem × φ⁴   */
+}
+
+/* ==========================================================================
    SPACING SCALE
    ========================================================================== */
 :root {
@@ -182,10 +198,10 @@
         --app-main-bottom-padding: var(--app-nav-safe-bottom);
         --app-scroll-to-top-bottom: calc(var(--app-nav-shell-height) + var(--app-nav-bottom-offset) + var(--space-4));
         --app-section-padding-inline: var(--space-4);
-        --app-section-padding-block: var(--space-12);
-        --app-section-padding-block-compact: var(--space-8);
+        --app-section-padding-block: var(--space-phi-4);       /* 2.618rem ≈ space-10 */
+        --app-section-padding-block-compact: var(--space-phi-3); /* 1.618rem ≈ space-6  */
         --app-section-scroll-margin: var(--space-24);
-        --app-section-separator-padding: var(--space-14, 3.5rem);
+        --app-section-separator-padding: var(--space-phi-5);   /* 4.236rem ≈ space-16; = block × φ */
         --app-section-max-sm: 36rem;
         --app-section-max-md: 42rem;
         --app-section-max-lg: 56rem;
@@ -203,10 +219,10 @@
         :root {
                 --app-container-padding-inline: var(--space-6);
                 --app-section-padding-inline: var(--space-6);
-                --app-section-padding-block: var(--space-16);
-                --app-section-padding-block-compact: var(--space-10);
+                --app-section-padding-block: var(--space-phi-5);       /* 4.236rem ≈ space-16 */
+                --app-section-padding-block-compact: var(--space-phi-4); /* 2.618rem ≈ space-10 */
                 --app-section-scroll-margin: var(--space-16);
-                --app-section-separator-padding: var(--space-16);
+                --app-section-separator-padding: var(--space-phi-6);    /* 6.854rem ≈ space-28; = block × φ */
                 --app-hero-padding-block-start: var(--space-28, 7rem);
                 --app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
                 --app-chart-frame-height: 16rem;

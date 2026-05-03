@@ -70,7 +70,7 @@ export function HomeHeroSection({
         onStartPicking,
 }: HomeHeroSectionProps) {
         return (
-                <section className="relative isolate -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center justify-center overflow-hidden px-4 py-16 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
+                <section className="relative isolate -mx-3 -mt-4 flex min-h-[100dvh] w-[calc(100%+1.5rem)] flex-col items-center overflow-hidden px-4 text-center sm:-mx-6 sm:-mt-6 sm:w-[calc(100%+3rem)] sm:px-8 md:-mt-10 md:px-12">
                         <div
                                 className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
                                 aria-hidden="true"
@@ -101,12 +101,23 @@ export function HomeHeroSection({
                                 />
                         </div>
 
-                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-white mix-blend-difference sm:mb-5 sm:text-base md:text-lg">
+                        {/*
+                         * Golden ratio vertical positioning.
+                         * Spacer ratio 0.618 : 1 (above : below) positions the
+                         * content block's top edge at the φ⁻¹ = 38.2% point of
+                         * the remaining whitespace, placing the visual focus of
+                         * the headline at approximately the upper golden section.
+                         */}
+                        <div aria-hidden="true" className="flex-[0.618]" style={{ minHeight: "3rem" }} />
+
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/90 mix-blend-difference sm:text-sm">
                                 My cat's name is
                         </p>
 
-                        <div className="mb-3 h-px w-12 bg-gradient-to-r from-transparent via-white/40 to-transparent mix-blend-difference sm:mb-6 sm:w-16" />
+                        {/* Divider: mb = base × φ = 0.75 × 1.618 ≈ 1.25rem */}
+                        <div className="mb-5 h-px w-14 bg-gradient-to-r from-transparent via-white/45 to-transparent mix-blend-difference sm:w-[3.5rem]" />
 
+                        {/* H1: mt from divider already handled; next gap to button = 1.25 × φ ≈ 2rem */}
                         <h1
                                 className="max-w-full font-black uppercase leading-[0.85] tracking-tighter mix-blend-difference"
                                 style={{ fontSize: "clamp(1.75rem, 9vw, 9rem)" }}
@@ -118,10 +129,13 @@ export function HomeHeroSection({
                                 variant="glass"
                                 size="xl"
                                 onClick={onStartPicking}
-                                className="mt-10 sm:mt-14"
+                                className="mt-8 sm:mt-10"
                         >
                                 Wanna help me decide?
                         </Button>
+
+                        {/* Remaining space: 1 part → total ratio above:below = 0.618:1 */}
+                        <div aria-hidden="true" className="flex-1" style={{ minHeight: "5rem" }} />
                 </section>
         );
 }
