@@ -12,65 +12,52 @@ export function TournamentComplete({
 	onNewTournament,
 }: TournamentCompleteProps) {
 	return (
-		<div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6 text-foreground selection:bg-primary/30">
-			{/* Background ambience */}
+		<div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6 py-16 text-foreground selection:bg-primary/30 sm:px-8 lg:px-10">
 			<div
 				className="pointer-events-none absolute inset-0"
 				aria-hidden="true"
 				style={{
 					background: `
-						radial-gradient(ellipse 70% 55% at 50% 30%, hsl(180 50% 12% / 0.28) 0%, transparent 65%),
-						radial-gradient(ellipse 50% 40% at 20% 80%, hsl(142 40% 10% / 0.18) 0%, transparent 55%)
+						radial-gradient(circle at 50% 24%, hsl(180 45% 12% / 0.28) 0%, transparent 42%),
+						radial-gradient(circle at 18% 78%, hsl(142 42% 11% / 0.16) 0%, transparent 30%),
+						radial-gradient(circle at 82% 72%, hsl(24 48% 14% / 0.12) 0%, transparent 28%)
 					`,
 				}}
 			/>
 
-			<div className="relative z-10 flex w-full max-w-md flex-col items-center text-center">
-				{/* Trophy icon */}
-				<div
-					className="mb-8 flex size-20 items-center justify-center rounded-3xl border border-primary/20 bg-primary/8"
-					style={{ boxShadow: "0 0 40px hsl(var(--primary) / 0.15), 0 8px 32px rgba(0,0,0,0.2)" }}
-				>
+			<div className="relative z-10 flex w-full max-w-2xl flex-col items-center text-center">
+				<div className="mb-8 flex size-20 items-center justify-center rounded-[1.75rem] border border-primary/20 bg-primary/10 shadow-[0_0_48px_rgba(45,212,191,0.14)] backdrop-blur-xl">
 					<Trophy className="size-9 text-primary" />
 				</div>
 
-				{/* Title */}
-				<h1 className="font-display text-4xl font-black tracking-tight text-white sm:text-5xl">
-					Tournament<br />
-					<span className="text-primary">Complete</span>
+				<p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/35">
+					Tournament finished
+				</p>
+
+				<h1 className="mt-4 max-w-4xl text-pretty font-display text-[clamp(3rem,10vw,6.5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-white">
+					Tournament Complete
 				</h1>
 
-				<p className="mt-4 max-w-xs text-sm leading-relaxed text-white/45">
+				<p className="mt-5 max-w-xl text-balance text-sm leading-relaxed text-white/48 sm:text-base">
 					Your results are ready to review in the analysis section below.
 				</p>
 
-				{/* Stats row */}
-				<div className="mt-10 flex items-center gap-0 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.03]">
-					<div className="flex flex-col items-center px-8 py-5">
-						<p className="text-3xl font-bold text-white/85">{totalMatches}</p>
-						<p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
-							Matches
-						</p>
+				<div className="mt-10 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2">
+					<div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.14)]">
+						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">Total matches</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
 					</div>
-					<div className="h-12 w-px bg-white/[0.07]" />
-					<div className="flex flex-col items-center px-8 py-5">
-						<p className="text-3xl font-bold text-white/85">{participantCount}</p>
-						<p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
-							Names
-						</p>
+					<div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.14)]">
+						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">Participants</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>
 					</div>
 				</div>
 
-				{/* Actions */}
-				<div className="mt-8 flex w-full flex-col gap-2.5">
+				<div className="mt-10 flex w-full max-w-2xl flex-col gap-3">
 					<button
 						type="button"
-						onClick={() =>
-							document
-								.getElementById("analysis")
-								?.scrollIntoView({ behavior: "smooth", block: "start" })
-						}
-						className="flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-primary/25 bg-primary/12 px-6 py-4 text-sm font-semibold text-primary transition-all hover:bg-primary/18 hover:border-primary/35 active:scale-[0.98]"
+						onClick={() => document.getElementById("analysis")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+						className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-primary/25 bg-primary/12 px-6 py-4 text-sm font-semibold text-primary transition-all hover:border-primary/35 hover:bg-primary/18 active:scale-[0.98]"
 					>
 						<Trophy size={15} />
 						View Analysis
@@ -79,7 +66,7 @@ export function TournamentComplete({
 					<button
 						type="button"
 						onClick={onNewTournament}
-						className="flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border border-white/[0.07] bg-transparent px-6 py-4 text-sm font-medium text-white/45 transition-all hover:border-white/12 hover:bg-white/[0.03] hover:text-white/60 active:scale-[0.98]"
+						className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-4 text-sm font-medium text-white/60 transition-all hover:border-white/15 hover:bg-white/[0.05] hover:text-white/80 active:scale-[0.98]"
 					>
 						<LogOut size={15} />
 						Start New Tournament
