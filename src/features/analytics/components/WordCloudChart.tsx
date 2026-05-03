@@ -11,6 +11,48 @@ function clamp(value: number, min: number, max: number) {
 	return Math.min(max, Math.max(min, value));
 }
 
+interface TooltipProps {
+	name: string;
+	avgRating: number;
+	wins: number;
+	totalRatings: number;
+}
+
+function WordTooltip({ name, avgRating, wins, totalRatings }: TooltipProps) {
+	const winRate = totalRatings > 0 ? Math.round((wins / totalRatings) * 100) : 0;
+	return (
+		<div className="pointer-events-none absolute left-1/2 top-full z-30 mt-3 -translate-x-1/2 translate-y-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+			{/* Caret */}
+			<div className="mx-auto mb-[-1px] h-0 w-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-white/10" />
+			{/* Card */}
+			<div
+				className="min-w-[148px] rounded-[1.1rem] border border-white/10 px-3.5 py-3 text-left shadow-[0_24px_56px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur-xl"
+				style={{ background: "rgba(12,14,22,0.92)" }}
+			>
+				{/* Name */}
+				<p className="mb-2 text-[13px] font-bold leading-none tracking-tight text-white">{name}</p>
+				{/* Divider */}
+				<div className="mb-2 h-px bg-white/8" />
+				{/* Stats row */}
+				<div className="flex flex-col gap-1.5">
+					<div className="flex items-center justify-between gap-6">
+						<span className="text-[11px] text-white/45">Avg rating</span>
+						<span className="text-[11px] font-semibold tabular-nums text-white/90">{Math.round(avgRating)}</span>
+					</div>
+					<div className="flex items-center justify-between gap-6">
+						<span className="text-[11px] text-white/45">Wins</span>
+						<span className="text-[11px] font-semibold tabular-nums text-white/90">{wins}</span>
+					</div>
+					<div className="flex items-center justify-between gap-6">
+						<span className="text-[11px] text-white/45">Win rate</span>
+						<span className="text-[11px] font-semibold tabular-nums text-white/90">{winRate}%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 	const items = [...leaderboard]
 		.sort((a, b) => b.avg_rating - a.avg_rating)
@@ -26,19 +68,13 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 							: index % 5 === 3
 								? "text-white/68"
 								: "text-white/54";
-			return {
-				...entry,
-				size,
-				tone,
-			};
+			return { ...entry, size, tone };
 		});
 
-	if (items.length === 0) {
-		return null;
-	}
+	if (items.length === 0) return null;
 
 	return (
-		<div className="flex min-h-[26rem] flex-wrap items-center justify-center gap-x-2 gap-y-2 px-3 py-6 text-center sm:min-h-[32rem] sm:px-6 sm:py-8">
+		<div className="flex min-h-[26rem] flex-wrap items-center justify-center gap-x-2 gap-y-3 px-3 py-6 text-center sm:min-h-[32rem] sm:px-6 sm:py-8">
 			{items.map((item) => (
 				<div key={item.name} className="group relative flex items-center justify-center px-1 py-1">
 					<span
@@ -48,17 +84,12 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 					>
 						{item.name}
 					</span>
-					<div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 translate-y-1 opacity-0 transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100">
-						<div className="relative rounded-[1.15rem] border border-white/12 bg-slate-950/98 px-3.5 py-2.5 text-left text-[11px] leading-tight text-white shadow-[0_18px_48px_rgba(0,0,0,0.5)]">
-							<div className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-l border-t border-white/12 bg-slate-950/98" />
-							<div className="text-sm font-semibold text-white">{item.name}</div>
-							<div className="mt-1 text-white/72">Avg rating {Math.round(item.avg_rating)}</div>
-							<div className="mt-1 flex gap-3 text-white/56">
-								<span>{item.wins} wins</span>
-								<span>{item.total_ratings} ratings</span>
-							</div>
-						</div>
-					</div>
+					<WordTooltip
+						name={item.name}
+						avgRating={item.avg_rating}
+						wins={item.wins}
+						totalRatings={item.total_ratings}
+					/>
 				</div>
 			))}
 		</div>
