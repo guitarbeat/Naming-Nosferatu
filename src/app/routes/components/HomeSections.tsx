@@ -129,7 +129,7 @@ export function HomeHeroSection({
                                 variant="glass"
                                 size="xl"
                                 onClick={onStartPicking}
-                                className="mt-8 sm:mt-10"
+                                className="mt-14 sm:mt-16"
                         >
                                 Wanna help me decide?
                         </Button>
