@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { type KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ErrorComponent } from "@/shared/components/layout/Feedback";
 import { CAT_IMAGES } from "@/shared/lib/constants";
@@ -40,20 +40,6 @@ interface StreakBurst {
 }
 
 const OPENING_BRACKET_REVEAL_MS = 2200;
-
-function isInteractiveTarget(target: EventTarget | null): boolean {
-        if (!(target instanceof HTMLElement)) {
-                return false;
-        }
-
-        const tagName = target.tagName;
-        return (
-                tagName === "INPUT" ||
-                tagName === "TEXTAREA" ||
-                tagName === "SELECT" ||
-                target.isContentEditable
-        );
-}
 
 function getStageHeadline(round: number, totalRounds: number): string {
         if (round >= totalRounds) {
@@ -288,16 +274,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                 ],
         );
 
-        const handleKeyDown = useCallback(
-                (event: KeyboardEvent<HTMLElement>, side: "left" | "right") => {
-                        if (event.key === "Enter" || event.key === " ") {
-                                event.preventDefault();
-                                handleVoteForSide(side);
-                        }
-                },
-                [handleVoteForSide],
-        );
-
         const leftImg =
                 showCatPictures && matchData ? getRandomCatImage(matchData.leftId, CAT_IMAGES) : null;
         const rightImg =
@@ -312,20 +288,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                 tournamentActions.resetTournament();
                 navigate("/");
         }, [handleQuit, tournamentActions, navigate]);
-
-        useEffect(() => {
-                if (isComplete || !matchData) {
-                        return;
-                }
-
-                void canUndo;
-                void handleUndo;
-                void handleVoteForSide;
-                void isComplete;
-                void isVoting;
-                void matchData;
-                void openingBracketReveal.value;
-        }, []);
 
         if (isComplete) {
                 return (

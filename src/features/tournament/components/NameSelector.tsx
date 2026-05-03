@@ -578,52 +578,6 @@ export function NameSelector() {
         const canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
         const selectionFloor = lockedInNames.length;
 
-        // Keyboard navigation for swipe mode
-        useEffect(() => {
-                if (!isSwipeMode) {
-                        return;
-                }
-
-                const handleKeyDown = (e: KeyboardEvent) => {
-                        // Don't handle keyboard events if lightbox is open
-                        if (lightboxOpen) {
-                                return;
-                        }
-
-                        const currentCard = visibleCards[0];
-                        if (!currentCard) {
-                                return;
-                        }
-
-                        switch (e.key) {
-                                case "ArrowLeft":
-                                case "a":
-                                case "A":
-                                        e.preventDefault();
-                                        setDragDirection("left");
-                                        handleSwipe(currentCard.id, "left");
-                                        break;
-                                case "ArrowRight":
-                                case "d":
-                                case "D":
-                                        e.preventDefault();
-                                        setDragDirection("right");
-                                        handleSwipe(currentCard.id, "right");
-                                        break;
-                                case "z":
-                                case "Z":
-                                        if (e.ctrlKey || e.metaKey) {
-                                                e.preventDefault();
-                                                handleUndo();
-                                        }
-                                        break;
-                        }
-                };
-
-                window.addEventListener("keydown", handleKeyDown);
-                return () => window.removeEventListener("keydown", handleKeyDown);
-        }, [isSwipeMode, visibleCards, handleSwipe, handleUndo, lightboxOpen]);
-
         const handleOpenLightbox = useCallback(
                 (nameId: IdType) => {
                         const index = names.findIndex((n) => n.id === nameId);
@@ -1069,12 +1023,6 @@ export function NameSelector() {
                                                                                                 <motion.div
                                                                                                         key={nameItem.id}
                                                                                                         onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        onKeyDown={(e) => {
-                                                                                                                if (e.key === "Enter" || e.key === " ") {
-                                                                                                                        e.preventDefault();
-                                                                                                                        handleToggleName(nameItem.id);
-                                                                                                                }
-                                                                                                        }}
                                                                                                         role="button"
                                                                                                         tabIndex={0}
                                                                                                         whileHover={{ scale: 1.03, y: -2 }}
@@ -1287,12 +1235,6 @@ export function NameSelector() {
                                                                                                 <div
                                                                                                         key={nameItem.id}
                                                                                                         onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        onKeyDown={(e) => {
-                                                                                                                if (e.key === "Enter" || e.key === " ") {
-                                                                                                                        e.preventDefault();
-                                                                                                                        handleToggleName(nameItem.id);
-                                                                                                                }
-                                                                                                        }}
                                                                                                         role="button"
                                                                                                         tabIndex={0}
                                                                                                         className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
