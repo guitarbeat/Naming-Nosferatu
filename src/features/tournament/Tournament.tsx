@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ErrorComponent } from "@/shared/components/layout/Feedback";
-import { CAT_IMAGES } from "@/shared/lib/constants";
+import { CAT_IMAGES, ELO_RATING } from "@/shared/lib/constants";
 import {
         Music,
         PawPrint,
@@ -325,8 +325,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
                                 : null;
 
         const progressWidth = progress || (currentMatchNumber / totalMatches) * 100;
-        const leftRating = ratings[matchData.leftId] ?? 1500;
-        const rightRating = ratings[matchData.rightId] ?? 1500;
+        const leftRating = ratings[matchData.leftId] ?? ELO_RATING.DEFAULT_RATING;
+        const rightRating = ratings[matchData.rightId] ?? ELO_RATING.DEFAULT_RATING;
         const ratingGap = Math.abs(leftRating - rightRating);
         const leftIsFavored = leftRating > rightRating;
         const rightIsFavored = rightRating > leftRating;

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { isStorageAvailable, readStorageJson, writeStorageJson } from "@/shared/lib/storage";
+import { createSortedKey } from "@/shared/lib/utils";
 import type { NameItem } from "@/shared/types";
 
 interface SaverOptions {
@@ -13,10 +14,7 @@ interface SaverApiResult {
 }
 
 function saveSelectionHash(selectedNames: NameItem[]): string {
-	return selectedNames
-		.map((n) => n.id)
-		.sort()
-		.join(",");
+	return createSortedKey(selectedNames);
 }
 
 function isSaverOptions(value: NameItem[] | SaverOptions): value is SaverOptions {
