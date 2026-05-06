@@ -5,6 +5,7 @@ import {
 	getExpectedEloScore,
 	updateEloRating,
 } from "@/shared/lib/elo";
+import { shuffleArray } from "@/shared/lib/utils";
 import type { Team, TeamMatch, TournamentMode } from "@/shared/types";
 export class EloRating {
 	constructor(
@@ -75,17 +76,6 @@ export class EloRating {
 
 export function resolveTournamentMode(selectedCount: number): TournamentMode {
 	return selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2" : "1v1";
-}
-
-function shuffleArray<T>(items: T[]): T[] {
-	const shuffled = [...items];
-	for (let i = shuffled.length - 1; i > 0; i -= 1) {
-		const j = Math.floor(Math.random() * (i + 1));
-		const temp = shuffled[i];
-		shuffled[i] = shuffled[j] as T;
-		shuffled[j] = temp as T;
-	}
-	return shuffled;
 }
 
 export function generateRandomTeams(participants: Array<{ id: string; name: string }>): Team[] {

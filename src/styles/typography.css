@@ -54,11 +54,6 @@ h3 {
         font-weight: var(--font-weight-medium);
 }
 
-.scroll-to-top {
-        font-size: var(--text-lg);
-        font-weight: var(--font-weight-bold);
-}
-
 .random-generator-button {
         font-size: 0.95rem;
         font-weight: var(--font-weight-extrabold);

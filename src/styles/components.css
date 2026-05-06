@@ -40,6 +40,8 @@
         background: hsl(224 24% 16% / 0.9);
         border: 1px solid rgb(255 255 255 / 0.1);
         backdrop-filter: blur(12px);
+        font-size: var(--text-lg);
+        font-weight: var(--font-weight-bold);
 }
 
 .scroll-to-top.visible {
@@ -47,6 +49,40 @@
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
+}
+
+@media (width <= 768px) {
+        .scroll-to-top {
+                right: var(--mobile-safe-spacing);
+                bottom: var(--app-scroll-to-top-bottom);
+        }
+}
+
+@media (width <= 430px) {
+        .scroll-to-top {
+                right: var(--mobile-safe-spacing-small);
+                bottom: var(--mobile-safe-spacing-small);
+        }
+}
+
+@supports (padding: max(0px)) {
+        @media (width <= 768px) {
+                .scroll-to-top {
+                        right: max(
+                                var(--mobile-safe-spacing),
+                                env(safe-area-inset-right) +
+                                var(--mobile-safe-spacing)
+                        );
+                        bottom: var(--app-scroll-to-top-bottom);
+                }
+        }
+}
+
+@media screen and (width <= 768px) and (orientation: landscape) {
+        .scroll-to-top {
+                right: var(--mobile-safe-spacing-small);
+                bottom: var(--app-scroll-to-top-bottom);
+        }
 }
 
 /* ==========================================================================
