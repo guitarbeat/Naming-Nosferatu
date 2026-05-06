@@ -7,7 +7,7 @@ import React, {
         useRef,
         useState,
 } from "react";
-import { Surface } from "@/shared/components/layout/Surface";
+import { Card } from "@/shared/components/layout/Card";
 
 export const CHART_TOOLTIP_STYLE = {
         background: "rgba(14, 18, 28, 0.96)",
@@ -65,9 +65,9 @@ export function ChartFrame({
 
 export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
         return (
-                <Surface radius="lg" elevated className={className}>
+                <Card variant="default" shadow="large" className={className}>
                         {children}
-                </Surface>
+                </Card>
         );
 }
 
