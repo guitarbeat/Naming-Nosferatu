@@ -5,6 +5,8 @@ import { Loading } from "@/shared/components/layout/Feedback";
 
 const HomeRoute = lazy(() => import("@/app/routes/HomeRoute"));
 const AdminRoute = lazy(() => import("@/app/routes/AdminRoute"));
+const CinematicFooterDemo = lazy(() => import("@/shared/components/ui/cinematic-footer-demo"));
+const CinematicHeroDemo = lazy(() => import("@/shared/components/ui/cinematic-landing-hero-demo"));
 
 function RouteFallback({ text }: { text: string }) {
         return <Loading variant="cat-gif" text={text} className="min-h-[82dvh]" />;
@@ -38,6 +40,22 @@ export default function AppShell() {
                                         element={
                                                 <Suspense fallback={<RouteFallback text="Loading admin..." />}>
                                                         <AdminRoute />
+                                                </Suspense>
+                                        }
+                                />
+                                <Route
+                                        path="/demo/cinematic-footer"
+                                        element={
+                                                <Suspense fallback={<RouteFallback text="Loading demo..." />}>
+                                                        <CinematicFooterDemo />
+                                                </Suspense>
+                                        }
+                                />
+                                <Route
+                                        path="/demo/cinematic-hero"
+                                        element={
+                                                <Suspense fallback={<RouteFallback text="Loading demo..." />}>
+                                                        <CinematicHeroDemo />
                                                 </Suspense>
                                         }
                                 />
