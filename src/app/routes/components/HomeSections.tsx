@@ -2,6 +2,7 @@ import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
+import { CinematicHero } from "@/shared/components/ui/CinematicHero";
 import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
@@ -10,6 +11,7 @@ interface HomeHeroSectionProps {
         state: HomeHeroState;
         lockedNames: NameItem[];
         onStartPicking: () => void;
+        useCinematic?: boolean;
 }
 
 interface TournamentBracketSectionProps {
@@ -60,7 +62,21 @@ export function HomeHeroSection({
         state,
         lockedNames,
         onStartPicking,
+        useCinematic = false,
 }: HomeHeroSectionProps) {
+        if (useCinematic) {
+                return (
+                        <CinematicHero
+                                tagline1="Pick the perfect"
+                                tagline2="name for your cat."
+                                description="Run a tournament, gather opinions, and find the name that fits. Fair, visual, and surprisingly fun."
+                                onCTA={onStartPicking}
+                                ctaLabel="Start a tournament"
+                                isScrollAnimated={true}
+                        />
+                );
+        }
+
         return (
                 <section className="relative isolate flex min-h-[100dvh] flex-col items-center justify-center px-6 text-center">
                         <div aria-hidden="true" className="flex-[0.55]" />
