@@ -21,7 +21,7 @@ const CINEMATIC_STYLES = `
 
   .bg-grid-theme {
     background-size: 60px 60px;
-    background-image: 
+    background-image:
       linear-gradient(to right, rgba(77, 200, 245, 0.05) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(77, 200, 245, 0.05) 1px, transparent 1px);
     mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
@@ -33,7 +33,7 @@ const CINEMATIC_STYLES = `
     background: linear-gradient(145deg, rgba(20, 30, 60, 0.8), rgba(10, 16, 29, 0.9));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    box-shadow: 
+    box-shadow:
       0 40px 100px -20px rgba(0, 0, 0, 0.9),
       0 20px 40px -20px rgba(0, 0, 0, 0.8),
       inset 0 1px 2px rgba(77, 200, 245, 0.1),
@@ -54,6 +54,77 @@ const CINEMATIC_STYLES = `
     stroke-dasharray: 402;
     stroke-dashoffset: 402;
     stroke-linecap: round;
+  }
+
+  /* Interactive Elements */
+  .tournament-button {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+  }
+
+  .tournament-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 24px rgba(77, 200, 245, 0.4);
+  }
+
+  .tournament-button:active {
+    transform: scale(0.98);
+  }
+
+  .stat-card {
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(77, 200, 245, 0.2);
+  }
+
+  .progress-bar {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .matchup-card {
+    transition: all 0.3s ease;
+  }
+
+  .matchup-card:hover {
+    border-color: rgba(77, 200, 245, 0.4);
+    box-shadow: 0 0 20px rgba(77, 200, 245, 0.2);
+  }
+
+  .counter-animation {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .badge-glow {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Smooth number transitions */
+  @supports (animation: counter-inc 1s) {
+    .counter-val {
+      animation: counter-inc 2s ease-out forwards;
+    }
   }
 `;
 
@@ -81,7 +152,7 @@ export function CinematicHero({
   const mockupRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
 
-  // Mouse interaction for card sheen
+  // Mouse interaction for card sheen and 3D depth
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (window.scrollY > window.innerHeight * 2) return;
@@ -100,19 +171,35 @@ export function CinematicHero({
           const xVal = (e.clientX / window.innerWidth - 0.5) * 2;
           const yVal = (e.clientY / window.innerHeight - 0.5) * 2;
 
+          // Enhanced 3D rotation with slight elevation
           gsap.to(mockupRef.current, {
-            rotationY: xVal * 12,
-            rotationX: -yVal * 12,
+            rotationY: xVal * 8,
+            rotationX: -yVal * 8,
+            y: -Math.abs(yVal) * 8,
             ease: "power3.out",
-            duration: 1.2,
+            duration: 0.8,
           });
         }
       });
     };
 
+    const handleMouseLeave = () => {
+      if (mockupRef.current) {
+        gsap.to(mockupRef.current, {
+          rotationY: 0,
+          rotationX: 0,
+          y: 0,
+          ease: "power3.out",
+          duration: 0.6,
+        });
+      }
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
       cancelAnimationFrame(requestRef.current);
     };
   }, []);
@@ -213,13 +300,16 @@ export function CinematicHero({
           <div className="card-sheen" aria-hidden="true" />
 
           {/* Card Grid Layout */}
-          <div className="relative w-full h-full max-w-7xl mx-auto px-4 lg:px-12 flex flex-col justify-evenly lg:grid lg:grid-cols-3 items-center lg:gap-8 z-10 py-6 lg:py-0">
+          <div className="relative w-full h-full max-w-7xl mx-auto px-4 lg:px-12 flex flex-col justify-between lg:justify-evenly lg:grid lg:grid-cols-3 items-center lg:gap-8 z-10 py-6 lg:py-0">
             
             {/* Left Content - Desktop: Left, Mobile: Bottom */}
-            <div className="card-left-content gsap-reveal order-3 lg:order-1 flex flex-col justify-center text-center lg:text-left z-20 w-full lg:max-w-none px-4 lg:px-0">
-              <h2 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-4 tracking-tight">
-                How it works
-              </h2>
+            <div className="card-left-content gsap-reveal order-3 lg:order-1 flex flex-col justify-center text-center lg:text-left z-20 w-full lg:max-w-none px-4 lg:px-0 space-y-4">
+              <div>
+                <h2 className="text-white text-2xl md:text-3xl lg:text-4xl font-black mb-2 tracking-tight leading-tight">
+                  How it works
+                </h2>
+                <div className="h-1 w-12 bg-gradient-to-r from-stardust to-hot-pink rounded-full hidden lg:block" />
+              </div>
               <p className="hidden md:block text-blue-100/70 text-sm md:text-base lg:text-lg font-normal leading-relaxed mx-auto lg:mx-0 max-w-sm lg:max-w-none">
                 {description}
               </p>
@@ -262,30 +352,30 @@ export function CinematicHero({
                       </div>
 
                       {/* Matchup Card */}
-                      <div className="flex-1 flex flex-col gap-2 bg-white/5 rounded-2xl p-3 border border-white/10">
+                      <div className="flex-1 flex flex-col gap-2 matchup-card bg-white/5 rounded-2xl p-3 border border-white/10">
                         <div className="flex gap-2 text-xs">
-                          <button className="flex-1 bg-stardust/20 text-stardust rounded-lg px-2 py-2 font-bold border border-stardust/30 hover:bg-stardust/30 transition-colors">
+                          <button className="tournament-button flex-1 bg-stardust/20 text-stardust rounded-lg px-2 py-2 font-bold border border-stardust/30">
                             Whiskers
                           </button>
-                          <span className="text-white/50 flex items-center">vs</span>
-                          <button className="flex-1 bg-white/5 text-white/70 rounded-lg px-2 py-2 font-bold border border-white/10 hover:bg-white/10 transition-colors">
+                          <span className="text-white/50 flex items-center text-[10px]">vs</span>
+                          <button className="tournament-button flex-1 bg-white/5 text-white/70 rounded-lg px-2 py-2 font-bold border border-white/10">
                             Shadow
                           </button>
                         </div>
-                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full w-3/5 bg-gradient-to-r from-stardust to-hot-pink" />
+                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden progress-bar">
+                          <div className="h-full w-3/5 bg-gradient-to-r from-stardust to-hot-pink rounded-full" />
                         </div>
                       </div>
 
                       {/* Stats */}
                       <div className="grid grid-cols-2 gap-2 text-[10px]">
-                        <div className="bg-white/5 rounded-lg p-2 border border-white/10">
-                          <span className="text-white/50">Total Votes</span>
-                          <p className="font-bold text-sm">24</p>
+                        <div className="stat-card bg-white/5 rounded-lg p-2 border border-white/10">
+                          <span className="text-white/50 text-[9px]">Total Votes</span>
+                          <p className="counter-animation font-bold text-sm text-stardust">24</p>
                         </div>
-                        <div className="bg-white/5 rounded-lg p-2 border border-white/10">
-                          <span className="text-white/50">Names</span>
-                          <p className="font-bold text-sm">8</p>
+                        <div className="stat-card bg-white/5 rounded-lg p-2 border border-white/10">
+                          <span className="text-white/50 text-[9px]">Remaining</span>
+                          <p className="counter-animation font-bold text-sm text-hot-pink">4</p>
                         </div>
                       </div>
                     </div>
@@ -296,24 +386,67 @@ export function CinematicHero({
                 </div>
 
                 {/* Badge */}
-                <div className="card-badge absolute flex top-4 -left-16 lg:-left-24 bg-white/5 backdrop-filter backdrop-blur-md rounded-xl p-3 items-center gap-3 z-30 border border-white/10">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-stardust/20 to-stardust/5 flex items-center justify-center border border-stardust/30">
+                <div className="card-badge absolute flex top-4 -left-16 lg:-left-24 bg-white/5 backdrop-filter backdrop-blur-md rounded-xl p-3 items-center gap-3 z-30 border border-stardust/30 shadow-lg shadow-stardust/20">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-stardust/30 to-stardust/10 flex items-center justify-center border border-stardust/40 badge-glow">
                     <span className="text-base">🏆</span>
                   </div>
                   <div>
                     <p className="text-white text-xs font-bold">Fair voting</p>
-                    <p className="text-stardust/70 text-[10px] font-medium">Double-blind rounds</p>
+                    <p className="text-stardust/80 text-[10px] font-medium">Double-blind</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Right Content - Desktop: Right, Mobile: Top */}
-            <div className="card-right-content gsap-reveal order-1 lg:order-3 flex flex-col justify-center lg:justify-start text-center lg:text-right z-20 w-full">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-stardust">
-                Vote
-              </h2>
-              <p className="text-sm text-white/50 mt-2 lg:text-right">See results in real time</p>
+            <div className="card-right-content gsap-reveal order-1 lg:order-3 flex flex-col justify-center lg:justify-start text-center lg:text-right z-20 w-full space-y-3">
+              <div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter bg-gradient-to-r from-stardust to-hot-pink bg-clip-text text-transparent">
+                  Vote
+                </h2>
+              </div>
+              <div className="flex flex-col lg:items-end gap-2">
+                <p className="text-sm text-white/70 font-medium">See results in real time</p>
+                <div className="flex gap-2 items-center justify-center lg:justify-end">
+                  <div className="flex -space-x-2">
+                    <div className="w-5 h-5 rounded-full bg-stardust/30 border border-stardust/50 flex items-center justify-center text-[10px]">👤</div>
+                    <div className="w-5 h-5 rounded-full bg-hot-pink/30 border border-hot-pink/50 flex items-center justify-center text-[10px]">👤</div>
+                    <div className="w-5 h-5 rounded-full bg-white/10 border border-white/30 flex items-center justify-center text-[10px]">+3</div>
+                  </div>
+                  <span className="text-xs text-white/50">5 voting</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature Highlights - Bottom */}
+            <div className="order-4 lg:order-4 col-span-1 lg:col-span-3 hidden lg:flex gap-4 mt-8 pt-8 border-t border-white/10 w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+              <div className="flex items-center gap-3 flex-1 text-left">
+                <div className="w-10 h-10 rounded-lg bg-stardust/20 border border-stardust/30 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg">⚡</span>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 uppercase tracking-widest">Instant</p>
+                  <p className="text-sm font-semibold text-white">Live Results</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 flex-1 text-center">
+                <div className="w-10 h-10 rounded-lg bg-hot-pink/20 border border-hot-pink/30 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg">🔒</span>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 uppercase tracking-widest">Blind</p>
+                  <p className="text-sm font-semibold text-white">Fair Voting</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 flex-1 text-right">
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg">📊</span>
+                </div>
+                <div>
+                  <p className="text-xs text-white/60 uppercase tracking-widest">Smart</p>
+                  <p className="text-sm font-semibold text-white">Analysis</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
