@@ -1,6 +1,5 @@
-import { shuffleArray } from "@/shared/lib/utils";
-import { getRandomCatImage } from "@/shared/lib/media";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { getRandomCatImage } from "@/shared/lib/media";
 import type { IdType, NameItem } from "@/shared/types";
 
 type ItemWithId<TId> = {
@@ -28,11 +27,35 @@ export function pickRandomItemIds<T extends ItemWithId<IdType>>(
 		return new Set();
 	}
 
-	return new Set(
-		shuffleArray([...items])
-			.slice(0, count)
-			.map((item) => item.id),
-	);
+	const maxCount = Math.min(count, items.length);
+	const result = new Set<IdType>();
+
+	if (maxCount < items.length * 0.25) {
+		const selectedIndices = new Set<number>();
+		while (selectedIndices.size < maxCount) {
+			const randomIndex = Math.floor(Math.random() * items.length);
+			if (!selectedIndices.has(randomIndex)) {
+				selectedIndices.add(randomIndex);
+				result.add(items[randomIndex]?.id);
+			}
+		}
+		return result;
+	}
+
+	const pool = new Int32Array(items.length);
+	for (let i = 0; i < items.length; i++) {
+		pool[i] = i;
+	}
+
+	for (let i = 0; i < maxCount; i++) {
+		const j = i + Math.floor(Math.random() * (items.length - i));
+		const temp = pool[i] as number;
+		pool[i] = pool[j] as number;
+		pool[j] = temp;
+		result.add(items[pool[i] as number]?.id);
+	}
+
+	return result;
 }
 
 export function buildNameCardImages(names: readonly NameItem[]): {
@@ -51,3 +74,10 @@ export function buildNameCardImages(names: readonly NameItem[]): {
 
 	return { catImages, catImageById };
 }
+
+export {
+	addManyToSet as addIdsToSet,
+	addToSet as addIdToSet,
+	removeFromSet as removeIdFromSet,
+	toggleInSet as toggleIdInSet,
+} from "@/shared/lib/setUtils";
