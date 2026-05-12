@@ -1,0 +1,16 @@
+--- src/app/deployment.ts
++++ src/app/deployment.ts
+@@ -144,10 +144,10 @@
+		.map(
+			(d) => `
+                 <tr style="border-bottom:1px solid #e5e7eb">
+-                        <td style="padding:8px 12px;font-weight:500">${escapeHtml(d.name)}</td>
++                        <td style="padding:8px 12px;font-weight:500">${escapeHtml(d.name || "")}</td>
+                         <td style="padding:8px 12px;text-align:center">${statusIcons[d.status]}</td>
+-                        <td style="padding:8px 12px;font-family:monospace;font-size:12px">${escapeHtml(d.value || "-")}</td>
+-                        <td style="padding:8px 12px;color:#6b7280;font-size:12px">${escapeHtml(d.hint || "")}</td>
++                        <td style="padding:8px 12px;font-family:monospace;font-size:12px">${escapeHtml(String(d.value) || "-")}</td>
++                        <td style="padding:8px 12px;color:#6b7280;font-size:12px">${escapeHtml(String(d.hint) || "")}</td>
+                 </tr>
+         `,
+		)

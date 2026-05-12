@@ -191,8 +191,8 @@ function renderConsoleErrors(errors: string[]): string {
                 <div class="deployment-error__section" style="background:#fef2f2;border-left-color:#ef4444">
                         <h3 class="deployment-error__section-title" style="color:#dc2626;display:flex;align-items:center;justify-content:between">
                                 <span>Console Errors (${errors.length})</span>
-                                <button 
-                                        type="button" 
+                                <button
+                                        type="button"
                                         onclick="copyErrorsToClipboard()"
                                         style="margin-left:auto;padding:4px 12px;font-size:12px;background:#dc2626;color:white;border:none;border-radius:4px;cursor:pointer"
                                 >
@@ -296,16 +296,8 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
                 <p class="deployment-error__message">${escapeHtml(errorInfo.message)}</p>
                 ${renderDiagnostics(diagnostics)}
                 ${renderConsoleErrors(consoleErrors)}
-                ${renderDeploymentList(
-									"What happened",
-									errorInfo.details?.map((d) => escapeHtml(d)),
-									"ul",
-								)}
-                ${renderDeploymentList(
-									"Try this",
-									errorInfo.suggestions?.map((s) => escapeHtml(s)),
-									"ol",
-								)}
+                ${renderDeploymentList("What happened", errorInfo.details, "ul")}
+                ${renderDeploymentList("Try this", errorInfo.suggestions, "ol")}
                 <div class="deployment-error__button-row">
                         <button type="button" class="deployment-error__button" onclick="window.location.reload()">Try again</button>
                         <button type="button" class="deployment-error__button" style="background:rgba(255,255,255,0.08);color:#94a3b8" onclick="document.getElementById('deployment-error-display').remove()">Dismiss</button>
