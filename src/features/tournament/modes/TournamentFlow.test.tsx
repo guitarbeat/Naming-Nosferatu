@@ -13,6 +13,7 @@ const mockStore = {
 		isComplete: false,
 		names: null as null | string[],
 		ratings: {} as Record<string, number>,
+		voteHistory: [],
 	},
 	tournamentActions: {},
 };
@@ -25,6 +26,7 @@ vi.mock("../hooks", () => ({
 	useTournamentHandlers: () => ({
 		handleStartNewTournament: mockHandleStartNewTournament,
 	}),
+	useSaveTournamentRatings: vi.fn(),
 }));
 
 vi.mock("../components/NameSelector", () => ({
