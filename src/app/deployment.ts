@@ -144,10 +144,10 @@ function renderDiagnostics(diagnostics: DiagnosticResult[]): string {
 		.map(
 			(d) => `
                 <tr style="border-bottom:1px solid #e5e7eb">
-                        <td style="padding:8px 12px;font-weight:500">${d.name}</td>
+                        <td style="padding:8px 12px;font-weight:500">${escapeHtml(d.name)}</td>
                         <td style="padding:8px 12px;text-align:center">${statusIcons[d.status]}</td>
-                        <td style="padding:8px 12px;font-family:monospace;font-size:12px">${d.value || "-"}</td>
-                        <td style="padding:8px 12px;color:#6b7280;font-size:12px">${d.hint || ""}</td>
+                        <td style="padding:8px 12px;font-family:monospace;font-size:12px">${escapeHtml(d.value || "-")}</td>
+                        <td style="padding:8px 12px;color:#6b7280;font-size:12px">${escapeHtml(d.hint || "")}</td>
                 </tr>
         `,
 		)
@@ -222,9 +222,9 @@ function renderDeploymentList(
 
 	return `
                 <div class="deployment-error__section">
-                        <h3 class="deployment-error__section-title">${title}</h3>
+                        <h3 class="deployment-error__section-title">${escapeHtml(title)}</h3>
                         <${listTag} class="deployment-error__list">
-                                ${items.map((item) => `<li class="deployment-error__list-item">${item}</li>`).join("")}
+                                ${items.map((item) => `<li class="deployment-error__list-item">${escapeHtml(item)}</li>`).join("")}
                         </${listTag}>
                 </div>
         `;
@@ -292,8 +292,8 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
 
 	content.innerHTML = `
                 <div class="deployment-error__icon" aria-hidden="true">🐾</div>
-                <h2 class="deployment-error__title">${errorInfo.title}</h2>
-                <p class="deployment-error__message">${errorInfo.message}</p>
+                <h2 class="deployment-error__title">${escapeHtml(errorInfo.title)}</h2>
+                <p class="deployment-error__message">${escapeHtml(errorInfo.message)}</p>
                 ${renderDiagnostics(diagnostics)}
                 ${renderConsoleErrors(consoleErrors)}
                 ${renderDeploymentList("What happened", errorInfo.details, "ul")}
