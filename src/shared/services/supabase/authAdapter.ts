@@ -1,9 +1,4 @@
-import type {
-	AuthAdapter,
-	AuthUser,
-	LoginCredentials,
-} from "@/app/providers/Providers";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
+import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
 import { isStorageAvailable } from "@/shared/lib/storage";
 import {
 	clearStoredUserSnapshot,
@@ -106,17 +101,22 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				writeStoredUserSnapshot({
 					...storedUser,
 					name: trimmedName,
-					isAdmin:
-						storedUser?.name === trimmedName ? storedUser.isAdmin : false,
+					isAdmin: storedUser?.name === trimmedName ? storedUser.isAdmin : false,
 				});
 				return true;
 			}
 
 			// Sign in with Supabase
+			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
+			if (!demoPassword) {
+				console.error("Missing VITE_SUPABASE_DEMO_PASSWORD environment variable.");
+				return false;
+			}
+
 			const sanitizedEmail = `${sanitizeNameForEmail(trimmedName)}@demo.local`;
 			const { data, error } = await client.auth.signInWithPassword({
 				email: sanitizedEmail,
-				password: "demo-password", // Demo password
+				password: demoPassword,
 			});
 
 			if (error) {
@@ -153,9 +153,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 	 * Register new user with Supabase Auth
 	 */
 	async register(): Promise<void> {
-		throw new Error(
-			"Registration not implemented. Please use Supabase Auth directly.",
-		);
+		throw new Error("Registration not implemented. Please use Supabase Auth directly.");
 	},
 
 	/**
