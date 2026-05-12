@@ -193,20 +193,18 @@ export function applyEloMatchUpdate({
 	const leftAggregateStats = leftParticipantIds.reduce(
 		(acc, participantId) => {
 			const participantStats = normalizeStats(stats?.[participantId]);
-			return {
-				wins: acc.wins + participantStats.wins,
-				losses: acc.losses + participantStats.losses,
-			};
+			acc.wins += participantStats.wins;
+			acc.losses += participantStats.losses;
+			return acc;
 		},
 		{ wins: 0, losses: 0 },
 	);
 	const rightAggregateStats = rightParticipantIds.reduce(
 		(acc, participantId) => {
 			const participantStats = normalizeStats(stats?.[participantId]);
-			return {
-				wins: acc.wins + participantStats.wins,
-				losses: acc.losses + participantStats.losses,
-			};
+			acc.wins += participantStats.wins;
+			acc.losses += participantStats.losses;
+			return acc;
 		},
 		{ wins: 0, losses: 0 },
 	);
