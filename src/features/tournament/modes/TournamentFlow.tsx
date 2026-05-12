@@ -8,139 +8,134 @@ import { NameSelector } from "../components/NameSelector";
 import { useTournamentHandlers } from "../hooks";
 
 export default function TournamentFlow() {
-        const { user, tournament, tournamentActions } = useAppStore();
-        const { handleStartNewTournament } = useTournamentHandlers({
-                userName: user.name,
-                tournamentActions,
-        });
-        const saveRatingsMutation = useMutation({
-                mutationFn: ({
-                        userId,
-                        ratings,
-                }: {
-                        userId: string;
-                        ratings: Record<string, { rating: number; wins: number; losses: number }>;
-                }) => ratingsAPI.saveRatings(userId, ratings),
-        });
+	const { user, tournament, tournamentActions } = useAppStore();
+	const { handleStartNewTournament } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
+	const saveRatingsMutation = useMutation({
+		mutationFn: ({
+			userId,
+			ratings,
+		}: {
+			userId: string;
+			ratings: Record<string, { rating: number; wins: number; losses: number }>;
+		}) => ratingsAPI.saveRatings(userId, ratings),
+	});
 
-        const mutateAsyncRef = useRef(saveRatingsMutation.mutateAsync);
-        mutateAsyncRef.current = saveRatingsMutation.mutateAsync;
+	const mutateAsyncRef = useRef(saveRatingsMutation.mutateAsync);
+	mutateAsyncRef.current = saveRatingsMutation.mutateAsync;
 
-        useEffect(() => {
-                if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
-                        const userId = user.name || "anonymous";
+	useEffect(() => {
+		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
+			const userId = user.name || "anonymous";
 
-                        // Compute per-name wins and losses from the vote history.
-                        // For 1v1, winnerId/loserId are direct name IDs.
-                        // For 2v2, winnerMemberIds/loserMemberIds expand team votes to individual names.
-                        const winsByName: Record<string, number> = {};
-                        const lossesByName: Record<string, number> = {};
+			// Compute per-name wins and losses from the vote history.
+			// For 1v1, winnerId/loserId are direct name IDs.
+			// For 2v2, winnerMemberIds/loserMemberIds expand team votes to individual names.
+			const winsByName: Record<string, number> = {};
+			const lossesByName: Record<string, number> = {};
 
-                        for (const vote of tournament.voteHistory) {
-                                const winnerIds: string[] =
-                                        Array.isArray((vote as Record<string, unknown>).winnerMemberIds)
-                                                ? ((vote as Record<string, unknown>).winnerMemberIds as string[])
-                                                : [String(vote.winnerId)];
-                                const loserIds: string[] =
-                                        Array.isArray((vote as Record<string, unknown>).loserMemberIds)
-                                                ? ((vote as Record<string, unknown>).loserMemberIds as string[])
-                                                : [String(vote.loserId)];
+			for (const vote of tournament.voteHistory) {
+				const winnerIds: string[] = Array.isArray((vote as Record<string, unknown>).winnerMemberIds)
+					? ((vote as Record<string, unknown>).winnerMemberIds as string[])
+					: [String(vote.winnerId)];
+				const loserIds: string[] = Array.isArray((vote as Record<string, unknown>).loserMemberIds)
+					? ((vote as Record<string, unknown>).loserMemberIds as string[])
+					: [String(vote.loserId)];
 
-                                for (const id of winnerIds) {
-                                        winsByName[id] = (winsByName[id] ?? 0) + 1;
-                                }
-                                for (const id of loserIds) {
-                                        lossesByName[id] = (lossesByName[id] ?? 0) + 1;
-                                }
-                        }
+				for (const id of winnerIds) {
+					winsByName[id] = (winsByName[id] ?? 0) + 1;
+				}
+				for (const id of loserIds) {
+					lossesByName[id] = (lossesByName[id] ?? 0) + 1;
+				}
+			}
 
-                        const ratingsWithStats = Object.entries(tournament.ratings).reduce(
-                                (acc, [nameId, ratingData]) => {
-                                        const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-                                        acc[nameId] = {
-                                                rating,
-                                                wins: winsByName[nameId] ?? 0,
-                                                losses: lossesByName[nameId] ?? 0,
-                                        };
-                                        return acc;
-                                },
-                                {} as Record<string, { rating: number; wins: number; losses: number }>,
-                        );
+			const ratingsWithStats: Record<string, { rating: number; wins: number; losses: number }> = {};
+			for (const nameId in tournament.ratings) {
+				// Skip inherited properties when iterating over generic objects
+				if (!Object.hasOwn(tournament.ratings, nameId)) {
+					continue;
+				}
+				const ratingData = tournament.ratings[nameId];
+				ratingsWithStats[nameId] = {
+					rating: typeof ratingData === "number" ? ratingData : ratingData.rating,
+					wins: winsByName[nameId] ?? 0,
+					losses: lossesByName[nameId] ?? 0,
+				};
+			}
 
-                        mutateAsyncRef.current({ userId, ratings: ratingsWithStats })
-                                .then((result) => {
-                                        if (result?.success) {
-                                                console.log(`Successfully saved ${result.count} ratings to database`);
-                                        }
-                                })
-                                .catch((error) => {
-                                        console.error("Failed to save tournament ratings:", error);
-                                });
-                }
-        }, [
-                tournament.isComplete,
-                tournament.ratings,
-                user.name,
-                tournament.voteHistory,
-        ]);
+			mutateAsyncRef
+				.current({ userId, ratings: ratingsWithStats })
+				.then((result) => {
+					if (result?.success) {
+						console.log(`Successfully saved ${result.count} ratings to database`);
+					}
+				})
+				.catch((error) => {
+					console.error("Failed to save tournament ratings:", error);
+				});
+		}
+	}, [tournament.isComplete, tournament.ratings, user.name, tournament.voteHistory]);
 
-        return (
-                <div className="w-full flex flex-col gap-2">
-                        <AnimatePresence mode="wait">
-                                {tournament.isComplete && tournament.names !== null ? (
-                                        <motion.div
-                                                key="complete"
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.95 }}
-                                                className="w-full flex justify-center py-6 sm:py-10"
-                                        >
-                                                <div className="w-full max-w-2xl text-center px-4 sm:px-6">
-                                                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
-                                                                A victor emerges from the eternal tournament
-                                                        </h2>
-                                                        <div className="flex justify-center mb-6 sm:mb-8">
-                                                                <div className="p-4 sm:p-6 bg-primary/10 rounded-full border border-primary/20">
-                                                                        <Trophy className="size-12 sm:size-14 text-primary" />
-                                                                </div>
-                                                        </div>
-                                                        <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">
-                                                                Your personal rankings have been updated. Head over to the{" "}
-                                                                <strong className="text-primary">Analyze</strong> section to see the full breakdown
-                                                                and compare results!
-                                                        </p>
-                                                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                                                                <button
-                                                                        onClick={() =>
-                                                                                document
-                                                                                        .getElementById("analysis")
-                                                                                        ?.scrollIntoView({ behavior: "smooth", block: "start" })
-                                                                        }
-                                                                        className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-colors"
-                                                                >
-                                                                        Analyze Results
-                                                                </button>
-                                                                <button
-                                                                        onClick={handleStartNewTournament}
-                                                                        className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-colors"
-                                                                >
-                                                                        Start New Tournament
-                                                                </button>
-                                                        </div>
-                                                </div>
-                                        </motion.div>
-                                ) : (
-                                        <motion.div
-                                                key="setup"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                                className="w-full py-0"
-                                        >
-                                                <NameSelector />
-                                        </motion.div>
-                                )}
-                        </AnimatePresence>
-                </div>
-        );
+	return (
+		<div className="w-full flex flex-col gap-2">
+			<AnimatePresence mode="wait">
+				{tournament.isComplete && tournament.names !== null ? (
+					<motion.div
+						key="complete"
+						initial={{ opacity: 0, scale: 0.95 }}
+						animate={{ opacity: 1, scale: 1 }}
+						exit={{ opacity: 0, scale: 0.95 }}
+						className="w-full flex justify-center py-6 sm:py-10"
+					>
+						<div className="w-full max-w-2xl text-center px-4 sm:px-6">
+							<h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
+								A victor emerges from the eternal tournament
+							</h2>
+							<div className="flex justify-center mb-6 sm:mb-8">
+								<div className="p-4 sm:p-6 bg-primary/10 rounded-full border border-primary/20">
+									<Trophy className="size-12 sm:size-14 text-primary" />
+								</div>
+							</div>
+							<p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">
+								Your personal rankings have been updated. Head over to the{" "}
+								<strong className="text-primary">Analyze</strong> section to see the full breakdown
+								and compare results!
+							</p>
+							<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+								<button
+									onClick={() =>
+										document
+											.getElementById("analysis")
+											?.scrollIntoView({ behavior: "smooth", block: "start" })
+									}
+									className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-colors"
+								>
+									Analyze Results
+								</button>
+								<button
+									onClick={handleStartNewTournament}
+									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-colors"
+								>
+									Start New Tournament
+								</button>
+							</div>
+						</div>
+					</motion.div>
+				) : (
+					<motion.div
+						key="setup"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						className="w-full py-0"
+					>
+						<NameSelector />
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</div>
+	);
 }
