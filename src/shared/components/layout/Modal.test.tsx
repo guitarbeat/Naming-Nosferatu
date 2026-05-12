@@ -55,7 +55,7 @@ describe("Modal", () => {
 
 	it("traps focus and handles keyboard navigation", () => {
 		render(<ModalHarness />);
-		
+
 		const opener = screen.getByRole("button", { name: "Open Modal" });
 		fireEvent.click(opener);
 
@@ -95,7 +95,7 @@ describe("Modal", () => {
 		const opener = screen.getByRole("button", { name: "Open Modal" });
 		opener.focus();
 		fireEvent.click(opener);
-		
+
 		fireEvent.keyDown(window, { key: "Escape" });
 		expect(opener).toHaveFocus();
 	});

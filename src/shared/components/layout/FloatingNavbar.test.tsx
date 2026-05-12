@@ -6,6 +6,10 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FloatingNavbar } from "./FloatingNavbar";
 
+vi.mock("@/app/providers/authContext", () => ({
+	useAuth: vi.fn(() => ({ user: null })),
+}));
+
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
@@ -144,9 +148,7 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
-		expect(
-			screen.getByRole("button", { name: "Pick Names" }),
-		).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Pick Names" })).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "Suggest" })).toHaveAttribute(
 			"aria-current",
 			"location",
@@ -175,9 +177,7 @@ describe("FloatingNavbar", () => {
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("floating-navbar__item--accent");
-		expect(
-			screen.queryByRole("button", { name: "Pick Names" }),
-		).not.toBeInTheDocument();
+		expect(screen.queryByRole("button", { name: "Pick Names" })).not.toBeInTheDocument();
 	});
 
 	it("shows analyze as the current destination on the analysis route", () => {
@@ -243,9 +243,7 @@ describe("FloatingNavbar", () => {
 	it("does not render on the tournament route", () => {
 		renderWithRouter(["/tournament"]);
 
-		expect(
-			screen.queryByRole("navigation", { name: "Primary" }),
-		).not.toBeInTheDocument();
+		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
 	});
 
 	it("marks the admin shortcut as current on the admin route", () => {
