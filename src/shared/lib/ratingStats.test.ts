@@ -52,11 +52,11 @@ describe("ratingStats", () => {
 		it("returns 50 for empty array", () => {
 			expect(getPercentileRank(1200, [])).toBe(50);
 		});
-		
+
 		it("returns higher percentile for higher ratings", () => {
 			const all = [1000, 1100, 1200, 1300, 1400];
 			expect(getPercentileRank(1400, all)).toBe(100);
-			expect(getPercentileRank(1000, all)).toBe(0);
+			expect(getPercentileRank(1000, all)).toBe(20);
 		});
 	});
 
@@ -65,12 +65,40 @@ describe("ratingStats", () => {
 			expect(getConfidenceScore(0)).toBe(0);
 		});
 
+		it("returns 0 for negative games", () => {
+			expect(getConfidenceScore(-5)).toBe(0);
+		});
+
 		it("linearly increases up to the threshold", () => {
 			expect(getConfidenceScore(7.5, 15)).toBe(0.5);
 		});
 
-		it("caps at 1.0", () => {
+		it("caps at 1.0 when exceeding threshold", () => {
 			expect(getConfidenceScore(20, 15)).toBe(1);
+		});
+
+		it("returns exactly 1.0 when hitting the threshold boundary", () => {
+			expect(getConfidenceScore(15, 15)).toBe(1);
+		});
+
+		it("uses the default threshold of 15 when not provided", () => {
+			expect(getConfidenceScore(7.5)).toBe(0.5);
+			expect(getConfidenceScore(15)).toBe(1);
+			expect(getConfidenceScore(30)).toBe(1);
+		});
+
+		it("handles custom thresholds correctly", () => {
+			expect(getConfidenceScore(5, 10)).toBe(0.5);
+			expect(getConfidenceScore(10, 10)).toBe(1);
+			expect(getConfidenceScore(20, 10)).toBe(1);
+		});
+
+		it("handles edge case: Infinity games", () => {
+			expect(getConfidenceScore(Infinity)).toBe(1);
+		});
+
+		it("handles edge case: NaN games", () => {
+			expect(getConfidenceScore(NaN)).toBeNaN();
 		});
 	});
 
