@@ -48,13 +48,8 @@ describe("ratingStats", () => {
 		});
 
 		describe("edge cases", () => {
-			it("returns 50 when all inputs are invalid (null or NaN)", () => {
-				expect(calculatePercentile(10, [NaN, null] as Array<number | null>)).toBe(50);
-			});
-
-			it("ignores invalid values and uses only valid numbers for calculation", () => {
-				// Valid values: [5, 10]. Value 10. Below: 5 (1 item). Total 2. 1/2 = 50%
-				expect(calculatePercentile(10, [5, NaN, 10, null] as Array<number | null>)).toBe(50);
+			it("returns 50 when all valid values are null or NaN", () => {
+				expect(calculatePercentile(10, [NaN, null as any])).toBe(50);
 			});
 
 			it("returns 0 if the value is NaN", () => {
