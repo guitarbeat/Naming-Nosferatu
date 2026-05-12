@@ -18,6 +18,9 @@ export function isNameLocked(name: NameItem | null | undefined): boolean {
  * Checks if a name item is active (neither hidden nor locked).
  */
 export function isNameActive(name: NameItem | null | undefined): boolean {
+	if (!name) {
+		return false;
+	}
 	return !isNameHidden(name) && !isNameLocked(name);
 }
 

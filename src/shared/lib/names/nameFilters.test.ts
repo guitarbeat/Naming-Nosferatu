@@ -29,6 +29,11 @@ describe("nameFilters predicates", () => {
 	});
 
 	describe("isNameActive", () => {
+		it("returns false for null or undefined", () => {
+			expect(isNameActive(null)).toBe(false);
+			expect(isNameActive(undefined)).toBe(false);
+		});
+
 		it("returns true only when name is neither hidden nor locked", () => {
 			expect(isNameActive({ id: 1, name: "Cat" } as NameItem)).toBe(true);
 			expect(isNameActive({ id: 2, name: "Cat", isHidden: true } as NameItem)).toBe(false);
