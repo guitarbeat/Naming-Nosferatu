@@ -2,22 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
 import { namesQueryOptions } from "@/features/names/api";
+import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
 import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
 import {
-        addToSet,
-        addManyToSet,
-        removeFromSet,
-        toggleInSet,
-} from "@/shared/lib/setUtils";
-import {
-        buildNameCardImages,
-        countSelectedItems,
-        pickRandomItemIds,
+	buildNameCardImages,
+	countSelectedItems,
+	pickRandomItemIds,
 } from "@/features/tournament/utils/nameSelection";
 import Button from "@/shared/components/layout/Button";
-import { Surface } from "@/shared/components/layout/Surface";
 import { Card } from "@/shared/components/layout/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
@@ -27,23 +20,24 @@ import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { useCollapsible } from "@/shared/hooks";
 import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
 import {
-        getActiveNames,
-        getHiddenNames,
-        getLockedNames,
-        isNameHidden,
-        isNameLocked,
-} from "@/shared/lib/names/nameFilters";
-import {
-        Check,
-        CheckCircle,
-        ChevronDown,
-        ChevronRight,
-        Eye,
-        EyeOff,
-        Heart,
-        X,
-        ZoomIn,
+	Check,
+	CheckCircle,
+	ChevronDown,
+	ChevronRight,
+	Eye,
+	EyeOff,
+	Heart,
+	X,
+	ZoomIn,
 } from "@/shared/lib/icons";
+import {
+	getActiveNames,
+	getHiddenNames,
+	getLockedNames,
+	isNameHidden,
+	isNameLocked,
+} from "@/shared/lib/names/nameFilters";
+import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
@@ -52,1350 +46,1253 @@ const SWIPE_VELOCITY_THRESHOLD = 500;
 
 // Optimized spring physics for smoother interactions
 const SMOOTH_SPRING_CONFIG = {
-        type: "spring" as const,
-        stiffness: 260,
-        damping: 20,
-        mass: 0.8,
-        velocity: 2,
+	type: "spring" as const,
+	stiffness: 260,
+	damping: 20,
+	mass: 0.8,
+	velocity: 2,
 };
 
 const EXIT_SPRING_CONFIG = {
-        type: "spring" as const,
-        stiffness: 400,
-        damping: 25,
-        velocity: 50,
+	type: "spring" as const,
+	stiffness: 400,
+	damping: 25,
+	velocity: 50,
 };
 
 // Shared hook for deferred sync to prevent render cycle issues
 const useDeferredSync = () => {
-        const deferredSync = useCallback((syncFn: () => void) => {
-                setTimeout(syncFn, 0);
-        }, []);
+	const deferredSync = useCallback((syncFn: () => void) => {
+		setTimeout(syncFn, 0);
+	}, []);
 
-        return deferredSync;
+	return deferredSync;
 };
 
 // Shared components for better DRY architecture
 
 // Selection badge component
 const SelectionBadge = () => (
-        <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="absolute top-3 right-3 z-20"
-        >
-                <div className="relative">
-                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                        <div className="relative size-6 sm:size-7 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-primary/50">
-                                <Check size={14} className="text-primary-foreground" strokeWidth={3} />
-                        </div>
-                </div>
-        </motion.div>
+	<motion.div
+		initial={{ scale: 0, opacity: 0 }}
+		animate={{ scale: 1, opacity: 1 }}
+		className="absolute top-3 right-3 z-20"
+	>
+		<div className="relative">
+			<div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+			<div className="relative size-6 sm:size-7 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-primary/50">
+				<Check size={14} className="text-primary-foreground" strokeWidth={3} />
+			</div>
+		</div>
+	</motion.div>
 );
 
 // Name content component
 const NameContent = ({
-        nameItem,
-        variant = "grid",
+	nameItem,
+	variant = "grid",
 }: {
-        nameItem: NameItem;
-        variant?: "grid" | "swipe";
+	nameItem: NameItem;
+	variant?: "grid" | "swipe";
 }) => {
-        const isGrid = variant === "grid";
-        const nameClasses = isGrid
-                ? "w-full break-words font-display text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem]"
-                : "w-full break-words font-display text-4xl leading-[0.92] tracking-tight text-white lg:text-5xl";
+	const isGrid = variant === "grid";
+	const nameClasses = isGrid
+		? "w-full break-words font-display text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem]"
+		: "w-full break-words font-display text-4xl leading-[0.92] tracking-tight text-white lg:text-5xl";
 
-        const pronunciationClasses = isGrid
-                ? "text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70"
-                : "text-xs font-semibold uppercase tracking-[0.28em] text-white/65";
+	const pronunciationClasses = isGrid
+		? "text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70"
+		: "text-xs font-semibold uppercase tracking-[0.28em] text-white/65";
 
-        const descriptionClasses = isGrid
-                ? "mt-2 line-clamp-2 text-xs leading-relaxed text-white/72 sm:text-sm"
-                : "mt-3 max-w-md line-clamp-3 text-sm leading-relaxed text-white/72 md:text-base";
+	const descriptionClasses = isGrid
+		? "mt-2 line-clamp-2 text-xs leading-relaxed text-white/72 sm:text-sm"
+		: "mt-3 max-w-md line-clamp-3 text-sm leading-relaxed text-white/72 md:text-base";
 
-        return (
-                <>
-                        <span className={nameClasses}>{nameItem.name}</span>
-                        {nameItem.pronunciation && (
-                                <span
-                                        className={
-                                                isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`
-                                        }
-                                >
-                                        [{nameItem.pronunciation}]
-                                </span>
-                        )}
-                        {nameItem.description && (
-                                <p className={descriptionClasses}>{nameItem.description}</p>
-                        )}
-                </>
-        );
+	return (
+		<>
+			<span className={nameClasses}>{nameItem.name}</span>
+			{nameItem.pronunciation && (
+				<span className={isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`}>
+					[{nameItem.pronunciation}]
+				</span>
+			)}
+			{nameItem.description && <p className={descriptionClasses}>{nameItem.description}</p>}
+		</>
+	);
 };
 
 // Zoom button component
-const ZoomButton = ({
-        nameId,
-        onClick,
-}: {
-        nameId: IdType;
-        onClick: (id: IdType) => void;
-}) => (
-        <button
-                type="button"
-                onClick={(e) => {
-                        e.stopPropagation();
-                        onClick(nameId);
-                }}
-                className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
-                aria-label="View full size"
-        >
-                <ZoomIn size={14} />
-        </button>
+const ZoomButton = ({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) => (
+	<button
+		type="button"
+		onClick={(e) => {
+			e.stopPropagation();
+			onClick(nameId);
+		}}
+		className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
+		aria-label="View full size"
+	>
+		<ZoomIn size={14} />
+	</button>
 );
 
 // Admin action button component
 const AdminActionButton = ({
-        nameItem,
-        actionType,
-        isProcessing,
-        onClick,
+	nameItem,
+	actionType,
+	isProcessing,
+	onClick,
 }: {
-        nameItem: NameItem;
-        actionType: "toggle-hidden" | "toggle-locked";
-        isProcessing: boolean;
-        onClick: () => void;
+	nameItem: NameItem;
+	actionType: "toggle-hidden" | "toggle-locked";
+	isProcessing: boolean;
+	onClick: () => void;
 }) => {
-        const isHidden = actionType === "toggle-hidden";
-        const _isLocked = actionType === "toggle-locked";
-        const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
+	const isHidden = actionType === "toggle-hidden";
+	const _isLocked = actionType === "toggle-locked";
+	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
 
-        const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-                isHidden
-                        ? isEnabled
-                                ? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
-                                : "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
-                        : isEnabled
-                                ? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
-                                : "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
-        } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`;
+	const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+		isHidden
+			? isEnabled
+				? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
+				: "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
+			: isEnabled
+				? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
+				: "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
+	} ${isProcessing ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`;
 
-        return (
-                <motion.button
-                        type="button"
-                        onClick={onClick}
-                        disabled={isProcessing}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className={buttonClasses}
-                >
-                        {isProcessing ? (
-                                <div className="flex items-center justify-center gap-1">
-                                        <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-                                        <span>Processing...</span>
-                                </div>
-                        ) : isHidden ? (
-                                <>
-                                        <Eye size={12} className="mr-1" />
-                                        {isEnabled ? "Unhide" : "Hide"}
-                                </>
-                        ) : (
-                                <>
-                                        <CheckCircle size={12} className="mr-1" />
-                                        {isEnabled ? "Unlock" : "Lock"}
-                                </>
-                        )}
-                </motion.button>
-        );
+	return (
+		<motion.button
+			type="button"
+			onClick={onClick}
+			disabled={isProcessing}
+			whileHover={{ scale: 1.05 }}
+			whileTap={{ scale: 0.95 }}
+			transition={{ type: "spring", stiffness: 400, damping: 25 }}
+			className={buttonClasses}
+		>
+			{isProcessing ? (
+				<div className="flex items-center justify-center gap-1">
+					<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+					<span>Processing...</span>
+				</div>
+			) : isHidden ? (
+				<>
+					<Eye size={12} className="mr-1" />
+					{isEnabled ? "Unhide" : "Hide"}
+				</>
+			) : (
+				<>
+					<CheckCircle size={12} className="mr-1" />
+					{isEnabled ? "Unlock" : "Lock"}
+				</>
+			)}
+		</motion.button>
+	);
 };
 
 // Card styles utility
 const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
-        const baseClasses =
-                "mobile-readable-card relative group overflow-hidden rounded-[1.35rem] border cursor-pointer transition-all duration-300";
-        const selectedClasses = isSelected
-                ? "z-10 border-primary/45 bg-gradient-to-br from-primary/14 to-white/[0.04] shadow-[0_20px_45px_rgba(39,135,153,0.2)] ring-1 ring-primary/25"
-                : "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(6,12,24,0.18)]";
-        const lockedClasses = isLocked
-                ? "cursor-not-allowed opacity-55 saturate-50"
-                : "";
+	const baseClasses =
+		"mobile-readable-card relative group overflow-hidden rounded-[1.35rem] border cursor-pointer transition-all duration-300";
+	const selectedClasses = isSelected
+		? "z-10 border-primary/45 bg-gradient-to-br from-primary/14 to-white/[0.04] shadow-[0_20px_45px_rgba(39,135,153,0.2)] ring-1 ring-primary/25"
+		: "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(6,12,24,0.18)]";
+	const lockedClasses = isLocked ? "cursor-not-allowed opacity-55 saturate-50" : "";
 
-        return `${baseClasses} ${selectedClasses} ${lockedClasses}`;
+	return `${baseClasses} ${selectedClasses} ${lockedClasses}`;
 };
 
 // Name overlay styles utility
 const getNameOverlayClasses = (variant: "grid" | "swipe") => {
-        const baseClasses =
-                "absolute inset-0 flex flex-col items-center justify-end pointer-events-none";
-        const gridClasses =
-                "p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-center";
-        const swipeClasses =
-                "z-10 p-6 sm:p-8 bg-gradient-to-t from-slate-950/96 via-slate-950/48 to-transparent text-center";
+	const baseClasses = "absolute inset-0 flex flex-col items-center justify-end pointer-events-none";
+	const gridClasses =
+		"p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-center";
+	const swipeClasses =
+		"z-10 p-6 sm:p-8 bg-gradient-to-t from-slate-950/96 via-slate-950/48 to-transparent text-center";
 
-        return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
+	return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
 
 export function NameSelector() {
-        const toast = useToast();
-        const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
-        const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
-        const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
-        const isAdmin = useAppStore((state) => state.user.isAdmin);
-        const userName = useAppStore((state) => state.user.name);
-        const tournamentActions = useAppStore((state) => state.tournamentActions);
-        const storeSelectedNames = useAppStore(
-                (state) => state.tournament.selectedNames,
-        );
-        const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
-        const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
-        const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(
-                null,
-        );
-        const [dragOffset, setDragOffset] = useState(0);
-        const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
-        const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
-        const [lightboxOpen, setLightboxOpen] = useState(false);
-        const [lightboxIndex, setLightboxIndex] = useState(0);
-        const hiddenPanel = useCollapsible(true, "hidden-names-collapsed");
-        const [hiddenQuery, setHiddenQuery] = useState("");
-        const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
-        const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
-        const [swipeHistory, setSwipeHistory] = useState<
-                Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
-        >([]);
-        const deferredSync = useDeferredSync();
-        const namesQuery = useQuery({
-                ...namesQueryOptions(isAdmin),
-                retry: 2,
-        });
-        const names = namesQuery.data?.names ?? [];
-        const isLoading = namesQuery.isPending;
-        const error =
-                namesQuery.error instanceof Error
-                        ? namesQuery.error.message
-                        : namesQuery.error
-                                ? "Failed to load names"
-                                : null;
-        const isSupabaseUnavailable = error === "Supabase client not available";
+	const toast = useToast();
+	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
+	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
+	const _setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
+	const isAdmin = useAppStore((state) => state.user.isAdmin);
+	const userName = useAppStore((state) => state.user.name);
+	const tournamentActions = useAppStore((state) => state.tournamentActions);
+	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
+	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
+	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
+	const [dragOffset, setDragOffset] = useState(0);
+	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
+	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
+	const [lightboxOpen, setLightboxOpen] = useState(false);
+	const [lightboxIndex, setLightboxIndex] = useState(0);
+	const hiddenPanel = useCollapsible(true, "hidden-names-collapsed");
+	const [hiddenQuery, setHiddenQuery] = useState("");
+	const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
+	const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
+	const [swipeHistory, setSwipeHistory] = useState<
+		Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
+	>([]);
+	const deferredSync = useDeferredSync();
+	const namesQuery = useQuery({
+		...namesQueryOptions(isAdmin),
+		retry: 2,
+	});
+	const names = namesQuery.data?.names ?? [];
+	const isLoading = namesQuery.isPending;
+	const error =
+		namesQuery.error instanceof Error
+			? namesQuery.error.message
+			: namesQuery.error
+				? "Failed to load names"
+				: null;
+	const isSupabaseUnavailable = error === "Supabase client not available";
 
-        const syncSelectionToStore = useCallback(
-                (nextSelectedIds: Set<IdType>) => {
-                        const selectedNameItems = names.filter((nameItem) =>
-                                nextSelectedIds.has(nameItem.id),
-                        );
-                        tournamentActions.setSelection(selectedNameItems);
-                },
-                [names, tournamentActions],
-        );
+	const syncSelectionToStore = useCallback(
+		(nextSelectedIds: Set<IdType>) => {
+			const selectedNameItems = names.filter((nameItem) => nextSelectedIds.has(nameItem.id));
+			tournamentActions.setSelection(selectedNameItems);
+		},
+		[names, tournamentActions],
+	);
 
-        // Memoize cat images and build an id->image lookup map
-        const { catImages, catImageById } = useMemo(
-                () => buildNameCardImages(names),
-                [names],
-        );
+	// Memoize cat images and build an id->image lookup map
+	const { catImages, catImageById } = useMemo(() => buildNameCardImages(names), [names]);
 
-        const showWarningRef = useRef(toast.showWarning);
-        useEffect(() => {
-                showWarningRef.current = toast.showWarning;
-        });
+	const showWarningRef = useRef(toast.showWarning);
+	useEffect(() => {
+		showWarningRef.current = toast.showWarning;
+	});
 
-        // Auto-select locked-in names when names are loaded
-        useEffect(() => {
-                if (names.length === 0) {
-                        return;
-                }
-                const lockedInIds = new Set(
-                        getLockedNames(names).map((nameItem) => nameItem.id),
-                );
-                if (lockedInIds.size === 0) {
-                        return;
-                }
-                setSelectedNames((prev) => {
-                        const next = addManyToSet(prev, lockedInIds);
-                        if (next.size !== prev.size) {
-                                deferredSync(() => syncSelectionToStore(next));
-                                return next;
-                        }
-                        return prev;
-                });
-        }, [deferredSync, names, syncSelectionToStore]);
+	// Auto-select locked-in names when names are loaded
+	useEffect(() => {
+		if (names.length === 0) {
+			return;
+		}
+		const lockedInIds = new Set(getLockedNames(names).map((nameItem) => nameItem.id));
+		if (lockedInIds.size === 0) {
+			return;
+		}
+		setSelectedNames((prev) => {
+			const next = addManyToSet(prev, lockedInIds);
+			if (next.size !== prev.size) {
+				deferredSync(() => syncSelectionToStore(next));
+				return next;
+			}
+			return prev;
+		});
+	}, [deferredSync, names, syncSelectionToStore]);
 
-        const toggleName = useCallback(
-                (nameId: IdType) => {
-                        setSelectedNames((prev) => {
-                                const next = toggleInSet(prev, nameId);
-                                syncSelectionToStore(next);
-                                return next;
-                        });
-                },
-                [syncSelectionToStore],
-        );
+	const toggleName = useCallback(
+		(nameId: IdType) => {
+			setSelectedNames((prev) => {
+				const next = toggleInSet(prev, nameId);
+				syncSelectionToStore(next);
+				return next;
+			});
+		},
+		[syncSelectionToStore],
+	);
 
-        // Trigger haptic feedback if available
-        const triggerHaptic = useCallback(() => {
-                if ("vibrate" in navigator) {
-                        navigator.vibrate(50);
-                }
-        }, []);
+	// Trigger haptic feedback if available
+	const triggerHaptic = useCallback(() => {
+		if ("vibrate" in navigator) {
+			navigator.vibrate(50);
+		}
+	}, []);
 
-        // Add haptic feedback for better UX
-        const handleToggleName = useCallback(
-                (nameId: IdType) => {
-                        // Add subtle haptic feedback if supported
-                        triggerHaptic();
-                        toggleName(nameId);
-                },
-                [triggerHaptic, toggleName],
-        );
+	// Add haptic feedback for better UX
+	const handleToggleName = useCallback(
+		(nameId: IdType) => {
+			// Add subtle haptic feedback if supported
+			triggerHaptic();
+			toggleName(nameId);
+		},
+		[triggerHaptic, toggleName],
+	);
 
-        // Optimized drag state update with batching
-        const updateDragState = useCallback(
-                (offset: number, direction: "left" | "right" | null = null) => {
-                        requestAnimationFrame(() => {
-                                setDragOffset(offset);
-                                if (direction) {
-                                        setDragDirection(direction);
-                                }
-                        });
-                },
-                [],
-        );
+	// Optimized drag state update with batching
+	const updateDragState = useCallback(
+		(offset: number, direction: "left" | "right" | null = null) => {
+			requestAnimationFrame(() => {
+				setDragOffset(offset);
+				if (direction) {
+					setDragDirection(direction);
+				}
+			});
+		},
+		[],
+	);
 
-        const markSwiped = useCallback(
-                (nameId: IdType, direction: "left" | "right") => {
-                        setSwipedIds((prev) => addToSet(prev, nameId));
-                        setSwipeHistory((prev) => [
-                                ...prev,
-                                { id: nameId, direction, timestamp: Date.now() },
-                        ]);
-                },
-                [],
-        );
+	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
+		setSwipedIds((prev) => addToSet(prev, nameId));
+		setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
+	}, []);
 
-        const handleSwipe = useCallback(
-                (nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
-                        if (direction === "right") {
-                                setSelectedNames((prev) => {
-                                        const next = addToSet(prev, nameId);
-                                        // Use deferred sync to prevent render cycle issue
-                                        deferredSync(() => syncSelectionToStore(next));
-                                        return next;
-                                });
-                        }
-                        markSwiped(nameId, direction);
-                        triggerHaptic();
+	const handleSwipe = useCallback(
+		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
+			if (direction === "right") {
+				setSelectedNames((prev) => {
+					const next = addToSet(prev, nameId);
+					// Use deferred sync to prevent render cycle issue
+					deferredSync(() => syncSelectionToStore(next));
+					return next;
+				});
+			}
+			markSwiped(nameId, direction);
+			triggerHaptic();
 
-                        // Dynamic reset delay based on velocity for smoother feel
-                        const baseDelay = 200;
-                        const velocityFactor = Math.min(Math.abs(velocity) * 0.05, 150);
-                        const resetDelay = Math.max(baseDelay, 350 - velocityFactor);
+			// Dynamic reset delay based on velocity for smoother feel
+			const baseDelay = 200;
+			const velocityFactor = Math.min(Math.abs(velocity) * 0.05, 150);
+			const resetDelay = Math.max(baseDelay, 350 - velocityFactor);
 
-                        // Batch state updates for better performance
-                        requestAnimationFrame(() => {
-                                setTimeout(() => {
-                                        requestAnimationFrame(() => {
-                                                setDragDirection(null);
-                                                setDragOffset(0);
-                                        });
-                                }, resetDelay);
-                        });
-                },
-                [markSwiped, syncSelectionToStore, triggerHaptic, deferredSync],
-        );
+			// Batch state updates for better performance
+			requestAnimationFrame(() => {
+				setTimeout(() => {
+					requestAnimationFrame(() => {
+						setDragDirection(null);
+						setDragOffset(0);
+					});
+				}, resetDelay);
+			});
+		},
+		[markSwiped, syncSelectionToStore, triggerHaptic, deferredSync],
+	);
 
-        const handleDragEnd = useCallback(
-                (nameId: IdType, info: PanInfo) => {
-                        const offset = info.offset.x;
-                        const velocity = info.velocity.x;
+	const handleDragEnd = useCallback(
+		(nameId: IdType, info: PanInfo) => {
+			const offset = info.offset.x;
+			const velocity = info.velocity.x;
 
-                        if (
-                                Math.abs(offset) < SWIPE_OFFSET_THRESHOLD &&
-                                Math.abs(velocity) < SWIPE_VELOCITY_THRESHOLD
-                        ) {
-                                // Smooth snap back animation
-                                updateDragState(0);
-                                return;
-                        }
+			if (
+				Math.abs(offset) < SWIPE_OFFSET_THRESHOLD &&
+				Math.abs(velocity) < SWIPE_VELOCITY_THRESHOLD
+			) {
+				// Smooth snap back animation
+				updateDragState(0);
+				return;
+			}
 
-                        // Determine direction based on offset and velocity
-                        const isRightSwipe =
-                                offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
-                        const direction = isRightSwipe ? "right" : "left";
+			// Determine direction based on offset and velocity
+			const isRightSwipe = offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
+			const direction = isRightSwipe ? "right" : "left";
 
-                        updateDragState(0, direction);
-                        handleSwipe(nameId, direction, Math.abs(velocity));
-                },
-                [handleSwipe, updateDragState],
-        );
+			updateDragState(0, direction);
+			handleSwipe(nameId, direction, Math.abs(velocity));
+		},
+		[handleSwipe, updateDragState],
+	);
 
-        // Undo last swipe functionality
-        const handleUndo = useCallback(() => {
-                if (swipeHistory.length === 0) {
-                        return;
-                }
+	// Undo last swipe functionality
+	const _handleUndo = useCallback(() => {
+		if (swipeHistory.length === 0) {
+			return;
+		}
 
-                const lastSwipe = swipeHistory[swipeHistory.length - 1];
-                if (!lastSwipe) {
-                        return;
-                }
+		const lastSwipe = swipeHistory[swipeHistory.length - 1];
+		if (!lastSwipe) {
+			return;
+		}
 
-                setSwipeHistory((prev) => prev.slice(0, -1));
-                setSwipedIds((prev) => removeFromSet(prev, lastSwipe.id));
+		setSwipeHistory((prev) => prev.slice(0, -1));
+		setSwipedIds((prev) => removeFromSet(prev, lastSwipe.id));
 
-                // If it was a right swipe, remove from selected names and sync with store
-                if (lastSwipe.direction === "right") {
-                        setSelectedNames((prev) => {
-                                const next = removeFromSet(prev, lastSwipe.id);
-                                // Use deferred sync to prevent render cycle issue
-                                deferredSync(() => syncSelectionToStore(next));
-                                return next;
-                        });
-                }
+		// If it was a right swipe, remove from selected names and sync with store
+		if (lastSwipe.direction === "right") {
+			setSelectedNames((prev) => {
+				const next = removeFromSet(prev, lastSwipe.id);
+				// Use deferred sync to prevent render cycle issue
+				deferredSync(() => syncSelectionToStore(next));
+				return next;
+			});
+		}
 
-                triggerHaptic();
-        }, [swipeHistory, syncSelectionToStore, triggerHaptic, deferredSync]);
+		triggerHaptic();
+	}, [swipeHistory, syncSelectionToStore, triggerHaptic, deferredSync]);
 
-        const handleToggleHidden = useCallback(
-                async (nameId: IdType, isCurrentlyHidden: boolean) => {
-                        if (!isAdmin || !userName?.trim()) {
-                                return;
-                        }
+	const handleToggleHidden = useCallback(
+		async (nameId: IdType, isCurrentlyHidden: boolean) => {
+			if (!isAdmin || !userName?.trim()) {
+				return;
+			}
 
-                        setTogglingHidden((prev) => addToSet(prev, nameId));
+			setTogglingHidden((prev) => addToSet(prev, nameId));
 
-                        try {
-                                await toggleHidden({ nameId, isCurrentlyHidden });
-                                toast.showSuccess(
-                                        isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
-                                );
-                        } catch (error) {
-                                console.error("Failed to toggle hidden status:", error);
-                                const detail = error instanceof Error ? error.message : "Unknown error";
-                                toast.showError(`Could not update hidden status: ${detail}`);
-                        } finally {
-                                setTogglingHidden((prev) => removeFromSet(prev, nameId));
-                        }
-                },
-                [isAdmin, toast, toggleHidden, userName],
-        );
+			try {
+				await toggleHidden({ nameId, isCurrentlyHidden });
+				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
+			} catch (error) {
+				const detail = error instanceof Error ? error.message : "Unknown error";
+				toast.showError(`Could not update hidden status: ${detail}`);
+			} finally {
+				setTogglingHidden((prev) => removeFromSet(prev, nameId));
+			}
+		},
+		[isAdmin, toast, toggleHidden, userName],
+	);
 
-        const handleToggleLocked = useCallback(
-                async (nameId: IdType, isCurrentlyLocked: boolean) => {
-                        if (!isAdmin || !userName?.trim()) {
-                                return;
-                        }
+	const handleToggleLocked = useCallback(
+		async (nameId: IdType, isCurrentlyLocked: boolean) => {
+			if (!isAdmin || !userName?.trim()) {
+				return;
+			}
 
-                        setTogglingLocked((prev) => addToSet(prev, nameId));
+			setTogglingLocked((prev) => addToSet(prev, nameId));
 
-                        try {
-                                await toggleLocked({ nameId, isCurrentlyLocked });
-                                toast.showSuccess(
-                                        isCurrentlyLocked ? "Name unlocked." : "Name locked in.",
-                                );
-                        } catch (error) {
-                                console.error("Failed to toggle locked status:", error);
-                                const detail = error instanceof Error ? error.message : "Unknown error";
-                                toast.showError(`Could not update lock state: ${detail}`);
-                        } finally {
-                                setTogglingLocked((prev) => removeFromSet(prev, nameId));
-                        }
-                },
-                [isAdmin, toast, toggleLocked, userName],
-        );
+			try {
+				await toggleLocked({ nameId, isCurrentlyLocked });
+				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
+			} catch (error) {
+				const detail = error instanceof Error ? error.message : "Unknown error";
+				toast.showError(`Could not update lock state: ${detail}`);
+			} finally {
+				setTogglingLocked((prev) => removeFromSet(prev, nameId));
+			}
+		},
+		[isAdmin, toast, toggleLocked, userName],
+	);
 
-        const {
-                pendingAdminAction,
-                requestAdminAction,
-                confirmAdminAction,
-                cancelAdminAction,
-                confirmActionName,
-                isPendingActionBusy,
-        } = useAdminActionConfirmation({
-                isAdmin,
-                userName,
-                names,
-                toast,
-                isBusy: (action) => {
-                        if (action.type === "toggle-hidden") {
-                                return togglingHidden.has(action.nameId);
-                        }
-                        return togglingLocked.has(action.nameId);
-                },
-                executeAction: async (action) => {
-                        if (action.type === "toggle-hidden") {
-                                await handleToggleHidden(action.nameId, action.isCurrentlyEnabled);
-                                return;
-                        }
-                        await handleToggleLocked(action.nameId, action.isCurrentlyEnabled);
-                },
-        });
+	const {
+		pendingAdminAction,
+		requestAdminAction,
+		confirmAdminAction,
+		cancelAdminAction,
+		confirmActionName,
+		isPendingActionBusy,
+	} = useAdminActionConfirmation({
+		isAdmin,
+		userName,
+		names,
+		toast,
+		isBusy: (action) => {
+			if (action.type === "toggle-hidden") {
+				return togglingHidden.has(action.nameId);
+			}
+			return togglingLocked.has(action.nameId);
+		},
+		executeAction: async (action) => {
+			if (action.type === "toggle-hidden") {
+				await handleToggleHidden(action.nameId, action.isCurrentlyEnabled);
+				return;
+			}
+			await handleToggleLocked(action.nameId, action.isCurrentlyEnabled);
+		},
+	});
 
-        const visibleCards = useMemo(() => {
-                const unlockedNames = names.filter((name) => !isNameLocked(name));
-                return unlockedNames.filter((name) => !swipedIds.has(name.id));
-        }, [names, swipedIds]);
-        const cardsToRender = useMemo(() => visibleCards.slice(0, 3), [visibleCards]);
+	const visibleCards = useMemo(() => {
+		const unlockedNames = names.filter((name) => !isNameLocked(name));
+		return unlockedNames.filter((name) => !swipedIds.has(name.id));
+	}, [names, swipedIds]);
+	const cardsToRender = useMemo(() => visibleCards.slice(0, 3), [visibleCards]);
 
-        const availableNames = useMemo(() => getActiveNames(names), [names]);
-        const lockedInNames = useMemo(() => getLockedNames(names), [names]);
-        const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
-        const hiddenFuzzy = useFuzzySearch(
-                hiddenNamesAll,
-                ["name", "description"],
-                hiddenQuery,
-        );
-        const hiddenFiltered = useMemo(() => {
-                return hiddenFuzzy.filter((name) => {
-                        if (hiddenShowSelectedOnly && !selectedNames.has(name.id)) {
-                                return false;
-                        }
-                        return true;
-                });
-        }, [hiddenFuzzy, hiddenShowSelectedOnly, selectedNames]);
-        const previewItems = useMemo(
-                () => hiddenNamesAll.slice(0, 6),
-                [hiddenNamesAll],
-        );
-        const renderItems = useMemo(
-                () => hiddenFiltered.slice(0, hiddenRenderCount),
-                [hiddenFiltered, hiddenRenderCount],
-        );
-        const selectedIdsSet = selectedNames;
-        const selectedAvailableCount = useMemo(
-                () => countSelectedItems(availableNames, selectedNames),
-                [availableNames, selectedNames],
-        );
-        const selectedHiddenCount = useMemo(
-                () => countSelectedItems(hiddenNamesAll, selectedNames),
-                [hiddenNamesAll, selectedNames],
-        );
-        const canSelectAllAvailable = useMemo(
-                () => availableNames.some((name) => !selectedIdsSet.has(name.id)),
-                [availableNames, selectedIdsSet],
-        );
-        const hasAnySelection = selectedIdsSet.size > 0;
-        const canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
-        const selectionFloor = lockedInNames.length;
+	const availableNames = useMemo(() => getActiveNames(names), [names]);
+	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
+	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
+	const hiddenFuzzy = useFuzzySearch(hiddenNamesAll, ["name", "description"], hiddenQuery);
+	const hiddenFiltered = useMemo(() => {
+		return hiddenFuzzy.filter((name) => {
+			if (hiddenShowSelectedOnly && !selectedNames.has(name.id)) {
+				return false;
+			}
+			return true;
+		});
+	}, [hiddenFuzzy, hiddenShowSelectedOnly, selectedNames]);
+	const previewItems = useMemo(() => hiddenNamesAll.slice(0, 6), [hiddenNamesAll]);
+	const renderItems = useMemo(
+		() => hiddenFiltered.slice(0, hiddenRenderCount),
+		[hiddenFiltered, hiddenRenderCount],
+	);
+	const selectedIdsSet = selectedNames;
+	const _selectedAvailableCount = useMemo(
+		() => countSelectedItems(availableNames, selectedNames),
+		[availableNames, selectedNames],
+	);
+	const _selectedHiddenCount = useMemo(
+		() => countSelectedItems(hiddenNamesAll, selectedNames),
+		[hiddenNamesAll, selectedNames],
+	);
+	const _canSelectAllAvailable = useMemo(
+		() => availableNames.some((name) => !selectedIdsSet.has(name.id)),
+		[availableNames, selectedIdsSet],
+	);
+	const _hasAnySelection = selectedIdsSet.size > 0;
+	const _canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
+	const _selectionFloor = lockedInNames.length;
 
-        const handleOpenLightbox = useCallback(
-                (nameId: IdType) => {
-                        const index = names.findIndex((n) => n.id === nameId);
-                        if (index !== -1) {
-                                setLightboxIndex(index);
-                                setLightboxOpen(true);
-                        }
-                },
-                [names],
-        );
+	const handleOpenLightbox = useCallback(
+		(nameId: IdType) => {
+			const index = names.findIndex((n) => n.id === nameId);
+			if (index !== -1) {
+				setLightboxIndex(index);
+				setLightboxOpen(true);
+			}
+		},
+		[names],
+	);
 
-        const startTournament = useCallback(() => {
-                if (storeSelectedNames && storeSelectedNames.length >= 2) {
-                        tournamentActions.setNames(storeSelectedNames);
-                }
-                document
-                        .getElementById("tournament")
-                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, [storeSelectedNames, tournamentActions]);
+	const startTournament = useCallback(() => {
+		if (storeSelectedNames && storeSelectedNames.length >= 2) {
+			tournamentActions.setNames(storeSelectedNames);
+		}
+		document.getElementById("tournament")?.scrollIntoView({ behavior: "smooth", block: "start" });
+	}, [storeSelectedNames, tournamentActions]);
 
-        const _handleSelectAllAvailable = useCallback(() => {
-                setSelectedNames((prev) => {
-                        const next = addManyToSet(
-                                prev,
-                                availableNames.map((name) => name.id),
-                        );
-                        // Use deferred sync to prevent render cycle issue
-                        deferredSync(() => syncSelectionToStore(next));
-                        return next;
-                });
-                triggerHaptic();
-        }, [availableNames, syncSelectionToStore, triggerHaptic, deferredSync]);
+	const _handleSelectAllAvailable = useCallback(() => {
+		setSelectedNames((prev) => {
+			const next = addManyToSet(
+				prev,
+				availableNames.map((name) => name.id),
+			);
+			// Use deferred sync to prevent render cycle issue
+			deferredSync(() => syncSelectionToStore(next));
+			return next;
+		});
+		triggerHaptic();
+	}, [availableNames, syncSelectionToStore, triggerHaptic, deferredSync]);
 
-        const _handleClearSelection = useCallback(() => {
-                const lockedIds = new Set(getLockedNames(names).map((name) => name.id));
-                setSelectedNames(lockedIds);
-                // Use deferred sync to prevent render cycle issue
-                deferredSync(() => syncSelectionToStore(lockedIds));
-                triggerHaptic();
-        }, [names, syncSelectionToStore, triggerHaptic, deferredSync]);
+	const _handleClearSelection = useCallback(() => {
+		const lockedIds = new Set(getLockedNames(names).map((name) => name.id));
+		setSelectedNames(lockedIds);
+		// Use deferred sync to prevent render cycle issue
+		deferredSync(() => syncSelectionToStore(lockedIds));
+		triggerHaptic();
+	}, [names, syncSelectionToStore, triggerHaptic, deferredSync]);
 
-        const _handleSelectRandomAvailable = useCallback(() => {
-                if (availableNames.length === 0) {
-                        return;
-                }
+	const _handleSelectRandomAvailable = useCallback(() => {
+		if (availableNames.length === 0) {
+			return;
+		}
 
-                const targetCount = Math.min(8, availableNames.length);
-                const randomIds = pickRandomItemIds(availableNames, targetCount);
-                setSelectedNames((prev) => {
-                        const next = addManyToSet(prev, randomIds);
-                        // Use deferred sync to prevent render cycle issue
-                        deferredSync(() => syncSelectionToStore(next));
-                        return next;
-                });
-                triggerHaptic();
-                toast.showSuccess(`Added ${targetCount} random names.`);
-        }, [
-                availableNames,
-                syncSelectionToStore,
-                toast,
-                triggerHaptic,
-                deferredSync,
-        ]);
+		const targetCount = Math.min(8, availableNames.length);
+		const randomIds = pickRandomItemIds(availableNames, targetCount);
+		setSelectedNames((prev) => {
+			const next = addManyToSet(prev, randomIds);
+			// Use deferred sync to prevent render cycle issue
+			deferredSync(() => syncSelectionToStore(next));
+			return next;
+		});
+		triggerHaptic();
+		toast.showSuccess(`Added ${targetCount} random names.`);
+	}, [availableNames, syncSelectionToStore, toast, triggerHaptic, deferredSync]);
 
-        if (isLoading) {
-                return (
-                        <div className="mx-auto w-full">
-                                <div className="flex items-center justify-center py-20">
-                                        <Loading variant="spinner" text="Loading cat names..." />
-                                </div>
-                        </div>
-                );
-        }
+	if (isLoading) {
+		return (
+			<div className="mx-auto w-full">
+				<div className="flex items-center justify-center py-20">
+					<Loading variant="spinner" text="Loading cat names..." />
+				</div>
+			</div>
+		);
+	}
 
-        if (error) {
-                return (
-                        <div className="mx-auto w-full">
-                                <div className="flex flex-col items-center justify-center py-20">
-                                        <div className="flex max-w-xl flex-col items-center gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-6 py-8 text-center shadow-[0_18px_40px_rgba(2,8,18,0.16)] backdrop-blur-md">
-                                                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary/80">
-                                                        Picker unavailable
-                                                </p>
-                                                <div className="space-y-2">
-                                                        <p className="font-display text-2xl leading-[0.96] tracking-[-0.04em] text-white">
-                                                                {isSupabaseUnavailable
-                                                                        ? "Connect Supabase to load the name pool."
-                                                                        : "We couldn&apos;t load the current shortlist."}
-                                                        </p>
-                                                        <p className="text-sm leading-relaxed text-white/68">
-                                                                {isSupabaseUnavailable
-                                                                        ? "The UI is ready, but local data needs `VITE_SUPABASE_URL` and a publishable key before names can appear here."
-                                                                        : error}
-                                                        </p>
-                                                </div>
-                                                <div className="flex flex-wrap items-center justify-center gap-3">
-                                                        <Button
-                                                                onClick={() => void namesQuery.refetch()}
-                                                                variant="glass"
-                                                                size="small"
-                                                        >
-                                                                Try Again
-                                                        </Button>
-                                                </div>
-                                        </div>
-                                </div>
-                        </div>
-                );
-        }
+	if (error) {
+		return (
+			<div className="mx-auto w-full">
+				<div className="flex flex-col items-center justify-center py-20">
+					<div className="flex max-w-xl flex-col items-center gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-6 py-8 text-center shadow-[0_18px_40px_rgba(2,8,18,0.16)] backdrop-blur-md">
+						<p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary/80">
+							Picker unavailable
+						</p>
+						<div className="space-y-2">
+							<p className="font-display text-2xl leading-[0.96] tracking-[-0.04em] text-white">
+								{isSupabaseUnavailable
+									? "Connect Supabase to load the name pool."
+									: "We couldn&apos;t load the current shortlist."}
+							</p>
+							<p className="text-sm leading-relaxed text-white/68">
+								{isSupabaseUnavailable
+									? "The UI is ready, but local data needs `VITE_SUPABASE_URL` and a publishable key before names can appear here."
+									: error}
+							</p>
+						</div>
+						<div className="flex flex-wrap items-center justify-center gap-3">
+							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+								Try Again
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
-        return (
-                <div className="mx-auto w-full">
-                        <div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
-                                {isSwipeMode ? (
-                                        <>
-                                                <div
-                                                        className="relative w-full flex items-center justify-center"
-                                                        style={{ minHeight: "min(70dvh, 550px)" }}
-                                                >
-                                                        <AnimatePresence mode="popLayout">
-                                                                {visibleCards.length > 0 ? (
-                                                                        cardsToRender.map((nameItem, index) => {
-                                                                                const catImage = catImageById.get(nameItem.id) ?? "";
-                                                                                return (
-                                                                                        <motion.div
-                                                                                                key={nameItem.id}
-                                                                                                layout={true}
-                                                                                                layoutId={String(nameItem.id)}
-                                                                                                className="absolute inset-0 flex items-center justify-center"
-                                                                                                style={{ zIndex: 10 - index }}
-                                                                                                exit={{
-                                                                                                        opacity: 0,
-                                                                                                        x: dragDirection === "right" ? 400 : -400,
-                                                                                                        rotate: dragDirection === "right" ? 25 : -25,
-                                                                                                        scale: 0.8,
-                                                                                                        transition: EXIT_SPRING_CONFIG,
-                                                                                                }}
-                                                                                        >
-                                                                                                <motion.div
-                                                                                                        drag={index === 0 ? "x" : false}
-                                                                                                        dragConstraints={{ left: -250, right: 250 }}
-                                                                                                        onDrag={(_, info) => {
-                                                                                                                if (index === 0) {
-                                                                                                                        updateDragState(info.offset.x);
-                                                                                                                }
-                                                                                                        }}
-                                                                                                        onDragEnd={(_, info) => {
-                                                                                                                if (index === 0) {
-                                                                                                                        handleDragEnd(nameItem.id, info);
-                                                                                                                }
-                                                                                                        }}
-                                                                                                        animate={{
-                                                                                                                scale: index === 0 ? 1 : 0.95,
-                                                                                                                opacity: 1,
-                                                                                                                rotate: index === 0 ? dragOffset / 30 : 0,
-                                                                                                                x: index === 0 ? dragOffset * 0.15 : 0,
-                                                                                                                y: index * 8,
-                                                                                                        }}
-                                                                                                        transition={SMOOTH_SPRING_CONFIG}
-                                                                                                        whileDrag={{
-                                                                                                                scale: 1.02,
-                                                                                                                transition: { duration: 0.15 },
-                                                                                                        }}
-                                                                                                        className="w-full max-w-md"
-                                                                                                        style={{ height: "min(65dvh, 500px)" }}
-                                                                                                >
-                                                                                                        <Card
-                                                                                                                className={`relative overflow-hidden group transition-all duration-200 h-full ${
-                                                                                                                        selectedNames.has(nameItem.id)
-                                                                                                                                ? "shadow-[0_0_30px_hsl(var(--success)/0.3)]"
-                                                                                                                                : ""
-                                                                                                                } ${
-                                                                                                                        index === 0
-                                                                                                                                ? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
-                                                                                                                                : "pointer-events-none"
-                                                                                                                }`}
-                                                                                                                variant="filled"
-                                                                                                                padding="none"
-                                                                                                        >
-                                                                                                                {index === 0 && (
-                                                                                                                        <>
-                                                                                                                                <motion.div
-                                                                                                                                        className="absolute left-8 top-1/2 -translate-y-1/2 z-20"
-                                                                                                                                        initial={{ opacity: 0, scale: 0.8 }}
-                                                                                                                                        animate={{
-                                                                                                                                                opacity: dragOffset < -50 ? 1 : 0,
-                                                                                                                                                scale: dragOffset < -50 ? 1 : 0.8,
-                                                                                                                                        }}
-                                                                                                                                >
-                                                                                                                                        <div className="flex items-center gap-2 px-6 py-3 bg-destructive/90 backdrop-blur-md rounded-full border-2 border-destructive shadow-lg rotate-[-20deg]">
-                                                                                                                                                <X
-                                                                                                                                                        size={24}
-                                                                                                                                                        className="text-destructive-foreground"
-                                                                                                                                                />
-                                                                                                                                                <span className="text-destructive-foreground font-black text-lg uppercase">
-                                                                                                                                                        Nope
-                                                                                                                                                </span>
-                                                                                                                                        </div>
-                                                                                                                                </motion.div>
+	return (
+		<div className="mx-auto w-full">
+			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
+				{isSwipeMode ? (
+					<>
+						<div
+							className="relative w-full flex items-center justify-center"
+							style={{ minHeight: "min(70dvh, 550px)" }}
+						>
+							<AnimatePresence mode="popLayout">
+								{visibleCards.length > 0 ? (
+									cardsToRender.map((nameItem, index) => {
+										const catImage = catImageById.get(nameItem.id) ?? "";
+										return (
+											<motion.div
+												key={nameItem.id}
+												layout={true}
+												layoutId={String(nameItem.id)}
+												className="absolute inset-0 flex items-center justify-center"
+												style={{ zIndex: 10 - index }}
+												exit={{
+													opacity: 0,
+													x: dragDirection === "right" ? 400 : -400,
+													rotate: dragDirection === "right" ? 25 : -25,
+													scale: 0.8,
+													transition: EXIT_SPRING_CONFIG,
+												}}
+											>
+												<motion.div
+													drag={index === 0 ? "x" : false}
+													dragConstraints={{ left: -250, right: 250 }}
+													onDrag={(_, info) => {
+														if (index === 0) {
+															updateDragState(info.offset.x);
+														}
+													}}
+													onDragEnd={(_, info) => {
+														if (index === 0) {
+															handleDragEnd(nameItem.id, info);
+														}
+													}}
+													animate={{
+														scale: index === 0 ? 1 : 0.95,
+														opacity: 1,
+														rotate: index === 0 ? dragOffset / 30 : 0,
+														x: index === 0 ? dragOffset * 0.15 : 0,
+														y: index * 8,
+													}}
+													transition={SMOOTH_SPRING_CONFIG}
+													whileDrag={{
+														scale: 1.02,
+														transition: { duration: 0.15 },
+													}}
+													className="w-full max-w-md"
+													style={{ height: "min(65dvh, 500px)" }}
+												>
+													<Card
+														className={`relative overflow-hidden group transition-all duration-200 h-full ${
+															selectedNames.has(nameItem.id)
+																? "shadow-[0_0_30px_hsl(var(--success)/0.3)]"
+																: ""
+														} ${
+															index === 0
+																? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
+																: "pointer-events-none"
+														}`}
+														variant="filled"
+														padding="none"
+													>
+														{index === 0 && (
+															<>
+																<motion.div
+																	className="absolute left-8 top-1/2 -translate-y-1/2 z-20"
+																	initial={{ opacity: 0, scale: 0.8 }}
+																	animate={{
+																		opacity: dragOffset < -50 ? 1 : 0,
+																		scale: dragOffset < -50 ? 1 : 0.8,
+																	}}
+																>
+																	<div className="flex items-center gap-2 px-6 py-3 bg-destructive/90 backdrop-blur-md rounded-full border-2 border-destructive shadow-lg rotate-[-20deg]">
+																		<X size={24} className="text-destructive-foreground" />
+																		<span className="text-destructive-foreground font-black text-lg uppercase">
+																			Nope
+																		</span>
+																	</div>
+																</motion.div>
 
-                                                                                                                                <motion.div
-                                                                                                                                        className="absolute right-8 top-1/2 -translate-y-1/2 z-20"
-                                                                                                                                        initial={{ opacity: 0, scale: 0.8 }}
-                                                                                                                                        animate={{
-                                                                                                                                                opacity: dragOffset > 50 ? 1 : 0,
-                                                                                                                                                scale: dragOffset > 50 ? 1 : 0.8,
-                                                                                                                                        }}
-                                                                                                                                >
-                                                                                                                                        <div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
-                                                                                                                                                <Heart
-                                                                                                                                                        size={24}
-                                                                                                                                                        className="text-success-foreground fill-success-foreground"
-                                                                                                                                                />
-                                                                                                                                                <span className="text-success-foreground font-black text-lg uppercase">
-                                                                                                                                                        Like
-                                                                                                                                                </span>
-                                                                                                                                        </div>
-                                                                                                                                </motion.div>
-                                                                                                                        </>
-                                                                                                                )}
+																<motion.div
+																	className="absolute right-8 top-1/2 -translate-y-1/2 z-20"
+																	initial={{ opacity: 0, scale: 0.8 }}
+																	animate={{
+																		opacity: dragOffset > 50 ? 1 : 0,
+																		scale: dragOffset > 50 ? 1 : 0.8,
+																	}}
+																>
+																	<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
+																		<Heart
+																			size={24}
+																			className="text-success-foreground fill-success-foreground"
+																		/>
+																		<span className="text-success-foreground font-black text-lg uppercase">
+																			Like
+																		</span>
+																	</div>
+																</motion.div>
+															</>
+														)}
 
-                                                                                                                <div className="relative w-full h-full flex flex-col justify-end bg-foreground/10">
-                                                                                                                        <CatImage
-                                                                                                                                src={catImage}
-                                                                                                                                alt={nameItem.name}
-                                                                                                                                objectFit="cover"
-                                                                                                                                containerClassName="absolute inset-0 w-full h-full"
-                                                                                                                                imageClassName="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
-                                                                                                                        />
+														<div className="relative w-full h-full flex flex-col justify-end bg-foreground/10">
+															<CatImage
+																src={catImage}
+																alt={nameItem.name}
+																objectFit="cover"
+																containerClassName="absolute inset-0 w-full h-full"
+																imageClassName="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
+															/>
 
-                                                                                                                        {/* Zoom Button Overlay */}
-                                                                                                                        {index === 0 && (
-                                                                                                                                <button
-                                                                                                                                        type="button"
-                                                                                                                                        onClick={(e) => {
-                                                                                                                                                e.stopPropagation();
-                                                                                                                                                handleOpenLightbox(nameItem.id);
-                                                                                                                                        }}
-                                                                                                                                        className="absolute top-4 right-4 p-2.5 rounded-full bg-foreground/50 backdrop-blur-sm text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/70 z-30"
-                                                                                                                                        aria-label="View full size"
-                                                                                                                                >
-                                                                                                                                        <ZoomIn size={18} />
-                                                                                                                                </button>
-                                                                                                                        )}
+															{/* Zoom Button Overlay */}
+															{index === 0 && (
+																<button
+																	type="button"
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		handleOpenLightbox(nameItem.id);
+																	}}
+																	className="absolute top-4 right-4 p-2.5 rounded-full bg-foreground/50 backdrop-blur-sm text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/70 z-30"
+																	aria-label="View full size"
+																>
+																	<ZoomIn size={18} />
+																</button>
+															)}
 
-                                                                                                                        {/* Name and Info Overlay */}
-                                                                                                                        <div className={getNameOverlayClasses("swipe")}>
-                                                                                                                                <div className="flex flex-col gap-1.5 max-w-full">
-                                                                                                                                        <NameContent
-                                                                                                                                                nameItem={nameItem}
-                                                                                                                                                variant="swipe"
-                                                                                                                                        />
-                                                                                                                                </div>
+															{/* Name and Info Overlay */}
+															<div className={getNameOverlayClasses("swipe")}>
+																<div className="flex flex-col gap-1.5 max-w-full">
+																	<NameContent nameItem={nameItem} variant="swipe" />
+																</div>
 
-                                                                                                                                {isAdmin && (
-                                                                                                                                        <button
-                                                                                                                                                type="button"
-                                                                                                                                                onClick={(e) => {
-                                                                                                                                                        e.stopPropagation();
-                                                                                                                                                        requestAdminAction({
-                                                                                                                                                                type: "toggle-hidden",
-                                                                                                                                                                nameId: nameItem.id,
-                                                                                                                                                                isCurrentlyEnabled:
-                                                                                                                                                                        isNameHidden(nameItem),
-                                                                                                                                                        });
-                                                                                                                                                }}
-                                                                                                                                                disabled={togglingHidden.has(nameItem.id)}
-                                                                                                                                                className={`mt-4 flex items-center gap-2 pointer-events-auto w-fit text-sm font-bold tracking-wider uppercase transition-all ${
-                                                                                                                                                        togglingHidden.has(nameItem.id)
-                                                                                                                                                                ? "text-muted-foreground cursor-not-allowed"
-                                                                                                                                                                : "text-warning hover:text-warning/80 hover:scale-105 active:scale-95"
-                                                                                                                                                }`}
-                                                                                                                                        >
-                                                                                                                                                {togglingHidden.has(nameItem.id) ? (
-                                                                                                                                                        <>
-                                                                                                                                                                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                                                                                                                                                                <span>Processing...</span>
-                                                                                                                                                        </>
-                                                                                                                                                ) : isNameHidden(nameItem) ? (
-                                                                                                                                                        <>
-                                                                                                                                                                <Eye size={16} />
-                                                                                                                                                                <span>Unhide From Public</span>
-                                                                                                                                                        </>
-                                                                                                                                                ) : (
-                                                                                                                                                        <>
-                                                                                                                                                                <EyeOff size={16} />
-                                                                                                                                                                <span>Hide From Public</span>
-                                                                                                                                                        </>
-                                                                                                                                                )}
-                                                                                                                                        </button>
-                                                                                                                                )}
+																{isAdmin && (
+																	<button
+																		type="button"
+																		onClick={(e) => {
+																			e.stopPropagation();
+																			requestAdminAction({
+																				type: "toggle-hidden",
+																				nameId: nameItem.id,
+																				isCurrentlyEnabled: isNameHidden(nameItem),
+																			});
+																		}}
+																		disabled={togglingHidden.has(nameItem.id)}
+																		className={`mt-4 flex items-center gap-2 pointer-events-auto w-fit text-sm font-bold tracking-wider uppercase transition-all ${
+																			togglingHidden.has(nameItem.id)
+																				? "text-muted-foreground cursor-not-allowed"
+																				: "text-warning hover:text-warning/80 hover:scale-105 active:scale-95"
+																		}`}
+																	>
+																		{togglingHidden.has(nameItem.id) ? (
+																			<>
+																				<div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+																				<span>Processing...</span>
+																			</>
+																		) : isNameHidden(nameItem) ? (
+																			<>
+																				<Eye size={16} />
+																				<span>Unhide From Public</span>
+																			</>
+																		) : (
+																			<>
+																				<EyeOff size={16} />
+																				<span>Hide From Public</span>
+																			</>
+																		)}
+																	</button>
+																)}
 
-                                                                                                                                {selectedNames.has(nameItem.id) && (
-                                                                                                                                        <div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20 mt-4">
-                                                                                                                                                <Check
-                                                                                                                                                        size={16}
-                                                                                                                                                        className="text-success"
-                                                                                                                                                />
-                                                                                                                                                <span className="text-success font-black text-xs tracking-[0.2em] uppercase">
-                                                                                                                                                        Selected
-                                                                                                                                                </span>
-                                                                                                                                        </div>
-                                                                                                                                )}
-                                                                                                                        </div>
-                                                                                                                </div>
-                                                                                                        </Card>
-                                                                                                </motion.div>
-                                                                                        </motion.div>
-                                                                                );
-                                                                        })
-                                                                ) : (
-                                                                        <div className="absolute inset-0 flex items-center justify-center">
-                                                                                <motion.div
-                                                                                        initial={{ opacity: 0, y: 20 }}
-                                                                                        animate={{ opacity: 1, y: 0 }}
-                                                                                        transition={{ duration: 0.6, ease: "easeOut" }}
-                                                                                        className="text-center space-y-6 max-w-md mx-auto px-6"
-                                                                                >
-                                                                                        <motion.div
-                                                                                                initial={{ scale: 0 }}
-                                                                                                animate={{ scale: 1 }}
-                                                                                                transition={{
-                                                                                                        delay: 0.2,
-                                                                                                        type: "spring",
-                                                                                                        stiffness: 400,
-                                                                                                        damping: 25,
-                                                                                                }}
-                                                                                                className="mx-auto w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center shadow-xl shadow-success/30"
-                                                                                        >
-                                                                                                <Check
-                                                                                                        size={40}
-                                                                                                        className="text-success-foreground"
-                                                                                                        strokeWidth={3}
-                                                                                                />
-                                                                                        </motion.div>
-                                                                                        <div className="isolate space-y-3">
-                                                                                                <h2 className="blend-difference-text text-3xl font-bold text-white sm:text-4xl">
-                                                                                                        All done!
-                                                                                                </h2>
-                                                                                                <p className="blend-difference-text text-lg leading-relaxed text-white">
-                                                                                                        You've reviewed all names. Ready to start the
-                                                                                                        tournament?
-                                                                                                </p>
-                                                                                        </div>
-                                                                                        <motion.div
-                                                                                                initial={{ opacity: 0 }}
-                                                                                                animate={{ opacity: 1 }}
-                                                                                                transition={{ delay: 0.4 }}
-                                                                                                className="pt-4"
-                                                                                        >
-                                                                                                <Button
-                                                                                                        onClick={startTournament}
-                                                                                                        className="min-w-[12rem]"
-                                                                                                >
-                                                                                                        Start Tournament
-                                                                                                </Button>
-                                                                                        </motion.div>
-                                                                                </motion.div>
-                                                                        </div>
-                                                                )}
-                                                        </AnimatePresence>
-                                                </div>
+																{selectedNames.has(nameItem.id) && (
+																	<div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20 mt-4">
+																		<Check size={16} className="text-success" />
+																		<span className="text-success font-black text-xs tracking-[0.2em] uppercase">
+																			Selected
+																		</span>
+																	</div>
+																)}
+															</div>
+														</div>
+													</Card>
+												</motion.div>
+											</motion.div>
+										);
+									})
+								) : (
+									<div className="absolute inset-0 flex items-center justify-center">
+										<motion.div
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ duration: 0.6, ease: "easeOut" }}
+											className="text-center space-y-6 max-w-md mx-auto px-6"
+										>
+											<motion.div
+												initial={{ scale: 0 }}
+												animate={{ scale: 1 }}
+												transition={{
+													delay: 0.2,
+													type: "spring",
+													stiffness: 400,
+													damping: 25,
+												}}
+												className="mx-auto w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center shadow-xl shadow-success/30"
+											>
+												<Check size={40} className="text-success-foreground" strokeWidth={3} />
+											</motion.div>
+											<div className="isolate space-y-3">
+												<h2 className="blend-difference-text text-3xl font-bold text-white sm:text-4xl">
+													All done!
+												</h2>
+												<p className="blend-difference-text text-lg leading-relaxed text-white">
+													You've reviewed all names. Ready to start the tournament?
+												</p>
+											</div>
+											<motion.div
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
+												transition={{ delay: 0.4 }}
+												className="pt-4"
+											>
+												<Button onClick={startTournament} className="min-w-[12rem]">
+													Start Tournament
+												</Button>
+											</motion.div>
+										</motion.div>
+									</div>
+								)}
+							</AnimatePresence>
+						</div>
 
-                                                {visibleCards.length > 0 && (
-                                                        <div className="flex items-center justify-center gap-6 sm:gap-8 mt-8 pb-6">
-                                                                <motion.div
-                                                                        whileHover={{ scale: 1.05, y: -2 }}
-                                                                        whileTap={{ scale: 0.95 }}
-                                                                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                                                >
-                                                                        <Button
-                                                                                variant="outline"
-                                                                                iconOnly={true}
-                                                                                className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-destructive/30 hover:border-destructive/50 bg-gradient-to-br from-destructive/5 to-destructive/10 hover:from-destructive/15 hover:to-destructive/20 text-destructive transition-all duration-300 shadow-xl hover:shadow-destructive/30 hover:scale-110 active:scale-95"
-                                                                                onClick={() => {
-                                                                                        const currentCard = visibleCards[0];
-                                                                                        if (currentCard) {
-                                                                                                handleSwipe(currentCard.id, "left");
-                                                                                        }
-                                                                                }}
-                                                                                aria-label="Skip (Left Arrow)"
-                                                                                title="Skip (Left Arrow)"
-                                                                        >
-                                                                                <div className="relative">
-                                                                                        <X size={28} className="sm:size-8" strokeWidth={2.5} />
-                                                                                        <div className="absolute inset-0 bg-destructive/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                                                                </div>
-                                                                        </Button>
-                                                                        <div className="text-center mt-2">
-                                                                                <span className="text-xs text-muted-foreground font-medium">
-                                                                                        Skip
-                                                                                </span>
-                                                                        </div>
-                                                                </motion.div>
+						{visibleCards.length > 0 && (
+							<div className="flex items-center justify-center gap-6 sm:gap-8 mt-8 pb-6">
+								<motion.div
+									whileHover={{ scale: 1.05, y: -2 }}
+									whileTap={{ scale: 0.95 }}
+									transition={{ type: "spring", stiffness: 400, damping: 25 }}
+								>
+									<Button
+										variant="outline"
+										iconOnly={true}
+										className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-destructive/30 hover:border-destructive/50 bg-gradient-to-br from-destructive/5 to-destructive/10 hover:from-destructive/15 hover:to-destructive/20 text-destructive transition-all duration-300 shadow-xl hover:shadow-destructive/30 hover:scale-110 active:scale-95"
+										onClick={() => {
+											const currentCard = visibleCards[0];
+											if (currentCard) {
+												handleSwipe(currentCard.id, "left");
+											}
+										}}
+										aria-label="Skip (Left Arrow)"
+										title="Skip (Left Arrow)"
+									>
+										<div className="relative">
+											<X size={28} className="sm:size-8" strokeWidth={2.5} />
+											<div className="absolute inset-0 bg-destructive/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+										</div>
+									</Button>
+									<div className="text-center mt-2">
+										<span className="text-xs text-muted-foreground font-medium">Skip</span>
+									</div>
+								</motion.div>
 
-                                                                <motion.div
-                                                                        whileHover={{ scale: 1.05, y: -2 }}
-                                                                        whileTap={{ scale: 0.95 }}
-                                                                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                                                >
-                                                                        <Button
-                                                                                variant="outline"
-                                                                                iconOnly={true}
-                                                                                className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-success/30 hover:border-success/50 bg-gradient-to-br from-success/5 to-success/10 hover:from-success/15 hover:to-success/20 text-success transition-all duration-300 shadow-xl hover:shadow-success/30 hover:scale-110 active:scale-95"
-                                                                                onClick={() => {
-                                                                                        const currentCard = visibleCards[0];
-                                                                                        if (currentCard) {
-                                                                                                handleSwipe(currentCard.id, "right");
-                                                                                        }
-                                                                                }}
-                                                                                aria-label="Select (Right Arrow)"
-                                                                                title="Select (Right Arrow)"
-                                                                        >
-                                                                                <div className="relative">
-                                                                                        <Heart
-                                                                                                size={28}
-                                                                                                className="sm:size-8"
-                                                                                                strokeWidth={2.5}
-                                                                                                fill="currentColor"
-                                                                                        />
-                                                                                        <div className="absolute inset-0 bg-success/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                                                                </div>
-                                                                        </Button>
-                                                                        <div className="text-center mt-2">
-                                                                                <span className="text-xs text-muted-foreground font-medium">
-                                                                                        Select
-                                                                                </span>
-                                                                        </div>
-                                                                </motion.div>
-                                                        </div>
-                                                )}
-                                        </>
-                                ) : (
-                                        <div className="space-y-8">
-                                                {(() => {
-                                                        const activeNames = getActiveNames(names);
-                                                        return (
-                                                                activeNames.length > 0 && (
-                                                                        <div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-                                                                                {activeNames.map((nameItem) => {
-                                                                                        const isSelected = selectedNames.has(nameItem.id);
-                                                                                        const catImage = catImageById.get(nameItem.id) ?? "";
-                                                                                        return (
-                                                                                                <motion.button
-                                                                                                        key={nameItem.id}
-                                                                                                        type="button"
-                                                                                                        onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        aria-pressed={isSelected}
-                                                                                                        whileHover={{ scale: 1.03, y: -2 }}
-                                                                                                        whileTap={{ scale: 0.97 }}
-                                                                                                        transition={{
-                                                                                                                type: "spring",
-                                                                                                                stiffness: 400,
-                                                                                                                damping: 25,
-                                                                                                        }}
-                                                                                                        className={getCardStyles(
-                                                                                                                isSelected,
-                                                                                                                isNameLocked(nameItem),
-                                                                                                        )}
-                                                                                                >
-                                                                                                        <div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden rounded-xl sm:rounded-2xl">
-                                                                                                                <CatImage
-                                                                                                                        src={catImage}
-                                                                                                                        alt={nameItem.name}
-                                                                                                                        objectFit="cover"
-                                                                                                                        containerClassName="w-full h-full"
-                                                                                                                        imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                                                                                                />
+								<motion.div
+									whileHover={{ scale: 1.05, y: -2 }}
+									whileTap={{ scale: 0.95 }}
+									transition={{ type: "spring", stiffness: 400, damping: 25 }}
+								>
+									<Button
+										variant="outline"
+										iconOnly={true}
+										className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-success/30 hover:border-success/50 bg-gradient-to-br from-success/5 to-success/10 hover:from-success/15 hover:to-success/20 text-success transition-all duration-300 shadow-xl hover:shadow-success/30 hover:scale-110 active:scale-95"
+										onClick={() => {
+											const currentCard = visibleCards[0];
+											if (currentCard) {
+												handleSwipe(currentCard.id, "right");
+											}
+										}}
+										aria-label="Select (Right Arrow)"
+										title="Select (Right Arrow)"
+									>
+										<div className="relative">
+											<Heart
+												size={28}
+												className="sm:size-8"
+												strokeWidth={2.5}
+												fill="currentColor"
+											/>
+											<div className="absolute inset-0 bg-success/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+										</div>
+									</Button>
+									<div className="text-center mt-2">
+										<span className="text-xs text-muted-foreground font-medium">Select</span>
+									</div>
+								</motion.div>
+							</div>
+						)}
+					</>
+				) : (
+					<div className="space-y-8">
+						{(() => {
+							const activeNames = getActiveNames(names);
+							return (
+								activeNames.length > 0 && (
+									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+										{activeNames.map((nameItem) => {
+											const isSelected = selectedNames.has(nameItem.id);
+											const catImage = catImageById.get(nameItem.id) ?? "";
+											return (
+												<motion.button
+													key={nameItem.id}
+													type="button"
+													onClick={() => handleToggleName(nameItem.id)}
+													aria-pressed={isSelected}
+													whileHover={{ scale: 1.03, y: -2 }}
+													whileTap={{ scale: 0.97 }}
+													transition={{
+														type: "spring",
+														stiffness: 400,
+														damping: 25,
+													}}
+													className={getCardStyles(isSelected, isNameLocked(nameItem))}
+												>
+													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden rounded-xl sm:rounded-2xl">
+														<CatImage
+															src={catImage}
+															alt={nameItem.name}
+															objectFit="cover"
+															containerClassName="w-full h-full"
+															imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+														/>
 
-                                                                                                                {/* Selection Badge */}
-                                                                                                                {isSelected && <SelectionBadge />}
+														{/* Selection Badge */}
+														{isSelected && <SelectionBadge />}
 
-                                                                                                                {/* Enhanced Name Overlay */}
-                                                                                                                <div className={getNameOverlayClasses("grid")}>
-                                                                                                                        <div className="flex flex-col items-center gap-1.5 max-w-full">
-                                                                                                                                <NameContent
-                                                                                                                                        nameItem={nameItem}
-                                                                                                                                        variant="grid"
-                                                                                                                                />
-                                                                                                                        </div>
-                                                                                                                </div>
+														{/* Enhanced Name Overlay */}
+														<div className={getNameOverlayClasses("grid")}>
+															<div className="flex flex-col items-center gap-1.5 max-w-full">
+																<NameContent nameItem={nameItem} variant="grid" />
+															</div>
+														</div>
 
-                                                                                                                {/* Enhanced Zoom Button */}
-                                                                                                                <ZoomButton
-                                                                                                                        nameId={nameItem.id}
-                                                                                                                        onClick={handleOpenLightbox}
-                                                                                                                />
-                                                                                                        </div>
-                                                                                                        {isAdmin && !isSwipeMode && (
-                                                                                                                <motion.div
-                                                                                                                        initial={{ opacity: 0, y: 10 }}
-                                                                                                                        animate={{ opacity: 1, y: 0 }}
-                                                                                                                        transition={{ delay: 0.1 }}
-                                                                                                                        className="px-3 pb-3 flex gap-2"
-                                                                                                                >
-                                                                                                                        <AdminActionButton
-                                                                                                                                nameItem={nameItem}
-                                                                                                                                actionType="toggle-hidden"
-                                                                                                                                isProcessing={togglingHidden.has(nameItem.id)}
-                                                                                                                                onClick={() =>
-                                                                                                                                        requestAdminAction({
-                                                                                                                                                type: "toggle-hidden",
-                                                                                                                                                nameId: nameItem.id,
-                                                                                                                                                isCurrentlyEnabled: isNameHidden(nameItem),
-                                                                                                                                        })
-                                                                                                                                }
-                                                                                                                        />
+														{/* Enhanced Zoom Button */}
+														<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+													</div>
+													{isAdmin && !isSwipeMode && (
+														<motion.div
+															initial={{ opacity: 0, y: 10 }}
+															animate={{ opacity: 1, y: 0 }}
+															transition={{ delay: 0.1 }}
+															className="px-3 pb-3 flex gap-2"
+														>
+															<AdminActionButton
+																nameItem={nameItem}
+																actionType="toggle-hidden"
+																isProcessing={togglingHidden.has(nameItem.id)}
+																onClick={() =>
+																	requestAdminAction({
+																		type: "toggle-hidden",
+																		nameId: nameItem.id,
+																		isCurrentlyEnabled: isNameHidden(nameItem),
+																	})
+																}
+															/>
 
-                                                                                                                        <AdminActionButton
-                                                                                                                                nameItem={nameItem}
-                                                                                                                                actionType="toggle-locked"
-                                                                                                                                isProcessing={togglingLocked.has(nameItem.id)}
-                                                                                                                                onClick={() =>
-                                                                                                                                        requestAdminAction({
-                                                                                                                                                type: "toggle-locked",
-                                                                                                                                                nameId: nameItem.id,
-                                                                                                                                                isCurrentlyEnabled: isNameLocked(nameItem),
-                                                                                                                                        })
-                                                                                                                                }
-                                                                                                                        />
-                                                                                                                </motion.div>
-                                                                                                        )}
-                                                                                                </motion.button>
-                                                                                        );
-                                                                                })}
-                                                                        </div>
-                                                                )
-                                                        );
-                                                })()}
-                                        </div>
-                                )}
+															<AdminActionButton
+																nameItem={nameItem}
+																actionType="toggle-locked"
+																isProcessing={togglingLocked.has(nameItem.id)}
+																onClick={() =>
+																	requestAdminAction({
+																		type: "toggle-locked",
+																		nameId: nameItem.id,
+																		isCurrentlyEnabled: isNameLocked(nameItem),
+																	})
+																}
+															/>
+														</motion.div>
+													)}
+												</motion.button>
+											);
+										})}
+									</div>
+								)
+							);
+						})()}
+					</div>
+				)}
 
-                                {(() => {
-                                        if (hiddenNamesAll.length === 0) {
-                                                return null;
-                                        }
+				{(() => {
+					if (hiddenNamesAll.length === 0) {
+						return null;
+					}
 
-                                        return (
-                                                <div className={isSwipeMode ? "" : "mt-2"}>
-                                                        <div className="select-none">
-                                                                <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                                if (!hiddenPanel.isCollapsed) {
-                                                                                        hiddenPanel.collapse();
-                                                                                        return;
-                                                                                }
-                                                                                hiddenPanel.expand();
-                                                                                setHiddenRenderCount(24);
-                                                                        }}
-                                                                        aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
-                                                                        aria-controls="hidden-names-panel"
-                                                                        className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
-                                                                >
-                                                                        <div className="flex items-center gap-2">
-                                                                                <span className="text-muted-foreground">
-                                                                                        {hiddenPanel.isCollapsed ? (
-                                                                                                <ChevronRight size={20} />
-                                                                                        ) : (
-                                                                                                <ChevronDown size={20} />
-                                                                                        )}
-                                                                                </span>
-                                                                                <span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
-                                                                                        Hidden Names ({hiddenNamesAll.length})
-                                                                                </span>
-                                                                        </div>
-                                                                        <span className="text-[11px] sm:text-xs text-muted-foreground">
-                                                                                {hiddenPanel.isCollapsed ? "Show panel" : "Hide panel"}
-                                                                        </span>
-                                                                </button>
+					return (
+						<div className={isSwipeMode ? "" : "mt-2"}>
+							<div className="select-none">
+								<button
+									type="button"
+									onClick={() => {
+										if (!hiddenPanel.isCollapsed) {
+											hiddenPanel.collapse();
+											return;
+										}
+										hiddenPanel.expand();
+										setHiddenRenderCount(24);
+									}}
+									aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
+									aria-controls="hidden-names-panel"
+									className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
+								>
+									<div className="flex items-center gap-2">
+										<span className="text-muted-foreground">
+											{hiddenPanel.isCollapsed ? (
+												<ChevronRight size={20} />
+											) : (
+												<ChevronDown size={20} />
+											)}
+										</span>
+										<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
+											Hidden Names ({hiddenNamesAll.length})
+										</span>
+									</div>
+									<span className="text-[11px] sm:text-xs text-muted-foreground">
+										{hiddenPanel.isCollapsed ? "Show panel" : "Hide panel"}
+									</span>
+								</button>
 
-                                                                {hiddenPanel.isCollapsed && (
-                                                                        <div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
-                                                                                {previewItems.map((n) => {
-                                                                                        const img = catImageById.get(n.id) ?? "";
-                                                                                        return (
-                                                                                                <div
-                                                                                                        key={n.id}
-                                                                                                        className="relative aspect-square overflow-hidden border border-border/10"
-                                                                                                >
-                                                                                                        <CatImage
-                                                                                                                src={img}
-                                                                                                                alt="Hidden name"
-                                                                                                                containerClassName="w-full h-full"
-                                                                                                                imageClassName="w-full h-full object-cover opacity-20"
-                                                                                                        />
-                                                                                                        <div className="absolute inset-0 flex items-center justify-center">
-                                                                                                                <span className="text-muted-foreground/50 text-sm font-bold">
-                                                                                                                        ?
-                                                                                                                </span>
-                                                                                                        </div>
-                                                                                                </div>
-                                                                                        );
-                                                                                })}
-                                                                        </div>
-                                                                )}
-                                                        </div>
+								{hiddenPanel.isCollapsed && (
+									<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
+										{previewItems.map((n) => {
+											const img = catImageById.get(n.id) ?? "";
+											return (
+												<div
+													key={n.id}
+													className="relative aspect-square overflow-hidden border border-border/10"
+												>
+													<CatImage
+														src={img}
+														alt="Hidden name"
+														containerClassName="w-full h-full"
+														imageClassName="w-full h-full object-cover opacity-20"
+													/>
+													<div className="absolute inset-0 flex items-center justify-center">
+														<span className="text-muted-foreground/50 text-sm font-bold">?</span>
+													</div>
+												</div>
+											);
+										})}
+									</div>
+								)}
+							</div>
 
-                                                        <CollapsibleContent
-                                                                id="hidden-names-panel"
-                                                                isCollapsed={hiddenPanel.isCollapsed}
-                                                        >
-                                                                <div className="mt-4">
-                                                                        {isSwipeMode && (
-                                                                                <p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
-                                                                                        Hidden names stay out of the swipe deck, but you can still
-                                                                                        inspect and select them here without leaving swipe mode.
-                                                                                </p>
-                                                                        )}
+							<CollapsibleContent id="hidden-names-panel" isCollapsed={hiddenPanel.isCollapsed}>
+								<div className="mt-4">
+									{isSwipeMode && (
+										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
+											Hidden names stay out of the swipe deck, but you can still inspect and select
+											them here without leaving swipe mode.
+										</p>
+									)}
 
-                                                                        <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between mb-3">
-                                                                                <input
-                                                                                        value={hiddenQuery}
-                                                                                        onChange={(e) => {
-                                                                                                setHiddenQuery(e.target.value);
-                                                                                                setHiddenRenderCount(24);
-                                                                                        }}
-                                                                                        placeholder="Search hidden names"
-                                                                                        className="w-full sm:max-w-sm px-3 py-2 bg-foreground/5 border border-border/10 text-foreground text-sm"
-                                                                                />
-                                                                                <div className="flex items-center justify-between sm:justify-end gap-3">
-                                                                                        {hiddenQuery.trim().length > 0 && (
-                                                                                                <button
-                                                                                                        type="button"
-                                                                                                        onClick={() => {
-                                                                                                                setHiddenQuery("");
-                                                                                                                setHiddenRenderCount(24);
-                                                                                                        }}
-                                                                                                        className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
-                                                                                                >
-                                                                                                        Clear search
-                                                                                                </button>
-                                                                                        )}
-                                                                                        <button
-                                                                                                type="button"
-                                                                                                onClick={() => setHiddenShowSelectedOnly((v) => !v)}
-                                                                                                className={`px-3 py-2 border text-xs font-medium ${
-                                                                                                        hiddenShowSelectedOnly
-                                                                                                                ? "bg-primary/20 border-primary/40 text-foreground"
-                                                                                                                : "bg-foreground/5 border-border/10 text-foreground/80"
-                                                                                                }`}
-                                                                                        >
-                                                                                                Selected only
-                                                                                        </button>
-                                                                                        <span className="text-xs text-muted-foreground">
-                                                                                                {hiddenFiltered.length} / {hiddenNamesAll.length}
-                                                                                        </span>
-                                                                                </div>
-                                                                        </div>
+									<div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between mb-3">
+										<input
+											value={hiddenQuery}
+											onChange={(e) => {
+												setHiddenQuery(e.target.value);
+												setHiddenRenderCount(24);
+											}}
+											placeholder="Search hidden names"
+											className="w-full sm:max-w-sm px-3 py-2 bg-foreground/5 border border-border/10 text-foreground text-sm"
+										/>
+										<div className="flex items-center justify-between sm:justify-end gap-3">
+											{hiddenQuery.trim().length > 0 && (
+												<button
+													type="button"
+													onClick={() => {
+														setHiddenQuery("");
+														setHiddenRenderCount(24);
+													}}
+													className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
+												>
+													Clear search
+												</button>
+											)}
+											<button
+												type="button"
+												onClick={() => setHiddenShowSelectedOnly((v) => !v)}
+												className={`px-3 py-2 border text-xs font-medium ${
+													hiddenShowSelectedOnly
+														? "bg-primary/20 border-primary/40 text-foreground"
+														: "bg-foreground/5 border-border/10 text-foreground/80"
+												}`}
+											>
+												Selected only
+											</button>
+											<span className="text-xs text-muted-foreground">
+												{hiddenFiltered.length} / {hiddenNamesAll.length}
+											</span>
+										</div>
+									</div>
 
-                                                                        <div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
-                                                                                {renderItems.map((nameItem) => {
-                                                                                        const isSelected = selectedNames.has(nameItem.id);
-                                                                                        const catImage = catImageById.get(nameItem.id) ?? "";
-                                                                                        return (
-                                                                                                <button
-                                                                                                        type="button"
-                                                                                                        key={nameItem.id}
-                                                                                                        onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        aria-pressed={isSelected}
-                                                                                                        className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
-                                                                                                                isSelected
-                                                                                                                        ? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
-                                                                                                                        : "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
-                                                                                                        }`}
-                                                                                                >
-                                                                                                        <div className="aspect-[5/4] sm:aspect-[4/3] w-full relative group/hidden">
-                                                                                                                <CatImage
-                                                                                                                        src={catImage}
-                                                                                                                        alt={nameItem.name}
-                                                                                                                        objectFit="cover"
-                                                                                                                        containerClassName="w-full h-full"
-                                                                                                                        imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                                                                                />
+									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
+										{renderItems.map((nameItem) => {
+											const isSelected = selectedNames.has(nameItem.id);
+											const catImage = catImageById.get(nameItem.id) ?? "";
+											return (
+												<button
+													type="button"
+													key={nameItem.id}
+													onClick={() => handleToggleName(nameItem.id)}
+													aria-pressed={isSelected}
+													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
+														isSelected
+															? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
+															: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
+													}`}
+												>
+													<div className="aspect-[5/4] sm:aspect-[4/3] w-full relative group/hidden">
+														<CatImage
+															src={catImage}
+															alt={nameItem.name}
+															objectFit="cover"
+															containerClassName="w-full h-full"
+															imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+														/>
 
-                                                                                                                <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
-                                                                                                                        <div className="flex flex-col gap-0.5">
-                                                                                                                                <div className="flex items-center justify-between gap-2">
-                                                                                                                                        <span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
-                                                                                                                                                {nameItem.name}
-                                                                                                                                        </span>
-                                                                                                                                        {isSelected && (
-                                                                                                                                                <motion.div
-                                                                                                                                                        initial={{ scale: 0, opacity: 0 }}
-                                                                                                                                                        animate={{ scale: 1, opacity: 1 }}
-                                                                                                                                                        className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
-                                                                                                                                                >
-                                                                                                                                                        <Check
-                                                                                                                                                                size={10}
-                                                                                                                                                                className="text-primary-foreground"
-                                                                                                                                                        />
-                                                                                                                                                </motion.div>
-                                                                                                                                        )}
-                                                                                                                                </div>
-                                                                                                                                {nameItem.pronunciation && (
-                                                                                                                                        <span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
-                                                                                                                                                [{nameItem.pronunciation}]
-                                                                                                                                        </span>
-                                                                                                                                )}
-                                                                                                                                {nameItem.description && (
-                                                                                                                                        <p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
-                                                                                                                                                {nameItem.description}
-                                                                                                                                        </p>
-                                                                                                                                )}
-                                                                                                                        </div>
-                                                                                                                </div>
+														<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
+															<div className="flex flex-col gap-0.5">
+																<div className="flex items-center justify-between gap-2">
+																	<span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
+																		{nameItem.name}
+																	</span>
+																	{isSelected && (
+																		<motion.div
+																			initial={{ scale: 0, opacity: 0 }}
+																			animate={{ scale: 1, opacity: 1 }}
+																			className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
+																		>
+																			<Check size={10} className="text-primary-foreground" />
+																		</motion.div>
+																	)}
+																</div>
+																{nameItem.pronunciation && (
+																	<span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
+																		[{nameItem.pronunciation}]
+																	</span>
+																)}
+																{nameItem.description && (
+																	<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
+																		{nameItem.description}
+																	</p>
+																)}
+															</div>
+														</div>
 
-                                                                                                                <button
-                                                                                                                        type="button"
-                                                                                                                        onClick={(e) => {
-                                                                                                                                e.stopPropagation();
-                                                                                                                                handleOpenLightbox(nameItem.id);
-                                                                                                                        }}
-                                                                                                                        className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
-                                                                                                                        aria-label="View full size"
-                                                                                                                >
-                                                                                                                        <ZoomIn size={14} />
-                                                                                                                </button>
-                                                                                                        </div>
-                                                                                                        {isAdmin && (
-                                                                                                                <div className="px-3 pb-3">
-                                                                                                                        <button
-                                                                                                                                type="button"
-                                                                                                                                onClick={(e) => {
-                                                                                                                                        e.stopPropagation();
-                                                                                                                                        requestAdminAction({
-                                                                                                                                                type: "toggle-hidden",
-                                                                                                                                                nameId: nameItem.id,
-                                                                                                                                                isCurrentlyEnabled: true,
-                                                                                                                                        });
-                                                                                                                                }}
-                                                                                                                                disabled={togglingHidden.has(nameItem.id)}
-                                                                                                                                className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-success hover:bg-success/80 text-success-foreground ${
-                                                                                                                                        togglingHidden.has(nameItem.id)
-                                                                                                                                                ? "opacity-50 cursor-not-allowed"
-                                                                                                                                                : ""
-                                                                                                                                }`}
-                                                                                                                        >
-                                                                                                                                {togglingHidden.has(nameItem.id) ? (
-                                                                                                                                        <div className="flex items-center justify-center gap-1">
-                                                                                                                                                <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-                                                                                                                                                <span>Processing...</span>
-                                                                                                                                        </div>
-                                                                                                                                ) : (
-                                                                                                                                        <>
-                                                                                                                                                <Eye size={12} className="mr-1 inline" />
-                                                                                                                                                Unhide
-                                                                                                                                        </>
-                                                                                                                                )}
-                                                                                                                        </button>
-                                                                                                                </div>
-                                                                                                        )}
-                                                                                                </button>
-                                                                                        );
-                                                                                })}
-                                                                        </div>
-                                                                        {hiddenFiltered.length === 0 && (
-                                                                                <div className="mt-4 rounded-xl border border-border/10 bg-foreground/5 px-4 py-6 text-center text-sm text-foreground/70">
-                                                                                        No hidden names match this filter.
-                                                                                </div>
-                                                                        )}
+														<button
+															type="button"
+															onClick={(e) => {
+																e.stopPropagation();
+																handleOpenLightbox(nameItem.id);
+															}}
+															className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
+															aria-label="View full size"
+														>
+															<ZoomIn size={14} />
+														</button>
+													</div>
+													{isAdmin && (
+														<div className="px-3 pb-3">
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	requestAdminAction({
+																		type: "toggle-hidden",
+																		nameId: nameItem.id,
+																		isCurrentlyEnabled: true,
+																	});
+																}}
+																disabled={togglingHidden.has(nameItem.id)}
+																className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-success hover:bg-success/80 text-success-foreground ${
+																	togglingHidden.has(nameItem.id)
+																		? "opacity-50 cursor-not-allowed"
+																		: ""
+																}`}
+															>
+																{togglingHidden.has(nameItem.id) ? (
+																	<div className="flex items-center justify-center gap-1">
+																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																		<span>Processing...</span>
+																	</div>
+																) : (
+																	<>
+																		<Eye size={12} className="mr-1 inline" />
+																		Unhide
+																	</>
+																)}
+															</button>
+														</div>
+													)}
+												</button>
+											);
+										})}
+									</div>
+									{hiddenFiltered.length === 0 && (
+										<div className="mt-4 rounded-xl border border-border/10 bg-foreground/5 px-4 py-6 text-center text-sm text-foreground/70">
+											No hidden names match this filter.
+										</div>
+									)}
 
-                                                                        {hiddenFiltered.length > hiddenRenderCount && (
-                                                                                <div className="mt-4 flex justify-center">
-                                                                                        <Button
-                                                                                                onClick={() => setHiddenRenderCount((c) => c + 24)}
-                                                                                                variant="glass"
-                                                                                                size="small"
-                                                                                        >
-                                                                                                Load more
-                                                                                        </Button>
-                                                                                </div>
-                                                                        )}
-                                                                </div>
-                                                        </CollapsibleContent>
-                                                </div>
-                                        );
-                                })()}
-                        </div>
+									{hiddenFiltered.length > hiddenRenderCount && (
+										<div className="mt-4 flex justify-center">
+											<Button
+												onClick={() => setHiddenRenderCount((c) => c + 24)}
+												variant="glass"
+												size="small"
+											>
+												Load more
+											</Button>
+										</div>
+									)}
+								</div>
+							</CollapsibleContent>
+						</div>
+					);
+				})()}
+			</div>
 
-                        {lightboxOpen && (
-                                <Lightbox
-                                        images={catImages}
-                                        currentIndex={lightboxIndex}
-                                        onClose={() => setLightboxOpen(false)}
-                                        onNavigate={setLightboxIndex}
-                                />
-                        )}
+			{lightboxOpen && (
+				<Lightbox
+					images={catImages}
+					currentIndex={lightboxIndex}
+					onClose={() => setLightboxOpen(false)}
+					onNavigate={setLightboxIndex}
+				/>
+			)}
 
-                        <ConfirmDialog
-                                open={Boolean(pendingAdminAction)}
-                                title={
-                                        pendingAdminAction?.type === "toggle-hidden"
-                                                ? pendingAdminAction.isCurrentlyEnabled
-                                                        ? "Unhide this name?"
-                                                        : "Hide this name?"
-                                                : pendingAdminAction?.isCurrentlyEnabled
-                                                        ? "Unlock this name?"
-                                                        : "Lock this name?"
-                                }
-                                description={
-                                        pendingAdminAction?.type === "toggle-hidden"
-                                                ? `${confirmActionName} will ${pendingAdminAction.isCurrentlyEnabled ? "be visible to everyone again." : "be removed from public view."}`
-                                                : `${confirmActionName} will ${pendingAdminAction?.isCurrentlyEnabled ? "be removed from the locked list." : "stay selected for all users."}`
-                                }
-                                confirmLabel={
-                                        pendingAdminAction?.type === "toggle-hidden"
-                                                ? pendingAdminAction?.isCurrentlyEnabled
-                                                        ? "Unhide"
-                                                        : "Hide"
-                                                : pendingAdminAction?.isCurrentlyEnabled
-                                                        ? "Unlock"
-                                                        : "Lock"
-                                }
-                                confirmTone="danger"
-                                loading={isPendingActionBusy}
-                                onCancel={cancelAdminAction}
-                                onConfirm={confirmAdminAction}
-                        />
-                </div>
-        );
+			<ConfirmDialog
+				open={Boolean(pendingAdminAction)}
+				title={
+					pendingAdminAction?.type === "toggle-hidden"
+						? pendingAdminAction.isCurrentlyEnabled
+							? "Unhide this name?"
+							: "Hide this name?"
+						: pendingAdminAction?.isCurrentlyEnabled
+							? "Unlock this name?"
+							: "Lock this name?"
+				}
+				description={
+					pendingAdminAction?.type === "toggle-hidden"
+						? `${confirmActionName} will ${pendingAdminAction.isCurrentlyEnabled ? "be visible to everyone again." : "be removed from public view."}`
+						: `${confirmActionName} will ${pendingAdminAction?.isCurrentlyEnabled ? "be removed from the locked list." : "stay selected for all users."}`
+				}
+				confirmLabel={
+					pendingAdminAction?.type === "toggle-hidden"
+						? pendingAdminAction?.isCurrentlyEnabled
+							? "Unhide"
+							: "Hide"
+						: pendingAdminAction?.isCurrentlyEnabled
+							? "Unlock"
+							: "Lock"
+				}
+				confirmTone="danger"
+				loading={isPendingActionBusy}
+				onCancel={cancelAdminAction}
+				onConfirm={confirmAdminAction}
+			/>
+		</div>
+	);
 }
