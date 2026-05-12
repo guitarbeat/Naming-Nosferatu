@@ -3,36 +3,17 @@ import { type KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useS
 import { useNavigate } from "react-router-dom";
 import { ErrorComponent } from "@/shared/components/layout/Feedback";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import {
-	Clock,
-	Gamepad2,
-	Medal,
-	Music,
-	PawPrint,
-	SkipBack,
-	SkipForward,
-	Trophy,
-	Undo2,
-	Volume2,
-	VolumeX,
-	X,
-} from "@/shared/lib/icons";
 import { getRandomCatImage } from "@/shared/lib/media";
 import { getVisibleNames } from "@/shared/lib/names/nameFilters";
 import type { TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { BracketTree } from "./components/BracketTree";
 import { MatchSideCard } from "./components/MatchSideCard";
+import { TournamentAnnouncements } from "./components/TournamentAnnouncements";
 import { TournamentComplete } from "./components/TournamentComplete";
+import { TournamentHeader } from "./components/TournamentHeader";
 import { useAudioManager } from "./hooks";
 import { useTournamentState } from "./hooks/useTournamentState";
-import {
-	getFlameCount,
-	getHeatLevel,
-	getHeatTextClasses,
-	type HeatLevel,
-	STREAK_THRESHOLDS,
-} from "./utils/heat";
+import { getHeatLevel, type HeatLevel, STREAK_THRESHOLDS } from "./utils/heat";
 import { extractMatchData, getMatchSideId } from "./utils/matchHelpers";
 import { useTimedState } from "./utils/useTimedState";
 
@@ -452,190 +433,28 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	return (
 		<div className="relative flex min-h-[82dvh] w-full flex-col overflow-x-hidden overflow-y-auto font-display text-foreground selection:bg-primary/30 sm:min-h-[88dvh]">
-			<header className="px-2 pb-2 pt-2 sm:px-4 sm:pt-4">
-				<div className="mx-auto flex w-full max-w-5xl flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-slate-950/60 px-4 py-4 shadow-[0_20px_55px_rgba(2,8,18,0.24)] backdrop-blur-xl sm:px-5">
-					<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-						<div className="flex items-start gap-3">
-							<div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-primary">
-								<Gamepad2 className="size-4" />
-							</div>
-							<div className="space-y-1">
-								<div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
-									<span>Round {roundNumber}</span>
-									<span className="text-white/25" aria-hidden="true">
-										&middot;
-									</span>
-									<span>{bracketStage}</span>
-									<span className="text-white/25" aria-hidden="true">
-										&middot;
-									</span>
-									<span>{tournamentMode === "2v2" ? "Team mode" : "Head to head"}</span>
-								</div>
-								<h2 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
-									Match {currentMatchNumber} of {totalMatches}
-								</h2>
-								<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
-									<span>{totalRounds} rounds total</span>
-									{etaMinutes > 0 && (
-										<span className="inline-flex items-center gap-1">
-											<Clock className="size-3" />
-											About {etaMinutes} minutes left
-										</span>
-									)}
-								</div>
-							</div>
-						</div>
-
-						<div className="flex flex-wrap items-center gap-2">
-							{(
-								[
-									{
-										action: audioManager.handleToggleMute,
-										icon: audioManager.isMuted ? VolumeX : Volume2,
-										label: audioManager.isMuted ? "Unmute" : "Mute",
-									},
-									{
-										action: audioManager.toggleBackgroundMusic,
-										icon: Music,
-										label: audioManager.backgroundMusicEnabled ? "Stop music" : "Play music",
-										active: audioManager.backgroundMusicEnabled,
-									},
-									{
-										action: () => setCatPictures(!showCatPictures),
-										icon: PawPrint,
-										label: showCatPictures ? "Names only" : "Show cats",
-										active: showCatPictures,
-									},
-								] as const
-							).map(({ action, icon: Icon, label, active }) => (
-								<button
-									key={label}
-									type="button"
-									onClick={action}
-									className={`inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm transition-colors ${
-										active
-											? "border-primary/30 bg-primary/15 text-primary"
-											: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
-									}`}
-									aria-label={label}
-								>
-									<Icon className="size-4" />
-								</button>
-							))}
-							<button
-								type="button"
-								onClick={audioManager.handlePreviousTrack}
-								className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
-								aria-label="Previous track"
-							>
-								<SkipBack className="size-4" />
-							</button>
-							<button
-								type="button"
-								onClick={audioManager.handleNextTrack}
-								className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
-								aria-label="Next track"
-							>
-								<SkipForward className="size-4" />
-							</button>
-							<button
-								type="button"
-								onClick={() => handleUndo()}
-								className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
-									canUndo
-										? "border-primary/30 bg-primary/12 text-primary hover:bg-primary/18"
-										: "cursor-not-allowed border-white/10 bg-white/[0.03] text-white/35"
-								}`}
-								aria-label="Undo last vote"
-								disabled={!canUndo}
-							>
-								<Undo2 className="size-4" />
-								<span className="hidden sm:inline">Undo</span>
-							</button>
-							<button
-								type="button"
-								onClick={quitTournament}
-								className="inline-flex h-10 items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/12 px-3 text-sm text-destructive transition-colors hover:bg-destructive/18"
-								aria-label="Quit tournament"
-							>
-								<X className="size-4" />
-								<span className="hidden sm:inline">Exit</span>
-							</button>
-						</div>
-					</div>
-
-					<div className="space-y-3">
-						<div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
-							<div
-								className="h-full rounded-full bg-primary transition-all duration-500 shadow-[0_0_18px_rgba(39,135,153,0.45)]"
-								style={{ width: `${progressWidth}%` }}
-							/>
-						</div>
-
-						<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-							<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
-								<span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1">
-									<Medal className="size-3.5 text-accent" />
-									{currentMatchNumber}/{totalMatches}
-								</span>
-								<span>{stageHeadline}</span>
-							</div>
-							{dominantStreak && (
-								<span
-									className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${getHeatTextClasses(dominantStreak.heatLevel)}`}
-								>
-									<span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px]">HOT</span>
-									<span>
-										{dominantStreak.name} x{dominantStreak.streak}
-									</span>
-								</span>
-							)}
-						</div>
-
-						<div className="hidden sm:block">
-							<BracketTree round={roundNumber} totalRounds={totalRounds} />
-						</div>
-
-						<div className="grid gap-3 md:grid-cols-[1.25fr_1fr_1fr]">
-							<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-								<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-									Match pulse
-								</p>
-								<p className="mt-2 text-sm font-semibold text-white">{matchupTone}</p>
-								<p className="mt-1 text-xs leading-relaxed text-white/58">{pressureCopy}</p>
-							</div>
-							<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-								<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-									Road to crown
-								</p>
-								<p className="mt-2 text-sm font-semibold text-white">
-									{matchesRemaining} match{matchesRemaining === 1 ? "" : "es"} after this
-								</p>
-								<p className="mt-1 text-xs leading-relaxed text-white/58">
-									Roughly {roundMatchesLeft} duel{roundMatchesLeft === 1 ? "" : "s"} remain in the
-									live bracket cycle.
-								</p>
-							</div>
-							<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-								<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-									Quick controls
-								</p>
-								<div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.14em]">
-									<span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/72">
-										A / ← Left
-									</span>
-									<span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/72">
-										D / → Right
-									</span>
-									<span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/72">
-										U Undo
-									</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</header>
+			<TournamentHeader
+				roundNumber={roundNumber}
+				totalRounds={totalRounds}
+				bracketStage={bracketStage}
+				tournamentMode={tournamentMode}
+				currentMatchNumber={currentMatchNumber}
+				totalMatches={totalMatches}
+				etaMinutes={etaMinutes}
+				audioManager={audioManager}
+				showCatPictures={showCatPictures}
+				setCatPictures={setCatPictures}
+				canUndo={canUndo}
+				handleUndo={handleUndo}
+				quitTournament={quitTournament}
+				progressWidth={progressWidth}
+				stageHeadline={stageHeadline}
+				dominantStreak={dominantStreak}
+				matchupTone={matchupTone}
+				pressureCopy={pressureCopy}
+				matchesRemaining={matchesRemaining}
+				roundMatchesLeft={roundMatchesLeft}
+			/>
 
 			<main className="relative flex min-h-0 flex-1 flex-col items-center justify-start px-1 py-3 sm:px-4 sm:py-5 sm:justify-center">
 				<div className="pointer-events-none absolute inset-0 hidden overflow-hidden sm:block">
@@ -645,189 +464,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					<div className="absolute bottom-0 right-1/3 h-36 w-36 rounded-full bg-stardust/15 animate-blob animation-delay-2000" />
 				</div>
 
-				<div className="sr-only" aria-live="polite">
-					{openingBracketReveal.value && "The bracket is set. First match begins now."}
-					{roundAnnouncement.value !== null && `Round ${roundAnnouncement.value} begins.`}
-					{voteAnnouncement.value && `${voteAnnouncement.value} advances.`}
-					{streakBurst.value &&
-						`${streakBurst.value.winnerName} is on a ${streakBurst.value.streak} win streak.`}
-				</div>
-
-				<AnimatePresence>
-					{openingBracketReveal.value && openingEntrants.length > 1 && (
-						<motion.div
-							initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-							exit={
-								prefersReducedMotion
-									? { opacity: 0 }
-									: { opacity: 0, scale: 1.03, filter: "blur(6px)" }
-							}
-							transition={{ duration: prefersReducedMotion ? 0.08 : 0.42 }}
-							className="absolute inset-0 z-40 flex items-center justify-center px-3 sm:px-6"
-						>
-							<div className="absolute inset-0 bg-slate-950/82 backdrop-blur-md" />
-							<motion.div
-								initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
-								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-								exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }}
-								transition={{ duration: prefersReducedMotion ? 0.08 : 0.38 }}
-								className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 overflow-hidden rounded-[2rem] border border-primary/20 bg-[radial-gradient(circle_at_top,rgba(57,189,216,0.18),rgba(2,6,23,0.96)_46%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-8"
-							>
-								<div className="absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.05),transparent)]" />
-								<div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-									<div>
-										<p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-primary/70">
-											Bracket Reveal
-										</p>
-										<h3 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-											The field is set
-										</h3>
-										<p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/68 sm:text-base">
-											{tournamentMode === "2v2"
-												? "Teams enter the night bracket. Watch the path lock in before Match 1 ignites."
-												: "Every contender is seeded. The opening duel begins as soon as the bracket settles."}
-										</p>
-									</div>
-									<div className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72">
-										<Trophy className="size-3.5 text-primary" />
-										<span>{openingEntrants.length} contenders</span>
-										<span className="h-1 w-1 rounded-full bg-white/25" />
-										<span>{totalRounds} rounds</span>
-									</div>
-								</div>
-
-								<div className="relative">
-									<div className="mb-4">
-										<BracketTree round={1} totalRounds={totalRounds} />
-									</div>
-									<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-										{openingEntrants.slice(0, 8).map((entrant, index) => (
-											<motion.div
-												key={`opening-entrant-${entrant.id}`}
-												initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
-												animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-												transition={{
-													duration: prefersReducedMotion ? 0.08 : 0.3,
-													delay: prefersReducedMotion ? 0 : 0.12 + index * 0.06,
-												}}
-												className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4"
-											>
-												<div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-primary via-accent to-chart-4" />
-												<p className="pl-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/42">
-													Seed {index + 1}
-												</p>
-												<p className="pl-2 pt-2 font-display text-xl leading-tight text-white sm:text-2xl">
-													{entrant.label}
-												</p>
-											</motion.div>
-										))}
-									</div>
-									{openingEntrants.length > 8 && (
-										<p className="mt-4 text-center text-xs uppercase tracking-[0.18em] text-white/48">
-											+ {openingEntrants.length - 8} more contenders in the shadows
-										</p>
-									)}
-								</div>
-							</motion.div>
-						</motion.div>
-					)}
-				</AnimatePresence>
-
-				<AnimatePresence>
-					{voteAnnouncement.value && (
-						<motion.div
-							key={`${voteAnnouncement.value}-${currentMatchKey}`}
-							initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.95 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
-							transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
-							className="pointer-events-none absolute left-1/2 top-2 z-30 w-[calc(100%-1.5rem)] max-w-full -translate-x-1/2 sm:w-auto"
-						>
-							<div className="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-3 py-2 shadow-[0_0_40px_rgba(16,185,129,0.35)] backdrop-blur-md sm:px-4">
-								<div className="flex items-center gap-2 text-emerald-100">
-									<Trophy className="size-4 text-emerald-300" />
-									<span className="truncate text-xs font-bold tracking-wide sm:text-sm">
-										{voteAnnouncement.value} advances
-									</span>
-								</div>
-							</div>
-						</motion.div>
-					)}
-				</AnimatePresence>
-
-				<AnimatePresence>
-					{streakBurst.value && (
-						<motion.div
-							key={`streak-burst-${streakBurst.value.key}`}
-							initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.94 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 1.03 }}
-							transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
-							className={`pointer-events-none absolute top-[20%] z-30 ${
-								streakBurst.value.side === "left"
-									? "left-3 sm:left-6"
-									: "right-3 text-right sm:right-6"
-							}`}
-						>
-							<div
-								className={`rounded-2xl border px-4 py-3 shadow-[0_0_40px_rgba(249,115,22,0.35)] backdrop-blur-lg ${getHeatTextClasses(streakBurst.value.heatLevel)}`}
-							>
-								<p className="text-[10px] uppercase tracking-[0.22em] opacity-80 sm:text-xs">
-									Hot streak
-								</p>
-								<p className="text-base font-black tracking-tight sm:text-lg">
-									{streakBurst.value.winnerName} x{streakBurst.value.streak}
-								</p>
-								<div className="mt-2 flex gap-1.5">
-									{Array.from({ length: getFlameCount(streakBurst.value.streak, 9) }).map(
-										(_, i) => (
-											<span
-												key={`streak-flame-${streakBurst.value.key}-${i}`}
-												className="h-1.5 w-5 animate-pulse rounded-full bg-current opacity-80 sm:h-2 sm:w-6"
-												style={{ animationDelay: `${i * 80}ms` }}
-											/>
-										),
-									)}
-								</div>
-							</div>
-						</motion.div>
-					)}
-				</AnimatePresence>
-
-				<AnimatePresence>
-					{roundAnnouncement.value !== null && (
-						<motion.div
-							key={`round-announcement-${roundAnnouncement.value}`}
-							initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-							exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
-							transition={{ duration: prefersReducedMotion ? 0.01 : 0.35 }}
-							className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
-						>
-							<motion.div
-								initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }}
-								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-								exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
-								transition={{ duration: prefersReducedMotion ? 0.01 : 0.3 }}
-								className="relative overflow-hidden rounded-2xl border border-primary/35 bg-slate-900/80 px-5 py-5 text-center shadow-[0_0_80px_rgba(39,135,153,0.25)] backdrop-blur-xl sm:px-8 sm:py-6"
-							>
-								<div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/10 to-chart-4/20" />
-								<div className="relative">
-									<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-primary/70 sm:text-xs sm:tracking-[0.3em]">
-										Next stage
-									</p>
-									<p className="text-2xl font-black tracking-tight text-white sm:text-3xl md:text-4xl">
-										Round {roundAnnouncement.value}
-									</p>
-									<p className="mt-1 text-xs text-white/72 sm:text-sm">
-										New head-to-head matchups ready
-									</p>
-								</div>
-							</motion.div>
-						</motion.div>
-					)}
-				</AnimatePresence>
+				<TournamentAnnouncements
+					prefersReducedMotion={prefersReducedMotion}
+					openingBracketReveal={openingBracketReveal.value}
+					openingEntrants={openingEntrants}
+					tournamentMode={tournamentMode}
+					totalRounds={totalRounds}
+					voteAnnouncement={voteAnnouncement.value}
+					currentMatchKey={currentMatchKey}
+					streakBurst={streakBurst.value}
+					roundAnnouncement={roundAnnouncement.value}
+				/>
 
 				<AnimatePresence mode="wait" initial={false}>
 					<motion.div
