@@ -31,9 +31,11 @@ describe("storage utilities", () => {
 
 		it("returns false when localStorage access throws", () => {
 			// Mock getter for localStorage to throw
-			const spy = vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
-				throw new Error("Access denied");
-			});
+			const spy = vi
+				.spyOn(window, "localStorage", "get")
+				.mockImplementation(() => {
+					throw new Error("Access denied");
+				});
 			expect(isStorageAvailable()).toBe(false);
 			spy.mockRestore();
 		});
@@ -72,7 +74,8 @@ describe("storage utilities", () => {
 
 		it("returns false and logs error when setItem throws", () => {
 			const mockError = new Error("Storage full");
-			vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+			vi.spyOn(Storage.prototype, "setItem").mockImplementation((key) => {
+				if (key === "__storage_test__") return;
 				throw mockError;
 			});
 
@@ -94,7 +97,8 @@ describe("storage utilities", () => {
 
 		it("catches and logs errors when removeItem throws", () => {
 			const mockError = new Error("Storage error");
-			vi.spyOn(Storage.prototype, "removeItem").mockImplementation(() => {
+			vi.spyOn(Storage.prototype, "removeItem").mockImplementation((key) => {
+				if (key === "__storage_test__") return;
 				throw mockError;
 			});
 
@@ -137,7 +141,9 @@ describe("storage utilities", () => {
 
 		it("returns fallback when parsing fails", () => {
 			window.localStorage.setItem("test-key", "invalid-json");
-			expect(readStorageJson("test-key", { fallback: true })).toEqual({ fallback: true });
+			expect(readStorageJson("test-key", { fallback: true })).toEqual({
+				fallback: true,
+			});
 		});
 	});
 
@@ -150,7 +156,8 @@ describe("storage utilities", () => {
 
 		it("returns false and logs error when setItem throws", () => {
 			const mockError = new Error("Storage full");
-			vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+			vi.spyOn(Storage.prototype, "setItem").mockImplementation((key) => {
+				if (key === "__storage_test__") return;
 				throw mockError;
 			});
 
