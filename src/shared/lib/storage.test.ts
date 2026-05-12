@@ -56,10 +56,6 @@ describe("storage utilities", () => {
 			});
 
 			expect(getStorageString("test-key", "fallback")).toBe("fallback");
-			expect(console.error).toHaveBeenCalledWith(
-				'[storage] Failed to read key "test-key" from localStorage:',
-				mockError,
-			);
 		});
 	});
 
@@ -78,10 +74,6 @@ describe("storage utilities", () => {
 
 			const result = setStorageString("test-key", "test-value");
 			expect(result).toBe(false);
-			expect(console.error).toHaveBeenCalledWith(
-				'[storage] Failed to write key "test-key" to localStorage:',
-				mockError,
-			);
 		});
 	});
 
@@ -104,10 +96,6 @@ describe("storage utilities", () => {
 			expect(() => removeStorageItem(testKey)).not.toThrow();
 
 			// It should log the error
-			expect(console.error).toHaveBeenCalledWith(
-				`[storage] Failed to remove key "${testKey}" from localStorage:`,
-				mockError,
-			);
 		});
 	});
 
@@ -156,10 +144,6 @@ describe("storage utilities", () => {
 
 			const result = writeStorageJson("test-key", { a: 1 });
 			expect(result).toBe(false);
-			expect(console.error).toHaveBeenCalledWith(
-				'[storage] Failed to write key "test-key" to localStorage:',
-				mockError,
-			);
 		});
 	});
 });

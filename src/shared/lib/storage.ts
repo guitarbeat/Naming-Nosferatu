@@ -1,6 +1,10 @@
+const isDev = () => import.meta.env?.DEV ?? false;
+
 export function isStorageAvailable(): boolean {
 	try {
-		if (typeof window === "undefined") return false;
+		if (typeof window === "undefined") {
+			return false;
+		}
 		const test = "__storage_test__";
 		window.localStorage.setItem(test, test);
 		window.localStorage.removeItem(test);
@@ -17,9 +21,11 @@ export function getStorageString(key: string, fallback: string | null = null): s
 
 	try {
 		const value = window.localStorage.getItem(key);
-		return value !== null ? value : fallback;
+		return value === null ? fallback : value;
 	} catch (error) {
-		console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
+		if (isDev()) {
+			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
+		}
 		return fallback;
 	}
 }
@@ -33,7 +39,9 @@ export function setStorageString(key: string, value: string): boolean {
 		window.localStorage.setItem(key, value);
 		return true;
 	} catch (error) {
-		console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+		if (isDev()) {
+			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+		}
 		return false;
 	}
 }
@@ -46,7 +54,9 @@ export function removeStorageItem(key: string): void {
 	try {
 		window.localStorage.removeItem(key);
 	} catch (error) {
-		console.error(`[storage] Failed to remove key "${key}" from localStorage:`, error);
+		if (isDev()) {
+			console.error(`[storage] Failed to remove key "${key}" from localStorage:`, error);
+		}
 	}
 }
 
@@ -58,7 +68,9 @@ export function parseJsonValue<T>(value: string | null, fallback: T): T {
 	try {
 		return JSON.parse(value) as T;
 	} catch (error) {
-		console.error("[storage] Failed to parse JSON from localStorage:", error);
+		if (isDev()) {
+			console.error("[storage] Failed to parse JSON from localStorage:", error);
+		}
 		return fallback;
 	}
 }
@@ -76,7 +88,9 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 		window.localStorage.setItem(key, JSON.stringify(value));
 		return true;
 	} catch (error) {
-		console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+		if (isDev()) {
+			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+		}
 		return false;
 	}
 }
