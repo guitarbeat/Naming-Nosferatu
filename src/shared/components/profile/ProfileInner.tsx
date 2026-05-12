@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
@@ -6,177 +6,226 @@ import { LogOut, Pencil, User } from "@/shared/lib/icons";
 import useAppStore from "@/store/appStore";
 
 interface ProfileInnerProps {
-        onLogin: (name: string) => Promise<boolean | undefined>;
-        onLogout: () => Promise<void>;
+	onLogin: (name: string) => Promise<boolean | undefined>;
+	onLogout: () => Promise<void>;
+}
+
+function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () => void }) {
+	return (
+		<div className="relative mb-1">
+			<div
+				className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50"
+				aria-hidden="true"
+			/>
+			<div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
+				<img src={avatarSrc} alt="Profile" className="size-full object-cover" onError={onError} />
+			</div>
+		</div>
+	);
+}
+
+interface ProfileEditFormProps {
+	editedName: string;
+	setEditedName: (val: string) => void;
+	saveError: string | null;
+	setSaveError: (val: string | null) => void;
+	isSaving: boolean;
+	isLoggedIn: boolean;
+	handleSave: () => void;
+	handleCancel: () => void;
+	nameInputRef: RefObject<HTMLInputElement | null>;
+}
+
+function ProfileEditForm({
+	editedName,
+	setEditedName,
+	saveError,
+	setSaveError,
+	isSaving,
+	isLoggedIn,
+	handleSave,
+	handleCancel,
+	nameInputRef,
+}: ProfileEditFormProps) {
+	return (
+		<div className="w-full space-y-4 animate-in fade-in duration-200">
+			<div className="relative">
+				<User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none" />
+				<Input
+					ref={nameInputRef}
+					type="text"
+					value={editedName}
+					onChange={(e) => {
+						setEditedName(e.target.value);
+						if (saveError) {
+							setSaveError(null);
+						}
+					}}
+					placeholder="Who are you?"
+					onKeyDown={(e) => e.key === "Enter" && handleSave()}
+					className="w-full h-11 pl-10 pr-4 text-sm"
+				/>
+			</div>
+
+			{saveError && (
+				<p role="alert" className="text-sm text-destructive">
+					{saveError}
+				</p>
+			)}
+
+			<div className="flex gap-2">
+				{isLoggedIn && (
+					<Button type="button" variant="ghost" onClick={handleCancel} className="flex-1">
+						Cancel
+					</Button>
+				)}
+				<Button
+					type="submit"
+					variant="glass"
+					size="large"
+					onClick={handleSave}
+					disabled={!editedName.trim() || isSaving}
+					loading={isSaving}
+					className={isLoggedIn ? "flex-[2]" : "w-full"}
+				>
+					{isLoggedIn ? "Save" : "Begin Journey"}
+				</Button>
+			</div>
+		</div>
+	);
+}
+
+interface ProfileViewProps {
+	userName: string | undefined;
+	isLoggingOut: boolean;
+	handleEdit: () => void;
+	handleLogout: () => void;
+}
+
+function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: ProfileViewProps) {
+	return (
+		<div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
+			<div className="flex items-center gap-2">
+				<h3 className="text-xl font-bold text-foreground">{userName}</h3>
+				<button
+					type="button"
+					onClick={handleEdit}
+					className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
+					aria-label="Edit name"
+				>
+					<Pencil size={14} />
+				</button>
+			</div>
+
+			<p className="text-xs text-muted-foreground/80">Your preferences are saved for ranking.</p>
+
+			<button
+				type="button"
+				onClick={handleLogout}
+				disabled={isLoggingOut}
+				className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
+			>
+				<LogOut size={13} />
+				{isLoggingOut ? "Logging out..." : "Logout"}
+			</button>
+		</div>
+	);
 }
 
 export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
-        const { user } = useAppStore();
-        const defaultAvatar = CAT_IMAGES[0] ?? "";
-        const nameInputRef = useRef<HTMLInputElement | null>(null);
-        const [editedName, setEditedName] = useState(user.name || "");
-        const [saveError, setSaveError] = useState<string | null>(null);
-        const [isSaving, setIsSaving] = useState(false);
-        const [isLoggingOut, setIsLoggingOut] = useState(false);
-        const [isEditing, setIsEditing] = useState(!user.isLoggedIn);
-        const [avatarSrc, setAvatarSrc] = useState(user.avatarUrl || defaultAvatar);
-        const previousLoginStateRef = useRef(user.isLoggedIn);
-        const previousEditingStateRef = useRef(isEditing);
+	const { user } = useAppStore();
+	const defaultAvatar = CAT_IMAGES[0] ?? "";
+	const nameInputRef = useRef<HTMLInputElement | null>(null);
+	const [editedName, setEditedName] = useState(user.name || "");
+	const [saveError, setSaveError] = useState<string | null>(null);
+	const [isSaving, setIsSaving] = useState(false);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const [isEditing, setIsEditing] = useState(!user.isLoggedIn);
+	const [avatarSrc, setAvatarSrc] = useState(user.avatarUrl || defaultAvatar);
+	const previousLoginStateRef = useRef(user.isLoggedIn);
+	const previousEditingStateRef = useRef(isEditing);
 
-        useEffect(() => {
-                setEditedName(user.name || "");
-                setAvatarSrc(user.avatarUrl || defaultAvatar);
-        }, [defaultAvatar, user.name, user.avatarUrl]);
+	useEffect(() => {
+		setEditedName(user.name || "");
+		setAvatarSrc(user.avatarUrl || defaultAvatar);
+	}, [user.name, user.avatarUrl, defaultAvatar]);
 
-        useEffect(() => {
-                const wasLoggedIn = previousLoginStateRef.current;
-                if (!user.isLoggedIn) {
-                        setIsEditing(true);
-                } else if (!wasLoggedIn) {
-                        setIsEditing(false);
-                }
-                previousLoginStateRef.current = user.isLoggedIn;
-        }, [user.isLoggedIn]);
+	useEffect(() => {
+		const wasLoggedIn = previousLoginStateRef.current;
+		if (!user.isLoggedIn) {
+			setIsEditing(true);
+		} else if (!wasLoggedIn) {
+			setIsEditing(false);
+		}
+		previousLoginStateRef.current = user.isLoggedIn;
+	}, [user.isLoggedIn]);
 
-        useEffect(() => {
-                const enteredEditingWhileLoggedIn =
-                        user.isLoggedIn && !previousEditingStateRef.current && isEditing;
-                if (enteredEditingWhileLoggedIn) {
-                        nameInputRef.current?.focus();
-                }
-                previousEditingStateRef.current = isEditing;
-        }, [isEditing, user.isLoggedIn]);
+	useEffect(() => {
+		const enteredEditingWhileLoggedIn =
+			user.isLoggedIn && !previousEditingStateRef.current && isEditing;
+		if (enteredEditingWhileLoggedIn) {
+			nameInputRef.current?.focus();
+		}
+		previousEditingStateRef.current = isEditing;
+	}, [isEditing, user.isLoggedIn]);
 
-        const handleSave = async () => {
-                if (!editedName.trim()) {
-                        return;
-                }
-                setIsSaving(true);
-                setSaveError(null);
-                try {
-                        const didLogin = await onLogin(editedName.trim());
-                        if (didLogin === false) {
-                                setSaveError("We couldn't log you in with that name. Try again.");
-                                return;
-                        }
-                        setIsEditing(false);
-                } catch (err) {
-                        console.error("Failed to update name:", err);
-                        setSaveError("We couldn't log you in right now. Try again.");
-                } finally {
-                        setIsSaving(false);
-                }
-        };
+	const handleSave = async () => {
+		if (!editedName.trim()) {
+			return;
+		}
+		setIsSaving(true);
+		setSaveError(null);
+		try {
+			const didLogin = await onLogin(editedName.trim());
+			if (didLogin === false) {
+				setSaveError("We couldn't log you in with that name. Try again.");
+				return;
+			}
+			setIsEditing(false);
+		} catch (err) {
+			console.error("Failed to update name:", err);
+			setSaveError("We couldn't log you in right now. Try again.");
+		} finally {
+			setIsSaving(false);
+		}
+	};
 
-        const handleLogout = async () => {
-                setIsLoggingOut(true);
-                try {
-                        await onLogout();
-                        setIsEditing(true);
-                } catch (err) {
-                        console.error("Failed to logout:", err);
-                } finally {
-                        setIsLoggingOut(false);
-                }
-        };
+	const handleLogout = async () => {
+		setIsLoggingOut(true);
+		try {
+			await onLogout();
+			setIsEditing(true);
+		} catch (err) {
+			console.error("Failed to logout:", err);
+		} finally {
+			setIsLoggingOut(false);
+		}
+	};
 
-        return (
-                <div className="flex flex-col items-center gap-5 w-full">
-                        {/* Avatar */}
-                        <div className="relative mb-1">
-                                <div
-                                        className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50"
-                                        aria-hidden="true"
-                                />
-                                <div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
-                                        <img
-                                                src={avatarSrc}
-                                                alt="Profile"
-                                                className="size-full object-cover"
-                                                onError={() => setAvatarSrc(defaultAvatar)}
-                                        />
-                                </div>
-                        </div>
+	return (
+		<div className="flex flex-col items-center gap-5 w-full">
+			<ProfileAvatar avatarSrc={avatarSrc} onError={() => setAvatarSrc(defaultAvatar)} />
 
-                        {isEditing ? (
-                                <div className="w-full space-y-4 animate-in fade-in duration-200">
-                                        <div className="relative">
-                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none" />
-                                                <Input
-                                                        ref={nameInputRef}
-                                                        type="text"
-                                                        value={editedName}
-                                                        onChange={(e) => {
-                                                                setEditedName(e.target.value);
-                                                                if (saveError) {
-                                                                        setSaveError(null);
-                                                                }
-                                                        }}
-                                                        placeholder="Who are you?"
-                                                        onKeyDown={(e) => e.key === "Enter" && handleSave()}
-                                                        className="w-full h-11 pl-10 pr-4 text-sm"
-                                                />
-                                        </div>
-
-                                        {saveError && (
-                                                <p role="alert" className="text-sm text-destructive">
-                                                        {saveError}
-                                                </p>
-                                        )}
-
-                                        <div className="flex gap-2">
-                                                {user.isLoggedIn && (
-                                                        <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                onClick={() => setIsEditing(false)}
-                                                                className="flex-1"
-                                                        >
-                                                                Cancel
-                                                        </Button>
-                                                )}
-                                                <Button
-                                                        type="submit"
-                                                        variant="glass"
-                                                        size="large"
-                                                        onClick={handleSave}
-                                                        disabled={!editedName.trim() || isSaving}
-                                                        loading={isSaving}
-                                                        className={user.isLoggedIn ? "flex-[2]" : "w-full"}
-                                                >
-                                                        {user.isLoggedIn ? "Save" : "Begin Journey"}
-                                                </Button>
-                                        </div>
-                                </div>
-                        ) : (
-                                <div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
-                                        <div className="flex items-center gap-2">
-                                                <h3 className="text-xl font-bold text-foreground">{user.name}</h3>
-                                                <button
-                                                        type="button"
-                                                        onClick={() => setIsEditing(true)}
-                                                        className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
-                                                        aria-label="Edit name"
-                                                >
-                                                        <Pencil size={14} />
-                                                </button>
-                                        </div>
-
-                                        <p className="text-xs text-muted-foreground/80">
-                                                Your preferences are saved for ranking.
-                                        </p>
-
-                                        <button
-                                                type="button"
-                                                onClick={() => void handleLogout()}
-                                                disabled={isLoggingOut}
-                                                className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
-                                        >
-                                                <LogOut size={13} />
-                                                {isLoggingOut ? "Logging out..." : "Logout"}
-                                        </button>
-                                </div>
-                        )}
-                </div>
-        );
+			{isEditing ? (
+				<ProfileEditForm
+					editedName={editedName}
+					setEditedName={setEditedName}
+					saveError={saveError}
+					setSaveError={setSaveError}
+					isSaving={isSaving}
+					isLoggedIn={user.isLoggedIn}
+					handleSave={handleSave}
+					handleCancel={() => setIsEditing(false)}
+					nameInputRef={nameInputRef}
+				/>
+			) : (
+				<ProfileView
+					userName={user.name}
+					isLoggingOut={isLoggingOut}
+					handleEdit={() => setIsEditing(true)}
+					handleLogout={() => void handleLogout()}
+				/>
+			)}
+		</div>
+	);
 }
