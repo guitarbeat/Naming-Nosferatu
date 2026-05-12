@@ -1,4 +1,4 @@
-🧪 [testing improvement] Add missing error test for applyTournamentMatch
+test: Add missing error test for applyTournamentMatch
 
 🎯 **What:** Adds missing error test case for `ratingsAPI.applyTournamentMatch` in `src/shared/services/supabase/ratingService.ts`.
 📊 **Coverage:** Successfully covers both the happy path with mocked defaults and the previously missing mocked database failure path properly throwing the RPC error via `throwOnRpcError`.
