@@ -1,17 +1,11 @@
 import { withSupabaseOrThrow } from "./runtime";
+import { throwOnRpcError } from "./errorUtils";
 
 export interface ApplyTournamentMatchParams {
         userName: string;
         leftNameIds: string[];
         rightNameIds: string[];
         winnerSide: "left" | "right" | "tie";
-}
-
-/** Throws a descriptive Error when a Supabase RPC returns an error object. */
-function throwOnError(error: { message?: string } | null, fallbackMsg: string): void {
-        if (error) {
-                throw new Error(error.message || fallbackMsg);
-        }
 }
 
 // Validation utilities
@@ -88,7 +82,7 @@ export const ratingsAPI = {
                                 p_winner_side: winnerSide,
                         });
 
-                        throwOnError(error, "Failed to apply tournament Elo update");
+                        throwOnRpcError(error, "Failed to apply tournament Elo update");
 
                         return (data ?? []).reduce(
                                 (
@@ -135,7 +129,7 @@ export const ratingsAPI = {
                                 p_ratings: ratingsList,
                         });
 
-                        throwOnError(error, "Failed to save ratings");
+                        throwOnRpcError(error, "Failed to save ratings");
 
                         const response = data as { success: boolean; count: number } | null;
                         if (!response?.success) {

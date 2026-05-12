@@ -1,4 +1,4 @@
-import { shuffleArray } from "@/shared/lib/utils";
+import { shuffleArray, createSortedKey } from "@/shared/lib/utils";
 import { ELO_RATING } from "@/shared/lib/constants";
 import type {
 	NameItem,
@@ -35,12 +35,7 @@ export function buildInitialRatings(names: NameItem[]): Record<string, number> {
 }
 
 export function createNamesKey(names: NameItem[]): string {
-	return names
-		.map((n) => n?.id || n?.name || "")
-		.filter(Boolean)
-		.map(String)
-		.sort()
-		.join(",");
+	return createSortedKey(names.map((n) => n?.id || ""));
 }
 
 export function createTournamentId(names: NameItem[], userName?: string): string {

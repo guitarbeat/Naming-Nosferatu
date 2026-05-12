@@ -57,6 +57,21 @@ Configured for Replit autoscale deployment. Build command: `npm run build`. Run 
 - `cat_tournament_selections` was dropped; global win/loss counters are now on `cat_names`
 - Key RPCs: `apply_tournament_match_elo`, `save_user_ratings`, `get_leaderboard_stats`, `get_site_stats`, `add_cat_name`, `soft_delete_cat_name`
 
+## Design System (Minimalist Redesign)
+
+The app was redesigned for a clean, modern minimalist aesthetic:
+
+- **Background**: CSS-only radial gradients replace the old Three.js WebGL animated background (`LiquidGradientBackground.tsx` now renders a static CSS gradient)
+- **Hero section**: Removed Framer Motion animated blobs; clean dark background with bold white display typography
+- **Boot screen**: Static gradient replaces animated blobs; dead `boot-blob-*` keyframes removed from `motion.css`
+- **TournamentComplete**: Replaced animated celebration blobs with a minimal static gradient and clean stat tiles
+- **Design tokens** (`tokens.css`): Darker base (`hsl(224 28% 7%)`), subtler surface/border/glass tokens, refined nav opacity
+- **Navbar** (`navbar.css`): Simpler border, dark blur backdrop, removed heavy inner highlight; mobile variant cleaned up
+- **Surface component**: Slightly reduced glass opacity (`bg-white/[0.03]`) and muted tone (`bg-black/10`) for subtlety
+- **Section separators**: Reduced border opacity from 10% → 6% white
+- **SectionHeading**: Simplified — clean display font with muted subtitle, no heavy wrappers
+- **DashboardPrimitives**: Cleaned up `Panel`, `StatTile`, `SectionHeader`, `ContextBadge` — consistent border/bg tokens throughout
+
 ## Bug Fixes Applied
 
 - **Win/Loss stats always zero**: `tournament.voteHistory` in the global store was never populated. Added `recordVote` and `clearVoteHistory` actions to `tournamentSlice`, called from `useTournamentState.handleVote` and `handleQuit`.

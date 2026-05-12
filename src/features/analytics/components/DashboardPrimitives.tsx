@@ -1,4 +1,4 @@
-import {
+import React, {
         cloneElement,
         type ElementType,
         isValidElement,
@@ -7,18 +7,18 @@ import {
         useRef,
         useState,
 } from "react";
-import { Surface } from "@/shared/components/layout/Surface";
+import { Card } from "@/shared/components/layout/Card";
 
 export const CHART_TOOLTIP_STYLE = {
-        background: "rgba(20, 26, 36, 0.96)",
-        border: "1px solid rgba(200, 210, 222, 0.18)",
-        borderRadius: 12,
+        background: "rgba(14, 18, 28, 0.96)",
+        border: "1px solid rgba(255, 255, 255, 0.09)",
+        borderRadius: 10,
         fontSize: 12,
-        color: "#ebf1f7",
-        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
+        color: "#d4dce8",
+        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.32)",
 } as const;
 
-export const CHART_CURSOR = { fill: "rgba(63, 184, 176, 0.08)" } as const;
+export const CHART_CURSOR = { fill: "rgba(63, 184, 176, 0.06)" } as const;
 
 export function ChartFrame({
         children,
@@ -53,7 +53,7 @@ export function ChartFrame({
 
         const chart =
                 size.width > 0 && size.height > 0 && isValidElement(children)
-                        ? cloneElement(children, { width: size.width, height: size.height })
+                        ? cloneElement(children as React.ReactElement<{ width?: number; height?: number }>, { width: size.width, height: size.height })
                         : null;
 
         return (
@@ -65,9 +65,9 @@ export function ChartFrame({
 
 export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
         return (
-                <Surface radius="lg" elevated className={className}>
+                <Card variant="default" shadow="large" className={className}>
                         {children}
-                </Surface>
+                </Card>
         );
 }
 
@@ -83,23 +83,23 @@ export function StatTile({
         accent?: boolean;
 }) {
         return (
-                <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/10 bg-black/15 px-4 py-5 text-center">
+                <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-5 text-center">
                         {Icon && (
                                 <div
-                                        className={`rounded-2xl border p-2.5 ${
+                                        className={`rounded-lg border p-2 ${
                                                 accent
-                                                        ? "border-primary/20 bg-primary/12 text-primary"
-                                                        : "border-white/10 bg-white/[0.04] text-white/65"
+                                                        ? "border-primary/15 bg-primary/8 text-primary"
+                                                        : "border-white/[0.07] bg-white/[0.03] text-white/40"
                                         }`}
                                 >
-                                        <Icon size={16} />
+                                        <Icon size={14} />
                                 </div>
                         )}
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
                                 {label}
                         </p>
                         <p
-                                className={`text-2xl font-semibold leading-none ${accent ? "text-primary" : "text-foreground"}`}
+                                className={`text-2xl font-semibold leading-none ${accent ? "text-primary" : "text-white/80"}`}
                         >
                                 {value}
                         </p>
@@ -116,10 +116,10 @@ export function ContextBadge({
 }) {
         return (
                 <span
-                        className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] ${
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${
                                 tone === "accent"
-                                        ? "border-primary/20 bg-primary/12 text-primary"
-                                        : "border-white/10 bg-black/15 text-muted-foreground/70"
+                                        ? "border-primary/15 bg-primary/8 text-primary/80"
+                                        : "border-white/[0.07] bg-white/[0.025] text-white/35"
                         }`}
                 >
                         {label}
@@ -139,14 +139,14 @@ export function SectionHeader({
         action?: ReactNode;
 }) {
         return (
-                <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                        <div className="space-y-2">
-                                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
-                                        <Icon size={14} className="text-primary" />
-                                        <span>{title}</span>
+                <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                        <Icon size={13} className="text-primary/70 shrink-0" />
+                                        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-white/50">{title}</span>
                                 </div>
                                 {subtitle && (
-                                        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">{subtitle}</p>
+                                        <p className="max-w-2xl text-sm leading-relaxed text-white/35">{subtitle}</p>
                                 )}
                         </div>
                         {action}

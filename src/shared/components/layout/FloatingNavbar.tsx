@@ -23,18 +23,23 @@ import useAppStore from "@/store/appStore";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";
 
-type NavSection = "pick" | "tournament" | "analysis" | "suggest";
+type NavSection = "pick" | "tournament" | "analysis";
 
 const keyToId: Record<NavSection, string> = {
         pick: "pick",
         tournament: "tournament",
         analysis: "analysis",
-        suggest: "suggest",
 };
 
 const LazyProfileInner = lazy(() =>
         import("@/shared/components/profile/ProfileInner").then((module) => ({
                 default: module.ProfileInner,
+        })),
+);
+
+const LazyNameSuggestion = lazy(() =>
+        import("@/features/tournament/components/NameSuggestion").then((module) => ({
+                default: module.NameSuggestion,
         })),
 );
 
@@ -45,6 +50,7 @@ function FloatingNavItem({
         isCurrent = false,
         isPressed = false,
         isAccent = false,
+        hasBadge = false,
         onClick,
         customIcon,
         className,
@@ -56,6 +62,7 @@ function FloatingNavItem({
         isCurrent?: boolean;
         isPressed?: boolean;
         isAccent?: boolean;
+        hasBadge?: boolean;
         onClick: () => void;
         customIcon?: ReactNode;
         className?: string;
@@ -80,6 +87,7 @@ function FloatingNavItem({
                 >
                         <span className="floating-navbar__icon" aria-hidden="true">
                                 {customIcon || <Icon className="h-5 w-5 sm:h-6 sm:w-6" />}
+                                {hasBadge && <span className="floating-navbar__badge" />}
                         </span>
                         <span
                                 className={cn(
@@ -109,8 +117,13 @@ export function FloatingNavbar() {
         const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
         const [pendingScroll, setPendingScroll] = useState<NavSection | null>(null);
         const [isProfileOpen, setIsProfileOpen] = useState(false);
+        const [isSuggestOpen, setIsSuggestOpen] = useState(false);
         const profileButtonRef = useRef<HTMLDivElement | null>(null);
+        const suggestButtonRef = useRef<HTMLDivElement | null>(null);
         const [profileOriginRect, setProfileOriginRect] = useState<
+                { x: number; y: number; width: number; height: number } | null
+        >(null);
+        const [suggestOriginRect, setSuggestOriginRect] = useState<
                 { x: number; y: number; width: number; height: number } | null
         >(null);
         const navGlassId = useId();
@@ -195,8 +208,6 @@ export function FloatingNavbar() {
                         "pick",
                         "tournament",
                         "analysis",
-                        "suggest",
-                        "profile",
                 ];
 
                 const handleScroll = () => {
@@ -376,15 +387,31 @@ export function FloatingNavbar() {
                                                         icon={BarChart3}
                                                         label="Analyze"
                                                         isCurrent={isHomeRoute && activeSection === "analysis"}
+                                                        hasBadge={Object.keys(tournament.ratings).length > 0 && activeSection !== "analysis"}
                                                         onClick={() => handleNavClick("analysis")}
                                                 />
 
+                                                <div ref={suggestButtonRef} className="contents">
                                                 <FloatingNavItem
                                                         icon={Lightbulb}
                                                         label="Suggest"
-                                                        isCurrent={isHomeRoute && activeSection === "suggest"}
-                                                        onClick={() => handleNavClick("suggest")}
+                                                        isCurrent={isSuggestOpen}
+                                                        onClick={() => {
+                                                                hapticNavTap();
+                                                                const buttonEl = suggestButtonRef.current?.querySelector("button");
+                                                                if (buttonEl) {
+                                                                        const rect = buttonEl.getBoundingClientRect();
+                                                                        setSuggestOriginRect({
+                                                                                x: rect.left,
+                                                                                y: rect.top,
+                                                                                width: rect.width,
+                                                                                height: rect.height,
+                                                                        });
+                                                                }
+                                                                setIsSuggestOpen(true);
+                                                        }}
                                                 />
+                                                </div>
 
                                                 {isAdmin && (
                                                         <FloatingNavItem
@@ -469,6 +496,24 @@ export function FloatingNavbar() {
                                                         return ok;
                                                 }}
                                                 onLogout={logout}
+                                        />
+                                </Suspense>
+                        </Modal>
+                )}
+                {isSuggestOpen && (
+                        <Modal
+                                title="Suggest a Name"
+                                hideTitle
+                                open={isSuggestOpen}
+                                onClose={() => setIsSuggestOpen(false)}
+                                maxWidth="max-w-md"
+                                description="Suggest a cat name."
+                                originRect={suggestOriginRect}
+                        >
+                                <Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
+                                        <LazyNameSuggestion
+                                                variant="modal"
+                                                onClose={() => setIsSuggestOpen(false)}
                                         />
                                 </Suspense>
                         </Modal>

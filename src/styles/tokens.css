@@ -151,6 +151,22 @@
 }
 
 /* ==========================================================================
+   GOLDEN RATIO
+   ========================================================================== */
+:root {
+        --phi: 1.618;
+        --phi-inv: 0.618;
+
+        /* φ-derived spacing: each step = previous × φ */
+        --space-phi-1: 0.618rem;  /* 1rem ÷ φ   */
+        --space-phi-2: 1rem;      /* base        */
+        --space-phi-3: 1.618rem;  /* 1rem × φ    */
+        --space-phi-4: 2.618rem;  /* 1rem × φ²   */
+        --space-phi-5: 4.236rem;  /* 1rem × φ³   */
+        --space-phi-6: 6.854rem;  /* 1rem × φ⁴   */
+}
+
+/* ==========================================================================
    SPACING SCALE
    ========================================================================== */
 :root {
@@ -182,10 +198,10 @@
         --app-main-bottom-padding: var(--app-nav-safe-bottom);
         --app-scroll-to-top-bottom: calc(var(--app-nav-shell-height) + var(--app-nav-bottom-offset) + var(--space-4));
         --app-section-padding-inline: var(--space-4);
-        --app-section-padding-block: var(--space-12);
-        --app-section-padding-block-compact: var(--space-8);
+        --app-section-padding-block: var(--space-phi-4);       /* 2.618rem ≈ space-10 */
+        --app-section-padding-block-compact: var(--space-phi-3); /* 1.618rem ≈ space-6  */
         --app-section-scroll-margin: var(--space-24);
-        --app-section-separator-padding: var(--space-14, 3.5rem);
+        --app-section-separator-padding: var(--space-phi-5);   /* 4.236rem ≈ space-16; = block × φ */
         --app-section-max-sm: 36rem;
         --app-section-max-md: 42rem;
         --app-section-max-lg: 56rem;
@@ -203,10 +219,10 @@
         :root {
                 --app-container-padding-inline: var(--space-6);
                 --app-section-padding-inline: var(--space-6);
-                --app-section-padding-block: var(--space-16);
-                --app-section-padding-block-compact: var(--space-10);
+                --app-section-padding-block: var(--space-phi-5);       /* 4.236rem ≈ space-16 */
+                --app-section-padding-block-compact: var(--space-phi-4); /* 2.618rem ≈ space-10 */
                 --app-section-scroll-margin: var(--space-16);
-                --app-section-separator-padding: var(--space-16);
+                --app-section-separator-padding: var(--space-phi-6);    /* 6.854rem ≈ space-28; = block × φ */
                 --app-hero-padding-block-start: var(--space-28, 7rem);
                 --app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
                 --app-chart-frame-height: 16rem;
@@ -393,9 +409,17 @@
         --pw-transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
         /* Heading treatment */
-        --pw-heading-1-size: clamp(2.15rem, 4.4vw, 3.65rem);
-        --pw-heading-2-size: clamp(1.7rem, 3vw, 2.55rem);
-        --pw-heading-3-size: clamp(1.35rem, 2.1vw, 1.95rem);
+        /*
+         * Golden-ratio type scale (φ = 1.618).
+         * Each heading's min = previous heading's max:
+         *   h3 range: φ⁰ → φ¹  (1rem     → 1.618rem)
+         *   h2 range: φ¹ → φ²  (1.618rem → 2.618rem)  h2_min = h3_max
+         *   h1 range: φ² → φ³  (2.618rem → 4.236rem)  h1_min = h2_max
+         * Fluid slopes derived so each heading reaches max at ~1440px.
+         */
+        --pw-heading-1-size: clamp(var(--space-phi-4), 2.31vw + 2.156rem, var(--space-phi-5));
+        --pw-heading-2-size: clamp(var(--space-phi-3), 1.43vw + 1.333rem, var(--space-phi-4));
+        --pw-heading-3-size: clamp(var(--space-phi-2), 0.88vw + 0.82rem,  var(--space-phi-3));
         --pw-heading-weight: 700;
         --pw-heading-tracking: 0.02em;
         --pw-heading-transform: uppercase;
@@ -433,20 +457,20 @@
         --primary-color: hsl(var(--pw-sage-hsl));
         --primary-light: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 68%, white);
         --primary-dark: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 76%, black);
-        --background: hsl(222deg 30% 9%);
-        --foreground: hsl(210deg 35% 96%);
-        --card: hsl(221deg 25% 13%);
-        --card-foreground: hsl(210deg 35% 96%);
-        --popover: hsl(221deg 25% 13%);
-        --popover-foreground: hsl(210deg 35% 96%);
+        --background: hsl(224deg 28% 7%);
+        --foreground: hsl(210deg 30% 94%);
+        --card: hsl(222deg 24% 10%);
+        --card-foreground: hsl(210deg 30% 94%);
+        --popover: hsl(222deg 24% 10%);
+        --popover-foreground: hsl(210deg 30% 94%);
         --primary: hsl(var(--pw-sage-hsl));
         --primary-foreground: hsl(0deg 0% 100%);
-        --secondary: hsl(217deg 21% 20%);
-        --secondary-foreground: hsl(210deg 35% 96%);
+        --secondary: hsl(218deg 20% 16%);
+        --secondary-foreground: hsl(210deg 30% 94%);
         --accent: hsl(var(--pw-coral-hsl));
         --accent-foreground: hsl(0deg 0% 100%);
-        --border: hsl(217deg 21% 31%);
-        --input: hsl(217deg 21% 31%);
+        --border: hsl(220deg 18% 22%);
+        --input: hsl(220deg 18% 22%);
         --ring: hsl(var(--pw-sage-hsl));
 
         /* Surface colors */
@@ -485,16 +509,16 @@
         --overlay-darker: color-mix(in srgb, var(--surface-muted) 76%, transparent);
 
         /* Glass surface tokens */
-        --glass-bg: color-mix(in srgb, var(--surface-muted) 58%, transparent);
-        --glass-bg-light: color-mix(in srgb, var(--surface-muted) 32%, transparent);
-        --glass-bg-strong: color-mix(in srgb, var(--surface-muted) 74%, transparent);
-        --glass-border: color-mix(in srgb, var(--pw-text-strong) 12%, transparent);
-        --glass-border-hover: color-mix(in srgb, var(--pw-text-strong) 22%, transparent);
-        --glass-blur: 8px;
-        --glass-shadow: var(--pw-shadow-lg);
+        --glass-bg: color-mix(in srgb, var(--surface-muted) 50%, transparent);
+        --glass-bg-light: color-mix(in srgb, var(--surface-muted) 24%, transparent);
+        --glass-bg-strong: color-mix(in srgb, var(--surface-muted) 68%, transparent);
+        --glass-border: color-mix(in srgb, var(--pw-text-strong) 9%, transparent);
+        --glass-border-hover: color-mix(in srgb, var(--pw-text-strong) 16%, transparent);
+        --glass-blur: 12px;
+        --glass-shadow: var(--pw-shadow-md);
         --glass-shadow-colored:
-                0 18px 40px color-mix(in srgb, var(--color-neon-cyan) 16%, transparent),
-                0 14px 32px color-mix(in srgb, var(--color-hot-pink) 12%, transparent);
+                0 18px 40px color-mix(in srgb, var(--color-neon-cyan) 10%, transparent),
+                0 14px 32px color-mix(in srgb, var(--color-hot-pink) 8%, transparent);
 
         /* Shadow utilities (theme-specific) */
         --shadow-sm: var(--pw-shadow-sm);
@@ -535,9 +559,9 @@
         --muted-foreground: #c8d2de;
 
         /* Navigation tokens */
-        --nav-bg: color-mix(in srgb, var(--surface-muted) 88%, transparent);
+        --nav-bg: color-mix(in srgb, var(--surface-muted) 80%, transparent);
         --nav-text: var(--pw-text-strong);
-        --nav-text-muted: var(--pw-text-base);
+        --nav-text-muted: color-mix(in srgb, var(--pw-text-base) 70%, transparent);
         --nav-highlight: hsl(var(--pw-sage-hsl));
         --nav-accent: hsl(var(--pw-coral-hsl));
         --nav-shell-bg: color-mix(in srgb, var(--surface-floating-bg) 84%, transparent);
