@@ -47,7 +47,7 @@ const getSupabaseCredentials = (): { url: string; key: string } | null => {
         const key =
                 import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-        if (!url || !key || url.includes("PLACEHOLDER")) {
+        if (!url || !key) {
                 if (shouldWarnMissingSupabaseCredentials(getCurrentHostname())) {
                         console.warn(
                                 "[Supabase] Credentials not found. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY) to enable Supabase features.",

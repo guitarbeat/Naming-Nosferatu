@@ -35,9 +35,11 @@ export default function AdminRoute() {
 						Admin access is required to view this page. Head back home to log in
 						or return to the main tournament flow.
 					</p>
-					<Button variant="outline" onClick={() => navigate("/")}>
-						Back Home
-					</Button>
+					<div className="flex flex-wrap items-center justify-center gap-3">
+						<Button variant="outline" onClick={() => navigate("/")}>
+							Back Home
+						</Button>
+					</div>
 				</div>
 			</Section>
 		);

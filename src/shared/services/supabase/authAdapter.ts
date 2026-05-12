@@ -1,13 +1,14 @@
 import type {
-        AuthAdapter,
-        AuthUser,
-        LoginCredentials,
+	AuthAdapter,
+	AuthUser,
+	LoginCredentials,
 } from "@/app/providers/Providers";
+import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { isStorageAvailable } from "@/shared/lib/storage";
 import {
-        clearStoredUserSnapshot,
-        readStoredUserSnapshot,
-        writeStoredUserSnapshot,
+	clearStoredUserSnapshot,
+	readStoredUserSnapshot,
+	writeStoredUserSnapshot,
 } from "@/shared/lib/userStorage";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
@@ -16,190 +17,212 @@ import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
  * Removes special characters, spaces, and converts to lowercase
  */
 function sanitizeNameForEmail(name: string): string {
-        return name
-                .toLowerCase()
-                .replace(/[^a-z0-9._-]/g, "") // Keep only alphanumeric, dots, underscores, hyphens
-                .replace(/^[.-]+|[.-]+$/g, "") // Remove leading/trailing dots or hyphens
-                .slice(0, 64); // Email local-part max length is 64 chars
+	return name
+		.toLowerCase()
+		.replace(/[^a-z0-9._-]/g, "") // Keep only alphanumeric, dots, underscores, hyphens
+		.replace(/^[.-]+|[.-]+$/g, "") // Remove leading/trailing dots or hyphens
+		.slice(0, 64); // Email local-part max length is 64 chars
 }
 
 function buildAuthUserFromStoredSnapshot(): AuthUser | null {
-        const storedUser = readStoredUserSnapshot();
-        if (!storedUser) {
-                return null;
-        }
+	const storedUser = readStoredUserSnapshot();
+	if (!storedUser) {
+		return null;
+	}
 
-        return {
-                id: storedUser.id || storedUser.name,
-                name: storedUser.name,
-                email: storedUser.email,
-                isAdmin: Boolean(storedUser.isAdmin),
-                role: storedUser.isAdmin ? "admin" : "user",
-        };
+	return {
+		id: storedUser.id || storedUser.name,
+		name: storedUser.name,
+		email: storedUser.email,
+		isAdmin: Boolean(storedUser.isAdmin),
+		role: storedUser.isAdmin ? "admin" : "user",
+	};
 }
 
 export const supabaseAuthAdapter: AuthAdapter = {
-        async getCurrentUser(): Promise<AuthUser | null> {
-                try {
-                        const client = await resolveSupabaseClient();
-                        if (!client) {
-                                return buildAuthUserFromStoredSnapshot();
-                        }
+	/**
+	 * Get current user from Supabase auth or localStorage fallback
+	 */
+	async getCurrentUser(): Promise<AuthUser | null> {
+		if (!isStorageAvailable()) {
+			return null;
+		}
 
-                        const {
-                                data: { user },
-                        } = await client.auth.getUser();
-                        if (!user) {
-                                return null;
-                        }
+		// Try to get current user from Supabase first
+		try {
+			const client = await resolveSupabaseClient();
+			if (!client) {
+				return buildAuthUserFromStoredSnapshot();
+			}
 
-                        const authUser = {
-                                id: user.id,
-                                name: user.user_metadata?.user_name || user.email || "Unknown",
-                                email: user.email,
-                                isAdmin: false,
-                                role: "user",
-                        } satisfies AuthUser;
+			const {
+				data: { user },
+			} = await client.auth.getUser();
 
-                        writeStoredUserSnapshot({
-                                id: authUser.id,
-                                name: authUser.name,
-                                email: authUser.email,
-                                isAdmin: false,
-                        });
+			if (!user) {
+				return null;
+			}
 
-                        return authUser;
-                } catch (error) {
-                        console.error("Error getting current user:", error);
-                        return null;
-                }
-        },
+			// Check if user has admin role
+			const isAdmin = await this.checkAdminStatus(user.id);
+			const authUser = {
+				id: user.id,
+				name: user.user_metadata?.user_name || user.email || "Unknown",
+				email: user.email,
+				isAdmin,
+				role: isAdmin ? "admin" : "user",
+			} satisfies AuthUser;
 
-        /**
-         * Login with Supabase Auth
-         */
-        async login(credentials: LoginCredentials): Promise<boolean> {
-                const { name } = credentials;
-                if (!name?.trim()) {
-                        return false;
-                }
+			writeStoredUserSnapshot({
+				...readStoredUserSnapshot(),
+				id: authUser.id,
+				name: authUser.name,
+				email: authUser.email,
+				isAdmin: authUser.isAdmin,
+			});
 
-                try {
-                        const trimmedName = name.trim();
-                        const client = await resolveSupabaseClient();
-                        if (!client) {
-                                writeStoredUserSnapshot({
-                                        name: trimmedName,
-                                        isAdmin: false,
-                                });
-                                return true;
-                        }
+			return authUser;
+		} catch (error) {
+			console.error("Error getting current user:", error);
+			return null;
+		}
+	},
 
-                        const sanitizedEmail = `${sanitizeNameForEmail(trimmedName)}@demo.local`;
-                        const DEMO_PASSWORD = "demo-password";
+	/**
+	 * Login with Supabase Auth
+	 */
+	async login(credentials: LoginCredentials): Promise<boolean> {
+		const { name } = credentials;
+		if (!name?.trim()) {
+			return false;
+		}
 
-                        // Try signing in first; if no account exists, sign up automatically
-                        let authUser: import("@supabase/supabase-js").User | null = null;
+		try {
+			const trimmedName = name.trim();
+			const client = await resolveSupabaseClient();
+			if (!client) {
+				// Fallback to localStorage for demo mode
+				const storedUser = readStoredUserSnapshot();
+				writeStoredUserSnapshot({
+					...storedUser,
+					name: trimmedName,
+					isAdmin:
+						storedUser?.name === trimmedName ? storedUser.isAdmin : false,
+				});
+				return true;
+			}
 
-                        const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
-                                email: sanitizedEmail,
-                                password: DEMO_PASSWORD,
-                        });
+			// Sign in with Supabase
+			const sanitizedEmail = `${sanitizeNameForEmail(trimmedName)}@demo.local`;
+			const { data, error } = await client.auth.signInWithPassword({
+				email: sanitizedEmail,
+				password: "demo-password", // Demo password
+			});
 
-                        if (signInError) {
-                                const isInvalidCredentials =
-                                        signInError.message?.toLowerCase().includes("invalid login") ||
-                                        signInError.message?.toLowerCase().includes("invalid credentials") ||
-                                        signInError.status === 400;
+			if (error) {
+				console.error("Supabase login failed:", error);
+				return false;
+			}
 
-                                if (!isInvalidCredentials) {
-                                        console.error("Supabase login failed:", signInError);
-                                        return false;
-                                }
+			// Store user info in localStorage for compatibility
+			if (data.user) {
+				const storedUser = readStoredUserSnapshot();
+				writeStoredUserSnapshot({
+					...storedUser,
+					id: data.user.id,
+					name: data.user.user_metadata?.user_name || trimmedName,
+					email: data.user.email,
+				});
 
-                                const { data: signUpData, error: signUpError } = await client.auth.signUp({
-                                        email: sanitizedEmail,
-                                        password: DEMO_PASSWORD,
-                                        options: {
-                                                data: { user_name: trimmedName },
-                                        },
-                                });
+				// Link auth.uid() to user_roles row (idempotent — no-op if already linked)
+				try {
+					await client.rpc("link_auth_uid");
+				} catch {
+					// Non-critical: is_admin() falls back to JWT user_metadata check
+				}
+			}
 
-                                if (signUpError) {
-                                        console.error("Supabase sign-up failed:", signUpError);
-                                        return false;
-                                }
+			return true;
+		} catch (error) {
+			console.error("Login error:", error);
+			return false;
+		}
+	},
 
-                                authUser = signUpData.user;
-                        } else {
-                                authUser = signInData.user;
-                        }
+	/**
+	 * Register new user with Supabase Auth
+	 */
+	async register(): Promise<void> {
+		throw new Error(
+			"Registration not implemented. Please use Supabase Auth directly.",
+		);
+	},
 
-                        if (authUser) {
-                                writeStoredUserSnapshot({
-                                        id: authUser.id,
-                                        name: authUser.user_metadata?.user_name || trimmedName,
-                                        email: authUser.email,
-                                        isAdmin: false,
-                                });
+	/**
+	 * Logout - clear Supabase session and localStorage
+	 */
+	async logout(): Promise<void> {
+		try {
+			const client = await resolveSupabaseClient();
+			if (client) {
+				await client.auth.signOut();
+			}
 
-                                try {
-                                        await client.rpc("link_auth_uid");
-                                } catch {
-                                }
-                        }
+			// Clear localStorage
+			if (isStorageAvailable()) {
+				clearStoredUserSnapshot();
+			}
+		} catch (error) {
+			console.error("Logout error:", error);
+		}
+	},
 
-                        return true;
-                } catch (error) {
-                        console.error("Login error:", error);
-                        return false;
-                }
-        },
+	/**
+	 * Check if a user is admin based on Supabase roles
+	 */
+	async checkAdminStatus(userId: string): Promise<boolean> {
+		try {
+			const client = await resolveSupabaseClient();
+			if (!client) {
+				return Boolean(readStoredUserSnapshot()?.isAdmin);
+			}
 
-        /**
-         * Register new user with Supabase Auth
-         */
-        async register(): Promise<void> {
-                throw new Error(
-                        "Registration not implemented. Please use Supabase Auth directly.",
-                );
-        },
+			const { data: isAdmin, error: rpcError } = await client.rpc("is_admin");
+			if (!rpcError && typeof isAdmin === "boolean") {
+				return isAdmin;
+			}
 
-        /**
-         * Logout - clear Supabase session and localStorage
-         */
-        async logout(): Promise<void> {
-                try {
-                        const client = await resolveSupabaseClient();
-                        if (client) {
-                                await client.auth.signOut();
-                        }
+			const { data, error } = await client
+				.from("cat_user_roles")
+				.select("role")
+				.eq("user_id", userId)
+				.eq("role", "admin")
+				.maybeSingle();
 
-                        if (isStorageAvailable()) {
-                                clearStoredUserSnapshot();
-                        }
-                } catch (error) {
-                        console.error("Logout error:", error);
-                }
-        },
+			if (data) {
+				return true;
+			}
 
-        async checkAdminStatus(userId: string): Promise<boolean> {
-                try {
-                        const client = await resolveSupabaseClient();
-                        if (!client) {
-                                return Boolean(readStoredUserSnapshot()?.isAdmin);
-                        }
+			const storedUserName = readStoredUserSnapshot()?.name;
+			if (!storedUserName) {
+				return false;
+			}
 
-                        const { data } = await client
-                                .from("cat_user_roles")
-                                .select("role")
-                                .eq("user_id", userId)
-                                .eq("role", "admin")
-                                .maybeSingle();
-                        return Boolean(data);
-                } catch (error) {
-                        console.error("[Auth] Error checking admin status:", error);
-                        return false;
-                }
-        },
+			const { data: fallbackData, error: fallbackError } = await client
+				.from("cat_user_roles")
+				.select("role")
+				.eq("user_name", storedUserName)
+				.eq("role", "admin")
+				.maybeSingle();
+
+			if (error || fallbackError) {
+				return false;
+			}
+
+			return Boolean(fallbackData);
+		} catch (error) {
+			console.error("Error checking admin status:", error);
+			return false;
+		}
+	},
 };

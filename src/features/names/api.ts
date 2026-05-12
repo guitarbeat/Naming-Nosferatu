@@ -4,7 +4,6 @@ import type { Database } from "@/integrations/supabase/types";
 import { isRpcSignatureError } from "@/shared/lib/errors";
 import { mapNameRow } from "@/shared/lib/names/mapNameRow";
 import { resolveSupabaseClient, withSupabase } from "@/shared/services/supabase/runtime";
-import { throwOnFailureResponse } from "@/shared/services/supabase/errorUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
@@ -40,6 +39,13 @@ function assertAdmin(message = "Admin privileges required"): void {
         }
 }
 
+/** Throws when the RPC returns a non-true result. */
+function assertSuccess(data: unknown, message: string): void {
+        if (data !== true) {
+                throw new Error(message);
+        }
+}
+
 async function runAdminMutation<T>(
         operation: (client: SupabaseClient<Database>) => Promise<T>,
 ): Promise<T> {
@@ -68,7 +74,7 @@ async function runBooleanAdminRpc(
                 if (error) {
                         throw error;
                 }
-                throwOnFailureResponse(data, errorMessage);
+                assertSuccess(data, errorMessage);
         });
 }
 
@@ -214,7 +220,7 @@ export async function toggleNameHidden(params: {
                 if (error) {
                         throw error;
                 }
-                throwOnFailureResponse(data, "Failed to update name visibility");
+                assertSuccess(data, "Failed to update name visibility");
         });
 }
 
@@ -242,7 +248,7 @@ export async function toggleNameLocked(params: {
                 if (rpcResult.error) {
                         throw new Error(rpcResult.error.message || "Failed to toggle locked status");
                 }
-                throwOnFailureResponse(rpcResult.data, "Failed to toggle locked status");
+                assertSuccess(rpcResult.data, "Failed to toggle locked status");
         });
 }
 
@@ -271,7 +277,7 @@ export async function unhideAllNames(): Promise<void> {
                 if (error) {
                         throw error;
                 }
-                throwOnFailureResponse(data, "Failed to unhide all names");
+                assertSuccess(data, "Failed to unhide all names");
         });
 }
 

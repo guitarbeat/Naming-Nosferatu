@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ELO_RATING } from "@/shared/lib/constants";
 import type { NameItem } from "@/shared/types";
 
 export function usePersonalResults({
@@ -32,7 +31,7 @@ export function usePersonalResults({
 				const actualName = idToNameMap.get(id) || id;
 				return {
 					name: actualName,
-					rating: Math.round(typeof r === "number" ? r : r?.rating || ELO_RATING.DEFAULT_RATING),
+					rating: Math.round(typeof r === "number" ? r : r?.rating || 1500),
 					wins: typeof r === "number" ? 0 : r?.wins || 0,
 					losses: typeof r === "number" ? 0 : r?.losses || 0,
 					id,

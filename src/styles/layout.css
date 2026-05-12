@@ -102,7 +102,7 @@
 
 .app-section--separator {
         padding-top: var(--app-section-separator-padding);
-        border-top: 1px solid rgb(255 255 255 / 6%);
+        border-top: 1px solid rgb(255 255 255 / 10%);
 }
 
 .app-section--centered {
@@ -247,6 +247,11 @@
                 box-shadow: 0 0 0 3px var(--primary-light);
         }
 
+        .scroll-to-top {
+                right: var(--mobile-safe-spacing);
+                bottom: var(--app-scroll-to-top-bottom);
+        }
+
         .card,
         .name-card {
                 margin-bottom: var(--space-3);
@@ -265,6 +270,11 @@
         .container {
                 padding: 0 var(--app-container-padding-inline);
         }
+
+        .scroll-to-top {
+                right: var(--mobile-safe-spacing-small);
+                bottom: var(--mobile-safe-spacing-small);
+        }
 }
 
 /* ==========================================================================
@@ -282,6 +292,15 @@
                         padding-right: max(var(--space-4), env(safe-area-inset-right));
                         padding-left: max(var(--space-4), env(safe-area-inset-left));
                 }
+
+                .scroll-to-top {
+                        right: max(
+                                var(--mobile-safe-spacing),
+                                env(safe-area-inset-right) +
+                                var(--mobile-safe-spacing)
+                        );
+                        bottom: var(--app-scroll-to-top-bottom);
+                }
         }
 }
 
@@ -289,6 +308,12 @@
    LANDSCAPE MOBILE
    ========================================================================== */
 
+@media screen and (width <= 768px) and (orientation: landscape) {
+        .scroll-to-top {
+                right: var(--mobile-safe-spacing-small);
+                bottom: var(--app-scroll-to-top-bottom);
+        }
+}
 
 /* ==========================================================================
    ACCESSIBILITY & PREFERENCE MEDIA QUERIES

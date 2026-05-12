@@ -21,15 +21,3 @@ export function shuffleArray<T>(array: T[]): T[] {
 	}
 	return next;
 }
-
-/**
- * Creates a stable, sorted string key from IDs/values for deduplication and comparison.
- */
-export function createSortedKey(items: Array<string | number | { id: string | number } | null | undefined>): string {
-	return items
-		.map((item) => (item && typeof item === "object" ? item.id : item))
-		.filter(Boolean)
-		.map(String)
-		.sort()
-		.join(",");
-}

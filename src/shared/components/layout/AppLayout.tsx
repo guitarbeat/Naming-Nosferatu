@@ -34,7 +34,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 <ErrorBoundary context="Main Application Layout">
                         <div className="app relative min-h-dvh w-full text-foreground">
                                 <OfflineIndicator />
-                                {analyticsEnabled && import.meta.env.VITE_VERCEL_ANALYTICS === "true" && <Analytics />}
+                                {analyticsEnabled && <Analytics />}
 
                                 <button
                                         type="button"
@@ -86,7 +86,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                                                 </div>
                                         )}
 
-                                        <ScrollToTopButton />
+                                        <ScrollToTopButton isLoggedIn={isLoggedIn} />
                                 </main>
                         </div>
                 </ErrorBoundary>

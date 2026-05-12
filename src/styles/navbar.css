@@ -25,16 +25,14 @@
 }
 
 .floating-navbar-shell.liquid-glass {
-        --glass-radius: 1.5rem;
-        --glass-blur: 16px;
-        --glass-saturation: 1.08;
+        --glass-radius: 1.8rem;
+        --glass-blur: 18px;
+        --glass-saturation: 1.16;
         overflow: hidden;
-        border-radius: 1.5rem;
-        border: 1px solid rgb(255 255 255 / 0.09);
-        background: hsl(224 28% 10% / 0.82);
-        box-shadow:
-                0 16px 40px rgb(0 0 0 / 0.32),
-                inset 0 1px 0 rgb(255 255 255 / 0.08);
+        border-radius: 1.8rem;
+        border: 1px solid var(--nav-shell-border);
+        background: var(--nav-shell-bg);
+        box-shadow: var(--nav-shell-shadow);
 }
 
 /* Inner highlight / gradient overlay */
@@ -45,11 +43,17 @@
         border-radius: inherit;
         background:
                 radial-gradient(
-                        120% 120% at 10% 0%,
-                        rgb(255 255 255 / 0.06),
-                        transparent 50%
+                        130% 140% at 12% 0%,
+                        color-mix(in srgb, white 16%, transparent),
+                        transparent 48%
+                ),
+                linear-gradient(
+                        135deg,
+                        color-mix(in srgb, var(--nav-highlight) 14%, transparent),
+                        color-mix(in srgb, var(--nav-accent) 10%, transparent) 55%,
+                        color-mix(in srgb, var(--surface-muted) 28%, transparent)
                 );
-        opacity: 1;
+        opacity: 0.92;
         pointer-events: none;
         z-index: var(--z-0);
 }
@@ -170,22 +174,10 @@
    ========================================================================== */
 
 .floating-navbar__icon {
-        position: relative;
         display: inline-flex;
         flex: none;
         align-items: center;
         justify-content: center;
-}
-
-.floating-navbar__badge {
-        position: absolute;
-        top: -3px;
-        right: -3px;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--primary);
-        box-shadow: 0 0 0 1.5px hsl(224 28% 10%);
 }
 
 .floating-navbar__icon > svg {
@@ -280,11 +272,16 @@
    ========================================================================== */
 
 @media (width <= 768px) {
+        .floating-navbar__utility {
+                display: none;
+        }
 
         .floating-navbar-shell.liquid-glass {
-                border-color: rgb(255 255 255 / 0.07);
-                box-shadow:
-                        0 -4px 32px rgb(0 0 0 / 0.28),
-                        inset 0 1px 0 rgb(255 255 255 / 0.06);
+                border-color: transparent;
+                box-shadow: 0 -1px 12px color-mix(in srgb, var(--pw-bg-0) 40%, transparent);
+        }
+
+        .floating-navbar-shell.liquid-glass::before {
+                opacity: 0.6;
         }
 }

@@ -1,10 +1,6 @@
 export function isStorageAvailable(): boolean {
 	try {
-		if (typeof window === "undefined") return false;
-		const test = "__storage_test__";
-		window.localStorage.setItem(test, test);
-		window.localStorage.removeItem(test);
-		return true;
+		return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 	} catch {
 		return false;
 	}

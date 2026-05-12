@@ -73,8 +73,9 @@ export default function TournamentFlow() {
                                                 console.log(`Successfully saved ${result.count} ratings to database`);
                                         }
                                 })
-                                .catch((error) => {
-                                        console.error("Failed to save tournament ratings:", error);
+                                .catch((_error) => {
+                                        // Error is already logged by ratingsAPI with context
+                                        console.warn("Tournament ratings save failed — ratings were not persisted");
                                 });
                 }
         }, [
