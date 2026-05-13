@@ -72,7 +72,8 @@ describe("storage utilities", () => {
 
 		it("returns false and logs error when setItem throws", () => {
 			const mockError = new Error("Storage full");
-			vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+			vi.spyOn(Storage.prototype, "setItem").mockImplementation((key) => {
+				if (key === "__storage_test__") return;
 				throw mockError;
 			});
 
@@ -94,7 +95,8 @@ describe("storage utilities", () => {
 
 		it("catches and logs errors when removeItem throws", () => {
 			const mockError = new Error("Storage error");
-			vi.spyOn(Storage.prototype, "removeItem").mockImplementation(() => {
+			vi.spyOn(Storage.prototype, "removeItem").mockImplementation((key) => {
+				if (key === "__storage_test__") return;
 				throw mockError;
 			});
 
@@ -150,7 +152,8 @@ describe("storage utilities", () => {
 
 		it("returns false and logs error when setItem throws", () => {
 			const mockError = new Error("Storage full");
-			vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+			vi.spyOn(Storage.prototype, "setItem").mockImplementation((key) => {
+				if (key === "__storage_test__") return;
 				throw mockError;
 			});
 
