@@ -1,5 +1,6 @@
+import { ErrorManager } from "@/shared/services/errorManager";
 import type { ErrorLog } from "@/shared/types";
-import { type AppSliceCreator, IS_DEV, patch } from "@/store/appStore.shared";
+import { type AppSliceCreator, patch } from "@/store/appStore.shared";
 import type { AppState } from "@/store/appStore.types";
 
 export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
@@ -42,9 +43,8 @@ export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorA
 				history: [...get().errors.history, entry],
 			});
 
-			if (IS_DEV) {
-				console.error("[Store] Error logged:", entry);
-			}
+			// Defer to ErrorManager for standardized logging
+			ErrorManager.handleError(error, context, metadata);
 		},
 	},
 });
