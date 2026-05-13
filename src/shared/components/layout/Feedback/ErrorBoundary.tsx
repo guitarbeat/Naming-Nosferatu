@@ -158,8 +158,8 @@ ${error?.stack || "No stack trace available"}
                         await navigator.clipboard.writeText(errorDetails);
                         setCopySuccess(true);
                         setTimeout(() => setCopySuccess(false), 2000);
-                } catch (err) {
-                        console.error("Failed to copy error details:", err);
+                } catch {
+                        // Silently ignore clipboard failures in production to avoid console spam
                 }
         };
 
