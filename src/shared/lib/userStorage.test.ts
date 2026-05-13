@@ -59,7 +59,7 @@ describe("userStorage utilities", () => {
 					isAdmin: "true", // Invalid type, should be boolean
 					avatarUrl: 456, // Invalid type, should be string
 					email: {}, // Invalid type, should be string
-				})
+				}),
 			);
 
 			expect(readStoredUserSnapshot()).toEqual({
@@ -140,7 +140,9 @@ describe("userStorage utilities", () => {
 			});
 			expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBe("Awesome User");
 			expect(window.localStorage.getItem(STORAGE_KEYS.USER_ID)).toBe("user-456");
-			expect(window.localStorage.getItem(STORAGE_KEYS.USER_AVATAR)).toBe("https://example.com/pic.jpg");
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_AVATAR)).toBe(
+				"https://example.com/pic.jpg",
+			);
 		});
 
 		it("removes helper keys when their respective optional properties are missing/null", () => {
