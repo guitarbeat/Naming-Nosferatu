@@ -7,6 +7,7 @@ import {
 } from "@/shared/lib/storage";
 
 const IS_BROWSER = typeof window !== "undefined";
+const IS_DEV = import.meta.env?.DEV ?? false;
 
 function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number): T {
 	let timeout: ReturnType<typeof setTimeout> | null = null;
@@ -73,9 +74,11 @@ export function useLocalStorage<T>(
 
 			const success = writeStorageJson(key, valueRef.current);
 			if (!success) {
-				console.error(
-					`[useLocalStorage] Unmount flush failed for key "${key}". In-memory state may not have been persisted.`,
-				);
+				if (IS_DEV) {
+					console.error(
+						`[useLocalStorage] Unmount flush failed for key "${key}". In-memory state may not have been persisted.`,
+					);
+				}
 			}
 		};
 	}, [key, options.debounceWait]);
@@ -103,7 +106,9 @@ export function useLocalStorage<T>(
 					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
 				}
 			} catch (error) {
-				console.error(`[useLocalStorage] Unexpected error for key "${key}":`, error);
+				if (IS_DEV) {
+					console.error(`[useLocalStorage] Unexpected error for key "${key}":`, error);
+				}
 				onErrorRef.current?.(error);
 			}
 		},
