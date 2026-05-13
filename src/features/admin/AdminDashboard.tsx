@@ -1,15 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-	type ChangeEvent,
-	type ElementType,
-	useCallback,
-	useMemo,
-	useState,
-} from "react";
+import { type ChangeEvent, type ElementType, useCallback, useMemo, useState } from "react";
 import { AdminNamesTab } from "@/features/admin/components/AdminNamesTab";
-import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
 import { namesQueryOptions } from "@/features/names/api";
+import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
 import { Loading } from "@/shared/components/layout/Feedback";
 import { BarChart3, Eye, EyeOff, Lock } from "@/shared/lib/icons";
 import {
@@ -63,10 +57,7 @@ interface AdminPlaceholderTabProps {
 }
 
 interface AdminStatsGridProps {
-	stats: Pick<
-		AdminStats,
-		"totalNames" | "activeNames" | "hiddenNames" | "lockedInNames"
-	>;
+	stats: Pick<AdminStats, "totalNames" | "activeNames" | "hiddenNames" | "lockedInNames">;
 }
 
 interface StatCell {
@@ -104,10 +95,7 @@ function mapNameToDisplay(name: NameItem): NameWithStats {
 	};
 }
 
-function buildAdminStats(
-	names: NameWithStats[],
-	siteStats: SiteStatsLike | null,
-): AdminStats {
+function buildAdminStats(names: NameWithStats[], siteStats: SiteStatsLike | null): AdminStats {
 	return {
 		totalNames: names.length,
 		activeNames: getActiveNames(names).length,
@@ -138,9 +126,7 @@ function filterNamesByStatusAndSearch(
 		return filtered;
 	}
 
-	return filtered.filter((name) =>
-		matchesNameSearchTerm(name, normalizedSearch),
-	);
+	return filtered.filter((name) => matchesNameSearchTerm(name, normalizedSearch));
 }
 
 function AdminTabNav<TTab extends string>({
@@ -180,13 +166,13 @@ function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 						onChange={onImageUpload}
 						className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
 					/>
-					<p className="text-xs text-muted-foreground mt-2">Upload errors will appear in the console.</p>
+					<p className="text-xs text-muted-foreground mt-2">
+						Upload errors will appear in the console.
+					</p>
 				</div>
 				<div>
 					<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
-					<p className="text-muted-foreground">
-						Activity tracking coming soon...
-					</p>
+					<p className="text-muted-foreground">Activity tracking coming soon...</p>
 				</div>
 			</div>
 		</div>
@@ -207,9 +193,7 @@ function AdminStatCell({ icon: Icon, colorClass, label, value }: StatCell) {
 		<div className="p-3 sm:p-6">
 			<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
 				<Icon className={colorClass} size={18} />
-				<h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>
-					{label}
-				</h3>
+				<h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>{label}</h3>
 			</div>
 			<p className="text-2xl sm:text-3xl font-bold text-foreground">{value}</p>
 		</div>
@@ -297,8 +281,8 @@ export function AdminDashboard() {
 					nameId: String(nameId),
 					isCurrentlyHidden: isHidden,
 				});
-			} catch (error) {
-				console.error("Failed to toggle hidden status:", error);
+			} catch (_error) {
+				// Error notification is handled by the UI
 			}
 		},
 		[toggleHidden],
@@ -311,8 +295,8 @@ export function AdminDashboard() {
 					nameId: String(nameId),
 					isCurrentlyLocked: isLocked,
 				});
-			} catch (error) {
-				console.error("Failed to toggle locked status:", error);
+			} catch (_error) {
+				// Error notification is handled by the UI
 			}
 		},
 		[toggleLocked],
@@ -339,8 +323,8 @@ export function AdminDashboard() {
 					});
 				}
 				setSelectedNames(new Set());
-			} catch (error) {
-				console.error("Failed to perform bulk action:", error);
+			} catch (_error) {
+				// Error notification is handled by the UI
 			}
 		},
 		[applyBatchLocked, applyBatchVisibility, selectedNames],
@@ -348,15 +332,13 @@ export function AdminDashboard() {
 
 	const handleSoftDelete = useCallback(
 		async (nameId: string | number) => {
-			if (
-				!window.confirm("Permanently delete this name? This cannot be undone.")
-			) {
+			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
 				return;
 			}
 			try {
 				await deleteName({ nameId });
-			} catch (error) {
-				console.error("Failed to delete name:", error);
+			} catch (_error) {
+				// Error notification is handled by the UI
 			}
 		},
 		[deleteName],
@@ -381,32 +363,24 @@ export function AdminDashboard() {
 		[uploadImage],
 	);
 
-	const handleSelectionChange = useCallback(
-		(nameId: string, checked: boolean) => {
-			setSelectedNames((prevSelectedNames) => {
-				return checked
-					? addToSet(prevSelectedNames, nameId)
-					: removeFromSet(prevSelectedNames, nameId);
-			});
-		},
-		[],
-	);
+	const handleSelectionChange = useCallback((nameId: string, checked: boolean) => {
+		setSelectedNames((prevSelectedNames) => {
+			return checked
+				? addToSet(prevSelectedNames, nameId)
+				: removeFromSet(prevSelectedNames, nameId);
+		});
+	}, []);
 
 	const handleTabChange = useCallback((tab: DashboardTab) => {
 		setActiveTab(tab);
 	}, []);
 
-	const handleFilterChange = useCallback(
-		(event: ChangeEvent<HTMLSelectElement>) => {
-			const option = FILTER_OPTIONS.find(
-				(item) => item.value === event.target.value,
-			);
-			if (option) {
-				setFilterStatus(option.value);
-			}
-		},
-		[],
-	);
+	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
+		if (option) {
+			setFilterStatus(option.value);
+		}
+	}, []);
 
 	const handleRefresh = useCallback(() => {
 		void Promise.all([namesQuery.refetch(), siteStatsQuery.refetch()]);
@@ -430,18 +404,12 @@ export function AdminDashboard() {
 				<h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-sm text-muted-foreground">
-					Manage names and monitor activity
-				</p>
+				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
 			</div>
 
 			{stats && <AdminStatsGrid stats={stats} />}
 
-			<AdminTabNav
-				activeTab={activeTab}
-				tabs={ADMIN_TABS}
-				onTabChange={handleTabChange}
-			/>
+			<AdminTabNav activeTab={activeTab} tabs={ADMIN_TABS} onTabChange={handleTabChange} />
 
 			<AnimatePresence mode="wait">
 				<motion.div
@@ -463,12 +431,8 @@ export function AdminDashboard() {
 							onClearSelection={handleClearSelection}
 							filteredNames={filteredNames}
 							onSelectionChange={handleSelectionChange}
-							onToggleHidden={(nameId, hidden) =>
-								void handleToggleHidden(nameId, hidden)
-							}
-							onToggleLocked={(nameId, locked) =>
-								void handleToggleLocked(nameId, locked)
-							}
+							onToggleHidden={(nameId, hidden) => void handleToggleHidden(nameId, hidden)}
+							onToggleLocked={(nameId, locked) => void handleToggleLocked(nameId, locked)}
 							onDelete={(nameId) => void handleSoftDelete(nameId)}
 						/>
 					) : activeTab === "overview" ? (
