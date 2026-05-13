@@ -6,6 +6,7 @@ import {
         TournamentBracketSection,
 } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/features/names/api";
+import { GooeyTextDemo } from "@/components/ui/demo";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
 import { useMediaQuery } from "@/shared/hooks/useBrowserState";
@@ -124,6 +125,9 @@ export default function HomeRoute() {
                                         </ErrorBoundary>
                                 </Suspense>
                         </div>
+                        <Section variant="card" padding="comfortable" maxWidth="xl">
+                                <GooeyTextDemo />
+                        </Section>
                 </>
         );
 }
