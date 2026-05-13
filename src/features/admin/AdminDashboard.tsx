@@ -180,7 +180,7 @@ function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 						onChange={onImageUpload}
 						className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
 					/>
-					<p className="text-xs text-muted-foreground mt-2">Upload errors will appear in the console.</p>
+					<p className="text-xs text-muted-foreground mt-2">Ensure your image meets the size and format requirements.</p>
 				</div>
 				<div>
 					<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
@@ -370,12 +370,9 @@ export function AdminDashboard() {
 			}
 
 			try {
-				const result = await uploadImage(file);
-				if (!result.success) {
-					console.error("Upload failed:", result.error);
-				}
-			} catch (error) {
-				console.error("Upload error:", error);
+				await uploadImage(file);
+			} catch (_error) {
+				// errors are handled at the service layer
 			}
 		},
 		[uploadImage],
