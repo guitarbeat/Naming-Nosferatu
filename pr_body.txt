@@ -1,3 +1,0 @@
-🎯 **What:** Adds unit tests for the `normalizeStoredUserSnapshot` logic implicitly via `window.localStorage` usage in `src/shared/lib/userStorage.ts`.
-📊 **Coverage:** Thoroughly tests edge cases: parsing valid setup, missing property coercion, unavailable `localStorage` scenarios, and invalid types resulting in undefined.
-✨ **Result:** Improved confidence in the persistence layer. 100% test passing rate for `userStorage.test.ts`.
