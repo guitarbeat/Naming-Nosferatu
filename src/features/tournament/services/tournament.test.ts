@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ELO_RATING } from "@/shared/lib/constants";
-import { applyEloMatchUpdate, calculatePairEloUpdate } from "@/shared/lib/elo";
+import { applyEloMatchUpdate, calculatePairEloUpdate } from "./pureElo";
 import {
 	applyTeamMatchElo,
 	buildTeamMatches,
