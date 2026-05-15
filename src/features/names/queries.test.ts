@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { fetchNames, fetchHiddenNames, namesQueryKeys, namesQueryOptions, hiddenNamesQueryOptions } from "./api";
+import {
+	fetchHiddenNames,
+	fetchNames,
+	hiddenNamesQueryOptions,
+	namesQueryKeys,
+	namesQueryOptions,
+} from "./api";
 
 vi.mock("@/store/appStore", () => ({
 	default: {
@@ -64,9 +70,7 @@ describe("fetchNames", () => {
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(fetchNames(false)).rejects.toThrow(
-			"Supabase client not available",
-		);
+		await expect(fetchNames(false)).rejects.toThrow("Supabase client not available");
 	});
 
 	it("throws on database error", async () => {
@@ -85,7 +89,6 @@ describe("fetchNames", () => {
 	});
 });
 
-
 describe("fetchHiddenNames", () => {
 	it("throws when user is not an admin", async () => {
 		vi.mocked(useAppStore.getState).mockReturnValueOnce({
@@ -101,9 +104,7 @@ describe("fetchHiddenNames", () => {
 			user: { isAdmin: true },
 		} as never);
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(fetchHiddenNames()).rejects.toThrow(
-			"Supabase client not available",
-		);
+		await expect(fetchHiddenNames()).rejects.toThrow("Supabase client not available");
 	});
 
 	it("allows admin to fetch hidden names", async () => {
@@ -115,7 +116,21 @@ describe("fetchHiddenNames", () => {
 		mockSelect.mockReturnValue({ eq: mockEq });
 		// fetchHiddenNames chains three eq calls then an order
 		mockEq.mockReturnValue({ eq: mockEq, order: mockOrder });
-		mockOrder.mockResolvedValueOnce({ data: [{ id: "1", name: "Test", avg_rating: 1500, global_wins: 0, global_losses: 0, is_hidden: true, is_active: true, is_deleted: false }], error: null });
+		mockOrder.mockResolvedValueOnce({
+			data: [
+				{
+					id: "1",
+					name: "Test",
+					avg_rating: 1500,
+					global_wins: 0,
+					global_losses: 0,
+					is_hidden: true,
+					is_active: true,
+					is_deleted: false,
+				},
+			],
+			error: null,
+		});
 
 		const result = await fetchHiddenNames();
 		expect(result).toBeDefined();
@@ -145,11 +160,7 @@ describe("namesQueryKeys", () => {
 	it("returns correct keys", () => {
 		expect(namesQueryKeys.all).toEqual(["names"]);
 		expect(namesQueryKeys.lists()).toEqual(["names", "list"]);
-		expect(namesQueryKeys.list(true)).toEqual([
-			"names",
-			"list",
-			{ includeHidden: true },
-		]);
+		expect(namesQueryKeys.list(true)).toEqual(["names", "list", { includeHidden: true }]);
 		expect(namesQueryKeys.hiddenList()).toEqual(["names", "hidden"]);
 	});
 });
