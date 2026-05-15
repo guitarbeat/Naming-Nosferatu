@@ -1,3 +1,16 @@
+
+import {
+	addToSet,
+	addManyToSet,
+	removeFromSet,
+	toggleInSet,
+} from "@/shared/lib/setUtils";
+
+export const addIdToSet = addToSet;
+export const toggleIdInSet = toggleInSet;
+export const addIdsToSet = addManyToSet;
+export const removeIdFromSet = removeFromSet;
+
 import { shuffleArray } from "@/shared/lib/utils";
 import { getRandomCatImage } from "@/shared/lib/media";
 import { CAT_IMAGES } from "@/shared/lib/constants";
