@@ -578,52 +578,6 @@ export function NameSelector() {
         const canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
         const selectionFloor = lockedInNames.length;
 
-        // Keyboard navigation for swipe mode
-        useEffect(() => {
-                if (!isSwipeMode) {
-                        return;
-                }
-
-                const handleKeyDown = (e: KeyboardEvent) => {
-                        // Don't handle keyboard events if lightbox is open
-                        if (lightboxOpen) {
-                                return;
-                        }
-
-                        const currentCard = visibleCards[0];
-                        if (!currentCard) {
-                                return;
-                        }
-
-                        switch (e.key) {
-                                case "ArrowLeft":
-                                case "a":
-                                case "A":
-                                        e.preventDefault();
-                                        setDragDirection("left");
-                                        handleSwipe(currentCard.id, "left");
-                                        break;
-                                case "ArrowRight":
-                                case "d":
-                                case "D":
-                                        e.preventDefault();
-                                        setDragDirection("right");
-                                        handleSwipe(currentCard.id, "right");
-                                        break;
-                                case "z":
-                                case "Z":
-                                        if (e.ctrlKey || e.metaKey) {
-                                                e.preventDefault();
-                                                handleUndo();
-                                        }
-                                        break;
-                        }
-                };
-
-                window.addEventListener("keydown", handleKeyDown);
-                return () => window.removeEventListener("keydown", handleKeyDown);
-        }, [isSwipeMode, visibleCards, handleSwipe, handleUndo, lightboxOpen]);
-
         const handleOpenLightbox = useCallback(
                 (nameId: IdType) => {
                         const index = names.findIndex((n) => n.id === nameId);
@@ -736,131 +690,6 @@ export function NameSelector() {
         return (
                 <div className="mx-auto w-full">
                         <div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
-                                <Surface as="div" radius="xl" padding="compact" className="sm:p-5">
-                                        <div className="flex flex-col gap-4 sm:gap-5">
-                                                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                                                        <div className="space-y-3">
-                                                                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary/80">
-                                                                        Selection deck
-                                                                </p>
-                                                                <div className="space-y-2">
-                                                                        <h3 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">
-                                                                                {isSwipeMode
-                                                                                        ? "Swipe through the contenders"
-                                                                                        : "Build your bracket shortlist"}
-                                                                        </h3>
-                                                                        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75 sm:text-base">
-                                                                                {isSwipeMode
-                                                                                        ? "Flick right to keep a name, left to skip it, then start the tournament once at least two names make the cut. Hidden names stay out of the swipe stack, but you can still review them below."
-                                                                                        : "Tap the names that deserve a slot in the tournament. Locked names stay selected automatically, and hidden names stay available below when you need them."}
-                                                                        </p>
-                                                                </div>
-                                                        </div>
-
-                                                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-                                                                {[
-                                                                        { label: "Selected", value: selectedIdsSet.size },
-                                                                        { label: "Available", value: availableNames.length },
-                                                                        { label: "Locked", value: lockedInNames.length },
-                                                                        { label: "Hidden", value: hiddenNamesAll.length },
-                                                                ].map((item) => (
-                                                                        <div
-                                                                                key={item.label}
-                                                                                className="rounded-2xl border border-white/10 bg-black/15 px-3 py-3 sm:px-4"
-                                                                        >
-                                                                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
-                                                                                        {item.label}
-                                                                                </p>
-                                                                                <p className="mt-2 text-2xl font-semibold text-foreground">
-                                                                                        {item.value}
-                                                                                </p>
-                                                                        </div>
-                                                                ))}
-                                                        </div>
-                                                </div>
-
-                                                <div className="flex flex-col gap-3 border-t border-white/10 pt-4">
-                                                        <div className="-mx-1 overflow-x-auto pb-1 sm:mx-0 sm:overflow-visible sm:pb-0">
-                                                                <div className="flex min-w-max gap-2 px-1 sm:min-w-0 sm:flex-wrap sm:px-0">
-                                                                        <Button
-                                                                                variant={isSwipeMode ? "primary" : "outline"}
-                                                                                size="small"
-                                                                                onClick={() => setSwipeMode(true)}
-                                                                        >
-                                                                                Swipe Mode
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant={isSwipeMode ? "outline" : "primary"}
-                                                                                size="small"
-                                                                                onClick={() => setSwipeMode(false)}
-                                                                        >
-                                                                                Grid Mode
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="small"
-                                                                                onClick={_handleSelectRandomAvailable}
-                                                                                disabled={availableNames.length === 0}
-                                                                        >
-                                                                                Pick 8 Random
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="small"
-                                                                                onClick={_handleSelectAllAvailable}
-                                                                                disabled={!canSelectAllAvailable}
-                                                                        >
-                                                                                Select All Visible
-                                                                        </Button>
-                                                                        <Button
-                                                                                variant="ghost"
-                                                                                size="small"
-                                                                                onClick={_handleClearSelection}
-                                                                                disabled={
-                                                                                        !hasAnySelection || selectedIdsSet.size <= selectionFloor
-                                                                                }
-                                                                        >
-                                                                                Clear Back to Locked
-                                                                        </Button>
-                                                                </div>
-                                                        </div>
-
-                                                        <div className="grid gap-3 rounded-[1.35rem] border border-white/10 bg-black/15 p-3.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-4">
-                                                                <div className="space-y-2">
-                                                                        <div className="flex flex-wrap items-center gap-2">
-                                                                                <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/80">
-                                                                                        {canStartTournament
-                                                                                                ? `${selectedIdsSet.size} names ready`
-                                                                                                : `Pick ${Math.max(0, 2 - selectedIdsSet.size)} more`}
-                                                                                </span>
-                                                                                {selectedHiddenCount > 0 && (
-                                                                                        <span className="rounded-full border border-warning/20 bg-warning/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-warning">
-                                                                                                {selectedHiddenCount} hidden selected
-                                                                                        </span>
-                                                                                )}
-                                                                        </div>
-                                                                        <p className="text-xs leading-relaxed text-muted-foreground/70 sm:text-sm">
-                                                                                {isSwipeMode
-                                                                                        ? hiddenNamesAll.length > 0
-                                                                                                ? "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe. Hidden names stay available below."
-                                                                                                : "Keyboard: use left and right arrows to choose, then Ctrl/Cmd+Z to undo the last swipe."
-                                                                                        : `${selectedAvailableCount} active picks and ${selectedHiddenCount} hidden picks are ready for the bracket.`}
-                                                                        </p>
-                                                                </div>
-
-                                                                <Button
-                                                                        size="large"
-                                                                        onClick={startTournament}
-                                                                        disabled={!canStartTournament}
-                                                                        className="w-full sm:min-w-[12rem] sm:w-auto"
-                                                                >
-                                                                        Start Tournament
-                                                                </Button>
-                                                        </div>
-                                                </div>
-                                        </div>
-                                </Surface>
-
                                 {isSwipeMode ? (
                                         <>
                                                 <div
@@ -1041,16 +870,14 @@ export function NameSelector() {
                                                                                                                                 )}
 
                                                                                                                                 {selectedNames.has(nameItem.id) && (
-                                                                                                                                        <div className="flex mt-4">
-                                                                                                                                                <div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20">
-                                                                                                                                                        <Check
-                                                                                                                                                                size={16}
-                                                                                                                                                                className="text-success"
-                                                                                                                                                        />
-                                                                                                                                                        <span className="text-success font-black text-xs tracking-[0.2em] uppercase">
-                                                                                                                                                                Selected
-                                                                                                                                                        </span>
-                                                                                                                                                </div>
+                                                                                                                                        <div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20 mt-4">
+                                                                                                                                                <Check
+                                                                                                                                                        size={16}
+                                                                                                                                                        className="text-success"
+                                                                                                                                                />
+                                                                                                                                                <span className="text-success font-black text-xs tracking-[0.2em] uppercase">
+                                                                                                                                                        Selected
+                                                                                                                                                </span>
                                                                                                                                         </div>
                                                                                                                                 )}
                                                                                                                         </div>
@@ -1193,17 +1020,11 @@ export function NameSelector() {
                                                                                         const isSelected = selectedNames.has(nameItem.id);
                                                                                         const catImage = catImageById.get(nameItem.id) ?? "";
                                                                                         return (
-                                                                                                <motion.div
+                                                                                                <motion.button
                                                                                                         key={nameItem.id}
+                                                                                                        type="button"
                                                                                                         onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        onKeyDown={(e) => {
-                                                                                                                if (e.key === "Enter" || e.key === " ") {
-                                                                                                                        e.preventDefault();
-                                                                                                                        handleToggleName(nameItem.id);
-                                                                                                                }
-                                                                                                        }}
-                                                                                                        role="button"
-                                                                                                        tabIndex={0}
+                                                                                                        aria-pressed={isSelected}
                                                                                                         whileHover={{ scale: 1.03, y: -2 }}
                                                                                                         whileTap={{ scale: 0.97 }}
                                                                                                         transition={{
@@ -1278,7 +1099,7 @@ export function NameSelector() {
                                                                                                                         />
                                                                                                                 </motion.div>
                                                                                                         )}
-                                                                                                </motion.div>
+                                                                                                </motion.button>
                                                                                         );
                                                                                 })}
                                                                         </div>
@@ -1411,18 +1232,12 @@ export function NameSelector() {
                                                                                         const isSelected = selectedNames.has(nameItem.id);
                                                                                         const catImage = catImageById.get(nameItem.id) ?? "";
                                                                                         return (
-                                                                                                <div
+                                                                                                <button
+                                                                                                        type="button"
                                                                                                         key={nameItem.id}
                                                                                                         onClick={() => handleToggleName(nameItem.id)}
-                                                                                                        onKeyDown={(e) => {
-                                                                                                                if (e.key === "Enter" || e.key === " ") {
-                                                                                                                        e.preventDefault();
-                                                                                                                        handleToggleName(nameItem.id);
-                                                                                                                }
-                                                                                                        }}
-                                                                                                        role="button"
-                                                                                                        tabIndex={0}
-                                                                                                        className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer ${
+                                                                                                        aria-pressed={isSelected}
+                                                                                                        className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
                                                                                                                 isSelected
                                                                                                                         ? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
                                                                                                                         : "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
@@ -1514,7 +1329,7 @@ export function NameSelector() {
                                                                                                                         </button>
                                                                                                                 </div>
                                                                                                         )}
-                                                                                                </div>
+                                                                                                </button>
                                                                                         );
                                                                                 })}
                                                                         </div>

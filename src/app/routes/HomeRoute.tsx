@@ -10,16 +10,10 @@ import { useTournamentHandlers } from "@/features/tournament/hooks";
 import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
 import { useMediaQuery } from "@/shared/hooks/useBrowserState";
 import { Section } from "@/shared/components/layout/Section";
-import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
 const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
-const LazyNameSuggestionInner = lazy(() =>
-        import("@/features/tournament/components/NameSuggestion").then((module) => ({
-                default: module.NameSuggestionInner,
-        })),
-);
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
@@ -88,7 +82,7 @@ export default function HomeRoute() {
                                 state={heroState}
                                 lockedNames={lockedNames}
                                 onStartPicking={() => scrollToSection("pick")}
-                                onSeeResults={() => scrollToSection("analysis")}
+                                useCinematic={true}
                         />
 
                         <Section
@@ -99,11 +93,7 @@ export default function HomeRoute() {
 
                                 separator={true}
                         >
-                                <SectionHeading
-                                        title="Pick Your Favorites"
-                                        subtitle="Tap to select."
-                                />
-                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                        <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                         <TournamentFlow />
                                 </Suspense>
                         </Section>
@@ -119,18 +109,7 @@ export default function HomeRoute() {
                                 onGoToPicker={() => scrollToSection("pick")}
                         />
 
-                        <Section
-                                id="analysis"
-                                variant="minimal"
-                                padding="comfortable"
-                                maxWidth="2xl"
-
-                                separator={true}
-                        >
-                                <SectionHeading
-                                        title="Results and Rankings"
-                                        subtitle="Leaderboard and stats."
-                                />
+                        <div id="analysis">
                                 <Suspense fallback={<Loading variant="skeleton" height={600} />}>
                                         <ErrorBoundary context={errorContexts.analysisDashboard}>
                                                 <DashboardLazy
@@ -144,24 +123,7 @@ export default function HomeRoute() {
                                                 />
                                         </ErrorBoundary>
                                 </Suspense>
-                        </Section>
-
-                        <Section
-                                id="suggest"
-                                variant="minimal"
-                                padding="comfortable"
-                                maxWidth="2xl"
-
-                                separator={true}
-                        >
-                                <SectionHeading
-                                        title="Suggest a Name"
-                                        subtitle="Add a name."
-                                />
-                                <Suspense fallback={<Loading variant="card-skeleton" height={340} />}>
-                                        <LazyNameSuggestionInner />
-                                </Suspense>
-                        </Section>
+                        </div>
                 </>
         );
 }

@@ -11,8 +11,6 @@ interface OriginRect {
 interface ModalProps {
         title: string;
         open?: boolean;
-        /** @deprecated Use `open` instead. */
-        isOpen?: boolean;
         onClose: () => void;
         children: React.ReactNode;
         maxWidth?: "max-w-sm" | "max-w-md" | "max-w-lg" | "max-w-xl" | "max-w-2xl";
@@ -27,7 +25,6 @@ const GENIE_DURATION_MS = 480;
 export function Modal({
         title,
         open,
-        isOpen,
         onClose,
         children,
         maxWidth = "max-w-md",
@@ -36,7 +33,7 @@ export function Modal({
         hideTitle = false,
         originRect = null,
 }: ModalProps) {
-        const isOpenResolved = open ?? isOpen ?? true;
+        const isOpenResolved = open ?? true;
         const modalRef = useRef<HTMLDivElement>(null);
         const [isClosing, setIsClosing] = useState(false);
         const [shouldRender, setShouldRender] = useState(isOpenResolved);
@@ -92,69 +89,7 @@ export function Modal({
                         return;
                 }
 
-                const previouslyFocusedElement =
-                        document.activeElement instanceof HTMLElement ? document.activeElement : null;
-
-                const getFocusableElements = () =>
-                        Array.from(
-                                modalElement.querySelectorAll<HTMLElement>(
-                                        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-                                ),
-                        );
-
-                const focusFirstElement = () => {
-                        const [firstElement] = getFocusableElements();
-                        if (firstElement) {
-                                firstElement.focus();
-                                return;
-                        }
-                        modalElement.focus();
-                };
-
-                const handleKeyDown = (e: KeyboardEvent) => {
-                        if (e.key === "Escape" && !closeDisabled) {
-                                e.preventDefault();
-                                requestClose();
-                                return;
-                        }
-
-                        if (e.key !== "Tab") {
-                                return;
-                        }
-
-                        const focusableElements = getFocusableElements();
-                        if (focusableElements.length === 0) {
-                                e.preventDefault();
-                                modalElement.focus();
-                                return;
-                        }
-
-                        const firstElement = focusableElements[0];
-                        const lastElement = focusableElements[focusableElements.length - 1];
-
-                        if (e.shiftKey) {
-                                if (document.activeElement === firstElement || document.activeElement === modalElement) {
-                                        e.preventDefault();
-                                        lastElement?.focus();
-                                }
-                                return;
-                        }
-
-                        if (document.activeElement === lastElement) {
-                                e.preventDefault();
-                                firstElement?.focus();
-                        }
-                };
-
-                focusFirstElement();
-                window.addEventListener("keydown", handleKeyDown);
-
-                return () => {
-                        window.removeEventListener("keydown", handleKeyDown);
-                        if (previouslyFocusedElement?.isConnected) {
-                                previouslyFocusedElement.focus();
-                        }
-                };
+                return undefined;
         }, [isOpenResolved, isClosing, onClose, closeDisabled]);
 
         if (!shouldRender) {

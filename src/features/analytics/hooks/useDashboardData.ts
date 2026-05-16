@@ -1,167 +1,99 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-	type EngagementMetrics,
-	type LeaderboardItem,
-	leaderboardAPI,
-	type SiteStats,
-	statsAPI,
-	type UserStats,
+        type LeaderboardItem,
+        leaderboardAPI,
+        type SiteStats,
+        statsAPI,
+        type UserStats,
+        type EngagementMetrics,
 } from "@/shared/services/supabase/statsService";
 import { fetchHiddenNames, unhideName } from "@/features/names/api";
+import { useAsyncData } from "@/shared/hooks/useAsyncData";
 
 export type DashboardTimeframe = "day" | "week" | "month";
 
 export interface HiddenNameListItem {
-	id: string | number;
-	name: string;
+        id: string | number;
+        name: string;
 }
 
 interface UseDashboardDataParams {
-	isAdmin?: boolean;
-	userName?: string;
+        isAdmin?: boolean;
+        userName?: string;
 }
 
 export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboardDataParams) {
-	const normalizedUserName = userName.trim();
-	const [leaderboard, setLeaderboard] = useState<LeaderboardItem[]>([]);
-	const [siteStats, setSiteStats] = useState<SiteStats | null>(null);
-	const [userStats, setUserStats] = useState<UserStats | null>(null);
-	const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
-	const [hiddenNames, setHiddenNames] = useState<HiddenNameListItem[]>([]);
-	const [showHiddenNames, setShowHiddenNames] = useState(false);
-	const [engagementMetrics, setEngagementMetrics] = useState<EngagementMetrics | null>(null);
-	const [isLoadingEngagement, setIsLoadingEngagement] = useState(true);
-	const [timeframe, setTimeframe] = useState<DashboardTimeframe>("week");
+        const normalizedUserName = userName.trim();
 
-	useEffect(() => {
-		let isActive = true;
+        const [timeframe, setTimeframe] = useState<DashboardTimeframe>("week");
+        const [showHiddenNames, setShowHiddenNames] = useState(false);
+        const [hiddenNames, setHiddenNames] = useState<HiddenNameListItem[]>([]);
 
-		const fetchLeaderboardData = async () => {
-			setIsLoadingLeaderboard(true);
-			try {
-				const data = await leaderboardAPI.getLeaderboard(10);
-				if (isActive) {
-					setLeaderboard(data);
-				}
-			} catch (error) {
-				console.error("Failed to fetch leaderboard:", error);
-			} finally {
-				if (isActive) {
-					setIsLoadingLeaderboard(false);
-				}
-			}
-		};
+        const { data: leaderboard, isLoading: isLoadingLeaderboard } = useAsyncData<LeaderboardItem[]>(
+                () => leaderboardAPI.getLeaderboard(10),
+                [],
+        );
 
-		void fetchLeaderboardData();
+        const { data: engagementMetrics, isLoading: isLoadingEngagement, refresh: refreshEngagementMetrics } =
+                useAsyncData<EngagementMetrics | null>(
+                        () => statsAPI.getEngagementMetrics(timeframe as "day" | "week" | "month" | "year"),
+                        null,
+                        { deps: [timeframe] },
+                );
 
-		return () => {
-			isActive = false;
-		};
-	}, []);
+        const { data: siteStats } = useAsyncData<SiteStats | null>(
+                () => statsAPI.getSiteStats(),
+                null,
+        );
 
-	const refreshEngagementMetrics = useCallback(async () => {
-		setIsLoadingEngagement(true);
-		try {
-			const metrics = await statsAPI.getEngagementMetrics(timeframe as any);
-			setEngagementMetrics(metrics);
-		} catch (error) {
-			console.error("Failed to fetch engagement metrics:", error);
-		} finally {
-			setIsLoadingEngagement(false);
-		}
-	}, [timeframe]);
+        const { data: userStats } = useAsyncData<UserStats | null>(
+                () => (normalizedUserName ? statsAPI.getUserStats(normalizedUserName) : Promise.resolve(null)),
+                null,
+                { deps: [normalizedUserName] },
+        );
 
-	useEffect(() => {
-		void refreshEngagementMetrics();
-	}, [refreshEngagementMetrics]);
+        useEffect(() => {
+                if (!isAdmin || !showHiddenNames) return;
 
-	useEffect(() => {
-		let isActive = true;
+                let isActive = true;
+                fetchHiddenNames()
+                        .then((result) => { if (isActive) setHiddenNames(result.names); })
+                        .catch((error) => { console.error("Failed to fetch hidden names:", error); });
 
-		const fetchStats = async () => {
-			try {
-				const [site, user] = await Promise.all([
-					statsAPI.getSiteStats(),
-					normalizedUserName ? statsAPI.getUserStats(normalizedUserName) : Promise.resolve(null),
-				]);
-				if (!isActive) {
-					return;
-				}
-				setSiteStats(site);
-				setUserStats(user);
-			} catch (error) {
-				console.error("Failed to fetch stats:", error);
-			}
-		};
+                return () => { isActive = false; };
+        }, [isAdmin, showHiddenNames]);
 
-		void fetchStats();
+        const toggleHiddenNames = useCallback(() => {
+                setShowHiddenNames((current) => !current);
+        }, []);
 
-		return () => {
-			isActive = false;
-		};
-	}, [normalizedUserName]);
+        const handleUnhideName = useCallback(
+                async (nameId: string | number) => {
+                        if (!normalizedUserName) return;
+                        try {
+                                const result = await unhideName(normalizedUserName, String(nameId));
+                                if (!result.success) throw new Error(result.error || "Failed to unhide name");
+                                setHiddenNames((current) => current.filter((name) => name.id !== nameId));
+                        } catch (error) {
+                                console.error("Failed to unhide name:", error);
+                        }
+                },
+                [normalizedUserName],
+        );
 
-	useEffect(() => {
-		if (!isAdmin || !showHiddenNames) {
-			return;
-		}
-
-		let isActive = true;
-
-		const fetchNames = async () => {
-			try {
-				const result = await fetchHiddenNames();
-				if (isActive) {
-					setHiddenNames(result.names);
-				}
-			} catch (error) {
-				console.error("Failed to fetch hidden names:", error);
-			}
-		};
-
-		void fetchNames();
-
-		return () => {
-			isActive = false;
-		};
-	}, [isAdmin, showHiddenNames]);
-
-	const toggleHiddenNames = useCallback(() => {
-		setShowHiddenNames((current) => !current);
-	}, []);
-
-	const handleUnhideName = useCallback(
-		async (nameId: string | number) => {
-			if (!normalizedUserName) {
-				return;
-			}
-
-			try {
-				const result = await unhideName(normalizedUserName, String(nameId));
-				if (!result.success) {
-					throw new Error(result.error || "Failed to unhide name");
-				}
-				setHiddenNames((current) => current.filter((name) => name.id !== nameId));
-			} catch (error) {
-				console.error("Failed to unhide name:", error);
-			}
-		},
-		[normalizedUserName],
-	);
-
-	return {
-		engagementMetrics,
-		handleUnhideName,
-		hiddenNames,
-		isLoadingEngagement,
-		isLoadingLeaderboard,
-		leaderboard,
-		refreshEngagementMetrics,
-		setTimeframe,
-		showHiddenNames,
-		siteStats,
-		timeframe,
-		toggleHiddenNames,
-		userStats,
-	};
+        return {
+                engagementMetrics,
+                handleUnhideName,
+                hiddenNames,
+                isLoadingEngagement,
+                isLoadingLeaderboard,
+                leaderboard,
+                refreshEngagementMetrics,
+                setTimeframe,
+                showHiddenNames,
+                siteStats,
+                timeframe,
+                toggleHiddenNames,
+                userStats,
+        };
 }
