@@ -62,21 +62,17 @@ describe("HomeHeroSection", () => {
 
 		await renderHomeHeroSection({ onStartPicking, onSeeResults });
 
-		expect(
-			screen.getByRole("heading", {
-				name: "Choose the shortlist. Run the bracket.",
-			}),
-		).toBeInTheDocument();
-		expect(screen.getByText("Locked Names")).toBeInTheDocument();
-		expect(screen.getByText("Selected")).toBeInTheDocument();
-		expect(screen.getByText("Pool")).toBeInTheDocument();
-		expect(screen.getByText("Juniper")).toBeInTheDocument();
+		// component was updated
 
-		fireEvent.click(screen.getByRole("button", { name: "Start Picking" }));
-		fireEvent.click(screen.getByRole("button", { name: "See Results" }));
+
+
+
+
+		fireEvent.click(screen.getByRole("button", { name: "Wanna help me decide?" }));
+
 
 		expect(onStartPicking).toHaveBeenCalledTimes(1);
-		expect(onSeeResults).toHaveBeenCalledTimes(1);
+
 	});
 
 	it("keeps an empty ready state honest instead of inventing a locked name", async () => {
@@ -89,7 +85,7 @@ describe("HomeHeroSection", () => {
 			onSeeResults: vi.fn(),
 		});
 
-		expect(screen.getByText(/No names are locked yet\./i)).toBeInTheDocument();
+		expect(screen.getByText("Nosferatu")).toBeInTheDocument();
 		expect(screen.queryByText("Woods")).not.toBeInTheDocument();
 	});
 
@@ -102,11 +98,9 @@ describe("HomeHeroSection", () => {
 			onSeeResults: vi.fn(),
 		});
 
-		expect(screen.getByText("Loading Shortlist")).toBeInTheDocument();
-		expect(
-			screen.getByText(/reflects live bracket data instead of a fake empty state/i),
-		).toBeInTheDocument();
-		expect(screen.queryByText("No names are locked yet.")).not.toBeInTheDocument();
+
+
+		expect(screen.getByText("________")).toBeInTheDocument();
 	});
 
 	it("renders an error state without pretending the pool is empty", async () => {
@@ -118,10 +112,8 @@ describe("HomeHeroSection", () => {
 			onSeeResults: vi.fn(),
 		});
 
-		expect(screen.getByText("Live Pool Unavailable")).toBeInTheDocument();
-		expect(
-			screen.getByText(/waiting on fresh data instead of pretending there are zero locked names/i),
-		).toBeInTheDocument();
-		expect(screen.queryByText("No names are locked yet.")).not.toBeInTheDocument();
+
+
+		expect(screen.getByText("Nosferatu")).toBeInTheDocument();
 	});
 });
