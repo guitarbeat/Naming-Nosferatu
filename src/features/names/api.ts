@@ -3,10 +3,10 @@ import { queryOptions } from "@tanstack/react-query";
 import type { Database } from "@/integrations/supabase/types";
 import { isRpcSignatureError } from "@/shared/lib/errors";
 import { mapNameRow } from "@/shared/lib/names/mapNameRow";
+import { assertAdmin } from "@/shared/services/authUtils";
 import { throwOnFailureResponse } from "@/shared/services/supabase/errorUtils";
 import { resolveSupabaseClient, withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
-import useAppStore from "@/store/appStore";
 
 // ============================================================================
 // Types & Constants
@@ -31,14 +31,6 @@ const SUPABASE_UNAVAILABLE = Symbol("SUPABASE_UNAVAILABLE");
 // ============================================================================
 // Helpers
 // ============================================================================
-
-/** Verifies that the current user has admin privileges. */
-function assertAdmin(message = "Admin privileges required"): void {
-	const user = useAppStore.getState().user;
-	if (!user?.isAdmin) {
-		throw new Error(message);
-	}
-}
 
 async function runAdminMutation<T>(
 	operation: (client: SupabaseClient<Database>) => Promise<T>,
