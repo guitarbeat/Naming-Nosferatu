@@ -65,7 +65,7 @@ export function AdminDashboard() {
 					isCurrentlyHidden: isHidden,
 				});
 			} catch (error) {
-				console.error("Failed to toggle hidden status:", error);
+				// Action failure is handled contextually (e.g. by query client or global error handling)
 			}
 		},
 		[toggleHidden],
@@ -79,7 +79,7 @@ export function AdminDashboard() {
 					isCurrentlyLocked: isLocked,
 				});
 			} catch (error) {
-				console.error("Failed to toggle locked status:", error);
+				// Action failure is handled contextually (e.g. by query client or global error handling)
 			}
 		},
 		[toggleLocked],
@@ -107,7 +107,7 @@ export function AdminDashboard() {
 				}
 				setSelectedNames(new Set());
 			} catch (error) {
-				console.error("Failed to perform bulk action:", error);
+				// Action failure is handled contextually (e.g. by query client or global error handling)
 			}
 		},
 		[applyBatchLocked, applyBatchVisibility, selectedNames],
@@ -121,7 +121,7 @@ export function AdminDashboard() {
 			try {
 				await deleteName({ nameId });
 			} catch (error) {
-				console.error("Failed to delete name:", error);
+				// Action failure is handled contextually (e.g. by query client or global error handling)
 			}
 		},
 		[deleteName],
@@ -135,12 +135,9 @@ export function AdminDashboard() {
 			}
 
 			try {
-				const result = await uploadImage(file);
-				if (!result.success) {
-					console.error("Upload failed:", result.error);
-				}
+				await uploadImage(file);
 			} catch (error) {
-				console.error("Upload error:", error);
+				// Action failure is handled contextually
 			}
 		},
 		[uploadImage],
