@@ -3,6 +3,11 @@ import "@testing-library/jest-dom/vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProfileInner } from "./ProfileInner";
 
+const mockLogout = vi.fn();
+vi.mock("@/app/providers/authContext", () => ({
+	useAuth: vi.fn(() => ({ logout: mockLogout })),
+}));
+
 const storeState = {
 	user: {
 		name: "Ada",
@@ -62,8 +67,6 @@ describe("ProfileInner", () => {
 		expect(
 			screen.getByText("We couldn't log you in with that name. Try again."),
 		).toBeInTheDocument();
-		expect(
-			screen.getByRole("button", { name: "Begin Journey" }),
-		).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Begin Journey" })).toBeInTheDocument();
 	});
 });
