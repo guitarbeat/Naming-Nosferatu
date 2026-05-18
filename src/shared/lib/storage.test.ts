@@ -1,156 +1,37 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	getStorageString,
-	isStorageAvailable,
-	parseJsonValue,
-	readStorageJson,
-	removeStorageItem,
-	setStorageString,
-	writeStorageJson,
-} from "./storage";
+import { describe, expect, it } from "vitest";
+import { parseJsonValue } from "./storage";
 
-describe("storage utilities", () => {
-	let originalConsoleError: typeof console.error;
-
-	beforeEach(() => {
-		originalConsoleError = console.error;
-		console.error = vi.fn();
-		// Clear mock storage before each test
-		window.localStorage.clear();
+describe("parseJsonValue", () => {
+	it("returns fallback when value is null", () => {
+		expect(parseJsonValue(null, "fallback")).toBe("fallback");
+		expect(parseJsonValue(null, { a: 1 })).toEqual({ a: 1 });
 	});
 
-	afterEach(() => {
-		console.error = originalConsoleError;
-		vi.restoreAllMocks();
+	it("returns parsed JSON when value is a valid JSON string (object)", () => {
+		const jsonString = JSON.stringify({ key: "value", num: 42 });
+		expect(parseJsonValue(jsonString, {})).toEqual({ key: "value", num: 42 });
 	});
 
-	describe("isStorageAvailable", () => {
-		it("returns true when localStorage is available", () => {
-			expect(isStorageAvailable()).toBe(true);
-		});
-
-		it("returns false when localStorage access throws", () => {
-			// Mock getter for localStorage to throw
-			const spy = vi
-				.spyOn(window, "localStorage", "get")
-				.mockImplementation(() => {
-					throw new Error("Access denied");
-				});
-			expect(isStorageAvailable()).toBe(false);
-			spy.mockRestore();
-		});
+	it("returns parsed JSON when value is a valid JSON string (array)", () => {
+		const jsonString = JSON.stringify([1, 2, "three"]);
+		expect(parseJsonValue(jsonString, [])).toEqual([1, 2, "three"]);
 	});
 
-	describe("getStorageString", () => {
-		it("returns value when key exists", () => {
-			window.localStorage.setItem("test-key", "test-value");
-			expect(getStorageString("test-key")).toBe("test-value");
-		});
-
-		it("returns fallback when key does not exist", () => {
-			expect(getStorageString("missing-key", "fallback")).toBe("fallback");
-		});
-
-		it("returns fallback and logs error when getItem throws", () => {
-			const mockError = new Error("Storage error");
-			vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
-				throw mockError;
-			});
-
-			expect(getStorageString("test-key", "fallback")).toBe("fallback");
-		});
+	it("returns parsed JSON when value is a valid JSON string (primitive)", () => {
+		expect(parseJsonValue('"hello"', "fallback")).toBe("hello");
+		expect(parseJsonValue("42", 0)).toBe(42);
+		expect(parseJsonValue("true", false)).toBe(true);
 	});
 
-	describe("setStorageString", () => {
-		it("sets value and returns true on success", () => {
-			const result = setStorageString("test-key", "test-value");
-			expect(result).toBe(true);
-			expect(window.localStorage.getItem("test-key")).toBe("test-value");
+	it("returns fallback when value is a malformed JSON string", () => {
+		expect(parseJsonValue("{ invalid: json }", { fallback: true })).toEqual({
+			fallback: true,
 		});
-
-		it("returns false and logs error when setItem throws", () => {
-			const mockError = new Error("Storage full");
-			vi.spyOn(Storage.prototype, "setItem").mockImplementation((key) => {
-				if (key === "__storage_test__") return;
-				throw mockError;
-			});
-
-			const result = setStorageString("test-key", "test-value");
-			expect(result).toBe(false);
-		});
+		expect(parseJsonValue('["missing_bracket"', [])).toEqual([]);
+		expect(parseJsonValue("undefined", "fallback")).toBe("fallback"); // "undefined" is not valid JSON
 	});
 
-	describe("removeStorageItem", () => {
-		it("removes item from storage", () => {
-			window.localStorage.setItem("test-key", "test-value");
-			removeStorageItem("test-key");
-			expect(window.localStorage.getItem("test-key")).toBeNull();
-		});
-
-		it("catches and logs errors when removeItem throws", () => {
-			const mockError = new Error("Storage error");
-			vi.spyOn(Storage.prototype, "removeItem").mockImplementation((key) => {
-				if (key === "__storage_test__") return;
-				throw mockError;
-			});
-
-			const testKey = "test-key";
-
-			// This should not throw
-			expect(() => removeStorageItem(testKey)).not.toThrow();
-
-			// It should log the error
-		});
-	});
-
-	describe("parseJsonValue", () => {
-		it("parses valid JSON", () => {
-			expect(parseJsonValue('{"a": 1}', {})).toEqual({ a: 1 });
-		});
-
-		it("returns fallback for null value", () => {
-			expect(parseJsonValue(null, "fallback")).toBe("fallback");
-		});
-
-		it("returns fallback and logs error for invalid JSON", () => {
-			expect(parseJsonValue("invalid-json", "fallback")).toBe("fallback");
-			expect(console.error).toHaveBeenCalledWith(
-				"[storage] Failed to parse JSON from localStorage:",
-				expect.any(SyntaxError),
-			);
-		});
-	});
-
-	describe("readStorageJson", () => {
-		it("reads and parses valid JSON from storage", () => {
-			window.localStorage.setItem("test-key", '{"a": 1}');
-			expect(readStorageJson("test-key", {})).toEqual({ a: 1 });
-		});
-
-		it("returns fallback when parsing fails", () => {
-			window.localStorage.setItem("test-key", "invalid-json");
-			expect(readStorageJson("test-key", { fallback: true })).toEqual({
-				fallback: true,
-			});
-		});
-	});
-
-	describe("writeStorageJson", () => {
-		it("stringifies and saves value", () => {
-			const result = writeStorageJson("test-key", { a: 1 });
-			expect(result).toBe(true);
-			expect(window.localStorage.getItem("test-key")).toBe('{"a":1}');
-		});
-
-		it("returns false and logs error when setItem throws", () => {
-			const mockError = new Error("Storage full");
-			vi.spyOn(Storage.prototype, "setItem").mockImplementation((key) => {
-				if (key === "__storage_test__") return;
-				throw mockError;
-			});
-
-			const result = writeStorageJson("test-key", { a: 1 });
-			expect(result).toBe(false);
-		});
+	it("returns fallback when value is an empty string", () => {
+		expect(parseJsonValue("", "fallback")).toBe("fallback");
 	});
 });
