@@ -22,12 +22,18 @@ export default function AdminRoute() {
 
 	if (!authUser?.isAdmin) {
 		return (
-			<Section id="admin" variant="minimal" padding="comfortable" maxWidth="md">
+			<Section
+				id="admin"
+				variant="minimal"
+				padding="comfortable"
+				maxWidth="md"
+
+			>
 				<div className="flex flex-col items-center gap-4 py-10 text-center">
 					<h2 className="text-3xl font-bold text-destructive">Access Denied</h2>
 					<p className="max-w-md text-muted-foreground">
-						Admin access is required to view this page. Head back home to log in or return to the
-						main tournament flow.
+						Admin access is required to view this page. Head back home to log in
+						or return to the main tournament flow.
 					</p>
 					<Button variant="outline" onClick={() => navigate("/")}>
 						Back Home
