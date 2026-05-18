@@ -21,6 +21,7 @@ import { useCollapsible } from "@/shared/hooks";
 import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
 import {
 	Check,
+	CheckCircle,
 	ChevronDown,
 	ChevronRight,
 	Eye,
@@ -37,8 +38,7 @@ import {
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
 import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
-import type { IdType } from "@/shared/types";
-
+import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 import { AdminActionButton } from "./name-selector/AdminActionButton";
 import { NameContent } from "./name-selector/NameContent";
@@ -64,6 +64,161 @@ const EXIT_SPRING_CONFIG = {
 	stiffness: 400,
 	damping: 25,
 	velocity: 50,
+};
+
+// Shared hook for deferred sync to prevent render cycle issues
+const useDeferredSync = () => {
+	const deferredSync = useCallback((syncFn: () => void) => {
+		setTimeout(syncFn, 0);
+	}, []);
+
+	return deferredSync;
+};
+
+// Shared components for better DRY architecture
+
+// Selection badge component
+const SelectionBadge = () => (
+	<motion.div
+		initial={{ scale: 0, opacity: 0 }}
+		animate={{ scale: 1, opacity: 1 }}
+		className="absolute top-3 right-3 z-20"
+	>
+		<div className="relative">
+			<div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+			<div className="relative size-6 sm:size-7 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-primary/50">
+				<Check size={14} className="text-primary-foreground" strokeWidth={3} />
+			</div>
+		</div>
+	</motion.div>
+);
+
+// Name content component
+const NameContent = ({
+	nameItem,
+	variant = "grid",
+}: {
+	nameItem: NameItem;
+	variant?: "grid" | "swipe";
+}) => {
+	const isGrid = variant === "grid";
+	const nameClasses = isGrid
+		? "w-full break-words font-display text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem]"
+		: "w-full break-words font-display text-4xl leading-[0.92] tracking-tight text-white lg:text-5xl";
+
+	const pronunciationClasses = isGrid
+		? "text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70"
+		: "text-xs font-semibold uppercase tracking-[0.28em] text-white/65";
+
+	const descriptionClasses = isGrid
+		? "mt-2 line-clamp-2 text-xs leading-relaxed text-white/72 sm:text-sm"
+		: "mt-3 max-w-md line-clamp-3 text-sm leading-relaxed text-white/72 md:text-base";
+
+	return (
+		<>
+			<span className={nameClasses}>{nameItem.name}</span>
+			{nameItem.pronunciation && (
+				<span className={isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`}>
+					[{nameItem.pronunciation}]
+				</span>
+			)}
+			{nameItem.description && <p className={descriptionClasses}>{nameItem.description}</p>}
+		</>
+	);
+};
+
+// Zoom button component
+const ZoomButton = ({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) => (
+	<button
+		type="button"
+		onClick={(e) => {
+			e.stopPropagation();
+			onClick(nameId);
+		}}
+		className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
+		aria-label="View full size"
+	>
+		<ZoomIn size={14} />
+	</button>
+);
+
+// Admin action button component
+const AdminActionButton = ({
+	nameItem,
+	actionType,
+	isProcessing,
+	onClick,
+}: {
+	nameItem: NameItem;
+	actionType: "toggle-hidden" | "toggle-locked";
+	isProcessing: boolean;
+	onClick: () => void;
+}) => {
+	const isHidden = actionType === "toggle-hidden";
+	const _isLocked = actionType === "toggle-locked";
+	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
+
+	const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+		isHidden
+			? isEnabled
+				? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
+				: "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
+			: isEnabled
+				? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
+				: "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
+	} ${isProcessing ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`;
+
+	return (
+		<motion.button
+			type="button"
+			onClick={onClick}
+			disabled={isProcessing}
+			whileHover={{ scale: 1.05 }}
+			whileTap={{ scale: 0.95 }}
+			transition={{ type: "spring", stiffness: 400, damping: 25 }}
+			className={buttonClasses}
+		>
+			{isProcessing ? (
+				<div className="flex items-center justify-center gap-1">
+					<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+					<span>Processing...</span>
+				</div>
+			) : isHidden ? (
+				<>
+					<Eye size={12} className="mr-1" />
+					{isEnabled ? "Unhide" : "Hide"}
+				</>
+			) : (
+				<>
+					<CheckCircle size={12} className="mr-1" />
+					{isEnabled ? "Unlock" : "Lock"}
+				</>
+			)}
+		</motion.button>
+	);
+};
+
+// Card styles utility
+const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
+	const baseClasses =
+		"mobile-readable-card relative group overflow-hidden rounded-[1.35rem] border cursor-pointer transition-all duration-300";
+	const selectedClasses = isSelected
+		? "z-10 border-primary/45 bg-gradient-to-br from-primary/14 to-white/[0.04] shadow-[0_20px_45px_rgba(39,135,153,0.2)] ring-1 ring-primary/25"
+		: "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(6,12,24,0.18)]";
+	const lockedClasses = isLocked ? "cursor-not-allowed opacity-55 saturate-50" : "";
+
+	return `${baseClasses} ${selectedClasses} ${lockedClasses}`;
+};
+
+// Name overlay styles utility
+const getNameOverlayClasses = (variant: "grid" | "swipe") => {
+	const baseClasses = "absolute inset-0 flex flex-col items-center justify-end pointer-events-none";
+	const gridClasses =
+		"p-4 sm:p-5 bg-gradient-to-t from-slate-950/95 via-slate-950/55 to-transparent text-center";
+	const swipeClasses =
+		"z-10 p-6 sm:p-8 bg-gradient-to-t from-slate-950/96 via-slate-950/48 to-transparent text-center";
+
+	return `${baseClasses} ${variant === "grid" ? gridClasses : swipeClasses}`;
 };
 
 export function NameSelector() {
@@ -280,7 +435,6 @@ export function NameSelector() {
 				await toggleHidden({ nameId, isCurrentlyHidden });
 				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
 			} catch (error) {
-				console.error("Failed to toggle hidden status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
 			} finally {
@@ -302,7 +456,6 @@ export function NameSelector() {
 				await toggleLocked({ nameId, isCurrentlyLocked });
 				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
 			} catch (error) {
-				console.error("Failed to toggle locked status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
 			} finally {
