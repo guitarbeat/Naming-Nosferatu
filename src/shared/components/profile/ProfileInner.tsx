@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
@@ -8,6 +8,128 @@ import useAppStore from "@/store/appStore";
 interface ProfileInnerProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;
 	onLogout: () => Promise<void>;
+}
+
+function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () => void }) {
+	return (
+		<div className="relative mb-1">
+			<div
+				className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50"
+				aria-hidden="true"
+			/>
+			<div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
+				<img src={avatarSrc} alt="Profile" className="size-full object-cover" onError={onError} />
+			</div>
+		</div>
+	);
+}
+
+interface ProfileEditFormProps {
+	editedName: string;
+	setEditedName: (val: string) => void;
+	saveError: string | null;
+	setSaveError: (val: string | null) => void;
+	isSaving: boolean;
+	isLoggedIn: boolean;
+	handleSave: () => void;
+	handleCancel: () => void;
+	nameInputRef: RefObject<HTMLInputElement | null>;
+}
+
+function ProfileEditForm({
+	editedName,
+	setEditedName,
+	saveError,
+	setSaveError,
+	isSaving,
+	isLoggedIn,
+	handleSave,
+	handleCancel,
+	nameInputRef,
+}: ProfileEditFormProps) {
+	return (
+		<div className="w-full space-y-4 animate-in fade-in duration-200">
+			<div className="relative">
+				<User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none" />
+				<Input
+					ref={nameInputRef}
+					type="text"
+					value={editedName}
+					onChange={(e) => {
+						setEditedName(e.target.value);
+						if (saveError) {
+							setSaveError(null);
+						}
+					}}
+					placeholder="Who are you?"
+					onKeyDown={(e) => e.key === "Enter" && handleSave()}
+					className="w-full h-11 pl-10 pr-4 text-sm"
+				/>
+			</div>
+
+			{saveError && (
+				<p role="alert" className="text-sm text-destructive">
+					{saveError}
+				</p>
+			)}
+
+			<div className="flex gap-2">
+				{isLoggedIn && (
+					<Button type="button" variant="ghost" onClick={handleCancel} className="flex-1">
+						Cancel
+					</Button>
+				)}
+				<Button
+					type="submit"
+					variant="glass"
+					size="large"
+					onClick={handleSave}
+					disabled={!editedName.trim() || isSaving}
+					loading={isSaving}
+					className={isLoggedIn ? "flex-[2]" : "w-full"}
+				>
+					{isLoggedIn ? "Save" : "Begin Journey"}
+				</Button>
+			</div>
+		</div>
+	);
+}
+
+interface ProfileViewProps {
+	userName: string | undefined;
+	isLoggingOut: boolean;
+	handleEdit: () => void;
+	handleLogout: () => void;
+}
+
+function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: ProfileViewProps) {
+	return (
+		<div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
+			<div className="flex items-center gap-2">
+				<h3 className="text-xl font-bold text-foreground">{userName}</h3>
+				<button
+					type="button"
+					onClick={handleEdit}
+					className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
+					aria-label="Edit name"
+				>
+					<Pencil size={14} />
+				</button>
+			</div>
+
+			<p className="text-xs text-muted-foreground/80">Your preferences are saved for ranking.</p>
+
+			<button
+				type="button"
+				onClick={handleLogout}
+				disabled={isLoggingOut}
+				className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
+			>
+				<LogOut size={13} />
+				{isLoggingOut ? "Logging out..." : "Logout"}
+			</button>
+		</div>
+	);
 }
 
 export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
@@ -26,7 +148,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 	useEffect(() => {
 		setEditedName(user.name || "");
 		setAvatarSrc(user.avatarUrl || defaultAvatar);
-	}, [defaultAvatar, user.name, user.avatarUrl]);
+	}, [user.name, user.avatarUrl, defaultAvatar]);
 
 	useEffect(() => {
 		const wasLoggedIn = previousLoginStateRef.current;
@@ -60,8 +182,9 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 				return;
 			}
 			setIsEditing(false);
-		} catch (_err) {
-			setSaveError("We couldn't save your name right now. Try again.");
+		} catch (err) {
+			console.error("Failed to update name:", err);
+			setSaveError("We couldn't log you in right now. Try again.");
 		} finally {
 			setIsSaving(false);
 		}
@@ -72,120 +195,37 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 		try {
 			await onLogout();
 			setIsEditing(true);
-		} catch (_err) {
-			// Error handled silently, user remains in editing state
+		} catch (err) {
+			console.error("Failed to logout:", err);
 		} finally {
 			setIsLoggingOut(false);
 		}
 	};
 
-        return (
-                <div className="flex flex-col items-center gap-8 w-full">
-                        {/* Avatar with Glow */}
-                        <div className="relative">
-                                <div
-                                        className="absolute -inset-4 rounded-full bg-gradient-to-br from-primary/40 to-accent/30 blur-xl opacity-60 animate-pulse"
-                                        aria-hidden="true"
-                                />
-                                <div className="relative size-32 rounded-full overflow-hidden ring-4 ring-primary/60 ring-offset-6 ring-offset-card bg-gradient-to-br from-primary/20 to-accent/10 shadow-2xl">
-                                        <img
-                                                src={avatarSrc}
-                                                alt="Your profile photo"
-                                                className="size-full object-cover"
-                                                onError={() => setAvatarSrc(defaultAvatar)}
-                                        />
-                                </div>
-                        </div>
+	return (
+		<div className="flex flex-col items-center gap-5 w-full">
+			<ProfileAvatar avatarSrc={avatarSrc} onError={() => setAvatarSrc(defaultAvatar)} />
 
-                        {isEditing ? (
-                                <div className="w-full max-w-sm space-y-5 animate-in fade-in duration-250">
-                                        <div className="text-center space-y-2">
-                                                <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">Who are you?</h2>
-                                                <p className="text-sm text-muted-foreground/80">Your name helps us track your preferences.</p>
-                                        </div>
-
-                                        <div className="relative group">
-                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-primary/50 pointer-events-none transition-colors group-focus-within:text-primary" />
-                                                <Input
-                                                        ref={nameInputRef}
-                                                        type="text"
-                                                        value={editedName}
-                                                        onChange={(e) => {
-                                                                setEditedName(e.target.value);
-                                                                if (saveError) {
-                                                                        setSaveError(null);
-                                                                }
-                                                        }}
-                                                        placeholder="Enter your name"
-                                                        onKeyDown={(e) => e.key === "Enter" && handleSave()}
-                                                        className="w-full h-14 pl-14 pr-4 text-base font-medium rounded-2xl bg-background/80 border border-primary/30 focus:border-primary/70 focus:bg-background/95 focus:outline-none transition-all"
-                                                        autoFocus
-                                                />
-                                        </div>
-
-                                        {saveError && (
-                                                <div role="alert" className="p-4 rounded-xl bg-destructive/15 border border-destructive/40 text-sm text-destructive font-medium">
-                                                        {saveError}
-                                                </div>
-                                        )}
-
-                                        <div className="flex gap-3 pt-3">
-                                                {user.isLoggedIn && (
-                                                        <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                size="large"
-                                                                onClick={() => setIsEditing(false)}
-                                                                className="flex-1"
-                                                        >
-                                                                Cancel
-                                                        </Button>
-                                                )}
-                                                <Button
-                                                        type="submit"
-                                                        variant="gradient"
-                                                        size="large"
-                                                        onClick={handleSave}
-                                                        disabled={!editedName.trim() || isSaving}
-                                                        loading={isSaving}
-                                                        className={user.isLoggedIn ? "flex-[2]" : "w-full"}
-                                                >
-                                                        {user.isLoggedIn ? "Save" : "Begin Journey"}
-                                                </Button>
-                                        </div>
-                                </div>
-                        ) : (
-                                <div className="w-full max-w-sm flex flex-col items-center gap-6 animate-in fade-in duration-250">
-                                        <div className="text-center space-y-2">
-                                                <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">{user.name}</h2>
-                                                <p className="text-sm text-muted-foreground/70">
-                                                        Your preferences are saved.
-                                                </p>
-                                        </div>
-
-                                        <div className="flex flex-col gap-2 w-full">
-                                                <button
-                                                        type="button"
-                                                        onClick={() => setIsEditing(true)}
-                                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-primary hover:text-primary hover:bg-primary/15 transition-colors"
-                                                        aria-label="Edit name"
-                                                >
-                                                        <Pencil size={16} />
-                                                        Edit
-                                                </button>
-
-                                                <button
-                                                        type="button"
-                                                        onClick={() => void handleLogout()}
-                                                        disabled={isLoggingOut}
-                                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-destructive/70 hover:text-destructive hover:bg-destructive/15 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                                >
-                                                        <LogOut size={16} />
-                                                        {isLoggingOut ? "Logging out..." : "Logout"}
-                                                </button>
-                                        </div>
-                                </div>
-                        )}
-                </div>
-        );
+			{isEditing ? (
+				<ProfileEditForm
+					editedName={editedName}
+					setEditedName={setEditedName}
+					saveError={saveError}
+					setSaveError={setSaveError}
+					isSaving={isSaving}
+					isLoggedIn={user.isLoggedIn}
+					handleSave={handleSave}
+					handleCancel={() => setIsEditing(false)}
+					nameInputRef={nameInputRef}
+				/>
+			) : (
+				<ProfileView
+					userName={user.name}
+					isLoggingOut={isLoggingOut}
+					handleEdit={() => setIsEditing(true)}
+					handleLogout={() => void handleLogout()}
+				/>
+			)}
+		</div>
+	);
 }
