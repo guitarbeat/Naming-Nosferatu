@@ -151,21 +151,17 @@ export function deriveBracketState(
 		return cached;
 	}
 
-	const len = bracketEntrants.length;
-	const entrants: string[] = new Array(len);
+	const entrants: string[] = [];
 	let totalEntrants = 0;
-	let validCount = 0;
-
-	for (let i = 0; i < len; i++) {
-		const id = String(bracketEntrants[i]);
+	for (const rawId of bracketEntrants) {
+		const id = String(rawId);
 		if (id) {
-			entrants[validCount++] = id;
+			entrants.push(id);
 			if (!isBye(id)) {
 				totalEntrants++;
 			}
 		}
 	}
-	entrants.length = validCount; // Truncate to actual size
 
 	if (totalEntrants < 2) {
 		const result = {
@@ -238,7 +234,7 @@ export function deriveBracketState(
 				cursor += 1;
 			} else {
 				// The recorded winner doesn't match either side — the history is corrupt
-				// for this slot. Skip the invalid record to avoid an infinite loop,
+				// in this slot. Skip the invalid record to avoid an infinite loop,
 				// clear the cache so this bad entry doesn't get persisted, and treat
 				// the match as pending so the user can re-vote it.
 				cursor += 1;
