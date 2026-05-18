@@ -37,7 +37,9 @@ function WordTooltip({ name, avgRating, wins, totalRatings }: TooltipProps) {
 				<div className="flex flex-col gap-1.5">
 					<div className="flex items-center justify-between gap-6">
 						<span className="text-[11px] text-white/45">Avg rating</span>
-						<span className="text-[11px] font-semibold tabular-nums text-white/90">{Math.round(avgRating)}</span>
+						<span className="text-[11px] font-semibold tabular-nums text-white/90">
+							{Math.round(avgRating)}
+						</span>
 					</div>
 					<div className="flex items-center justify-between gap-6">
 						<span className="text-[11px] text-white/45">Wins</span>
@@ -71,7 +73,9 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 			return { ...entry, size, tone };
 		});
 
-	if (items.length === 0) return null;
+	if (items.length === 0) {
+		return null;
+	}
 
 	return (
 		<div className="flex min-h-[26rem] flex-wrap items-center justify-center gap-x-2 gap-y-3 px-3 py-6 text-center sm:min-h-[32rem] sm:px-6 sm:py-8">

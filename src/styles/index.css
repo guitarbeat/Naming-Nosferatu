@@ -1,4 +1,13 @@
 @import "tailwindcss";
+@import "./tokens.css";
+@import "./reset.css";
+@import "./typography.css";
+@import "./layout.css";
+@import "./indicators.css";
+@import "./components.css";
+@import "./navbar.css";
+@import "./motion.css";
+@import "./liquid-glass.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -12,13 +21,3 @@
    7. Motion & animation system
    8. Glass morphism effects
 */
-
-@import "./tokens.css";
-@import "./reset.css";
-@import "./typography.css";
-@import "./layout.css";
-@import "./indicators.css";
-@import "./components.css";
-@import "./navbar.css";
-@import "./motion.css";
-@import "./liquid-glass.css";
