@@ -5,7 +5,7 @@
 type GlobalScope = typeof globalThis | typeof window | Record<string, unknown>;
 
 const GLOBAL_SCOPE: GlobalScope =
-	typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : {};
+	typeof globalThis === "undefined" ? (typeof window === "undefined" ? {} : window) : globalThis;
 
 /**
  * * Get the global scope object
@@ -504,6 +504,8 @@ export class CircuitBreaker {
 	}
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 	operation: T,
 	options: Record<string, unknown> = {},
@@ -522,7 +524,7 @@ function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 				if (a === maxAttempts || !isRetryable(parseError(e), {})) {
 					throw e;
 				}
-				await new Promise((r) => setTimeout(r, baseDelay * 2 ** (a - 1)));
+				await sleep(baseDelay << (a - 1));
 			}
 		}
 		throw lastErr;
