@@ -9,6 +9,8 @@ describe("shouldEnableAnalytics", () => {
 	it("disables analytics for local preview hosts", () => {
 		expect(shouldEnableAnalytics({ hostname: "localhost", isProd: true })).toBe(false);
 		expect(shouldEnableAnalytics({ hostname: "127.0.0.1", isProd: true })).toBe(false);
+		expect(shouldEnableAnalytics({ hostname: "0.0.0.0", isProd: true })).toBe(false);
+		expect(shouldEnableAnalytics({ hostname: "::1", isProd: true })).toBe(false);
 	});
 
 	it("enables analytics for production hosts", () => {
