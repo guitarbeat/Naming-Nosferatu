@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { RatingStats } from "./ratingStats";
 import {
 	calculatePercentile,
 	computeRatingStats,
@@ -52,7 +53,7 @@ describe("ratingStats", () => {
 		it("returns 50 for empty array", () => {
 			expect(getPercentileRank(1200, [])).toBe(50);
 		});
-		
+
 		it("returns higher percentile for higher ratings", () => {
 			const all = [1000, 1100, 1200, 1300, 1400];
 			expect(getPercentileRank(1400, all)).toBe(100);
@@ -76,7 +77,14 @@ describe("ratingStats", () => {
 
 	describe("getZScore", () => {
 		it("calculates Z-score correctly", () => {
-			const stats = { mean: 1100, stdDev: 100 } as any;
+			const stats: RatingStats = {
+				mean: 1100,
+				stdDev: 100,
+				median: 1100,
+				min: 1000,
+				max: 1200,
+				count: 10,
+			};
 			expect(getZScore(1200, stats)).toBe(1);
 			expect(getZScore(1000, stats)).toBe(-1);
 		});
