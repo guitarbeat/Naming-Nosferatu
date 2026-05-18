@@ -435,7 +435,6 @@ export function NameSelector() {
 				await toggleHidden({ nameId, isCurrentlyHidden });
 				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
 			} catch (error) {
-				console.error("Failed to toggle hidden status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
 			} finally {
@@ -457,7 +456,6 @@ export function NameSelector() {
 				await toggleLocked({ nameId, isCurrentlyLocked });
 				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
 			} catch (error) {
-				console.error("Failed to toggle locked status:", error);
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
 			} finally {
@@ -534,23 +532,15 @@ export function NameSelector() {
 	const _canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
 	const _selectionFloor = lockedInNames.length;
 
-	const nameIndexMap = useMemo(() => {
-		const map = new Map<IdType, number>();
-		for (let i = 0; i < names.length; i++) {
-			map.set(names[i].id, i);
-		}
-		return map;
-	}, [names]);
-
 	const handleOpenLightbox = useCallback(
 		(nameId: IdType) => {
-			const index = nameIndexMap.get(nameId);
-			if (index !== undefined) {
+			const index = names.findIndex((n) => n.id === nameId);
+			if (index !== -1) {
 				setLightboxIndex(index);
 				setLightboxOpen(true);
 			}
 		},
-		[nameIndexMap],
+		[names],
 	);
 
 	const startTournament = useCallback(() => {
