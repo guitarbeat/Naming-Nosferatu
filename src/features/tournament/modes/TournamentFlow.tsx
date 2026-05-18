@@ -27,32 +27,46 @@ export default function TournamentFlow() {
 		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
 			const userId = user.name || "anonymous";
 
-                        ratingsAPI
-                                .saveRatings(userName, ratingsSnapshot)
-                                .then(async (result) => {
-                                        if (!result?.success) {
-                                                // Save failed (e.g. offline) — enqueue for later sync
-                                                const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
-                                                        name_id: nameId,
-                                                        rating: data.rating,
-                                                        wins: data.wins,
-                                                        losses: data.losses,
-                                                }));
-                                                await enqueueRatingsMutation(records);
-                                                console.warn("Ratings save failed; queued for offline sync");
-                                        }
-                                })
-                                .catch(async (_error) => {
-                                        // Network error — enqueue for later sync
-                                        const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
-                                                name_id: nameId,
-                                                rating: data.rating,
-                                                wins: data.wins,
-                                                losses: data.losses,
-                                        }));
-                                        await enqueueRatingsMutation(records);
-                                        console.warn("Tournament ratings save failed; queued for offline sync");
-                                });
+                        // Compute per-name wins and losses from the vote history.
+                        // For 1v1, winnerId/loserId are direct name IDs.
+                        // For 2v2, winnerMemberIds/loserMemberIds expand team votes to individual names.
+                        const winsByName: Record<string, number> = {};
+                        const lossesByName: Record<string, number> = {};
+
+                        for (const vote of tournament.voteHistory) {
+                                const winnerIds: string[] =
+                                        Array.isArray((vote as Record<string, unknown>).winnerMemberIds)
+                                                ? ((vote as Record<string, unknown>).winnerMemberIds as string[])
+                                                : [String(vote.winnerId)];
+                                const loserIds: string[] =
+                                        Array.isArray((vote as Record<string, unknown>).loserMemberIds)
+                                                ? ((vote as Record<string, unknown>).loserMemberIds as string[])
+                                                : [String(vote.loserId)];
+
+                                for (const id of winnerIds) {
+                                        winsByName[id] = (winsByName[id] ?? 0) + 1;
+                                }
+                                for (const id of loserIds) {
+                                        lossesByName[id] = (lossesByName[id] ?? 0) + 1;
+                                }
+                        }
+
+                        const ratingsWithStats = Object.entries(tournament.ratings).reduce(
+                                (acc, [nameId, ratingData]) => {
+                                        const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
+                                        acc[nameId] = {
+                                                rating,
+                                                wins: winsByName[nameId] ?? 0,
+                                                losses: lossesByName[nameId] ?? 0,
+                                        };
+                                        return acc;
+                                },
+                                {} as Record<string, { rating: number; wins: number; losses: number }>,
+                        );
+
+                        mutateAsyncRef.current({ userId, ratings: ratingsWithStats }).catch(() => {
+                                // Error is already logged by ratingsAPI with context
+                        });
                 }
         }, [tournament.isComplete, tournament.ratings, user.name]);
 
