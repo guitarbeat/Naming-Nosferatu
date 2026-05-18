@@ -1,0 +1,9 @@
+🎯 **What:** The `writeStoredUserSnapshot` along with `readStoredUserSnapshot` and `clearStoredUserSnapshot` in `src/shared/lib/userStorage.ts` were lacking dedicated tests. The storage operations relied on mocking `setStorageString` and `writeStorageJson`.
+
+📊 **Coverage:**
+- Added comprehensive tests for `writeStoredUserSnapshot`.
+- Added tests for `readStoredUserSnapshot`.
+- Added tests for `clearStoredUserSnapshot`.
+- Covered conditions when `storage` is unavailable, invalid data cases, and valid saving data cases.
+
+✨ **Result:** Improved overall test coverage and reliability for user local storage management logic by introducing a dedicated suite `src/shared/lib/userStorage.test.ts`.
