@@ -27,11 +27,34 @@ export default function TournamentFlow() {
 		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
 			const userId = user.name || "anonymous";
 
-			// Compute per-name wins and losses from the vote history.
-			// For 1v1, winnerId/loserId are direct name IDs.
-			// For 2v2, winnerMemberIds/loserMemberIds expand team votes to individual names.
-			const winsByName: Record<string, number> = {};
-			const lossesByName: Record<string, number> = {};
+                        ratingsAPI
+                                .saveRatings(userName, ratingsSnapshot)
+                                .then(async (result) => {
+                                        if (!result?.success) {
+                                                // Save failed (e.g. offline) — enqueue for later sync
+                                                const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
+                                                        name_id: nameId,
+                                                        rating: data.rating,
+                                                        wins: data.wins,
+                                                        losses: data.losses,
+                                                }));
+                                                await enqueueRatingsMutation(records);
+                                                console.warn("Ratings save failed; queued for offline sync");
+                                        }
+                                })
+                                .catch(async (_error) => {
+                                        // Network error — enqueue for later sync
+                                        const records = Object.entries(ratingsSnapshot).map(([nameId, data]) => ({
+                                                name_id: nameId,
+                                                rating: data.rating,
+                                                wins: data.wins,
+                                                losses: data.losses,
+                                        }));
+                                        await enqueueRatingsMutation(records);
+                                        console.warn("Tournament ratings save failed; queued for offline sync");
+                                });
+                }
+        }, [tournament.isComplete, tournament.ratings, user.name]);
 
 			for (const vote of tournament.voteHistory) {
 				const winnerIds: string[] = Array.isArray((vote as Record<string, unknown>).winnerMemberIds)
