@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
-import { HomeHeroSection, TournamentBracketSection } from "@/app/routes/components/HomeSections";
-import { GooeyTextDemo } from "@/components/ui/demo";
+import {
+        HomeHeroSection,
+} from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/features/names/api";
 import { useTournamentHandlers } from "@/features/tournament/hooks";
 import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
 import { Section } from "@/shared/components/layout/Section";
-import { useMediaQuery } from "@/shared/hooks/useBrowserState";
+import { SectionHeading } from "@/shared/components/layout/SectionHeading";
+import Button from "@/shared/components/layout/Button";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
@@ -87,41 +89,101 @@ export default function HomeRoute() {
 				useCinematic={true}
 			/>
 
-			<Section id="pick" variant="minimal" padding="comfortable" maxWidth="xl" separator={true}>
-				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-					<TournamentFlow />
-				</Suspense>
-			</Section>
+                        <Section
+                                id="pick"
+                                variant="minimal"
+                                padding="comfortable"
+                                maxWidth="xl"
+                                fullpage={true}
+                                separator={true}
+                        >
+                                <SectionHeading
+                                        title="Narrow It Down"
+                                        subtitle="Select your top picks."
+                                />
+                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                        <TournamentFlow />
+                                </Suspense>
+                        </Section>
 
-			<TournamentBracketSection
-				LazyTournament={LazyTournament}
-				names={tournament.names}
-				ratings={tournament.ratings}
-				onComplete={(ratings) => {
-					handleTournamentComplete(ratings);
-					scheduleAnalysisScroll();
-				}}
-				onGoToPicker={() => scrollToSection("pick")}
-			/>
+                        <Section
+                                id="tournament"
+                                variant="minimal"
+                                padding="comfortable"
+                                maxWidth="2xl"
+                                fullpage={true}
+                                separator={true}
+                        >
+                                <SectionHeading
+                                        title="Bracket"
+                                        subtitle="Head-to-head matchups."
+                                />
+                                <Suspense fallback={<Loading variant="skeleton" height={400} />}>
+                                        {tournament.names && tournament.names.length > 0 ? (
+                                                <LazyTournament
+                                                        names={tournament.names}
+                                                        existingRatings={tournament.ratings}
+                                                        onComplete={(ratings) => {
+                                                                handleTournamentComplete(ratings);
+                                                                scheduleAnalysisScroll();
+                                                        }}
+                                                />
+                                        ) : (
+                                                <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
+                                                        <p className="text-pretty text-sm text-muted-foreground/70">
+                                                                Select at least two names to begin.
+                                                        </p>
+                                                        <Button variant="glass" onClick={() => scrollToSection("pick")}>
+                                                                Go Back
+                                                        </Button>
+                                                </div>
+                                        )}
+                                </Suspense>
+                        </Section>
 
-			<div id="analysis">
-				<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-					<ErrorBoundary context={errorContexts.analysisDashboard}>
-						<DashboardLazy
-							personalRatings={tournament.ratings}
-							currentTournamentNames={tournament.names ?? undefined}
-							onStartNew={handleStartNewTournament}
-							userName={user.name ?? ""}
-							isAdmin={user.isAdmin}
-							isLoggedIn={user.isLoggedIn}
-							avatarUrl={user.avatarUrl}
-						/>
-					</ErrorBoundary>
-				</Suspense>
-			</div>
-			<Section variant="card" padding="comfortable" maxWidth="xl">
-				<GooeyTextDemo />
-			</Section>
-		</>
-	);
+                        <Section
+                                id="analysis"
+                                variant="minimal"
+                                padding="comfortable"
+                                maxWidth="2xl"
+                                fullpage={true}
+                                separator={true}
+                        >
+                                <SectionHeading
+                                        title="Your Rankings"
+                                        subtitle="Final scores."
+                                />
+                                <Suspense fallback={<Loading variant="skeleton" height={600} />}>
+                                        <ErrorBoundary context={errorContexts.analysisDashboard}>
+                                                <DashboardLazy
+                                                        personalRatings={tournament.ratings}
+                                                        currentTournamentNames={tournament.names ?? undefined}
+                                                        onStartNew={handleStartNewTournament}
+                                                        userName={user.name ?? ""}
+                                                        isAdmin={user.isAdmin}
+                                                        isLoggedIn={user.isLoggedIn}
+                                                        avatarUrl={user.avatarUrl}
+                                                />
+                                        </ErrorBoundary>
+                                </Suspense>
+                        </Section>
+
+                        <Section
+                                id="suggest"
+                                variant="minimal"
+                                padding="comfortable"
+                                maxWidth="2xl"
+                                fullpage={true}
+                                separator={true}
+                        >
+                                <SectionHeading
+                                        title="Have a Suggestion?"
+                                        subtitle="Submit a name."
+                                />
+                                <Suspense fallback={<Loading variant="card-skeleton" height={340} />}>
+                                        <LazyNameSuggestionInner />
+                                </Suspense>
+                        </Section>
+                </>
+        );
 }

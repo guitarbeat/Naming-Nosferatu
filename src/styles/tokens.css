@@ -186,41 +186,34 @@
 }
 
 :root {
-	--app-container-max-width: clamp(70rem, 95vw, 150rem);
-	--app-container-padding-inline: var(--space-4);
-	--app-main-min-height: 100dvh;
-	--app-main-gap: 0;
-	--app-nav-frame-width: min(95vw, 58rem);
-	--app-nav-frame-width-compact: min(calc(100vw - 1rem), 32rem);
-	--app-nav-bottom-offset: max(var(--space-4), calc(env(safe-area-inset-bottom) + var(--space-3)));
-	--app-nav-shell-height: 4.75rem;
-	--app-nav-safe-bottom: calc(
-		var(--app-nav-shell-height) +
-		var(--app-nav-bottom-offset) +
-		var(--space-6)
-	);
-	--app-main-bottom-padding: var(--app-nav-safe-bottom);
-	--app-scroll-to-top-bottom: calc(
-		var(--app-nav-shell-height) +
-		var(--app-nav-bottom-offset) +
-		var(--space-4)
-	);
-	--app-section-padding-inline: var(--space-4);
-	--app-section-padding-block: var(--space-phi-4); /* 2.618rem ≈ space-10 */
-	--app-section-padding-block-compact: var(--space-phi-3); /* 1.618rem ≈ space-6  */
-	--app-section-scroll-margin: var(--space-24);
-	--app-section-separator-padding: var(--space-phi-5); /* 4.236rem ≈ space-16; = block × φ */
-	--app-section-max-sm: 36rem;
-	--app-section-max-md: 42rem;
-	--app-section-max-lg: 56rem;
-	--app-section-max-xl: 72rem;
-	--app-section-max-2xl: 80rem;
-	--app-hero-min-height: calc(100dvh - var(--app-nav-shell-height));
-	--app-hero-padding-block-start: var(--space-24);
-	--app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
-	--app-hero-preview-min-height: 26rem;
-	--app-chart-frame-height: 13rem;
-	--app-chart-frame-height-tall: 14rem;
+        --app-container-max-width: clamp(70rem, 95vw, 150rem);
+        --app-container-padding-inline: var(--space-4);
+        --app-main-min-height: 100dvh;
+        --app-main-gap: 0;
+        --app-nav-frame-width: min(95vw, 58rem);
+        --app-nav-frame-width-compact: min(calc(100vw - 1rem), 32rem);
+        --app-nav-bottom-offset: max(var(--space-4), calc(env(safe-area-inset-bottom) + var(--space-3)));
+        --app-nav-shell-height: 4.75rem;
+        --app-nav-safe-bottom: calc(var(--app-nav-shell-height) + var(--app-nav-bottom-offset) + var(--space-6));
+        --app-main-bottom-padding: var(--app-nav-safe-bottom);
+        --app-scroll-to-top-bottom: calc(var(--app-nav-shell-height) + var(--app-nav-bottom-offset) + var(--space-4));
+        --app-section-padding-inline: var(--space-4);
+        --app-section-padding-block: var(--space-12);
+        --app-section-padding-block-compact: var(--space-8);
+        --app-section-padding-block-fullpage: max(var(--space-24), calc(100dvh - var(--app-nav-shell-height) - var(--space-16)));
+        --app-section-scroll-margin: var(--space-24);
+        --app-section-separator-padding: var(--space-14, 3.5rem);
+        --app-section-max-sm: 36rem;
+        --app-section-max-md: 42rem;
+        --app-section-max-lg: 56rem;
+        --app-section-max-xl: 72rem;
+        --app-section-max-2xl: 80rem;
+        --app-hero-min-height: calc(100dvh - var(--app-nav-shell-height));
+        --app-hero-padding-block-start: var(--space-24);
+        --app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
+        --app-hero-preview-min-height: 26rem;
+        --app-chart-frame-height: 13rem;
+        --app-chart-frame-height-tall: 14rem;
 }
 
 @media (min-width: 640px) {

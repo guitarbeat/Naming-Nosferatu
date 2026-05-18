@@ -63,20 +63,20 @@ export function NameSuggestionInner() {
         const isFormComplete = values.name.trim().length > 0 && values.description.trim().length > 0;
 
         return (
-                <form onSubmit={handleLocalSubmit} className="w-full max-w-lg mx-auto space-y-6">
-                        <div className="text-center space-y-2">
-                                <h3 className="text-xl sm:text-2xl font-bold text-foreground">What would you name him?</h3>
-                                <p className="text-sm text-muted-foreground">
-                                        Every suggestion enters the bracket for voting.
+                <form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto space-y-7">
+                        <div className="text-center space-y-3">
+                                <h3 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight">Have a suggestion?</h3>
+                                <p className="text-base text-muted-foreground/80">
+                                        Submit a name and it enters the bracket for everyone to vote on.
                                 </p>
                         </div>
 
-                        <div className="space-y-2">
-                                <div className="flex items-baseline justify-between">
-                                        <label htmlFor="suggest-name" className="text-sm font-medium text-foreground/80">
-                                                Suggested Name
+                        <div className="space-y-3">
+                                <div className="flex items-baseline justify-between gap-4">
+                                        <label htmlFor="suggest-name" className="text-sm font-semibold text-foreground/90 uppercase tracking-wide">
+                                                Name
                                         </label>
-                                        <span className="text-[11px] text-muted-foreground/60 tabular-nums">
+                                        <span className="text-xs text-muted-foreground/60 tabular-nums font-mono">
                                                 {values.name.length}/50
                                         </span>
                                 </div>
@@ -86,18 +86,18 @@ export function NameSuggestionInner() {
                                         value={values.name}
                                         onChange={(e) => handleChange("name", e.target.value)}
                                         placeholder="e.g. Count Whiskula, Sir Paws-a-lot"
-                                        className="h-12 text-base border-border/40 focus:border-primary bg-foreground/[0.03]"
+                                        className="h-14 text-base font-medium border-primary/30 focus:border-primary/70 focus:bg-background/95 bg-background/80 rounded-2xl"
                                         disabled={isSubmitting}
                                         maxLength={50}
                                 />
                         </div>
 
-                        <div className="space-y-2">
-                                <div className="flex items-baseline justify-between">
-                                        <label htmlFor="suggest-description" className="text-sm font-medium text-foreground/80">
+                        <div className="space-y-3">
+                                <div className="flex items-baseline justify-between gap-4">
+                                        <label htmlFor="suggest-description" className="text-sm font-semibold text-foreground/90 uppercase tracking-wide">
                                                 Why This Name?
                                         </label>
-                                        <span className="text-[11px] text-muted-foreground/60 tabular-nums">
+                                        <span className="text-xs text-muted-foreground/60 tabular-nums font-mono">
                                                 {values.description.length}/500
                                         </span>
                                 </div>
@@ -107,29 +107,29 @@ export function NameSuggestionInner() {
                                         onChange={(e) => handleChange("description", e.target.value)}
                                         placeholder="What makes it special? Help voters feel the vibe."
                                         rows={4}
-                                        className="text-base border-border/40 focus:border-primary bg-foreground/[0.03] resize-none"
+                                        className="text-base font-medium border-primary/30 focus:border-primary/70 focus:bg-background/95 bg-background/80 rounded-2xl resize-none"
                                         disabled={isSubmitting}
                                         maxLength={500}
                                         showCount={false}
                                 />
                         </div>
 
+                        <StatusMessage error={globalError} success={successMessage} />
+
                         <Button
                                 type="submit"
                                 disabled={!isFormComplete || isSubmitting}
                                 loading={isSubmitting}
-                                variant="glass"
+                                variant="gradient"
                                 size="large"
                                 className="w-full"
                         >
                                 {isSubmitting ? "Submitting…" : "Add to Bracket"}
                         </Button>
 
-                        <p className="text-[11px] text-center text-muted-foreground/60">
-                                Goes into the shared pool for everyone to discover
+                        <p className="text-xs text-center text-muted-foreground/70">
+                                Your suggestion enters the shared pool for everyone to discover.
                         </p>
-
-                        <StatusMessage error={globalError} success={successMessage} />
                 </form>
         );
 }

@@ -118,6 +118,10 @@ export function TournamentBracketSection({
                         maxWidth="2xl"
                         separator={true}
                 >
+                        <SectionHeading
+                                title="Bracket"
+                                subtitle="Head-to-head matchups."
+                        />
                         <Suspense fallback={<Loading variant="skeleton" height={400} />}>
                                 {names && names.length > 0 ? (
                                         <LazyTournament
@@ -125,7 +129,16 @@ export function TournamentBracketSection({
                                                 existingRatings={ratings}
                                                 onComplete={onComplete}
                                         />
-                                ) : null}
+                                ) : (
+                                        <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
+                                                <p className="text-pretty text-sm text-muted-foreground/70">
+                                                        Select at least two names to begin.
+                                                </p>
+                                                <Button variant="glass" onClick={onGoToPicker}>
+                                                        Go Back
+                                                </Button>
+                                        </div>
+                                )}
                         </Suspense>
                 </Section>
         );

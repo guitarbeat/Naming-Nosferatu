@@ -79,97 +79,113 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 		}
 	};
 
-	return (
-		<div className="flex flex-col items-center gap-6 w-full pt-2">
-			{/* Avatar */}
-			<div className="size-20 rounded-full overflow-hidden border border-white/10 bg-muted shadow-md flex-shrink-0">
-				<img
-					src={avatarSrc}
-					alt="Profile"
-					className="size-full object-cover"
-					onError={() => setAvatarSrc(defaultAvatar)}
-				/>
-			</div>
+        return (
+                <div className="flex flex-col items-center gap-8 w-full">
+                        {/* Avatar with Glow */}
+                        <div className="relative">
+                                <div
+                                        className="absolute -inset-4 rounded-full bg-gradient-to-br from-primary/40 to-accent/30 blur-xl opacity-60 animate-pulse"
+                                        aria-hidden="true"
+                                />
+                                <div className="relative size-32 rounded-full overflow-hidden ring-4 ring-primary/60 ring-offset-6 ring-offset-card bg-gradient-to-br from-primary/20 to-accent/10 shadow-2xl">
+                                        <img
+                                                src={avatarSrc}
+                                                alt="Your profile photo"
+                                                className="size-full object-cover"
+                                                onError={() => setAvatarSrc(defaultAvatar)}
+                                        />
+                                </div>
+                        </div>
 
-			{isEditing ? (
-				<div className="w-full space-y-4 animate-in fade-in duration-200">
-					<div className="space-y-1.5">
-						<label className="text-xs font-medium tracking-widest uppercase text-muted-foreground/60">
-							Your name
-						</label>
-						<Input
-							ref={nameInputRef}
-							type="text"
-							value={editedName}
-							onChange={(e) => {
-								setEditedName(e.target.value);
-								if (saveError) {
-									setSaveError(null);
-								}
-							}}
-							placeholder="Who are you?"
-							className="w-full h-11 px-4 text-sm"
-						/>
-					</div>
+                        {isEditing ? (
+                                <div className="w-full max-w-sm space-y-5 animate-in fade-in duration-250">
+                                        <div className="text-center space-y-2">
+                                                <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">Who are you?</h2>
+                                                <p className="text-sm text-muted-foreground/80">Your name helps us track your preferences.</p>
+                                        </div>
 
-					{saveError && (
-						<p role="alert" className="text-sm text-destructive/90">
-							{saveError}
-						</p>
-					)}
+                                        <div className="relative group">
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-primary/50 pointer-events-none transition-colors group-focus-within:text-primary" />
+                                                <Input
+                                                        ref={nameInputRef}
+                                                        type="text"
+                                                        value={editedName}
+                                                        onChange={(e) => {
+                                                                setEditedName(e.target.value);
+                                                                if (saveError) {
+                                                                        setSaveError(null);
+                                                                }
+                                                        }}
+                                                        placeholder="Enter your name"
+                                                        onKeyDown={(e) => e.key === "Enter" && handleSave()}
+                                                        className="w-full h-14 pl-14 pr-4 text-base font-medium rounded-2xl bg-background/80 border border-primary/30 focus:border-primary/70 focus:bg-background/95 focus:outline-none transition-all"
+                                                        autoFocus
+                                                />
+                                        </div>
 
-					<div className="flex gap-2 pt-1">
-						{user.isLoggedIn && (
-							<Button
-								type="button"
-								variant="ghost"
-								onClick={() => setIsEditing(false)}
-								className="flex-1"
-							>
-								Cancel
-							</Button>
-						)}
-						<Button
-							type="submit"
-							variant="primary"
-							size="large"
-							onClick={handleSave}
-							disabled={!editedName.trim() || isSaving}
-							loading={isSaving}
-							className={user.isLoggedIn ? "flex-[2]" : "w-full"}
-						>
-							{user.isLoggedIn ? "Save" : "Begin Journey"}
-						</Button>
-					</div>
-				</div>
-			) : (
-				<div className="w-full flex flex-col items-center gap-4 animate-in fade-in duration-200">
-					<div className="flex flex-col items-center gap-1">
-						<div className="flex items-center gap-2">
-							<h3 className="text-xl font-bold text-foreground tracking-tight">{user.name}</h3>
-							<button
-								type="button"
-								onClick={() => setIsEditing(true)}
-								className="p-1 rounded-full text-muted-foreground/50 hover:text-foreground hover:bg-muted/60 transition-colors"
-								aria-label="Edit name"
-							>
-								<Pencil size={13} />
-							</button>
-						</div>
-						<p className="text-xs text-muted-foreground/60">Rankings saved to your profile.</p>
-					</div>
+                                        {saveError && (
+                                                <div role="alert" className="p-4 rounded-xl bg-destructive/15 border border-destructive/40 text-sm text-destructive font-medium">
+                                                        {saveError}
+                                                </div>
+                                        )}
 
-					<button
-						type="button"
-						onClick={() => void handleLogout()}
-						disabled={isLoggingOut}
-						className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-colors"
-					>
-						<LogOut size={12} />
-						{isLoggingOut ? "Logging out…" : "Log out"}
-					</button>
-				</div>
-			)}
-		</div>
-	);
+                                        <div className="flex gap-3 pt-3">
+                                                {user.isLoggedIn && (
+                                                        <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="large"
+                                                                onClick={() => setIsEditing(false)}
+                                                                className="flex-1"
+                                                        >
+                                                                Cancel
+                                                        </Button>
+                                                )}
+                                                <Button
+                                                        type="submit"
+                                                        variant="gradient"
+                                                        size="large"
+                                                        onClick={handleSave}
+                                                        disabled={!editedName.trim() || isSaving}
+                                                        loading={isSaving}
+                                                        className={user.isLoggedIn ? "flex-[2]" : "w-full"}
+                                                >
+                                                        {user.isLoggedIn ? "Save" : "Begin Journey"}
+                                                </Button>
+                                        </div>
+                                </div>
+                        ) : (
+                                <div className="w-full max-w-sm flex flex-col items-center gap-6 animate-in fade-in duration-250">
+                                        <div className="text-center space-y-2">
+                                                <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">{user.name}</h2>
+                                                <p className="text-sm text-muted-foreground/70">
+                                                        Your preferences are saved.
+                                                </p>
+                                        </div>
+
+                                        <div className="flex flex-col gap-2 w-full">
+                                                <button
+                                                        type="button"
+                                                        onClick={() => setIsEditing(true)}
+                                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-primary hover:text-primary hover:bg-primary/15 transition-colors"
+                                                        aria-label="Edit name"
+                                                >
+                                                        <Pencil size={16} />
+                                                        Edit
+                                                </button>
+
+                                                <button
+                                                        type="button"
+                                                        onClick={() => void handleLogout()}
+                                                        disabled={isLoggingOut}
+                                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-destructive/70 hover:text-destructive hover:bg-destructive/15 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                        <LogOut size={16} />
+                                                        {isLoggingOut ? "Logging out..." : "Logout"}
+                                                </button>
+                                        </div>
+                                </div>
+                        )}
+                </div>
+        );
 }

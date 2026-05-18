@@ -11,6 +11,7 @@ interface SectionProps {
         separator?: boolean;
         scrollMargin?: boolean;
         centered?: boolean;
+        fullpage?: boolean;
 }
 
 const maxWidthClasses = {
@@ -44,6 +45,7 @@ export function Section({
         separator = false,
         scrollMargin = true,
         centered = true,
+        fullpage = false,
 }: SectionProps) {
         return (
                 <section
@@ -56,6 +58,7 @@ export function Section({
                                 separator && "app-section--separator",
                                 !scrollMargin && "scroll-mt-0",
                                 centered && "app-section--centered",
+                                fullpage && "app-section--fullpage",
                                 className,
                         )}
                 >
