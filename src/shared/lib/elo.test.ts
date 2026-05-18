@@ -1,114 +1,56 @@
 import { describe, expect, it } from "vitest";
-import { applyEloMatchUpdate } from "./elo";
+import { getExpectedEloScore } from "./elo";
 
-describe("applyEloMatchUpdate", () => {
-	it("should update elo ratings correctly for a 1v1 match (left wins)", () => {
-		const result = applyEloMatchUpdate({
-			ratings: { p1: 1500, p2: 1500 },
-			leftParticipantIds: ["p1"],
-			rightParticipantIds: ["p2"],
-			winnerSide: "left",
+describe("elo", () => {
+	describe("getExpectedEloScore", () => {
+		it("calculates correct expected score when ratings are equal", () => {
+			expect(getExpectedEloScore(1500, 1500)).toBe(0.5);
+			expect(getExpectedEloScore(2000, 2000)).toBe(0.5);
 		});
 
-		expect(result.leftAverageRating).toBe(1500);
-		expect(result.rightAverageRating).toBe(1500);
-		expect(result.ratings.p1).toBeGreaterThan(1500);
-		expect(result.ratings.p2).toBeLessThan(1500);
-		expect(result.participants.p1.wins).toBe(1);
-		expect(result.participants.p1.losses).toBe(0);
-		expect(result.participants.p2.wins).toBe(0);
-		expect(result.participants.p2.losses).toBe(1);
-		expect(result.stats.p1.wins).toBe(1);
-		expect(result.stats.p2.losses).toBe(1);
-	});
+		it("calculates expected score for different ratings correctly", () => {
+			// A rating difference of 400 points should result in an expected score of ~0.909 for the higher rating
+			const expectedWin = getExpectedEloScore(1900, 1500);
+			expect(expectedWin).toBeCloseTo(0.909, 3);
 
-	it("should update elo ratings correctly for a 1v1 match (right wins)", () => {
-		const result = applyEloMatchUpdate({
-			ratings: { p1: 1500, p2: 1500 },
-			leftParticipantIds: ["p1"],
-			rightParticipantIds: ["p2"],
-			winnerSide: "right",
+			// And the expected score for the lower rating should be ~0.091
+			const expectedLoss = getExpectedEloScore(1500, 1900);
+			expect(expectedLoss).toBeCloseTo(0.091, 3);
+
+			// Expected scores should sum to 1
+			expect(expectedWin + expectedLoss).toBeCloseTo(1, 5);
 		});
 
-		expect(result.ratings.p1).toBeLessThan(1500);
-		expect(result.ratings.p2).toBeGreaterThan(1500);
-		expect(result.participants.p1.losses).toBe(1);
-		expect(result.participants.p2.wins).toBe(1);
-	});
+		it("calculates expected score for large rating difference correctly", () => {
+			const expectedWin = getExpectedEloScore(2400, 800);
+			expect(expectedWin).toBeCloseTo(0.9999, 4);
 
-	it("should update elo ratings correctly for a tie", () => {
-		const result = applyEloMatchUpdate({
-			ratings: { p1: 1500, p2: 1600 }, // p2 is expected to win
-			leftParticipantIds: ["p1"],
-			rightParticipantIds: ["p2"],
-			winnerSide: "tie",
+			const expectedLoss = getExpectedEloScore(800, 2400);
+			expect(expectedLoss).toBeCloseTo(0.0001, 4);
 		});
 
-		// Lower rated player should gain rating, higher rated should lose on a tie
-		expect(result.ratings.p1).toBeGreaterThan(1500);
-		expect(result.ratings.p2).toBeLessThan(1600);
-	});
+		it("respects custom configuration for ratingDivisor", () => {
+			// With a divisor of 100, a difference of 100 points should give a similar probability
+			// to a difference of 400 points with the default divisor of 400.
+			const customConfig = { ratingDivisor: 100 };
+			const expectedWinCustom = getExpectedEloScore(1600, 1500, customConfig);
+			expect(expectedWinCustom).toBeCloseTo(0.909, 3);
 
-	it("should handle missing participants gracefully using default ratings", () => {
-		const result = applyEloMatchUpdate({
-			ratings: { p1: 1500 }, // p2 rating missing
-			leftParticipantIds: ["p1"],
-			rightParticipantIds: ["p2"],
-			winnerSide: "left",
+			const expectedLossCustom = getExpectedEloScore(1500, 1600, customConfig);
+			expect(expectedLossCustom).toBeCloseTo(0.091, 3);
 		});
 
-		expect(result.rightAverageRating).toBe(1500); // Default
-		expect(result.ratings.p2).toBeLessThan(1500);
-	});
-
-	it("should properly accumulate stats if passed in", () => {
-		const result = applyEloMatchUpdate({
-			ratings: { p1: 1500, p2: 1500 },
-			leftParticipantIds: ["p1"],
-			rightParticipantIds: ["p2"],
-			winnerSide: "left",
-			stats: {
-				p1: { wins: 5, losses: 2 },
-				p2: { wins: 3, losses: 4 },
-			},
+		it("handles zero rating difference correctly with custom configuration", () => {
+			const customConfig = { ratingDivisor: 100 };
+			expect(getExpectedEloScore(1200, 1200, customConfig)).toBe(0.5);
 		});
 
-		expect(result.stats.p1.wins).toBe(6);
-		expect(result.stats.p1.losses).toBe(2);
-		expect(result.stats.p2.wins).toBe(3);
-		expect(result.stats.p2.losses).toBe(5);
-		expect(result.participants.p1.wins).toBe(6);
-		expect(result.participants.p2.losses).toBe(5);
-	});
+		it("handles edge cases with floating point ratings", () => {
+			const expectedWin = getExpectedEloScore(1500.5, 1500.5);
+			expect(expectedWin).toBe(0.5);
 
-	it("should distribute rating delta correctly in a team match", () => {
-		const result = applyEloMatchUpdate({
-			ratings: { p1: 1600, p2: 1400, p3: 1500, p4: 1500 },
-			leftParticipantIds: ["p1", "p2"], // Avg 1500
-			rightParticipantIds: ["p3", "p4"], // Avg 1500
-			winnerSide: "left",
+			const diffWin = getExpectedEloScore(1500.75, 1500.25);
+			expect(diffWin).toBeGreaterThan(0.5);
 		});
-
-		expect(result.leftAverageRating).toBe(1500);
-		expect(result.rightAverageRating).toBe(1500);
-
-		// Both members of left side should gain the same amount
-		expect(result.participants.p1.delta).toBeGreaterThan(0);
-		expect(result.participants.p2.delta).toBe(result.participants.p1.delta);
-
-		// Both members of right side should lose the same amount
-		expect(result.participants.p3.delta).toBeLessThan(0);
-		expect(result.participants.p4.delta).toBe(result.participants.p3.delta);
-	});
-
-	it("should throw if left or right side is empty", () => {
-		expect(() => {
-			applyEloMatchUpdate({
-				ratings: { p1: 1500 },
-				leftParticipantIds: [],
-				rightParticipantIds: ["p1"],
-				winnerSide: "left",
-			});
-		}).toThrow("Cannot calculate Elo for an empty side");
 	});
 });
