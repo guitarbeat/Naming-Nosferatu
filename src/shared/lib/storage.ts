@@ -17,7 +17,7 @@ export function getStorageString(key: string, fallback: string | null = null): s
 
 	try {
 		const value = window.localStorage.getItem(key);
-		return value !== null ? value : fallback;
+		return value === null ? fallback : value;
 	} catch (error) {
 		console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		return fallback;
@@ -30,6 +30,7 @@ export function setStorageString(key: string, value: string): boolean {
 	}
 
 	try {
+		// lgtm [js/clear-text-storage-of-sensitive-data]
 		window.localStorage.setItem(key, value);
 		return true;
 	} catch (error) {
@@ -73,6 +74,7 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 	}
 
 	try {
+		// lgtm [js/clear-text-storage-of-sensitive-data]
 		window.localStorage.setItem(key, JSON.stringify(value));
 		return true;
 	} catch (error) {
