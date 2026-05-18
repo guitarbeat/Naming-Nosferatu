@@ -34,7 +34,9 @@ class TournamentRealtimeService {
 	private dbChannel: RealtimeChannel | null = null;
 	private tournamentChannels = new Map<string, RealtimeChannel>();
 	private connectionState: ConnectionState = "disconnected";
-	private ratingChangeCallbacks: Array<(payload: unknown) => void> = [];
+	private nameChangeCallbacks = new Set<(payload: unknown) => void>();
+	private ratingChangeCallbacks = new Set<(payload: unknown) => void>();
+	private messageHandlers = new Map<string, Set<MessageHandler>>();
 
 	async connect(): Promise<void> {
 		if (this.connectionState === "connected" || this.connectionState === "connecting") {
@@ -83,6 +85,47 @@ class TournamentRealtimeService {
 		}
 		this.tournamentChannels.clear();
 		this.connectionState = "disconnected";
+	}
+
+	getConnectionState(): ConnectionState {
+		return this.connectionState;
+	}
+
+	isConnected(): boolean {
+		return this.connectionState === "connected";
+	}
+
+	onNameChange(callback: (payload: unknown) => void): () => void {
+		this.nameChangeCallbacks.add(callback);
+		return () => {
+			this.nameChangeCallbacks.delete(callback);
+		};
+	}
+
+	onRatingChange(callback: (payload: unknown) => void): () => void {
+		this.ratingChangeCallbacks.add(callback);
+		return () => {
+			this.ratingChangeCallbacks.delete(callback);
+		};
+	}
+
+	onMessage(type: string, handler: MessageHandler): void {
+		if (!this.messageHandlers.has(type)) {
+			this.messageHandlers.set(type, new Set());
+		}
+		this.messageHandlers.get(type)?.add(handler);
+	}
+
+	offMessage(type: string): void {
+		this.messageHandlers.delete(type);
+	}
+
+	sendMessage(message: unknown): void {
+		this.appChannel?.send({
+			type: "broadcast",
+			event: "message",
+			payload: message,
+		});
 	}
 
 	subscribeToTournament(
@@ -142,10 +185,9 @@ class TournamentRealtimeService {
 			};
 			callback(result);
 		};
-
-		this.ratingChangeCallbacks.push(handler);
+		this.ratingChangeCallbacks.add(handler);
 		return () => {
-			this.ratingChangeCallbacks = this.ratingChangeCallbacks.filter((cb) => cb !== handler);
+			this.ratingChangeCallbacks.delete(handler);
 		};
 	}
 
