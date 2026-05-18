@@ -1,7 +1,4 @@
-interface AdminPlaceholderTabProps {
-	title: string;
-	message: string;
-}
+import type { AdminPlaceholderTabProps } from "../types";
 
 export function AdminPlaceholderTab({ title, message }: AdminPlaceholderTabProps) {
 	return (

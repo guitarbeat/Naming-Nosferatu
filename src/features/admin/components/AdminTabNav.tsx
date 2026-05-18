@@ -1,8 +1,4 @@
-interface AdminTabNavProps<TTab extends string> {
-	activeTab: TTab;
-	tabs: readonly { id: TTab; label: string }[];
-	onTabChange: (tab: TTab) => void;
-}
+import type { AdminTabNavProps } from "../types";
 
 export function AdminTabNav<TTab extends string>({
 	activeTab,

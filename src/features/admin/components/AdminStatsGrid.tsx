@@ -1,5 +1,5 @@
 import { BarChart3, Eye, EyeOff, Lock } from "@/shared/lib/icons";
-import type { AdminStats, StatCell } from "../types";
+import type { AdminStatsGridProps, StatCell } from "../types";
 
 function AdminStatCell({ icon: Icon, colorClass, label, value }: StatCell) {
 	return (
@@ -11,10 +11,6 @@ function AdminStatCell({ icon: Icon, colorClass, label, value }: StatCell) {
 			<p className="text-2xl sm:text-3xl font-bold text-foreground">{value}</p>
 		</div>
 	);
-}
-
-interface AdminStatsGridProps {
-	stats: Pick<AdminStats, "totalNames" | "activeNames" | "hiddenNames" | "lockedInNames">;
 }
 
 export function AdminStatsGrid({ stats }: AdminStatsGridProps) {

@@ -31,3 +31,22 @@ export interface StatCell {
 	label: string;
 	value: number;
 }
+
+export interface AdminTabNavProps<TTab extends string> {
+	activeTab: TTab;
+	tabs: readonly { id: TTab; label: string }[];
+	onTabChange: (tab: TTab) => void;
+}
+
+export interface AdminOverviewTabProps {
+	onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export interface AdminPlaceholderTabProps {
+	title: string;
+	message: string;
+}
+
+export interface AdminStatsGridProps {
+	stats: Pick<AdminStats, "totalNames" | "activeNames" | "hiddenNames" | "lockedInNames">;
+}

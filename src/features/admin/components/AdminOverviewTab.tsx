@@ -1,8 +1,4 @@
-import type { ChangeEvent } from "react";
-
-interface AdminOverviewTabProps {
-	onImageUpload: (event: ChangeEvent<HTMLInputElement>) => void;
-}
+import type { AdminOverviewTabProps } from "../types";
 
 export function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 	return (
