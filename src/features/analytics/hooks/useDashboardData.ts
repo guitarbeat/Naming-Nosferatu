@@ -29,14 +29,16 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 	const [showHiddenNames, setShowHiddenNames] = useState(false);
 	const [hiddenNames, setHiddenNames] = useState<HiddenNameListItem[]>([]);
 
-	const { data: leaderboard, isLoading: isLoadingLeaderboard } = useAsyncData<LeaderboardItem[]>(
-		() => leaderboardAPI.getLeaderboard(10),
-		[],
-	);
+	const {
+		data: leaderboard,
+		isLoading: isLoadingLeaderboard,
+		error: errorLeaderboard,
+	} = useAsyncData<LeaderboardItem[]>(() => leaderboardAPI.getLeaderboard(10), []);
 
 	const {
 		data: engagementMetrics,
 		isLoading: isLoadingEngagement,
+		error: errorEngagement,
 		refresh: refreshEngagementMetrics,
 	} = useAsyncData<EngagementMetrics | null>(
 		() => statsAPI.getEngagementMetrics(timeframe as "day" | "week" | "month" | "year"),
@@ -44,9 +46,12 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 		{ deps: [timeframe] },
 	);
 
-	const { data: siteStats } = useAsyncData<SiteStats | null>(() => statsAPI.getSiteStats(), null);
+	const { data: siteStats, error: errorSiteStats } = useAsyncData<SiteStats | null>(
+		() => statsAPI.getSiteStats(),
+		null,
+	);
 
-	const { data: userStats } = useAsyncData<UserStats | null>(
+	const { data: userStats, error: errorUserStats } = useAsyncData<UserStats | null>(
 		() => (normalizedUserName ? statsAPI.getUserStats(normalizedUserName) : Promise.resolve(null)),
 		null,
 		{ deps: [normalizedUserName] },
@@ -64,8 +69,8 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 					setHiddenNames(result.names);
 				}
 			})
-			.catch(() => {
-				/* Errors are handled contextually */
+			.catch((error) => {
+				console.error("Failed to fetch hidden names:", error);
 			});
 
 		return () => {
@@ -82,11 +87,14 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 			if (!normalizedUserName) {
 				return;
 			}
-			const result = await unhideName(normalizedUserName, String(nameId)).catch(() => ({
-				success: false,
-			}));
-			if (result.success) {
+			try {
+				const result = await unhideName(normalizedUserName, String(nameId));
+				if (!result.success) {
+					throw new Error(result.error || "Failed to unhide name");
+				}
 				setHiddenNames((current) => current.filter((name) => name.id !== nameId));
+			} catch (error) {
+				console.error("Failed to unhide name:", error);
 			}
 		},
 		[normalizedUserName],
@@ -94,6 +102,10 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 
 	return {
 		engagementMetrics,
+		errorEngagement,
+		errorLeaderboard,
+		errorSiteStats,
+		errorUserStats,
 		handleUnhideName,
 		hiddenNames,
 		isLoadingEngagement,
