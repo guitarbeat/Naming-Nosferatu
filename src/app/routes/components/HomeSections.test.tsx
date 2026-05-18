@@ -64,15 +64,9 @@ describe("HomeHeroSection", () => {
 
 		// component was updated
 
-
-
-
-
 		fireEvent.click(screen.getByRole("button", { name: "Wanna help me decide?" }));
 
-
 		expect(onStartPicking).toHaveBeenCalledTimes(1);
-
 	});
 
 	it("keeps an empty ready state honest instead of inventing a locked name", async () => {
@@ -98,8 +92,6 @@ describe("HomeHeroSection", () => {
 			onSeeResults: vi.fn(),
 		});
 
-
-
 		expect(screen.getByText("________")).toBeInTheDocument();
 	});
 
@@ -111,8 +103,6 @@ describe("HomeHeroSection", () => {
 			onStartPicking: vi.fn(),
 			onSeeResults: vi.fn(),
 		});
-
-
 
 		expect(screen.getByText("Nosferatu")).toBeInTheDocument();
 	});
