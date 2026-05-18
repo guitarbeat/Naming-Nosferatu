@@ -1,56 +1,115 @@
 import { describe, expect, it } from "vitest";
-import { getExpectedEloScore } from "./elo";
+import { ELO_RATING } from "./constants";
+import { updateEloRating } from "./elo";
 
-describe("elo", () => {
-	describe("getExpectedEloScore", () => {
-		it("calculates correct expected score when ratings are equal", () => {
-			expect(getExpectedEloScore(1500, 1500)).toBe(0.5);
-			expect(getExpectedEloScore(2000, 2000)).toBe(0.5);
+describe("updateEloRating", () => {
+	it("updates rating for an established player on win", () => {
+		const newRating = updateEloRating({
+			rating: 1500,
+			expectedScore: 0.5,
+			actualScore: 1,
+			gamesPlayed: 20, // >= 15
 		});
+		// rating + 40 * 1 * (1 - 0.5) = 1500 + 20 = 1520
+		expect(newRating).toBe(1520);
+	});
 
-		it("calculates expected score for different ratings correctly", () => {
-			// A rating difference of 400 points should result in an expected score of ~0.909 for the higher rating
-			const expectedWin = getExpectedEloScore(1900, 1500);
-			expect(expectedWin).toBeCloseTo(0.909, 3);
-
-			// And the expected score for the lower rating should be ~0.091
-			const expectedLoss = getExpectedEloScore(1500, 1900);
-			expect(expectedLoss).toBeCloseTo(0.091, 3);
-
-			// Expected scores should sum to 1
-			expect(expectedWin + expectedLoss).toBeCloseTo(1, 5);
+	it("updates rating for an established player on loss", () => {
+		const newRating = updateEloRating({
+			rating: 1500,
+			expectedScore: 0.5,
+			actualScore: 0,
+			gamesPlayed: 20,
 		});
+		// rating + 40 * 1 * (0 - 0.5) = 1500 - 20 = 1480
+		expect(newRating).toBe(1480);
+	});
 
-		it("calculates expected score for large rating difference correctly", () => {
-			const expectedWin = getExpectedEloScore(2400, 800);
-			expect(expectedWin).toBeCloseTo(0.9999, 4);
-
-			const expectedLoss = getExpectedEloScore(800, 2400);
-			expect(expectedLoss).toBeCloseTo(0.0001, 4);
+	it("applies new player multiplier for win", () => {
+		const newRating = updateEloRating({
+			rating: 1500,
+			expectedScore: 0.5,
+			actualScore: 1,
+			gamesPlayed: 5, // < 15
 		});
+		// rating + 40 * 2 * (1 - 0.5) = 1500 + 40 = 1540
+		expect(newRating).toBe(1540);
+	});
 
-		it("respects custom configuration for ratingDivisor", () => {
-			// With a divisor of 100, a difference of 100 points should give a similar probability
-			// to a difference of 400 points with the default divisor of 400.
-			const customConfig = { ratingDivisor: 100 };
-			const expectedWinCustom = getExpectedEloScore(1600, 1500, customConfig);
-			expect(expectedWinCustom).toBeCloseTo(0.909, 3);
-
-			const expectedLossCustom = getExpectedEloScore(1500, 1600, customConfig);
-			expect(expectedLossCustom).toBeCloseTo(0.091, 3);
+	it("applies new player multiplier for loss", () => {
+		const newRating = updateEloRating({
+			rating: 1500,
+			expectedScore: 0.5,
+			actualScore: 0,
+			gamesPlayed: 5,
 		});
+		// rating + 40 * 2 * (0 - 0.5) = 1500 - 40 = 1460
+		expect(newRating).toBe(1460);
+	});
 
-		it("handles zero rating difference correctly with custom configuration", () => {
-			const customConfig = { ratingDivisor: 100 };
-			expect(getExpectedEloScore(1200, 1200, customConfig)).toBe(0.5);
+	it("uses standard multiplier at the exact gamesPlayed threshold boundary", () => {
+		const newRating = updateEloRating({
+			rating: 1500,
+			expectedScore: 0.5,
+			actualScore: 1,
+			gamesPlayed: 15, // exactly ELO_RATING.NEW_PLAYER_GAME_THRESHOLD
 		});
+		expect(newRating).toBe(1520);
+	});
 
-		it("handles edge cases with floating point ratings", () => {
-			const expectedWin = getExpectedEloScore(1500.5, 1500.5);
-			expect(expectedWin).toBe(0.5);
-
-			const diffWin = getExpectedEloScore(1500.75, 1500.25);
-			expect(diffWin).toBeGreaterThan(0.5);
+	it("clamps rating to minimum value", () => {
+		const newRating = updateEloRating({
+			rating: 810,
+			expectedScore: 0.9,
+			actualScore: 0, // lost when expected to win big
+			gamesPlayed: 20,
 		});
+		// rating + 40 * 1 * (0 - 0.9) = 810 - 36 = 774 -> clamped to 800
+		expect(newRating).toBe(ELO_RATING.MIN_RATING);
+	});
+
+	it("clamps rating to maximum value", () => {
+		const newRating = updateEloRating({
+			rating: 2380,
+			expectedScore: 0.1,
+			actualScore: 1, // won when expected to lose big
+			gamesPlayed: 20,
+		});
+		// rating + 40 * 1 * (1 - 0.1) = 2380 + 36 = 2416 -> clamped to 2400
+		expect(newRating).toBe(ELO_RATING.MAX_RATING);
+	});
+
+	it("respects custom configuration overrides", () => {
+		const newRating = updateEloRating({
+			rating: 1000,
+			expectedScore: 0.5,
+			actualScore: 1,
+			gamesPlayed: 5,
+			config: {
+				kFactor: 50,
+				newPlayerGameThreshold: 10,
+				newPlayerKMultiplier: 3,
+				minRating: 500,
+				maxRating: 3000,
+			},
+		});
+		// config threshold is 10, gamesPlayed 5 -> multiplier 3 applies
+		// rating + 50 * 3 * (1 - 0.5) = 1000 + 75 = 1075
+		expect(newRating).toBe(1075);
+	});
+
+	it("respects custom config for clamping", () => {
+		const newRating = updateEloRating({
+			rating: 2990,
+			expectedScore: 0.5,
+			actualScore: 1,
+			gamesPlayed: 20,
+			config: {
+				kFactor: 50,
+				maxRating: 3000,
+			},
+		});
+		// rating + 50 * 1 * 0.5 = 3015 -> clamped to 3000
+		expect(newRating).toBe(3000);
 	});
 });
