@@ -1,21 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
 import type { NameItem } from "@/shared/types";
-import {
-	addIdsToSet,
-	addIdToSet,
-	buildNameCardImages,
-	countSelectedItems,
-	pickRandomItemIds,
-	removeIdFromSet,
-	toggleIdInSet,
-} from "./nameSelection";
+import { buildNameCardImages, countSelectedItems, pickRandomItemIds } from "./nameSelection";
 
 describe("nameSelection helpers", () => {
 	it("adds and removes ids without mutating the original set", () => {
 		const original = new Set([1, 2]);
 
-		const added = addIdToSet(original, 3);
-		const removed = removeIdFromSet(added, 2);
+		const added = addToSet(original, 3);
+		const removed = removeFromSet(added, 2);
 
 		expect(original).toEqual(new Set([1, 2]));
 		expect(added).toEqual(new Set([1, 2, 3]));
@@ -23,12 +16,12 @@ describe("nameSelection helpers", () => {
 	});
 
 	it("toggles ids in a set", () => {
-		expect(toggleIdInSet(new Set([1, 2]), 2)).toEqual(new Set([1]));
-		expect(toggleIdInSet(new Set([1, 2]), 3)).toEqual(new Set([1, 2, 3]));
+		expect(toggleInSet(new Set([1, 2]), 2)).toEqual(new Set([1]));
+		expect(toggleInSet(new Set([1, 2]), 3)).toEqual(new Set([1, 2, 3]));
 	});
 
 	it("adds multiple ids in one pass", () => {
-		expect(addIdsToSet(new Set([1]), [1, 2, 3])).toEqual(new Set([1, 2, 3]));
+		expect(addManyToSet(new Set([1]), [1, 2, 3])).toEqual(new Set([1, 2, 3]));
 	});
 
 	it("counts how many visible items are selected", () => {
