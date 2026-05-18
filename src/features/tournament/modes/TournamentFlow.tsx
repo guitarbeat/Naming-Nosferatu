@@ -97,16 +97,23 @@ export default function TournamentFlow() {
 				};
 			}
 
-			mutateAsyncRef
-				.current({ userId, ratings: ratingsWithStats })
-				.then((result) => {
-					if (result?.success) {
-						console.log(`Successfully saved ${result.count} ratings to database`);
-					}
-				})
-				.catch((error) => {
-					console.error("Failed to save tournament ratings:", error);
-				});
+			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
+				(acc, [nameId, ratingData]) => {
+					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
+					acc[nameId] = {
+						rating,
+						wins: winsByName[nameId] ?? 0,
+						losses: lossesByName[nameId] ?? 0,
+					};
+					return acc;
+				},
+				{} as Record<string, { rating: number; wins: number; losses: number }>,
+			);
+
+			saveRatingsMutation.mutateAsync({ userId, ratings: ratingsWithStats }).catch((_error) => {
+				// Error is already logged by ratingsAPI with context
+				console.warn("Tournament ratings save failed — ratings were not persisted");
+			});
 		}
 	}, [tournament.isComplete, tournament.ratings, user.name, tournament.voteHistory]);
 
