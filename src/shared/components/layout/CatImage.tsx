@@ -115,6 +115,70 @@ interface CatImageProps {
 	onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 }
 
+interface CatImageElementProps {
+	currentSrc: string | undefined;
+	fallbackUrl: string;
+	hasError: boolean;
+	alt: string;
+	imageClassName: string;
+	objectFit?: React.CSSProperties["objectFit"];
+	loading: "lazy" | "eager";
+	decoding: "async" | "auto" | "sync";
+	onLoad: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+	onError: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+	imageRef: React.RefObject<HTMLImageElement | null>;
+}
+
+function CatImageElement({
+	currentSrc,
+	fallbackUrl,
+	hasError,
+	alt,
+	imageClassName,
+	objectFit,
+	loading,
+	decoding,
+	onLoad,
+	onError,
+	imageRef,
+}: CatImageElementProps) {
+	const imageStyle: React.CSSProperties = {
+		objectPosition: "center var(--image-pos-y, 50%)",
+		objectFit: objectFit ?? ("var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"]),
+	};
+
+	// Only set CORS for external images; local assets don't need it
+	const isLocalAsset = currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/");
+	const commonProps = {
+		ref: imageRef,
+		src: currentSrc || fallbackUrl,
+		alt: hasError ? "Fallback cat picture" : alt,
+		className: imageClassName,
+		style: imageStyle,
+		loading,
+		decoding,
+		onLoad,
+		onError,
+		...(isLocalAsset ? {} : { crossOrigin: "anonymous" as const }),
+	};
+
+	if (currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/assets/images/")) {
+		const extension = currentSrc.split(".").pop()?.toLowerCase();
+		if (!extension || extension === "gif" || extension === "avif" || extension === "webp") {
+			return <img {...commonProps} />;
+		}
+		const base = currentSrc.replace(/\.[^.]+$/, "");
+		return (
+			<picture className="block h-full w-full">
+				<source type="image/avif" srcSet={`${base}.avif`} />
+				<source type="image/webp" srcSet={`${base}.webp`} />
+				<img {...commonProps} />
+			</picture>
+		);
+	}
+	return <img {...commonProps} />;
+}
+
 function CatImage({
 	src,
 	alt = "Cat picture",
@@ -218,47 +282,21 @@ function CatImage({
 		...(currentSrc ? { "--bg-image": `url(${currentSrc})` } : {}),
 	} as React.CSSProperties;
 
-	const renderImage = () => {
-		const imageStyle: React.CSSProperties = {
-			objectPosition: "center var(--image-pos-y, 50%)",
-			objectFit: objectFit ?? ("var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"]),
-		};
-
-		// Only set CORS for external images; local assets don't need it
-		const isLocalAsset = currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/");
-		const commonProps = {
-			ref: imageRef,
-			src: currentSrc || fallbackUrl,
-			alt: hasError ? "Fallback cat picture" : alt,
-			className: imageClassName,
-			style: imageStyle,
-			loading,
-			decoding,
-			onLoad: handleLoad,
-			onError: handleError,
-			...(isLocalAsset ? {} : { crossOrigin: "anonymous" as const }),
-		};
-
-		if (currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/assets/images/")) {
-			const extension = currentSrc.split(".").pop()?.toLowerCase();
-			if (!extension || extension === "gif" || extension === "avif" || extension === "webp") {
-				return <img {...commonProps} />;
-			}
-			const base = currentSrc.replace(/\.[^.]+$/, "");
-			return (
-				<picture className="block h-full w-full">
-					<source type="image/avif" srcSet={`${base}.avif`} />
-					<source type="image/webp" srcSet={`${base}.webp`} />
-					<img {...commonProps} />
-				</picture>
-			);
-		}
-		return <img {...commonProps} />;
-	};
-
 	return (
 		<div ref={containerRef} className={containerClasses} style={mergedStyle}>
-			{renderImage()}
+			<CatImageElement
+				currentSrc={currentSrc}
+				fallbackUrl={fallbackUrl}
+				hasError={hasError}
+				alt={alt}
+				imageClassName={imageClassName}
+				objectFit={objectFit}
+				loading={loading}
+				decoding={decoding}
+				onLoad={handleLoad}
+				onError={handleError}
+				imageRef={imageRef}
+			/>
 		</div>
 	);
 }
