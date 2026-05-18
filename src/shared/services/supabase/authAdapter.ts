@@ -91,15 +91,20 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				return true;
 			}
 
-			const sanitizedEmail = `${sanitizeNameForEmail(trimmedName)}@demo.local`;
-			const DEMO_PASSWORD = "demo-password";
+			// Sign in with Supabase
+			const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
+			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
 
-			// Try signing in first; if no account exists, sign up automatically
-			let authUser: import("@supabase/supabase-js").User | null = null;
+			if (!demoPassword) {
+				console.error(
+					"[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.",
+				);
+				return false;
+			}
 
-			const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+			const { data, error } = await client.auth.signInWithPassword({
 				email: sanitizedEmail,
-				password: DEMO_PASSWORD,
+				password: demoPassword,
 			});
 
 			if (signInError) {
