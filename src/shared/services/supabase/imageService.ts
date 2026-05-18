@@ -5,7 +5,6 @@ export const imagesAPI = {
 		return withSupabase(async (client) => {
 			const { data, error } = await client.storage.from("cat-images").list();
 			if (error) {
-				console.error("Failed to list images:", error);
 				return [];
 			}
 			return (data ?? []).map((item) => item.name);
@@ -45,7 +44,6 @@ export const imagesAPI = {
 				});
 
 				if (error) {
-					console.error("Upload failed:", error);
 					return { path: null, error: error.message, success: false };
 				}
 
@@ -63,7 +61,6 @@ export const imagesAPI = {
 			async (client) => {
 				const { error } = await client.storage.from("cat-images").remove([fileName]);
 				if (error) {
-					console.error("Delete failed:", error);
 					return { success: false, error: error.message };
 				}
 				return { success: true, error: null };
