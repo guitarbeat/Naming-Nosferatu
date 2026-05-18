@@ -1,179 +1,188 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
-import * as storage from "@/shared/lib/storage";
+import { STORAGE_KEYS } from "./constants";
 import {
 	clearStoredUserSnapshot,
 	readStoredUserSnapshot,
-	type StoredUserSnapshot,
 	writeStoredUserSnapshot,
 } from "./userStorage";
 
-vi.mock("@/shared/lib/storage", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@/shared/lib/storage")>();
-	return {
-		...actual,
-		isStorageAvailable: vi.fn(),
-		setStorageString: vi.fn(),
-		writeStorageJson: vi.fn(),
-		removeStorageItem: vi.fn(),
-		readStorageJson: vi.fn(),
-	};
-});
-
 describe("userStorage utilities", () => {
+	let originalConsoleError: typeof console.error;
+
 	beforeEach(() => {
-		vi.resetAllMocks();
-		vi.mocked(storage.isStorageAvailable).mockReturnValue(true);
+		originalConsoleError = console.error;
+		console.error = vi.fn();
+		window.localStorage.clear();
 	});
 
 	afterEach(() => {
+		console.error = originalConsoleError;
 		vi.restoreAllMocks();
 	});
 
-	describe("writeStoredUserSnapshot", () => {
-		it("does nothing if storage is unavailable", () => {
-			vi.mocked(storage.isStorageAvailable).mockReturnValue(false);
-
-			writeStoredUserSnapshot({ name: "Test" });
-
-			expect(storage.writeStorageJson).not.toHaveBeenCalled();
-			expect(storage.setStorageString).not.toHaveBeenCalled();
+	describe("readStoredUserSnapshot", () => {
+		it("returns null if storage is not available", () => {
+			const spy = vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+				throw new Error("Access denied");
+			});
+			expect(readStoredUserSnapshot()).toBeNull();
+			spy.mockRestore();
 		});
 
-		it("clears storage if snapshot is invalid", () => {
-			writeStoredUserSnapshot(null);
+		it("returns null and clears storage when stored value is empty or not an object", () => {
+			window.localStorage.setItem(STORAGE_KEYS.USER_STORAGE, "null");
+			window.localStorage.setItem(STORAGE_KEYS.USER, "should-be-cleared");
 
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_AVATAR);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_STORAGE);
+			expect(readStoredUserSnapshot()).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_STORAGE)).toBeNull();
 		});
 
-		it("clears storage if snapshot missing name", () => {
-			// @ts-expect-error Testing invalid input
-			writeStoredUserSnapshot({ id: "123" });
+		it("returns null and clears storage when name is missing or empty", () => {
+			window.localStorage.setItem(STORAGE_KEYS.USER_STORAGE, JSON.stringify({ id: "123" }));
 
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_AVATAR);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_STORAGE);
+			expect(readStoredUserSnapshot()).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_STORAGE)).toBeNull();
+
+			window.localStorage.setItem(STORAGE_KEYS.USER_STORAGE, JSON.stringify({ name: "   " }));
+
+			expect(readStoredUserSnapshot()).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_STORAGE)).toBeNull();
 		});
 
-		it("writes minimal valid snapshot", () => {
-			const snapshot: StoredUserSnapshot = { name: "Test User" };
-			writeStoredUserSnapshot(snapshot);
+		it("returns valid structured snapshot, ignoring invalid types for optional fields", () => {
+			window.localStorage.setItem(
+				STORAGE_KEYS.USER_STORAGE,
+				JSON.stringify({
+					id: 123, // Invalid type, should be string or null
+					name: " Test User  ", // Should be trimmed
+					isAdmin: "true", // Invalid type, should be boolean
+					avatarUrl: 456, // Invalid type, should be string
+					email: {}, // Invalid type, should be string
+				})
+			);
 
-			expect(storage.writeStorageJson).toHaveBeenCalledWith(STORAGE_KEYS.USER_STORAGE, {
+			expect(readStoredUserSnapshot()).toEqual({
 				id: undefined,
 				name: "Test User",
 				isAdmin: undefined,
 				avatarUrl: undefined,
 				email: undefined,
 			});
-			expect(storage.setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.USER, "Test User");
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_AVATAR);
 		});
 
-		it("writes full valid snapshot", () => {
-			const snapshot: StoredUserSnapshot = {
+		it("returns valid structured snapshot with correct types", () => {
+			const expectedData = {
 				id: "user-123",
-				name: "Test User",
+				name: "Valid User",
 				isAdmin: true,
-				avatarUrl: "https://example.com/avatar.jpg",
-				email: "test@example.com",
+				avatarUrl: "https://example.com/avatar.png",
+				email: "user@example.com",
 			};
 
-			writeStoredUserSnapshot(snapshot);
+			window.localStorage.setItem(STORAGE_KEYS.USER_STORAGE, JSON.stringify(expectedData));
 
-			expect(storage.writeStorageJson).toHaveBeenCalledWith(STORAGE_KEYS.USER_STORAGE, snapshot);
-			expect(storage.setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.USER, "Test User");
-			expect(storage.setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID, "user-123");
-			expect(storage.setStorageString).toHaveBeenCalledWith(
-				STORAGE_KEYS.USER_AVATAR,
-				"https://example.com/avatar.jpg",
-			);
+			expect(readStoredUserSnapshot()).toEqual(expectedData);
 		});
 
-		it("handles null id explicitly", () => {
-			const snapshot: StoredUserSnapshot = { name: "Test User", id: null };
-			writeStoredUserSnapshot(snapshot);
-
-			expect(storage.writeStorageJson).toHaveBeenCalledWith(STORAGE_KEYS.USER_STORAGE, {
+		it("returns valid structured snapshot when id is explicitly null", () => {
+			const expectedData = {
 				id: null,
-				name: "Test User",
+				name: "Guest",
+			};
+
+			window.localStorage.setItem(STORAGE_KEYS.USER_STORAGE, JSON.stringify(expectedData));
+
+			expect(readStoredUserSnapshot()).toEqual({
+				id: null,
+				name: "Guest",
 				isAdmin: undefined,
 				avatarUrl: undefined,
 				email: undefined,
 			});
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID);
 		});
 	});
 
-	describe("readStoredUserSnapshot", () => {
-		it("returns null if storage is unavailable", () => {
-			vi.mocked(storage.isStorageAvailable).mockReturnValue(false);
-
-			const result = readStoredUserSnapshot();
-
-			expect(result).toBeNull();
-			expect(storage.readStorageJson).not.toHaveBeenCalled();
+	describe("writeStoredUserSnapshot", () => {
+		it("does nothing if storage is not available", () => {
+			const spy = vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+				throw new Error("Access denied");
+			});
+			expect(() => writeStoredUserSnapshot({ name: "User" })).not.toThrow();
+			spy.mockRestore();
 		});
 
-		it("returns null and clears storage if no data exists", () => {
-			vi.mocked(storage.readStorageJson).mockReturnValue(null);
+		it("clears storage when snapshot is null or invalid", () => {
+			window.localStorage.setItem(STORAGE_KEYS.USER, "existing");
+			writeStoredUserSnapshot(null);
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
 
-			const result = readStoredUserSnapshot();
-
-			expect(result).toBeNull();
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER);
+			window.localStorage.setItem(STORAGE_KEYS.USER, "existing");
+			writeStoredUserSnapshot({ name: "   " } as any);
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
 		});
 
-		it("returns null and clears storage if data is invalid", () => {
-			vi.mocked(storage.readStorageJson).mockReturnValue({ id: "123" }); // Missing name
-
-			const result = readStoredUserSnapshot();
-
-			expect(result).toBeNull();
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER);
-		});
-
-		it("returns parsed snapshot if valid data exists", () => {
-			const mockData = {
-				id: "user-123",
-				name: "Test User",
-				isAdmin: true,
+		it("writes correctly and sets helper keys", () => {
+			const data = {
+				id: "user-456",
+				name: "Awesome User",
+				avatarUrl: "https://example.com/pic.jpg",
 			};
-			vi.mocked(storage.readStorageJson).mockReturnValue(mockData);
 
-			const result = readStoredUserSnapshot();
+			writeStoredUserSnapshot(data);
 
-			expect(result).toEqual({
-				id: "user-123",
-				name: "Test User",
-				isAdmin: true,
+			expect(JSON.parse(window.localStorage.getItem(STORAGE_KEYS.USER_STORAGE)!)).toEqual({
+				id: "user-456",
+				name: "Awesome User",
+				isAdmin: undefined,
+				avatarUrl: "https://example.com/pic.jpg",
+				email: undefined,
+			});
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBe("Awesome User");
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_ID)).toBe("user-456");
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_AVATAR)).toBe("https://example.com/pic.jpg");
+		});
+
+		it("removes helper keys when their respective optional properties are missing/null", () => {
+			window.localStorage.setItem(STORAGE_KEYS.USER_ID, "old-id");
+			window.localStorage.setItem(STORAGE_KEYS.USER_AVATAR, "old-avatar");
+
+			writeStoredUserSnapshot({ name: "No Extras" });
+
+			expect(JSON.parse(window.localStorage.getItem(STORAGE_KEYS.USER_STORAGE)!)).toEqual({
+				id: undefined,
+				name: "No Extras",
+				isAdmin: undefined,
 				avatarUrl: undefined,
 				email: undefined,
 			});
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBe("No Extras");
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_ID)).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_AVATAR)).toBeNull();
 		});
 	});
 
 	describe("clearStoredUserSnapshot", () => {
-		it("does nothing if storage is unavailable", () => {
-			vi.mocked(storage.isStorageAvailable).mockReturnValue(false);
-
-			clearStoredUserSnapshot();
-
-			expect(storage.removeStorageItem).not.toHaveBeenCalled();
+		it("does nothing if storage is not available", () => {
+			const spy = vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+				throw new Error("Access denied");
+			});
+			expect(() => clearStoredUserSnapshot()).not.toThrow();
+			spy.mockRestore();
 		});
 
-		it("removes all user-related storage keys", () => {
+		it("clears all user-related keys from storage", () => {
+			window.localStorage.setItem(STORAGE_KEYS.USER_STORAGE, "something");
+			window.localStorage.setItem(STORAGE_KEYS.USER, "something");
+			window.localStorage.setItem(STORAGE_KEYS.USER_ID, "something");
+			window.localStorage.setItem(STORAGE_KEYS.USER_AVATAR, "something");
+
 			clearStoredUserSnapshot();
 
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_AVATAR);
-			expect(storage.removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_STORAGE);
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_STORAGE)).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_ID)).toBeNull();
+			expect(window.localStorage.getItem(STORAGE_KEYS.USER_AVATAR)).toBeNull();
 		});
 	});
 });
