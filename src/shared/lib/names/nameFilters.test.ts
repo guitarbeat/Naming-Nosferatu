@@ -18,6 +18,23 @@ describe("nameFilters predicates", () => {
 			expect(isNameHidden({ id: 2, name: "Cat", is_hidden: true } as NameItem)).toBe(true);
 			expect(isNameHidden({ id: 3, name: "Cat" } as NameItem)).toBe(false);
 		});
+
+		it("returns false for explicitly false hidden flags", () => {
+			expect(isNameHidden({ id: 4, name: "Cat", isHidden: false } as NameItem)).toBe(false);
+			expect(isNameHidden({ id: 5, name: "Cat", is_hidden: false } as NameItem)).toBe(false);
+		});
+
+		it("returns false for null or undefined input", () => {
+			expect(isNameHidden(null)).toBe(false);
+			expect(isNameHidden(undefined)).toBe(false);
+		});
+
+		it("enforces strict boolean true", () => {
+			// @ts-expect-error Testing invalid runtime inputs
+			expect(isNameHidden({ id: 6, name: "Cat", isHidden: "true" })).toBe(false);
+			// @ts-expect-error Testing invalid runtime inputs
+			expect(isNameHidden({ id: 7, name: "Cat", is_hidden: 1 })).toBe(false);
+		});
 	});
 
 	describe("isNameLocked", () => {
