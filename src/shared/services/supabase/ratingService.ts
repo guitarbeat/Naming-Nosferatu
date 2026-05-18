@@ -118,12 +118,16 @@ export const ratingsAPI = {
 			throw new Error(validation.error || "Invalid ratings data");
 		}
 
-		const ratingsList = Object.entries(ratings).map(([nameId, data]) => ({
-			nameId,
-			rating: data.rating,
-			wins: data.wins,
-			losses: data.losses,
-		}));
+		const ratingsList = [];
+		for (const nameId in ratings) {
+			const data = ratings[nameId];
+			ratingsList.push({
+				nameId,
+				rating: data.rating,
+				wins: data.wins,
+				losses: data.losses,
+			});
+		}
 
 		return withSupabaseOrThrow(async (client) => {
 			// @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
