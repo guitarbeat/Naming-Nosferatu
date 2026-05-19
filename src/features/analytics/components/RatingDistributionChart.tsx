@@ -45,13 +45,16 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 			buckets[bucket] = (buckets[bucket] ?? 0) + 1;
 		}
 
-		return Object.entries(buckets)
-			.map(([key, count]) => ({
-				range: bucketLabel(Number(key)),
-				bucketStart: Number(key),
-				count,
-			}))
-			.sort((a, b) => a.bucketStart - b.bucketStart);
+		const chartData = [];
+		for (const keyStr in buckets) {
+			const keyNum = Number(keyStr);
+			chartData.push({
+				range: bucketLabel(keyNum),
+				bucketStart: keyNum,
+				count: buckets[keyNum],
+			});
+		}
+		return chartData.sort((a, b) => a.bucketStart - b.bucketStart);
 	}, [ratings]);
 
 	const meanBucket = useMemo(() => {
