@@ -116,13 +116,16 @@ export function useTournamentUIState({
 			const sideData = (side: "left" | "right") => {
 				const participant = currentMatch[side];
 				const id = typeof participant === "object" ? String(participant.id) : String(participant);
-				const name =
-					currentMatch.mode === "2v2"
-						? ((currentMatch[side] as any).memberNames ?? []).join(" + ") ||
-							String((currentMatch[side] as any).id)
-						: typeof participant === "object" && "name" in participant
-							? participant.name
+				let name = "";
+				if (currentMatch.mode === "2v2") {
+					const teamParticipant = participant as { memberNames?: string[] };
+					name = (teamParticipant.memberNames ?? []).join(" + ") || id;
+				} else {
+					name =
+						typeof participant === "object" && "name" in participant
+							? String((participant as { name: string }).name)
 							: String(participant);
+				}
 				return { name, id, description: "", outcome: winnerId === id ? "winner" : "loser" };
 			};
 			try {
