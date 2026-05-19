@@ -139,12 +139,16 @@ export type MagneticButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> 
 
 const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 	({ className, children, as: Component = "button", ...props }, forwardedRef) => {
-		const localRef = useRef<HTMLElement>(null);
+		const localRef = useRef<HTMLElement | null>(null);
 
 		useEffect(() => {
-			if (typeof window === "undefined") return;
+			if (typeof window === "undefined") {
+				return;
+			}
 			const element = localRef.current;
-			if (!element) return;
+			if (!element) {
+				return;
+			}
 
 			const ctx = gsap.context(() => {
 				const handleMouseMove = (e: MouseEvent) => {
@@ -177,11 +181,11 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 					});
 				};
 
-				element.addEventListener("mousemove", handleMouseMove as any);
+				element.addEventListener("mousemove", handleMouseMove);
 				element.addEventListener("mouseleave", handleMouseLeave);
 
 				return () => {
-					element.removeEventListener("mousemove", handleMouseMove as any);
+					element.removeEventListener("mousemove", handleMouseMove);
 					element.removeEventListener("mouseleave", handleMouseLeave);
 				};
 			}, element);
@@ -192,9 +196,12 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 		return (
 			<Component
 				ref={(node: HTMLElement) => {
-					(localRef as any).current = node;
-					if (typeof forwardedRef === "function") forwardedRef(node);
-					else if (forwardedRef) (forwardedRef as any).current = node;
+					localRef.current = node;
+					if (typeof forwardedRef === "function") {
+						forwardedRef(node);
+					} else if (forwardedRef && "current" in forwardedRef) {
+						forwardedRef.current = node;
+					}
 				}}
 				className={cn("cursor-pointer", className)}
 				{...props}
@@ -226,8 +233,12 @@ export function CinematicFooter() {
 	const linksRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (typeof window === "undefined") return;
-		if (!wrapperRef.current) return;
+		if (typeof window === "undefined") {
+			return;
+		}
+		if (!wrapperRef.current) {
+			return;
+		}
 
 		// React strict mode compatible GSAP context cleanup
 		const ctx = gsap.context(() => {
