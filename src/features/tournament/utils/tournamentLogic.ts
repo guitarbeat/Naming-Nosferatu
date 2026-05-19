@@ -74,7 +74,16 @@ function makePendingResult(
 }
 
 function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
-	const entrantsKey = bracketEntrants.map(String).filter(Boolean).sort().join(",");
+	const entrantsKey = bracketEntrants
+		.reduce<string[]>((acc, id) => {
+			const str = String(id);
+			if (str) {
+				acc.push(str);
+			}
+			return acc;
+		}, [])
+		.sort()
+		.join(",");
 	const historyKey = matchHistory.map((m) => `${m.winner}-${m.loser}`).join("|");
 	return `${entrantsKey}:${historyKey}`;
 }
