@@ -242,9 +242,6 @@ export function NameSelector() {
 	const [hiddenQuery, setHiddenQuery] = useState("");
 	const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
 	const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
-	const [swipeHistory, setSwipeHistory] = useState<
-		Array<{ id: IdType; direction: "left" | "right"; timestamp: number }>
-	>([]);
 	const deferredSync = useDeferredSync();
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
@@ -338,7 +335,6 @@ export function NameSelector() {
 
 	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
 		setSwipedIds((prev) => addToSet(prev, nameId));
-		setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
 	}, []);
 
 	const handleSwipe = useCallback(
@@ -395,33 +391,6 @@ export function NameSelector() {
 		},
 		[handleSwipe, updateDragState],
 	);
-
-	// Undo last swipe functionality
-	const _handleUndo = useCallback(() => {
-		if (swipeHistory.length === 0) {
-			return;
-		}
-
-		const lastSwipe = swipeHistory[swipeHistory.length - 1];
-		if (!lastSwipe) {
-			return;
-		}
-
-		setSwipeHistory((prev) => prev.slice(0, -1));
-		setSwipedIds((prev) => removeFromSet(prev, lastSwipe.id));
-
-		// If it was a right swipe, remove from selected names and sync with store
-		if (lastSwipe.direction === "right") {
-			setSelectedNames((prev) => {
-				const next = removeFromSet(prev, lastSwipe.id);
-				// Use deferred sync to prevent render cycle issue
-				deferredSync(() => syncSelectionToStore(next));
-				return next;
-			});
-		}
-
-		triggerHaptic();
-	}, [swipeHistory, syncSelectionToStore, triggerHaptic, deferredSync]);
 
 	const handleToggleHidden = useCallback(
 		async (nameId: IdType, isCurrentlyHidden: boolean) => {
