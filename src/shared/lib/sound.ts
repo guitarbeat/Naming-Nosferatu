@@ -1,11 +1,11 @@
-import { getStorageString, isStorageAvailable } from "@/shared/lib/storage";
 import { AUDIO, STORAGE_KEYS } from "@/shared/lib/constants";
-import { 
-	BACKGROUND_TRACKS, 
-	SOUND_EFFECTS, 
-	FALLBACK_MUSIC_PATTERNS, 
+import { getStorageString, isStorageAvailable } from "@/shared/lib/storage";
+import {
+	BACKGROUND_TRACKS,
+	FALLBACK_MUSIC_PATTERNS,
 	getFallbackEffectPattern,
-	type SynthNote 
+	SOUND_EFFECTS,
+	type SynthNote,
 } from "./sound/resources";
 import { synthEngine } from "./sound/synthEngine";
 
@@ -114,11 +114,13 @@ class SoundManager {
 				return;
 			}
 
-			const pattern = FALLBACK_MUSIC_PATTERNS[this.currentTrackIndex % FALLBACK_MUSIC_PATTERNS.length] ?? FALLBACK_MUSIC_PATTERNS[0];
+			const pattern =
+				FALLBACK_MUSIC_PATTERNS[this.currentTrackIndex % FALLBACK_MUSIC_PATTERNS.length] ??
+				FALLBACK_MUSIC_PATTERNS[0];
 			if (!pattern) {
 				return;
 			}
-			
+
 			const context = this.getAudioContext();
 			const leadDuration = synthEngine.playSequence(
 				context,
@@ -145,7 +147,10 @@ class SoundManager {
 				AUDIO.FALLBACK_LOOP_MIN_DURATION_MS,
 				Math.round(Math.max(leadDuration, bassDuration, 1.35) * 1000),
 			);
-			this.fallbackMusicTimeout = window.setTimeout(playLoop, loopDurationMs - AUDIO.FALLBACK_LOOP_OVERLAP_MS);
+			this.fallbackMusicTimeout = window.setTimeout(
+				playLoop,
+				loopDurationMs - AUDIO.FALLBACK_LOOP_OVERLAP_MS,
+			);
 		};
 
 		playLoop();
@@ -177,7 +182,8 @@ class SoundManager {
 	}
 
 	playPreviousTrack() {
-		this.currentTrackIndex = (this.currentTrackIndex - 1 + BACKGROUND_TRACKS.length) % BACKGROUND_TRACKS.length;
+		this.currentTrackIndex =
+			(this.currentTrackIndex - 1 + BACKGROUND_TRACKS.length) % BACKGROUND_TRACKS.length;
 		const prevTrack = BACKGROUND_TRACKS[this.currentTrackIndex];
 		if (prevTrack) {
 			this.loadBackgroundTrack(prevTrack);
@@ -236,7 +242,8 @@ class SoundManager {
 				return;
 			}
 
-			let audio: HTMLAudioElement | null = this.audioCache.get(soundName) ?? this.createAudioElement(soundName);
+			const audio: HTMLAudioElement | null =
+				this.audioCache.get(soundName) ?? this.createAudioElement(soundName);
 
 			if (!audio) {
 				this.failedAssets.add(soundName);
@@ -321,7 +328,8 @@ class SoundManager {
 		if (!this.isBrowser) {
 			return false;
 		}
-		const soundEnabled = getStorageString(STORAGE_KEYS.SOUND_ENABLED) ?? getStorageString("sound-enabled");
+		const soundEnabled =
+			getStorageString(STORAGE_KEYS.SOUND_ENABLED) ?? getStorageString("sound-enabled");
 		return soundEnabled !== "false";
 	}
 }
@@ -339,7 +347,8 @@ export const playSound = (soundName: string, config?: SoundConfig) => {
 
 export const playBackgroundMusic = () => soundManager.playBackgroundMusic();
 export const stopBackgroundMusic = () => soundManager.stopBackgroundMusic();
-export const setBackgroundMusicVolume = (volume: number) => soundManager.setBackgroundMusicVolume(volume);
+export const setBackgroundMusicVolume = (volume: number) =>
+	soundManager.setBackgroundMusicVolume(volume);
 export const playNextTrack = () => soundManager.playNextTrack();
 export const playPreviousTrack = () => soundManager.playPreviousTrack();
 export const getCurrentTrack = () => soundManager.getCurrentTrack();

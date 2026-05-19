@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
-import {
-	readStoredUserSnapshot,
-	writeStoredUserSnapshot,
-} from "@/shared/lib/userStorage";
+import { readStoredUserSnapshot, writeStoredUserSnapshot } from "@/shared/lib/userStorage";
 
 vi.mock("@/shared/services/supabase/runtime", () => ({
 	resolveSupabaseClient: vi.fn(),
@@ -52,9 +49,7 @@ describe("supabaseAuthAdapter", () => {
 		};
 		vi.mocked(resolveSupabaseClient).mockResolvedValue(client as never);
 
-		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(
-			true,
-		);
+		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(true);
 		expect(client.rpc).toHaveBeenCalledWith("is_admin");
 	});
 
@@ -81,9 +76,7 @@ describe("supabaseAuthAdapter", () => {
 		};
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(client as never);
 
-		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(
-			true,
-		);
+		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(true);
 		expect(client.from).toHaveBeenNthCalledWith(1, "cat_user_roles");
 		expect(userIdQuery.fieldEq).toHaveBeenCalledWith("user_id", "user-1");
 		expect(userNameQuery.fieldEq).toHaveBeenCalledWith("user_name", "Ada");

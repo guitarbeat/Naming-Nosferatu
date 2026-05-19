@@ -40,8 +40,7 @@ const queryState: {
 
 function createMatchMedia(prefersReducedMotion: boolean) {
 	return vi.fn().mockImplementation((query: string) => ({
-		matches:
-			query === "(prefers-reduced-motion: reduce)" ? prefersReducedMotion : false,
+		matches: query === "(prefers-reduced-motion: reduce)" ? prefersReducedMotion : false,
 		media: query,
 		onchange: null,
 		addEventListener: vi.fn(),
@@ -53,8 +52,7 @@ function createMatchMedia(prefersReducedMotion: boolean) {
 }
 
 vi.mock("@tanstack/react-query", async (importOriginal) => {
-	const actual =
-		await importOriginal<typeof import("@tanstack/react-query")>();
+	const actual = await importOriginal<typeof import("@tanstack/react-query")>();
 	return {
 		...actual,
 		useQuery: () => queryState,

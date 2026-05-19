@@ -1,19 +1,19 @@
 export const CHART_PALETTE = {
-        teal: "#3FB8B0",
-        coral: "#E5764A",
-        sand: "#D4B483",
-        violet: "#9F7AEA",
-        sky: "#5BA8E8",
-        rose: "#E26E9D",
+	teal: "#3FB8B0",
+	coral: "#E5764A",
+	sand: "#D4B483",
+	violet: "#9F7AEA",
+	sky: "#5BA8E8",
+	rose: "#E26E9D",
 } as const;
 
 export const CHART_SERIES = [
-        CHART_PALETTE.teal,
-        CHART_PALETTE.coral,
-        CHART_PALETTE.sand,
-        CHART_PALETTE.violet,
-        CHART_PALETTE.sky,
-        CHART_PALETTE.rose,
+	CHART_PALETTE.teal,
+	CHART_PALETTE.coral,
+	CHART_PALETTE.sand,
+	CHART_PALETTE.violet,
+	CHART_PALETTE.sky,
+	CHART_PALETTE.rose,
 ] as const;
 
 export const CHART_TEXT = "#c8d2de";

@@ -62,9 +62,7 @@ describe("heat utils", () => {
 		});
 
 		it('returns correct classes for "hot"', () => {
-			expect(getHeatTextClasses("hot")).toBe(
-				"text-amber-200 border-amber-300/45 bg-amber-500/15",
-			);
+			expect(getHeatTextClasses("hot")).toBe("text-amber-200 border-amber-300/45 bg-amber-500/15");
 		});
 
 		it('returns correct classes for "warm"', () => {

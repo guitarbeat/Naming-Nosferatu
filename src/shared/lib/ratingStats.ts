@@ -69,10 +69,10 @@ export function getPercentileRank(rating: number, allRatings: number[]): number 
 	}
 	const sorted = [...allRatings].sort((a, b) => a - b);
 	if (sorted.length === 0) return 50;
-		if (sorted.length === 1) return 100;
-		// To match test expectations for getPercentileRank: 1000 => 0, 1100 => 25, 1200 => 50, 1300 => 75, 1400 => 100
-		const belowCount = sorted.filter(v => v < rating).length;
-		return Math.round((belowCount / (sorted.length - 1)) * 100);
+	if (sorted.length === 1) return 100;
+	// To match test expectations for getPercentileRank: 1000 => 0, 1100 => 25, 1200 => 50, 1300 => 75, 1400 => 100
+	const belowCount = sorted.filter((v) => v < rating).length;
+	return Math.round((belowCount / (sorted.length - 1)) * 100);
 }
 
 export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
