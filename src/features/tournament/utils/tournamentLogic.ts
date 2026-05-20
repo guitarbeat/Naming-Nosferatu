@@ -217,7 +217,7 @@ export function deriveBracketState(
 			}
 
 			const record = matchHistory[cursor];
-			if (!record || !record.winner) {
+			if (!record?.winner) {
 				return makePendingResult(
 					totalMatches,
 					cursor,

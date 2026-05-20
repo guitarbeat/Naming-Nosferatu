@@ -50,7 +50,7 @@ function useOnlineStatus(options?: {
 	onDisconnect?: () => void;
 }): boolean {
 	const [isOnline, setIsOnline] = useState(
-		typeof navigator !== "undefined" ? navigator.onLine : true,
+		typeof navigator === "undefined" ? true : navigator.onLine,
 	);
 
 	useEventListener("online", () => {

@@ -20,21 +20,16 @@ export function useTournamentHandlers({ tournamentActions }: UseTournamentHandle
 		tournamentActions.resetTournament();
 	}, [tournamentActions]);
 
-                        ratingsAPI
-                                .saveRatings(uName, ratings)
-                                .then(async (result) => {
-                                        if (!result?.success) {
-                                                await enqueueRatingsMutation(records);
-                                                console.warn("Ratings save failed; queued for offline sync");
-                                        }
-                                })
-                                .catch(async () => {
-                                        await enqueueRatingsMutation(records);
-                                        console.warn("Ratings save error; queued for offline sync");
-                                });
-                },
-                [tournamentActions, userName],
-        );
+	const handleUpdateRatings = useCallback(
+		(
+			ratings:
+				| Record<string, RatingData>
+				| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
+		) => {
+			tournamentActions.setRatings(ratings);
+		},
+		[tournamentActions],
+	);
 
 	return {
 		handleTournamentComplete,

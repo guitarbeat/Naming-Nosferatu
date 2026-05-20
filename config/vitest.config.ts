@@ -7,9 +7,6 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "..", "src"),
-			"@/app": path.resolve(__dirname, "..", "src/app"),
-			"@/features": path.resolve(__dirname, "..", "src/features"),
-			"@/shared": path.resolve(__dirname, "..", "src/shared"),
 			"@supabase/client": path.resolve(__dirname, "..", "src/shared/services/supabase/runtime.ts"),
 			"@supabase/types": path.resolve(__dirname, "..", "supabase/types.ts"),
 			"@db": path.resolve(__dirname, "..", "supabase"),

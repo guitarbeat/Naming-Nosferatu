@@ -1,6 +1,3 @@
-import Button from "@/shared/components/layout/Button";
-import { EmptyState } from "@/shared/components/layout/EmptyState";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import {
 	Activity,
 	BarChart3,
@@ -12,17 +9,15 @@ import {
 	User,
 	Users,
 } from "lucide-react";
+import Button from "@/shared/components/layout/Button";
+import { EmptyState } from "@/shared/components/layout/EmptyState";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
-import { ContextBadge, Panel, SectionHeader } from "./components/DashboardPrimitives";
-import { HiddenNamesPanel } from "./components/HiddenNamesPanel";
+import { ContextBadge, Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
-import { ProfilePanel } from "./components/ProfilePanel";
-import { type QuickStat, QuickStatsPanel } from "./components/QuickStatsPanel";
+import { type QuickStat } from "./components/QuickStatsPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
-import { RecentActivityPanel } from "./components/RecentActivityPanel";
-import { SiteStatsPanel } from "./components/SiteStatsPanel";
 import { TopNamesChart } from "./components/TopNamesChart";
 import { WinLossChart } from "./components/WinLossChart";
 import { useDashboardData } from "./hooks/useDashboardData";
@@ -43,13 +38,6 @@ interface DashboardProps {
 	avatarUrl?: string;
 	canHideNames?: boolean;
 	onNameHidden?: (nameId: string) => void;
-}
-
-interface QuickStat {
-	accent?: boolean;
-	icon: ElementType;
-	label: string;
-	value: string | number;
 }
 
 function getQuickStats({
@@ -217,72 +205,6 @@ function DashboardHeader({
 				</Panel>
 			)}
 		</div>
-	);
-}
-
-function LeaderboardPanel({
-	leaderboard,
-	isLoadingLeaderboard,
-	onStartNew,
-}: {
-	leaderboard: any[];
-	isLoadingLeaderboard: boolean;
-	onStartNew?: () => void;
-}) {
-	return (
-		<Panel>
-			<SectionHeader
-				icon={Trophy}
-				title="Leaderboard"
-				subtitle="Top of the pool."
-				action={
-					<div className="flex items-center gap-2">
-						<ContextBadge label="Community" />
-						{onStartNew ? (
-							<Button variant="outline" size="small" onClick={onStartNew}>
-								New Tournament
-							</Button>
-						) : undefined}
-					</div>
-				}
-			/>
-
-			{isLoadingLeaderboard ? (
-				<Loading variant="skeleton" height={320} />
-			) : leaderboard.length > 0 ? (
-				<div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
-					{leaderboard.map((entry, index) => (
-						<div
-							key={entry.name}
-							className={`flex items-center gap-3 px-4 py-3 ${
-								index < leaderboard.length - 1 ? "border-b border-white/10" : ""
-							}`}
-						>
-							<div className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-foreground">
-								{index + 1}
-							</div>
-							<div className="min-w-0 flex-1">
-								<p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
-								<p className="text-xs text-muted-foreground/70">
-									{entry.total_ratings} rating
-									{entry.total_ratings === 1 ? "" : "s"} | {entry.wins} win
-									{entry.wins === 1 ? "" : "s"}
-								</p>
-							</div>
-							<div className="text-right">
-								<p className="text-lg font-semibold text-primary">{Math.round(entry.avg_rating)}</p>
-							</div>
-						</div>
-					))}
-				</div>
-			) : (
-				<EmptyState
-					variant="box"
-					title="No community ratings yet."
-					description="Complete a few tournament sessions to start separating the personal bracket layer from the shared leaderboard."
-				/>
-			)}
-		</Panel>
 	);
 }
 

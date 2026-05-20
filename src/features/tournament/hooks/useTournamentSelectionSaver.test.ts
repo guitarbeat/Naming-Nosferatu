@@ -8,6 +8,10 @@ const mockNames: NameItem[] = [
 	{ id: 2, name: "Luna", userId: 1, lastUsed: null, createdAt: new Date() },
 ];
 
+function tournamentSelectionWrites(spy: ReturnType<typeof vi.spyOn>) {
+	return spy.mock.calls.filter(([key]) => String(key).startsWith("tournament_selection_"));
+}
+
 describe("useTournamentSelectionSaver", () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
@@ -36,19 +40,15 @@ describe("useTournamentSelectionSaver", () => {
 
 			result.current?.scheduleSave(mockNames);
 
-			// Should not have been called immediately
-			expect(setItemSpy).not.toHaveBeenCalled();
+			expect(tournamentSelectionWrites(setItemSpy)).toHaveLength(0);
 
-			// Advance time by 999ms, still should not be called
 			vi.advanceTimersByTime(999);
-			expect(setItemSpy).not.toHaveBeenCalled();
+			expect(tournamentSelectionWrites(setItemSpy)).toHaveLength(0);
 
-			// Advance the remaining 1ms
 			vi.advanceTimersByTime(1);
-			expect(setItemSpy).toHaveBeenCalledWith(
-				"tournament_selection_testuser",
-				JSON.stringify([1, 2]), // mockNames mapped to their IDs
-			);
+			expect(tournamentSelectionWrites(setItemSpy)).toEqual([
+				["tournament_selection_testuser", JSON.stringify([1, 2])],
+			]);
 		});
 
 		it("scheduleSave debounces multiple rapid calls", () => {
@@ -62,17 +62,15 @@ describe("useTournamentSelectionSaver", () => {
 			result.current?.scheduleSave(mockNames);
 			vi.advanceTimersByTime(500); // 1000ms since first call, but 500ms since second
 
-			// Still should not have been called because of debounce
-			expect(setItemSpy).not.toHaveBeenCalled();
+			expect(tournamentSelectionWrites(setItemSpy)).toHaveLength(0);
 
 			vi.advanceTimersByTime(500); // 1000ms since second call
 
-			// Now it should be called once, with the latest arguments
-			expect(setItemSpy).toHaveBeenCalledTimes(1);
-			expect(setItemSpy).toHaveBeenCalledWith(
+			expect(tournamentSelectionWrites(setItemSpy)).toHaveLength(1);
+			expect(tournamentSelectionWrites(setItemSpy)[0]).toEqual([
 				"tournament_selection_testuser",
 				JSON.stringify([1, 2]),
-			);
+			]);
 		});
 
 		it("does not save if the selection hash has not changed", () => {
@@ -81,16 +79,14 @@ describe("useTournamentSelectionSaver", () => {
 
 			result.current?.scheduleSave(mockNames);
 			vi.advanceTimersByTime(1000);
-			expect(setItemSpy).toHaveBeenCalledTimes(1);
+			expect(tournamentSelectionWrites(setItemSpy)).toHaveLength(1);
 
 			setItemSpy.mockClear();
 
-			// Call again with same selection
 			result.current?.scheduleSave(mockNames);
 			vi.advanceTimersByTime(1000);
 
-			// Should not save again because hash is identical
-			expect(setItemSpy).not.toHaveBeenCalled();
+			expect(tournamentSelectionWrites(setItemSpy)).toHaveLength(0);
 		});
 
 		it("does not save if enableAutoSave is false", () => {

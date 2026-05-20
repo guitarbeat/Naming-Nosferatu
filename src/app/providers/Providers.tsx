@@ -1,17 +1,13 @@
 import type { ReactNode } from "react";
 import {
-	AuthProvider,
 	type AuthAdapter,
+	AuthProvider,
 	type AuthUser,
 	type LoginCredentials,
 	type RegisterData,
 	useAuth,
 } from "@/app/providers/authContext";
-import {
-	ToastProvider,
-	type ToastPosition,
-	useToast,
-} from "@/app/providers/toastContext";
+import { type ToastPosition, ToastProvider, useToast } from "@/app/providers/toastContext";
 
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;

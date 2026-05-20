@@ -1,5 +1,5 @@
-import { shuffleArray, createSortedKey } from "@/shared/lib/utils";
 import { ELO_RATING } from "@/shared/lib/constants";
+import { createSortedKey, shuffleArray } from "@/shared/lib/utils";
 import type {
 	NameItem,
 	PersistentTournamentState,

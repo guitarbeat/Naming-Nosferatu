@@ -15,14 +15,7 @@ export const BACKGROUND_TRACKS = [
 ];
 
 // Sound effect identifiers
-export const SOUND_EFFECTS = [
-	"vote",
-	"undo",
-	"level-up",
-	"wow",
-	"surprise",
-	"streak",
-];
+export const SOUND_EFFECTS = ["vote", "undo", "level-up", "wow", "surprise", "streak"];
 
 // Synthesis fallback patterns for music when files are missing
 export const FALLBACK_MUSIC_PATTERNS: SynthNote[][] = [

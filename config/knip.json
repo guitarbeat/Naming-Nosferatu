@@ -1,16 +1,18 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"entry": ["src/app/main.tsx"],
-	"project": [
-		"src/**/*.{js,jsx,ts,tsx}",
-		"shared/**/*.{js,jsx,ts,tsx}"
-	],
+	"project": ["src/**/*.{js,jsx,ts,tsx}"],
 	"ignore": [
 		"**/*.md",
 		"**/README.md",
 		"src/features/tournament/hooks/useTournamentSelectionSaver.ts",
 		"src/features/tournament/hooks/useTournamentSelectionSaver.bench.ts"
 	],
-	"ignoreDependencies": ["@capacitor/cli", "tailwindcss"],
+	"ignoreDependencies": [
+		"@capacitor/cli",
+		"@radix-ui/react-slot",
+		"playwright",
+		"tailwindcss"
+	],
 	"typescript": true
 }

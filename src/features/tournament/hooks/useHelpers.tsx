@@ -5,7 +5,6 @@ import {
 	playBackgroundMusic,
 	playNextTrack,
 	playPreviousTrack,
-	playSound,
 	setBackgroundMusicVolume,
 	stopBackgroundMusic,
 } from "@/shared/lib/sound";
@@ -89,24 +88,36 @@ export function useAudioManager(): UseAudioManagerResult {
 	const soundEffects = useMemo(
 		() => ({
 			playVoteSound: () => {
-				if (!isMuted) AudioEffects.playVote({ volume });
+				if (!isMuted) {
+					AudioEffects.playVote({ volume });
+				}
 			},
 			playUndoSound: () => {
-				if (!isMuted) AudioEffects.playUndo({ volume });
+				if (!isMuted) {
+					AudioEffects.playUndo({ volume });
+				}
 			},
 			playStreakSound: (streakSize = 2) => {
-				if (isMuted) return;
+				if (isMuted) {
+					return;
+				}
 				const streakBoost = Math.min(0.28, Math.max(0, streakSize - 1) * 0.04);
 				AudioEffects.playStreak({ volume: Math.min(1, volume + streakBoost) });
 			},
 			playLevelUpSound: () => {
-				if (!isMuted) AudioEffects.playLevelUp({ volume });
+				if (!isMuted) {
+					AudioEffects.playLevelUp({ volume });
+				}
 			},
 			playWowSound: () => {
-				if (!isMuted) AudioEffects.playWow({ volume });
+				if (!isMuted) {
+					AudioEffects.playWow({ volume });
+				}
 			},
 			playSurpriseSound: () => {
-				if (!isMuted) AudioEffects.playSurprise({ volume });
+				if (!isMuted) {
+					AudioEffects.playSurprise({ volume });
+				}
 			},
 		}),
 		[isMuted, volume],

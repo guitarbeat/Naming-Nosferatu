@@ -19,8 +19,7 @@ const LiquidGradientBackground = lazy(() =>
 );
 
 export function AppLayout({ children }: AppLayoutProps) {
-	const { user, tournament, errors, errorActions } = useAppStore();
-	const { isLoggedIn } = user;
+	const { tournament, errors, errorActions } = useAppStore();
 
 	const analyticsEnabled = shouldEnableAnalytics({
 		hostname: window.location.hostname,

@@ -25,7 +25,9 @@ export function shuffleArray<T>(array: T[]): T[] {
 /**
  * Creates a stable, sorted string key from IDs/values for deduplication and comparison.
  */
-export function createSortedKey(items: Array<string | number | { id: string | number } | null | undefined>): string {
+export function createSortedKey(
+	items: Array<string | number | { id: string | number } | null | undefined>,
+): string {
 	return items
 		.map((item) => (item && typeof item === "object" ? item.id : item))
 		.filter(Boolean)

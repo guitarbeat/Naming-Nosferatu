@@ -82,8 +82,8 @@ const useFormValidation = (
 		return () => clearTimeout(timer);
 	}, [value, isTouched, schema, validate, debounceMs]);
 
-	const currentError = externalError !== undefined ? externalError : internalError;
-	const currentTouched = externalTouched !== undefined ? externalTouched : isTouched;
+	const currentError = externalError === undefined ? internalError : externalError;
+	const currentTouched = externalTouched === undefined ? isTouched : externalTouched;
 	const hasError = currentTouched && currentError && !isValidating;
 
 	return {

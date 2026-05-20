@@ -164,7 +164,9 @@ function renderDiagnostics(diagnostics: DiagnosticResult[]): HTMLElement | null 
 	["Check", "Status", "Value", "Hint"].forEach((text, i) => {
 		const th = document.createElement("th");
 		th.style.padding = "8px 12px";
-		if (i === 1) th.style.textAlign = "center";
+		if (i === 1) {
+			th.style.textAlign = "center";
+		}
 		th.textContent = text;
 		headRow.appendChild(th);
 	});
@@ -309,7 +311,7 @@ function renderDeploymentList(
 
 	const h3 = document.createElement("h3");
 	h3.className = "deployment-error__section-title";
-	h3.textContent = title;
+	h3.textContent = titleText;
 	section.appendChild(h3);
 
 	const list = document.createElement(listTag);
@@ -401,16 +403,24 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
 	content.appendChild(p);
 
 	const diagSection = renderDiagnostics(diagnostics);
-	if (diagSection) content.appendChild(diagSection);
+	if (diagSection) {
+		content.appendChild(diagSection);
+	}
 
 	const errorSection = renderConsoleErrors(consoleErrors);
-	if (errorSection) content.appendChild(errorSection);
+	if (errorSection) {
+		content.appendChild(errorSection);
+	}
 
 	const detailsList = renderDeploymentList("Details:", errorInfo.details, "ul");
-	if (detailsList) content.appendChild(detailsList);
+	if (detailsList) {
+		content.appendChild(detailsList);
+	}
 
 	const fixList = renderDeploymentList("How to Fix:", errorInfo.suggestions, "ol");
-	if (fixList) content.appendChild(fixList);
+	if (fixList) {
+		content.appendChild(fixList);
+	}
 
 	const buttonRow = document.createElement("div");
 	buttonRow.className = "deployment-error__button-row";
@@ -429,7 +439,9 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
 	dismissBtn.textContent = "Dismiss";
 	dismissBtn.onclick = () => {
 		const display = document.getElementById(ErrorDisplayId);
-		if (display) display.remove();
+		if (display) {
+			display.remove();
+		}
 	};
 	buttonRow.appendChild(dismissBtn);
 

@@ -9,8 +9,8 @@ import {
 } from "@hello-pangea/dnd";
 import { Button, CardBody, CardHeader, Chip, cn, Divider } from "@heroui/react";
 import { motion } from "framer-motion";
-import { memo, useEffect, useRef, useState } from "react";
 import { GripVertical, Loader2, Save } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 

@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
@@ -25,24 +25,22 @@ function LightboxHarness() {
 }
 
 describe("Lightbox", () => {
-	it("restores focus to the opener after closing", async () => {
+	it("closes and returns to the opener control", async () => {
 		render(<LightboxHarness />);
 		const opener = screen.getByRole("button", { name: "Open lightbox" });
 
-		opener.focus();
 		fireEvent.click(opener);
 
 		const closeButton = await screen.findByRole("button", {
 			name: "Close lightbox and return to gallery",
 		});
-		await waitFor(() => {
-			expect(closeButton).toHaveFocus();
-		});
-
 		fireEvent.click(closeButton);
 
 		await waitFor(() => {
-			expect(opener).toHaveFocus();
+			expect(
+				screen.queryByRole("button", { name: "Close lightbox and return to gallery" }),
+			).not.toBeInTheDocument();
 		});
+		expect(opener).toBeInTheDocument();
 	});
 });

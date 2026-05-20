@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
-import type { VoteRecord } from "@/store/slices/createTournamentSlice";
+import type { VoteRecord } from "@/shared/types";
 
 interface UseSaveTournamentRatingsProps {
 	isComplete: boolean;

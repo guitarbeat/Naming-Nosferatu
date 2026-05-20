@@ -38,7 +38,7 @@ describe("ProfileInner", () => {
 
 		render(<ProfileInner onLogin={vi.fn()} onLogout={onLogout} />);
 
-		fireEvent.click(screen.getByRole("button", { name: /log out/i }));
+		fireEvent.click(screen.getByRole("button", { name: "Logout" }));
 
 		await waitFor(() => {
 			expect(onLogout).toHaveBeenCalledTimes(1);

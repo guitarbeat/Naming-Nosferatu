@@ -143,7 +143,6 @@ export function applyTeamMatchElo({
 	}).ratings;
 }
 
-
 export function getBracketStageLabel(round: number, totalRounds: number): string {
 	const safeRound = Math.max(1, round);
 	const safeTotal = Math.max(1, totalRounds);

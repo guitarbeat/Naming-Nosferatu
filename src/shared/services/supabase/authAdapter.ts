@@ -49,19 +49,20 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				return null;
 			}
 
+			const isAdmin = await supabaseAuthAdapter.checkAdminStatus(user.id);
 			const authUser = {
 				id: user.id,
 				name: user.user_metadata?.user_name || user.email || "Unknown",
 				email: user.email,
-				isAdmin: false,
-				role: "user",
+				isAdmin,
+				role: isAdmin ? "admin" : "user",
 			} satisfies AuthUser;
 
 			writeStoredUserSnapshot({
 				id: authUser.id,
 				name: authUser.name,
 				email: authUser.email,
-				isAdmin: false,
+				isAdmin,
 			});
 
 			return authUser;
@@ -96,13 +97,13 @@ export const supabaseAuthAdapter: AuthAdapter = {
 			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
 
 			if (!demoPassword) {
-				console.error(
-					"[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.",
-				);
+				console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
 				return false;
 			}
 
-			const { data, error } = await client.auth.signInWithPassword({
+			let authUser: import("@supabase/supabase-js").User | null = null;
+
+			const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
 				email: sanitizedEmail,
 				password: demoPassword,
 			});
@@ -120,7 +121,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 				const { data: signUpData, error: signUpError } = await client.auth.signUp({
 					email: sanitizedEmail,
-					password: DEMO_PASSWORD,
+					password: demoPassword,
 					options: {
 						data: { user_name: trimmedName },
 					},
@@ -146,7 +147,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 				try {
 					await client.rpc("link_auth_uid");
-				} catch {}
+				} catch {
+					// Non-fatal: session is still valid without linking
+				}
 			}
 
 			return true;
@@ -188,13 +191,39 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				return Boolean(readStoredUserSnapshot()?.isAdmin);
 			}
 
-			const { data } = await client
+			const { data: isAdmin, error: rpcError } = await client.rpc("is_admin");
+			if (!rpcError && typeof isAdmin === "boolean") {
+				return isAdmin;
+			}
+
+			const { data, error } = await client
 				.from("cat_user_roles")
 				.select("role")
 				.eq("user_id", userId)
 				.eq("role", "admin")
 				.maybeSingle();
-			return Boolean(data);
+
+			if (data) {
+				return true;
+			}
+
+			const storedUserName = readStoredUserSnapshot()?.name;
+			if (!storedUserName) {
+				return false;
+			}
+
+			const { data: fallbackData, error: fallbackError } = await client
+				.from("cat_user_roles")
+				.select("role")
+				.eq("user_name", storedUserName)
+				.eq("role", "admin")
+				.maybeSingle();
+
+			if (error || fallbackError) {
+				return false;
+			}
+
+			return Boolean(fallbackData);
 		} catch (error) {
 			console.error("[Auth] Error checking admin status:", error);
 			return false;
