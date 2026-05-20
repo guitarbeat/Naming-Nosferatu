@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useNamesCache } from "@/shared/hooks";
+import { useNamesCache } from "@/shared/hooks/useNamesCache";
 import type { NameItem } from "@/shared/types";
 
 describe("useNamesCache", () => {

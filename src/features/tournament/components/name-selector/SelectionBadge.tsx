@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check } from "@/shared/lib/icons";
+import { Check } from "lucide-react";
 
 export const SelectionBadge = () => (
         <motion.div

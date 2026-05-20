@@ -3,7 +3,7 @@ import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from 
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
 import { Modal } from "@/shared/components/layout/Modal";
-import { Loading } from "@/shared/components/layout/Feedback";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { cn } from "@/shared/lib/utils";
 import {
         hapticNavTap,
@@ -18,7 +18,7 @@ import {
         Lock,
         Trophy,
         User,
-} from "@/shared/lib/icons";
+} from "lucide-react";
 import useAppStore from "@/store/appStore";
 import { getGlassPreset } from "./GlassPresets";
 import LiquidGlass from "./LiquidGlass";

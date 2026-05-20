@@ -1,4 +1,4 @@
-import { LogOut, Trophy } from "@/shared/lib/icons";
+import { LogOut, Trophy } from "lucide-react";
 
 interface TournamentCompleteProps {
 	totalMatches: number;

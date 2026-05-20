@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Trophy } from "@/shared/lib/icons";
+import { Trophy } from "lucide-react";
 import { getFlameCount, getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
 

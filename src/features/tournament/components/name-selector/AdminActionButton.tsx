@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import type { NameItem } from "@/shared/types";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
-import { CheckCircle, Eye } from "@/shared/lib/icons";
+import { CheckCircle, Eye } from "lucide-react";
 
 export const AdminActionButton = ({
         nameItem,

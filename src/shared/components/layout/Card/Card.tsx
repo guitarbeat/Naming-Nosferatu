@@ -3,7 +3,7 @@ import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
 import { cn } from "@/shared/lib/utils";
 import { TIMING } from "@/shared/lib/constants";
-import { ZoomIn } from "@/shared/lib/icons";
+import { ZoomIn } from "lucide-react";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 type CardVariant =

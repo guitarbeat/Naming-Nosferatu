@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { Trophy } from "lucide-react";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
-import { TournamentFlowComplete } from "../components/TournamentFlowComplete";
-import { useSaveTournamentRatings, useTournamentHandlers } from "../hooks";
+import { useSaveTournamentRatings } from "../hooks/useSaveTournamentRatings";
+import { useTournamentHandlers } from "../hooks/useTournamentHandlers";
 
 export default function TournamentFlow() {
 	const { user, tournament, tournamentActions } = useAppStore();
@@ -10,112 +11,13 @@ export default function TournamentFlow() {
 		userName: user.name,
 		tournamentActions,
 	});
-	const saveRatingsMutation = useMutation({
-		mutationFn: ({
-			userId,
-			ratings,
-		}: {
-			userId: string;
-			ratings: Record<string, { rating: number; wins: number; losses: number }>;
-		}) => ratingsAPI.saveRatings(userId, ratings),
+
+	useSaveTournamentRatings({
+		isComplete: tournament.isComplete,
+		ratings: tournament.ratings,
+		userName: user.name,
+		voteHistory: tournament.voteHistory,
 	});
-
-	const mutateAsyncRef = useRef(saveRatingsMutation.mutateAsync);
-	mutateAsyncRef.current = saveRatingsMutation.mutateAsync;
-
-	useEffect(() => {
-		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
-			const userId = user.name || "anonymous";
-
-                        // Compute per-name wins and losses from the vote history.
-                        // For 1v1, winnerId/loserId are direct name IDs.
-                        // For 2v2, winnerMemberIds/loserMemberIds expand team votes to individual names.
-                        const winsByName: Record<string, number> = {};
-                        const lossesByName: Record<string, number> = {};
-
-                        for (const vote of tournament.voteHistory) {
-                                const winnerIds: string[] =
-                                        Array.isArray((vote as Record<string, unknown>).winnerMemberIds)
-                                                ? ((vote as Record<string, unknown>).winnerMemberIds as string[])
-                                                : [String(vote.winnerId)];
-                                const loserIds: string[] =
-                                        Array.isArray((vote as Record<string, unknown>).loserMemberIds)
-                                                ? ((vote as Record<string, unknown>).loserMemberIds as string[])
-                                                : [String(vote.loserId)];
-
-                                for (const id of winnerIds) {
-                                        winsByName[id] = (winsByName[id] ?? 0) + 1;
-                                }
-                                for (const id of loserIds) {
-                                        lossesByName[id] = (lossesByName[id] ?? 0) + 1;
-                                }
-                        }
-
-                        const ratingsWithStats = Object.entries(tournament.ratings).reduce(
-                                (acc, [nameId, ratingData]) => {
-                                        const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-                                        acc[nameId] = {
-                                                rating,
-                                                wins: winsByName[nameId] ?? 0,
-                                                losses: lossesByName[nameId] ?? 0,
-                                        };
-                                        return acc;
-                                },
-                                {} as Record<string, { rating: number; wins: number; losses: number }>,
-                        );
-
-                        mutateAsyncRef.current({ userId, ratings: ratingsWithStats }).catch(() => {
-                                // Error is already logged by ratingsAPI with context
-                        });
-                }
-        }, [tournament.isComplete, tournament.ratings, user.name]);
-
-			for (const vote of tournament.voteHistory) {
-				const winnerIds: string[] = Array.isArray((vote as Record<string, unknown>).winnerMemberIds)
-					? ((vote as Record<string, unknown>).winnerMemberIds as string[])
-					: [String(vote.winnerId)];
-				const loserIds: string[] = Array.isArray((vote as Record<string, unknown>).loserMemberIds)
-					? ((vote as Record<string, unknown>).loserMemberIds as string[])
-					: [String(vote.loserId)];
-
-				for (const id of winnerIds) {
-					winsByName[id] = (winsByName[id] ?? 0) + 1;
-				}
-				for (const id of loserIds) {
-					lossesByName[id] = (lossesByName[id] ?? 0) + 1;
-				}
-			}
-
-			const ratingsWithStats: Record<string, { rating: number; wins: number; losses: number }> = {};
-			for (const nameId in tournament.ratings) {
-				const ratingData = tournament.ratings[nameId];
-				const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-				ratingsWithStats[nameId] = {
-					rating,
-					wins: winsByName[nameId] ?? 0,
-					losses: lossesByName[nameId] ?? 0,
-				};
-			}
-
-			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
-				(acc, [nameId, ratingData]) => {
-					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-					acc[nameId] = {
-						rating,
-						wins: winsByName[nameId] ?? 0,
-						losses: lossesByName[nameId] ?? 0,
-					};
-					return acc;
-				},
-				{} as Record<string, { rating: number; wins: number; losses: number }>,
-			);
-
-			saveRatingsMutation.mutateAsync({ userId, ratings: ratingsWithStats }).catch((_error) => {
-				// Error is already logged by ratingsAPI with context
-				console.warn("Tournament ratings save failed — ratings were not persisted");
-			});
-		}
-	}, [tournament.isComplete, tournament.ratings, user.name, tournament.voteHistory]);
 
 	return (
 		<div className="w-full flex flex-col gap-2">
@@ -144,6 +46,7 @@ export default function TournamentFlow() {
 							</p>
 							<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
 								<button
+									type="button"
 									onClick={() =>
 										document
 											.getElementById("analysis")
@@ -154,6 +57,7 @@ export default function TournamentFlow() {
 									Analyze Results
 								</button>
 								<button
+									type="button"
 									onClick={handleStartNewTournament}
 									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-colors"
 								>

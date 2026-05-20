@@ -1,7 +1,7 @@
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";
 import { cn } from "@/shared/lib/utils";
-import { Cat, Heart, PawPrint } from "@/shared/lib/icons";
+import { Cat, Heart, PawPrint } from "lucide-react";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif"];
 

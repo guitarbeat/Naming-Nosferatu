@@ -1,5 +1,5 @@
 import type { ElementType } from "react";
-import { BarChart3 } from "@/shared/lib/icons";
+import { BarChart3 } from "lucide-react";
 import { Panel, SectionHeader, StatTile } from "./DashboardPrimitives";
 
 export interface QuickStat {

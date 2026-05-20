@@ -1,6 +1,6 @@
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
-import { Loading } from "@/shared/components/layout/Feedback";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import {
 	Activity,
 	BarChart3,
@@ -11,7 +11,7 @@ import {
 	Trophy,
 	User,
 	Users,
-} from "@/shared/lib/icons";
+} from "lucide-react";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import { ContextBadge, Panel, SectionHeader } from "./components/DashboardPrimitives";

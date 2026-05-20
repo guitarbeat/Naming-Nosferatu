@@ -5,11 +5,13 @@ import {
         HomeHeroSection,
 } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/features/names/api";
-import { useTournamentHandlers } from "@/features/tournament/hooks";
-import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
+import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
+import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import Button from "@/shared/components/layout/Button";
+import { useMediaQuery } from "@/shared/hooks/useBrowserState";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
@@ -165,23 +167,6 @@ export default function HomeRoute() {
                                                         avatarUrl={user.avatarUrl}
                                                 />
                                         </ErrorBoundary>
-                                </Suspense>
-                        </Section>
-
-                        <Section
-                                id="suggest"
-                                variant="minimal"
-                                padding="comfortable"
-                                maxWidth="2xl"
-                                fullpage={true}
-                                separator={true}
-                        >
-                                <SectionHeading
-                                        title="Have a Suggestion?"
-                                        subtitle="Submit a name."
-                                />
-                                <Suspense fallback={<Loading variant="card-skeleton" height={340} />}>
-                                        <LazyNameSuggestionInner />
                                 </Suspense>
                         </Section>
                 </>

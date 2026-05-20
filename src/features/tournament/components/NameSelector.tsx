@@ -11,13 +11,13 @@ import {
 	pickRandomItemIds,
 } from "@/features/tournament/utils/nameSelection";
 import Button from "@/shared/components/layout/Button";
-import { Card } from "@/shared/components/layout/Card";
+import { Card } from "@/shared/components/layout/Card/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
 import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
-import { Loading } from "@/shared/components/layout/Feedback";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
-import { useCollapsible } from "@/shared/hooks";
+import { useCollapsible } from "@/shared/hooks/useCollapsible";
 import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
 import {
 	Check,
@@ -29,7 +29,7 @@ import {
 	Heart,
 	X,
 	ZoomIn,
-} from "@/shared/lib/icons";
+} from "lucide-react";
 import {
 	getActiveNames,
 	getHiddenNames,

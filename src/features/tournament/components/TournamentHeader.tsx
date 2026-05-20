@@ -10,7 +10,7 @@ import {
 	Volume2,
 	VolumeX,
 	X,
-} from "@/shared/lib/icons";
+} from "lucide-react";
 import { getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
 

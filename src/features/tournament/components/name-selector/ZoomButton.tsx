@@ -1,5 +1,5 @@
 import type { IdType } from "@/shared/types";
-import { ZoomIn } from "@/shared/lib/icons";
+import { ZoomIn } from "lucide-react";
 
 export const ZoomButton = ({
         nameId,

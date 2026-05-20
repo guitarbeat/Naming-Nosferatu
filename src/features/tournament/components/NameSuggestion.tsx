@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef } from "react";
-import { useNameSuggestion } from "@/features/tournament/hooks";
+import { useNameSuggestion } from "@/features/tournament/hooks/useNameSuggestion";
 import Button from "@/shared/components/layout/Button";
 import { Input, Textarea } from "@/shared/components/layout/FormPrimitives";
-import { CheckCircle, X } from "@/shared/lib/icons";
+import { CheckCircle, X } from "lucide-react";
 
 // ============================================================================
 // TYPES

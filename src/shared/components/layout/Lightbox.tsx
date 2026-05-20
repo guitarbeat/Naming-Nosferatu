@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, X, ZoomOut } from "@/shared/lib/icons";
+import { ChevronLeft, ChevronRight, X, ZoomOut } from "lucide-react";
 
 interface LightboxImageProps {
         src: string;

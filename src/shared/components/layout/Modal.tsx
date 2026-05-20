@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { X } from "@/shared/lib/icons";
+import { X } from "lucide-react";
 
 interface OriginRect {
         x: number;

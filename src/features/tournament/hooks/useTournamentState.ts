@@ -9,7 +9,7 @@ import type {
 	TournamentUpdate,
 	UserActivity,
 } from "@/features/tournament/hooks/useTournamentRealtime";
-import { useLocalStorage } from "@/shared/hooks";
+import { useLocalStorage } from "@/shared/hooks/useLocalStorage";
 import { TIMING } from "@/shared/lib/constants";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import type {

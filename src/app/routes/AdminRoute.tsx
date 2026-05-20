@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/providers/Providers";
 import Button from "@/shared/components/layout/Button";
-import { ErrorBoundary, Loading } from "@/shared/components/layout/Feedback";
+import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 
 const AdminDashboardLazy = routeComponents.AdminDashboardLazy;

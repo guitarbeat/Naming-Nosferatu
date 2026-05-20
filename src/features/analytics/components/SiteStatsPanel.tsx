@@ -1,4 +1,4 @@
-import { Activity, BarChart3, Target, TrendingUp, Users } from "@/shared/lib/icons";
+import { Activity, BarChart3, Target, TrendingUp, Users } from "lucide-react";
 import type { SiteStats } from "@/shared/services/supabase/statsService";
 import { Panel, SectionHeader, StatTile } from "./DashboardPrimitives";
 

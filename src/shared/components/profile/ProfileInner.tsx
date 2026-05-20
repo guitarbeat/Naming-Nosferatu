@@ -2,7 +2,7 @@ import { type RefObject, useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import { LogOut, Pencil } from "@/shared/lib/icons";
+import { LogOut, Pencil, User } from "lucide-react";
 import useAppStore from "@/store/appStore";
 
 interface ProfileInnerProps {

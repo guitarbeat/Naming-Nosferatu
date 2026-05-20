@@ -1,6 +1,6 @@
 import { useToast } from "@/app/providers/Providers";
 import Button from "@/shared/components/layout/Button";
-import { Plus } from "@/shared/lib/icons";
+import { Plus } from "lucide-react";
 import type { NameItem, RatingData } from "@/shared/types";
 import { usePersonalResults } from "./hooks/usePersonalResults";
 import { RankingAdjustment } from "./RankingAdjustment";

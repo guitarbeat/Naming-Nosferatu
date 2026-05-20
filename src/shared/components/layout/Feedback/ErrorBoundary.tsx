@@ -1,6 +1,6 @@
 import React, { Component, type ReactNode, useState } from "react";
 import { cn } from "@/shared/lib/utils";
-import { Copy } from "@/shared/lib/icons";
+import { Copy } from "lucide-react";
 import { ErrorManager } from "@/shared/services/errorManager";
 
 interface ErrorBoundaryProps {

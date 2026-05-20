@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Trophy } from "@/shared/lib/icons";
+import { Trophy } from "lucide-react";
 
 interface TournamentFlowCompleteProps {
 	onStartNewTournament: () => void;

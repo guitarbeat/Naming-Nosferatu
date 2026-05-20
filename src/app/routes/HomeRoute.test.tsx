@@ -73,7 +73,7 @@ vi.mock("@/store/appStore", () => ({
 	default: () => storeState,
 }));
 
-vi.mock("@/features/tournament/hooks", () => ({
+vi.mock("@/features/tournament/hooks/useTournamentHandlers", () => ({
 	useTournamentHandlers: () => ({
 		handleTournamentComplete: mockHandleTournamentComplete,
 		handleStartNewTournament: mockHandleStartNewTournament,

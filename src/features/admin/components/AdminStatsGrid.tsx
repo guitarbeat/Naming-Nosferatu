@@ -1,4 +1,4 @@
-import { BarChart3, Eye, EyeOff, Lock } from "@/shared/lib/icons";
+import { BarChart3, Eye, EyeOff, Lock } from "lucide-react";
 import type { AdminStatsGridProps, StatCell } from "../types";
 
 function AdminStatCell({ icon: Icon, colorClass, label, value }: StatCell) {

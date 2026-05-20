@@ -7,7 +7,7 @@ import React, {
         useRef,
         useState,
 } from "react";
-import { Card } from "@/shared/components/layout/Card";
+import { Card } from "@/shared/components/layout/Card/Card";
 
 export const CHART_TOOLTIP_STYLE = {
         background: "rgba(14, 18, 28, 0.96)",

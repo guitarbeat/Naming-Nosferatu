@@ -1,6 +1,6 @@
 import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
 import Button from "@/shared/components/layout/Button";
-import { Loading } from "@/shared/components/layout/Feedback";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { CinematicHero } from "@/shared/components/ui/CinematicHero";
 import type { NameItem, RatingData } from "@/shared/types";
