@@ -155,7 +155,9 @@ export function CinematicHero({
 	// Mouse interaction for card sheen and 3D depth
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
-			if (window.scrollY > window.innerHeight * 2) return;
+			if (window.scrollY > window.innerHeight * 2) {
+				return;
+			}
 
 			cancelAnimationFrame(requestRef.current);
 
@@ -206,7 +208,9 @@ export function CinematicHero({
 
 	// Scroll timeline animation
 	useEffect(() => {
-		if (!isScrollAnimated) return;
+		if (!isScrollAnimated) {
+			return;
+		}
 
 		const isMobile = window.innerWidth < 768;
 

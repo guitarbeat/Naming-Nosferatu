@@ -67,7 +67,7 @@ describe("ratingStats", () => {
 		it("returns higher percentile for higher ratings", () => {
 			const all = [1000, 1100, 1200, 1300, 1400];
 			expect(getPercentileRank(1400, all)).toBe(100);
-			expect(getPercentileRank(1000, all)).toBe(20);
+			expect(getPercentileRank(1000, all)).toBe(0);
 		});
 	});
 

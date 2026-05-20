@@ -22,10 +22,13 @@ vi.mock("@/store/appStore", () => ({
 	default: () => mockStore,
 }));
 
-vi.mock("../hooks", () => ({
+vi.mock("../hooks/useTournamentHandlers", () => ({
 	useTournamentHandlers: () => ({
 		handleStartNewTournament: mockHandleStartNewTournament,
 	}),
+}));
+
+vi.mock("../hooks/useSaveTournamentRatings", () => ({
 	useSaveTournamentRatings: vi.fn(),
 }));
 

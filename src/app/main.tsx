@@ -1,12 +1,10 @@
-import "../polyfills";
-
 import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { supabaseAuthAdapter as authAdapter } from "@/shared/services/supabase/authAdapter";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
-import { queryClient } from "@/shared/services/supabase/client";
+import { supabaseAuthAdapter as authAdapter } from "@/shared/services/supabase/authAdapter";
+import { queryClient } from "@/shared/services/supabase/runtime";
 import App from "./App";
 import { Providers } from "./providers/Providers";
 import "../index.css";

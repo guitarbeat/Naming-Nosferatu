@@ -6,7 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FloatingNavbar } from "./FloatingNavbar";
 
-vi.mock("@/app/providers/authContext", () => ({
+vi.mock("@/app/providers/Providers", () => ({
 	useAuth: vi.fn(() => ({ user: null })),
 }));
 
@@ -26,6 +26,7 @@ const mockStore = {
 		selectedNames: [] as string[],
 		names: null as string[] | null,
 		isComplete: false,
+		ratings: {} as Record<string, unknown>,
 	},
 	tournamentActions: {
 		setNames: setNamesMock,
@@ -144,20 +145,20 @@ describe("FloatingNavbar", () => {
 		);
 
 	it("renders home navigation items and tracks the active section", () => {
-		mountSections({ pick: 220, suggest: 24, profile: 520 });
+		mountSections({ pick: 20, tournament: 200, analysis: 400 });
 
 		renderWithRouter();
 
-		expect(screen.getByRole("button", { name: "Pick Names" })).toBeInTheDocument();
-		expect(screen.getByRole("button", { name: "Suggest" })).toHaveAttribute(
+		expect(screen.getByRole("button", { name: "Pick Names" })).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
+		expect(screen.getByRole("button", { name: "Suggest" })).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "Profile" })).toBeInTheDocument();
 	}, 10000);
 
 	it("renders an admin shortcut for admin users", () => {
-		mountSections({ pick: 220, suggest: 24, profile: 520 });
+		mountSections({ pick: 20, tournament: 200, analysis: 400 });
 		mockStore.user.isLoggedIn = true;
 		mockStore.user.name = "Avery Admin";
 		mockStore.user.isAdmin = true;
@@ -168,7 +169,7 @@ describe("FloatingNavbar", () => {
 	});
 
 	it("promotes the first item to a highlighted start action when enough names are selected", () => {
-		mountSections({ pick: 0, suggest: 200, profile: 400 });
+		mountSections({ pick: 0, tournament: 200, analysis: 400 });
 		mockStore.tournament.selectedNames = ["Luna", "Fig", "Miso"];
 
 		renderWithRouter();
@@ -200,7 +201,7 @@ describe("FloatingNavbar", () => {
 	});
 
 	it("uses pressed semantics for the layout mode chip without treating it as the current destination", () => {
-		mountSections({ pick: 0, suggest: 200, profile: 400 });
+		mountSections({ pick: 0, tournament: 200, analysis: 400 });
 		mockStore.ui.isSwipeMode = true;
 
 		renderWithRouter();
@@ -215,7 +216,7 @@ describe("FloatingNavbar", () => {
 	});
 
 	it("renders the logged-in avatar when available", () => {
-		mountSections({ pick: 0, suggest: 200, profile: 400 });
+		mountSections({ pick: 0, tournament: 200, analysis: 400 });
 		mockStore.user.isLoggedIn = true;
 		mockStore.user.name = "Avery Admin";
 		mockStore.user.avatarUrl = "https://example.com/avatar.png";

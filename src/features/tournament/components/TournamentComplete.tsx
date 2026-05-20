@@ -1,4 +1,4 @@
-import { LogOut, Trophy } from "@/shared/lib/icons";
+import { LogOut, Trophy } from "lucide-react";
 
 interface TournamentCompleteProps {
 	totalMatches: number;
@@ -40,7 +40,8 @@ export function TournamentComplete({
 				className="pointer-events-none absolute inset-0"
 				aria-hidden="true"
 				style={{
-					background: `radial-gradient(ellipse 80% 70% at 50% 50%, transparent 10%, hsl(230 30% 6% / 0.50) 100%)`,
+					background:
+						"radial-gradient(ellipse 80% 70% at 50% 50%, transparent 10%, hsl(230 30% 6% / 0.50) 100%)",
 				}}
 			/>
 
@@ -63,11 +64,15 @@ export function TournamentComplete({
 
 				<div className="mt-10 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">Total matches</p>
+						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+							Total matches
+						</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
 					</div>
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">Participants</p>
+						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+							Participants
+						</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>
 					</div>
 				</div>
@@ -75,7 +80,11 @@ export function TournamentComplete({
 				<div className="mt-10 flex w-full flex-col gap-3">
 					<button
 						type="button"
-						onClick={() => document.getElementById("analysis")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+						onClick={() =>
+							document
+								.getElementById("analysis")
+								?.scrollIntoView({ behavior: "smooth", block: "start" })
+						}
 						className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-white/30 bg-white/15 px-6 py-4 text-sm font-semibold text-white shadow-[0_0_30px_rgba(180,120,255,0.35)] backdrop-blur-sm transition-all hover:bg-white/22 hover:shadow-[0_0_40px_rgba(180,120,255,0.55)] active:scale-[0.98]"
 					>
 						<Trophy size={15} />

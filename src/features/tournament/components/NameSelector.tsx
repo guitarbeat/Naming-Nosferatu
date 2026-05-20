@@ -1,5 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import {
+	Check,
+	CheckCircle,
+	ChevronDown,
+	ChevronRight,
+	Eye,
+	EyeOff,
+	Heart,
+	X,
+	ZoomIn,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/features/names/api";
@@ -11,25 +22,14 @@ import {
 	pickRandomItemIds,
 } from "@/features/tournament/utils/nameSelection";
 import Button from "@/shared/components/layout/Button";
-import { Card } from "@/shared/components/layout/Card";
+import { Card } from "@/shared/components/layout/Card/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
 import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
-import { Loading } from "@/shared/components/layout/Feedback";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
-import { useCollapsible } from "@/shared/hooks";
+import { useCollapsible } from "@/shared/hooks/useCollapsible";
 import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
-import {
-	Check,
-	CheckCircle,
-	ChevronDown,
-	ChevronRight,
-	Eye,
-	EyeOff,
-	Heart,
-	X,
-	ZoomIn,
-} from "@/shared/lib/icons";
 import {
 	getActiveNames,
 	getHiddenNames,
@@ -40,12 +40,6 @@ import {
 import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { AdminActionButton } from "./name-selector/AdminActionButton";
-import { NameContent } from "./name-selector/NameContent";
-import { getCardStyles, getNameOverlayClasses } from "./name-selector/nameSelectorUtils";
-import { SelectionBadge } from "./name-selector/SelectionBadge";
-import { useDeferredSync } from "./name-selector/useDeferredSync";
-import { ZoomButton } from "./name-selector/ZoomButton";
 
 const SWIPE_OFFSET_THRESHOLD = 100;
 const SWIPE_VELOCITY_THRESHOLD = 500;

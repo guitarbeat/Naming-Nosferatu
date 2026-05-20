@@ -24,7 +24,7 @@ vi.mock("@/shared/lib/constants", () => ({
 	CAT_IMAGES: ["https://example.com/cat.jpg"],
 }));
 
-vi.mock("@/shared/lib/icons", () => ({
+vi.mock("lucide-react", () => ({
 	LogOut: ({ size, ...props }: any) => <span {...props}>LogOut</span>,
 	Pencil: ({ size, ...props }: any) => <span {...props}>Pencil</span>,
 	User: ({ size, ...props }: any) => <span {...props}>User</span>,

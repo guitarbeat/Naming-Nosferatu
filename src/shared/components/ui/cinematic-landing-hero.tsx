@@ -207,7 +207,9 @@ export function CinematicHero({
 	// 1. High-Performance Mouse Interaction Logic (Using requestAnimationFrame)
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
-			if (window.scrollY > window.innerHeight * 2) return;
+			if (window.scrollY > window.innerHeight * 2) {
+				return;
+			}
 
 			cancelAnimationFrame(requestRef.current);
 

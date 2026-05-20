@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cn, shuffleArray } from "./basic";
+import { cn, shuffleArray } from "./utils";
 
 describe("cn", () => {
 	it("merges basic classes", () => {

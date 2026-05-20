@@ -10,7 +10,7 @@ import {
 	toggleNameHidden,
 	toggleNameLocked,
 } from "@/features/names/api";
-import { imagesAPI } from "@/shared/services/supabase/api";
+import { imagesAPI } from "@/shared/services/supabase/imageService";
 import { useNameAdminActions } from "./useNameAdminActions";
 
 vi.mock("@/features/names/api", () => ({
@@ -24,7 +24,7 @@ vi.mock("@/features/names/api", () => ({
 	},
 }));
 
-vi.mock("@/shared/services/supabase/api", () => ({
+vi.mock("@/shared/services/supabase/imageService", () => ({
 	imagesAPI: {
 		upload: vi.fn(),
 	},

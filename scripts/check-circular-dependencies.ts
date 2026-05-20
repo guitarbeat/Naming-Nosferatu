@@ -108,7 +108,10 @@ function resolveAliasImport(
 	}
 
 	if (importPath === "@supabase/client") {
-		return resolveFileCandidate(path.join(projectRoot, "src", "services", "supabase", "client"), knownFiles);
+		return resolveFileCandidate(
+			path.join(projectRoot, "src", "shared", "services", "supabase", "runtime"),
+			knownFiles,
+		);
 	}
 
 	if (importPath === "@supabase/types") {

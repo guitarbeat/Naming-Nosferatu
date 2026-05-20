@@ -1,6 +1,6 @@
+import { Eye, EyeOff } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
-import { Eye, EyeOff } from "@/shared/lib/icons";
 import { Panel, SectionHeader } from "./DashboardPrimitives";
 
 interface HiddenName {

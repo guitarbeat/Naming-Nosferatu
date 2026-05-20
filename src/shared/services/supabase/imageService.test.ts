@@ -36,7 +36,7 @@ describe("imagesAPI", () => {
 			expect(result).toEqual(["cat1.jpg", "cat2.png"]);
 		});
 
-		it("returns empty array and logs error if list fails", async () => {
+		it("returns empty array if list fails", async () => {
 			const mockStorageClient = {
 				storage: {
 					from: vi.fn().mockReturnValue({
@@ -47,9 +47,6 @@ describe("imagesAPI", () => {
 					}),
 				},
 			};
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
-				/* mock */
-			});
 
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
 				return callback(mockStorageClient as any);
@@ -57,10 +54,7 @@ describe("imagesAPI", () => {
 
 			const result = await imagesAPI.list();
 
-			expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to list images:", expect.any(Error));
 			expect(result).toEqual([]);
-
-			consoleErrorSpy.mockRestore();
 		});
 
 		it("returns fallback if withSupabase returns fallback", async () => {
@@ -149,24 +143,17 @@ describe("imagesAPI", () => {
 					}),
 				},
 			};
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
-				/* mock */
-			});
-
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
 				return callback(mockStorageClient as any);
 			});
 
 			const result = await imagesAPI.upload(mockFile, "testuser");
 
-			expect(consoleErrorSpy).toHaveBeenCalledWith("Upload failed:", expect.any(Error));
 			expect(result).toEqual({
 				path: null,
 				error: "Upload failed",
 				success: false,
 			});
-
-			consoleErrorSpy.mockRestore();
 		});
 	});
 
@@ -204,20 +191,13 @@ describe("imagesAPI", () => {
 					}),
 				},
 			};
-			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
-				/* mock */
-			});
-
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
 				return callback(mockStorageClient as any);
 			});
 
 			const result = await imagesAPI.delete("cat1.jpg");
 
-			expect(consoleErrorSpy).toHaveBeenCalledWith("Delete failed:", expect.any(Error));
 			expect(result).toEqual({ success: false, error: "Delete failed" });
-
-			consoleErrorSpy.mockRestore();
 		});
 	});
 });

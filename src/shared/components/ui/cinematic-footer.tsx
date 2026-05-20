@@ -142,9 +142,13 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 		const localRef = useRef<HTMLElement>(null);
 
 		useEffect(() => {
-			if (typeof window === "undefined") return;
+			if (typeof window === "undefined") {
+				return;
+			}
 			const element = localRef.current;
-			if (!element) return;
+			if (!element) {
+				return;
+			}
 
 			const ctx = gsap.context(() => {
 				const handleMouseMove = (e: MouseEvent) => {
@@ -193,8 +197,11 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 			<Component
 				ref={(node: HTMLElement) => {
 					(localRef as any).current = node;
-					if (typeof forwardedRef === "function") forwardedRef(node);
-					else if (forwardedRef) (forwardedRef as any).current = node;
+					if (typeof forwardedRef === "function") {
+						forwardedRef(node);
+					} else if (forwardedRef) {
+						(forwardedRef as any).current = node;
+					}
 				}}
 				className={cn("cursor-pointer", className)}
 				{...props}
@@ -226,8 +233,12 @@ export function CinematicFooter() {
 	const linksRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (typeof window === "undefined") return;
-		if (!wrapperRef.current) return;
+		if (typeof window === "undefined") {
+			return;
+		}
+		if (!wrapperRef.current) {
+			return;
+		}
 
 		// React strict mode compatible GSAP context cleanup
 		const ctx = gsap.context(() => {

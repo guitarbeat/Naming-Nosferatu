@@ -68,8 +68,12 @@ describe("LiquidGlass", () => {
 		);
 		const glassElement = container.querySelector(".liquid-glass") as HTMLElement;
 		expect(glassElement.style.getPropertyValue("--width")).toBe(String(DEFAULT_GLASS_CONFIG.width));
-		expect(glassElement.style.getPropertyValue("--height")).toBe(String(DEFAULT_GLASS_CONFIG.height));
-		expect(glassElement.style.getPropertyValue("--glass-radius")).toBe(`${DEFAULT_GLASS_CONFIG.radius}px`);
+		expect(glassElement.style.getPropertyValue("--height")).toBe(
+			String(DEFAULT_GLASS_CONFIG.height),
+		);
+		expect(glassElement.style.getPropertyValue("--glass-radius")).toBe(
+			`${DEFAULT_GLASS_CONFIG.radius}px`,
+		);
 	});
 
 	it("overrides CSS variables with props", () => {

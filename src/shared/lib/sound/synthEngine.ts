@@ -7,12 +7,7 @@ export const synthEngine = {
 	/**
 	 * Schedules a single synth note to play at a specific time.
 	 */
-	scheduleNote: (
-		context: AudioContext,
-		note: SynthNote,
-		startAt: number,
-		volume: number,
-	) => {
+	scheduleNote: (context: AudioContext, note: SynthNote, startAt: number, volume: number) => {
 		if (note.frequency <= 0) {
 			return;
 		}
@@ -40,11 +35,7 @@ export const synthEngine = {
 	/**
 	 * Plays a sequence of notes and returns the total duration.
 	 */
-	playSequence: (
-		context: AudioContext | null,
-		notes: SynthNote[],
-		volume: number,
-	): number => {
+	playSequence: (context: AudioContext | null, notes: SynthNote[], volume: number): number => {
 		if (!context) {
 			return 0;
 		}

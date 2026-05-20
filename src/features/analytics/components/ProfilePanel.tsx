@@ -1,4 +1,4 @@
-import { User } from "@/shared/lib/icons";
+import { User } from "lucide-react";
 import { Panel } from "./DashboardPrimitives";
 
 interface ProfilePanelProps {

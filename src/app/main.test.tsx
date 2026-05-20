@@ -12,8 +12,6 @@ const bootstrapMocks = vi.hoisted(() => {
 	return { createRootMock, renderMock };
 });
 
-vi.mock("../polyfills", () => ({}));
-
 vi.mock("@sentry/react", () => ({
 	init: vi.fn(),
 	browserTracingIntegration: vi.fn(),
@@ -66,11 +64,7 @@ vi.mock("react-router-dom", () => ({
 	),
 }));
 
-vi.mock("@/services/authAdapter", () => ({
-	authAdapter: { kind: "auth-adapter" },
-}));
-
-vi.mock("@/shared/services/supabase/client", () => ({
+vi.mock("@/shared/services/supabase/runtime", () => ({
 	queryClient: { kind: "query-client" },
 }));
 

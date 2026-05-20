@@ -16,7 +16,7 @@ import {
 } from "@/features/admin/utils";
 import { namesQueryOptions } from "@/features/names/api";
 import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
-import { Loading } from "@/shared/components/layout/Feedback";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { addToSet, removeFromSet } from "@/shared/lib/setUtils";
 import { statsAPI } from "@/shared/services/supabase/statsService";
 import useAppStore from "@/store/appStore";

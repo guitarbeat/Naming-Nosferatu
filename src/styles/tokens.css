@@ -1,7 +1,7 @@
 /**
  * @file tokens.css
  * @description All CSS custom properties: design tokens, theme variables, colors,
- * spacing, radius, z-index, surfaces, glass, shimmer, and analysis tokens.
+ * spacing, radius, z-index, surfaces, glass, and analysis tokens.
  *
  * Extracted from base.css for single-responsibility.
  */
@@ -186,34 +186,45 @@
 }
 
 :root {
-        --app-container-max-width: clamp(70rem, 95vw, 150rem);
-        --app-container-padding-inline: var(--space-4);
-        --app-main-min-height: 100dvh;
-        --app-main-gap: 0;
-        --app-nav-frame-width: min(95vw, 58rem);
-        --app-nav-frame-width-compact: min(calc(100vw - 1rem), 32rem);
-        --app-nav-bottom-offset: max(var(--space-4), calc(env(safe-area-inset-bottom) + var(--space-3)));
-        --app-nav-shell-height: 4.75rem;
-        --app-nav-safe-bottom: calc(var(--app-nav-shell-height) + var(--app-nav-bottom-offset) + var(--space-6));
-        --app-main-bottom-padding: var(--app-nav-safe-bottom);
-        --app-scroll-to-top-bottom: calc(var(--app-nav-shell-height) + var(--app-nav-bottom-offset) + var(--space-4));
-        --app-section-padding-inline: var(--space-4);
-        --app-section-padding-block: var(--space-12);
-        --app-section-padding-block-compact: var(--space-8);
-        --app-section-padding-block-fullpage: max(var(--space-24), calc(100dvh - var(--app-nav-shell-height) - var(--space-16)));
-        --app-section-scroll-margin: var(--space-24);
-        --app-section-separator-padding: var(--space-14, 3.5rem);
-        --app-section-max-sm: 36rem;
-        --app-section-max-md: 42rem;
-        --app-section-max-lg: 56rem;
-        --app-section-max-xl: 72rem;
-        --app-section-max-2xl: 80rem;
-        --app-hero-min-height: calc(100dvh - var(--app-nav-shell-height));
-        --app-hero-padding-block-start: var(--space-24);
-        --app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
-        --app-hero-preview-min-height: 26rem;
-        --app-chart-frame-height: 13rem;
-        --app-chart-frame-height-tall: 14rem;
+	--app-container-max-width: clamp(70rem, 95vw, 150rem);
+	--app-container-padding-inline: var(--space-4);
+	--app-main-min-height: 100dvh;
+	--app-main-gap: 0;
+	--app-nav-frame-width: min(95vw, 58rem);
+	--app-nav-frame-width-compact: min(calc(100vw - 1rem), 32rem);
+	--app-nav-bottom-offset: max(var(--space-4), calc(env(safe-area-inset-bottom) + var(--space-3)));
+	--app-nav-shell-height: 4.75rem;
+	--app-nav-safe-bottom: calc(
+		var(--app-nav-shell-height) +
+		var(--app-nav-bottom-offset) +
+		var(--space-6)
+	);
+	--app-main-bottom-padding: var(--app-nav-safe-bottom);
+	--app-scroll-to-top-bottom: calc(
+		var(--app-nav-shell-height) +
+		var(--app-nav-bottom-offset) +
+		var(--space-4)
+	);
+	--app-section-padding-inline: var(--space-4);
+	--app-section-padding-block: var(--space-12);
+	--app-section-padding-block-compact: var(--space-8);
+	--app-section-padding-block-fullpage: max(
+		var(--space-24),
+		calc(100dvh - var(--app-nav-shell-height) - var(--space-16))
+	);
+	--app-section-scroll-margin: var(--space-24);
+	--app-section-separator-padding: var(--space-14, 3.5rem);
+	--app-section-max-sm: 36rem;
+	--app-section-max-md: 42rem;
+	--app-section-max-lg: 56rem;
+	--app-section-max-xl: 72rem;
+	--app-section-max-2xl: 80rem;
+	--app-hero-min-height: calc(100dvh - var(--app-nav-shell-height));
+	--app-hero-padding-block-start: var(--space-24);
+	--app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
+	--app-hero-preview-min-height: 26rem;
+	--app-chart-frame-height: 13rem;
+	--app-chart-frame-height-tall: 14rem;
 }
 
 @media (min-width: 640px) {
@@ -316,49 +327,6 @@
 	--surface-floating-border: var(--glass-border-hover);
 	--surface-floating-shadow: var(--shadow-xl);
 	--surface-floating-radius: var(--radius-lg);
-}
-
-/* ==========================================================================
-   SHIMMER EFFECTS
-   ========================================================================== */
-:root {
-	--glow-hue: 222deg;
-	--shadow-hue: 180deg;
-	--shimmer-inset: 40px;
-	--spring-easing: linear(
-		0,
-		0.002,
-		0.01 0.9%,
-		0.038 1.8%,
-		0.156,
-		0.312 5.8%,
-		0.789 11.1%,
-		1.015 14.2%,
-		1.096,
-		1.157,
-		1.199,
-		1.224 20.3%,
-		1.231,
-		1.231,
-		1.226,
-		1.214 24.6%,
-		1.176 26.9%,
-		1.057 32.6%,
-		1.007 35.5%,
-		0.984,
-		0.968,
-		0.956,
-		0.949 42%,
-		0.946 44.1%,
-		0.95 46.5%,
-		0.998 57.2%,
-		1.007,
-		1.011 63.3%,
-		1.012 68.3%,
-		0.998 84%,
-		1
-	);
-	--spring-duration: 1.33s;
 }
 
 /* ==========================================================================

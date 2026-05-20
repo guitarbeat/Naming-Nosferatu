@@ -1,7 +1,36 @@
 import "@testing-library/jest-dom/vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { NameItem, RatingData } from "@/shared/types";
+
+const { TournamentMock } = vi.hoisted(() => ({
+	TournamentMock: ({
+		onComplete,
+	}: {
+		onComplete: (ratings: Record<string, RatingData>) => void;
+	}) => (
+		<button
+			type="button"
+			onClick={() =>
+				onComplete({
+					Miso: { rating: 1200, wins: 1, losses: 0 },
+				})
+			}
+		>
+			Complete Tournament
+		</button>
+	),
+}));
+
+vi.mock("react", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("react")>();
+	return {
+		...actual,
+		lazy: () => TournamentMock,
+		Suspense: ({ children }: { children: ReactNode }) => <>{children}</>,
+	};
+});
 
 const mockHandleTournamentComplete = vi.fn();
 const mockHandleStartNewTournament = vi.fn();
@@ -40,8 +69,7 @@ const queryState: {
 
 function createMatchMedia(prefersReducedMotion: boolean) {
 	return vi.fn().mockImplementation((query: string) => ({
-		matches:
-			query === "(prefers-reduced-motion: reduce)" ? prefersReducedMotion : false,
+		matches: query === "(prefers-reduced-motion: reduce)" ? prefersReducedMotion : false,
 		media: query,
 		onchange: null,
 		addEventListener: vi.fn(),
@@ -53,8 +81,7 @@ function createMatchMedia(prefersReducedMotion: boolean) {
 }
 
 vi.mock("@tanstack/react-query", async (importOriginal) => {
-	const actual =
-		await importOriginal<typeof import("@tanstack/react-query")>();
+	const actual = await importOriginal<typeof import("@tanstack/react-query")>();
 	return {
 		...actual,
 		useQuery: () => queryState,
@@ -73,7 +100,7 @@ vi.mock("@/store/appStore", () => ({
 	default: () => storeState,
 }));
 
-vi.mock("@/features/tournament/hooks", () => ({
+vi.mock("@/features/tournament/hooks/useTournamentHandlers", () => ({
 	useTournamentHandlers: () => ({
 		handleTournamentComplete: mockHandleTournamentComplete,
 		handleStartNewTournament: mockHandleStartNewTournament,
@@ -93,49 +120,17 @@ vi.mock("@/app/appConfig", () => ({
 }));
 
 vi.mock("@/app/routes/components/HomeSections", () => ({
-	HomeHeroSection: ({
-		onStartPicking,
-		onSeeResults,
-	}: {
-		onStartPicking: () => void;
-		onSeeResults: () => void;
-	}) => (
+	HomeHeroSection: ({ onStartPicking }: { onStartPicking: () => void }) => (
 		<div>
 			<button type="button" onClick={onStartPicking}>
 				Start Picking
-			</button>
-			<button type="button" onClick={onSeeResults}>
-				See Results
-			</button>
-		</div>
-	),
-	TournamentBracketSection: ({
-		onComplete,
-		onGoToPicker,
-	}: {
-		onComplete: (ratings: Record<string, RatingData>) => void;
-		onGoToPicker: () => void;
-	}) => (
-		<div>
-			<button
-				type="button"
-				onClick={() =>
-					onComplete({
-						Miso: { rating: 1200, wins: 1, losses: 0 },
-					})
-				}
-			>
-				Complete Tournament
-			</button>
-			<button type="button" onClick={onGoToPicker}>
-				Back To Picker
 			</button>
 		</div>
 	),
 }));
 
-vi.mock("@/features/tournament/Tournament", () => ({
-	default: () => <div data-testid="lazy-tournament" />,
+vi.mock("@/shared/hooks/useBrowserState", () => ({
+	useMediaQuery: (query: string) => window.matchMedia(query).matches,
 }));
 
 vi.mock("@/features/tournament/components/NameSuggestion", () => ({

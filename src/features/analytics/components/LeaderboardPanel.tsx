@@ -1,7 +1,7 @@
+import { Trophy } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
-import { Loading } from "@/shared/components/layout/Feedback";
-import { Trophy } from "@/shared/lib/icons";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { ContextBadge, Panel, SectionHeader } from "./DashboardPrimitives";
 
 interface LeaderboardEntry {

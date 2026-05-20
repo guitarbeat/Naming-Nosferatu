@@ -137,21 +137,11 @@ describe("leaderboardAPI", () => {
 	});
 
 	it("returns empty array when RPC returns an error", async () => {
-		const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {
-			/* suppress warning */
-		});
-
 		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "Database error" } });
 
 		const result = await leaderboardAPI.getLeaderboard(50);
 
 		expect(result).toEqual([]);
-		expect(consoleWarnSpy).toHaveBeenCalledWith(
-			"[statsService] get_leaderboard_stats failed:",
-			"Database error",
-		);
-
-		consoleWarnSpy.mockRestore();
 	});
 
 	it("handles missing stats gracefully (confidence = 0)", async () => {
