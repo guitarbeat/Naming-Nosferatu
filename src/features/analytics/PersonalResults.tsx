@@ -31,7 +31,7 @@ export const PersonalResults = ({
 
 	return (
 		<div className="space-y-6">
-			<div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-4 sm:p-5">
+			<div className="surface-panel-inset rounded-[1.5rem] p-4 sm:p-5">
 				<div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 					<div className="space-y-2">
 						<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/65">

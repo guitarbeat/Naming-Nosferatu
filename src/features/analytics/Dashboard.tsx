@@ -6,14 +6,22 @@ import {
 	Target,
 	TrendingUp,
 	Trophy,
-	User,
 	Users,
 } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
-import { ContextBadge, Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
+import {
+	ContextBadge,
+	ListPanel,
+	ListPanelRow,
+	Panel,
+	SectionHeader,
+	StatTile,
+} from "./components/DashboardPrimitives";
+import { ProfilePanel } from "./components/ProfilePanel";
+import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
 import { type QuickStat } from "./components/QuickStatsPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
@@ -101,7 +109,7 @@ function DashboardEmptyState({
 	onStartNew?: () => void;
 }) {
 	return (
-		<Panel className="border-dashed bg-black/10">
+		<Panel className="border-dashed bg-muted/20">
 			<SectionHeader
 				icon={BarChart3}
 				title="Nothing Ranked Yet"
@@ -115,14 +123,14 @@ function DashboardEmptyState({
 				}
 			/>
 			<div className="grid gap-3 md:grid-cols-2">
-				<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+				<div className={`${themeSurfaces.panelDense} p-4`}>
+					<p className={themeText.eyebrowWide}>
 						Personal Layer
 					</p>
 					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">Your saved order.</p>
 				</div>
-				<div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-					<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/65">
+				<div className={`${themeSurfaces.panelDense} p-4`}>
+					<p className={themeText.eyebrowWide}>
 						Community Layer
 					</p>
 					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
@@ -158,30 +166,7 @@ function DashboardHeader({
 	return (
 		<div className="grid gap-4 xl:grid-cols-[minmax(0,20rem)_1fr]">
 			{isLoggedIn && userName && (
-				<Panel>
-					<div className="flex items-center gap-4">
-						{avatarUrl ? (
-							<img
-								src={avatarUrl}
-								alt={userName}
-								className="size-16 rounded-full border border-white/10 object-cover"
-							/>
-						) : (
-							<div className="flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-primary">
-								<User size={22} />
-							</div>
-						)}
-						<div className="min-w-0">
-							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/65">
-								Profile
-							</p>
-							<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
-							<p className="mt-1 text-sm text-muted-foreground/75">
-								{isAdmin ? "Administrator" : "Tournament participant"}
-							</p>
-						</div>
-					</div>
-				</Panel>
+				<ProfilePanel userName={userName} isAdmin={isAdmin} avatarUrl={avatarUrl} />
 			)}
 
 			{quickStats.length > 0 && (
@@ -300,7 +285,7 @@ function EngagementPanel({
 						<select
 							value={timeframe}
 							onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
-							className="rounded-xl border border-white/10 bg-black/15 px-3 py-2 text-sm text-foreground"
+							className={`rounded-xl px-3 py-2 text-sm text-foreground ${themeSurfaces.panelDense}`}
 						>
 							<option value="day">24 hours</option>
 							<option value="week">Week</option>
@@ -361,31 +346,30 @@ function AdminPanel({
 				}
 			/>
 			{showHiddenNames ? (
-				<div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
+				<ListPanel>
 					{hiddenNames.length > 0 ? (
 						hiddenNames.map((name, index) => (
-							<div
+							<ListPanelRow
 								key={name.id}
-								className={`flex items-center justify-between gap-3 px-4 py-3 ${
-									index < hiddenNames.length - 1 ? "border-b border-white/10" : ""
-								}`}
+								divided={index < hiddenNames.length - 1}
+								className="justify-between"
 							>
 								<span className="text-sm font-medium text-foreground">{name.name}</span>
 								<Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
 									<Eye size={14} />
 									Unhide
 								</Button>
-							</div>
+							</ListPanelRow>
 						))
 					) : (
 						<EmptyState variant="inline" title="No hidden names." />
 					)}
-				</div>
+				</ListPanel>
 			) : (
 				<EmptyState
 					variant="box"
 					title="Open the list to review and restore hidden names."
-					className="border-dashed bg-black/10"
+					className="border-dashed bg-muted/20"
 				/>
 			)}
 		</Panel>

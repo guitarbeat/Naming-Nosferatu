@@ -11,43 +11,27 @@
    ========================================================================== */
 
 :root {
-	--background: hsl(0deg 0% 100%);
-	--foreground: hsl(0deg 0% 0%);
-	--card: hsl(0deg 0% 100%);
-	--card-foreground: hsl(0deg 0% 0%);
-	--popover: hsl(0deg 0% 100%);
-	--popover-foreground: hsl(0deg 0% 0%);
-	--primary: hsl(0deg 0% 0%);
-	--primary-foreground: hsl(0deg 0% 100%);
-	--secondary: hsl(0deg 0% 96%);
-	--secondary-foreground: hsl(0deg 0% 0%);
-	--muted: hsl(0deg 0% 96%);
-	--muted-foreground: hsl(0deg 0% 45%);
-	--accent: hsl(0deg 0% 90%);
-	--accent-foreground: hsl(0deg 0% 0%);
-	--destructive: hsl(0deg 84% 60%);
+	/* Light-mode fallbacks; dark palette overrides below */
+	--destructive: hsl(6deg 68% 52%);
 	--destructive-foreground: hsl(0deg 0% 98%);
-	--success: hsl(142deg 71% 45%);
+	--success: hsl(190deg 55% 34%);
 	--success-foreground: hsl(0deg 0% 100%);
-	--warning: hsl(38deg 92% 50%);
-	--warning-foreground: hsl(0deg 0% 100%);
-	--border: hsl(0deg 0% 0%);
-	--input: hsl(0deg 0% 0%);
-	--ring: hsl(0deg 0% 0%);
-	--chart-1: hsl(12deg 76% 61%);
-	--chart-2: hsl(173deg 58% 39%);
-	--chart-3: hsl(197deg 37% 24%);
-	--chart-4: hsl(43deg 74% 66%);
-	--chart-5: hsl(27deg 87% 67%);
-	--accent-color: hsl(190deg 100% 50%);
-	--navbar: hsl(0deg 0% 98%);
-	--navbar-foreground: hsl(0deg 0% 0%);
-	--navbar-primary: hsl(0deg 0% 0%);
+	--warning: hsl(42deg 82% 60%);
+	--warning-foreground: hsl(224deg 28% 12%);
+	--chart-1: hsl(18deg 68% 56%);
+	--chart-2: hsl(190deg 58% 38%);
+	--chart-3: hsl(227deg 18% 28%);
+	--chart-4: hsl(42deg 82% 60%);
+	--chart-5: hsl(330deg 73% 64%);
+	--accent-color: hsl(190deg 72% 53%);
+	--navbar: hsl(210deg 33% 99%);
+	--navbar-foreground: hsl(220deg 24% 16%);
+	--navbar-primary: hsl(190deg 55% 34%);
 	--navbar-primary-foreground: hsl(0deg 0% 100%);
-	--navbar-accent: hsl(0deg 0% 90%);
-	--navbar-accent-foreground: hsl(0deg 0% 0%);
-	--navbar-border: hsl(0deg 0% 0%);
-	--navbar-ring: hsl(0deg 0% 0%);
+	--navbar-accent: hsl(16deg 71% 53%);
+	--navbar-accent-foreground: hsl(0deg 0% 100%);
+	--navbar-border: hsl(214deg 26% 78%);
+	--navbar-ring: hsl(190deg 55% 34%);
 	--font-sans:
 		"Space Grotesk", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI",
 		roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
@@ -59,7 +43,7 @@
 	--font-mono:
 		"Space Mono", ui-monospace, sfmono-regular, menlo, monaco, consolas, "Liberation Mono",
 		"Courier New", monospace;
-	--radius: 0rem;
+	--radius: 0.75rem;
 	--shadow-2xs: 1px 1px 0px 0px var(--color-neutral-900);
 	--shadow-xs: 2px 2px 0px 0px var(--color-neutral-900);
 	--shadow-sm: 3px 3px 0px 0px var(--color-neutral-900);
@@ -341,24 +325,24 @@
    ========================================================================== */
 :root {
 	/* Core palette (HSL tuples for Tailwind + semantic binding) */
-	--pw-sage-hsl: 190 55% 34%;
-	--pw-coral-hsl: 16 71% 53%;
+	--pw-sage-hsl: 190 58% 38%;
+	--pw-coral-hsl: 18 68% 56%;
 	--pw-sand-hsl: 31 28% 58%;
-	--pw-indigo-hsl: 227 18% 18%;
+	--pw-indigo-hsl: 224 22% 14%;
 	--pw-mimosa-hsl: 42 82% 60%;
 	--pw-danger-hsl: 6 68% 52%;
 	--pw-info-hsl: 212 78% 61%;
 	--pw-lavender-hsl: 246 52% 87%;
 	--pw-rose-hsl: 330 73% 64%;
 
-	/* Dark defaults */
-	--pw-bg-0: #111318;
-	--pw-bg-1: #171b23;
-	--pw-bg-2: #1f2631;
-	--pw-bg-3: #283140;
-	--pw-text-strong: #ebf1f7;
-	--pw-text-base: #d2dbe6;
-	--pw-text-muted: #a7b0bb;
+	/* Dark defaults — aligned with app shell and PWA manifest */
+	--pw-bg-0: #0a0e14;
+	--pw-bg-1: #121820;
+	--pw-bg-2: #1a222c;
+	--pw-bg-3: #232d3a;
+	--pw-text-strong: #eef3f9;
+	--pw-text-base: #c8d4e0;
+	--pw-text-muted: #8f9bab;
 	--pw-border-soft: color-mix(in srgb, var(--pw-text-strong) 16%, transparent);
 	--pw-border-strong: color-mix(in srgb, var(--pw-text-strong) 28%, transparent);
 
@@ -395,6 +379,14 @@
 	--pw-heading-gradient-from: hsl(var(--pw-sage-hsl));
 	--pw-heading-gradient-to: hsl(var(--pw-coral-hsl));
 
+	/* Chart / data-viz chrome */
+	--chart-tooltip-bg: color-mix(in srgb, var(--card) 96%, transparent);
+	--chart-tooltip-border: color-mix(in srgb, var(--foreground) 9%, transparent);
+	--chart-tooltip-fg: var(--pw-text-base);
+	--chart-tooltip-shadow: 0 8px 24px color-mix(in srgb, var(--background-color) 55%, transparent);
+	--chart-cursor-fill: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 8%, transparent);
+	--app-boot-bg: var(--pw-bg-0);
+
 	/* Tailwind color tuple support */
 	--charcoal: 227 18% 18%;
 	--blue-gray: 214 22% 31%;
@@ -426,21 +418,26 @@
 	--primary-color: hsl(var(--pw-sage-hsl));
 	--primary-light: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 68%, white);
 	--primary-dark: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 76%, black);
-	--background: hsl(224deg 28% 7%);
-	--foreground: hsl(210deg 30% 94%);
-	--card: hsl(222deg 24% 10%);
-	--card-foreground: hsl(210deg 30% 94%);
-	--popover: hsl(222deg 24% 10%);
-	--popover-foreground: hsl(210deg 30% 94%);
+	--background: hsl(224deg 28% 6%);
+	--foreground: hsl(210deg 32% 95%);
+	--card: hsl(222deg 22% 11%);
+	--card-foreground: hsl(210deg 32% 95%);
+	--popover: hsl(222deg 22% 11%);
+	--popover-foreground: hsl(210deg 32% 95%);
 	--primary: hsl(var(--pw-sage-hsl));
 	--primary-foreground: hsl(0deg 0% 100%);
-	--secondary: hsl(218deg 20% 16%);
-	--secondary-foreground: hsl(210deg 30% 94%);
+	--secondary: hsl(218deg 18% 17%);
+	--secondary-foreground: hsl(210deg 28% 90%);
 	--accent: hsl(var(--pw-coral-hsl));
 	--accent-foreground: hsl(0deg 0% 100%);
-	--border: hsl(220deg 18% 22%);
-	--input: hsl(220deg 18% 22%);
+	--border: hsl(220deg 16% 24%);
+	--input: hsl(220deg 16% 24%);
 	--ring: hsl(var(--pw-sage-hsl));
+	--chart-1: hsl(var(--pw-coral-hsl));
+	--chart-2: hsl(var(--pw-sage-hsl));
+	--chart-3: hsl(var(--pw-indigo-hsl));
+	--chart-4: hsl(var(--pw-mimosa-hsl));
+	--chart-5: hsl(var(--pw-rose-hsl));
 
 	/* Surface colors */
 	--surface-color: var(--pw-bg-1);
@@ -524,8 +521,8 @@
 	);
 	--namecard-selected-border: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 62%, white);
 	--namecard-selected-description: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 82%, white);
-	--muted: #1d2630;
-	--muted-foreground: #c8d2de;
+	--muted: hsl(218deg 18% 15%);
+	--muted-foreground: hsl(214deg 14% 68%);
 
 	/* Navigation tokens */
 	--nav-bg: color-mix(in srgb, var(--surface-muted) 80%, transparent);

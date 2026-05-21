@@ -75,7 +75,7 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 
 	if (data.length === 0) {
 		return (
-			<div className="flex h-40 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/15 px-4 text-center text-sm text-muted-foreground/70">
+			<div className="surface-panel-inset flex h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center text-sm text-muted-foreground/70">
 				Not enough rated names yet to draw a distribution.
 			</div>
 		);
