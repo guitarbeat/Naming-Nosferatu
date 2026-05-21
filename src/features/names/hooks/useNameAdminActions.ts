@@ -88,7 +88,8 @@ export function useNameAdminActions(userName: string) {
 
 	const batchVisibilityMutation = useMutation(
 		createInvalidatingMutationOptions<BatchVisibilityInput>(
-			({ nameIds, isHidden }) => batchUpdateVisibility({ nameIds, isHidden }),
+			({ nameIds, isHidden }) =>
+				batchUpdateVisibility({ nameIds, isHidden, userName: trimmedUserName }),
 			invalidateNames,
 		),
 	);

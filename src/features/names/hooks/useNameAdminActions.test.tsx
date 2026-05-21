@@ -89,6 +89,7 @@ describe("useNameAdminActions", () => {
 		expect(batchUpdateVisibility).toHaveBeenCalledWith({
 			nameIds: ["1", "2"],
 			isHidden: true,
+			userName: "admin",
 		});
 		expect(batchUpdateLocked).toHaveBeenCalledWith({
 			nameIds: ["1", "2"],

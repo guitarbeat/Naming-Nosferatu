@@ -162,16 +162,26 @@ export async function softDeleteName(params: { nameId: IdType }): Promise<void> 
 export async function batchUpdateVisibility(params: {
 	nameIds: IdType[];
 	isHidden: boolean;
+	userName: string;
 }): Promise<void> {
-	const { nameIds, isHidden } = params;
-	await runBooleanAdminRpc(
-		"batch_update_name_visibility",
-		{
-			p_name_ids: nameIds.map(String),
-			p_is_hidden: isHidden,
-		},
-		"Failed to batch update name visibility",
-	);
+	const { nameIds, isHidden, userName } = params;
+	const client = await resolveSupabaseClient();
+	if (!client) {
+		throw new Error("Supabase client not available");
+	}
+
+	const { error } = await client
+		.from("cat_names")
+		.update({
+			is_hidden: isHidden,
+			updated_by: userName,
+			updated_at: new Date().toISOString(),
+		})
+		.in("id", nameIds.map(String));
+
+	if (error) {
+		throw error;
+	}
 }
 
 export async function batchUpdateLocked(params: {

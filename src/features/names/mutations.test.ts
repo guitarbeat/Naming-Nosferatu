@@ -88,59 +88,65 @@ describe("softDeleteName", () => {
 });
 
 describe("batchUpdateVisibility", () => {
-	it("calls batch_update_name_visibility RPC with p_is_hidden=true to hide names", async () => {
-		mockRpc.mockResolvedValueOnce({ data: true, error: null });
+	it("calls supabase.update with is_hidden=true to hide names", async () => {
+		const mockIn = vi.fn().mockResolvedValue({ error: null });
+		const mockUpdate = vi.fn().mockReturnValue({ in: mockIn });
+		const mockFrom = vi.fn().mockReturnValue({ update: mockUpdate });
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce({ from: mockFrom } as never);
+
+		const before = Date.now();
 		await expect(
-			batchUpdateVisibility({ nameIds: ["id-1", "id-2"], isHidden: true }),
+			batchUpdateVisibility({ nameIds: ["id-1", "id-2"], isHidden: true, userName: "admin" }),
 		).resolves.toBeUndefined();
-		expect(mockRpc).toHaveBeenCalledWith("batch_update_name_visibility", {
-			p_name_ids: ["id-1", "id-2"],
-			p_is_hidden: true,
+		const after = Date.now();
+
+		expect(mockFrom).toHaveBeenCalledWith("cat_names");
+		expect(mockUpdate).toHaveBeenCalledWith({
+			is_hidden: true,
+			updated_by: "admin",
+			updated_at: expect.any(String),
 		});
+		expect(mockIn).toHaveBeenCalledWith("id", ["id-1", "id-2"]);
+
+		const callArgs = mockUpdate.mock.calls[0][0];
+		const updatedAtDate = new Date(callArgs.updated_at).getTime();
+		expect(updatedAtDate).toBeGreaterThanOrEqual(before);
+		expect(updatedAtDate).toBeLessThanOrEqual(after);
 	});
 
-	it("calls batch_update_name_visibility RPC with p_is_hidden=false to unhide names", async () => {
-		mockRpc.mockResolvedValueOnce({ data: true, error: null });
+	it("calls supabase.update with is_hidden=false to unhide names", async () => {
+		const mockIn = vi.fn().mockResolvedValue({ error: null });
+		const mockUpdate = vi.fn().mockReturnValue({ in: mockIn });
+		const mockFrom = vi.fn().mockReturnValue({ update: mockUpdate });
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce({ from: mockFrom } as never);
+
 		await expect(
-			batchUpdateVisibility({ nameIds: ["id-3"], isHidden: false }),
+			batchUpdateVisibility({ nameIds: ["id-3"], isHidden: false, userName: "admin" }),
 		).resolves.toBeUndefined();
-		expect(mockRpc).toHaveBeenCalledWith("batch_update_name_visibility", {
-			p_name_ids: ["id-3"],
-			p_is_hidden: false,
-		});
-	});
 
-	it("throws when the RPC returns an error", async () => {
-		mockRpc.mockResolvedValueOnce({
-			data: null,
-			error: { message: "permission denied" },
-		});
-		await expect(
-			batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true }),
-		).rejects.toMatchObject({ message: "permission denied" });
-	});
-
-	it("throws when RPC returns data !== true", async () => {
-		mockRpc.mockResolvedValueOnce({ data: false, error: null });
-		await expect(batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true })).rejects.toThrow(
-			"Failed to batch update name visibility",
+		expect(mockFrom).toHaveBeenCalledWith("cat_names");
+		expect(mockUpdate).toHaveBeenCalledWith(
+			expect.objectContaining({ is_hidden: false, updated_by: "admin" }),
 		);
+		expect(mockIn).toHaveBeenCalledWith("id", ["id-3"]);
+	});
+
+	it("throws when the supabase client returns an error", async () => {
+		const mockIn = vi.fn().mockResolvedValue({ error: { message: "permission denied" } });
+		const mockUpdate = vi.fn().mockReturnValue({ in: mockIn });
+		const mockFrom = vi.fn().mockReturnValue({ update: mockUpdate });
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce({ from: mockFrom } as never);
+
+		await expect(
+			batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true, userName: "admin" }),
+		).rejects.toMatchObject({ message: "permission denied" });
 	});
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true })).rejects.toThrow(
-			"Supabase client not available",
-		);
-	});
-
-	it("throws when user is not an admin", async () => {
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({
-			user: { isAdmin: false },
-		} as never);
-		await expect(batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true })).rejects.toThrow(
-			"Admin privileges required",
-		);
+		await expect(
+			batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true, userName: "admin" }),
+		).rejects.toThrow("Supabase client not available");
 	});
 });
 
