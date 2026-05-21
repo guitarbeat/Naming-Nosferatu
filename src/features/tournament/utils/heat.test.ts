@@ -111,5 +111,21 @@ describe("heat utils", () => {
 		it("respects custom max value", () => {
 			expect(getFlameCount(10, 12)).toBe(12); // 10 * 1.2 = 12
 		});
+
+		it("handles negative streak values", () => {
+			expect(getFlameCount(-1)).toBe(3);
+			expect(getFlameCount(-5)).toBe(3);
+			expect(getFlameCount(-100)).toBe(3);
+		});
+
+		it("handles extremely large streak values within bounds", () => {
+			expect(getFlameCount(1000)).toBe(8); // Default max is 8
+			expect(getFlameCount(1000, 50)).toBe(50); // Custom max
+		});
+
+		it("handles cases where max is less than the lower bound of 3", () => {
+			expect(getFlameCount(5, 2)).toBe(2);
+			expect(getFlameCount(10, -5)).toBe(-5);
+		});
 	});
 });
