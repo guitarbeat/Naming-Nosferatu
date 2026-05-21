@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./tokens.css";
+@import "./surfaces.css";
 @import "./reset.css";
 @import "./typography.css";
 @import "./layout.css";

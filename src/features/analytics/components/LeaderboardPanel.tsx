@@ -2,7 +2,8 @@ import { Trophy } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
-import { ContextBadge, Panel, SectionHeader } from "./DashboardPrimitives";
+import { ContextBadge, ListPanel, ListPanelRow, Panel, SectionHeader } from "./DashboardPrimitives";
+import { themeSurfaces } from "@/shared/lib/themeClasses";
 
 interface LeaderboardEntry {
 	name: string;
@@ -43,15 +44,15 @@ export function LeaderboardPanel({
 			{isLoadingLeaderboard ? (
 				<Loading variant="skeleton" height={320} />
 			) : leaderboard.length > 0 ? (
-				<div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
+				<ListPanel>
 					{leaderboard.map((entry, index) => (
-						<div
+						<ListPanelRow
 							key={entry.name}
-							className={`flex items-center gap-3 px-4 py-3 ${
-								index < leaderboard.length - 1 ? "border-b border-white/10" : ""
-							}`}
+							divided={index < leaderboard.length - 1}
 						>
-							<div className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-semibold text-foreground">
+							<div
+								className={`flex size-9 items-center justify-center rounded-full text-sm font-semibold text-foreground ${themeSurfaces.avatar}`}
+							>
 								{index + 1}
 							</div>
 							<div className="min-w-0 flex-1">
@@ -65,9 +66,9 @@ export function LeaderboardPanel({
 							<div className="text-right">
 								<p className="text-lg font-semibold text-primary">{Math.round(entry.avg_rating)}</p>
 							</div>
-						</div>
+						</ListPanelRow>
 					))}
-				</div>
+				</ListPanel>
 			) : (
 				<EmptyState
 					variant="box"

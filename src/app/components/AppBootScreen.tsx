@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { SpinnerCircle } from "@/shared/components/layout/Feedback/Loading";
+import { themeText } from "@/shared/lib/themeClasses";
 import useAppStore from "@/store/appStore";
 
 const LOADING_PREVIEW = "/assets/images/loading-preview.png";
@@ -43,7 +44,7 @@ export function AppBootScreen({
 
 	return (
 		<div
-			className="fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden bg-[#080c12] px-6"
+			className="fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden bg-[var(--app-boot-bg)] px-6"
 			role="status"
 			aria-label="Loading application"
 		>
@@ -52,8 +53,8 @@ export function AppBootScreen({
 				aria-hidden="true"
 				style={{
 					background: `
-                                                radial-gradient(ellipse 70% 50% at 20% 15%, hsl(190 55% 18% / 0.28) 0%, transparent 60%),
-                                                radial-gradient(ellipse 55% 45% at 85% 80%, hsl(16 71% 22% / 0.18) 0%, transparent 55%)
+						radial-gradient(ellipse 70% 50% at 20% 15%, hsl(var(--pw-sage-hsl) / 0.22) 0%, transparent 60%),
+						radial-gradient(ellipse 55% 45% at 85% 80%, hsl(var(--pw-coral-hsl) / 0.16) 0%, transparent 55%)
                                         `,
 				}}
 			/>
@@ -65,14 +66,12 @@ export function AppBootScreen({
 					className="mb-8 w-full max-w-[22rem] select-none object-contain"
 				/>
 
-				<p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-white/40">
-					My cat's name is
-				</p>
+				<p className={`${themeText.eyebrowWide} tracking-[0.32em]`}>My cat's name is</p>
 
-				<div className="my-4 h-px w-12 bg-gradient-to-r from-transparent via-white/28 to-transparent" />
+				<div className="my-4 h-px w-12 bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
 
 				<p
-					className="font-display font-black uppercase text-white"
+					className={`font-display ${themeText.heroDisplay}`}
 					style={{
 						fontSize: "clamp(2.618rem, 9vw, 5.5rem)",
 						lineHeight: 0.88,
@@ -88,7 +87,7 @@ export function AppBootScreen({
 
 				<div className="mt-12 flex flex-col items-center gap-3">
 					<SpinnerCircle size="small" />
-					<p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
+					<p className={`${themeText.eyebrow} tracking-[0.26em]`}>
 						{message}
 					</p>
 				</div>

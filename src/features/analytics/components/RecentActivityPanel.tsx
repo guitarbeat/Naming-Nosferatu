@@ -38,7 +38,7 @@ export function RecentActivityPanel({
 						<select
 							value={timeframe}
 							onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
-							className="rounded-xl border border-white/10 bg-black/15 px-3 py-2 text-sm text-foreground"
+							className="surface-panel-inset rounded-xl px-3 py-2 text-sm text-foreground"
 						>
 							<option value="day">24 hours</option>
 							<option value="week">Week</option>
