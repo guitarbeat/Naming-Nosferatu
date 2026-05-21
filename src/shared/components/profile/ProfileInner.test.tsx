@@ -68,9 +68,11 @@ describe("ProfileInner", () => {
 		await waitFor(() => {
 			expect(onLogin).toHaveBeenCalledWith("Ada");
 		});
-		expect(
-			screen.getByText("We couldn't log you in with that name. Try again."),
-		).toBeInTheDocument();
+		await waitFor(() => {
+			expect(
+				screen.getByText("We couldn't log you in with that name. Try again."),
+			).toBeInTheDocument();
+		});
 		expect(screen.getByRole("button", { name: "Begin Journey" })).toBeInTheDocument();
 	});
 });
