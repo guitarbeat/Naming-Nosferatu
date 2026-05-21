@@ -23,7 +23,7 @@ function ModalHarness() {
 describe("Modal", () => {
 	it("renders when open and matches title", () => {
 		render(
-			<Modal title="Welcome" open={true} onClose={() => {}}>
+			<Modal title="Welcome" open={true} onClose={() => { /* intentional */ }}>
 				<p>Modal Content</p>
 			</Modal>,
 		);
@@ -33,7 +33,7 @@ describe("Modal", () => {
 
 	it("does not render when closed", () => {
 		render(
-			<Modal title="Welcome" open={false} onClose={() => {}}>
+			<Modal title="Welcome" open={false} onClose={() => { /* intentional */ }}>
 				<p>Modal Content</p>
 			</Modal>,
 		);
