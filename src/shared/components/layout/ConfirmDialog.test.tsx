@@ -6,12 +6,13 @@ import { ConfirmDialog } from "./ConfirmDialog";
 describe("ConfirmDialog", () => {
 	it("opens and can be closed with the cancel button", () => {
 		const onCancel = vi.fn();
+		const onConfirm = vi.fn();
 		render(
 			<ConfirmDialog
 				open={true}
 				title="Confirm action"
 				description="A confirmation is required."
-				onConfirm={() => {}}
+				onConfirm={onConfirm}
 				onCancel={onCancel}
 			/>,
 		);
