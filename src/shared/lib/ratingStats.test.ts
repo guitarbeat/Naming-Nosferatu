@@ -128,7 +128,7 @@ describe("ratingStats", () => {
 		});
 
 		it("returns 0 when stdDev is 0", () => {
-			const stats = { mean: 1100, stdDev: 0 } as any;
+			const stats = { mean: 1100, stdDev: 0 } as RatingStats;
 			expect(getZScore(1200, stats)).toBe(0);
 		});
 	});
