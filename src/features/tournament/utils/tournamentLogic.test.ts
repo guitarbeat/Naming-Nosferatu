@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Team } from "@/shared/types";
-import { createTeamsById, calculateTournamentMetrics } from "./tournamentLogic";
+import { calculateTournamentMetrics, createTeamsById } from "./tournamentLogic";
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -33,7 +33,6 @@ describe("createTeamsById", () => {
 	});
 });
 
-
 describe("calculateTournamentMetrics", () => {
 	it("returns correct metrics for a newly started tournament (0 completed matches)", () => {
 		const result = calculateTournamentMetrics({
@@ -58,7 +57,7 @@ describe("calculateTournamentMetrics", () => {
 			totalRounds: 4,
 			stageLabel: "Round 1",
 			progress: 0,
-			etaMinutes: Math.ceil(15 * 3 / 60),
+			etaMinutes: Math.ceil((15 * 3) / 60),
 		});
 	});
 
@@ -85,7 +84,7 @@ describe("calculateTournamentMetrics", () => {
 			totalRounds: 4,
 			stageLabel: "Quarterfinals",
 			progress: Math.round((7 / 15) * 100),
-			etaMinutes: Math.ceil((15 - 7) * 3 / 60),
+			etaMinutes: Math.ceil(((15 - 7) * 3) / 60),
 		});
 	});
 

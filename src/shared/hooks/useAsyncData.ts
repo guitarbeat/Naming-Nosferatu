@@ -64,7 +64,7 @@ export function useAsyncData<T>(
 			isActive = false;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, deps);
+	}, []);
 
 	return { data, isLoading, error, refresh: run };
 }
