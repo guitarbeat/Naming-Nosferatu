@@ -213,13 +213,13 @@ describe("ContextBadge", () => {
 		render(<ContextBadge label="Status" />);
 		const badge = screen.getByText("Status");
 		expect(badge).toBeInTheDocument();
-		expect(badge).toHaveClass("border-white/[0.07]");
+		expect(badge).toHaveClass("border-border/35");
 	});
 
 	it("renders correctly with accent tone", () => {
 		render(<ContextBadge label="Active" tone="accent" />);
 		const badge = screen.getByText("Active");
-		expect(badge).toHaveClass("bg-primary/8");
+		expect(badge).toHaveClass("bg-primary/10");
 	});
 });
 

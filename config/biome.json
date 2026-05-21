@@ -111,7 +111,8 @@
 			"linter": {
 				"rules": {
 					"suspicious": {
-						"noExplicitAny": "off"
+						"noExplicitAny": "off",
+						"noEmptyBlockStatements": "off"
 					},
 					"style": {
 						"useNamingConvention": "off"

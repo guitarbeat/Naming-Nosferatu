@@ -38,6 +38,7 @@ import {
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
 import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
+import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
@@ -249,7 +250,7 @@ export function NameSelector() {
 			: namesQuery.error
 				? "Failed to load names"
 				: null;
-	const isSupabaseUnavailable = error === "Supabase client not available";
+	const isSupabaseUnavailable = error === SUPABASE_UNAVAILABLE_MSG;
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
@@ -327,7 +328,7 @@ export function NameSelector() {
 		[],
 	);
 
-	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
+	const markSwiped = useCallback((nameId: IdType, _direction: "left" | "right") => {
 		setSwipedIds((prev) => addToSet(prev, nameId));
 	}, []);
 

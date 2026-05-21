@@ -12,3 +12,8 @@ interface ImportMeta {
 	readonly MODE: string;
 	readonly PROD: boolean;
 }
+
+/** Captured in index.html before the app bundle loads (Chromium install prompt). */
+interface Window {
+	__deferredPwaPrompt: BeforeInstallPromptEvent | null;
+}

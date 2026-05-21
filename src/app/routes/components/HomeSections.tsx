@@ -4,6 +4,7 @@ import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { CinematicHero } from "@/shared/components/ui/CinematicHero";
+import { themeText } from "@/shared/lib/themeClasses";
 import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
@@ -31,7 +32,7 @@ interface TournamentBracketSectionProps {
 
 function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNames: NameItem[] }) {
 	if (state === "loading") {
-		return <span className="text-white/20">________</span>;
+		return <span className={themeText.heroPlaceholder}>________</span>;
 	}
 	if (state === "error" || lockedNames.length === 0) {
 		return <span>Nosferatu</span>;
@@ -73,14 +74,9 @@ export function HomeHeroSection({
 		<section className="relative isolate flex min-h-[100dvh] flex-col items-center justify-center px-6 text-center">
 			<div aria-hidden="true" className="flex-[0.55]" />
 
-			<p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/40">
-				My cat's name is
-			</p>
+			<p className={`mb-4 ${themeText.eyebrowWide}`}>My cat's name is</p>
 
-			<h1
-				className="font-black uppercase leading-[0.88] tracking-tighter text-white"
-				style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}
-			>
+			<h1 className={themeText.heroDisplay} style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}>
 				<HeroNameWords state={state} lockedNames={lockedNames} />
 			</h1>
 

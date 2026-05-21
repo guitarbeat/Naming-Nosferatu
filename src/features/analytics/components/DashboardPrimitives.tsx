@@ -8,17 +8,19 @@ import React, {
 	useState,
 } from "react";
 import { Card } from "@/shared/components/layout/Card/Card";
+import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
+import { cn } from "@/shared/lib/utils";
 
 export const CHART_TOOLTIP_STYLE = {
-	background: "rgba(14, 18, 28, 0.96)",
-	border: "1px solid rgba(255, 255, 255, 0.09)",
+	background: "var(--chart-tooltip-bg)",
+	border: "1px solid var(--chart-tooltip-border)",
 	borderRadius: 10,
 	fontSize: 12,
-	color: "#d4dce8",
-	boxShadow: "0 8px 24px rgba(0, 0, 0, 0.32)",
+	color: "var(--chart-tooltip-fg)",
+	boxShadow: "var(--chart-tooltip-shadow)",
 } as const;
 
-export const CHART_CURSOR = { fill: "rgba(63, 184, 176, 0.06)" } as const;
+export const CHART_CURSOR = { fill: "var(--chart-cursor-fill)" } as const;
 
 export function ChartFrame({
 	children,
@@ -74,6 +76,33 @@ export function Panel({ children, className = "" }: { children: ReactNode; class
 	);
 }
 
+/** Bordered list container shared by leaderboard, hidden names, and similar panels. */
+export function ListPanel({ children, className }: { children: ReactNode; className?: string }) {
+	return <div className={cn(themeSurfaces.panelInset, className)}>{children}</div>;
+}
+
+export function ListPanelRow({
+	children,
+	divided = true,
+	className,
+}: {
+	children: ReactNode;
+	divided?: boolean;
+	className?: string;
+}) {
+	return (
+		<div
+			className={cn(
+				"flex items-center gap-3 px-4 py-3",
+				divided && themeSurfaces.rowDivider,
+				className,
+			)}
+		>
+			{children}
+		</div>
+	);
+}
+
 export function StatTile({
 	label,
 	value,
@@ -86,24 +115,14 @@ export function StatTile({
 	accent?: boolean;
 }) {
 	return (
-		<div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-5 text-center">
+		<div className={themeSurfaces.statTile}>
 			{Icon && (
-				<div
-					className={`rounded-lg border p-2 ${
-						accent
-							? "border-primary/15 bg-primary/8 text-primary"
-							: "border-white/[0.07] bg-white/[0.03] text-white/40"
-					}`}
-				>
+				<div className={accent ? themeSurfaces.statIconAccent : themeSurfaces.statIcon}>
 					<Icon size={14} />
 				</div>
 			)}
-			<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">{label}</p>
-			<p
-				className={`text-2xl font-semibold leading-none ${accent ? "text-primary" : "text-white/80"}`}
-			>
-				{value}
-			</p>
+			<p className={themeText.eyebrow}>{label}</p>
+			<p className={cn(themeText.statValue, accent && "text-primary")}>{value}</p>
 		</div>
 	);
 }
@@ -116,13 +135,7 @@ export function ContextBadge({
 	tone?: "default" | "accent";
 }) {
 	return (
-		<span
-			className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${
-				tone === "accent"
-					? "border-primary/15 bg-primary/8 text-primary/80"
-					: "border-white/[0.07] bg-white/[0.025] text-white/35"
-			}`}
-		>
+		<span className={tone === "accent" ? themeSurfaces.badgeAccent : themeSurfaces.badge}>
 			{label}
 		</span>
 	);
@@ -144,11 +157,9 @@ export function SectionHeader({
 			<div className="space-y-1.5">
 				<div className="flex items-center gap-2">
 					<Icon size={13} className="text-primary/70 shrink-0" />
-					<span className="text-xs font-semibold uppercase tracking-[0.16em] text-white/50">
-						{title}
-					</span>
+					<span className={themeText.sectionLabel}>{title}</span>
 				</div>
-				{subtitle && <p className="max-w-2xl text-sm leading-relaxed text-white/35">{subtitle}</p>}
+				{subtitle && <p className={cn("max-w-2xl", themeText.subtitle)}>{subtitle}</p>}
 			</div>
 			{action}
 		</div>

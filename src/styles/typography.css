@@ -122,7 +122,12 @@ h3 {
 .gradient-heading {
 	font-weight: var(--font-weight-bold);
 	text-wrap: balance;
-	background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+	background: linear-gradient(
+		115deg,
+		hsl(var(--pw-sage-hsl)),
+		hsl(var(--pw-coral-hsl)) 55%,
+		hsl(var(--pw-mimosa-hsl))
+	);
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
