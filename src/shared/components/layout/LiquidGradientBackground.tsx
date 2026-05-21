@@ -328,7 +328,7 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		camera.position.z = 50;
 
 		const scene = new THREE.Scene();
-		scene.background = new THREE.Color(0x0a0e27);
+		scene.background = new THREE.Color(0x12100d);
 
 		const timer = new THREE.Timer();
 
@@ -340,21 +340,25 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 
 		const touchTexture = new TouchTexture();
 
+		/* Warm terracotta + ink brown — matches tokens.css palette */
+		const terracotta = new THREE.Vector3(0.78, 0.48, 0.36);
+		const warmInk = new THREE.Vector3(0.09, 0.07, 0.05);
+
 		const uniforms: Uniforms = {
 			uTime: { value: 0 },
 			uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-			uColor1: { value: new THREE.Vector3(0.945, 0.353, 0.133) },
-			uColor2: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
-			uColor3: { value: new THREE.Vector3(0.945, 0.353, 0.133) },
-			uColor4: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
-			uColor5: { value: new THREE.Vector3(0.945, 0.353, 0.133) },
-			uColor6: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
-			uSpeed: { value: 1.5 },
-			uIntensity: { value: 1.8 },
+			uColor1: { value: terracotta.clone() },
+			uColor2: { value: warmInk.clone() },
+			uColor3: { value: terracotta.clone() },
+			uColor4: { value: warmInk.clone() },
+			uColor5: { value: terracotta.clone() },
+			uColor6: { value: warmInk.clone() },
+			uSpeed: { value: 1.35 },
+			uIntensity: { value: 1.55 },
 			uTouchTexture: { value: touchTexture.texture },
-			uGrainIntensity: { value: 0.08 },
+			uGrainIntensity: { value: 0.11 },
 			uZoom: { value: 1.0 },
-			uDarkNavy: { value: new THREE.Vector3(0.039, 0.055, 0.153) },
+			uDarkNavy: { value: warmInk.clone() },
 			uGradientSize: { value: 0.45 },
 			uGradientCount: { value: 12.0 },
 			uColor1Weight: { value: 0.5 },

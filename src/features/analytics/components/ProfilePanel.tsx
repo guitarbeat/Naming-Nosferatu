@@ -26,9 +26,7 @@ export function ProfilePanel({ userName, isAdmin, avatarUrl }: ProfilePanelProps
 					</div>
 				)}
 				<div className="min-w-0">
-					<p className={themeText.eyebrowWide}>
-						Profile
-					</p>
+					<p className={themeText.eyebrowWide}>Profile</p>
 					<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
 					<p className="mt-1 text-sm text-muted-foreground/75">
 						{isAdmin ? "Administrator" : "Tournament participant"}

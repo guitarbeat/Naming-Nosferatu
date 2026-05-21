@@ -1,0 +1,117 @@
+/**
+ * @file textures.css
+ * @description Organic grain, paper, and ambient layers for a warmer human feel.
+ */
+
+:root {
+	--texture-grain-opacity: 0.052;
+	--texture-paper-opacity: 0.07;
+	--texture-warm-glow-opacity: 0.55;
+	--texture-vignette-opacity: 0.42;
+	--texture-grain-size: 180px;
+}
+
+:root[data-theme="light"] {
+	--texture-grain-opacity: 0.035;
+	--texture-paper-opacity: 0.05;
+	--texture-warm-glow-opacity: 0.35;
+	--texture-vignette-opacity: 0.22;
+}
+
+/* SVG fractal noise — no external assets */
+:root {
+	--texture-grain-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.app {
+	position: relative;
+	isolation: isolate;
+}
+
+/* Fine grain */
+.app::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	opacity: var(--texture-grain-opacity);
+	background-image: var(--texture-grain-svg);
+	background-size: var(--texture-grain-size) var(--texture-grain-size);
+	mix-blend-mode: soft-light;
+}
+
+/* Linen / paper fiber */
+.app::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	opacity: var(--texture-paper-opacity);
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			transparent,
+			transparent 3px,
+			color-mix(in srgb, var(--pw-text-strong) 3.5%, transparent) 3px,
+			color-mix(in srgb, var(--pw-text-strong) 3.5%, transparent) 4px
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent,
+			transparent 3px,
+			color-mix(in srgb, var(--pw-text-strong) 2.5%, transparent) 3px,
+			color-mix(in srgb, var(--pw-text-strong) 2.5%, transparent) 4px
+		),
+		radial-gradient(
+			ellipse 120% 80% at 50% -10%,
+			color-mix(in srgb, hsl(var(--pw-coral-hsl)) 14%, transparent),
+			transparent 55%
+		),
+		radial-gradient(
+			ellipse 90% 70% at 88% 92%,
+			color-mix(in srgb, hsl(var(--pw-sage-hsl)) 10%, transparent),
+			transparent 50%
+		);
+	mix-blend-mode: overlay;
+}
+
+/* Warm desk-lamp wash + edge vignette (sits above gradient, below UI) */
+.app-ambient {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		radial-gradient(
+			ellipse 85% 65% at 18% 8%,
+			color-mix(in srgb, hsl(var(--pw-mimosa-hsl)) 9%, transparent),
+			transparent 58%
+		),
+		radial-gradient(
+			ellipse 70% 55% at 82% 18%,
+			color-mix(in srgb, hsl(var(--pw-coral-hsl)) 7%, transparent),
+			transparent 52%
+		),
+		radial-gradient(
+			ellipse 95% 85% at 50% 50%,
+			transparent 42%,
+			color-mix(in srgb, var(--pw-bg-0) 55%, transparent) 100%
+		);
+	opacity: var(--texture-warm-glow-opacity);
+}
+
+.surface-panel,
+.surface-panel-inset {
+	box-shadow:
+		var(--shadow-sm),
+		inset 0 1px 0 color-mix(in srgb, var(--pw-text-strong) 8%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.app::before,
+	.app::after {
+		opacity: calc(var(--texture-grain-opacity) * 0.6);
+	}
+}

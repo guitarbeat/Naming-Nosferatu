@@ -7,7 +7,10 @@ import { supabaseAuthAdapter as authAdapter } from "@/shared/services/supabase/a
 import { queryClient } from "@/shared/services/supabase/runtime";
 import App from "./App";
 import { Providers } from "./providers/Providers";
+import { registerServiceWorker } from "./registerServiceWorker";
 import "../index.css";
+
+registerServiceWorker();
 
 async function initSentry(): Promise<void> {
 	if (!import.meta.env.PROD || !import.meta.env.VITE_SENTRY_DSN) {

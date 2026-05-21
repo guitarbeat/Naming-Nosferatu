@@ -1,6 +1,6 @@
 import { type ElementType, type ReactNode } from "react";
-import { cn } from "@/shared/lib/utils";
 import { themeSurfaces } from "@/shared/lib/themeClasses";
+import { cn } from "@/shared/lib/utils";
 
 type SurfaceTone = "glass" | "muted" | "inset" | "transparent";
 type SurfacePadding = "none" | "compact" | "comfortable";

@@ -8,8 +8,8 @@ import React, {
 	useState,
 } from "react";
 import { Card } from "@/shared/components/layout/Card/Card";
-import { cn } from "@/shared/lib/utils";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
+import { cn } from "@/shared/lib/utils";
 
 export const CHART_TOOLTIP_STYLE = {
 	background: "var(--chart-tooltip-bg)",
@@ -77,13 +77,7 @@ export function Panel({ children, className = "" }: { children: ReactNode; class
 }
 
 /** Bordered list container shared by leaderboard, hidden names, and similar panels. */
-export function ListPanel({
-	children,
-	className,
-}: {
-	children: ReactNode;
-	className?: string;
-}) {
+export function ListPanel({ children, className }: { children: ReactNode; className?: string }) {
 	return <div className={cn(themeSurfaces.panelInset, className)}>{children}</div>;
 }
 
@@ -97,7 +91,13 @@ export function ListPanelRow({
 	className?: string;
 }) {
 	return (
-		<div className={cn("flex items-center gap-3 px-4 py-3", divided && themeSurfaces.rowDivider, className)}>
+		<div
+			className={cn(
+				"flex items-center gap-3 px-4 py-3",
+				divided && themeSurfaces.rowDivider,
+				className,
+			)}
+		>
 			{children}
 		</div>
 	);
