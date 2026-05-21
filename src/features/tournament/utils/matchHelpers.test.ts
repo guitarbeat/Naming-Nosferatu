@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getMatchSideId, getMatchSideName, extractMatchData } from "./matchHelpers";
 import type { Match, NameItem, Team } from "@/shared/types";
+import { extractMatchData, getMatchSideId, getMatchSideName } from "./matchHelpers";
 
 describe("matchHelpers", () => {
 	const mockName1: NameItem = {
