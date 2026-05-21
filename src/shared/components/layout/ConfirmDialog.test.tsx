@@ -11,7 +11,9 @@ describe("ConfirmDialog", () => {
 				open={true}
 				title="Confirm action"
 				description="A confirmation is required."
-				onConfirm={() => { /* intentional */ }}
+				onConfirm={() => {
+					/* intentional */
+				}}
 				onCancel={onCancel}
 			/>,
 		);

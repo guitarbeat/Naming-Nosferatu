@@ -420,26 +420,27 @@ describe("unhideName", () => {
 	});
 });
 
-
 describe("addName", () => {
 	it("returns parsed mapped name item on successful addition", async () => {
 		mockRpc.mockResolvedValueOnce({
-			data: [{
-				id: "new-id",
-				name: "Luna",
-				description: "A sweet moon cat",
-				pronunciation: "Loo-nuh",
-				avg_rating: 1200,
-				global_wins: 0,
-				global_losses: 0,
-				created_at: "2024-05-21T00:00:00Z",
-				is_hidden: false,
-				is_active: true,
-				locked_in: false,
-				status: "pending",
-				provenance: "user_submission",
-				is_deleted: false,
-			}],
+			data: [
+				{
+					id: "new-id",
+					name: "Luna",
+					description: "A sweet moon cat",
+					pronunciation: "Loo-nuh",
+					avg_rating: 1200,
+					global_wins: 0,
+					global_losses: 0,
+					created_at: "2024-05-21T00:00:00Z",
+					is_hidden: false,
+					is_active: true,
+					locked_in: false,
+					status: "pending",
+					provenance: "user_submission",
+					is_deleted: false,
+				},
+			],
 			error: null,
 		});
 
@@ -458,22 +459,24 @@ describe("addName", () => {
 
 	it("falls back to empty string description if omitted", async () => {
 		mockRpc.mockResolvedValueOnce({
-			data: [{
-				id: "new-id-2",
-				name: "Bella",
-				description: "",
-				pronunciation: null,
-				avg_rating: 1200,
-				global_wins: 0,
-				global_losses: 0,
-				created_at: "2024-05-21T00:00:00Z",
-				is_hidden: false,
-				is_active: true,
-				locked_in: false,
-				status: "pending",
-				provenance: "user_submission",
-				is_deleted: false,
-			}],
+			data: [
+				{
+					id: "new-id-2",
+					name: "Bella",
+					description: "",
+					pronunciation: null,
+					avg_rating: 1200,
+					global_wins: 0,
+					global_losses: 0,
+					created_at: "2024-05-21T00:00:00Z",
+					is_hidden: false,
+					is_active: true,
+					locked_in: false,
+					status: "pending",
+					provenance: "user_submission",
+					is_deleted: false,
+				},
+			],
 			error: null,
 		});
 
