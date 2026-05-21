@@ -87,9 +87,7 @@ export function AppBootScreen({
 
 				<div className="mt-12 flex flex-col items-center gap-3">
 					<SpinnerCircle size="small" />
-					<p className={`${themeText.eyebrow} tracking-[0.26em]`}>
-						{message}
-					</p>
+					<p className={`${themeText.eyebrow} tracking-[0.26em]`}>{message}</p>
 				</div>
 			</div>
 		</div>

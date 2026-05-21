@@ -2,8 +2,8 @@ import { Trophy } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
-import { ContextBadge, ListPanel, ListPanelRow, Panel, SectionHeader } from "./DashboardPrimitives";
 import { themeSurfaces } from "@/shared/lib/themeClasses";
+import { ContextBadge, ListPanel, ListPanelRow, Panel, SectionHeader } from "./DashboardPrimitives";
 
 interface LeaderboardEntry {
 	name: string;
@@ -46,10 +46,7 @@ export function LeaderboardPanel({
 			) : leaderboard.length > 0 ? (
 				<ListPanel>
 					{leaderboard.map((entry, index) => (
-						<ListPanelRow
-							key={entry.name}
-							divided={index < leaderboard.length - 1}
-						>
+						<ListPanelRow key={entry.name} divided={index < leaderboard.length - 1}>
 							<div
 								className={`flex size-9 items-center justify-center rounded-full text-sm font-semibold text-foreground ${themeSurfaces.avatar}`}
 							>

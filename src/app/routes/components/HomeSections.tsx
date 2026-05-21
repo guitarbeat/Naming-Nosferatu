@@ -76,10 +76,7 @@ export function HomeHeroSection({
 
 			<p className={`mb-4 ${themeText.eyebrowWide}`}>My cat's name is</p>
 
-			<h1
-				className={themeText.heroDisplay}
-				style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}
-			>
+			<h1 className={themeText.heroDisplay} style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}>
 				<HeroNameWords state={state} lockedNames={lockedNames} />
 			</h1>
 

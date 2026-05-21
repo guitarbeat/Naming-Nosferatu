@@ -25,7 +25,9 @@ function WordTooltip({ name, avgRating, wins, totalRatings }: TooltipProps) {
 			{/* Caret */}
 			<div className="mx-auto mb-[-1px] h-0 w-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-border/50" />
 			<div className="surface-panel min-w-[148px] rounded-[1.1rem] px-3.5 py-3 text-left shadow-lg">
-				<p className="mb-2 text-[13px] font-bold leading-none tracking-tight text-foreground">{name}</p>
+				<p className="mb-2 text-[13px] font-bold leading-none tracking-tight text-foreground">
+					{name}
+				</p>
 				<div className="mb-2 h-px bg-border/40" />
 				<div className="flex flex-col gap-1.5">
 					<div className="flex items-center justify-between gap-6">
@@ -36,11 +38,15 @@ function WordTooltip({ name, avgRating, wins, totalRatings }: TooltipProps) {
 					</div>
 					<div className="flex items-center justify-between gap-6">
 						<span className="text-[11px] text-muted-foreground/70">Wins</span>
-						<span className="text-[11px] font-semibold tabular-nums text-foreground/90">{wins}</span>
+						<span className="text-[11px] font-semibold tabular-nums text-foreground/90">
+							{wins}
+						</span>
 					</div>
 					<div className="flex items-center justify-between gap-6">
 						<span className="text-[11px] text-muted-foreground/70">Win rate</span>
-						<span className="text-[11px] font-semibold tabular-nums text-foreground/90">{winRate}%</span>
+						<span className="text-[11px] font-semibold tabular-nums text-foreground/90">
+							{winRate}%
+						</span>
 					</div>
 				</div>
 			</div>

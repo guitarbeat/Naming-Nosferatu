@@ -1,6 +1,6 @@
 import "@khmyznikov/pwa-install";
-import { useEffect, useRef } from "react";
 import type { PWAInstallElement } from "@khmyznikov/pwa-install";
+import { useEffect, useRef } from "react";
 
 const INSTALL_DESCRIPTION =
 	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";

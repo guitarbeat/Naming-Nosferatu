@@ -1,15 +1,7 @@
-import {
-	Activity,
-	BarChart3,
-	Eye,
-	EyeOff,
-	Target,
-	TrendingUp,
-	Trophy,
-	Users,
-} from "lucide-react";
+import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, Users } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
+import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import {
@@ -20,9 +12,8 @@ import {
 	SectionHeader,
 	StatTile,
 } from "./components/DashboardPrimitives";
-import { ProfilePanel } from "./components/ProfilePanel";
-import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
+import { ProfilePanel } from "./components/ProfilePanel";
 import { type QuickStat } from "./components/QuickStatsPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
@@ -124,15 +115,11 @@ function DashboardEmptyState({
 			/>
 			<div className="grid gap-3 md:grid-cols-2">
 				<div className={`${themeSurfaces.panelDense} p-4`}>
-					<p className={themeText.eyebrowWide}>
-						Personal Layer
-					</p>
+					<p className={themeText.eyebrowWide}>Personal Layer</p>
 					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">Your saved order.</p>
 				</div>
 				<div className={`${themeSurfaces.panelDense} p-4`}>
-					<p className={themeText.eyebrowWide}>
-						Community Layer
-					</p>
+					<p className={themeText.eyebrowWide}>Community Layer</p>
 					<p className="mt-2 text-sm leading-relaxed text-muted-foreground/75">
 						Aggregate site stats.
 					</p>
