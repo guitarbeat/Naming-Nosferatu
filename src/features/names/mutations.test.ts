@@ -386,12 +386,12 @@ describe("unhideName", () => {
 		expect(result).toEqual({ success: true });
 		expect(mockRpc).toHaveBeenCalledWith("toggle_name_visibility", {
 			p_name_id: "name-123",
-			p_hide: false, // Since unhideName unhides the name
+			p_hide: false,
 			p_user_name: "admin",
 		});
 	});
 
-	it("returns success: false with error message when unhiding fails", async () => {
+	it("returns success: false with error message when unhiding fails with an Error object", async () => {
 		mockRpc.mockImplementationOnce(() => {
 			throw new Error("Permission denied");
 		});
@@ -404,17 +404,16 @@ describe("unhideName", () => {
 		});
 	});
 
-	it("returns generic error message if a non-Error is thrown", async () => {
-		// Mock withSupabase or resolveSupabaseClient to throw a string instead of Error
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({
-			user: { isAdmin: false },
-		} as never);
+	it("returns success: false with generic error message when unhiding fails with a non-Error", async () => {
+		mockRpc.mockImplementationOnce(() => {
+			throw "String error instead of Error object";
+		});
 
 		const result = await unhideName("admin", "name-123");
 
 		expect(result).toEqual({
 			success: false,
-			error: "Admin privileges required", // The assertAdmin function throws an Error object
+			error: "Failed to unhide name",
 		});
 	});
 });
