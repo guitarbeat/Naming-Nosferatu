@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Team } from "@/shared/types";
-import { createTeamsById } from "./tournamentLogic";
+import type { Team, NameItem } from "@/shared/types";
+import { createTeamsById, createIdToNameMap } from "./tournamentLogic";
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -30,5 +30,37 @@ describe("createTeamsById", () => {
 		expect(result).toBeInstanceOf(Map);
 		expect(result.size).toBe(1);
 		expect(result.get("team1")).toEqual(teamB);
+	});
+});
+
+
+describe("createIdToNameMap", () => {
+	it("returns an empty map when given an empty array", () => {
+		const result = createIdToNameMap([]);
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(0);
+	});
+
+	it("returns a map with names keyed by their stringified ID", () => {
+		const names: NameItem[] = [
+			{ id: "name1", name: "Name 1" },
+			{ id: 2, name: "Name 2" },
+		];
+		const result = createIdToNameMap(names);
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(2);
+		expect(result.get("name1")).toEqual(names[0]);
+		expect(result.get("2")).toEqual(names[1]);
+	});
+
+	it("overrides earlier names if duplicate IDs exist", () => {
+		const nameA: NameItem = { id: "name1", name: "Name 1" };
+		const nameB: NameItem = { id: "name1", name: "Name 2" };
+		const names: NameItem[] = [nameA, nameB];
+
+		const result = createIdToNameMap(names);
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(1);
+		expect(result.get("name1")).toEqual(nameB);
 	});
 });
