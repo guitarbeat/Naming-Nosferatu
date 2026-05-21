@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import {
 	batchUpdateLocked,
 	batchUpdateVisibility,
@@ -72,9 +73,7 @@ describe("softDeleteName", () => {
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow(
-			"Supabase client not available",
-		);
+		await expect(softDeleteName({ nameId: "abc-123" })).rejects.toThrow(SUPABASE_UNAVAILABLE_MSG);
 	});
 
 	it("throws when user is not an admin", async () => {
@@ -130,7 +129,7 @@ describe("batchUpdateVisibility", () => {
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
 		await expect(batchUpdateVisibility({ nameIds: ["id-1"], isHidden: true })).rejects.toThrow(
-			"Supabase client not available",
+			SUPABASE_UNAVAILABLE_MSG,
 		);
 	});
 
@@ -244,7 +243,7 @@ describe("toggleNameLocked", () => {
 				isCurrentlyLocked: false,
 				userName: "admin",
 			}),
-		).rejects.toThrow("Supabase client not available");
+		).rejects.toThrow(SUPABASE_UNAVAILABLE_MSG);
 	});
 
 	it("throws when user is not an admin", async () => {
@@ -316,7 +315,7 @@ describe("unhideAllNames", () => {
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null as never);
-		await expect(unhideAllNames()).rejects.toThrow("Supabase client not available");
+		await expect(unhideAllNames()).rejects.toThrow(SUPABASE_UNAVAILABLE_MSG);
 	});
 });
 
@@ -363,7 +362,7 @@ describe("batchUpdateLocked", () => {
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
 		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
-			"Supabase client not available",
+			SUPABASE_UNAVAILABLE_MSG,
 		);
 	});
 

@@ -4,7 +4,11 @@ import type { Database } from "@/integrations/supabase/types";
 import { isRpcSignatureError } from "@/shared/lib/errors";
 import { mapNameRow } from "@/shared/lib/names/mapNameRow";
 import { assertAdmin } from "@/shared/services/authUtils";
-import { throwOnFailureResponse } from "@/shared/services/supabase/errorUtils";
+import {
+	throwOnFailureResponse,
+	throwOnRpcError,
+	throwSupabaseUnavailable,
+} from "@/shared/services/supabase/errorUtils";
 import { resolveSupabaseClient, withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
 
@@ -43,7 +47,7 @@ async function runAdminMutation<T>(
 	);
 
 	if (result === SUPABASE_UNAVAILABLE) {
-		throw new Error("Supabase client not available");
+		throwSupabaseUnavailable();
 	}
 
 	return result;
@@ -101,7 +105,7 @@ export async function fetchHiddenNames(): Promise<NamesQueryResult> {
 	assertAdmin("Admin privileges required to view hidden names");
 	const client = await resolveSupabaseClient();
 	if (!client) {
-		throw new Error("Supabase client not available");
+		throwSupabaseUnavailable();
 	}
 
 	const { data, error } = await client
@@ -127,7 +131,7 @@ export async function fetchHiddenNames(): Promise<NamesQueryResult> {
 export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	const names = await fetchNamesFromSupabase(includeHidden);
 	if (names === null) {
-		throw new Error("Supabase client not available");
+		throwSupabaseUnavailable();
 	}
 	return { names, source: "supabase" };
 }
@@ -273,9 +277,7 @@ export async function addName(params: { name: string; description?: string }): P
 			p_name: params.name,
 			p_description: params.description || "",
 		});
-		if (error) {
-			throw new Error(error.message || "Failed to add name");
-		}
+		throwOnRpcError(error, "Failed to add name");
 		const row = Array.isArray(data) ? data[0] : data;
 		if (!row) {
 			throw new Error("No data returned from add_cat_name");

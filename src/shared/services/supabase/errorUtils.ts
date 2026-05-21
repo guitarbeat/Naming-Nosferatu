@@ -1,3 +1,9 @@
+export const SUPABASE_UNAVAILABLE_MSG = "Supabase client not available";
+
+export function throwSupabaseUnavailable(): never {
+	throw new Error(SUPABASE_UNAVAILABLE_MSG);
+}
+
 /**
  * Centralized error handling utilities for Supabase operations.
  * Consolidates error patterns used across multiple services.

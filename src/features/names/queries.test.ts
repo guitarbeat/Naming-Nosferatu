@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import {
 	fetchHiddenNames,
 	fetchNames,
@@ -70,7 +71,7 @@ describe("fetchNames", () => {
 
 	it("throws when Supabase client is unavailable", async () => {
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(fetchNames(false)).rejects.toThrow("Supabase client not available");
+		await expect(fetchNames(false)).rejects.toThrow(SUPABASE_UNAVAILABLE_MSG);
 	});
 
 	it("throws on database error", async () => {
@@ -104,7 +105,7 @@ describe("fetchHiddenNames", () => {
 			user: { isAdmin: true },
 		} as never);
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
-		await expect(fetchHiddenNames()).rejects.toThrow("Supabase client not available");
+		await expect(fetchHiddenNames()).rejects.toThrow(SUPABASE_UNAVAILABLE_MSG);
 	});
 
 	it("allows admin to fetch hidden names", async () => {
