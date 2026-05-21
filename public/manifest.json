@@ -9,8 +9,8 @@
 	"scope": "/",
 	"display": "standalone",
 	"display_override": ["standalone", "minimal-ui"],
-	"background_color": "#0a0e14",
-	"theme_color": "#0a0e14",
+	"background_color": "#12100d",
+	"theme_color": "#12100d",
 	"orientation": "any",
 	"categories": ["entertainment", "utilities"],
 	"icons": [

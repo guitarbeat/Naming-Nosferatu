@@ -5,7 +5,7 @@ import type { PWAInstallElement } from "@khmyznikov/pwa-install";
 const INSTALL_DESCRIPTION =
 	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";
 
-const PWA_TINT = "hsl(190, 58%, 38%)";
+const PWA_TINT = "hsl(152, 26%, 42%)";
 
 /**
  * Cross-browser PWA install dialog (Chromium prompt + Apple share instructions).

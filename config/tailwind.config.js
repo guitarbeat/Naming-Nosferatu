@@ -24,7 +24,7 @@ export default {
                         colors: {
                                 stardust: "#4DC8F5",
 
-                                charcoal: "hsl(var(--charcoal))",
+                                charcoal: "hsl(var(--pw-indigo-hsl))",
                                 "blue-gray": "hsl(var(--blue-gray))",
                                 mimosa: "hsl(var(--mimosa))",
                                 gold: "hsl(var(--gold))",

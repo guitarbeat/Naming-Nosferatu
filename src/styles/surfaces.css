@@ -7,7 +7,7 @@
 	.surface-panel {
 		border-radius: var(--radius-xl);
 		border: 1px solid var(--glass-border);
-		background: var(--glass-bg);
+		background: color-mix(in srgb, var(--glass-bg) 88%, hsl(var(--pw-cream-hsl)) 12%);
 		backdrop-filter: blur(var(--glass-blur));
 		box-shadow: var(--shadow-sm);
 	}
@@ -16,7 +16,7 @@
 		overflow: hidden;
 		border-radius: var(--radius-xl);
 		border: 1px solid var(--glass-border);
-		background: color-mix(in srgb, var(--card) 35%, transparent);
+		background: color-mix(in srgb, var(--card) 72%, hsl(var(--pw-sand-hsl) / 8%));
 	}
 
 	.surface-avatar {

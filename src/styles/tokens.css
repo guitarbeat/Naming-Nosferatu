@@ -324,25 +324,27 @@
    WEBSITE-INSPIRED TOKEN BRIDGE
    ========================================================================== */
 :root {
-	/* Core palette (HSL tuples for Tailwind + semantic binding) */
-	--pw-sage-hsl: 190 58% 38%;
-	--pw-coral-hsl: 18 68% 56%;
-	--pw-sand-hsl: 31 28% 58%;
-	--pw-indigo-hsl: 224 22% 14%;
-	--pw-mimosa-hsl: 42 82% 60%;
-	--pw-danger-hsl: 6 68% 52%;
-	--pw-info-hsl: 212 78% 61%;
-	--pw-lavender-hsl: 246 52% 87%;
-	--pw-rose-hsl: 330 73% 64%;
+	/* Core palette — warm ink, clay, and muted botanical accents */
+	--pw-sage-hsl: 152 26% 42%;
+	--pw-coral-hsl: 24 48% 54%;
+	--pw-sand-hsl: 34 32% 62%;
+	--pw-indigo-hsl: 28 16% 18%;
+	--pw-mimosa-hsl: 38 72% 58%;
+	--pw-danger-hsl: 8 58% 48%;
+	--pw-info-hsl: 205 42% 52%;
+	--pw-lavender-hsl: 280 28% 78%;
+	--pw-rose-hsl: 12 42% 58%;
+	--pw-clay-hsl: 22 35% 48%;
+	--pw-cream-hsl: 38 42% 92%;
 
-	/* Dark defaults — aligned with app shell and PWA manifest */
-	--pw-bg-0: #0a0e14;
-	--pw-bg-1: #121820;
-	--pw-bg-2: #1a222c;
-	--pw-bg-3: #232d3a;
-	--pw-text-strong: #eef3f9;
-	--pw-text-base: #c8d4e0;
-	--pw-text-muted: #8f9bab;
+	/* Dark defaults — cozy study at night (paper + lamplight) */
+	--pw-bg-0: #12100d;
+	--pw-bg-1: #1a1713;
+	--pw-bg-2: #242019;
+	--pw-bg-3: #2f2922;
+	--pw-text-strong: #f5f0e8;
+	--pw-text-base: #d4c8b8;
+	--pw-text-muted: #9a8b7a;
 	--pw-border-soft: color-mix(in srgb, var(--pw-text-strong) 16%, transparent);
 	--pw-border-strong: color-mix(in srgb, var(--pw-text-strong) 28%, transparent);
 
@@ -388,11 +390,11 @@
 	--app-boot-bg: var(--pw-bg-0);
 
 	/* Tailwind color tuple support */
-	--charcoal: 227 18% 18%;
+	--charcoal: var(--pw-indigo-hsl);
 	--blue-gray: 214 22% 31%;
 	--mimosa: var(--pw-mimosa-hsl);
 	--gold: 34 62% 52%;
-	--neon-cyan: 190 72% 53%;
+	--neon-cyan: 152 32% 48%;
 	--hot-pink: var(--pw-rose-hsl);
 	--fire-red: var(--pw-danger-hsl);
 	--coral: var(--pw-coral-hsl);
@@ -408,7 +410,7 @@
 	--color-hot-pink: hsl(var(--hot-pink));
 	--color-mimosa: hsl(var(--mimosa));
 	--pw-analysis-accent: hsl(var(--pw-sage-hsl));
-	--pw-analysis-accent-rgb: 39, 135, 153;
+	--pw-analysis-accent-rgb: 82, 118, 98;
 }
 
 /* ==========================================================================
@@ -418,21 +420,21 @@
 	--primary-color: hsl(var(--pw-sage-hsl));
 	--primary-light: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 68%, white);
 	--primary-dark: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 76%, black);
-	--background: hsl(224deg 28% 6%);
-	--foreground: hsl(210deg 32% 95%);
-	--card: hsl(222deg 22% 11%);
-	--card-foreground: hsl(210deg 32% 95%);
-	--popover: hsl(222deg 22% 11%);
-	--popover-foreground: hsl(210deg 32% 95%);
+	--background: hsl(32deg 18% 8%);
+	--foreground: hsl(38deg 35% 94%);
+	--card: hsl(30deg 14% 12%);
+	--card-foreground: hsl(38deg 35% 94%);
+	--popover: hsl(30deg 14% 12%);
+	--popover-foreground: hsl(38deg 35% 94%);
 	--primary: hsl(var(--pw-sage-hsl));
-	--primary-foreground: hsl(0deg 0% 100%);
-	--secondary: hsl(218deg 18% 17%);
-	--secondary-foreground: hsl(210deg 28% 90%);
+	--primary-foreground: hsl(38deg 42% 96%);
+	--secondary: hsl(28deg 12% 18%);
+	--secondary-foreground: hsl(36deg 28% 88%);
 	--accent: hsl(var(--pw-coral-hsl));
-	--accent-foreground: hsl(0deg 0% 100%);
-	--border: hsl(220deg 16% 24%);
-	--input: hsl(220deg 16% 24%);
-	--ring: hsl(var(--pw-sage-hsl));
+	--accent-foreground: hsl(38deg 42% 96%);
+	--border: hsl(30deg 12% 26%);
+	--input: hsl(30deg 12% 26%);
+	--ring: hsl(var(--pw-coral-hsl));
 	--chart-1: hsl(var(--pw-coral-hsl));
 	--chart-2: hsl(var(--pw-sage-hsl));
 	--chart-3: hsl(var(--pw-indigo-hsl));
@@ -483,8 +485,8 @@
 	--glass-blur: 12px;
 	--glass-shadow: var(--pw-shadow-md);
 	--glass-shadow-colored:
-		0 18px 40px color-mix(in srgb, var(--color-neon-cyan) 10%, transparent),
-		0 14px 32px color-mix(in srgb, var(--color-hot-pink) 8%, transparent);
+		0 18px 40px color-mix(in srgb, hsl(var(--pw-coral-hsl)) 12%, transparent),
+		0 14px 32px color-mix(in srgb, hsl(var(--pw-sage-hsl)) 10%, transparent);
 
 	/* Shadow utilities (theme-specific) */
 	--shadow-sm: var(--pw-shadow-sm);
@@ -521,8 +523,8 @@
 	);
 	--namecard-selected-border: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 62%, white);
 	--namecard-selected-description: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 82%, white);
-	--muted: hsl(218deg 18% 15%);
-	--muted-foreground: hsl(214deg 14% 68%);
+	--muted: hsl(28deg 10% 16%);
+	--muted-foreground: hsl(32deg 12% 62%);
 
 	/* Navigation tokens */
 	--nav-bg: color-mix(in srgb, var(--surface-muted) 80%, transparent);
@@ -566,44 +568,44 @@
    LIGHT THEME TOKENS
    ========================================================================== */
 :root[data-theme="light"] {
-	--pw-bg-0: #f2f3f5;
-	--pw-bg-1: #ffffff;
-	--pw-bg-2: #eef1f4;
-	--pw-bg-3: #dde3ea;
-	--pw-text-strong: #1e2530;
-	--pw-text-base: #3c4857;
-	--pw-text-muted: #5f6d7d;
+	--pw-bg-0: #f3ede4;
+	--pw-bg-1: #faf6f0;
+	--pw-bg-2: #ebe4d8;
+	--pw-bg-3: #ddd4c4;
+	--pw-text-strong: #2a2218;
+	--pw-text-base: #4a4034;
+	--pw-text-muted: #7a6e5e;
 	--pw-border-soft: color-mix(in srgb, var(--pw-text-strong) 18%, transparent);
 	--pw-border-strong: color-mix(in srgb, var(--pw-text-strong) 28%, transparent);
 	--pw-shadow-sm: 0 1px 3px rgb(15 23 42 / 12%);
 	--pw-shadow-md: 0 10px 20px rgb(15 23 42 / 14%);
 	--pw-shadow-lg: 0 24px 48px rgb(15 23 42 / 16%);
-	--pw-analysis-accent: hsl(190deg 58% 34%);
-	--pw-analysis-accent-rgb: 36, 117, 137;
+	--pw-analysis-accent: hsl(152deg 26% 38%);
+	--pw-analysis-accent-rgb: 72, 108, 92;
 
 	/* Keep semantic tokens coherent with light mode contrast */
 	--button-secondary-bg: color-mix(in srgb, var(--pw-text-strong) 8%, transparent);
 	--button-secondary-hover: color-mix(in srgb, var(--pw-text-strong) 14%, transparent);
-	--button-text-light: #101417;
+	--button-text-light: #1f1a14;
 
 	/* Align major semantic tokens used by utility-driven components */
-	--background: hsl(210deg 33% 99%);
-	--foreground: hsl(220deg 24% 16%);
-	--card: hsl(0deg 0% 100%);
-	--card-foreground: hsl(220deg 24% 16%);
-	--popover: hsl(0deg 0% 100%);
-	--popover-foreground: hsl(220deg 24% 16%);
-	--primary: hsl(190deg 55% 34%);
-	--primary-foreground: hsl(0deg 0% 100%);
-	--secondary: hsl(214deg 24% 93%);
-	--secondary-foreground: hsl(220deg 24% 20%);
-	--muted: hsl(212deg 24% 92%);
-	--muted-foreground: hsl(215deg 16% 41%);
-	--accent: hsl(16deg 71% 53%);
-	--accent-foreground: hsl(0deg 0% 100%);
-	--border: hsl(214deg 26% 78%);
-	--input: hsl(214deg 26% 78%);
-	--ring: hsl(190deg 55% 34%);
+	--background: hsl(38deg 42% 96%);
+	--foreground: hsl(28deg 22% 16%);
+	--card: hsl(40deg 38% 99%);
+	--card-foreground: hsl(28deg 22% 16%);
+	--popover: hsl(40deg 38% 99%);
+	--popover-foreground: hsl(28deg 22% 16%);
+	--primary: hsl(var(--pw-sage-hsl));
+	--primary-foreground: hsl(38deg 42% 98%);
+	--secondary: hsl(34deg 22% 90%);
+	--secondary-foreground: hsl(28deg 18% 22%);
+	--muted: hsl(36deg 20% 88%);
+	--muted-foreground: hsl(30deg 10% 42%);
+	--accent: hsl(var(--pw-coral-hsl));
+	--accent-foreground: hsl(38deg 42% 98%);
+	--border: hsl(32deg 18% 78%);
+	--input: hsl(32deg 18% 78%);
+	--ring: hsl(var(--pw-coral-hsl));
 }
 
 /* ==========================================================================

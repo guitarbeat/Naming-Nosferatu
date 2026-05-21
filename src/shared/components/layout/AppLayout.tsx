@@ -30,6 +30,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 	return (
 		<ErrorBoundary context="Main Application Layout">
 			<div className="app relative min-h-dvh w-full text-foreground">
+				<div className="app-ambient" aria-hidden="true" />
 				<PwaInstallPrompt />
 				<OfflineIndicator />
 				{analyticsEnabled && import.meta.env.VITE_VERCEL_ANALYTICS === "true" && <Analytics />}
