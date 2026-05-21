@@ -1,18 +1,36 @@
 {
+	"id": "/",
 	"name": "Name Nosferatu",
 	"short_name": "NameNosferatu",
 	"description": "Pick the perfect cat name via a fun tournament. Save, compare, and share results.",
+	"lang": "en",
+	"dir": "ltr",
 	"start_url": "/",
+	"scope": "/",
 	"display": "standalone",
+	"display_override": ["standalone", "minimal-ui"],
 	"background_color": "#0a0e14",
 	"theme_color": "#0a0e14",
-	"orientation": "portrait-primary",
+	"orientation": "any",
+	"categories": ["entertainment", "utilities"],
 	"icons": [
 		{
 			"src": "/assets/images/favicon.png",
-			"sizes": "192x192 512x512",
+			"sizes": "192x192",
 			"type": "image/png",
-			"purpose": "any maskable"
+			"purpose": "any"
+		},
+		{
+			"src": "/assets/images/favicon.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any"
+		},
+		{
+			"src": "/assets/images/favicon.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
 		}
 	]
 }

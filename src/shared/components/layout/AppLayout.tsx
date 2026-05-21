@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/react";
 import { lazy, type ReactNode, Suspense } from "react";
 import { shouldEnableAnalytics } from "@/app/analytics";
+import { PwaInstallPrompt } from "@/app/components/PwaInstallPrompt";
 import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import { ErrorBoundary, ErrorComponent } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
@@ -29,6 +30,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 	return (
 		<ErrorBoundary context="Main Application Layout">
 			<div className="app relative min-h-dvh w-full text-foreground">
+				<PwaInstallPrompt />
 				<OfflineIndicator />
 				{analyticsEnabled && import.meta.env.VITE_VERCEL_ANALYTICS === "true" && <Analytics />}
 

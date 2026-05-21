@@ -6,8 +6,11 @@ import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary
 import { supabaseAuthAdapter as authAdapter } from "@/shared/services/supabase/authAdapter";
 import { queryClient } from "@/shared/services/supabase/runtime";
 import App from "./App";
+import { registerServiceWorker } from "./registerServiceWorker";
 import { Providers } from "./providers/Providers";
 import "../index.css";
+
+registerServiceWorker();
 
 async function initSentry(): Promise<void> {
 	if (!import.meta.env.PROD || !import.meta.env.VITE_SENTRY_DSN) {
