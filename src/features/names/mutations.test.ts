@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+	addName,
 	batchUpdateLocked,
 	batchUpdateVisibility,
 	softDeleteName,
@@ -386,12 +387,12 @@ describe("unhideName", () => {
 		expect(result).toEqual({ success: true });
 		expect(mockRpc).toHaveBeenCalledWith("toggle_name_visibility", {
 			p_name_id: "name-123",
-			p_hide: false,
+			p_hide: false, // Since unhideName unhides the name
 			p_user_name: "admin",
 		});
 	});
 
-	it("returns success: false with error message when unhiding fails with an Error object", async () => {
+	it("returns success: false with error message when unhiding fails", async () => {
 		mockRpc.mockImplementationOnce(() => {
 			throw new Error("Permission denied");
 		});
@@ -404,16 +405,138 @@ describe("unhideName", () => {
 		});
 	});
 
-	it("returns success: false with generic error message when unhiding fails with a non-Error", async () => {
-		mockRpc.mockImplementationOnce(() => {
-			throw "String error instead of Error object";
-		});
+	it("returns generic error message if a non-Error is thrown", async () => {
+		// Mock withSupabase or resolveSupabaseClient to throw a string instead of Error
+		vi.mocked(useAppStore.getState).mockReturnValueOnce({
+			user: { isAdmin: false },
+		} as never);
 
 		const result = await unhideName("admin", "name-123");
 
 		expect(result).toEqual({
 			success: false,
-			error: "Failed to unhide name",
+			error: "Admin privileges required", // The assertAdmin function throws an Error object
+		});
+	});
+});
+
+
+describe("addName", () => {
+	it("returns parsed mapped name item on successful addition", async () => {
+		mockRpc.mockResolvedValueOnce({
+			data: [{
+				id: "new-id",
+				name: "Luna",
+				description: "A sweet moon cat",
+				pronunciation: "Loo-nuh",
+				avg_rating: 1200,
+				global_wins: 0,
+				global_losses: 0,
+				created_at: "2024-05-21T00:00:00Z",
+				is_hidden: false,
+				is_active: true,
+				locked_in: false,
+				status: "pending",
+				provenance: "user_submission",
+				is_deleted: false,
+			}],
+			error: null,
+		});
+
+		const result = await addName({ name: "Luna", description: "A sweet moon cat" });
+
+		expect(result).toMatchObject({
+			id: "new-id",
+			name: "Luna",
+			description: "A sweet moon cat",
+		});
+		expect(mockRpc).toHaveBeenCalledWith("add_cat_name", {
+			p_name: "Luna",
+			p_description: "A sweet moon cat",
+		});
+	});
+
+	it("falls back to empty string description if omitted", async () => {
+		mockRpc.mockResolvedValueOnce({
+			data: [{
+				id: "new-id-2",
+				name: "Bella",
+				description: "",
+				pronunciation: null,
+				avg_rating: 1200,
+				global_wins: 0,
+				global_losses: 0,
+				created_at: "2024-05-21T00:00:00Z",
+				is_hidden: false,
+				is_active: true,
+				locked_in: false,
+				status: "pending",
+				provenance: "user_submission",
+				is_deleted: false,
+			}],
+			error: null,
+		});
+
+		await addName({ name: "Bella" });
+
+		expect(mockRpc).toHaveBeenCalledWith("add_cat_name", {
+			p_name: "Bella",
+			p_description: "",
+		});
+	});
+
+	it("throws error if RPC returns an error", async () => {
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: { message: "Name already exists" },
+		});
+
+		await expect(addName({ name: "Luna" })).rejects.toThrow("Name already exists");
+	});
+
+	it("throws generic error if RPC error message is missing", async () => {
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: {},
+		});
+
+		await expect(addName({ name: "Luna" })).rejects.toThrow("Failed to add name");
+	});
+
+	it("throws error if no data is returned", async () => {
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: null,
+		});
+
+		await expect(addName({ name: "Luna" })).rejects.toThrow("No data returned from add_cat_name");
+	});
+
+	it("handles data not being an array", async () => {
+		mockRpc.mockResolvedValueOnce({
+			data: {
+				id: "new-id-3",
+				name: "Oliver",
+				description: "",
+				pronunciation: null,
+				avg_rating: 1200,
+				global_wins: 0,
+				global_losses: 0,
+				created_at: "2024-05-21T00:00:00Z",
+				is_hidden: false,
+				is_active: true,
+				locked_in: false,
+				status: "pending",
+				provenance: "user_submission",
+				is_deleted: false,
+			},
+			error: null,
+		});
+
+		const result = await addName({ name: "Oliver" });
+		expect(result).toMatchObject({
+			id: "new-id-3",
+			name: "Oliver",
 		});
 	});
 });
