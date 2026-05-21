@@ -69,7 +69,7 @@ describe("ProfileInner", () => {
 			expect(onLogin).toHaveBeenCalledWith("Ada");
 		});
 		expect(
-			screen.getByText("We couldn't log you in with that name. Try again."),
+			await screen.findByText("We couldn't log you in with that name. Try again."),
 		).toBeInTheDocument();
 		expect(screen.getByRole("button", { name: "Begin Journey" })).toBeInTheDocument();
 	});

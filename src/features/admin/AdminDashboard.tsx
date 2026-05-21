@@ -12,7 +12,7 @@ import {
 	buildAdminStats,
 	filterNamesByStatusAndSearch,
 	mapNameToDisplay,
-} from "@/features/admin/utils";
+} from "@/features/admin/utils/adminUtils";
 import { namesQueryOptions } from "@/features/names/api";
 import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
