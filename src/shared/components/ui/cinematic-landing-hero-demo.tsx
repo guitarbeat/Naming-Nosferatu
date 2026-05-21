@@ -1,6 +1,6 @@
 "use client";
 
-import { CinematicHero } from "./cinematic-landing-hero";
+import { CinematicHero } from "./CinematicHero";
 
 export default function CinematicHeroDemo() {
 	return (
