@@ -5,21 +5,7 @@ import {
 	matchesNameSearchTerm,
 } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
-import type { AdminStats, DashboardTab, NameFilter, NameWithStats, SiteStatsLike } from "./types";
-
-export const ADMIN_TABS: readonly { id: DashboardTab; label: string }[] = [
-	{ id: "overview", label: "Overview" },
-	{ id: "names", label: "Names" },
-	{ id: "users", label: "Users" },
-	{ id: "analytics", label: "Analytics" },
-];
-
-export const FILTER_OPTIONS: readonly { value: NameFilter; label: string }[] = [
-	{ value: "all", label: "All Names" },
-	{ value: "active", label: "Active" },
-	{ value: "hidden", label: "Hidden" },
-	{ value: "locked", label: "Locked In" },
-];
+import type { AdminStats, NameFilter, NameWithStats, SiteStatsLike } from "./types";
 
 export function toNumber(value: unknown): number {
 	const parsed = Number(value);

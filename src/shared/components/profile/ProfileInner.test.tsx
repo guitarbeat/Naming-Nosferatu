@@ -52,7 +52,11 @@ describe("ProfileInner", () => {
 			isAdmin: false,
 			avatarUrl: undefined,
 		};
-		const onLogin = vi.fn().mockResolvedValue(false);
+		const onLogin = vi
+			.fn()
+			.mockImplementation(
+				() => new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 0)),
+			);
 
 		render(<ProfileInner onLogin={onLogin} onLogout={vi.fn()} />);
 

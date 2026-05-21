@@ -77,10 +77,3 @@ export function buildNameCardImages(names: readonly NameItem[]): {
 
 	return { catImages, catImageById };
 }
-
-export {
-	addManyToSet as addIdsToSet,
-	addToSet as addIdToSet,
-	removeFromSet as removeIdFromSet,
-	toggleInSet as toggleIdInSet,
-} from "@/shared/lib/setUtils";

@@ -6,11 +6,10 @@ import { AdminOverviewTab } from "@/features/admin/components/AdminOverviewTab";
 import { AdminPlaceholderTab } from "@/features/admin/components/AdminPlaceholderTab";
 import { AdminStatsGrid } from "@/features/admin/components/AdminStatsGrid";
 import { AdminTabNav } from "@/features/admin/components/AdminTabNav";
+import { ADMIN_TABS, FILTER_OPTIONS } from "@/features/admin/constants";
 import type { BulkAction, DashboardTab, NameFilter } from "@/features/admin/types";
 import {
-	ADMIN_TABS,
 	buildAdminStats,
-	FILTER_OPTIONS,
 	filterNamesByStatusAndSearch,
 	mapNameToDisplay,
 } from "@/features/admin/utils";
