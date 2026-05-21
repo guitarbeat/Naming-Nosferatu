@@ -1,4 +1,5 @@
 import { User } from "lucide-react";
+import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import { Panel } from "./DashboardPrimitives";
 
 interface ProfilePanelProps {
@@ -15,17 +16,17 @@ export function ProfilePanel({ userName, isAdmin, avatarUrl }: ProfilePanelProps
 					<img
 						src={avatarUrl}
 						alt={userName}
-						className="size-16 rounded-full border border-white/10 object-cover"
+						className={`size-16 rounded-full object-cover ${themeSurfaces.avatar}`}
 					/>
 				) : (
-					<div className="flex size-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-primary">
+					<div
+						className={`flex size-16 items-center justify-center rounded-full text-primary ${themeSurfaces.avatar}`}
+					>
 						<User size={22} />
 					</div>
 				)}
 				<div className="min-w-0">
-					<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/65">
-						Profile
-					</p>
+					<p className={themeText.eyebrowWide}>Profile</p>
 					<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
 					<p className="mt-1 text-sm text-muted-foreground/75">
 						{isAdmin ? "Administrator" : "Tournament participant"}

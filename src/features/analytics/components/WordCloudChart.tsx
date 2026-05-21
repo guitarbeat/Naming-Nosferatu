@@ -23,31 +23,30 @@ function WordTooltip({ name, avgRating, wins, totalRatings }: TooltipProps) {
 	return (
 		<div className="pointer-events-none absolute left-1/2 top-full z-30 mt-3 -translate-x-1/2 translate-y-1 opacity-0 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
 			{/* Caret */}
-			<div className="mx-auto mb-[-1px] h-0 w-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-white/10" />
-			{/* Card */}
-			<div
-				className="min-w-[148px] rounded-[1.1rem] border border-white/10 px-3.5 py-3 text-left shadow-[0_24px_56px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur-xl"
-				style={{ background: "rgba(12,14,22,0.92)" }}
-			>
-				{/* Name */}
-				<p className="mb-2 text-[13px] font-bold leading-none tracking-tight text-white">{name}</p>
-				{/* Divider */}
-				<div className="mb-2 h-px bg-white/8" />
-				{/* Stats row */}
+			<div className="mx-auto mb-[-1px] h-0 w-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-border/50" />
+			<div className="surface-panel min-w-[148px] rounded-[1.1rem] px-3.5 py-3 text-left shadow-lg">
+				<p className="mb-2 text-[13px] font-bold leading-none tracking-tight text-foreground">
+					{name}
+				</p>
+				<div className="mb-2 h-px bg-border/40" />
 				<div className="flex flex-col gap-1.5">
 					<div className="flex items-center justify-between gap-6">
-						<span className="text-[11px] text-white/45">Avg rating</span>
-						<span className="text-[11px] font-semibold tabular-nums text-white/90">
+						<span className="text-[11px] text-muted-foreground/70">Avg rating</span>
+						<span className="text-[11px] font-semibold tabular-nums text-foreground/90">
 							{Math.round(avgRating)}
 						</span>
 					</div>
 					<div className="flex items-center justify-between gap-6">
-						<span className="text-[11px] text-white/45">Wins</span>
-						<span className="text-[11px] font-semibold tabular-nums text-white/90">{wins}</span>
+						<span className="text-[11px] text-muted-foreground/70">Wins</span>
+						<span className="text-[11px] font-semibold tabular-nums text-foreground/90">
+							{wins}
+						</span>
 					</div>
 					<div className="flex items-center justify-between gap-6">
-						<span className="text-[11px] text-white/45">Win rate</span>
-						<span className="text-[11px] font-semibold tabular-nums text-white/90">{winRate}%</span>
+						<span className="text-[11px] text-muted-foreground/70">Win rate</span>
+						<span className="text-[11px] font-semibold tabular-nums text-foreground/90">
+							{winRate}%
+						</span>
 					</div>
 				</div>
 			</div>
@@ -64,12 +63,12 @@ export function WordCloudChart({ leaderboard }: WordCloudChartProps) {
 				index % 5 === 0
 					? "text-primary"
 					: index % 5 === 1
-						? "text-white/95"
+						? "text-foreground/95"
 						: index % 5 === 2
-							? "text-white/82"
+							? "text-foreground/82"
 							: index % 5 === 3
-								? "text-white/68"
-								: "text-white/54";
+								? "text-foreground/68"
+								: "text-muted-foreground/75";
 			return { ...entry, size, tone };
 		});
 

@@ -63,7 +63,7 @@ export function useAsyncData<T>(
 		return () => {
 			isActive = false;
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// biome-ignore lint/correctness/useExhaustiveDependencies: caller supplies dependency list
 	}, deps);
 
 	return { data, isLoading, error, refresh: run };

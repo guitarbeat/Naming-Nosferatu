@@ -137,11 +137,15 @@ export interface CinematicHeroProps extends React.HTMLAttributes<HTMLDivElement>
 	isScrollAnimated?: boolean;
 }
 
+function defaultHeroCta() {
+	return;
+}
+
 export function CinematicHero({
 	tagline1 = "Pick the perfect",
 	tagline2 = "name for your cat.",
 	description = "Run a tournament, gather opinions, and find the name that fits. Fair, visual, and surprisingly fun.",
-	onCTA = () => {},
+	onCTA = defaultHeroCta,
 	ctaLabel = "Start a tournament",
 	isScrollAnimated = true,
 	className,

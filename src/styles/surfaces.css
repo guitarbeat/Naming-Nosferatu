@@ -1,0 +1,42 @@
+/**
+ * @file surfaces.css
+ * @description Semantic surface utilities backed by design tokens.
+ */
+
+@layer utilities {
+	.surface-panel {
+		border-radius: var(--radius-xl);
+		border: 1px solid var(--glass-border);
+		background: color-mix(in srgb, var(--glass-bg) 88%, hsl(var(--pw-cream-hsl)) 12%);
+		backdrop-filter: blur(var(--glass-blur));
+		box-shadow: var(--shadow-sm);
+	}
+
+	.surface-panel-inset {
+		overflow: hidden;
+		border-radius: var(--radius-xl);
+		border: 1px solid var(--glass-border);
+		background: color-mix(in srgb, var(--card) 72%, hsl(var(--pw-sand-hsl) / 8%));
+	}
+
+	.surface-avatar {
+		border: 1px solid var(--glass-border-hover);
+		background: color-mix(in srgb, var(--foreground) 4%, transparent);
+	}
+
+	.text-eyebrow {
+		font-size: 0.625rem;
+		font-weight: 600;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--muted-foreground) 60%, transparent);
+	}
+
+	.text-eyebrow-wide {
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--muted-foreground) 55%, transparent);
+	}
+}

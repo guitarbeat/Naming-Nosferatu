@@ -1,4 +1,5 @@
 import type { ElementType, ReactNode } from "react";
+import { themeSurfaces } from "@/shared/lib/themeClasses";
 import { cn } from "@/shared/lib/utils";
 
 interface EmptyStateProps {
@@ -20,7 +21,8 @@ export function EmptyState({
 		return (
 			<div
 				className={cn(
-					"rounded-2xl border border-white/10 bg-black/15 px-4 py-8 text-center text-sm text-muted-foreground/75",
+					themeSurfaces.panelInset,
+					"px-4 py-8 text-center text-sm text-muted-foreground/75",
 					className,
 				)}
 			>

@@ -328,7 +328,7 @@ export function NameSelector() {
 		[],
 	);
 
-	const markSwiped = useCallback((nameId: IdType, direction: "left" | "right") => {
+	const markSwiped = useCallback((nameId: IdType, _direction: "left" | "right") => {
 		setSwipedIds((prev) => addToSet(prev, nameId));
 	}, []);
 

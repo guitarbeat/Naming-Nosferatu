@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
-import { Panel, SectionHeader } from "./DashboardPrimitives";
+import { ListPanel, ListPanelRow, Panel, SectionHeader } from "./DashboardPrimitives";
 
 interface HiddenName {
 	id: string;
@@ -40,31 +40,30 @@ export function HiddenNamesPanel({
 				}
 			/>
 			{showHiddenNames ? (
-				<div className="overflow-hidden rounded-2xl border border-white/10 bg-black/15">
+				<ListPanel>
 					{hiddenNames.length > 0 ? (
 						hiddenNames.map((name, index) => (
-							<div
+							<ListPanelRow
 								key={name.id}
-								className={`flex items-center justify-between gap-3 px-4 py-3 ${
-									index < hiddenNames.length - 1 ? "border-b border-white/10" : ""
-								}`}
+								divided={index < hiddenNames.length - 1}
+								className="justify-between"
 							>
 								<span className="text-sm font-medium text-foreground">{name.name}</span>
 								<Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
 									<Eye size={14} />
 									Unhide
 								</Button>
-							</div>
+							</ListPanelRow>
 						))
 					) : (
 						<EmptyState variant="inline" title="No hidden names." />
 					)}
-				</div>
+				</ListPanel>
 			) : (
 				<EmptyState
 					variant="box"
 					title="Open the list to review and restore hidden names."
-					className="border-dashed bg-black/10"
+					className="border-dashed bg-muted/20"
 				/>
 			)}
 		</Panel>
