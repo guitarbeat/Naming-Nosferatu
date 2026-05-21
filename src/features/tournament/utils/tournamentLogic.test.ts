@@ -53,9 +53,6 @@ describe("padForRound", () => {
 	it("pads an array of 5 elements to 8 using BYE strings with the correct round and index", () => {
 		const result = padForRound(["a", "b", "c", "d", "e"], 2);
 		expect(result.length).toBe(8);
-		expect(result).toEqual([
-			"a", "b", "c", "d", "e",
-			"__BYE__2_5", "__BYE__2_6", "__BYE__2_7"
-		]);
+		expect(result).toEqual(["a", "b", "c", "d", "e", "__BYE__2_5", "__BYE__2_6", "__BYE__2_7"]);
 	});
 });
