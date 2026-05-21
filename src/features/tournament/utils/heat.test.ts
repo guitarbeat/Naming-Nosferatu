@@ -70,6 +70,11 @@ describe("heat utils", () => {
 				"text-orange-100 border-orange-300/35 bg-orange-500/10",
 			);
 		});
+		it("returns default classes for invalid/unknown inputs", () => {
+			expect(getHeatTextClasses("unknown" as any)).toBe(
+				"text-orange-100 border-orange-300/35 bg-orange-500/10",
+			);
+		});
 	});
 
 	describe("getHeatGradientClasses", () => {
@@ -87,6 +92,11 @@ describe("heat utils", () => {
 
 		it('returns correct classes for "warm"', () => {
 			expect(getHeatGradientClasses("warm")).toBe(
+				"bg-gradient-to-t from-orange-500/20 via-amber-200/10 to-transparent",
+			);
+		});
+		it("returns default classes for invalid/unknown inputs", () => {
+			expect(getHeatGradientClasses("unknown" as any)).toBe(
 				"bg-gradient-to-t from-orange-500/20 via-amber-200/10 to-transparent",
 			);
 		});
