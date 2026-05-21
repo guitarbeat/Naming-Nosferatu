@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Team, NameItem } from "@/shared/types";
-import { createTeamsById, createIdToNameMap } from "./tournamentLogic";
+import type { NameItem, Team } from "@/shared/types";
+import { createIdToNameMap, createTeamsById } from "./tournamentLogic";
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -32,7 +32,6 @@ describe("createTeamsById", () => {
 		expect(result.get("team1")).toEqual(teamB);
 	});
 });
-
 
 describe("createIdToNameMap", () => {
 	it("returns an empty map when given an empty array", () => {
