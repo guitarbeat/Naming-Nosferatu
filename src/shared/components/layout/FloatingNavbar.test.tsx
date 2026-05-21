@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import type { CSSProperties, ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FloatingNavbar } from "./FloatingNavbar";
@@ -45,22 +44,6 @@ const mockStore = {
 	},
 };
 
-vi.mock("./LiquidGlass", () => ({
-	default: ({
-		children,
-		className,
-		style,
-	}: {
-		children: ReactNode;
-		className?: string;
-		style?: CSSProperties;
-	}) => (
-		<div data-testid="liquid-glass" className={className} style={style}>
-			{children}
-		</div>
-	),
-}));
-
 vi.mock("@/store/appStore", () => ({
 	default: () => mockStore,
 }));
@@ -99,6 +82,22 @@ function mountSections(topById: Record<string, number>) {
 	}
 }
 
+function getNav() {
+	return screen.getByRole("navigation", { name: "Primary" });
+}
+
+function expandNav() {
+	fireEvent.click(screen.getByTestId("dynamic-island-shell"));
+}
+
+function setPastHeroScroll() {
+	Object.defineProperty(window, "scrollY", {
+		writable: true,
+		configurable: true,
+		value: 900,
+	});
+}
+
 describe("FloatingNavbar", () => {
 	beforeEach(() => {
 		mockStore.tournament.selectedNames = [];
@@ -120,6 +119,20 @@ describe("FloatingNavbar", () => {
 		Object.defineProperty(window, "scrollTo", {
 			writable: true,
 			value: vi.fn(),
+		});
+		Object.defineProperty(document.documentElement, "scrollHeight", {
+			configurable: true,
+			value: 2000,
+		});
+		Object.defineProperty(window, "innerHeight", {
+			writable: true,
+			configurable: true,
+			value: 800,
+		});
+		Object.defineProperty(window, "scrollY", {
+			writable: true,
+			configurable: true,
+			value: 0,
 		});
 
 		vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
@@ -144,10 +157,16 @@ describe("FloatingNavbar", () => {
 			</QueryClientProvider>,
 		);
 
-	it("renders home navigation items and tracks the active section", () => {
+	it("renders the dynamic island navigation and tracks the active section", () => {
 		mountSections({ pick: 20, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
 
 		renderWithRouter();
+
+		expect(getNav()).toBeInTheDocument();
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Pick Names");
+
+		expandNav();
 
 		expect(screen.getByRole("button", { name: "Pick Names" })).toHaveAttribute(
 			"aria-current",
@@ -159,31 +178,40 @@ describe("FloatingNavbar", () => {
 
 	it("renders an admin shortcut for admin users", () => {
 		mountSections({ pick: 20, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
 		mockStore.user.isLoggedIn = true;
 		mockStore.user.name = "Avery Admin";
 		mockStore.user.isAdmin = true;
 
 		renderWithRouter();
 
+		expandNav();
+
 		expect(screen.getByRole("button", { name: "Admin" })).toBeInTheDocument();
 	});
 
 	it("promotes the first item to a highlighted start action when enough names are selected", () => {
 		mountSections({ pick: 0, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
 		mockStore.tournament.selectedNames = ["Luna", "Fig", "Miso"];
 
 		renderWithRouter();
 
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Start (3)");
+
+		expandNav();
+
 		const startButton = screen.getByRole("button", { name: "Start (3)" });
 
 		expect(startButton).toBeInTheDocument();
-		expect(startButton).toHaveClass("floating-navbar__item--accent");
+		expect(startButton).toHaveClass("text-primary");
 		expect(screen.queryByRole("button", { name: "Pick Names" })).not.toBeInTheDocument();
 	});
 
 	it("shows analyze as the current destination on the analysis route", () => {
 		mockStore.tournament.isComplete = true;
 		mockStore.tournament.names = ["Luna", "Fig"];
+		setPastHeroScroll();
 		mountSections({
 			pick: 200,
 			tournament: 200,
@@ -194,6 +222,8 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter(["/"]);
 
+		expandNav();
+
 		expect(screen.getByRole("button", { name: "Analyze" })).toHaveAttribute(
 			"aria-current",
 			"location",
@@ -202,9 +232,12 @@ describe("FloatingNavbar", () => {
 
 	it("uses pressed semantics for the layout mode chip without treating it as the current destination", () => {
 		mountSections({ pick: 0, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
 		mockStore.ui.isSwipeMode = true;
 
 		renderWithRouter();
+
+		expandNav();
 
 		const modeChip = screen.getByRole("button", { name: "Swipe mode active" });
 
@@ -217,22 +250,28 @@ describe("FloatingNavbar", () => {
 
 	it("renders the logged-in avatar when available", () => {
 		mountSections({ pick: 0, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
 		mockStore.user.isLoggedIn = true;
 		mockStore.user.name = "Avery Admin";
 		mockStore.user.avatarUrl = "https://example.com/avatar.png";
 
 		renderWithRouter();
 
+		expandNav();
+
 		expect(screen.getByAltText("Avery")).toBeInTheDocument();
 	});
 
 	it("keeps the admin profile icon treatment when no avatar is present", () => {
 		mountSections({ pick: 0, suggest: 200, profile: 24 });
+		setPastHeroScroll();
 		mockStore.user.isLoggedIn = true;
 		mockStore.user.name = "Avery Admin";
 		mockStore.user.isAdmin = true;
 
 		renderWithRouter();
+
+		expandNav();
 
 		const profileButton = screen.getByRole("button", { name: "Avery" });
 		const profileIcon = profileButton.querySelector("svg");
@@ -253,6 +292,8 @@ describe("FloatingNavbar", () => {
 		mockStore.user.isAdmin = true;
 
 		renderWithRouter(["/admin"]);
+
+		expandNav();
 
 		expect(screen.getByRole("button", { name: "Admin" })).toHaveAttribute(
 			"aria-current",
