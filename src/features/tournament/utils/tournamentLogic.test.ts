@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Team } from "@/shared/types";
-import { createTeamsById } from "./tournamentLogic";
+import { createTeamsById, padForRound } from "./tournamentLogic";
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -30,5 +30,32 @@ describe("createTeamsById", () => {
 		expect(result).toBeInstanceOf(Map);
 		expect(result.size).toBe(1);
 		expect(result.get("team1")).toEqual(teamB);
+	});
+});
+
+describe("padForRound", () => {
+	it("returns the same array if it has 0 or 1 elements", () => {
+		expect(padForRound([], 1)).toEqual([]);
+		expect(padForRound(["a"], 1)).toEqual(["a"]);
+	});
+
+	it("returns the same array if its length is already a power of two", () => {
+		expect(padForRound(["a", "b"], 1)).toEqual(["a", "b"]);
+		expect(padForRound(["a", "b", "c", "d"], 1)).toEqual(["a", "b", "c", "d"]);
+	});
+
+	it("pads an array of 3 elements to 4 using BYE strings", () => {
+		const result = padForRound(["a", "b", "c"], 1);
+		expect(result.length).toBe(4);
+		expect(result).toEqual(["a", "b", "c", "__BYE__1_3"]);
+	});
+
+	it("pads an array of 5 elements to 8 using BYE strings with the correct round and index", () => {
+		const result = padForRound(["a", "b", "c", "d", "e"], 2);
+		expect(result.length).toBe(8);
+		expect(result).toEqual([
+			"a", "b", "c", "d", "e",
+			"__BYE__2_5", "__BYE__2_6", "__BYE__2_7"
+		]);
 	});
 });

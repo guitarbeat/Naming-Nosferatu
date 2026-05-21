@@ -121,7 +121,7 @@ function createBye(round: number, index: number): string {
 	return `${BYE_PREFIX}${round}_${index}`;
 }
 
-function padForRound(entrants: string[], round: number): string[] {
+export function padForRound(entrants: string[], round: number): string[] {
 	if (entrants.length <= 1) {
 		return entrants;
 	}
