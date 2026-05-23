@@ -60,8 +60,9 @@ function makePendingResult(
 	activeRoundSize: number,
 	left: string,
 	right: string,
+	cacheKey?: string,
 ): BracketDerivation {
-	return {
+	const result = {
 		isComplete: false,
 		totalMatches,
 		completedMatches: cursor,
@@ -71,6 +72,10 @@ function makePendingResult(
 		roundSize: activeRoundSize,
 		pendingMatchIds: { leftId: left, rightId: right },
 	};
+	if (cacheKey) {
+		return setBracketCache(cacheKey, result);
+	}
+	return result;
 }
 
 function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
@@ -235,6 +240,7 @@ export function deriveBracketState(
 					activeRoundSize,
 					left,
 					right,
+					cacheKey,
 				);
 			}
 
