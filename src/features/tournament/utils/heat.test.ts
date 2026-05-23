@@ -28,6 +28,25 @@ describe("heat utils", () => {
 			expect(getHeatLevel(7)).toBe("blazing");
 			expect(getHeatLevel(10)).toBe("blazing");
 		});
+
+		it("handles negative streaks", () => {
+			expect(getHeatLevel(-1)).toBe(null);
+			expect(getHeatLevel(-10)).toBe(null);
+		});
+
+		it("handles fractional streaks correctly", () => {
+			expect(getHeatLevel(2.9)).toBe(null);
+			expect(getHeatLevel(3.1)).toBe("warm");
+			expect(getHeatLevel(4.9)).toBe("warm");
+			expect(getHeatLevel(5.1)).toBe("hot");
+			expect(getHeatLevel(6.9)).toBe("hot");
+			expect(getHeatLevel(7.1)).toBe("blazing");
+		});
+
+		it("handles extremely large numbers and infinity", () => {
+			expect(getHeatLevel(Number.MAX_SAFE_INTEGER)).toBe("blazing");
+			expect(getHeatLevel(Infinity)).toBe("blazing");
+		});
 	});
 
 	describe("getHeatCardClasses", () => {
