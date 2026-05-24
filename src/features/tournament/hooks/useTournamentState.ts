@@ -38,7 +38,7 @@ import {
 	createTournamentId,
 	sanitizePersistentState,
 } from "./tournamentPersistence";
-import { useAudioManager } from "./useHelpers";
+import { useAudioManager } from "./useAudioManager";
 import { useTournamentRealtime } from "./useTournamentRealtime";
 
 interface UseTournamentStateResult {
@@ -251,8 +251,14 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			setRefreshKey((k) => k + 1);
 		};
 
-		// Use requestAnimationFrame to ensure smooth initialization
-		requestAnimationFrame(initializeTournament);
+		let frameId: number | null = null;
+		frameId = requestAnimationFrame(initializeTournament);
+
+		return () => {
+			if (frameId !== null) {
+				cancelAnimationFrame(frameId);
+			}
+		};
 	}, [
 		namesKey,
 		names.length,

@@ -15,7 +15,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/features/names/api";
 import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
-import { useAdminActionConfirmation } from "@/features/tournament/hooks/useAdminActionConfirmation";
+type PendingAdminAction = {
+	type: "toggle-hidden" | "toggle-locked";
+	nameId: IdType;
+	isCurrentlyEnabled: boolean;
+};
 import {
 	buildNameCardImages,
 	countSelectedItems,
@@ -429,32 +433,62 @@ export function NameSelector() {
 		[isAdmin, toast, toggleLocked, userName],
 	);
 
-	const {
-		pendingAdminAction,
-		requestAdminAction,
-		confirmAdminAction,
-		cancelAdminAction,
-		confirmActionName,
-		isPendingActionBusy,
-	} = useAdminActionConfirmation({
-		isAdmin,
-		userName,
-		names,
-		toast,
-		isBusy: (action) => {
-			if (action.type === "toggle-hidden") {
-				return togglingHidden.has(action.nameId);
-			}
-			return togglingLocked.has(action.nameId);
-		},
-		executeAction: async (action) => {
-			if (action.type === "toggle-hidden") {
-				await handleToggleHidden(action.nameId, action.isCurrentlyEnabled);
+	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
+
+	const requestAdminAction = useCallback(
+		(action: PendingAdminAction) => {
+			if (!isAdmin) {
+				toast.showWarning("Only admins can perform that action.");
 				return;
 			}
-			await handleToggleLocked(action.nameId, action.isCurrentlyEnabled);
+
+			if (!userName?.trim()) {
+				toast.showError("Admin actions require a valid user session. Please log in again.");
+				return;
+			}
+
+			setPendingAdminAction(action);
 		},
-	});
+		[isAdmin, toast, userName],
+	);
+
+	const cancelAdminAction = useCallback(() => {
+		setPendingAdminAction(null);
+	}, []);
+
+	const confirmActionName = useMemo(() => {
+		if (!pendingAdminAction) {
+			return "";
+		}
+		const target = names.find((n) => n.id === pendingAdminAction.nameId);
+		return target?.name ?? "this name";
+	}, [names, pendingAdminAction]);
+
+	const isPendingActionBusy = useMemo(() => {
+		if (!pendingAdminAction) {
+			return false;
+		}
+		if (pendingAdminAction.type === "toggle-hidden") {
+			return togglingHidden.has(pendingAdminAction.nameId);
+		}
+		return togglingLocked.has(pendingAdminAction.nameId);
+	}, [pendingAdminAction, togglingHidden, togglingLocked]);
+
+	const confirmAdminAction = useCallback(async () => {
+		if (!pendingAdminAction) {
+			return;
+		}
+
+		try {
+			if (pendingAdminAction.type === "toggle-hidden") {
+				await handleToggleHidden(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+			} else {
+				await handleToggleLocked(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+			}
+		} finally {
+			setPendingAdminAction(null);
+		}
+	}, [pendingAdminAction, handleToggleHidden, handleToggleLocked]);
 
 	const visibleCards = useMemo(() => {
 		const unlockedNames = names.filter((name) => !isNameLocked(name));

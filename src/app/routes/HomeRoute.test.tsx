@@ -32,8 +32,9 @@ vi.mock("react", async (importOriginal) => {
 	};
 });
 
-const mockHandleTournamentComplete = vi.fn();
-const mockHandleStartNewTournament = vi.fn();
+const mockCompleteTournament = vi.fn();
+const mockResetTournament = vi.fn();
+const mockSetRatings = vi.fn();
 const loginMock = vi.fn();
 const logoutMock = vi.fn();
 
@@ -54,7 +55,11 @@ const storeState = {
 		names: queryNames,
 		ratings: {} as Record<string, RatingData>,
 	},
-	tournamentActions: {},
+	tournamentActions: {
+		completeTournament: mockCompleteTournament,
+		resetTournament: mockResetTournament,
+		setRatings: mockSetRatings,
+	},
 };
 
 const queryState: {
@@ -100,12 +105,7 @@ vi.mock("@/store/appStore", () => ({
 	default: () => storeState,
 }));
 
-vi.mock("@/features/tournament/hooks/useTournamentHandlers", () => ({
-	useTournamentHandlers: () => ({
-		handleTournamentComplete: mockHandleTournamentComplete,
-		handleStartNewTournament: mockHandleStartNewTournament,
-	}),
-}));
+
 
 vi.mock("@/app/appConfig", () => ({
 	errorContexts: { analysisDashboard: "Analysis dashboard" },
@@ -148,8 +148,8 @@ async function renderHomeRoute() {
 
 describe("HomeRoute", () => {
 	beforeEach(() => {
-		mockHandleTournamentComplete.mockReset();
-		mockHandleStartNewTournament.mockReset();
+		mockCompleteTournament.mockReset();
+		mockResetTournament.mockReset();
 		loginMock.mockReset();
 		logoutMock.mockReset();
 		queryState.data = { names: queryNames };
@@ -224,7 +224,7 @@ describe("HomeRoute", () => {
 			vi.advanceTimersByTime(800);
 		});
 
-		expect(mockHandleStartNewTournament).toHaveBeenCalledTimes(1);
+		expect(mockResetTournament).toHaveBeenCalledTimes(1);
 		expect(analysisScroll).not.toHaveBeenCalled();
 	});
 });

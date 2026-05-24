@@ -3,7 +3,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/features/names/api";
-import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
+
 import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
@@ -32,11 +32,7 @@ export default function HomeRoute() {
 				: "ready";
 	const names = namesQuery.data?.names ?? [];
 	const lockedNames = heroState === "ready" ? getLockedNames(names) : [];
-	const { handleTournamentComplete, handleStartNewTournament: startNewTournament } =
-		useTournamentHandlers({
-			userName: user.name,
-			tournamentActions,
-		});
+
 
 	const clearPendingAnalysisScroll = useCallback(() => {
 		if (pendingAnalysisScrollRef.current === null) {
@@ -75,8 +71,8 @@ export default function HomeRoute() {
 
 	const handleStartNewTournament = useCallback(() => {
 		clearPendingAnalysisScroll();
-		startNewTournament();
-	}, [clearPendingAnalysisScroll, startNewTournament]);
+		tournamentActions.resetTournament();
+	}, [clearPendingAnalysisScroll, tournamentActions]);
 
 	useEffect(() => clearPendingAnalysisScroll, [clearPendingAnalysisScroll]);
 
@@ -118,7 +114,7 @@ export default function HomeRoute() {
 							names={tournament.names}
 							existingRatings={tournament.ratings}
 							onComplete={(ratings) => {
-								handleTournamentComplete(ratings);
+								tournamentActions.completeTournament(ratings);
 								scheduleAnalysisScroll();
 							}}
 						/>
@@ -150,6 +146,7 @@ export default function HomeRoute() {
 							personalRatings={tournament.ratings}
 							currentTournamentNames={tournament.names ?? undefined}
 							onStartNew={handleStartNewTournament}
+							onUpdateRatings={tournamentActions.setRatings}
 							userName={user.name ?? ""}
 							isAdmin={user.isAdmin}
 							isLoggedIn={user.isLoggedIn}

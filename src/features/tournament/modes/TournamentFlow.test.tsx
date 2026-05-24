@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import TournamentFlow from "./TournamentFlow";
 
-const mockHandleStartNewTournament = vi.fn();
+const mockResetTournament = vi.fn();
 
 const mockStore = {
 	user: { name: "Test User" },
@@ -15,22 +15,16 @@ const mockStore = {
 		ratings: {} as Record<string, number>,
 		voteHistory: [],
 	},
-	tournamentActions: {},
+	tournamentActions: {
+		resetTournament: mockResetTournament,
+	},
 };
 
 vi.mock("@/store/appStore", () => ({
 	default: () => mockStore,
 }));
 
-vi.mock("../hooks/useTournamentHandlers", () => ({
-	useTournamentHandlers: () => ({
-		handleStartNewTournament: mockHandleStartNewTournament,
-	}),
-}));
 
-vi.mock("../hooks/useSaveTournamentRatings", () => ({
-	useSaveTournamentRatings: vi.fn(),
-}));
 
 vi.mock("../components/NameSelector", () => ({
 	NameSelector: () => <div data-testid="name-selector">Name Selector</div>,
@@ -47,7 +41,7 @@ describe("TournamentFlow responsive behavior", () => {
 		);
 
 	beforeEach(() => {
-		mockHandleStartNewTournament.mockReset();
+		mockResetTournament.mockReset();
 		mockStore.tournament.isComplete = false;
 		mockStore.tournament.names = null;
 	});

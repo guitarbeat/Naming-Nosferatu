@@ -20,6 +20,7 @@ export interface TournamentActions {
 			| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
 	) => void;
 	setComplete: (isComplete: boolean) => void;
+	completeTournament: (ratings: Record<string, RatingData>) => void;
 	resetTournament: () => void;
 	setSelection: (names: NameItem[]) => void;
 	recordVote: (

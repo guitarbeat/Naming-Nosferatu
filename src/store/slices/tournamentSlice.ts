@@ -35,6 +35,14 @@ export const createTournamentSlice: AppSliceCreator<
 
 		setComplete: (isComplete) => patch(set, "tournament", { isComplete }),
 
+		completeTournament: (ratings) => {
+			const current = get().tournament.ratings;
+			patch(set, "tournament", {
+				ratings: { ...current, ...ratings },
+				isComplete: true,
+			});
+		},
+
 		resetTournament: () =>
 			patch(set, "tournament", {
 				names: null,

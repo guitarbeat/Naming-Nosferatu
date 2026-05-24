@@ -1,23 +1,59 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Trophy } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
-import { useSaveTournamentRatings } from "../hooks/useSaveTournamentRatings";
-import { useTournamentHandlers } from "../hooks/useTournamentHandlers";
 
 export default function TournamentFlow() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { handleStartNewTournament } = useTournamentHandlers({
-		userName: user.name,
-		tournamentActions,
+
+	const saveRatingsMutation = useMutation({
+		mutationFn: ({
+			userId,
+			ratings,
+		}: {
+			userId: string;
+			ratings: Record<string, { rating: number; wins: number; losses: number }>;
+		}) => ratingsAPI.saveRatings(userId, ratings),
 	});
 
-	useSaveTournamentRatings({
-		isComplete: tournament.isComplete,
-		ratings: tournament.ratings,
-		userName: user.name,
-		voteHistory: tournament.voteHistory,
-	});
+	const mutateAsyncRef = useRef(saveRatingsMutation.mutateAsync);
+	mutateAsyncRef.current = saveRatingsMutation.mutateAsync;
+
+	useEffect(() => {
+		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
+			const userId = user.name || "anonymous";
+
+			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
+				(acc, [nameId, ratingData]) => {
+					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
+					const wins = typeof ratingData === "number" ? 0 : ratingData.wins ?? 0;
+					const losses = typeof ratingData === "number" ? 0 : ratingData.losses ?? 0;
+					acc[nameId] = {
+						rating,
+						wins,
+						losses,
+					};
+					return acc;
+				},
+				{} as Record<string, { rating: number; wins: number; losses: number }>,
+			);
+
+			mutateAsyncRef
+				.current({ userId, ratings: ratingsWithStats })
+				.then((result) => {
+					if (result?.success) {
+						console.log(`Successfully saved ${result.count} ratings to database`);
+					}
+				})
+				.catch((_error) => {
+					// Error is already logged by ratingsAPI with context
+					console.warn("Tournament ratings save failed — ratings were not persisted");
+				});
+		}
+	}, [tournament.isComplete, tournament.ratings, user.name]);
 
 	return (
 		<div className="w-full flex flex-col gap-2">
@@ -58,7 +94,7 @@ export default function TournamentFlow() {
 								</button>
 								<button
 									type="button"
-									onClick={handleStartNewTournament}
+									onClick={() => tournamentActions.resetTournament()}
 									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-colors"
 								>
 									Start New Tournament

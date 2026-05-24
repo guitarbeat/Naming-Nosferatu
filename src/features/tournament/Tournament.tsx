@@ -11,7 +11,7 @@ import { MatchSideCard } from "./components/MatchSideCard";
 import { TournamentAnnouncements } from "./components/TournamentAnnouncements";
 import { TournamentComplete } from "./components/TournamentComplete";
 import { TournamentHeader } from "./components/TournamentHeader";
-import { useAudioManager } from "./hooks/useHelpers";
+import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { getHeatLevel, type HeatLevel, STREAK_THRESHOLDS } from "./utils/heat";
 import { extractMatchData, getMatchSideId } from "./utils/matchHelpers";
@@ -204,13 +204,51 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			completionHandledRef.current = true;
 			audioManager.playLevelUpSound();
 			setTimeout(() => audioManager.playWowSound(), 500);
+
+			const winsByName: Record<string, number> = {};
+			const lossesByName: Record<string, number> = {};
+
+			for (const record of matchHistory) {
+				if (!record || !record.match) {
+					continue;
+				}
+
+				const leftSide = (record.match as any).left;
+				const rightSide = (record.match as any).right;
+
+				const leftIds = leftSide?.memberIds
+					? leftSide.memberIds.map(String)
+					: [String(leftSide?.id || "")];
+				const rightIds = rightSide?.memberIds
+					? rightSide.memberIds.map(String)
+					: [String(rightSide?.id || "")];
+
+				const winnerIds = leftIds.includes(String(record.winner)) ? leftIds : rightIds;
+				const loserIds = leftIds.includes(String(record.winner)) ? rightIds : leftIds;
+
+				for (const id of winnerIds) {
+					if (id) {
+						winsByName[id] = (winsByName[id] ?? 0) + 1;
+					}
+				}
+				for (const id of loserIds) {
+					if (id) {
+						lossesByName[id] = (lossesByName[id] ?? 0) + 1;
+					}
+				}
+			}
+
 			const results: Record<string, { rating: number; wins: number; losses: number }> = {};
 			for (const [id, rating] of Object.entries(ratings)) {
-				results[idToName.get(id) ?? id] = { rating, wins: 0, losses: 0 };
+				results[id] = {
+					rating,
+					wins: winsByName[id] ?? 0,
+					losses: lossesByName[id] ?? 0,
+				};
 			}
 			onComplete(results);
 		}
-	}, [isComplete, ratings, onComplete, idToName, audioManager]);
+	}, [isComplete, ratings, onComplete, matchHistory, audioManager]);
 
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
 	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);

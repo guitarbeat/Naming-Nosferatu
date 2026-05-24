@@ -1,8 +1,9 @@
+import { useMemo } from "react";
 import { Plus } from "lucide-react";
 import { useToast } from "@/app/providers/Providers";
+import { ELO_RATING } from "@/shared/lib/constants";
 import Button from "@/shared/components/layout/Button";
 import type { NameItem, RatingData } from "@/shared/types";
-import { usePersonalResults } from "./hooks/usePersonalResults";
 import { RankingAdjustment } from "./RankingAdjustment";
 
 interface PersonalResultsProps {
@@ -23,10 +24,35 @@ export const PersonalResults = ({
 	onStartNew,
 	onUpdateRatings,
 }: PersonalResultsProps) => {
-	const { rankings } = usePersonalResults({
-		personalRatings,
-		currentTournamentNames,
-	});
+	const rankings = useMemo((): NameItem[] => {
+		if (!personalRatings) {
+			return [];
+		}
+
+		const idToNameMap = new Map<string, string>();
+		if (currentTournamentNames) {
+			for (const n of currentTournamentNames) {
+				if (n.id !== undefined) {
+					idToNameMap.set(String(n.id), n.name);
+				}
+			}
+		}
+
+		return Object.entries(personalRatings)
+			.map(([id, rating]: [string, unknown]) => {
+				const r = rating as { rating?: number; wins?: number; losses?: number } | number;
+				const actualName = idToNameMap.get(id) || id;
+				return {
+					name: actualName,
+					rating: Math.round(typeof r === "number" ? r : r?.rating || ELO_RATING.DEFAULT_RATING),
+					wins: typeof r === "number" ? 0 : r?.wins || 0,
+					losses: typeof r === "number" ? 0 : r?.losses || 0,
+					id,
+				};
+			})
+			.sort((a, b) => b.rating - a.rating) as NameItem[];
+	}, [personalRatings, currentTournamentNames]);
+
 	const { showToast } = useToast();
 
 	return (
