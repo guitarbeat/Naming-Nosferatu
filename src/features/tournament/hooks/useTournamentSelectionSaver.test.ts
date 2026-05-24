@@ -35,7 +35,7 @@ describe("useTournamentSelectionSaver", () => {
 		});
 
 		it("scheduleSave correctly writes to localStorage after 1000ms delay", () => {
-			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+			const setItemSpy = vi.spyOn(localStorage, "setItem");
 			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			result.current?.scheduleSave(mockNames);
@@ -52,7 +52,7 @@ describe("useTournamentSelectionSaver", () => {
 		});
 
 		it("scheduleSave debounces multiple rapid calls", () => {
-			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+			const setItemSpy = vi.spyOn(localStorage, "setItem");
 			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			result.current?.scheduleSave([mockNames[0]]);
@@ -74,7 +74,7 @@ describe("useTournamentSelectionSaver", () => {
 		});
 
 		it("does not save if the selection hash has not changed", () => {
-			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+			const setItemSpy = vi.spyOn(localStorage, "setItem");
 			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: "testuser" }));
 
 			result.current?.scheduleSave(mockNames);
@@ -90,7 +90,7 @@ describe("useTournamentSelectionSaver", () => {
 		});
 
 		it("does not save if enableAutoSave is false", () => {
-			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+			const setItemSpy = vi.spyOn(localStorage, "setItem");
 			const { result } = renderHook(() =>
 				useTournamentSelectionSaver({ userName: "testuser", enableAutoSave: false }),
 			);
@@ -102,7 +102,7 @@ describe("useTournamentSelectionSaver", () => {
 		});
 
 		it("does not save if userName is null", () => {
-			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+			const setItemSpy = vi.spyOn(localStorage, "setItem");
 			const { result } = renderHook(() => useTournamentSelectionSaver({ userName: null }));
 
 			result.current?.scheduleSave(mockNames);
@@ -148,7 +148,7 @@ describe("useTournamentSelectionSaver", () => {
 
 	describe("with NameItem[] (useEffect side-effect signature)", () => {
 		it("returns undefined but updates hash reference behind the scenes without setting localStorage", () => {
-			const setItemSpy = vi.spyOn(Storage.prototype, "setItem");
+			const setItemSpy = vi.spyOn(localStorage, "setItem");
 			const { result } = renderHook(() => useTournamentSelectionSaver(mockNames));
 
 			// Should return undefined when an array of NameItem is passed

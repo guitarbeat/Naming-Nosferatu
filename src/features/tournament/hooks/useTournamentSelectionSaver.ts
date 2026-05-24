@@ -31,7 +31,7 @@ export function useTournamentSelectionSaver(
 	const userName = options?.userName ?? null;
 	const enableAutoSave = options?.enableAutoSave ?? true;
 
-	const saveTimeoutRef = useRef<ReturnType<typeof globalThis.setTimeout> | null>(null);
+	const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const lastSavedRef = useRef<string>("");
 
 	const clearPendingSave = useCallback(() => {
@@ -55,7 +55,7 @@ export function useTournamentSelectionSaver(
 				return;
 			}
 
-			saveTimeoutRef.current = globalThis.setTimeout(() => {
+			saveTimeoutRef.current = setTimeout(() => {
 				writeStorageJson(
 					`tournament_selection_${userName}`,
 					names.map((n) => n.id),
@@ -83,7 +83,7 @@ export function useTournamentSelectionSaver(
 
 		clearPendingSave();
 
-		saveTimeoutRef.current = globalThis.setTimeout(() => {
+		saveTimeoutRef.current = setTimeout(() => {
 			const selectionHash = saveSelectionHash(selectedNames);
 			if (selectionHash === lastSavedRef.current) {
 				return;
