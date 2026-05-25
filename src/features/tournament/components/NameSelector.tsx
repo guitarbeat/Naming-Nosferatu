@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { namesQueryOptions } from "@/features/names/api";
-import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
+import { namesQueryOptions } from "@/shared/api/names/api";
+import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
 type PendingAdminAction = {
 	type: "toggle-hidden" | "toggle-locked";
 	nameId: IdType;
@@ -116,12 +116,12 @@ const NameContent = ({
 	return (
 		<>
 			<span className={nameClasses}>{nameItem.name}</span>
-			{nameItem.pronunciation && (
+			{nameItem.pronunciation ? (
 				<span className={isGrid ? pronunciationClasses : `${pronunciationClasses} block mt-2`}>
 					[{nameItem.pronunciation}]
 				</span>
-			)}
-			{nameItem.description && <p className={descriptionClasses}>{nameItem.description}</p>}
+			) : null}
+			{nameItem.description ? <p className={descriptionClasses}>{nameItem.description}</p> : null}
 		</>
 	);
 };
@@ -1172,16 +1172,16 @@ export function NameSelector() {
 																		</motion.div>
 																	)}
 																</div>
-																{nameItem.pronunciation && (
+																{nameItem.pronunciation ? (
 																	<span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
 																		[{nameItem.pronunciation}]
 																	</span>
-																)}
-																{nameItem.description && (
+																) : null}
+																{nameItem.description ? (
 																	<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
 																		{nameItem.description}
 																	</p>
-																)}
+																) : null}
 															</div>
 														</div>
 

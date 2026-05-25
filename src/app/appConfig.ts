@@ -9,19 +9,12 @@ export { errorContexts } from "@/store/appStore";
 const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
 
 const DashboardLazy = lazy(() =>
-	import("@/features/analytics/Dashboard").then((m) => ({
+	import("@/features/dashboard/Dashboard").then((m) => ({
 		default: m.Dashboard,
-	})),
-);
-
-const AdminDashboardLazy = lazy(() =>
-	import("@/features/admin/AdminDashboard").then((m) => ({
-		default: m.AdminDashboard,
 	})),
 );
 
 export const routeComponents = {
 	TournamentFlow,
 	DashboardLazy,
-	AdminDashboardLazy,
 } as const;

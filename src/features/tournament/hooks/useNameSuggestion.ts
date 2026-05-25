@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { addName } from "@/features/names/api";
+import { addName } from "@/shared/api/names/api";
 
 interface UseNameSuggestionProps {
 	onSuccess?: () => void;

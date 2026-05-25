@@ -25,7 +25,7 @@ vi.mock("@/app/providers/Providers", () => ({
 vi.mock("@/app/appConfig", () => ({
 	errorContexts: { analysisDashboard: "Analysis Dashboard" },
 	routeComponents: {
-		AdminDashboardLazy: () => <div data-testid="admin-dashboard">Admin dashboard</div>,
+		DashboardLazy: () => <div data-testid="admin-dashboard">Admin dashboard</div>,
 	},
 }));
 

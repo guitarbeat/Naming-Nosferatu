@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchHiddenNames, unhideName } from "@/features/names/api";
+import { fetchHiddenNames, unhideName } from "@/shared/api/names/api";
 import { leaderboardAPI, statsAPI } from "@/shared/services/supabase/statsService";
 import { useDashboardData } from "./useDashboardData";
 
@@ -15,7 +15,7 @@ vi.mock("@/shared/services/supabase/statsService", () => ({
 	},
 }));
 
-vi.mock("@/features/names/api", () => ({
+vi.mock("@/shared/api/names/api", () => ({
 	fetchHiddenNames: vi.fn(),
 	unhideName: vi.fn(),
 }));

@@ -7,7 +7,7 @@ import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 
-const AdminDashboardLazy = routeComponents.AdminDashboardLazy;
+const DashboardLazy = routeComponents.DashboardLazy;
 
 export default function AdminRoute() {
 	const { user: authUser, isLoading: authLoading } = useAuth();
@@ -42,7 +42,7 @@ export default function AdminRoute() {
 		<Section id="admin" variant="minimal" padding="comfortable" maxWidth="2xl">
 			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
 				<ErrorBoundary context={errorContexts.analysisDashboard}>
-					<AdminDashboardLazy />
+					<DashboardLazy isAdmin={authUser?.isAdmin} userName={authUser?.name} isLoggedIn={authUser?.isLoggedIn} avatarUrl={authUser?.avatarUrl} />
 				</ErrorBoundary>
 			</Suspense>
 		</Section>

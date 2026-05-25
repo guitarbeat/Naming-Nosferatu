@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
-import { namesQueryOptions } from "@/features/names/api";
+import { namesQueryOptions } from "@/shared/api/names/api";
 
 import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";

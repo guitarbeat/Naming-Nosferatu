@@ -1,4 +1,3 @@
-import { Analytics } from "@vercel/analytics/react";
 import { lazy, type ReactNode, Suspense } from "react";
 import { shouldEnableAnalytics } from "@/app/analytics";
 import { PwaInstallPrompt } from "@/app/components/PwaInstallPrompt";
@@ -12,6 +11,10 @@ import useAppStore from "@/store/appStore";
 interface AppLayoutProps {
 	children: ReactNode;
 }
+
+const Analytics = lazy(() =>
+	import("@vercel/analytics/react").then((module) => ({ default: module.Analytics }))
+);
 
 const LiquidGradientBackground = lazy(() =>
 	import("@/shared/components/layout/LiquidGradientBackground").then((module) => ({
@@ -33,7 +36,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 				<div className="app-ambient" aria-hidden="true" />
 				<PwaInstallPrompt />
 				<OfflineIndicator />
-				{analyticsEnabled && import.meta.env.VITE_VERCEL_ANALYTICS === "true" && <Analytics />}
+				{analyticsEnabled && import.meta.env.VITE_VERCEL_ANALYTICS === "true" && (
+					<Suspense fallback={null}>
+						<Analytics />
+					</Suspense>
+				)}
 
 				<button
 					type="button"

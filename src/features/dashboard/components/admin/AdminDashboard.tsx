@@ -1,20 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
-import { AdminNamesTab } from "@/features/admin/components/AdminNamesTab";
-import { AdminOverviewTab } from "@/features/admin/components/AdminOverviewTab";
-import { AdminPlaceholderTab } from "@/features/admin/components/AdminPlaceholderTab";
-import { AdminStatsGrid } from "@/features/admin/components/AdminStatsGrid";
-import { AdminTabNav } from "@/features/admin/components/AdminTabNav";
-import { ADMIN_TABS, FILTER_OPTIONS } from "@/features/admin/constants";
-import type { BulkAction, DashboardTab, NameFilter } from "@/features/admin/types";
+import { AdminNamesTab } from "./components/AdminNamesTab";
+import { AdminOverviewTab } from "./components/AdminOverviewTab";
+import { AdminPlaceholderTab } from "./components/AdminPlaceholderTab";
+import { AdminStatsGrid } from "./components/AdminStatsGrid";
+import { AdminTabNav } from "./components/AdminTabNav";
+import { ADMIN_TABS, FILTER_OPTIONS } from "../constants";
+import type { BulkAction, DashboardTab, NameFilter } from "../types";
 import {
 	buildAdminStats,
 	filterNamesByStatusAndSearch,
 	mapNameToDisplay,
-} from "@/features/admin/utils";
-import { namesQueryOptions } from "@/features/names/api";
-import { useNameAdminActions } from "@/features/names/hooks/useNameAdminActions";
+} from "../utils";
+import { namesQueryOptions } from "@/shared/api/names/api";
+import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { addToSet, removeFromSet } from "@/shared/lib/setUtils";
 import { statsAPI } from "@/shared/services/supabase/statsService";

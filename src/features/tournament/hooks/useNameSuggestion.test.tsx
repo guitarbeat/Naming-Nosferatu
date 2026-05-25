@@ -4,7 +4,7 @@ import { useNameSuggestion } from "./useNameSuggestion";
 
 const mockAddName = vi.fn();
 
-vi.mock("@/features/names/api", () => ({
+vi.mock("@/shared/api/names/api", () => ({
 	addName: (...args: unknown[]) => mockAddName(...args),
 }));
 

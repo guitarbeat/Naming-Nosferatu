@@ -9,11 +9,11 @@ import {
 	softDeleteName,
 	toggleNameHidden,
 	toggleNameLocked,
-} from "@/features/names/api";
+} from "@/shared/api/names/api";
 import { imagesAPI } from "@/shared/services/supabase/imageService";
 import { useNameAdminActions } from "./useNameAdminActions";
 
-vi.mock("@/features/names/api", () => ({
+vi.mock("@/shared/api/names/api", () => ({
 	batchUpdateLocked: vi.fn(),
 	batchUpdateVisibility: vi.fn(),
 	softDeleteName: vi.fn(),

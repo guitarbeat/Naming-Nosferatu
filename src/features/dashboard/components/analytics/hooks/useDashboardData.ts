@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchHiddenNames, unhideName } from "@/features/names/api";
+import { fetchHiddenNames, unhideName } from "@/shared/api/names/api";
 import { useAsyncData } from "@/shared/hooks/useAsyncData";
 import {
 	type EngagementMetrics,

@@ -565,7 +565,7 @@ const CardNameBase = memo(function CardName({
 						{name}
 					</h3>
 
-					{pronunciation && (
+					{pronunciation ? (
 						<p
 							id={`${getSafeId(name)}-pronunciation`}
 							className={cn(
@@ -579,9 +579,9 @@ const CardNameBase = memo(function CardName({
 						>
 							[{pronunciation}]
 						</p>
-					)}
+					) : null}
 
-					{description && (
+					{description ? (
 						<p
 							id={`${getSafeId(name)}-description`}
 							className={cn(
@@ -595,7 +595,7 @@ const CardNameBase = memo(function CardName({
 						>
 							{description}
 						</p>
-					)}
+					) : null}
 				</div>
 
 				{metadata && (

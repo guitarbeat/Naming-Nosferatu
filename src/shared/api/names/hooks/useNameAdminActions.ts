@@ -7,7 +7,7 @@ import {
 	softDeleteName,
 	toggleNameHidden,
 	toggleNameLocked,
-} from "@/features/names/api";
+} from "@/shared/api/names/api";
 import { imagesAPI } from "@/shared/services/supabase/imageService";
 import type { IdType } from "@/shared/types";
 

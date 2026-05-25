@@ -154,12 +154,13 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		ratingsRef.current = ratings;
 	}, [ratings]);
 
+	// Vercel Best Practice: derive state during render instead of effect
+	if (lastNamesKeyRef.current !== namesKey) {
+		initializedRef.current = false;
+		lastNamesKeyRef.current = namesKey;
+	}
+
 	useEffect(() => {
-		const isNewNames = lastNamesKeyRef.current !== namesKey;
-		if (isNewNames) {
-			initializedRef.current = false;
-			lastNamesKeyRef.current = namesKey;
-		}
 
 		if (initializedRef.current) {
 			return;
@@ -260,23 +261,12 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			}
 		};
 	}, [
-		namesKey,
-		names.length,
-		tournamentMode,
-		persistentState.bracketEntrants.filter,
-		persistentState.bracketEntrants,
-		persistentState.currentRound,
-		persistentState.matchHistory,
-		persistentState.mode,
-		persistentState.namesKey,
-		persistentState.ratings,
-		persistentState.teams,
-		persistentState.currentMatch,
-		updatePersistentState,
-		names.map,
 		names,
-		persistentState.lastUpdated,
-	]); // Reduced dependency array
+		namesKey,
+		tournamentMode,
+		persistentState,
+		updatePersistentState,
+	]); // Reduced and optimized dependency array
 
 	const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
 	const teamsById = useMemo(() => createTeamsById(persistentState.teams), [persistentState.teams]);
