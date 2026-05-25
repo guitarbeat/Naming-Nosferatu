@@ -82,7 +82,6 @@ export default function HomeRoute() {
 				state={heroState}
 				lockedNames={lockedNames}
 				onStartPicking={() => scrollToSection("pick")}
-				useCinematic={true}
 			/>
 
 			<Section
