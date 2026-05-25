@@ -21,6 +21,49 @@ import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptic
 import { cn } from "@/shared/lib/utils";
 import useAppStore from "@/store/appStore";
 
+function MobileBottomNav({ items, isVisible }: { items: DynamicIslandNavItem[], isVisible: boolean }) {
+	const topItems = items.filter(i => i.level === 1).slice(0, 5);
+
+	return (
+		<nav
+			className={cn(
+				"fixed bottom-0 left-0 w-full z-[9998] flex items-center justify-around border-t border-border/50 bg-background/95 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-lg transition-transform duration-300 sm:hidden",
+				isVisible ? "translate-y-0" : "translate-y-full"
+			)}
+		>
+			{topItems.map((item) => {
+				const isActive = Boolean(item.isActive);
+				return (
+					<button
+						key={item.id}
+						type="button"
+						onClick={item.onClick}
+						className={cn(
+							"flex flex-col items-center justify-center gap-1 px-2 py-1 min-h-[48px] min-w-[48px]",
+							item.isAccent && !isActive && "text-primary",
+							item.isAccent && isActive && "text-primary",
+							!item.isAccent && isActive && "text-foreground",
+							!isActive && !item.isAccent && "text-muted-foreground"
+						)}
+						aria-label={item.ariaLabel ?? item.label}
+						aria-current={isActive ? "location" : undefined}
+					>
+						<span className="relative flex shrink-0 items-center justify-center">
+							{item.icon}
+							{item.hasBadge && (
+								<span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
+							)}
+						</span>
+						<span className="text-[10px] font-medium tracking-tight">
+							{item.label}
+						</span>
+					</button>
+				);
+			})}
+		</nav>
+	);
+}
+
 type NavSection = "pick" | "tournament" | "analysis";
 
 const keyToId: Record<NavSection, string> = {
@@ -455,20 +498,24 @@ export function FloatingNavbar() {
 			<div ref={profileButtonRef} className="sr-only" aria-hidden="true" />
 			<div ref={suggestButtonRef} className="sr-only" aria-hidden="true" />
 
-			<DynamicIslandNav
-				items={navItems}
-				collapsedLabel={primaryLabel}
-				collapsedLabelKey={
-					isAdminRoute
-						? "admin"
-						: isHomeRoute
-							? `${activeSection}-${selectedCount}-${isTournamentActive}`
-							: "away"
-				}
-				progress={scrollProgress}
-				isVisible={shouldShow}
-				prefersReducedMotion={prefersReducedMotion}
-			/>
+			<div className="hidden sm:block">
+				<DynamicIslandNav
+					items={navItems}
+					collapsedLabel={primaryLabel}
+					collapsedLabelKey={
+						isAdminRoute
+							? "admin"
+							: isHomeRoute
+								? `${activeSection}-${selectedCount}-${isTournamentActive}`
+								: "away"
+					}
+					progress={scrollProgress}
+					isVisible={shouldShow}
+					prefersReducedMotion={prefersReducedMotion}
+				/>
+			</div>
+
+			<MobileBottomNav items={navItems} isVisible={shouldShow} />
 
 			{isProfileOpen && (
 				<Modal

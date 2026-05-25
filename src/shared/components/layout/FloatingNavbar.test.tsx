@@ -168,12 +168,12 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getByRole("button", { name: "Pick Names" })).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Pick Names" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
-		expect(screen.getByRole("button", { name: "Suggest" })).toBeInTheDocument();
-		expect(screen.getByRole("button", { name: "Profile" })).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Suggest" })[0]).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Profile" })[0]).toBeInTheDocument();
 	}, 10000);
 
 	it("renders an admin shortcut for admin users", () => {
@@ -187,7 +187,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getByRole("button", { name: "Admin" })).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Admin" })[0]).toBeInTheDocument();
 	});
 
 	it("promotes the first item to a highlighted start action when enough names are selected", () => {
@@ -201,11 +201,11 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		const startButton = screen.getByRole("button", { name: "Start (3)" });
+		const startButton = screen.getAllByRole("button", { name: "Start (3)" })[0];
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("text-primary");
-		expect(screen.queryByRole("button", { name: "Pick Names" })).not.toBeInTheDocument();
+		expect(screen.queryAllByRole("button", { name: "Pick Names" }).length).toBe(0);
 	});
 
 	it("shows analyze as the current destination on the analysis route", () => {
@@ -224,7 +224,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getByRole("button", { name: "Analyze" })).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Analyze" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
@@ -239,7 +239,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		const modeChip = screen.getByRole("button", { name: "Swipe mode active" });
+		const modeChip = screen.getAllByRole("button", { name: "Swipe mode active" })[0];
 
 		expect(modeChip).toHaveAttribute("aria-pressed", "true");
 		expect(modeChip).not.toHaveAttribute("aria-current");
@@ -259,7 +259,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getByAltText("Avery")).toBeInTheDocument();
+		expect(screen.getAllByAltText("Avery")[0]).toBeInTheDocument();
 	});
 
 	it("keeps the admin profile icon treatment when no avatar is present", () => {
@@ -273,7 +273,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		const profileButton = screen.getByRole("button", { name: "Avery" });
+		const profileButton = screen.getAllByRole("button", { name: "Avery" })[0];
 		const profileIcon = profileButton.querySelector("svg");
 
 		expect(profileIcon).not.toBeNull();
@@ -295,7 +295,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getByRole("button", { name: "Admin" })).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Admin" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);

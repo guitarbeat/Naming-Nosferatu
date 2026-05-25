@@ -315,8 +315,10 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		} catch {
 			return;
 		}
+		const isMobile = window.innerWidth < 768;
 		renderer.setSize(window.innerWidth, window.innerHeight);
-		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+		// Lower pixel ratio on mobile to save GPU battery
+		renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
 		container.appendChild(renderer.domElement);
 
 		const camera = new THREE.PerspectiveCamera(
@@ -377,8 +379,20 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		scene.add(mesh);
 
 		let rafId: number;
+		let isRendering = true;
+
+		// Respect prefers-reduced-motion
+		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+		if (mediaQuery.matches) {
+			isRendering = false;
+			// Render a single static frame
+			timer.update();
+			uniforms.uTime.value += 1.5; // fast forward a bit for a nice initial frame
+			renderer.render(scene, camera);
+		}
 
 		const tick = () => {
+			if (!isRendering) return;
 			timer.update();
 			const delta = Math.min(timer.getDelta(), 0.1);
 			touchTexture.update();
@@ -386,15 +400,20 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			renderer.render(scene, camera);
 			rafId = requestAnimationFrame(tick);
 		};
-		tick();
+		
+		if (isRendering) {
+			tick();
+		}
 
 		const onMouseMove = (ev: MouseEvent) => {
+			if (!isRendering) return;
 			touchTexture.addTouch({
 				x: ev.clientX / window.innerWidth,
 				y: 1 - ev.clientY / window.innerHeight,
 			});
 		};
 		const onTouchMove = (ev: TouchEvent) => {
+			if (!isRendering) return;
 			const t = ev.touches[0];
 			touchTexture.addTouch({
 				x: t.clientX / window.innerWidth,
@@ -404,11 +423,18 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		const onResize = () => {
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
+			const isMobileResize = window.innerWidth < 768;
 			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setPixelRatio(isMobileResize ? 1 : Math.min(window.devicePixelRatio, 1.5));
 			uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
 			const vs = getViewSize();
 			mesh.geometry.dispose();
 			mesh.geometry = new THREE.PlaneGeometry(vs.width, vs.height, 1, 1);
+			
+			// Re-render once if paused
+			if (!isRendering) {
+				renderer.render(scene, camera);
+			}
 		};
 
 		window.addEventListener("mousemove", onMouseMove);
