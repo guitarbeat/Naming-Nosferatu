@@ -1,0 +1,303 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "@testing-library/jest-dom/vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { FloatingNavbar } from "./FloatingNavbar";
+
+vi.mock("@/app/providers/Providers", () => ({
+	useAuth: vi.fn(() => ({ user: null })),
+}));
+
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			retry: false,
+		},
+	},
+});
+
+const setSwipeModeMock = vi.fn();
+const setNamesMock = vi.fn();
+
+const mockStore = {
+	tournament: {
+		selectedNames: [] as string[],
+		names: null as string[] | null,
+		isComplete: false,
+		ratings: {} as Record<string, unknown>,
+	},
+	tournamentActions: {
+		setNames: setNamesMock,
+	},
+	user: {
+		isLoggedIn: false,
+		name: "",
+		avatarUrl: "",
+		isAdmin: false,
+	},
+	ui: {
+		isSwipeMode: false,
+	},
+	uiActions: {
+		setSwipeMode: setSwipeModeMock,
+	},
+};
+
+vi.mock("@/store/appStore", () => ({
+	default: () => mockStore,
+}));
+
+function createMatchMedia(matches = false) {
+	return vi.fn().mockImplementation((query: string) => ({
+		matches,
+		media: query,
+		onchange: null,
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	}));
+}
+
+function mountSections(topById: Record<string, number>) {
+	for (const [id, top] of Object.entries(topById)) {
+		const section = document.createElement("section");
+		section.id = id;
+		Object.defineProperty(section, "getBoundingClientRect", {
+			value: () => ({
+				top,
+				bottom: top + 120,
+				left: 0,
+				right: 200,
+				width: 200,
+				height: 120,
+				x: 0,
+				y: top,
+				toJSON: () => ({}),
+			}),
+		});
+		document.body.append(section);
+	}
+}
+
+function getNav() {
+	return screen.getByRole("navigation", { name: "Primary" });
+}
+
+function expandNav() {
+	fireEvent.click(screen.getByTestId("dynamic-island-shell"));
+}
+
+function setPastHeroScroll() {
+	Object.defineProperty(window, "scrollY", {
+		writable: true,
+		configurable: true,
+		value: 900,
+	});
+}
+
+describe("FloatingNavbar", () => {
+	beforeEach(() => {
+		mockStore.tournament.selectedNames = [];
+		mockStore.tournament.names = null;
+		mockStore.tournament.isComplete = false;
+		mockStore.user.isLoggedIn = false;
+		mockStore.user.name = "";
+		mockStore.user.avatarUrl = "";
+		mockStore.user.isAdmin = false;
+		mockStore.ui.isSwipeMode = false;
+
+		setSwipeModeMock.mockReset();
+		setNamesMock.mockReset();
+
+		Object.defineProperty(window, "matchMedia", {
+			writable: true,
+			value: createMatchMedia(false),
+		});
+		Object.defineProperty(window, "scrollTo", {
+			writable: true,
+			value: vi.fn(),
+		});
+		Object.defineProperty(document.documentElement, "scrollHeight", {
+			configurable: true,
+			value: 2000,
+		});
+		Object.defineProperty(window, "innerHeight", {
+			writable: true,
+			configurable: true,
+			value: 800,
+		});
+		Object.defineProperty(window, "scrollY", {
+			writable: true,
+			configurable: true,
+			value: 0,
+		});
+
+		vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+			callback(0);
+			return 1;
+		});
+		vi.stubGlobal("cancelAnimationFrame", vi.fn());
+	});
+
+	afterEach(() => {
+		cleanup();
+		vi.unstubAllGlobals();
+		document.body.innerHTML = "";
+	});
+
+	const renderWithRouter = (initialEntries = ["/"]) =>
+		render(
+			<QueryClientProvider client={queryClient}>
+				<MemoryRouter initialEntries={initialEntries}>
+					<FloatingNavbar />
+				</MemoryRouter>
+			</QueryClientProvider>,
+		);
+
+	it("renders the dynamic island navigation and tracks the active section", () => {
+		mountSections({ pick: 20, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
+
+		renderWithRouter();
+
+		expect(getNav()).toBeInTheDocument();
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Pick Names");
+
+		expandNav();
+
+		expect(screen.getByRole("button", { name: "Pick Names" })).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
+		expect(screen.getByRole("button", { name: "Suggest" })).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: "Profile" })).toBeInTheDocument();
+	}, 10000);
+
+	it("renders an admin shortcut for admin users", () => {
+		mountSections({ pick: 20, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
+		mockStore.user.isLoggedIn = true;
+		mockStore.user.name = "Avery Admin";
+		mockStore.user.isAdmin = true;
+
+		renderWithRouter();
+
+		expandNav();
+
+		expect(screen.getByRole("button", { name: "Admin" })).toBeInTheDocument();
+	});
+
+	it("promotes the first item to a highlighted start action when enough names are selected", () => {
+		mountSections({ pick: 0, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
+		mockStore.tournament.selectedNames = ["Luna", "Fig", "Miso"];
+
+		renderWithRouter();
+
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Start (3)");
+
+		expandNav();
+
+		const startButton = screen.getByRole("button", { name: "Start (3)" });
+
+		expect(startButton).toBeInTheDocument();
+		expect(startButton).toHaveClass("text-primary");
+		expect(screen.queryByRole("button", { name: "Pick Names" })).not.toBeInTheDocument();
+	});
+
+	it("shows analyze as the current destination on the analysis route", () => {
+		mockStore.tournament.isComplete = true;
+		mockStore.tournament.names = ["Luna", "Fig"];
+		setPastHeroScroll();
+		mountSections({
+			pick: 200,
+			tournament: 200,
+			analysis: 0,
+			suggest: 200,
+			profile: 400,
+		});
+
+		renderWithRouter(["/"]);
+
+		expandNav();
+
+		expect(screen.getByRole("button", { name: "Analyze" })).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
+	});
+
+	it("uses pressed semantics for the layout mode chip without treating it as the current destination", () => {
+		mountSections({ pick: 0, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
+		mockStore.ui.isSwipeMode = true;
+
+		renderWithRouter();
+
+		expandNav();
+
+		const modeChip = screen.getByRole("button", { name: "Swipe mode active" });
+
+		expect(modeChip).toHaveAttribute("aria-pressed", "true");
+		expect(modeChip).not.toHaveAttribute("aria-current");
+
+		fireEvent.click(modeChip);
+		expect(setSwipeModeMock).toHaveBeenCalledWith(false);
+	});
+
+	it("renders the logged-in avatar when available", () => {
+		mountSections({ pick: 0, tournament: 200, analysis: 400 });
+		setPastHeroScroll();
+		mockStore.user.isLoggedIn = true;
+		mockStore.user.name = "Avery Admin";
+		mockStore.user.avatarUrl = "https://example.com/avatar.png";
+
+		renderWithRouter();
+
+		expandNav();
+
+		expect(screen.getByAltText("Avery")).toBeInTheDocument();
+	});
+
+	it("keeps the admin profile icon treatment when no avatar is present", () => {
+		mountSections({ pick: 0, suggest: 200, profile: 24 });
+		setPastHeroScroll();
+		mockStore.user.isLoggedIn = true;
+		mockStore.user.name = "Avery Admin";
+		mockStore.user.isAdmin = true;
+
+		renderWithRouter();
+
+		expandNav();
+
+		const profileButton = screen.getByRole("button", { name: "Avery" });
+		const profileIcon = profileButton.querySelector("svg");
+
+		expect(profileIcon).not.toBeNull();
+		expect(profileIcon).toHaveClass("text-chart-4");
+	});
+
+	it("does not render on the tournament route", () => {
+		renderWithRouter(["/tournament"]);
+
+		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
+	});
+
+	it("marks the admin shortcut as current on the admin route", () => {
+		mockStore.user.isLoggedIn = true;
+		mockStore.user.name = "Avery Admin";
+		mockStore.user.isAdmin = true;
+
+		renderWithRouter(["/admin"]);
+
+		expandNav();
+
+		expect(screen.getByRole("button", { name: "Admin" })).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
+	});
+});

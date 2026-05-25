@@ -104,23 +104,25 @@ export function HomeHeroSection({
 	}, []);
 
 	return (
-		<section ref={containerRef} className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background text-foreground px-6 text-center">
-			<div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 w-full">
-				<p className={`mb-4 ${themeText.eyebrowWide}`}>My cat's name is</p>
-				<h1 className={themeText.heroDisplay} style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}>
-					<HeroNameWords state={state} lockedNames={lockedNames} />
-				</h1>
-			</div>
+		<div className="home-hero-wrapper w-full">
+			<section ref={containerRef} className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background text-foreground px-6 text-center">
+				<div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 w-full">
+					<p className={`mb-4 ${themeText.eyebrowWide}`}>My cat's name is</p>
+					<h1 className={themeText.heroDisplay} style={{ fontSize: "clamp(2rem, 9vw, 8.5rem)" }}>
+						<HeroNameWords state={state} lockedNames={lockedNames} />
+					</h1>
+				</div>
 
-			<div ref={ctaRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 w-full px-4">
-				<h2 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter bg-gradient-to-r from-stardust to-hot-pink bg-clip-text text-transparent mb-8 text-center max-w-4xl" style={{ lineHeight: 1.1 }}>
-					Run a tournament, gather opinions, and find the name that fits.
-				</h2>
-				<Button variant="glass" size="xl" onClick={onStartPicking}>
-					Start a tournament
-				</Button>
-			</div>
-		</section>
+				<div ref={ctaRef} className="absolute inset-0 flex flex-col items-center justify-center z-20 w-full px-4">
+					<h2 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter bg-gradient-to-r from-stardust to-hot-pink bg-clip-text text-transparent mb-8 text-center max-w-4xl" style={{ lineHeight: 1.1 }}>
+						Run a tournament, gather opinions, and find the name that fits.
+					</h2>
+					<Button variant="glass" size="xl" onClick={onStartPicking}>
+						Start a tournament
+					</Button>
+				</div>
+			</section>
+		</div>
 	);
 }
 

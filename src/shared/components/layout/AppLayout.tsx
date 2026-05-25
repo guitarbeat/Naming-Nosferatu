@@ -6,13 +6,18 @@ import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import { ErrorBoundary, ErrorComponent } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { OfflineIndicator } from "@/shared/components/layout/Feedback/OfflineIndicator";
+import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {
 	children: ReactNode;
 }
 
-
+const LiquidGradientBackground = lazy(() =>
+	import("@/shared/components/layout/LiquidGradientBackground").then((module) => ({
+		default: module.LiquidGradientBackground,
+	})),
+);
 
 export function AppLayout({ children }: AppLayoutProps) {
 	const { tournament, errors, errorActions } = useAppStore();
@@ -44,7 +49,11 @@ export function AppLayout({ children }: AppLayoutProps) {
 					Skip to main content
 				</button>
 
+				<Suspense fallback={null}>
+					<LiquidGradientBackground />
+				</Suspense>
 
+				<FloatingNavbar />
 
 				<main
 					id="main-content"

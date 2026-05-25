@@ -13,17 +13,11 @@ const lockedNames: NameItem[] = [
 async function renderHomeHeroSection({
 	state = "ready",
 	lockedNamesOverride = lockedNames,
-	selectedCount = 6,
-	totalNameCount = 24,
 	onStartPicking,
-	onSeeResults,
 }: {
 	state?: "loading" | "ready" | "error";
 	lockedNamesOverride?: NameItem[];
-	selectedCount?: number;
-	totalNameCount?: number | null;
 	onStartPicking: () => void;
-	onSeeResults: () => void;
 }) {
 	const { HomeHeroSection } = await import("./HomeSections");
 
@@ -31,10 +25,7 @@ async function renderHomeHeroSection({
 		<HomeHeroSection
 			state={state}
 			lockedNames={lockedNamesOverride}
-			selectedCount={selectedCount}
-			totalNameCount={totalNameCount}
 			onStartPicking={onStartPicking}
-			onSeeResults={onSeeResults}
 		/>,
 	);
 }
@@ -58,13 +49,10 @@ describe("HomeHeroSection", () => {
 
 	it("renders mobile hero actions and forwards CTA clicks", async () => {
 		const onStartPicking = vi.fn();
-		const onSeeResults = vi.fn();
 
-		await renderHomeHeroSection({ onStartPicking, onSeeResults });
+		await renderHomeHeroSection({ onStartPicking });
 
-		// component was updated
-
-		fireEvent.click(screen.getByRole("button", { name: "Wanna help me decide?" }));
+		fireEvent.click(screen.getByText("Start a tournament"));
 
 		expect(onStartPicking).toHaveBeenCalledTimes(1);
 	});
@@ -73,10 +61,7 @@ describe("HomeHeroSection", () => {
 		await renderHomeHeroSection({
 			state: "ready",
 			lockedNamesOverride: [],
-			selectedCount: 0,
-			totalNameCount: 0,
 			onStartPicking: vi.fn(),
-			onSeeResults: vi.fn(),
 		});
 
 		expect(screen.getByText("Nosferatu")).toBeInTheDocument();
@@ -87,9 +72,7 @@ describe("HomeHeroSection", () => {
 		await renderHomeHeroSection({
 			state: "loading",
 			lockedNamesOverride: [],
-			totalNameCount: null,
 			onStartPicking: vi.fn(),
-			onSeeResults: vi.fn(),
 		});
 
 		expect(screen.getByText("________")).toBeInTheDocument();
@@ -99,9 +82,7 @@ describe("HomeHeroSection", () => {
 		await renderHomeHeroSection({
 			state: "error",
 			lockedNamesOverride: [],
-			totalNameCount: null,
 			onStartPicking: vi.fn(),
-			onSeeResults: vi.fn(),
 		});
 
 		expect(screen.getByText("Nosferatu")).toBeInTheDocument();
