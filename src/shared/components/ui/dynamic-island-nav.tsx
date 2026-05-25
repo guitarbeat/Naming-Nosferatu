@@ -195,7 +195,7 @@ export function DynamicIslandNav({
 						className={cn("absolute inset-0 flex flex-col", !isExpanded && "pointer-events-none")}
 					>
 						<div className="flex shrink-0 items-center justify-between px-6 pb-3 pt-5">
-							<span className="text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">
+							<span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
 								{expandedTitle}
 							</span>
 							<button

@@ -355,15 +355,15 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			uColor4: { value: warmInk.clone() },
 			uColor5: { value: terracotta.clone() },
 			uColor6: { value: warmInk.clone() },
-			uSpeed: { value: 1.35 },
-			uIntensity: { value: 1.55 },
+			uSpeed: { value: 0.65 }, // Reduced from 1.35
+			uIntensity: { value: 0.85 }, // Reduced from 1.55
 			uTouchTexture: { value: touchTexture.texture },
-			uGrainIntensity: { value: 0.11 },
+			uGrainIntensity: { value: 0.08 }, // Reduced from 0.11
 			uZoom: { value: 1.0 },
 			uDarkNavy: { value: warmInk.clone() },
 			uGradientSize: { value: 0.45 },
 			uGradientCount: { value: 12.0 },
-			uColor1Weight: { value: 0.5 },
+			uColor1Weight: { value: 0.3 }, // Reduced from 0.5
 			uColor2Weight: { value: 1.8 },
 		};
 
@@ -459,5 +459,5 @@ export function LiquidGradientBackground() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	useLiquidBackground(containerRef);
 
-	return <div ref={containerRef} className="fixed inset-0 -z-10" aria-hidden="true" />;
+	return <div ref={containerRef} className="fixed inset-0 -z-10 opacity-60" aria-hidden="true" />;
 }

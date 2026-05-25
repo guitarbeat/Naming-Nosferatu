@@ -88,14 +88,14 @@ export default function TournamentFlow() {
 											.getElementById("analysis")
 											?.scrollIntoView({ behavior: "smooth", block: "start" })
 									}
-									className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-colors"
+									className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
 								>
 									Analyze Results
 								</button>
 								<button
 									type="button"
 									onClick={() => tournamentActions.resetTournament()}
-									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-colors"
+									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
 								>
 									Start New Tournament
 								</button>

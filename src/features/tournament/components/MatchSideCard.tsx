@@ -87,7 +87,7 @@ export function MatchSideCard({
 		<div className="flex min-h-[18rem] flex-1 flex-col sm:min-h-[26rem]">
 			<button
 				type="button"
-				className={`group relative flex-1 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/30 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+				className={`group relative flex-1 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/30 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 active:scale-[0.98] hover:border-white/20 hover:bg-black/40 hover:-translate-y-1 ${
 					isVoting ? "pointer-events-none" : "cursor-pointer"
 				} ${getHeatCardClasses(heatLevel)} ${selectionClass}`}
 				style={animationDelay ? { animationDelay } : undefined}

@@ -15,9 +15,9 @@ export function SectionHeading({ title, subtitle, className }: SectionHeadingPro
 				className,
 			)}
 		>
-			<h2 className="font-display leading-[0.96] tracking-[-0.03em] text-white/90">{title}</h2>
+			<h2 className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground">{title}</h2>
 			{subtitle && (
-				<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/40 sm:text-base">
+				<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
 					{subtitle}
 				</p>
 			)}

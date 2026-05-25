@@ -141,7 +141,7 @@ const CardBase = memo(
 				cardRefClasses,
 				className,
 				interactive &&
-					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-primary",
+					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary",
 				interactive && onClick && "active:translate-y-0",
 				enableTilt &&
 					"transform-gpu [transform-style:preserve-3d] motion-safe:hover:[transform:perspective(1100px)_rotateX(4deg)_rotateY(-4deg)_translateY(-6px)]",

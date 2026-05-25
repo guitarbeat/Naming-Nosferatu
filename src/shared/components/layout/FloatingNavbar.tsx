@@ -54,7 +54,7 @@ function MobileBottomNav({ items, isVisible }: { items: DynamicIslandNavItem[], 
 								<span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
 							)}
 						</span>
-						<span className="text-[10px] font-medium tracking-tight">
+						<span className="text-xs font-medium tracking-tight">
 							{item.label}
 						</span>
 					</button>

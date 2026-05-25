@@ -1,6 +1,7 @@
 import React, { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
 import { cn } from "@/shared/lib/utils";
+import { CheckCircle, XCircle } from "lucide-react";
 
 // ============================================================================
 // TYPES
@@ -103,7 +104,7 @@ const useFormValidation = (
 // ============================================================================
 
 const inputBaseStyles =
-	"flex h-12 w-full rounded-xl border border-border/10 bg-background/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-foreground backdrop-blur-sm";
+	"flex h-12 w-full rounded-xl border border-border/10 bg-background/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-foreground backdrop-blur-sm";
 
 const errorStyles = "border-destructive/50 focus-visible:ring-destructive/50 animate-pulse";
 const successStyles = "border-chart-2/50 focus-visible:ring-chart-2/50";
@@ -116,6 +117,7 @@ interface FormFieldProps extends BaseFieldProps {
 	children: React.ReactNode;
 	id?: string;
 	name?: string;
+	disabled?: boolean;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -124,6 +126,7 @@ const FormField: React.FC<FormFieldProps> = ({
 	label,
 	error,
 	required = false,
+	disabled = false,
 	children,
 	className = "",
 }) => {
@@ -137,7 +140,10 @@ const FormField: React.FC<FormFieldProps> = ({
 				{label && (
 					<label
 						htmlFor={fieldId}
-						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground/80 ml-1"
+						className={cn(
+							"text-sm font-medium leading-none text-foreground/80 ml-1 transition-opacity",
+							disabled && "cursor-not-allowed opacity-50"
+						)}
 					>
 						{label}
 						{required && <span className="text-destructive ml-1">*</span>}
@@ -218,7 +224,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 			String(value || "").length > 0;
 
 		return (
-			<FormField id={id} label={label} error={hasError ? currentError : null} required={required}>
+			<FormField id={id} label={label} error={hasError ? currentError : null} required={required} disabled={props.disabled}>
 				<div className="relative">
 					<input
 						{...props}
@@ -237,13 +243,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 						aria-describedby={hasError ? `${id}-error` : undefined}
 					/>
 					{isSuccess && (
-						<span className="absolute right-3 top-1/2 -translate-y-1/2 text-chart-2 pointer-events-none motion-safe:animate-[fadeIn_160ms_ease-out]">
-							✅
+						<span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-chart-2 pointer-events-none motion-safe:animate-[fadeIn_160ms_ease-out]">
+							<CheckCircle size={16} />
 						</span>
 					)}
 					{hasError && (
-						<span className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive pointer-events-none motion-safe:animate-[fadeIn_160ms_ease-out]">
-							❌
+						<span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-destructive pointer-events-none motion-safe:animate-[fadeIn_160ms_ease-out]">
+							<XCircle size={16} />
 						</span>
 					)}
 				</div>
@@ -326,7 +332,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			.join(" ");
 
 		return (
-			<FormField id={id} label={label} error={hasError ? currentError : null} required={required}>
+			<FormField id={id} label={label} error={hasError ? currentError : null} required={required} disabled={props.disabled}>
 				<textarea
 					{...props}
 					id={id}

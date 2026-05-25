@@ -200,7 +200,7 @@ const AdminActionButton = ({
 // Card styles utility
 const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 	const baseClasses =
-		"mobile-readable-card relative group overflow-hidden rounded-[1.35rem] border cursor-pointer transition-all duration-300";
+		"mobile-readable-card relative group overflow-hidden rounded-[1.35rem] border cursor-pointer transition-all duration-300 active:scale-[0.98]";
 	const selectedClasses = isSelected
 		? "z-10 border-primary/45 bg-gradient-to-br from-primary/14 to-white/[0.04] shadow-[0_20px_45px_rgba(39,135,153,0.2)] ring-1 ring-primary/25"
 		: "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(6,12,24,0.18)]";

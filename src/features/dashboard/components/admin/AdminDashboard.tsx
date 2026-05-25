@@ -6,13 +6,13 @@ import { AdminOverviewTab } from "./components/AdminOverviewTab";
 import { AdminPlaceholderTab } from "./components/AdminPlaceholderTab";
 import { AdminStatsGrid } from "./components/AdminStatsGrid";
 import { AdminTabNav } from "./components/AdminTabNav";
-import { ADMIN_TABS, FILTER_OPTIONS } from "../constants";
-import type { BulkAction, DashboardTab, NameFilter } from "../types";
+import { ADMIN_TABS, FILTER_OPTIONS } from "./constants";
+import type { BulkAction, DashboardTab, NameFilter } from "./types";
 import {
 	buildAdminStats,
 	filterNamesByStatusAndSearch,
 	mapNameToDisplay,
-} from "../utils";
+} from "./utils";
 import { namesQueryOptions } from "@/shared/api/names/api";
 import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
