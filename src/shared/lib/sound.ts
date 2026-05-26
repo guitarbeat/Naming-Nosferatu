@@ -362,4 +362,5 @@ export const AudioEffects = {
 	playStreak: (config?: SoundConfig) => playSound("streak", config),
 	playVote: (config?: SoundConfig) => playSound("vote", config),
 	playUndo: (config?: SoundConfig) => playSound("undo", config),
+	playMeow: (config?: SoundConfig) => playSound("meow", config),
 };

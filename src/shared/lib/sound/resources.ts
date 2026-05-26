@@ -15,7 +15,7 @@ export const BACKGROUND_TRACKS = [
 ];
 
 // Sound effect identifiers
-export const SOUND_EFFECTS = ["vote", "undo", "level-up", "wow", "surprise", "streak"];
+export const SOUND_EFFECTS = ["vote", "undo", "level-up", "wow", "surprise", "streak", "meow"];
 
 // Synthesis fallback patterns for music when files are missing
 export const FALLBACK_MUSIC_PATTERNS: SynthNote[][] = [
@@ -110,6 +110,13 @@ export function getFallbackEffectPattern(soundName: string): SynthNote[] | null 
 				{ frequency: 587.33, duration: 0.06 },
 				{ frequency: 739.99, duration: 0.06 },
 				{ frequency: 880, duration: 0.08 },
+			];
+		case "meow":
+			return [
+				{ frequency: 659.25, duration: 0.06, wave: "triangle" },
+				{ frequency: 783.99, duration: 0.06, wave: "triangle" },
+				{ frequency: 987.77, duration: 0.08, wave: "sine", gain: 0.8 },
+				{ frequency: 1046.5, duration: 0.15, wave: "sine", gain: 0.6 },
 			];
 		default:
 			return null;
