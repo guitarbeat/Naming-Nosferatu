@@ -13,10 +13,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Modal } from "@/shared/components/layout/Modal";
-import {
-	DynamicIslandNav,
-	type DynamicIslandNavItem,
-} from "@/shared/components/ui/dynamic-island-nav";
+export type DynamicIslandNavItem = {
+	id: string;
+	label: string;
+	level?: number;
+	icon?: React.ReactNode;
+	isActive?: boolean;
+	isAccent?: boolean;
+	hasBadge?: boolean;
+	ariaLabel?: string;
+	ariaPressed?: boolean;
+	onClick: () => void;
+};
+
 import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptics";
 import { cn } from "@/shared/lib/utils";
 import useAppStore from "@/store/appStore";
@@ -53,6 +62,7 @@ function MobileBottomNav({
 						)}
 						aria-label={item.ariaLabel ?? item.label}
 						aria-current={isActive ? "location" : undefined}
+						aria-pressed={typeof item.ariaPressed === "boolean" ? item.ariaPressed : undefined}
 					>
 						<span className="relative flex shrink-0 items-center justify-center">
 							{item.icon}
@@ -61,6 +71,60 @@ function MobileBottomNav({
 							)}
 						</span>
 						<span className="text-xs font-medium tracking-tight">{item.label}</span>
+					</button>
+				);
+			})}
+		</nav>
+	);
+}
+
+function DesktopNavbar({
+	items,
+	isVisible,
+}: {
+	items: DynamicIslandNavItem[];
+	isVisible: boolean;
+}) {
+	// Include level 1 items and the layout mode switcher to lay them all flat
+	const visibleItems = items.filter((i) => i.level === 1 || i.id === "layout-mode");
+
+	return (
+		<nav
+			aria-label="Primary"
+			className={cn(
+				"fixed bottom-6 left-1/2 z-[9999] flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-foreground/10 bg-background/90 px-3 py-1.5 shadow-2xl backdrop-blur-md transition-all duration-300",
+				isVisible
+					? "translate-y-0 opacity-100 scale-100"
+					: "translate-y-10 opacity-0 scale-95 pointer-events-none",
+			)}
+		>
+			{visibleItems.map((item) => {
+				const isActive = Boolean(item.isActive);
+				return (
+					<button
+						key={item.id}
+						type="button"
+						onClick={item.onClick}
+						className={cn(
+							"group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-95",
+							item.isAccent && !isActive && "text-primary hover:bg-primary/10",
+							item.isAccent && isActive && "bg-primary/20 text-primary",
+							!item.isAccent && isActive && "bg-foreground/10 text-foreground",
+							!isActive &&
+								!item.isAccent &&
+								"text-muted-foreground hover:bg-foreground/5 hover:text-foreground",
+						)}
+						aria-label={item.ariaLabel ?? item.label}
+						aria-current={isActive ? "location" : undefined}
+						aria-pressed={typeof item.ariaPressed === "boolean" ? item.ariaPressed : undefined}
+					>
+						<span className="relative flex shrink-0 items-center justify-center">
+							{item.icon}
+							{item.hasBadge && (
+								<span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
+							)}
+						</span>
+						<span>{item.label}</span>
 					</button>
 				);
 			})}
@@ -101,7 +165,6 @@ export function FloatingNavbar() {
 	const [activeSection, setActiveSection] = useState<NavSection>("pick");
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-	const [scrollProgress, setScrollProgress] = useState(0);
 	const [pendingScroll, setPendingScroll] = useState<NavSection | null>(null);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const [isSuggestOpen, setIsSuggestOpen] = useState(false);
@@ -250,11 +313,6 @@ export function FloatingNavbar() {
 					}
 				}
 				setActiveSection(current);
-
-				const total = document.documentElement.scrollHeight - window.innerHeight;
-				setScrollProgress(
-					total > 0 ? Math.min(100, Math.max(0, (window.scrollY / total) * 100)) : 0,
-				);
 			});
 		};
 
@@ -266,12 +324,6 @@ export function FloatingNavbar() {
 				cancelAnimationFrame(rafId);
 			}
 		};
-	}, [isHomeRoute]);
-
-	useEffect(() => {
-		if (!isHomeRoute) {
-			setScrollProgress(0);
-		}
 	}, [isHomeRoute]);
 
 	useEffect(() => {
@@ -343,28 +395,6 @@ export function FloatingNavbar() {
 			mobileMediaQuery.removeEventListener("change", onViewportChange);
 		};
 	}, []);
-
-	const primaryLabel = useMemo(() => {
-		if (isAdminRoute) {
-			return "Admin";
-		}
-		if (!isHomeRoute) {
-			return "Navigation";
-		}
-		if (isTournamentActive) {
-			return "Tournament";
-		}
-		if (selectedCount >= 2) {
-			return `Start (${selectedCount})`;
-		}
-		if (activeSection === "analysis") {
-			return "Analyze";
-		}
-		if (activeSection === "tournament") {
-			return "Bracket";
-		}
-		return "Pick Names";
-	}, [activeSection, isAdminRoute, isHomeRoute, isTournamentActive, selectedCount]);
 
 	const navItems = useMemo((): DynamicIslandNavItem[] => {
 		const items: DynamicIslandNavItem[] = [];
@@ -503,20 +533,7 @@ export function FloatingNavbar() {
 			<div ref={suggestButtonRef} className="sr-only" aria-hidden="true" />
 
 			<div className="hidden sm:block">
-				<DynamicIslandNav
-					items={navItems}
-					collapsedLabel={primaryLabel}
-					collapsedLabelKey={
-						isAdminRoute
-							? "admin"
-							: isHomeRoute
-								? `${activeSection}-${selectedCount}-${isTournamentActive}`
-								: "away"
-					}
-					progress={scrollProgress}
-					isVisible={shouldShow}
-					prefersReducedMotion={prefersReducedMotion}
-				/>
+				<DesktopNavbar items={navItems} isVisible={shouldShow} />
 			</div>
 
 			<MobileBottomNav items={navItems} isVisible={shouldShow} />
