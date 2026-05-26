@@ -86,6 +86,10 @@ function getNav() {
 	return screen.getByRole("navigation", { name: "Primary" });
 }
 
+function expandNav() {
+	fireEvent.click(screen.getByTestId("dynamic-island-shell"));
+}
+
 function setPastHeroScroll() {
 	Object.defineProperty(window, "scrollY", {
 		writable: true,
@@ -153,13 +157,17 @@ describe("FloatingNavbar", () => {
 			</QueryClientProvider>,
 		);
 
-	it("renders the navigation and tracks the active section", () => {
+	it("renders the dynamic island navigation and tracks the active section", () => {
 		mountSections({ pick: 20, tournament: 200, analysis: 400 });
 		setPastHeroScroll();
 
 		renderWithRouter();
 
 		expect(getNav()).toBeInTheDocument();
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Pick Names");
+
+		expandNav();
+
 		expect(screen.getAllByRole("button", { name: "Pick Names" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
@@ -177,6 +185,8 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
+		expandNav();
+
 		expect(screen.getAllByRole("button", { name: "Admin" })[0]).toBeInTheDocument();
 	});
 
@@ -186,6 +196,10 @@ describe("FloatingNavbar", () => {
 		mockStore.tournament.selectedNames = ["Luna", "Fig", "Miso"];
 
 		renderWithRouter();
+
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Start (3)");
+
+		expandNav();
 
 		const startButton = screen.getAllByRole("button", { name: "Start (3)" })[0];
 
@@ -208,6 +222,8 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter(["/"]);
 
+		expandNav();
+
 		expect(screen.getAllByRole("button", { name: "Analyze" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
@@ -220,6 +236,8 @@ describe("FloatingNavbar", () => {
 		mockStore.ui.isSwipeMode = true;
 
 		renderWithRouter();
+
+		expandNav();
 
 		const modeChip = screen.getAllByRole("button", { name: "Swipe mode active" })[0];
 
@@ -239,6 +257,8 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
+		expandNav();
+
 		expect(screen.getAllByAltText("Avery")[0]).toBeInTheDocument();
 	});
 
@@ -250,6 +270,8 @@ describe("FloatingNavbar", () => {
 		mockStore.user.isAdmin = true;
 
 		renderWithRouter();
+
+		expandNav();
 
 		const profileButton = screen.getAllByRole("button", { name: "Avery" })[0];
 		const profileIcon = profileButton.querySelector("svg");
@@ -270,6 +292,8 @@ describe("FloatingNavbar", () => {
 		mockStore.user.isAdmin = true;
 
 		renderWithRouter(["/admin"]);
+
+		expandNav();
 
 		expect(screen.getAllByRole("button", { name: "Admin" })[0]).toHaveAttribute(
 			"aria-current",
