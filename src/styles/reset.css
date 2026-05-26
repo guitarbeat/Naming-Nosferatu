@@ -61,6 +61,22 @@ img {
 	display: block;
 	max-width: 100%;
 	height: auto;
+	/* Subtle depth outline — pure white on dark bg (no tinted neutrals) */
+	outline: 1px solid rgba(255, 255, 255, 0.08);
+	outline-offset: -1px;
+}
+
+/* Light theme uses a pure black outline */
+[data-theme="light"] img {
+	outline-color: rgba(0, 0, 0, 0.08);
+}
+
+/* text-wrap: pretty prevents orphaned last words on paragraphs */
+p,
+li,
+figcaption,
+blockquote {
+	text-wrap: pretty;
 }
 
 /* ==========================================================================

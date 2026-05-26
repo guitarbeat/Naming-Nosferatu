@@ -141,7 +141,7 @@ const CardBase = memo(
 				cardRefClasses,
 				className,
 				interactive &&
-					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary",
+					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-primary",
 				interactive && onClick && "active:translate-y-0",
 				enableTilt &&
 					"transform-gpu [transform-style:preserve-3d] motion-safe:hover:[transform:perspective(1100px)_rotateX(4deg)_rotateY(-4deg)_translateY(-6px)]",
@@ -555,7 +555,7 @@ const CardNameBase = memo(function CardName({
 				>
 					<h3
 						className={cn(
-							"font-bold leading-tight m-0 tracking-tight",
+							"font-bold leading-tight m-0 tracking-tight text-balance",
 							image ? "text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" : "text-foreground",
 							size === "small" ? "text-sm" : "text-lg md:text-xl",
 							isHidden && "text-chart-4/80",

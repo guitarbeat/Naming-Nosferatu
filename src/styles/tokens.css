@@ -688,7 +688,7 @@
 	--duration-normal: var(--duration-moderate);
 
 	/* Transform scales */
-	--scale-press: 0.97;
+	--scale-press: 0.96;
 	--scale-hover: 1.02;
 	--scale-subtle: 1.005;
 

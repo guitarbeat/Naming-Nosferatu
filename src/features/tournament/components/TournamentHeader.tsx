@@ -80,14 +80,17 @@ export function TournamentHeader({
 								<span>{tournamentMode === "2v2" ? "Team mode" : "Head to head"}</span>
 							</div>
 							<h2 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
-								Match {currentMatchNumber} of {totalMatches}
+								Match{" "}
+								<span className="tabular-nums">{currentMatchNumber}</span>
+								{" "}of{" "}
+								<span className="tabular-nums">{totalMatches}</span>
 							</h2>
 							<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
-								<span>{totalRounds} rounds total</span>
+								<span><span className="tabular-nums">{totalRounds}</span> rounds total</span>
 								{etaMinutes > 0 && (
 									<span className="inline-flex items-center gap-1">
 										<Clock className="size-3" />
-										About {etaMinutes} minutes left
+										About <span className="tabular-nums ml-1">{etaMinutes}</span> minutes left
 									</span>
 								)}
 							</div>
@@ -120,7 +123,7 @@ export function TournamentHeader({
 								key={label}
 								type="button"
 								onClick={action}
-								className={`inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm transition-colors ${
+								className={`inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm transition-[background-color,color,opacity] active:scale-[0.96] ${
 									active
 										? "border-primary/30 bg-primary/15 text-primary"
 										: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
@@ -182,10 +185,10 @@ export function TournamentHeader({
 
 					<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 						<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
-							<span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1">
-								<Medal className="size-3.5 text-accent" />
-								{currentMatchNumber}/{totalMatches}
-							</span>
+						<span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1">
+							<Medal className="size-3.5 text-accent" />
+							<span className="tabular-nums">{currentMatchNumber}</span>/<span className="tabular-nums">{totalMatches}</span>
+						</span>
 							<span>{stageHeadline}</span>
 						</div>
 						{dominantStreak && (
@@ -217,10 +220,10 @@ export function TournamentHeader({
 								Road to crown
 							</p>
 							<p className="mt-2 text-sm font-semibold text-white">
-								{matchesRemaining} match{matchesRemaining === 1 ? "" : "es"} after this
+								<span className="tabular-nums">{matchesRemaining}</span> match{matchesRemaining === 1 ? "" : "es"} after this
 							</p>
 							<p className="mt-1 text-xs leading-relaxed text-white/58">
-								Roughly {roundMatchesLeft} duel{roundMatchesLeft === 1 ? "" : "s"} remain in the
+								Roughly <span className="tabular-nums">{roundMatchesLeft}</span> duel{roundMatchesLeft === 1 ? "" : "s"} remain in the
 								live bracket cycle.
 							</p>
 						</div>

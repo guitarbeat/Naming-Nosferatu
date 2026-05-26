@@ -75,7 +75,7 @@ export function NameSuggestionInner() {
 	return (
 		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto space-y-7">
 			<div className="text-center space-y-3">
-				<h3 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight">
+				<h3 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight text-balance">
 					Have a suggestion?
 				</h3>
 				<p className="text-base text-muted-foreground/80">
