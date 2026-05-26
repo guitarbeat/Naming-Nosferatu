@@ -149,7 +149,7 @@ export function DynamicIslandNav({
 					}}
 					transition={islandTransition}
 					style={{ cursor: isExpanded ? "default" : "pointer" }}
-					className="relative overflow-hidden border border-foreground/10 bg-background/95 text-foreground shadow-2xl backdrop-blur-md"
+					className="relative overflow-hidden border border-foreground/10 dark:border-white/10 bg-background/85 text-foreground shadow-[0_24px_50px_-12px_rgba(0,0,0,0.3)] backdrop-blur-xl"
 				>
 					<motion.div
 						initial={false}
@@ -164,7 +164,7 @@ export function DynamicIslandNav({
 							isExpanded && "pointer-events-none",
 						)}
 					>
-						<div className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+						<div className="h-2 w-2 shrink-0 rounded-full bg-primary animate-pulse" aria-hidden="true" />
 
 						<div className="relative flex h-full flex-1 items-center overflow-hidden text-left">
 							<AnimatePresence mode="popLayout" initial={false}>
@@ -194,8 +194,8 @@ export function DynamicIslandNav({
 						transition={{ ...islandTransition, delay: isExpanded ? 0.1 : 0 }}
 						className={cn("absolute inset-0 flex flex-col", !isExpanded && "pointer-events-none")}
 					>
-						<div className="flex shrink-0 items-center justify-between px-6 pb-3 pt-5">
-							<span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+						<div className="flex shrink-0 items-center justify-between px-7 pb-3 pt-7">
+							<span className="text-[10px] font-bold tracking-[0.12em] uppercase text-muted-foreground/60">
 								{expandedTitle}
 							</span>
 							<button
@@ -204,15 +204,15 @@ export function DynamicIslandNav({
 									e.stopPropagation();
 									setIsExpanded(false);
 								}}
-								className="text-muted-foreground transition-colors hover:text-foreground"
+								className="flex h-6.5 w-6.5 items-center justify-center rounded-full text-muted-foreground/70 hover:bg-foreground/5 dark:hover:bg-white/5 hover:text-foreground active:scale-90 transition-all duration-200"
 								aria-label="Close navigation menu"
 							>
-								<X className="h-5 w-5" />
+								<X className="h-4.5 w-4.5" />
 							</button>
 						</div>
 
-						<div className="flex-1 overflow-y-auto overscroll-contain px-3 pb-4">
-							<div className="flex flex-col gap-0.5">
+						<div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-5">
+							<div className="flex flex-col gap-1">
 								{items.map((item) => {
 									const isActive = Boolean(item.isActive);
 									const isHovered = hoveredId === item.id;
@@ -237,18 +237,31 @@ export function DynamicIslandNav({
 											}}
 											style={{ paddingLeft: `${paddingLeft}px` }}
 											className={cn(
-												"group flex w-full shrink-0 cursor-pointer items-center gap-2 rounded-lg border-none py-2 pr-3 text-left text-sm transition-all duration-300 ease-out",
+												"group flex w-full shrink-0 cursor-pointer items-center gap-2.5 rounded-xl border-none py-2.5 pr-3 text-left text-sm transition-[transform,background-color,color] active:scale-[0.96] duration-200 ease-out relative",
 												item.isAccent && !isActive && "text-primary",
-												item.isAccent && isActive && "bg-primary/15 font-medium text-primary",
+												item.isAccent && isActive && "bg-primary/15 font-semibold text-primary",
 												!item.isAccent &&
 													isActive &&
-													"bg-foreground/10 font-medium text-foreground",
-												!isActive && isHovered && "bg-foreground/5 text-foreground/85",
-												!isActive && !isHovered && "bg-transparent text-foreground/45",
+													"bg-foreground/10 font-semibold text-foreground",
+												!isActive && isHovered && "bg-foreground/5 text-foreground/90",
+												!isActive && !isHovered && "bg-transparent text-foreground/50",
+												indentLevel > 0 && "opacity-90"
 											)}
 										>
+											{indentLevel > 0 && (
+												<svg
+													className="absolute top-0 h-[18px] w-[14px] text-foreground/20 dark:text-white/20 stroke-current fill-none pointer-events-none select-none"
+													style={{ left: `${(indentLevel - 1) * 14 + 20}px` }}
+													viewBox="0 0 14 18"
+													strokeWidth="1.5"
+													strokeLinecap="round"
+													aria-hidden="true"
+												>
+													<path d="M 1,0 L 1,9 Q 1,13 12,13" />
+												</svg>
+											)}
 											{item.icon ? (
-												<span className="relative flex shrink-0 items-center justify-center text-foreground/70">
+												<span className="relative flex shrink-0 items-center justify-center text-foreground/75 transition-colors duration-200 group-hover:text-foreground">
 													{item.icon}
 													{item.hasBadge && (
 														<span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
@@ -261,8 +274,11 @@ export function DynamicIslandNav({
 											<motion.div
 												initial={false}
 												animate={{ scale: isActive ? 1 : 0, opacity: isActive ? 1 : 0 }}
-												transition={{ duration: 0.3, ease: "easeOut" }}
-												className="ml-1 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground"
+												transition={{ duration: 0.25, ease: "easeOut" }}
+												className={cn(
+													"ml-1 h-1.5 w-1.5 shrink-0 rounded-full",
+													item.isAccent ? "bg-primary shadow-[0_0_6px_var(--primary)]" : "bg-foreground"
+												)}
 											/>
 										</button>
 									);
