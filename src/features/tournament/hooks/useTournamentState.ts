@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import type {
 	MatchResult,
@@ -22,12 +22,9 @@ import type {
 import useAppStore from "@/store/appStore";
 import {
 	calculateTournamentMetrics,
-	computeUpdatedRatings,
 	createIdToNameMap,
-	createMatchRecord,
 	createTeamsById,
 	deriveBracketState,
-	type HistoryEntry,
 	resolveCurrentMatch,
 } from "../utils/tournamentLogic";
 import {
@@ -38,6 +35,7 @@ import {
 	createTournamentId,
 	sanitizePersistentState,
 } from "./tournamentPersistence";
+import { tournamentReducer } from "./tournamentReducer";
 import { useAudioManager } from "./useAudioManager";
 import { useTournamentRealtime } from "./useTournamentRealtime";
 
@@ -84,9 +82,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	const toast = useToast();
 	const audioManager = useAudioManager();
 	const [isVoting, setIsVoting] = useState(false);
-	const [ratings, setRatings] = useState<Record<string, number>>({});
-	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const [refreshKey, setRefreshKey] = useState(0);
+
 	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
@@ -119,27 +115,25 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		[persistentStateRaw, userName],
 	);
 
-	const updatePersistentState = useCallback(
-		(
-			updates:
-				| Partial<PersistentTournamentState>
-				| ((prev: PersistentTournamentState) => Partial<PersistentTournamentState>),
-		) => {
-			setPersistentState((prev) => {
-				const delta = typeof updates === "function" ? updates(prev) || {} : updates || {};
-				return { ...prev, ...delta };
-			});
-		},
-		[setPersistentState],
-	);
+	// Reducer State Machine Integration
+	const [state, dispatch] = useReducer(tournamentReducer, {
+		ratings: {},
+		history: [],
+		persistentState: defaultPersistentState,
+		refreshKey: 0,
+	});
 
-	const ratingsRef = useRef(ratings);
+	const ratingsRef = useRef(state.ratings);
 	const initializedRef = useRef(false);
 	const lastNamesKeyRef = useRef("");
-	// Tracks when ratings were last updated in-memory (ms since epoch).
-	// Used during initialization to avoid overwriting newer in-memory ratings
-	// with a stale value read from localStorage (e.g. after a failed flush).
 	const lastRatingsUpdateRef = useRef(0);
+
+	// Sync local storage when persistentState in the reducer changes
+	useEffect(() => {
+		if (initializedRef.current) {
+			setPersistentState(state.persistentState);
+		}
+	}, [state.persistentState, setPersistentState]);
 
 	// Cleanup WebSocket connections on unmount
 	useEffect(() => {
@@ -151,10 +145,9 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	}, [realtime]);
 
 	useEffect(() => {
-		ratingsRef.current = ratings;
-	}, [ratings]);
+		ratingsRef.current = state.ratings;
+	}, [state.ratings]);
 
-	// Vercel Best Practice: derive state during render instead of effect
 	if (lastNamesKeyRef.current !== namesKey) {
 		initializedRef.current = false;
 		lastNamesKeyRef.current = namesKey;
@@ -169,7 +162,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			return;
 		}
 
-		// Batch all state updates to prevent race conditions
 		const initializeTournament = () => {
 			const hasValidPersistence =
 				persistentState.namesKey === namesKey && persistentState.mode === tournamentMode;
@@ -197,7 +189,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				? createBracketEntrants(participantIds)
 				: persistentState.bracketEntrants;
 
-			// Single state update to prevent race conditions
 			const stateUpdates: Partial<PersistentTournamentState> = {
 				matchHistory: shouldResetBracket ? [] : persistentState.matchHistory,
 				currentRound: shouldResetBracket ? 1 : persistentState.currentRound,
@@ -222,33 +213,34 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				stateUpdates.ratings = shouldResetBracket ? initialRatings : persistentState.ratings;
 			}
 
-			// Update ratings and persistent state atomically.
-			// Guard: only restore ratings from storage if the stored timestamp is
-			// at least as recent as the last in-memory update. This prevents a
-			// stale localStorage value (e.g. from a failed unmount flush) from
-			// silently overwriting newer in-memory ratings on remount.
 			const storedRatingsAreFresh =
 				(persistentState.lastUpdated ?? 0) >= lastRatingsUpdateRef.current;
+
+			let activeRatings = initialRatings;
 			if (
 				hasValidPersistence &&
 				persistentState.ratings &&
 				Object.keys(persistentState.ratings).length > 0 &&
 				storedRatingsAreFresh
 			) {
-				setRatings(persistentState.ratings);
+				activeRatings = persistentState.ratings;
 			} else if (lastRatingsUpdateRef.current > 0) {
-				// In-memory ratings are newer — keep ratingsRef.current as-is
-				setRatings(ratingsRef.current);
+				activeRatings = ratingsRef.current;
 			} else {
-				setRatings(initialRatings);
 				if (!stateUpdates.ratings) {
 					stateUpdates.ratings = initialRatings;
 				}
 			}
 
-			updatePersistentState(stateUpdates);
+			dispatch({
+				type: "INIT",
+				payload: {
+					ratings: activeRatings,
+					persistentState: { ...persistentState, ...stateUpdates },
+				},
+			});
+
 			initializedRef.current = true;
-			setRefreshKey((k) => k + 1);
 		};
 
 		let frameId: number | null = null;
@@ -259,27 +251,32 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				cancelAnimationFrame(frameId);
 			}
 		};
-	}, [names, namesKey, tournamentMode, persistentState, updatePersistentState]); // Reduced and optimized dependency array
+	}, [names, namesKey, tournamentMode, persistentState]);
 
 	const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
-	const teamsById = useMemo(() => createTeamsById(persistentState.teams), [persistentState.teams]);
+	const teamsById = useMemo(
+		() => createTeamsById(state.persistentState.teams),
+		[state.persistentState.teams],
+	);
 	const bracketDerived = useMemo(
-		() => deriveBracketState(persistentState.bracketEntrants, persistentState.matchHistory),
-		[persistentState.bracketEntrants, persistentState.matchHistory],
+		() =>
+			deriveBracketState(state.persistentState.bracketEntrants, state.persistentState.matchHistory),
+		[state.persistentState.bracketEntrants, state.persistentState.matchHistory],
 	);
 
 	const currentMatch = useMemo(() => {
-		void refreshKey;
+		void state.refreshKey;
 		return resolveCurrentMatch({
 			tournamentMode,
 			pendingMatchIds: bracketDerived.pendingMatchIds,
 			teamsById,
 			idToNameMap,
 		});
-	}, [refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
+	}, [state.refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
+
 	const openingEntrants = useMemo(
 		() =>
-			persistentState.bracketEntrants
+			state.persistentState.bracketEntrants
 				.filter((entrantId) => !String(entrantId).startsWith("__BYE__"))
 				.map((entrantId) => {
 					const entrantKey = String(entrantId);
@@ -297,7 +294,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 						label: name?.name ?? entrantKey,
 					};
 				}),
-		[persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap],
+		[state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap],
 	);
 
 	const isComplete = bracketDerived.isComplete;
@@ -317,20 +314,9 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				return;
 			}
 
-			const ratingsSnapshot = ratingsRef.current;
-			const newRatings = computeUpdatedRatings({
-				currentMatch,
-				ratingsSnapshot,
-				winnerId,
-				loserId,
-			});
-
 			const voteTimestamp = Date.now();
 			lastRatingsUpdateRef.current = voteTimestamp;
-			setRatings(newRatings);
 
-			// Fire-and-forget: update global win/loss counters per match.
-			// Errors are non-fatal — the local Elo update already happened.
 			const leftIds =
 				currentMatch.mode === "2v2" ? currentMatch.left.memberIds : [String(currentMatch.left.id)];
 			const rightIds =
@@ -338,17 +324,16 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 					? currentMatch.right.memberIds
 					: [String(currentMatch.right.id)];
 
-			// Record the vote in the global store so TournamentFlow can compute
-			// per-name wins/losses when saving final ratings. For 2v2, include the
-			// individual member IDs so the save logic can expand team votes.
 			const winnerSideIds = leftIds.includes(winnerId) ? leftIds : rightIds;
 			const loserSideIds = leftIds.includes(winnerId) ? rightIds : leftIds;
+
 			tournamentActions.recordVote(
 				winnerId,
 				loserId,
 				winnerSideIds.length > 1 ? winnerSideIds : undefined,
 				loserSideIds.length > 1 ? loserSideIds : undefined,
 			);
+
 			const winnerSide = leftIds.includes(winnerId) ? "left" : "right";
 			ratingsAPI
 				.applyTournamentMatch({
@@ -361,42 +346,20 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
 				});
 
-			const matchRecord: MatchRecord = createMatchRecord({
-				currentMatch,
-				winnerId,
-				loserId,
-				matchNumber,
-				round,
-			});
-
-			setHistory((prev) => [
-				...prev,
-				{
-					match: currentMatch,
-					ratings: { ...ratingsSnapshot },
-					round,
+			dispatch({
+				type: "VOTE",
+				payload: {
+					currentMatch,
+					winnerId,
+					loserId,
 					matchNumber,
+					round,
+					voteTimestamp,
+					userName: userName || "anonymous",
 				},
-			]);
-
-			updatePersistentState((prev) => ({
-				matchHistory: [...(prev.matchHistory || []), matchRecord],
-				currentMatch: matchNumber + 1,
-				currentRound: round,
-				ratings: newRatings,
-				lastUpdated: voteTimestamp,
-			}));
-
-			setRefreshKey((k) => k + 1);
+			});
 		},
-		[
-			currentMatch,
-			matchNumber,
-			round,
-			updatePersistentState,
-			userName,
-			tournamentActions.recordVote,
-		],
+		[currentMatch, matchNumber, round, userName, tournamentActions.recordVote],
 	);
 
 	const voteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -416,7 +379,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		[handleVote, isVoting, audioManager],
 	);
 
-	// Cleanup vote timeout on unmount
 	useEffect(() => {
 		return () => {
 			if (voteTimeoutRef.current) {
@@ -426,53 +388,48 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	}, []);
 
 	const handleUndo = useCallback(() => {
-		if (history.length === 0) {
+		if (state.history.length === 0) {
 			toast.showWarning("No more moves to undo");
 			return;
 		}
 
-		const lastEntry = history[history.length - 1];
+		const lastEntry = state.history[state.history.length - 1];
 		if (!lastEntry) {
 			return;
 		}
 
 		audioManager.playUndoSound();
-		setRatings(lastEntry.ratings);
-		setHistory((prev) => prev.slice(0, -1));
-		setRefreshKey((k) => k + 1);
-
-		updatePersistentState((prev) => {
-			const newHistory = (prev.matchHistory || []).slice(0, -1);
-			return {
-				matchHistory: newHistory,
-				ratings: lastEntry.ratings,
-			};
+		dispatch({
+			type: "UNDO",
+			payload: { lastEntry },
 		});
-	}, [audioManager, history, toast, updatePersistentState]);
+	}, [audioManager, state.history, toast]);
 
 	const handleQuit = useCallback(() => {
-		updatePersistentState({
-			matchHistory: [],
-			currentRound: 1,
-			currentMatch: 1,
-			totalMatches: 0,
-			namesKey: "",
-			ratings: {},
-			mode: "1v1",
-			teams: [],
-			teamMatches: [],
-			teamMatchIndex: 0,
-			bracketEntrants: [],
+		dispatch({
+			type: "QUIT",
+			payload: {
+				defaultState: {
+					matchHistory: [],
+					currentRound: 1,
+					currentMatch: 1,
+					totalMatches: 0,
+					namesKey: "",
+					ratings: {},
+					mode: "1v1",
+					teams: [],
+					teamMatches: [],
+					teamMatchIndex: 0,
+					bracketEntrants: [],
+				},
+			},
 		});
-		setHistory([]);
-		setRatings({});
-		setRefreshKey((key) => key + 1);
 		tournamentActions.clearVoteHistory();
-	}, [updatePersistentState, tournamentActions]);
+	}, [tournamentActions]);
 
 	return {
 		currentMatch,
-		ratings,
+		ratings: state.ratings,
 		openingEntrants,
 		round,
 		totalRounds,
@@ -483,13 +440,13 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		tournamentMode,
 		handleVote,
 		handleUndo,
-		canUndo: history.length > 0,
+		canUndo: state.history.length > 0,
 		handleQuit,
 		progress,
 		etaMinutes,
 		isVoting,
 		handleVoteWithAnimation,
-		matchHistory: persistentState.matchHistory,
+		matchHistory: state.persistentState.matchHistory,
 		subscribeToTournamentUpdates: realtime.subscribeToTournament,
 		subscribeToMatchResults: realtime.subscribeToMatches,
 		subscribeToUserActivity: realtime.subscribeToUserActivity,

@@ -1,3 +1,5 @@
+import { getTelemetryAdapter } from "./telemetrySeam";
+
 // ============================================================================
 // Internal Helpers & Scope
 // ============================================================================
@@ -395,36 +397,23 @@ interface ErrorServiceLogData {
 }
 
 function sendToErrorService(logData: ErrorServiceLogData): void {
-	const g = getGlobalScope() as typeof globalThis & {
-		Sentry?: { captureException?: (error: Error, options?: unknown) => void };
-	};
-	const sentry = g.Sentry;
-	if (sentry?.captureException) {
-		const e = new Error(logData.error.message);
-		e.name = logData.context;
-		e.stack = logData.error.stack || undefined;
-		sentry.captureException(e, {
-			tags: {
-				context: logData.context,
-				errorType: logData.error.type,
-				severity: logData.error.severity,
-			},
-			extra: {
-				...logData.metadata,
-				errorId: logData.error.id,
-				userMessage: logData.error.userMessage,
-				isRetryable: logData.error.isRetryable,
-			},
-			level:
-				logData.error.severity === "critical"
-					? "fatal"
-					: logData.error.severity === "high"
-						? "error"
-						: logData.error.severity === "medium"
-							? "warning"
-							: "info",
-		});
-	}
+	const e = new Error(logData.error.message);
+	e.name = logData.context;
+	e.stack = logData.error.stack || undefined;
+	getTelemetryAdapter().captureException(
+		e,
+		logData.context,
+		{
+			errorType: logData.error.type,
+			severity: logData.error.severity,
+		},
+		{
+			...logData.metadata,
+			errorId: logData.error.id,
+			userMessage: logData.error.userMessage,
+			isRetryable: logData.error.isRetryable,
+		},
+	);
 }
 
 function logError(
@@ -432,11 +421,8 @@ function logError(
 	context: string,
 	metadata: Record<string, unknown>,
 ) {
-	if (process.env.NODE_ENV === "development") {
-		console.group(`🔴 Error [${formattedError.type}]`);
-		console.error("Context:", context, "Message:", formattedError.userMessage);
-		console.groupEnd();
-	} else {
+	getTelemetryAdapter().logError(formattedError, context);
+	if (process.env.NODE_ENV !== "development") {
 		sendToErrorService({ error: formattedError, context, metadata });
 	}
 }
