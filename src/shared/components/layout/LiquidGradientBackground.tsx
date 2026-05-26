@@ -392,7 +392,9 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		}
 
 		const tick = () => {
-			if (!isRendering) return;
+			if (!isRendering) {
+				return;
+			}
 			timer.update();
 			const delta = Math.min(timer.getDelta(), 0.1);
 			touchTexture.update();
@@ -400,20 +402,24 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			renderer.render(scene, camera);
 			rafId = requestAnimationFrame(tick);
 		};
-		
+
 		if (isRendering) {
 			tick();
 		}
 
 		const onMouseMove = (ev: MouseEvent) => {
-			if (!isRendering) return;
+			if (!isRendering) {
+				return;
+			}
 			touchTexture.addTouch({
 				x: ev.clientX / window.innerWidth,
 				y: 1 - ev.clientY / window.innerHeight,
 			});
 		};
 		const onTouchMove = (ev: TouchEvent) => {
-			if (!isRendering) return;
+			if (!isRendering) {
+				return;
+			}
 			const t = ev.touches[0];
 			touchTexture.addTouch({
 				x: t.clientX / window.innerWidth,
@@ -430,7 +436,7 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			const vs = getViewSize();
 			mesh.geometry.dispose();
 			mesh.geometry = new THREE.PlaneGeometry(vs.width, vs.height, 1, 1);
-			
+
 			// Re-render once if paused
 			if (!isRendering) {
 				renderer.render(scene, camera);

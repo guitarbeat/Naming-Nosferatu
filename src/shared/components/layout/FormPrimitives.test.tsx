@@ -26,7 +26,7 @@ describe("Input", () => {
 				externalTouched={true}
 				externalError={null}
 				onChange={() => {}}
-			/>
+			/>,
 		);
 		// Lucide SVG wrapper check
 		const successIcon = container.querySelector(".text-chart-2 svg");
@@ -41,7 +41,7 @@ describe("Input", () => {
 				externalTouched={true}
 				externalError="Too short"
 				onChange={() => {}}
-			/>
+			/>,
 		);
 		// Lucide SVG wrapper check
 		const errorIcon = container.querySelector(".text-destructive svg");

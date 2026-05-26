@@ -1,7 +1,7 @@
+import { CheckCircle, XCircle } from "lucide-react";
 import React, { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
 import { cn } from "@/shared/lib/utils";
-import { CheckCircle, XCircle } from "lucide-react";
 
 // ============================================================================
 // TYPES
@@ -142,7 +142,7 @@ const FormField: React.FC<FormFieldProps> = ({
 						htmlFor={fieldId}
 						className={cn(
 							"text-sm font-medium leading-none text-foreground/80 ml-1 transition-opacity",
-							disabled && "cursor-not-allowed opacity-50"
+							disabled && "cursor-not-allowed opacity-50",
 						)}
 					>
 						{label}
@@ -224,7 +224,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 			String(value || "").length > 0;
 
 		return (
-			<FormField id={id} label={label} error={hasError ? currentError : null} required={required} disabled={props.disabled}>
+			<FormField
+				id={id}
+				label={label}
+				error={hasError ? currentError : null}
+				required={required}
+				disabled={props.disabled}
+			>
 				<div className="relative">
 					<input
 						{...props}
@@ -332,7 +338,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			.join(" ");
 
 		return (
-			<FormField id={id} label={label} error={hasError ? currentError : null} required={required} disabled={props.disabled}>
+			<FormField
+				id={id}
+				label={label}
+				error={hasError ? currentError : null}
+				required={required}
+				disabled={props.disabled}
+			>
 				<textarea
 					{...props}
 					id={id}

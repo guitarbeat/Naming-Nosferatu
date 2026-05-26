@@ -42,7 +42,12 @@ export default function AdminRoute() {
 		<Section id="admin" variant="minimal" padding="comfortable" maxWidth="2xl">
 			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
 				<ErrorBoundary context={errorContexts.analysisDashboard}>
-					<DashboardLazy isAdmin={authUser?.isAdmin} userName={authUser?.name} isLoggedIn={authUser?.isLoggedIn} avatarUrl={authUser?.avatarUrl} />
+					<DashboardLazy
+						isAdmin={authUser?.isAdmin}
+						userName={authUser?.name}
+						isLoggedIn={authUser?.isLoggedIn}
+						avatarUrl={authUser?.avatarUrl}
+					/>
 				</ErrorBoundary>
 			</Suspense>
 		</Section>

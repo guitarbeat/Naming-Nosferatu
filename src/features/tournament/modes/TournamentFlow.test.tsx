@@ -24,8 +24,6 @@ vi.mock("@/store/appStore", () => ({
 	default: () => mockStore,
 }));
 
-
-
 vi.mock("../components/NameSelector", () => ({
 	NameSelector: () => <div data-testid="name-selector">Name Selector</div>,
 }));

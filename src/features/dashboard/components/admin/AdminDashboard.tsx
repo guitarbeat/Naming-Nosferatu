@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
+import { namesQueryOptions } from "@/shared/api/names/api";
+import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { addToSet, removeFromSet } from "@/shared/lib/setUtils";
+import { statsAPI } from "@/shared/services/supabase/statsService";
+import useAppStore from "@/store/appStore";
 import { AdminNamesTab } from "./components/AdminNamesTab";
 import { AdminOverviewTab } from "./components/AdminOverviewTab";
 import { AdminPlaceholderTab } from "./components/AdminPlaceholderTab";
@@ -8,17 +14,7 @@ import { AdminStatsGrid } from "./components/AdminStatsGrid";
 import { AdminTabNav } from "./components/AdminTabNav";
 import { ADMIN_TABS, FILTER_OPTIONS } from "./constants";
 import type { BulkAction, DashboardTab, NameFilter } from "./types";
-import {
-	buildAdminStats,
-	filterNamesByStatusAndSearch,
-	mapNameToDisplay,
-} from "./utils";
-import { namesQueryOptions } from "@/shared/api/names/api";
-import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
-import { addToSet, removeFromSet } from "@/shared/lib/setUtils";
-import { statsAPI } from "@/shared/services/supabase/statsService";
-import useAppStore from "@/store/appStore";
+import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
 
 export function AdminDashboard() {
 	const { user } = useAppStore();

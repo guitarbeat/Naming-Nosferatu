@@ -161,7 +161,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	}
 
 	useEffect(() => {
-
 		if (initializedRef.current) {
 			return;
 		}
@@ -260,13 +259,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				cancelAnimationFrame(frameId);
 			}
 		};
-	}, [
-		names,
-		namesKey,
-		tournamentMode,
-		persistentState,
-		updatePersistentState,
-	]); // Reduced and optimized dependency array
+	}, [names, namesKey, tournamentMode, persistentState, updatePersistentState]); // Reduced and optimized dependency array
 
 	const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
 	const teamsById = useMemo(() => createTeamsById(persistentState.teams), [persistentState.teams]);

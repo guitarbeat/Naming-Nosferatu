@@ -13,7 +13,7 @@ interface AppLayoutProps {
 }
 
 const Analytics = lazy(() =>
-	import("@vercel/analytics/react").then((module) => ({ default: module.Analytics }))
+	import("@vercel/analytics/react").then((module) => ({ default: module.Analytics })),
 );
 
 const LiquidGradientBackground = lazy(() =>

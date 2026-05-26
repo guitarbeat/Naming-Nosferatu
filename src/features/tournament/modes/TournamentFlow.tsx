@@ -1,6 +1,6 @@
+import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trophy } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import useAppStore from "@/store/appStore";
@@ -29,8 +29,8 @@ export default function TournamentFlow() {
 			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
 				(acc, [nameId, ratingData]) => {
 					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-					const wins = typeof ratingData === "number" ? 0 : ratingData.wins ?? 0;
-					const losses = typeof ratingData === "number" ? 0 : ratingData.losses ?? 0;
+					const wins = typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
+					const losses = typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
 					acc[nameId] = {
 						rating,
 						wins,

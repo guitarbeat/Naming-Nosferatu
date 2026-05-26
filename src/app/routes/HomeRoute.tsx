@@ -33,7 +33,6 @@ export default function HomeRoute() {
 	const names = namesQuery.data?.names ?? [];
 	const lockedNames = heroState === "ready" ? getLockedNames(names) : [];
 
-
 	const clearPendingAnalysisScroll = useCallback(() => {
 		if (pendingAnalysisScrollRef.current === null) {
 			return;

@@ -192,7 +192,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[onVote, currentMatch, ratings],
 	);
 
-	const idToName = useMemo(
+	const _idToName = useMemo(
 		() => new Map(visibleNames.map((n) => [String(n.id), n.name])),
 		[visibleNames],
 	);
@@ -209,7 +209,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			const lossesByName: Record<string, number> = {};
 
 			for (const record of matchHistory) {
-				if (!record || !record.match) {
+				if (!record?.match) {
 					continue;
 				}
 

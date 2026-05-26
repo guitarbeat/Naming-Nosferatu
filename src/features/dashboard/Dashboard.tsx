@@ -1,9 +1,9 @@
+import { LayoutDashboard, Shield } from "lucide-react";
 import { useState } from "react";
+import Button from "@/shared/components/layout/Button";
+import type { NameItem, RatingData } from "@/shared/types";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { Dashboard as AnalyticsDashboard } from "./components/analytics/Dashboard";
-import type { RatingData, NameItem } from "@/shared/types";
-import { LayoutDashboard, Shield } from "lucide-react";
-import Button from "@/shared/components/layout/Button";
 
 interface UnifiedDashboardProps {
 	personalRatings?: Record<string, RatingData>;

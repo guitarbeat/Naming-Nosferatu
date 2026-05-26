@@ -105,8 +105,6 @@ vi.mock("@/store/appStore", () => ({
 	default: () => storeState,
 }));
 
-
-
 vi.mock("@/app/appConfig", () => ({
 	errorContexts: { analysisDashboard: "Analysis dashboard" },
 	routeComponents: {

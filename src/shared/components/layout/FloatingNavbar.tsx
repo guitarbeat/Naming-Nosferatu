@@ -21,14 +21,20 @@ import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptic
 import { cn } from "@/shared/lib/utils";
 import useAppStore from "@/store/appStore";
 
-function MobileBottomNav({ items, isVisible }: { items: DynamicIslandNavItem[], isVisible: boolean }) {
-	const topItems = items.filter(i => i.level === 1).slice(0, 5);
+function MobileBottomNav({
+	items,
+	isVisible,
+}: {
+	items: DynamicIslandNavItem[];
+	isVisible: boolean;
+}) {
+	const topItems = items.filter((i) => i.level === 1).slice(0, 5);
 
 	return (
 		<nav
 			className={cn(
 				"fixed bottom-0 left-0 w-full z-[9998] flex items-center justify-around border-t border-border/50 bg-background/95 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-lg transition-transform duration-300 sm:hidden",
-				isVisible ? "translate-y-0" : "translate-y-full"
+				isVisible ? "translate-y-0" : "translate-y-full",
 			)}
 		>
 			{topItems.map((item) => {
@@ -43,7 +49,7 @@ function MobileBottomNav({ items, isVisible }: { items: DynamicIslandNavItem[], 
 							item.isAccent && !isActive && "text-primary",
 							item.isAccent && isActive && "text-primary",
 							!item.isAccent && isActive && "text-foreground",
-							!isActive && !item.isAccent && "text-muted-foreground"
+							!isActive && !item.isAccent && "text-muted-foreground",
 						)}
 						aria-label={item.ariaLabel ?? item.label}
 						aria-current={isActive ? "location" : undefined}
@@ -54,9 +60,7 @@ function MobileBottomNav({ items, isVisible }: { items: DynamicIslandNavItem[], 
 								<span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
 							)}
 						</span>
-						<span className="text-xs font-medium tracking-tight">
-							{item.label}
-						</span>
+						<span className="text-xs font-medium tracking-tight">{item.label}</span>
 					</button>
 				);
 			})}

@@ -43,11 +43,66 @@
       "skillPath": "skills/caveman-stats/SKILL.md",
       "computedHash": "47ce2de3d6cb39a75047b5c962e4eb3da15594e7397c94103e9a104d42626553"
     },
+    "check-compiler-errors": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "74ccecb5589d6802133748fc00a6475c00a6b9e1a5cbdb9639d65150ecd709d2"
+    },
+    "control-cli": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "3f6ccb21788bdf59ee96b54eac9ad35aa75e733e44700910c8d2998b165e888b"
+    },
+    "control-ui": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "29343abf8da1f692915ef82d11a1ce6d03d211101792b39f8c66e2f7c7868d05"
+    },
+    "deslop": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "8883a7d459c07a0b2ee06972e79baa634009aa3bab969a6650acbefac394ad41"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    },
+    "fix-ci": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "4fd612543072facaaf7193c3a28cef12507ba6826d3a533836b1c9cc1c511e53"
+    },
+    "fix-merge-conflicts": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "8404e1b711c7da7a35049ecb6e722af7da64af849ff61d6b1ebcaac046f3f35e"
+    },
+    "get-pr-comments": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "598f4df0600f25edbafb5a15933869ae967d35c5d2309279f1c3755cbbf78667"
+    },
+    "loop-on-ci": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "2d6eaadbe66bf8c3fc872c74f08e867e3a1f51c2f5948f71a77a90b2cc12d4cd"
+    },
+    "make-pr-easy-to-review": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "8b3e62ce5609388731966d66725a0962e6d6c249bf384b84e131eb24de3c2b27"
+    },
+    "new-branch-and-pr": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "fee5edaa9344c396b11f3899f04a962784987b9940635c287ac51c96c5d2f403"
+    },
+    "pr-review-canvas": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "b9ad154880ed8e865185f28fa646384475ae324af0baffc7f5787904f4b30bda"
     },
     "pwa-development": {
       "source": "alinaqi/claude-bootstrap",
@@ -55,11 +110,26 @@
       "skillPath": "skills/pwa-development/SKILL.md",
       "computedHash": "356d9a26a8435778bb3bb906f5198814c48872ae87485ae97f4da3c10a0cfcc5"
     },
+    "review-and-ship": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "8d6a4b696b9c89ee19a8aebdcc3a624d092911a7233273039b00ededd14de187"
+    },
+    "run-smoke-tests": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "3e44933b5ad6439c42d5163a24f31515988ade894e000d9252e402ede1c23b47"
+    },
     "supabase-postgres-best-practices": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
       "computedHash": "292c93e5a86e2429204bc37abe26b3c9023c4760eb02418462887f2082f118ce"
+    },
+    "thermo-nuclear-code-quality-review": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "9052b01b46b1d8dbf94c45f9313ec1983443f9a460e83d49cdc7fe0f640ca476"
     },
     "ui-ux-pro-max": {
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
@@ -72,6 +142,21 @@
       "sourceType": "github",
       "skillPath": "skills/webapp-testing/SKILL.md",
       "computedHash": "ad5b1fc52807e9afa4635e59218a026b164dc58b6c3f41b0f7c644dcd6ccf572"
+    },
+    "weekly-review": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "44758e8294c79fc6906253b319a18fb76e318fd2c99d697b39b94848cc8494da"
+    },
+    "what-did-i-get-done": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "c2b206c90991d42a771bb5250fabe2a0b4e9a5ffb5b59856512ebbcdb4e43be9"
+    },
+    "workflow-from-chats": {
+      "source": "/tmp/cursor-plugins-repo/cursor-team-kit",
+      "sourceType": "local",
+      "computedHash": "421f2e4ace6d101b4234e5ad9141adce0a13bf4c3aadd41fc63ea051a73ba2a0"
     }
   }
 }

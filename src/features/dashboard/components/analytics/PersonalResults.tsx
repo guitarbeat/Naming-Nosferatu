@@ -1,8 +1,8 @@
-import { useMemo } from "react";
 import { Plus } from "lucide-react";
+import { useMemo } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { ELO_RATING } from "@/shared/lib/constants";
 import Button from "@/shared/components/layout/Button";
+import { ELO_RATING } from "@/shared/lib/constants";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RankingAdjustment } from "./RankingAdjustment";
 
