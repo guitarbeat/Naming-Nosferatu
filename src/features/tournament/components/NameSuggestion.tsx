@@ -52,8 +52,18 @@ function StatusMessage({ error, success }: { error?: string; success?: string })
 // ============================================================================
 
 export function NameSuggestionInner() {
-	const { values, isSubmitting, handleChange, handleSubmit, globalError, successMessage } =
-		useNameSuggestion();
+	const {
+		values,
+		errors,
+		touched,
+		isSubmitting,
+		isValid,
+		handleChange,
+		handleBlur,
+		handleSubmit,
+		globalError,
+		successMessage,
+	} = useNameSuggestion();
 
 	const handleLocalSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -90,10 +100,13 @@ export function NameSuggestionInner() {
 					type="text"
 					value={values.name}
 					onChange={(e) => handleChange("name", e.target.value)}
+					onBlur={() => handleBlur("name")}
 					placeholder="e.g. Count Whiskula, Sir Paws-a-lot"
 					className="h-14 text-base font-medium border-primary/30 focus:border-primary/70 focus:bg-background/95 bg-background/80 rounded-2xl"
 					disabled={isSubmitting}
 					maxLength={50}
+					showSuccess={true}
+					error={touched.name ? errors.name : null}
 				/>
 			</div>
 
@@ -113,12 +126,15 @@ export function NameSuggestionInner() {
 					id="suggest-description"
 					value={values.description}
 					onChange={(e) => handleChange("description", e.target.value)}
+					onBlur={() => handleBlur("description")}
 					placeholder="What makes it special? Help voters feel the vibe."
 					rows={4}
 					className="text-base font-medium border-primary/30 focus:border-primary/70 focus:bg-background/95 bg-background/80 rounded-2xl resize-none"
 					disabled={isSubmitting}
 					maxLength={500}
 					showCount={false}
+					showSuccess={true}
+					error={touched.description ? errors.description : null}
 				/>
 			</div>
 
@@ -126,7 +142,7 @@ export function NameSuggestionInner() {
 
 			<Button
 				type="submit"
-				disabled={!isFormComplete || isSubmitting}
+				disabled={!isFormComplete || !isValid || isSubmitting}
 				loading={isSubmitting}
 				variant="gradient"
 				size="large"
