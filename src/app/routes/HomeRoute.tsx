@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -87,36 +86,19 @@ export default function HomeRoute() {
 			<Section id="pick" variant="minimal" padding="comfortable" maxWidth="xl" separator={true} fullpage={true}>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, ease: "easeOut" }}
-							viewport={{ once: false }}
-						>
+						<div>
 							<SectionHeading title="Narrow It Down" subtitle="Select your top picks." />
-						</motion.div>
-						<motion.div
-							initial={{ opacity: 0, scale: 0.95 }}
-							whileInView={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-							viewport={{ once: false }}
-							className="w-full"
-						>
+						</div>
+						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 								<TournamentFlow />
 							</Suspense>
-						</motion.div>
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-							viewport={{ once: false }}
-							className="mt-auto pt-8 flex justify-center"
-						>
+						</div>
+						<div className="mt-auto pt-8 flex justify-center">
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
 								Continue to Bracket
 							</Button>
-						</motion.div>
+						</div>
 					</div>
 				</div>
 			</Section>
@@ -131,24 +113,13 @@ export default function HomeRoute() {
 			>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, ease: "easeOut" }}
-							viewport={{ once: false }}
-						>
+						<div>
 							<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
-						</motion.div>
+						</div>
 						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 							{tournament.names && tournament.names.length > 0 ? (
 								<>
-									<motion.div
-										initial={{ opacity: 0, scale: 0.95 }}
-										whileInView={{ opacity: 1, scale: 1 }}
-										transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-										viewport={{ once: false }}
-										className="w-full"
-									>
+									<div className="w-full">
 										<LazyTournament
 											names={tournament.names}
 											existingRatings={tournament.ratings}
@@ -157,34 +128,22 @@ export default function HomeRoute() {
 												scheduleAnalysisScroll();
 											}}
 										/>
-									</motion.div>
-									<motion.div
-										initial={{ opacity: 0, y: 20 }}
-										whileInView={{ opacity: 1, y: 0 }}
-										transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-										viewport={{ once: false }}
-										className="mt-auto pt-8 flex justify-center"
-									>
+									</div>
+									<div className="mt-auto pt-8 flex justify-center">
 										<Button variant="glass" size="lg" onClick={() => scrollToSection("analysis")}>
 											View Rankings
 										</Button>
-									</motion.div>
+									</div>
 								</>
 							) : (
-								<motion.div
-									initial={{ opacity: 0, y: 20 }}
-									whileInView={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.6, ease: "easeOut" }}
-									viewport={{ once: false }}
-									className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center"
-								>
+								<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
 									<p className="text-pretty text-sm text-muted-foreground/70">
 										Select at least two names to begin.
 									</p>
 									<Button variant="glass" onClick={() => scrollToSection("pick")}>
 										Go Back
 									</Button>
-								</motion.div>
+								</div>
 							)}
 						</Suspense>
 					</div>
@@ -201,21 +160,10 @@ export default function HomeRoute() {
 			>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, ease: "easeOut" }}
-							viewport={{ once: false }}
-						>
+						<div>
 							<SectionHeading title="Your Rankings" subtitle="Final scores." />
-						</motion.div>
-						<motion.div
-							initial={{ opacity: 0, scale: 0.95 }}
-							whileInView={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-							viewport={{ once: false }}
-							className="w-full"
-						>
+						</div>
+						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={600} />}>
 								<ErrorBoundary context={errorContexts.analysisDashboard}>
 									<DashboardLazy
@@ -230,18 +178,12 @@ export default function HomeRoute() {
 									/>
 								</ErrorBoundary>
 							</Suspense>
-						</motion.div>
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-							viewport={{ once: false }}
-							className="mt-auto pt-8 flex justify-center"
-						>
+						</div>
+						<div className="mt-auto pt-8 flex justify-center">
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
 								Start Over
 							</Button>
-						</motion.div>
+						</div>
 					</div>
 				</div>
 			</Section>
