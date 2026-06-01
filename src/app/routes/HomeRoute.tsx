@@ -83,7 +83,7 @@ export default function HomeRoute() {
 				onStartPicking={() => scrollToSection("pick")}
 			/>
 
-			<Section id="pick" variant="minimal" padding="comfortable" maxWidth="xl" separator={true}>
+			<Section id="pick" variant="minimal" padding="comfortable" maxWidth="xl" separator={true} fullpage={true}>
 				<SectionHeading title="Narrow It Down" subtitle="Select your top picks." />
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 					<TournamentFlow />
@@ -96,6 +96,7 @@ export default function HomeRoute() {
 				padding="comfortable"
 				maxWidth="2xl"
 				separator={true}
+				fullpage={true}
 			>
 				<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
@@ -127,6 +128,7 @@ export default function HomeRoute() {
 				padding="comfortable"
 				maxWidth="2xl"
 				separator={true}
+				fullpage={true}
 			>
 				<SectionHeading title="Your Rankings" subtitle="Final scores." />
 				<Suspense fallback={<Loading variant="skeleton" height={600} />}>
