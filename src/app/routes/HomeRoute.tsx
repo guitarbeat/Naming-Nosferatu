@@ -88,6 +88,11 @@ export default function HomeRoute() {
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 					<TournamentFlow />
 				</Suspense>
+				<div className="mt-8 flex justify-center">
+					<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
+						Continue to Bracket
+					</Button>
+				</div>
 			</Section>
 
 			<Section
@@ -101,14 +106,21 @@ export default function HomeRoute() {
 				<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
 				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 					{tournament.names && tournament.names.length > 0 ? (
-						<LazyTournament
-							names={tournament.names}
-							existingRatings={tournament.ratings}
-							onComplete={(ratings) => {
-								tournamentActions.completeTournament(ratings);
-								scheduleAnalysisScroll();
-							}}
-						/>
+						<>
+							<LazyTournament
+								names={tournament.names}
+								existingRatings={tournament.ratings}
+								onComplete={(ratings) => {
+									tournamentActions.completeTournament(ratings);
+									scheduleAnalysisScroll();
+								}}
+							/>
+							<div className="mt-8 flex justify-center">
+								<Button variant="glass" size="lg" onClick={() => scrollToSection("analysis")}>
+									View Rankings
+								</Button>
+							</div>
+						</>
 					) : (
 						<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
 							<p className="text-pretty text-sm text-muted-foreground/70">
@@ -145,6 +157,11 @@ export default function HomeRoute() {
 						/>
 					</ErrorBoundary>
 				</Suspense>
+				<div className="mt-8 flex justify-center">
+					<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
+						Start Over
+					</Button>
+				</div>
 			</Section>
 		</>
 	);
