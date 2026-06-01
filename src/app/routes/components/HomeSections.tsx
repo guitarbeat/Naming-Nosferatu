@@ -53,7 +53,7 @@ function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNam
 export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
 	return (
 		<div className="home-hero-wrapper w-full">
-			<section className="relative isolate flex min-h-[45dvh] sm:min-h-[50dvh] w-full flex-col items-center justify-center overflow-hidden bg-background text-foreground px-6 text-center py-12 md:py-16 border-b border-border/40">
+			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background text-foreground px-6 text-center py-12 md:py-16 border-b border-border/40">
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}
 					animate={{ opacity: 1, y: 0 }}
