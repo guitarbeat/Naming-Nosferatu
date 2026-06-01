@@ -94,9 +94,12 @@ export default function HomeRoute() {
 								<TournamentFlow />
 							</Suspense>
 						</div>
-						<div className="mt-auto pt-8 flex justify-center">
+						<div className="mt-auto pt-8 flex justify-center gap-4">
+							<Button variant="glass" size="lg" onClick={() => scrollToSection("")}>
+								↑ Previous
+							</Button>
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
-								Continue to Bracket
+								Next ↓
 							</Button>
 						</div>
 					</div>
@@ -129,9 +132,12 @@ export default function HomeRoute() {
 											}}
 										/>
 									</div>
-									<div className="mt-auto pt-8 flex justify-center">
+									<div className="mt-auto pt-8 flex justify-center gap-4">
+										<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
+											↑ Previous
+										</Button>
 										<Button variant="glass" size="lg" onClick={() => scrollToSection("analysis")}>
-											View Rankings
+											Next ↓
 										</Button>
 									</div>
 								</>
@@ -179,7 +185,10 @@ export default function HomeRoute() {
 								</ErrorBoundary>
 							</Suspense>
 						</div>
-						<div className="mt-auto pt-8 flex justify-center">
+						<div className="mt-auto pt-8 flex justify-center gap-4">
+							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
+								↑ Previous
+							</Button>
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
 								Start Over
 							</Button>
