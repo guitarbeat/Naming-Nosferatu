@@ -53,39 +53,76 @@ function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNam
 export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
 	return (
 		<div className="home-hero-wrapper w-full">
-			<section className="relative isolate flex min-h-[45dvh] sm:min-h-[50dvh] w-full flex-col items-center justify-center overflow-hidden bg-background text-foreground px-6 text-center py-12 md:py-16 border-b border-border/40">
+			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background text-foreground px-6 text-center border-b border-border/40">
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, ease: "easeOut" }}
-					className="flex flex-col items-center justify-center text-center max-w-4xl"
+					className="flex flex-col items-center justify-center text-center max-w-4xl gap-8 md:gap-12"
 				>
-					<p className={`mb-3 ${themeText.eyebrowWide}`}>My cat's name is</p>
-					<h1
-						className={`${themeText.heroDisplay} mb-6 tracking-tighter`}
-						style={{ fontSize: "clamp(2.5rem, 8vw, 6.5rem)", lineHeight: 1.05 }}
+					<motion.p
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
+						className={`${themeText.eyebrowWide}`}
 					>
-						<HeroNameWords state={state} lockedNames={lockedNames} />
-					</h1>
+						My cat's name is
+					</motion.p>
+
+					<motion.div
+						initial={{ opacity: 0, scale: 0.9 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
+					>
+						<h1
+							className={`${themeText.heroDisplay} tracking-tighter`}
+							style={{ fontSize: "clamp(2.5rem, 8vw, 6.5rem)", lineHeight: 1.05 }}
+						>
+							<HeroNameWords state={state} lockedNames={lockedNames} />
+						</h1>
+					</motion.div>
 
 					<motion.h2
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={{ delay: 0.2, duration: 0.6 }}
-						className="text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-tight bg-gradient-to-r from-stardust via-hot-pink to-accent bg-clip-text text-transparent mb-6 text-center max-w-2xl px-4"
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.35, duration: 0.6, ease: "easeOut" }}
+						className="text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-tight bg-gradient-to-r from-stardust via-hot-pink to-accent bg-clip-text text-transparent text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.2 }}
 					>
 						Run a tournament, gather opinions, and find the name that fits.
 					</motion.h2>
 
 					<motion.div
-						initial={{ opacity: 0, scale: 0.95 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ delay: 0.4, duration: 0.4 }}
+						initial={{ opacity: 0, y: 20, scale: 0.95 }}
+						animate={{ opacity: 1, y: 0, scale: 1 }}
+						transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
+						className="mt-6"
 					>
 						<Button variant="glass" size="lg" onClick={onStartPicking}>
 							Narrow It Down
 						</Button>
+					</motion.div>
+
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 0.6 }}
+						transition={{ delay: 0.7, duration: 1, ease: "easeOut" }}
+						className="mt-12 flex flex-col items-center gap-2 text-muted-foreground"
+					>
+						<motion.svg
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							animate={{ y: [0, 8, 0] }}
+							transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+						>
+							<polyline points="12 3 12 12 19 5" />
+							<path d="M18 13H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z" />
+						</motion.svg>
+						<span className="text-xs font-medium">Scroll to continue</span>
 					</motion.div>
 				</motion.div>
 			</section>
