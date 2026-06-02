@@ -80,13 +80,13 @@ export function TournamentHeader({
 								<span>{tournamentMode === "2v2" ? "Team mode" : "Head to head"}</span>
 							</div>
 							<h2 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
-								Match{" "}
-								<span className="tabular-nums">{currentMatchNumber}</span>
-								{" "}of{" "}
+								Match <span className="tabular-nums">{currentMatchNumber}</span> of{" "}
 								<span className="tabular-nums">{totalMatches}</span>
 							</h2>
 							<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
-								<span><span className="tabular-nums">{totalRounds}</span> rounds total</span>
+								<span>
+									<span className="tabular-nums">{totalRounds}</span> rounds total
+								</span>
 								{etaMinutes > 0 && (
 									<span className="inline-flex items-center gap-1">
 										<Clock className="size-3" />
@@ -185,10 +185,11 @@ export function TournamentHeader({
 
 					<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 						<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
-						<span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1">
-							<Medal className="size-3.5 text-accent" />
-							<span className="tabular-nums">{currentMatchNumber}</span>/<span className="tabular-nums">{totalMatches}</span>
-						</span>
+							<span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1">
+								<Medal className="size-3.5 text-accent" />
+								<span className="tabular-nums">{currentMatchNumber}</span>/
+								<span className="tabular-nums">{totalMatches}</span>
+							</span>
 							<span>{stageHeadline}</span>
 						</div>
 						{dominantStreak && (
@@ -220,11 +221,12 @@ export function TournamentHeader({
 								Road to crown
 							</p>
 							<p className="mt-2 text-sm font-semibold text-white">
-								<span className="tabular-nums">{matchesRemaining}</span> match{matchesRemaining === 1 ? "" : "es"} after this
+								<span className="tabular-nums">{matchesRemaining}</span> match
+								{matchesRemaining === 1 ? "" : "es"} after this
 							</p>
 							<p className="mt-1 text-xs leading-relaxed text-white/58">
-								Roughly <span className="tabular-nums">{roundMatchesLeft}</span> duel{roundMatchesLeft === 1 ? "" : "s"} remain in the
-								live bracket cycle.
+								Roughly <span className="tabular-nums">{roundMatchesLeft}</span> duel
+								{roundMatchesLeft === 1 ? "" : "s"} remain in the live bracket cycle.
 							</p>
 						</div>
 						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
