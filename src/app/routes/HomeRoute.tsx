@@ -147,7 +147,7 @@ export default function HomeRoute() {
 										Pick at least 2 names to start comparing them.
 									</p>
 									<Button variant="glass" onClick={() => scrollToSection("pick")}>
-										Go Back
+										← Back
 									</Button>
 								</div>
 							)}
