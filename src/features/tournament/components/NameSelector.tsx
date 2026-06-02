@@ -797,10 +797,17 @@ export function NameSelector() {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage = catImageById.get(nameItem.id) ?? "";
 											return (
-												<motion.button
+												<motion.div
 													key={nameItem.id}
-													type="button"
+													role="button"
+													tabIndex={0}
 													onClick={() => handleToggleName(nameItem.id)}
+													onKeyDown={(e) => {
+														if (e.key === "Enter" || e.key === " ") {
+															e.preventDefault();
+															handleToggleName(nameItem.id);
+														}
+													}}
 													aria-pressed={isSelected}
 													whileHover={{ scale: 1.03, y: -2 }}
 													whileTap={{ scale: 0.97 }}
@@ -867,7 +874,7 @@ export function NameSelector() {
 															/>
 														</motion.div>
 													)}
-												</motion.button>
+												</motion.div>
 											);
 										})}
 									</div>
@@ -995,10 +1002,17 @@ export function NameSelector() {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage = catImageById.get(nameItem.id) ?? "";
 											return (
-												<button
-													type="button"
+												<div
 													key={nameItem.id}
+													role="button"
+													tabIndex={0}
 													onClick={() => handleToggleName(nameItem.id)}
+													onKeyDown={(e) => {
+														if (e.key === "Enter" || e.key === " ") {
+															e.preventDefault();
+															handleToggleName(nameItem.id);
+														}
+													}}
 													aria-pressed={isSelected}
 													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
 														isSelected
@@ -1089,7 +1103,7 @@ export function NameSelector() {
 															</button>
 														</div>
 													)}
-												</button>
+												</div>
 											);
 										})}
 									</div>
