@@ -64,9 +64,9 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
-						className={`${themeText.eyebrowWide}`}
+						className="text-sm font-medium uppercase tracking-wider text-muted-foreground/70"
 					>
-						My cat's name is
+						Help me choose
 					</motion.p>
 
 					<motion.div
@@ -86,10 +86,10 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.35, duration: 0.6, ease: "easeOut" }}
-						className="text-lg sm:text-xl md:text-2xl font-bold uppercase tracking-tight bg-gradient-to-r from-stardust via-hot-pink to-accent bg-clip-text text-transparent text-center max-w-2xl px-4"
-						style={{ lineHeight: 1.2 }}
+						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
+						style={{ lineHeight: 1.4 }}
 					>
-						Run a tournament, gather opinions, and find the name that fits.
+						Vote on your favorite names and discover what your friends think too.
 					</motion.h2>
 
 					<motion.div
@@ -99,7 +99,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						className="mt-6"
 					>
 						<Button variant="glass" size="lg" onClick={onStartPicking}>
-							Narrow It Down
+							Get Started
 						</Button>
 					</motion.div>
 
@@ -152,7 +152,7 @@ export function TournamentBracketSection({
 				) : (
 					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
 						<p className="text-pretty text-sm text-muted-foreground/70">
-							Select at least two names to begin.
+							Pick at least 2 names to start comparing them.
 						</p>
 						<Button variant="glass" onClick={onGoToPicker}>
 							Go Back

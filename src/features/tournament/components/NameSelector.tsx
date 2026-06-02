@@ -699,10 +699,10 @@ export function NameSelector() {
 											</motion.div>
 											<div className="isolate space-y-3">
 												<h2 className="blend-difference-text text-3xl font-bold text-white sm:text-4xl">
-													All done!
+													Great!
 												</h2>
 												<p className="blend-difference-text text-lg leading-relaxed text-white">
-													You've reviewed all names. Ready to start the tournament?
+													You've picked all the names. Let's compare them!
 												</p>
 											</div>
 											<motion.div
@@ -712,7 +712,7 @@ export function NameSelector() {
 												className="pt-4"
 											>
 												<Button onClick={startTournament} className="min-w-[12rem]">
-													Start Tournament
+													Compare Names
 												</Button>
 											</motion.div>
 										</motion.div>
@@ -915,7 +915,7 @@ export function NameSelector() {
 											)}
 										</span>
 										<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
-											Hidden Names ({hiddenNamesAll.length})
+											Archived Names ({hiddenNamesAll.length})
 										</span>
 									</div>
 									<span className="text-[11px] sm:text-xs text-muted-foreground">
