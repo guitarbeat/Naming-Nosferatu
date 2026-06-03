@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
+import { lazy, Suspense, useCallback, useEffect } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/shared/api/names/api";
 
-import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
-import { useMediaQuery } from "@/shared/hooks/useBrowserState";
+import { SectionNavigation } from "@/shared/components/layout/SectionNavigation";
+import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
@@ -21,8 +21,8 @@ const DashboardLazy = routeComponents.DashboardLazy;
 export default function HomeRoute() {
 	const { user, tournament, tournamentActions } = useAppStore();
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
-	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-	const pendingAnalysisScrollRef = useRef<number | null>(null);
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
+
 	const hasNamesData = typeof namesQuery.data !== "undefined";
 	const heroState =
 		!hasNamesData && namesQuery.isPending
@@ -33,47 +33,16 @@ export default function HomeRoute() {
 	const names = namesQuery.data?.names ?? [];
 	const lockedNames = heroState === "ready" ? getLockedNames(names) : [];
 
-	const clearPendingAnalysisScroll = useCallback(() => {
-		if (pendingAnalysisScrollRef.current === null) {
-			return;
-		}
-
-		window.clearTimeout(pendingAnalysisScrollRef.current);
-		pendingAnalysisScrollRef.current = null;
-	}, []);
-
-	const performSectionScroll = useCallback(
-		(id: string) => {
-			document.getElementById(id)?.scrollIntoView({
-				behavior: prefersReducedMotion ? "auto" : "smooth",
-				block: "start",
-			});
-		},
-		[prefersReducedMotion],
-	);
-
-	const scrollToSection = useCallback(
-		(id: string) => {
-			clearPendingAnalysisScroll();
-			performSectionScroll(id);
-		},
-		[clearPendingAnalysisScroll, performSectionScroll],
-	);
-
 	const scheduleAnalysisScroll = useCallback(() => {
-		clearPendingAnalysisScroll();
-		pendingAnalysisScrollRef.current = window.setTimeout(() => {
-			pendingAnalysisScrollRef.current = null;
-			performSectionScroll("analysis");
-		}, 800);
-	}, [clearPendingAnalysisScroll, performSectionScroll]);
+		scheduleSectionScroll("analysis");
+	}, [scheduleSectionScroll]);
 
 	const handleStartNewTournament = useCallback(() => {
-		clearPendingAnalysisScroll();
+		clearPendingScroll();
 		tournamentActions.resetTournament();
-	}, [clearPendingAnalysisScroll, tournamentActions]);
+	}, [clearPendingScroll, tournamentActions]);
 
-	useEffect(() => clearPendingAnalysisScroll, [clearPendingAnalysisScroll]);
+	useEffect(() => clearPendingScroll, [clearPendingScroll]);
 
 	return (
 		<>
