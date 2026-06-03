@@ -373,10 +373,10 @@ export function FloatingNavbar() {
 			items.push({
 				id: "pick",
 				label: isTournamentActive
-					? "Tournament"
+					? "Compare"
 					: selectedCount >= 2
-						? `Start (${selectedCount})`
-						: "Pick Names",
+						? `Vote (${selectedCount})`
+						: "Favorites",
 				level: 1,
 				icon: isTournamentActive ? (
 					<Trophy className="h-4 w-4" />
@@ -400,7 +400,7 @@ export function FloatingNavbar() {
 
 			items.push({
 				id: "analysis",
-				label: "Analyze",
+				label: "Results",
 				level: 1,
 				icon: <BarChart3 className="h-4 w-4" />,
 				isActive: activeSection === "analysis",

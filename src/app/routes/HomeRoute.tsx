@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense, useCallback, useEffect, useRef } from "react";
+import { lazy, Suspense, useCallback, useEffect } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/shared/api/names/api";
 
-import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
-import { useMediaQuery } from "@/shared/hooks/useBrowserState";
+import { SectionNavigation } from "@/shared/components/layout/SectionNavigation";
+import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
 
@@ -21,8 +21,8 @@ const DashboardLazy = routeComponents.DashboardLazy;
 export default function HomeRoute() {
 	const { user, tournament, tournamentActions } = useAppStore();
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
-	const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-	const pendingAnalysisScrollRef = useRef<number | null>(null);
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
+
 	const hasNamesData = typeof namesQuery.data !== "undefined";
 	const heroState =
 		!hasNamesData && namesQuery.isPending
@@ -33,47 +33,16 @@ export default function HomeRoute() {
 	const names = namesQuery.data?.names ?? [];
 	const lockedNames = heroState === "ready" ? getLockedNames(names) : [];
 
-	const clearPendingAnalysisScroll = useCallback(() => {
-		if (pendingAnalysisScrollRef.current === null) {
-			return;
-		}
-
-		window.clearTimeout(pendingAnalysisScrollRef.current);
-		pendingAnalysisScrollRef.current = null;
-	}, []);
-
-	const performSectionScroll = useCallback(
-		(id: string) => {
-			document.getElementById(id)?.scrollIntoView({
-				behavior: prefersReducedMotion ? "auto" : "smooth",
-				block: "start",
-			});
-		},
-		[prefersReducedMotion],
-	);
-
-	const scrollToSection = useCallback(
-		(id: string) => {
-			clearPendingAnalysisScroll();
-			performSectionScroll(id);
-		},
-		[clearPendingAnalysisScroll, performSectionScroll],
-	);
-
 	const scheduleAnalysisScroll = useCallback(() => {
-		clearPendingAnalysisScroll();
-		pendingAnalysisScrollRef.current = window.setTimeout(() => {
-			pendingAnalysisScrollRef.current = null;
-			performSectionScroll("analysis");
-		}, 800);
-	}, [clearPendingAnalysisScroll, performSectionScroll]);
+		scheduleSectionScroll("analysis");
+	}, [scheduleSectionScroll]);
 
 	const handleStartNewTournament = useCallback(() => {
-		clearPendingAnalysisScroll();
+		clearPendingScroll();
 		tournamentActions.resetTournament();
-	}, [clearPendingAnalysisScroll, tournamentActions]);
+	}, [clearPendingScroll, tournamentActions]);
 
-	useEffect(() => clearPendingAnalysisScroll, [clearPendingAnalysisScroll]);
+	useEffect(() => clearPendingScroll, [clearPendingScroll]);
 
 	return (
 		<>
@@ -87,7 +56,7 @@ export default function HomeRoute() {
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Narrow It Down" subtitle="Select your top picks." />
+							<SectionHeading title="Pick Your Favorites" subtitle="Swipe or click to select names you love." />
 						</div>
 						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
@@ -96,10 +65,10 @@ export default function HomeRoute() {
 						</div>
 						<div className="mt-auto pt-8 flex justify-center gap-4">
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("")}>
-								↑ Previous
+								← Back
 							</Button>
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
-								Next ↓
+								Compare →
 							</Button>
 						</div>
 					</div>
@@ -117,7 +86,7 @@ export default function HomeRoute() {
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
+							<SectionHeading title="Compare Names" subtitle="Vote on which name you prefer in each matchup." />
 						</div>
 						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 							{tournament.names && tournament.names.length > 0 ? (
@@ -134,20 +103,20 @@ export default function HomeRoute() {
 									</div>
 									<div className="mt-auto pt-8 flex justify-center gap-4">
 										<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
-											↑ Previous
+											← Back
 										</Button>
 										<Button variant="glass" size="lg" onClick={() => scrollToSection("analysis")}>
-											Next ↓
+											See Results →
 										</Button>
 									</div>
 								</>
 							) : (
 								<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
 									<p className="text-pretty text-sm text-muted-foreground/70">
-										Select at least two names to begin.
+										Pick at least 2 names to start comparing them.
 									</p>
 									<Button variant="glass" onClick={() => scrollToSection("pick")}>
-										Go Back
+										← Back
 									</Button>
 								</div>
 							)}
@@ -167,7 +136,7 @@ export default function HomeRoute() {
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Your Rankings" subtitle="Final scores." />
+							<SectionHeading title="Results" subtitle="See how all the names ranked." />
 						</div>
 						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={600} />}>
@@ -187,10 +156,10 @@ export default function HomeRoute() {
 						</div>
 						<div className="mt-auto pt-8 flex justify-center gap-4">
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
-								↑ Previous
+								← Back
 							</Button>
 							<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
-								Start Over
+								Pick Different Names
 							</Button>
 						</div>
 					</div>
