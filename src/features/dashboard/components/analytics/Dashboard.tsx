@@ -108,7 +108,7 @@ function DashboardEmptyState({
 				action={
 					onStartNew ? (
 						<Button variant="outline" size="small" onClick={onStartNew}>
-							Start Tournament
+							Pick Different Names
 						</Button>
 					) : undefined
 				}

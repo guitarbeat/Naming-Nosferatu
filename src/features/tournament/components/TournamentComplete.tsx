@@ -59,7 +59,7 @@ export function TournamentComplete({
 				</h1>
 
 				<p className="mt-5 max-w-xl text-balance text-sm leading-relaxed text-white/70 sm:text-base">
-					Your results are ready to review in the analysis section below.
+					Your results are ready to review below. See how all the names ranked!
 				</p>
 
 				<div className="mt-10 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">

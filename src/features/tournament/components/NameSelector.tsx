@@ -952,7 +952,7 @@ export function NameSelector() {
 								<div className="mt-4">
 									{isSwipeMode && (
 										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
-											Hidden names stay out of the swipe deck, but you can still inspect and select
+											Archived names stay out of the swipe deck, but you can still inspect and select
 											them here without leaving swipe mode.
 										</p>
 									)}
