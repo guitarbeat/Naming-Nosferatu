@@ -39,10 +39,12 @@ export default defineConfig(({ command }) => ({
                 },
         },
         plugins: [
-                react(),
+                react({
+                        jsxImportSource: command === "serve" ? "react" : "react",
+                }),
                 tailwindcss(),
-                consoleForwardPlugin({
-                        enabled: command === "serve",
+                command === "serve" && consoleForwardPlugin({
+                        enabled: true,
                         endpoint: "/api/debug/client-logs",
                         levels: ["log", "warn", "error", "info", "debug"],
                 }),

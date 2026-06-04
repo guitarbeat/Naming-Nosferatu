@@ -2,6 +2,11 @@
 
 /* App-specific overrides that don't belong in the design system */
 
+/* Hide Builder.io dev attributes */
+[data-loc] {
+	outline: none !important;
+}
+
 /* Section visibility toggle animation */
 section[id] {
 	transition:
