@@ -213,15 +213,22 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					continue;
 				}
 
-				const leftSide = (record.match as any).left;
-				const rightSide = (record.match as any).right;
+				const leftSide = record.match.left;
+				const rightSide = record.match.right;
 
-				const leftIds = leftSide?.memberIds
+				const isTeam = (side: typeof record.match.left): side is import("@/shared/types").Team =>
+					typeof side === "object" && side !== null && "memberIds" in side;
+
+				const leftIds = isTeam(leftSide)
 					? leftSide.memberIds.map(String)
-					: [String(leftSide?.id || "")];
-				const rightIds = rightSide?.memberIds
+					: [String(typeof leftSide === "object" && leftSide !== null ? leftSide.id : leftSide)];
+				const rightIds = isTeam(rightSide)
 					? rightSide.memberIds.map(String)
-					: [String(rightSide?.id || "")];
+					: [
+							String(
+								typeof rightSide === "object" && rightSide !== null ? rightSide.id : rightSide,
+							),
+						];
 
 				const winnerIds = leftIds.includes(String(record.winner)) ? leftIds : rightIds;
 				const loserIds = leftIds.includes(String(record.winner)) ? rightIds : leftIds;
