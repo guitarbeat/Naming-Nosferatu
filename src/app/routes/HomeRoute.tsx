@@ -4,6 +4,7 @@ import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/shared/api/names/api";
 
+import { Button } from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
