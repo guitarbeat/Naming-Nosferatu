@@ -38,7 +38,7 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 
 	return (
 		<ChartFrame>
-			<BarChart data={data} layout="vertical" margin={{ top: 4, right: 12, left: 4, bottom: 0 }}>
+			<BarChart data={data} layout="vertical" margin={{ top: 8, right: 16, left: 4, bottom: 8 }}>
 				<CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} horizontal={false} />
 				<XAxis
 					type="number"
@@ -51,7 +51,7 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 					dataKey="name"
 					type="category"
 					width={72}
-					tick={{ fontSize: 11, fill: CHART_FOREGROUND }}
+					tick={{ fontSize: 11, fill: CHART_FOREGROUND, fontWeight: 500 }}
 					axisLine={false}
 					tickLine={false}
 				/>
@@ -68,7 +68,7 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 					}}
 					cursor={CHART_CURSOR}
 				/>
-				<Bar dataKey="rating" radius={[0, 6, 6, 0]} maxBarSize={28}>
+				<Bar dataKey="rating" radius={[0, 8, 8, 0]} maxBarSize={28}>
 					{data.map((_, i) => (
 						<Cell key={i} fill={CHART_SERIES[i % CHART_SERIES.length]} />
 					))}
@@ -78,12 +78,14 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 						x={meanRating}
 						stroke={CHART_AXIS}
 						strokeDasharray="4 3"
-						strokeWidth={1.5}
+						strokeWidth={2}
 						label={{
 							value: `avg ${meanRating}`,
 							position: "insideBottomRight",
 							fill: CHART_TEXT_MUTED,
-							fontSize: 9,
+							fontSize: 10,
+							fontWeight: 500,
+							offset: 8,
 						}}
 					/>
 				)}

@@ -24,36 +24,54 @@ function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boo
 	);
 }
 
-const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => (
-	<div className="flex items-center gap-4 w-full">
-		{/* Drag Handle */}
-		<div className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors cursor-grab active:cursor-grabbing">
-			<GripVertical size={20} />
-		</div>
+const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => {
+	const medalColors = {
+		0: "from-yellow-500 to-amber-600",
+		1: "from-slate-300 to-slate-500",
+		2: "from-amber-700 to-orange-800",
+	};
+	const medalBg = index < 3 ? medalColors[index as keyof typeof medalColors] : "from-primary/20 to-accent/20";
+	const medalBorder = index < 3 ? "border-yellow-600/50" : "border-primary/30";
+	const medalText = index < 3 ? "text-white" : "text-foreground";
 
-		{/* Rank Badge */}
-		<Chip
-			className="flex-shrink-0 bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30 text-foreground font-bold min-w-[3rem]"
-			size="lg"
-			variant="flat"
-		>
-			#{index + 1}
-		</Chip>
+	return (
+		<div className="flex items-center gap-4 w-full">
+			{/* Drag Handle */}
+			<div className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors cursor-grab active:cursor-grabbing">
+				<GripVertical size={20} />
+			</div>
 
-		{/* Name and Stats */}
-		<div className="flex-1 min-w-0">
-			<h3 className="text-lg font-semibold text-foreground truncate mb-1">{item.name}</h3>
-			<div className="flex items-center gap-3 text-sm">
-				<span className="text-muted-foreground">
-					Rating:{" "}
-					<span className="text-foreground/90 font-medium">
-						{Math.round(item.rating as number)}
-					</span>
-				</span>
+			{/* Rank Badge */}
+			<Chip
+				className={`flex-shrink-0 bg-gradient-to-br ${medalBg} border ${medalBorder} ${medalText} font-bold min-w-[3rem] shadow-sm`}
+				size="lg"
+				variant="flat"
+			>
+				{index < 3 ? ["🥇", "🥈", "🥉"][index] : `#${index + 1}`}
+			</Chip>
+
+			{/* Name and Stats */}
+			<div className="flex-1 min-w-0">
+				<h3 className="text-lg font-semibold text-foreground truncate mb-1">{item.name}</h3>
+				<div className="flex items-center gap-4 text-sm">
+					<div className="flex items-center gap-1.5">
+						<span className="text-muted-foreground">Rating:</span>
+						<span className="inline-flex items-center justify-center min-w-[2.5rem] rounded-md bg-primary/10 px-2 py-0.5 font-semibold text-primary">
+							{Math.round(item.rating as number)}
+						</span>
+					</div>
+					{item.wins ? (
+						<div className="flex items-center gap-1.5">
+							<span className="text-muted-foreground">W/L:</span>
+							<span className="text-accent font-medium">{item.wins}W</span>
+							<span className="text-destructive/70 font-medium">{item.losses}L</span>
+						</div>
+					) : null}
+				</div>
 			</div>
 		</div>
-	</div>
-));
+	);
+});
 RankingItemContent.displayName = "RankingItemContent";
 
 export const RankingAdjustment = memo(
