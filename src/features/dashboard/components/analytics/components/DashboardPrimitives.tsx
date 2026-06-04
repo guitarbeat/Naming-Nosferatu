@@ -115,14 +115,22 @@ export function StatTile({
 	accent?: boolean;
 }) {
 	return (
-		<div className={themeSurfaces.statTile}>
-			{Icon && (
-				<div className={accent ? themeSurfaces.statIconAccent : themeSurfaces.statIcon}>
-					<Icon size={14} />
+		<div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-card to-card/50 p-4 transition-all hover:border-primary/30 hover:shadow-md">
+			<div className="absolute -top-6 -right-6 size-12 rounded-full bg-primary/5 blur-xl transition-transform group-hover:scale-110" />
+			<div className="relative space-y-2">
+				<div className="flex items-center justify-between">
+					<p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+					{Icon && (
+						<div className={cn(
+							"rounded-lg p-2 transition-colors",
+							accent ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+						)}>
+							<Icon size={14} />
+						</div>
+					)}
 				</div>
-			)}
-			<p className={themeText.eyebrow}>{label}</p>
-			<p className={cn(themeText.statValue, accent && "text-primary")}>{value}</p>
+				<p className={cn("text-2xl font-bold tracking-tight", accent && "text-primary")}>{value}</p>
+			</div>
 		</div>
 	);
 }
