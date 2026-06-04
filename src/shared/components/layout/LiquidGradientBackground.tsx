@@ -342,7 +342,6 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 
 		const touchTexture = new TouchTexture();
 
-		/* Vibrant neon colors for more colorful effect */
 		const neonPurple = new THREE.Vector3(0.8, 0.0, 1.0);
 		const neonCyan = new THREE.Vector3(0.0, 1.0, 1.0);
 		const neonPink = new THREE.Vector3(1.0, 0.2, 0.8);
