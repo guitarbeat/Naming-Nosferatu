@@ -330,7 +330,7 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		camera.position.z = 50;
 
 		const scene = new THREE.Scene();
-		scene.background = new THREE.Color(0x12100d);
+		scene.background = new THREE.Color(0x0a0a1a);
 
 		const timer = new THREE.Timer();
 
@@ -342,29 +342,32 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 
 		const touchTexture = new TouchTexture();
 
-		/* Warm terracotta + ink brown — matches tokens.css palette */
-		const terracotta = new THREE.Vector3(0.78, 0.48, 0.36);
-		const warmInk = new THREE.Vector3(0.09, 0.07, 0.05);
+		const neonPurple = new THREE.Vector3(0.8, 0.0, 1.0);
+		const neonCyan = new THREE.Vector3(0.0, 1.0, 1.0);
+		const neonPink = new THREE.Vector3(1.0, 0.2, 0.8);
+		const neonGreen = new THREE.Vector3(0.0, 1.0, 0.4);
+		const neonOrange = new THREE.Vector3(1.0, 0.5, 0.0);
+		const neonBlue = new THREE.Vector3(0.2, 0.4, 1.0);
 
 		const uniforms: Uniforms = {
 			uTime: { value: 0 },
 			uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-			uColor1: { value: terracotta.clone() },
-			uColor2: { value: warmInk.clone() },
-			uColor3: { value: terracotta.clone() },
-			uColor4: { value: warmInk.clone() },
-			uColor5: { value: terracotta.clone() },
-			uColor6: { value: warmInk.clone() },
-			uSpeed: { value: 0.65 }, // Reduced from 1.35
-			uIntensity: { value: 0.85 }, // Reduced from 1.55
+			uColor1: { value: neonPurple.clone() },
+			uColor2: { value: neonCyan.clone() },
+			uColor3: { value: neonPink.clone() },
+			uColor4: { value: neonGreen.clone() },
+			uColor5: { value: neonOrange.clone() },
+			uColor6: { value: neonBlue.clone() },
+			uSpeed: { value: 0.85 },
+			uIntensity: { value: 1.1 },
 			uTouchTexture: { value: touchTexture.texture },
-			uGrainIntensity: { value: 0.08 }, // Reduced from 0.11
+			uGrainIntensity: { value: 0.06 },
 			uZoom: { value: 1.0 },
-			uDarkNavy: { value: warmInk.clone() },
-			uGradientSize: { value: 0.45 },
+			uDarkNavy: { value: new THREE.Vector3(0.05, 0.05, 0.15) },
+			uGradientSize: { value: 0.5 },
 			uGradientCount: { value: 12.0 },
-			uColor1Weight: { value: 0.3 }, // Reduced from 0.5
-			uColor2Weight: { value: 1.8 },
+			uColor1Weight: { value: 0.6 },
+			uColor2Weight: { value: 0.6 },
 		};
 
 		const viewSize = getViewSize();
