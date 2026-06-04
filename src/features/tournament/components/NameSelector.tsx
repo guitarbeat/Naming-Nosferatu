@@ -464,9 +464,7 @@ export function NameSelector() {
 							<p className="font-display text-2xl leading-[0.96] tracking-[-0.04em] text-white">
 								We couldn&apos;t load the current shortlist.
 							</p>
-							<p className="text-sm leading-relaxed text-white/68">
-								{error}
-							</p>
+							<p className="text-sm leading-relaxed text-white/68">{error}</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
 							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
@@ -484,7 +482,8 @@ export function NameSelector() {
 			{isSupabaseUnavailable && (
 				<div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center">
 					<p className="text-sm text-amber-200">
-						📝 Using sample cat names — <span className="font-medium">connect Supabase to load your own</span>
+						📝 Using sample cat names —{" "}
+						<span className="font-medium">connect Supabase to load your own</span>
 					</p>
 				</div>
 			)}

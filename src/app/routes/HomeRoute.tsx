@@ -53,7 +53,14 @@ export default function HomeRoute() {
 				onStartPicking={() => scrollToSection("pick")}
 			/>
 
-			<Section id="pick" variant="minimal" padding="comfortable" maxWidth="xl" separator={true} fullpage={true}>
+			<Section
+				id="pick"
+				variant="minimal"
+				padding="comfortable"
+				maxWidth="xl"
+				separator={true}
+				fullpage={true}
+			>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>

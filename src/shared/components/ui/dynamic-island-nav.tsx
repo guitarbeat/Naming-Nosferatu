@@ -164,7 +164,10 @@ export function DynamicIslandNav({
 							isExpanded && "pointer-events-none",
 						)}
 					>
-						<div className="h-2 w-2 shrink-0 rounded-full bg-primary animate-pulse" aria-hidden="true" />
+						<div
+							className="h-2 w-2 shrink-0 rounded-full bg-primary animate-pulse"
+							aria-hidden="true"
+						/>
 
 						<div className="relative flex h-full flex-1 items-center overflow-hidden text-left">
 							<AnimatePresence mode="popLayout" initial={false}>
@@ -245,7 +248,7 @@ export function DynamicIslandNav({
 													"bg-foreground/10 font-semibold text-foreground",
 												!isActive && isHovered && "bg-foreground/5 text-foreground/90",
 												!isActive && !isHovered && "bg-transparent text-foreground/50",
-												indentLevel > 0 && "opacity-90"
+												indentLevel > 0 && "opacity-90",
 											)}
 										>
 											{indentLevel > 0 && (
@@ -277,7 +280,9 @@ export function DynamicIslandNav({
 												transition={{ duration: 0.25, ease: "easeOut" }}
 												className={cn(
 													"ml-1 h-1.5 w-1.5 shrink-0 rounded-full",
-													item.isAccent ? "bg-primary shadow-[0_0_6px_var(--primary)]" : "bg-foreground"
+													item.isAccent
+														? "bg-primary shadow-[0_0_6px_var(--primary)]"
+														: "bg-foreground",
 												)}
 											/>
 										</button>

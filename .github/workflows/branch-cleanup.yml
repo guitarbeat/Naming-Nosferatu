@@ -1,0 +1,77 @@
+name: Branch Cleanup
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Process branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Auto-detect default branch
+          DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@' || true)
+          if [ -z "$DEFAULT_BRANCH" ]; then
+            echo "Could not detect default branch. Falling back to main."
+            DEFAULT_BRANCH="main"
+          fi
+
+          echo "Default branch: $DEFAULT_BRANCH"
+
+          # Iterate through remote branches
+          for branch in $(git branch -r | grep 'origin/' | grep -v 'origin/HEAD' | sed 's@origin/@@' | awk '{$1=$1};1'); do
+            if [ "$branch" = "$DEFAULT_BRANCH" ]; then
+              continue
+            fi
+
+            echo "Processing branch: $branch"
+
+            # Check if merged into default branch
+            is_merged=$(git branch -r --merged "origin/$DEFAULT_BRANCH" | grep -E "^\s*origin/$branch$" || true)
+
+            if [ -n "$is_merged" ]; then
+              echo "Branch $branch is merged into $DEFAULT_BRANCH. Deleting..."
+              git push origin --delete "$branch"
+            else
+              echo "Branch $branch is not merged."
+
+              # Check if there's an open PR
+              pr_exists=$(gh pr list --head "$branch" --state open --json number --jq 'length')
+
+              if [ "$pr_exists" -eq "0" ]; then
+                echo "No open PR for $branch. Creating PR..."
+
+                # Attempt to create PR
+                pr_url=$(gh pr create --head "$branch" --base "$DEFAULT_BRANCH" --title "Auto PR for stale branch $branch" --body "This PR was automatically created for the stale branch $branch." || true)
+
+                # Verify if PR creation actually succeeded (could be empty or error)
+                if echo "$pr_url" | grep -q "https://github.com"; then
+                  echo "Created PR: $pr_url. Attempting auto-merge..."
+
+                  # Attempt auto merge
+                  if ! gh pr merge "$pr_url" --auto --merge; then
+                    echo "Auto-merge failed (possible conflict). Opening issue..."
+                    gh issue create --title "Merge conflict in stale branch: $branch" --body "Automated branch cleanup attempted to merge \`$branch\` into \`$DEFAULT_BRANCH\` via PR $pr_url, but encountered a conflict. Please resolve manually." --label "stale-branch"
+                  fi
+                else
+                  echo "Failed to create PR for $branch (maybe no commits difference or other error)."
+                fi
+              else
+                echo "An open PR already exists for $branch. Skipping."
+              fi
+            fi
+          done
