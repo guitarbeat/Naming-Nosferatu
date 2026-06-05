@@ -24,7 +24,6 @@ export default function TournamentFlow() {
 	const mutateAsyncRef = useRef(saveRatingsMutation.mutateAsync);
 	mutateAsyncRef.current = saveRatingsMutation.mutateAsync;
 
-	// Crowning meow sound trigger
 	useEffect(() => {
 		if (tournament.isComplete) {
 			AudioEffects.playMeow();
@@ -58,7 +57,6 @@ export default function TournamentFlow() {
 					}
 				})
 				.catch((_error) => {
-					// Error is already logged by ratingsAPI with context
 					console.warn("Tournament ratings save failed — ratings were not persisted");
 				});
 		}

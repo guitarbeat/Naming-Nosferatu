@@ -41,7 +41,6 @@ import useAppStore from "@/store/appStore";
 const SWIPE_OFFSET_THRESHOLD = 100;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 
-// Optimized spring physics for smoother interactions
 const SMOOTH_SPRING_CONFIG = {
 	type: "spring" as const,
 	stiffness: 260,
@@ -120,7 +119,6 @@ export function NameSelector() {
 		[names, tournamentActions],
 	);
 
-	// Memoize cat images and build an id->image lookup map
 	const { catImages, catImageById } = useMemo(() => buildNameCardImages(names), [names]);
 
 	const showWarningRef = useRef(toast.showWarning);
@@ -128,7 +126,6 @@ export function NameSelector() {
 		showWarningRef.current = toast.showWarning;
 	});
 
-	// Auto-select locked-in names when names are loaded
 	useEffect(() => {
 		if (names.length === 0) {
 			return;

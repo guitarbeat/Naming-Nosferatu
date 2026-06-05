@@ -55,28 +55,20 @@ export function AdminDashboard() {
 
 	const handleToggleHidden = useCallback(
 		async (nameId: string | number, isHidden: boolean) => {
-			try {
-				await toggleHidden({
-					nameId: String(nameId),
-					isCurrentlyHidden: isHidden,
-				});
-			} catch (_error) {
-				// Error notification is handled by the UI
-			}
+			await toggleHidden({
+				nameId: String(nameId),
+				isCurrentlyHidden: isHidden,
+			});
 		},
 		[toggleHidden],
 	);
 
 	const handleToggleLocked = useCallback(
 		async (nameId: string | number, isLocked: boolean) => {
-			try {
-				await toggleLocked({
-					nameId: String(nameId),
-					isCurrentlyLocked: isLocked,
-				});
-			} catch (_error) {
-				// Error notification is handled by the UI
-			}
+			await toggleLocked({
+				nameId: String(nameId),
+				isCurrentlyLocked: isLocked,
+			});
 		},
 		[toggleLocked],
 	);
@@ -89,22 +81,18 @@ export function AdminDashboard() {
 
 			const ids = Array.from(selectedNames);
 
-			try {
-				if (action === "hide" || action === "unhide") {
-					await applyBatchVisibility({
-						nameIds: ids,
-						isHidden: action === "hide",
-					});
-				} else {
-					await applyBatchLocked({
-						nameIds: ids,
-						isLocked: action === "lock",
-					});
-				}
-				setSelectedNames(new Set());
-			} catch (_error) {
-				// Error notification is handled by the UI
+			if (action === "hide" || action === "unhide") {
+				await applyBatchVisibility({
+					nameIds: ids,
+					isHidden: action === "hide",
+				});
+			} else {
+				await applyBatchLocked({
+					nameIds: ids,
+					isLocked: action === "lock",
+				});
 			}
+			setSelectedNames(new Set());
 		},
 		[applyBatchLocked, applyBatchVisibility, selectedNames],
 	);
@@ -114,11 +102,7 @@ export function AdminDashboard() {
 			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
 				return;
 			}
-			try {
-				await deleteName({ nameId });
-			} catch (_error) {
-				// Error notification is handled by the UI
-			}
+			await deleteName({ nameId });
 		},
 		[deleteName],
 	);
@@ -130,11 +114,7 @@ export function AdminDashboard() {
 				return;
 			}
 
-			try {
-				await uploadImage(file);
-			} catch (_error) {
-				// errors are handled at the service layer
-			}
+			await uploadImage(file);
 		},
 		[uploadImage],
 	);

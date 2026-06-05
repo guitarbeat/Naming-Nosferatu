@@ -12,16 +12,10 @@ export function TournamentComplete({
 	onNewTournament,
 }: TournamentCompleteProps) {
 	return (
-		/*
-		 * Full-bleed wrapper: breaks out of any padded/max-width parent container
-		 * by using negative margins + 100vw so the colorful background covers
-		 * the full viewport width regardless of parent constraints.
-		 */
 		<div
 			className="relative flex min-h-[80vh] w-screen flex-col items-center justify-center overflow-hidden py-16 text-foreground"
 			style={{ marginInline: "calc((100% - 100vw) / 2)" }}
 		>
-			{/* Colorful background blobs */}
 			<div
 				className="pointer-events-none absolute inset-0"
 				aria-hidden="true"
@@ -35,7 +29,6 @@ export function TournamentComplete({
 					`,
 				}}
 			/>
-			{/* Dark vignette for contrast */}
 			<div
 				className="pointer-events-none absolute inset-0"
 				aria-hidden="true"
