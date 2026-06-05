@@ -161,8 +161,6 @@ function DashboardEmptyState({
 	);
 }
 
-// Extracted Components
-
 function DashboardHeader({
 	isLoggedIn,
 	userName,
@@ -216,7 +214,7 @@ function CommunityChartsPanel({
 	leaderboard,
 	siteStats,
 }: {
-	leaderboard: any[];
+	leaderboard: typeof leaderboard extends any[] ? typeof leaderboard : NameItem[];
 	siteStats: SiteStats | null;
 }) {
 	return (
@@ -283,7 +281,7 @@ function EngagementPanel({
 	refreshEngagementMetrics,
 	isLoadingEngagement,
 }: {
-	engagementMetrics: any;
+	engagementMetrics: typeof engagementMetrics;
 	timeframe: DashboardTimeframe;
 	setTimeframe: (tf: DashboardTimeframe) => void;
 	refreshEngagementMetrics: () => void;
@@ -345,7 +343,7 @@ function AdminPanel({
 	isAdmin: boolean;
 	showHiddenNames: boolean;
 	toggleHiddenNames: () => void;
-	hiddenNames: any[];
+	hiddenNames: NameItem[];
 	handleUnhideName: (id: string) => void;
 }) {
 	if (!isAdmin) {

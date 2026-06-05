@@ -5,18 +5,10 @@ import { useNameSuggestion } from "@/features/tournament/hooks/useNameSuggestion
 import Button from "@/shared/components/layout/Button";
 import { Input, Textarea } from "@/shared/components/layout/FormPrimitives";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 interface NameSuggestionProps {
 	variant?: "inline" | "modal";
 	onClose?: () => void;
 }
-
-// ============================================================================
-// STATUS MESSAGE
-// ============================================================================
 
 function StatusMessage({ error, success }: { error?: string; success?: string }) {
 	return (
