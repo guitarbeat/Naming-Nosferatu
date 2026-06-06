@@ -6,7 +6,6 @@ import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { themeText } from "@/shared/lib/themeClasses";
 import { TIMING } from "@/shared/lib/constants";
-import { motion } from "framer-motion";
 import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
