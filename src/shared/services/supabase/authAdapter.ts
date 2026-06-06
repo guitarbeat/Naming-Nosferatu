@@ -34,199 +34,214 @@ function buildAuthUserFromStoredSnapshot(): AuthUser | null {
 	};
 }
 
-export const supabaseAuthAdapter: AuthAdapter = {
-	async getCurrentUser(): Promise<AuthUser | null> {
-		try {
-			const client = await resolveSupabaseClient();
-			if (!client) {
-				return buildAuthUserFromStoredSnapshot();
-			}
+async function checkAdminStatus(userId: string): Promise<boolean> {
+	try {
+		const client = await resolveSupabaseClient();
+		if (!client) {
+			return Boolean(readStoredUserSnapshot()?.isAdmin);
+		}
 
-			const {
-				data: { user },
-			} = await client.auth.getUser();
-			if (!user) {
-				return null;
-			}
+		const { data: isAdmin, error: rpcError } = await client.rpc("is_admin");
+		if (!rpcError && typeof isAdmin === "boolean") {
+			return isAdmin;
+		}
 
-			const isAdmin = await supabaseAuthAdapter.checkAdminStatus(user.id);
-			const authUser = {
-				id: user.id,
-				name: user.user_metadata?.user_name || user.email || "Unknown",
-				email: user.email,
-				isAdmin,
-				role: isAdmin ? "admin" : "user",
-			} satisfies AuthUser;
+		const { data, error } = await client
+			.from("cat_user_roles")
+			.select("role")
+			.eq("user_id", userId)
+			.eq("role", "admin")
+			.maybeSingle();
 
-			writeStoredUserSnapshot({
-				id: authUser.id,
-				name: authUser.name,
-				email: authUser.email,
-				isAdmin,
-			});
+		if (data) {
+			return true;
+		}
 
-			return authUser;
-		} catch (error) {
-			console.error("Error getting current user:", error);
+		const storedUserName = readStoredUserSnapshot()?.name;
+		if (!storedUserName) {
+			return false;
+		}
+
+		const { data: fallbackData, error: fallbackError } = await client
+			.from("cat_user_roles")
+			.select("role")
+			.eq("user_name", storedUserName)
+			.eq("role", "admin")
+			.maybeSingle();
+
+		if (error || fallbackError) {
+			return false;
+		}
+
+		return Boolean(fallbackData);
+	} catch (error) {
+		console.error("[Auth] Error checking admin status:", error);
+		return false;
+	}
+}
+
+async function getCurrentUser(): Promise<AuthUser | null> {
+	try {
+		const client = await resolveSupabaseClient();
+		if (!client) {
+			return buildAuthUserFromStoredSnapshot();
+		}
+
+		const {
+			data: { user },
+		} = await client.auth.getUser();
+		if (!user) {
 			return null;
 		}
-	},
 
-	/**
-	 * Login with Supabase Auth
-	 */
-	async login(credentials: LoginCredentials): Promise<boolean> {
-		const { name } = credentials;
-		if (!name?.trim()) {
+		const isAdmin = await checkAdminStatus(user.id);
+		const authUser = {
+			id: user.id,
+			name: user.user_metadata?.user_name || user.email || "Unknown",
+			email: user.email,
+			isAdmin,
+			role: isAdmin ? "admin" : "user",
+		} satisfies AuthUser;
+
+		writeStoredUserSnapshot({
+			id: authUser.id,
+			name: authUser.name,
+			email: authUser.email,
+			isAdmin,
+		});
+
+		return authUser;
+	} catch (error) {
+		console.error("Error getting current user:", error);
+		return null;
+	}
+}
+
+async function authenticateDemoUser(
+	client: import("@supabase/supabase-js").SupabaseClient,
+	sanitizedEmail: string,
+	demoPassword: string,
+	trimmedName: string,
+): Promise<import("@supabase/supabase-js").User | null> {
+	const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+		email: sanitizedEmail,
+		password: demoPassword,
+	});
+
+	if (signInError) {
+		const isInvalidCredentials =
+			signInError.message?.toLowerCase().includes("invalid login") ||
+			signInError.message?.toLowerCase().includes("invalid credentials") ||
+			signInError.status === 400;
+
+		if (!isInvalidCredentials) {
+			console.error("Supabase login failed:", signInError);
+			return null;
+		}
+
+		const { data: signUpData, error: signUpError } = await client.auth.signUp({
+			email: sanitizedEmail,
+			password: demoPassword,
+			options: {
+				data: { user_name: trimmedName },
+			},
+		});
+
+		if (signUpError) {
+			console.error("Supabase sign-up failed:", signUpError);
+			return null;
+		}
+
+		return signUpData.user;
+	}
+
+	return signInData.user;
+}
+
+/**
+ * Login with Supabase Auth
+ */
+async function login(credentials: LoginCredentials): Promise<boolean> {
+	const { name } = credentials;
+	if (!name?.trim()) {
+		return false;
+	}
+
+	try {
+		const trimmedName = name.trim();
+		const client = await resolveSupabaseClient();
+		if (!client) {
+			writeStoredUserSnapshot({
+				name: trimmedName,
+				isAdmin: false,
+			});
+			return true;
+		}
+
+		// Sign in with Supabase
+		const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
+		const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
+
+		if (!demoPassword) {
+			console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
 			return false;
 		}
 
-		try {
-			const trimmedName = name.trim();
-			const client = await resolveSupabaseClient();
-			if (!client) {
-				writeStoredUserSnapshot({
-					name: trimmedName,
-					isAdmin: false,
-				});
-				return true;
-			}
+		const authUser = await authenticateDemoUser(client, sanitizedEmail, demoPassword, trimmedName);
 
-			// Sign in with Supabase
-			const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
-			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
-
-			if (!demoPassword) {
-				console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
-				return false;
-			}
-
-			let authUser: import("@supabase/supabase-js").User | null = null;
-
-			const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
-				email: sanitizedEmail,
-				password: demoPassword,
+		if (authUser) {
+			writeStoredUserSnapshot({
+				id: authUser.id,
+				name: authUser.user_metadata?.user_name || trimmedName,
+				email: authUser.email,
+				isAdmin: false,
 			});
 
-			if (signInError) {
-				const isInvalidCredentials =
-					signInError.message?.toLowerCase().includes("invalid login") ||
-					signInError.message?.toLowerCase().includes("invalid credentials") ||
-					signInError.status === 400;
-
-				if (!isInvalidCredentials) {
-					console.error("Supabase login failed:", signInError);
-					return false;
-				}
-
-				const { data: signUpData, error: signUpError } = await client.auth.signUp({
-					email: sanitizedEmail,
-					password: demoPassword,
-					options: {
-						data: { user_name: trimmedName },
-					},
-				});
-
-				if (signUpError) {
-					console.error("Supabase sign-up failed:", signUpError);
-					return false;
-				}
-
-				authUser = signUpData.user;
-			} else {
-				authUser = signInData.user;
+			try {
+				await client.rpc("link_auth_uid");
+			} catch {
+				// Non-fatal: session is still valid without linking
 			}
-
-			if (authUser) {
-				writeStoredUserSnapshot({
-					id: authUser.id,
-					name: authUser.user_metadata?.user_name || trimmedName,
-					email: authUser.email,
-					isAdmin: false,
-				});
-
-				try {
-					await client.rpc("link_auth_uid");
-				} catch {
-					// Non-fatal: session is still valid without linking
-				}
-			}
-
-			return true;
-		} catch (error) {
-			console.error("Login error:", error);
+		} else {
 			return false;
 		}
-	},
 
-	/**
-	 * Register new user with Supabase Auth
-	 */
-	async register(): Promise<void> {
-		throw new Error("Registration not implemented. Please use Supabase Auth directly.");
-	},
+		return true;
+	} catch (error) {
+		console.error("Login error:", error);
+		return false;
+	}
+}
 
-	/**
-	 * Logout - clear Supabase session and localStorage
-	 */
-	async logout(): Promise<void> {
-		try {
-			const client = await resolveSupabaseClient();
-			if (client) {
-				await client.auth.signOut();
-			}
+/**
+ * Register new user with Supabase Auth
+ */
+async function register(): Promise<void> {
+	throw new Error("Registration not implemented. Please use Supabase Auth directly.");
+}
 
-			if (isStorageAvailable()) {
-				clearStoredUserSnapshot();
-			}
-		} catch (error) {
-			console.error("Logout error:", error);
+/**
+ * Logout - clear Supabase session and localStorage
+ */
+async function logout(): Promise<void> {
+	try {
+		const client = await resolveSupabaseClient();
+		if (client) {
+			await client.auth.signOut();
 		}
-	},
 
-	async checkAdminStatus(userId: string): Promise<boolean> {
-		try {
-			const client = await resolveSupabaseClient();
-			if (!client) {
-				return Boolean(readStoredUserSnapshot()?.isAdmin);
-			}
-
-			const { data: isAdmin, error: rpcError } = await client.rpc("is_admin");
-			if (!rpcError && typeof isAdmin === "boolean") {
-				return isAdmin;
-			}
-
-			const { data, error } = await client
-				.from("cat_user_roles")
-				.select("role")
-				.eq("user_id", userId)
-				.eq("role", "admin")
-				.maybeSingle();
-
-			if (data) {
-				return true;
-			}
-
-			const storedUserName = readStoredUserSnapshot()?.name;
-			if (!storedUserName) {
-				return false;
-			}
-
-			const { data: fallbackData, error: fallbackError } = await client
-				.from("cat_user_roles")
-				.select("role")
-				.eq("user_name", storedUserName)
-				.eq("role", "admin")
-				.maybeSingle();
-
-			if (error || fallbackError) {
-				return false;
-			}
-
-			return Boolean(fallbackData);
-		} catch (error) {
-			console.error("[Auth] Error checking admin status:", error);
-			return false;
+		if (isStorageAvailable()) {
+			clearStoredUserSnapshot();
 		}
-	},
+	} catch (error) {
+		console.error("Logout error:", error);
+	}
+}
+
+export const supabaseAuthAdapter: AuthAdapter = {
+	getCurrentUser,
+	login,
+	register,
+	logout,
+	checkAdminStatus,
 };
