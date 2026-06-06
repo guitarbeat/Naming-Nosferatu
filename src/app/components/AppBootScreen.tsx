@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SpinnerCircle } from "@/shared/components/layout/Feedback/Loading";
 import { themeText } from "@/shared/lib/themeClasses";
+import { TIMING } from "@/shared/lib/constants";
 import useAppStore from "@/store/appStore";
 
 const LOADING_PREVIEW = "/assets/images/loading-preview.png";
@@ -33,8 +34,8 @@ export function AppBootScreen({
 			setTimeout(() => {
 				setNameIdx((i) => (i + 1) % CAT_NAMES.length);
 				setNameVisible(true);
-			}, 320);
-		}, 1500);
+			}, TIMING.MOTION_FAST * 1000);
+		}, TIMING.MOTION_CYCLE);
 		return () => clearInterval(id);
 	}, [shouldRender]);
 
@@ -77,7 +78,7 @@ export function AppBootScreen({
 						lineHeight: 0.88,
 						letterSpacing: "-0.045em",
 						opacity: nameVisible ? 1 : 0,
-						transition: "opacity 0.3s ease",
+						transition: `opacity ${TIMING.MOTION_FAST}s ${TIMING.MOTION_EASING}`,
 					}}
 					aria-live="polite"
 					aria-atomic="true"
