@@ -477,10 +477,13 @@ export function NameSelector() {
 	return (
 		<div className="mx-auto w-full">
 			{isSupabaseUnavailable && (
-				<div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center">
-					<p className="text-sm text-amber-200">
-						📝 Using sample cat names —{" "}
-						<span className="font-medium">connect Supabase to load your own</span>
+				<div className="mb-6 rounded-lg border border-amber-500/40 bg-gradient-to-r from-amber-500/15 to-orange-500/10 px-5 py-4 backdrop-blur-sm">
+					<p className="flex items-start gap-3 text-sm">
+						<span className="mt-0.5 flex-shrink-0 text-lg">⚡</span>
+						<span>
+							<span className="text-amber-100 font-medium">Demo mode:</span>{" "}
+							<span className="text-amber-50">Connect Supabase to use your own names</span>
+						</span>
 					</p>
 				</div>
 			)}
