@@ -476,14 +476,6 @@ export function NameSelector() {
 
 	return (
 		<div className="mx-auto w-full">
-			{isSupabaseUnavailable && (
-				<div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center">
-					<p className="text-sm text-amber-200">
-						📝 Using sample cat names —{" "}
-						<span className="font-medium">connect Supabase to load your own</span>
-					</p>
-				</div>
-			)}
 			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
 				{isSwipeMode ? (
 					<>
