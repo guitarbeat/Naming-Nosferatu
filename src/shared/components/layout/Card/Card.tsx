@@ -104,7 +104,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	interactive?: boolean;
 	enableTilt?: boolean;
 	disabled?: boolean;
-	type?: "button" | "submit" | "reset" | undefined;
+	type?: "button" | "submit" | "reset";
 }
 
 const CardBase = memo(
@@ -490,7 +490,6 @@ const CardNameBase = memo(function CardName({
 					className,
 				)}
 				onClick={isInteractive ? handleInteraction : undefined}
-				// @ts-expect-error - Card props might not fully match HTML attributes
 				disabled={isInteractive ? disabled : undefined}
 				aria-pressed={isInteractive ? isSelected : undefined}
 				aria-label={getAriaLabel()}
