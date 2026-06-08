@@ -490,6 +490,7 @@ const CardNameBase = memo(function CardName({
 					className,
 				)}
 				onClick={isInteractive ? handleInteraction : undefined}
+				// @ts-expect-error - Card props might not fully match HTML attributes
 				disabled={isInteractive ? disabled : undefined}
 				aria-pressed={isInteractive ? isSelected : undefined}
 				aria-label={getAriaLabel()}
