@@ -104,7 +104,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	interactive?: boolean;
 	enableTilt?: boolean;
 	disabled?: boolean;
-	type?: "button" | "submit" | "reset";
+	type?: "button" | "submit" | "reset" | undefined;
 }
 
 const CardBase = memo(
