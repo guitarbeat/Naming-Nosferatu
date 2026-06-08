@@ -289,6 +289,80 @@ void main() {
 }
 `;
 
+function initWebGLRenderer(): THREE.WebGLRenderer | null {
+	// Bail out gracefully when WebGL is unavailable (e.g. headless environments)
+	const testCanvas = document.createElement("canvas");
+	const hasWebGL = !!testCanvas.getContext("webgl") || !!testCanvas.getContext("webgl2");
+	if (!hasWebGL) {
+		return null;
+	}
+
+	try {
+		return new THREE.WebGLRenderer({
+			antialias: true,
+			powerPreference: "high-performance",
+			alpha: false,
+			stencil: false,
+			depth: false,
+		});
+	} catch {
+		return null;
+	}
+}
+
+function createUniforms(touchTexture: TouchTexture): Uniforms {
+	const neonPurple = new THREE.Vector3(0.8, 0.0, 1.0);
+	const neonCyan = new THREE.Vector3(0.0, 1.0, 1.0);
+	const neonPink = new THREE.Vector3(1.0, 0.2, 0.8);
+	const neonGreen = new THREE.Vector3(0.0, 1.0, 0.4);
+	const neonOrange = new THREE.Vector3(1.0, 0.5, 0.0);
+	const neonBlue = new THREE.Vector3(0.2, 0.4, 1.0);
+
+	return {
+		uTime: { value: 0 },
+		uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+		uColor1: { value: neonPurple.clone() },
+		uColor2: { value: neonCyan.clone() },
+		uColor3: { value: neonPink.clone() },
+		uColor4: { value: neonGreen.clone() },
+		uColor5: { value: neonOrange.clone() },
+		uColor6: { value: neonBlue.clone() },
+		uSpeed: { value: 0.85 },
+		uIntensity: { value: 1.1 },
+		uTouchTexture: { value: touchTexture.texture },
+		uGrainIntensity: { value: 0.06 },
+		uZoom: { value: 1.0 },
+		uDarkNavy: { value: new THREE.Vector3(0.05, 0.05, 0.15) },
+		uGradientSize: { value: 0.5 },
+		uGradientCount: { value: 12.0 },
+		uColor1Weight: { value: 0.6 },
+		uColor2Weight: { value: 0.6 },
+	};
+}
+
+function getViewSize(camera: THREE.PerspectiveCamera) {
+	const fovInRadians = (camera.fov * Math.PI) / 180;
+	const height = Math.abs(camera.position.z * Math.tan(fovInRadians / 2) * 2);
+	return { width: height * camera.aspect, height };
+}
+
+function setupScene(uniforms: Uniforms, viewSize: { width: number; height: number }) {
+	const scene = new THREE.Scene();
+	scene.background = new THREE.Color(0x0a0a1a);
+
+	const geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height, 1, 1);
+	const material = new THREE.ShaderMaterial({
+		uniforms,
+		vertexShader: VERTEX_SHADER,
+		fragmentShader: FRAGMENT_SHADER,
+	});
+	const mesh = new THREE.Mesh(geometry, material);
+	mesh.position.z = 0;
+	scene.add(mesh);
+
+	return { scene, mesh, material };
+}
+
 function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null>) {
 	useEffect(() => {
 		const container = containerRef.current;
@@ -296,25 +370,11 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			return;
 		}
 
-		// Bail out gracefully when WebGL is unavailable (e.g. headless environments)
-		const testCanvas = document.createElement("canvas");
-		const hasWebGL = !!testCanvas.getContext("webgl") || !!testCanvas.getContext("webgl2");
-		if (!hasWebGL) {
+		const renderer = initWebGLRenderer();
+		if (!renderer) {
 			return;
 		}
 
-		let renderer: THREE.WebGLRenderer;
-		try {
-			renderer = new THREE.WebGLRenderer({
-				antialias: true,
-				powerPreference: "high-performance",
-				alpha: false,
-				stencil: false,
-				depth: false,
-			});
-		} catch {
-			return;
-		}
 		const isMobile = window.innerWidth < 768;
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		// Lower pixel ratio on mobile to save GPU battery
@@ -329,57 +389,12 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		);
 		camera.position.z = 50;
 
-		const scene = new THREE.Scene();
-		scene.background = new THREE.Color(0x0a0a1a);
-
 		const timer = new THREE.Timer();
-
-		const getViewSize = () => {
-			const fovInRadians = (camera.fov * Math.PI) / 180;
-			const height = Math.abs(camera.position.z * Math.tan(fovInRadians / 2) * 2);
-			return { width: height * camera.aspect, height };
-		};
-
 		const touchTexture = new TouchTexture();
+		const uniforms = createUniforms(touchTexture);
+		const viewSize = getViewSize(camera);
 
-		const neonPurple = new THREE.Vector3(0.8, 0.0, 1.0);
-		const neonCyan = new THREE.Vector3(0.0, 1.0, 1.0);
-		const neonPink = new THREE.Vector3(1.0, 0.2, 0.8);
-		const neonGreen = new THREE.Vector3(0.0, 1.0, 0.4);
-		const neonOrange = new THREE.Vector3(1.0, 0.5, 0.0);
-		const neonBlue = new THREE.Vector3(0.2, 0.4, 1.0);
-
-		const uniforms: Uniforms = {
-			uTime: { value: 0 },
-			uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-			uColor1: { value: neonPurple.clone() },
-			uColor2: { value: neonCyan.clone() },
-			uColor3: { value: neonPink.clone() },
-			uColor4: { value: neonGreen.clone() },
-			uColor5: { value: neonOrange.clone() },
-			uColor6: { value: neonBlue.clone() },
-			uSpeed: { value: 0.85 },
-			uIntensity: { value: 1.1 },
-			uTouchTexture: { value: touchTexture.texture },
-			uGrainIntensity: { value: 0.06 },
-			uZoom: { value: 1.0 },
-			uDarkNavy: { value: new THREE.Vector3(0.05, 0.05, 0.15) },
-			uGradientSize: { value: 0.5 },
-			uGradientCount: { value: 12.0 },
-			uColor1Weight: { value: 0.6 },
-			uColor2Weight: { value: 0.6 },
-		};
-
-		const viewSize = getViewSize();
-		const geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height, 1, 1);
-		const material = new THREE.ShaderMaterial({
-			uniforms,
-			vertexShader: VERTEX_SHADER,
-			fragmentShader: FRAGMENT_SHADER,
-		});
-		const mesh = new THREE.Mesh(geometry, material);
-		mesh.position.z = 0;
-		scene.add(mesh);
+		const { scene, mesh, material } = setupScene(uniforms, viewSize);
 
 		let rafId: number;
 		let isRendering = true;
@@ -419,6 +434,7 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 				y: 1 - ev.clientY / window.innerHeight,
 			});
 		};
+
 		const onTouchMove = (ev: TouchEvent) => {
 			if (!isRendering) {
 				return;
@@ -429,6 +445,7 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 				y: 1 - t.clientY / window.innerHeight,
 			});
 		};
+
 		const onResize = () => {
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
@@ -436,7 +453,7 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			renderer.setPixelRatio(isMobileResize ? 1 : Math.min(window.devicePixelRatio, 1.5));
 			uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-			const vs = getViewSize();
+			const vs = getViewSize(camera);
 			mesh.geometry.dispose();
 			mesh.geometry = new THREE.PlaneGeometry(vs.width, vs.height, 1, 1);
 
