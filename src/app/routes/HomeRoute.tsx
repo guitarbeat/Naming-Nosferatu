@@ -64,7 +64,7 @@ export default function HomeRoute() {
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Pick Your Favorites" subtitle="Swipe or click to select names you love." />
+							<SectionHeading title="My Cat Needs a Name" subtitle="Pick your favorites. Let's see what wins." />
 						</div>
 						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
@@ -94,7 +94,7 @@ export default function HomeRoute() {
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Compare Names" subtitle="Vote on which name you prefer in each matchup." />
+							<SectionHeading title="But See How I Got There" subtitle="Head-to-head matchups to rank them all." />
 						</div>
 						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 							{tournament.names && tournament.names.length > 0 ? (

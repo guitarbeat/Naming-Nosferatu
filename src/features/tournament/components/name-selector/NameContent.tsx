@@ -9,8 +9,8 @@ export const NameContent = ({
 }) => {
 	const isGrid = variant === "grid";
 	const nameClasses = isGrid
-		? "w-full break-words font-display text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem]"
-		: "w-full break-words font-display text-4xl leading-[0.92] tracking-tight text-white lg:text-5xl";
+		? "w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem]"
+		: "w-full break-words font-whimsical text-4xl leading-[0.92] tracking-tight text-white lg:text-5xl";
 
 	const pronunciationClasses = isGrid
 		? "text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70"
