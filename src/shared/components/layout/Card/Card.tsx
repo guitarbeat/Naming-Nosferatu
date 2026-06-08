@@ -375,8 +375,6 @@ interface CardNameProps {
 	image?: string;
 	onImageClick?: (e: React.MouseEvent) => void;
 	enableTilt?: boolean;
-	disabled?: boolean;
-	type?: "button" | "submit" | "reset";
 }
 
 const CardNameBase = memo(function CardName({
