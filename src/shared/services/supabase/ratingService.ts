@@ -77,7 +77,6 @@ export const ratingsAPI = {
 		winnerSide,
 	}: ApplyTournamentMatchParams) => {
 		return withSupabaseOrThrow(async (client) => {
-			// @ts-expect-error - apply_tournament_match_elo is a custom RPC not yet reflected in generated types
 			const { data, error } = await client.rpc("apply_tournament_match_elo", {
 				p_user_name: userName.trim(),
 				p_left_name_ids: leftNameIds,
@@ -130,7 +129,6 @@ export const ratingsAPI = {
 		}
 
 		return withSupabaseOrThrow(async (client) => {
-			// @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
 			const { data, error } = await client.rpc("save_user_ratings", {
 				p_user_name: userId,
 				p_ratings: ratingsList,
