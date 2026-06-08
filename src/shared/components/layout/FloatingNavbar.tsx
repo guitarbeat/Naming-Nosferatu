@@ -358,7 +358,7 @@ export function FloatingNavbar() {
 			return `Start (${selectedCount})`;
 		}
 		if (activeSection === "analysis") {
-			return "Analyze";
+			return "Bracket";
 		}
 		if (activeSection === "tournament") {
 			return "Bracket";
