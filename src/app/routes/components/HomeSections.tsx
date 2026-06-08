@@ -103,28 +103,6 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 							Get Started
 						</Button>
 					</motion.div>
-
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 0.6 }}
-						transition={{ delay: 0.7, duration: 1, ease: "easeOut" }}
-						className="mt-12 flex flex-col items-center gap-2 text-muted-foreground"
-					>
-						<motion.svg
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							animate={{ y: [0, 8, 0] }}
-							transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-						>
-							<polyline points="12 3 12 12 19 5" />
-							<path d="M18 13H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z" />
-						</motion.svg>
-						<span className="text-xs font-medium">Scroll to continue</span>
-					</motion.div>
 				</motion.div>
 			</section>
 		</div>
