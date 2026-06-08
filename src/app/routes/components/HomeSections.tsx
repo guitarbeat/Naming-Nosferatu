@@ -5,6 +5,7 @@ import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { themeText } from "@/shared/lib/themeClasses";
+import { TIMING } from "@/shared/lib/constants";
 import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
@@ -63,7 +64,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					<motion.p
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
+						transition={{ delay: 0.1, duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
 						className="text-sm font-medium uppercase tracking-wider text-muted-foreground/70"
 					>
 						Help me choose
@@ -72,7 +73,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					<motion.div
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
-						transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
+						transition={{ delay: 0.2, duration: TIMING.MOTION_SLOW, ease: TIMING.MOTION_EASING }}
 					>
 						<h1
 							className={`${themeText.heroDisplay} tracking-tighter`}
@@ -85,7 +86,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					<motion.h2
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.35, duration: 0.6, ease: "easeOut" }}
+						transition={{ delay: 0.35, duration: TIMING.MOTION_SLOW, ease: TIMING.MOTION_EASING }}
 						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.4 }}
 					>
@@ -95,7 +96,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					<motion.div
 						initial={{ opacity: 0, y: 20, scale: 0.95 }}
 						animate={{ opacity: 1, y: 0, scale: 1 }}
-						transition={{ delay: 0.5, duration: 0.5, ease: "easeOut" }}
+						transition={{ delay: 0.5, duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
 						className="mt-6"
 					>
 						<Button variant="glass" size="lg" onClick={onStartPicking}>

@@ -168,7 +168,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				const participant = currentMatch[side];
 				const id = typeof participant === "object" ? String(participant.id) : String(participant);
 				const name =
-					currentMatch.mode === "2v2" && typeof participant === "object" && "memberNames" in participant
+					currentMatch.mode === "2v2" &&
+					typeof participant === "object" &&
+					"memberNames" in participant
 						? (participant.memberNames ?? []).join(" + ") || String(participant.id)
 						: typeof participant === "object"
 							? participant.name
