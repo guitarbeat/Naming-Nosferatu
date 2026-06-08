@@ -1,3 +1,5 @@
+import { IS_BROWSER } from "@/store/appStore.shared";
+
 interface ErrorInfo {
 	title: string;
 	message: string;
@@ -580,6 +582,6 @@ export function initDeploymentCheck(): void {
 }
 
 // Auto-initialize if running in browser context
-if (typeof window !== "undefined") {
+if (IS_BROWSER) {
 	initDeploymentCheck();
 }
