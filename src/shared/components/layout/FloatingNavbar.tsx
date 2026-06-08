@@ -8,15 +8,14 @@ import {
 	Trophy,
 	User,
 } from "lucide-react";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
-import { Modal } from "@/shared/components/layout/Modal";
 import {
 	DynamicIslandNav,
 	type DynamicIslandNavItem,
 } from "@/shared/components/ui/dynamic-island-nav";
+import { NavbarModals } from "@/shared/components/ui/NavbarModals";
 import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptics";
 import { cn } from "@/shared/lib/utils";
 import useAppStore from "@/store/appStore";
@@ -75,18 +74,6 @@ const keyToId: Record<NavSection, string> = {
 	tournament: "tournament",
 	analysis: "analysis",
 };
-
-const LazyProfileInner = lazy(() =>
-	import("@/shared/components/profile/ProfileInner").then((module) => ({
-		default: module.ProfileInner,
-	})),
-);
-
-const LazyNameSuggestion = lazy(() =>
-	import("@/features/tournament/components/NameSuggestion").then((module) => ({
-		default: module.NameSuggestion,
-	})),
-);
 
 export function FloatingNavbar() {
 	const appStore = useAppStore();
@@ -521,45 +508,22 @@ export function FloatingNavbar() {
 
 			<MobileBottomNav items={navItems} isVisible={shouldShow} />
 
-			{isProfileOpen && (
-				<Modal
-					title="Your Profile"
-					hideTitle={true}
-					open={isProfileOpen}
-					onClose={() => setIsProfileOpen(false)}
-					maxWidth="max-w-md"
-					description="Sign in to save your rankings."
-					originRect={profileOriginRect}
-				>
-					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyProfileInner
-							onLogin={async (name) => {
-								const ok = await login({ name });
-								if (ok !== false) {
-									setIsProfileOpen(false);
-								}
-								return ok;
-							}}
-							onLogout={logout}
-						/>
-					</Suspense>
-				</Modal>
-			)}
-			{isSuggestOpen && (
-				<Modal
-					title="Suggest a Name"
-					hideTitle={true}
-					open={isSuggestOpen}
-					onClose={() => setIsSuggestOpen(false)}
-					maxWidth="max-w-md"
-					description="Suggest a cat name."
-					originRect={suggestOriginRect}
-				>
-					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyNameSuggestion variant="modal" onClose={() => setIsSuggestOpen(false)} />
-					</Suspense>
-				</Modal>
-			)}
+			<NavbarModals
+				isProfileOpen={isProfileOpen}
+				isSuggestOpen={isSuggestOpen}
+				onProfileClose={() => setIsProfileOpen(false)}
+				onSuggestClose={() => setIsSuggestOpen(false)}
+				profileOriginRect={profileOriginRect}
+				suggestOriginRect={suggestOriginRect}
+				onLogin={async (name) => {
+					const ok = await login({ name });
+					if (ok !== false) {
+						setIsProfileOpen(false);
+					}
+					return ok;
+				}}
+				onLogout={logout}
+			/>
 		</>
 	);
 }
