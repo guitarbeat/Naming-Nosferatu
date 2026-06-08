@@ -92,74 +92,6 @@ function getQuickStats({
 	return [];
 }
 
-function DashboardEmptyState({
-	isLoggedIn,
-	onStartNew,
-}: {
-	isLoggedIn: boolean;
-	onStartNew?: () => void;
-}) {
-	return (
-		<Panel>
-			<SectionHeader
-				icon={BarChart3}
-				title="Nothing Ranked Yet"
-				subtitle={isLoggedIn ? "Run a bracket to start." : "Run a bracket to begin."}
-				action={
-					onStartNew ? (
-						<Button variant="outline" size="small" onClick={onStartNew}>
-							Pick Different Names
-						</Button>
-					) : undefined
-				}
-			/>
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-				<div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-primary/5 to-accent/5 p-5 transition-all hover:border-primary/30 hover:shadow-sm">
-					<div className="absolute -top-8 -right-8 size-16 rounded-full bg-primary/5 blur-2xl" />
-					<div className="relative space-y-3">
-						<div className="flex items-center gap-2">
-							<div className="rounded-lg bg-primary/10 p-2">
-								<Target size={18} className="text-primary" />
-							</div>
-							<p className={`${themeText.eyebrowWide}`}>Personal Layer</p>
-						</div>
-						<p className="text-sm leading-relaxed text-muted-foreground/75">
-							Your personal ranking after completing the bracket tournament.
-						</p>
-					</div>
-				</div>
-				<div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-accent/5 to-cyan-600/5 p-5 transition-all hover:border-accent/30 hover:shadow-sm">
-					<div className="absolute -top-8 -right-8 size-16 rounded-full bg-accent/5 blur-2xl" />
-					<div className="relative space-y-3">
-						<div className="flex items-center gap-2">
-							<div className="rounded-lg bg-accent/10 p-2">
-								<Users size={18} className="text-accent" />
-							</div>
-							<p className={`${themeText.eyebrowWide}`}>Community Layer</p>
-						</div>
-						<p className="text-sm leading-relaxed text-muted-foreground/75">
-							Aggregate rankings from all users across the community.
-						</p>
-					</div>
-				</div>
-				<div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-yellow-600/5 to-orange-600/5 p-5 transition-all hover:border-yellow-600/30 hover:shadow-sm">
-					<div className="absolute -top-8 -right-8 size-16 rounded-full bg-yellow-600/5 blur-2xl" />
-					<div className="relative space-y-3">
-						<div className="flex items-center gap-2">
-							<div className="rounded-lg bg-yellow-600/10 p-2">
-								<Trophy size={18} className="text-yellow-600" />
-							</div>
-							<p className={`${themeText.eyebrowWide}`}>Leaderboard</p>
-						</div>
-						<p className="text-sm leading-relaxed text-muted-foreground/75">
-							Top performing names ranked by community votes and ratings.
-						</p>
-					</div>
-				</div>
-			</div>
-		</Panel>
-	);
-}
 
 function DashboardHeader({
 	isLoggedIn,
@@ -436,9 +368,6 @@ export function Dashboard({
 				userStats={userStats}
 			/>
 
-			{shouldShowDashboardPrimer && (
-				<DashboardEmptyState isLoggedIn={isLoggedIn} onStartNew={onStartNew} />
-			)}
 
 			{hasPersonalRatings && onUpdateRatings && (
 				<Panel>
