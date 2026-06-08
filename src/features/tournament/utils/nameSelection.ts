@@ -11,9 +11,12 @@ export function countSelectedItems<TId>(
 	selectedIds: ReadonlySet<TId>,
 ): number {
 	let count = 0;
-	for (const item of items) {
-		if (selectedIds.has(item.id)) {
-			count += 1;
+	const targetCount = selectedIds.size;
+	if (targetCount === 0 || items.length === 0) return 0;
+	for (let i = 0; i < items.length; i++) {
+		if (selectedIds.has(items[i].id)) {
+			count++;
+			if (count === targetCount) break;
 		}
 	}
 	return count;
