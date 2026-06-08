@@ -621,14 +621,22 @@ const CardNameBase = memo(function CardName({
 
 						{metadata.categories && metadata.categories.length > 0 && (
 							<div className="flex flex-wrap gap-1 justify-center mt-1">
-								{metadata.categories.slice(0, 2).map((category, index) => (
+								{metadata.categories.length > 0 && (
 									<span
-										key={index}
+										key={0}
 										className="px-1.5 py-0.5 text-[10px] font-medium text-primary bg-primary/10 border border-primary/20 rounded-full"
 									>
-										{category}
+										{metadata.categories[0]}
 									</span>
-								))}
+								)}
+								{metadata.categories.length > 1 && (
+									<span
+										key={1}
+										className="px-1.5 py-0.5 text-[10px] font-medium text-primary bg-primary/10 border border-primary/20 rounded-full"
+									>
+										{metadata.categories[1]}
+									</span>
+								)}
 								{metadata.categories.length > 2 && (
 									<span className="px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/40 bg-foreground/5 border border-foreground/5 rounded-full">
 										+{metadata.categories.length - 2}
