@@ -145,6 +145,13 @@ const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Databas
 
 export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
 
+
+type SupabaseClientWithHeaders = SupabaseClient<Database> & {
+	rest?: {
+		headers: Record<string, string | undefined>;
+	};
+};
+
 export const updateSupabaseUserContext = (
 	userName: string | null,
 	userId: string | null = null,
@@ -152,22 +159,20 @@ export const updateSupabaseUserContext = (
 	if (!supabaseInstance) {
 		return;
 	}
-	// @ts-expect-error - accessing internal property
-	if (supabaseInstance.rest?.headers) {
+
+	const client = supabaseInstance as SupabaseClientWithHeaders;
+
+	if (client.rest?.headers) {
 		if (userName) {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-name"] = userName;
+			client.rest.headers["x-user-name"] = userName;
 		} else {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-name"] = undefined;
+			client.rest.headers["x-user-name"] = undefined;
 		}
 
 		if (userId) {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-id"] = userId;
+			client.rest.headers["x-user-id"] = userId;
 		} else {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-id"] = undefined;
+			client.rest.headers["x-user-id"] = undefined;
 		}
 	}
 };
