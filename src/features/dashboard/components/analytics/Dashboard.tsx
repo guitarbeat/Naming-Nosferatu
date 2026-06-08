@@ -214,7 +214,7 @@ function CommunityChartsPanel({
 	leaderboard,
 	siteStats,
 }: {
-	leaderboard: typeof leaderboard extends any[] ? typeof leaderboard : NameItem[];
+	leaderboard: NameItem[];
 	siteStats: SiteStats | null;
 }) {
 	return (
