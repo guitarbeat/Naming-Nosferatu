@@ -54,7 +54,7 @@ function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNam
 export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
 	return (
 		<div className="home-hero-wrapper w-full">
-			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center border-b border-border/40">
+			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center">
 				<motion.div
 					initial={{ opacity: 0, y: -20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -67,7 +67,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						transition={{ delay: 0.1, duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
 						className="text-sm font-medium uppercase tracking-wider text-muted-foreground/70"
 					>
-						Help me choose
+						What should we name my cat?
 					</motion.p>
 
 					<motion.div
@@ -90,7 +90,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.4 }}
 					>
-						Vote on your favorite names and discover what your friends think too.
+						Pick your favorites and see which names score highest with your friends.
 					</motion.h2>
 
 					<motion.div
@@ -102,28 +102,6 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						<Button variant="glass" size="lg" onClick={onStartPicking}>
 							Get Started
 						</Button>
-					</motion.div>
-
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 0.6 }}
-						transition={{ delay: 0.7, duration: 1, ease: "easeOut" }}
-						className="mt-12 flex flex-col items-center gap-2 text-muted-foreground"
-					>
-						<motion.svg
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							animate={{ y: [0, 8, 0] }}
-							transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-						>
-							<polyline points="12 3 12 12 19 5" />
-							<path d="M18 13H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z" />
-						</motion.svg>
-						<span className="text-xs font-medium">Scroll to continue</span>
 					</motion.div>
 				</motion.div>
 			</section>
