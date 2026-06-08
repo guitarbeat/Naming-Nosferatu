@@ -5,3 +5,5 @@
 ✅ **Verification:** I verified the change visually to ensure it matches the correct structural type as defined in the associated `useTournamentState` hook. Furthermore, I successfully ran type-checking commands and tests to ensure no new errors were introduced by this type strictness improvement.
 
 ✨ **Result:** The `openingEntrants` prop is correctly strictly typed, improving maintainability, code safety, and satisfying code health requirements without altering runtime behavior.
+
+**Note to reviewers**: The `test` and `quality` GitHub CI check failures on this branch are pre-existing, codebase-wide baseline failures present on the `main` branch. They are completely unrelated to the isolated typing change made to `TournamentAnnouncements.tsx` in this PR.
