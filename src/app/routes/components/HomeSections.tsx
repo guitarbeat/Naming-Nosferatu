@@ -67,7 +67,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						transition={{ delay: 0.1, duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
 						className="text-sm font-medium uppercase tracking-wider text-muted-foreground/70"
 					>
-						Help me choose
+						What should we name my cat?
 					</motion.p>
 
 					<motion.div
@@ -90,7 +90,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.4 }}
 					>
-						Vote on your favorite names and discover what your friends think too.
+						Pick your favorites and see which names score highest with your friends.
 					</motion.h2>
 
 					<motion.div
