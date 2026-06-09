@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useEffect } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
-import { SectionFlow } from "@/shared/components/ui/SectionFlow";
 import { namesQueryOptions } from "@/shared/api/names/api";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
+import { SectionFlow } from "@/shared/components/ui/SectionFlow";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
@@ -121,10 +121,7 @@ export default function HomeRoute() {
 					>
 						<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 							<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-								<SectionHeading
-									title="Results"
-									subtitle="See how all the names ranked."
-								/>
+								<SectionHeading title="Results" subtitle="See how all the names ranked." />
 								<div className="w-full">
 									<Suspense fallback={<Loading variant="skeleton" height={600} />}>
 										<ErrorBoundary context={errorContexts.analysisDashboard}>

@@ -119,12 +119,16 @@ export function StatTile({
 			<div className="absolute -top-6 -right-6 size-12 rounded-full bg-primary/5 blur-xl transition-transform group-hover:scale-110" />
 			<div className="relative space-y-2">
 				<div className="flex items-center justify-between">
-					<p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+					<p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+						{label}
+					</p>
 					{Icon && (
-						<div className={cn(
-							"rounded-lg p-2 transition-colors",
-							accent ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-						)}>
+						<div
+							className={cn(
+								"rounded-lg p-2 transition-colors",
+								accent ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground",
+							)}
+						>
 							<Icon size={14} />
 						</div>
 					)}

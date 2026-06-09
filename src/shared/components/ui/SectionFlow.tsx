@@ -56,8 +56,12 @@ export function SectionFlow({ sections, onSectionChange }: SectionFlowProps) {
 				data-section={current}
 				className="w-full"
 				onKeyDown={(e) => {
-					if (e.key === "ArrowRight" || e.key === "l") next();
-					if (e.key === "ArrowLeft" || e.key === "h") prev();
+					if (e.key === "ArrowRight" || e.key === "l") {
+						next();
+					}
+					if (e.key === "ArrowLeft" || e.key === "h") {
+						prev();
+					}
 				}}
 				role="region"
 				aria-label={`Section: ${current}`}

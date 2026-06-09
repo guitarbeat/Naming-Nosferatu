@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { themeText } from "@/shared/lib/themeClasses";
 import { TIMING } from "@/shared/lib/constants";
+import { themeText } from "@/shared/lib/themeClasses";
 import type { NameItem } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
