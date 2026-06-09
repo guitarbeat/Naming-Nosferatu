@@ -52,6 +52,7 @@ export function AdminNamesTab({
 					<Input
 						type="text"
 						placeholder="Search names..."
+						aria-label="Search names"
 						value={searchTerm}
 						onChange={(event) => onSearchTermChange(event.target.value)}
 						className="w-full"
@@ -62,6 +63,7 @@ export function AdminNamesTab({
 						value={filterStatus}
 						onChange={onFilterChange}
 						className="px-4 py-2 bg-foreground/10 border border-border/20 rounded-lg text-foreground"
+						aria-label="Filter status"
 					>
 						{filterOptions.map((option) => (
 							<option value={option.value} key={option.value}>
@@ -70,7 +72,7 @@ export function AdminNamesTab({
 						))}
 					</select>
 
-					<Button onClick={onRefresh} variant="ghost" size="small">
+					<Button onClick={onRefresh} variant="ghost" size="small" aria-label="Refresh names list">
 						<Loader2 size={16} />
 					</Button>
 				</div>
@@ -111,6 +113,7 @@ export function AdminNamesTab({
 								<div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
 									<input
 										type="checkbox"
+										aria-label={`Select ${name.name}`}
 										checked={selectedNames.has(nameId)}
 										onChange={(event) => onSelectionChange(nameId, event.target.checked)}
 										className="w-4 h-4 mt-1 sm:mt-0 shrink-0"

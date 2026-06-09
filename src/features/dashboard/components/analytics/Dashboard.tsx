@@ -92,7 +92,6 @@ function getQuickStats({
 	return [];
 }
 
-
 function DashboardHeader({
 	isLoggedIn,
 	userName,
@@ -367,7 +366,6 @@ export function Dashboard({
 				quickStats={quickStats}
 				userStats={userStats}
 			/>
-
 
 			{hasPersonalRatings && onUpdateRatings && (
 				<Panel>
