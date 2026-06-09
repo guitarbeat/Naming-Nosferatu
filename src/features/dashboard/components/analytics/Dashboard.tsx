@@ -1,7 +1,7 @@
 import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, Users } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
-import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
+import { themeSurfaces } from "@/shared/lib/themeClasses";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import {
@@ -91,7 +91,6 @@ function getQuickStats({
 
 	return [];
 }
-
 
 function DashboardHeader({
 	isLoggedIn,
@@ -354,7 +353,7 @@ export function Dashboard({
 	const quickStats = getQuickStats({ siteStats, userName, userStats });
 	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
 	const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
-	const shouldShowDashboardPrimer =
+	const _shouldShowDashboardPrimer =
 		!hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
 
 	return (
@@ -367,7 +366,6 @@ export function Dashboard({
 				quickStats={quickStats}
 				userStats={userStats}
 			/>
-
 
 			{hasPersonalRatings && onUpdateRatings && (
 				<Panel>
