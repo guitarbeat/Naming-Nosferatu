@@ -93,6 +93,7 @@ interface GlassConfig {
 }
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+	disabled?: boolean;
 	children?: React.ReactNode;
 	variant?: CardVariant;
 	padding?: CardPadding;
@@ -124,6 +125,7 @@ const CardBase = memo(
 				onMouseMove,
 				onMouseLeave,
 				style,
+				disabled,
 				...props
 			},
 			ref,
@@ -196,7 +198,13 @@ const CardBase = memo(
 						}}
 						{...glassProps}
 					>
-						<Component ref={ref} className={contentClasses} onClick={onClick} {...props}>
+						<Component
+							ref={ref}
+							className={contentClasses}
+							onClick={onClick}
+							{...(Component === "button" ? { disabled } : { "aria-disabled": disabled })}
+							{...props}
+						>
 							{children}
 						</Component>
 					</LiquidGlass>
@@ -211,6 +219,7 @@ const CardBase = memo(
 					onMouseMove={onMouseMove}
 					onMouseLeave={onMouseLeave}
 					style={style}
+					{...(Component === "button" ? { disabled } : { "aria-disabled": disabled })}
 					{...props}
 				>
 					<div
@@ -488,7 +497,6 @@ const CardNameBase = memo(function CardName({
 					className,
 				)}
 				onClick={isInteractive ? handleInteraction : undefined}
-				// @ts-expect-error - Card props might not fully match HTML attributes
 				disabled={isInteractive ? disabled : undefined}
 				aria-pressed={isInteractive ? isSelected : undefined}
 				aria-label={getAriaLabel()}
