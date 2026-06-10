@@ -3,6 +3,7 @@ import { QueryClient } from "@tanstack/react-query";
 import type { Database } from "@/integrations/supabase/types";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { getStorageString, isStorageAvailable } from "@/shared/lib/storage";
+import { IS_BROWSER } from "@/store/appStore.shared";
 
 export const queryClient = new QueryClient({
 	defaultOptions: {
@@ -39,7 +40,7 @@ export function shouldWarnMissingSupabaseCredentials(hostname: string): boolean 
 
 function getCurrentHostname(): string {
 	try {
-		return typeof window === "undefined" ? "" : window.location.hostname;
+		return IS_BROWSER ? window.location.hostname : "";
 	} catch {
 		return "";
 	}
@@ -63,8 +64,9 @@ const getSupabaseCredentials = (): { url: string; key: string } | null => {
 	return { url, key };
 };
 
-let supabaseInstance: SupabaseClient<Database> | null =
-	typeof window === "undefined" ? null : (window.__supabaseClient ?? null);
+let supabaseInstance: SupabaseClient<Database> | null = IS_BROWSER
+	? (window.__supabaseClient ?? null)
+	: null;
 let initializationPromise: Promise<SupabaseClient<Database> | null> | null = null;
 
 const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> => {
@@ -111,7 +113,7 @@ const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> 
 			db: { schema: "public" },
 		});
 
-		if (typeof window !== "undefined") {
+		if (IS_BROWSER) {
 			window.__supabaseClient = client;
 		}
 		return client;
