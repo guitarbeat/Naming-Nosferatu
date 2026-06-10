@@ -1,7 +1,9 @@
 import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
+import { SelectCombobox } from "@/shared/components/ui/SelectCombobox";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
 
@@ -47,7 +49,12 @@ export function AdminNamesTab({
 }: AdminNamesTabProps) {
 	return (
 		<>
-			<div className="flex flex-col lg:flex-row gap-4 mb-6">
+			<motion.div
+				className="flex flex-col lg:flex-row gap-4 mb-6"
+				initial={{ opacity: 0, y: -8 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.3 }}
+			>
 				<div className="flex-1">
 					<Input
 						type="text"
@@ -58,23 +65,21 @@ export function AdminNamesTab({
 					/>
 				</div>
 				<div className="flex gap-2">
-					<select
-						value={filterStatus}
-						onChange={onFilterChange}
-						className="px-4 py-2 bg-foreground/10 border border-border/20 rounded-lg text-foreground"
-					>
-						{filterOptions.map((option) => (
-							<option value={option.value} key={option.value}>
-								{option.label}
-							</option>
-						))}
-					</select>
+					<div className="w-full max-w-xs">
+						<SelectCombobox
+							options={filterOptions}
+							value={filterStatus}
+							onChange={(value) => onFilterChange({ target: { value } } as ChangeEvent<HTMLSelectElement>)}
+							placeholder="Filter by status..."
+							ariaLabel="Filter names by status"
+						/>
+					</div>
 
 					<Button onClick={onRefresh} variant="ghost" size="small">
 						<Loader2 size={16} />
 					</Button>
 				</div>
-			</div>
+			</motion.div>
 
 			{selectedNames.size > 0 && (
 				<div className="mb-4 py-3 sm:py-4 border-y border-border/10">

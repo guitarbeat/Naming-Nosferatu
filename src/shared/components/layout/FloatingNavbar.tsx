@@ -482,7 +482,7 @@ export function FloatingNavbar() {
 		return null;
 	}
 
-	const shouldShow = isNavVisible && (!isHomeRoute || isPastHero);
+	const shouldShow = !isHomeRoute ? isNavVisible : true;
 
 	return (
 		<>
