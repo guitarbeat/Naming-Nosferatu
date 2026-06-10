@@ -1,5 +1,7 @@
 import { Activity, TrendingUp, Trophy, Users } from "lucide-react";
+import { motion } from "framer-motion";
 import Button from "@/shared/components/layout/Button";
+import { SegmentedControl } from "@/shared/components/ui/SegmentedControl";
 import type { DashboardTimeframe } from "../hooks/useDashboardData";
 import { Panel, SectionHeader, StatTile } from "./DashboardPrimitives";
 
@@ -15,6 +17,12 @@ interface RecentActivityPanelProps {
 	refreshEngagementMetrics: () => void;
 	isLoadingEngagement: boolean;
 }
+
+const TIMEFRAME_OPTIONS = [
+	{ value: "day" as const, label: "24h" },
+	{ value: "week" as const, label: "Week" },
+	{ value: "month" as const, label: "Month" },
+] as const;
 
 export function RecentActivityPanel({
 	engagementMetrics,
@@ -34,16 +42,19 @@ export function RecentActivityPanel({
 				title="Recent Activity"
 				subtitle="Last window."
 				action={
-					<div className="flex items-center gap-2">
-						<select
+					<motion.div
+						className="flex items-center gap-3"
+						initial={{ opacity: 0, y: -4 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.3, ease: "easeOut" }}
+					>
+						<SegmentedControl
+							options={TIMEFRAME_OPTIONS}
 							value={timeframe}
-							onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
-							className="surface-panel-inset rounded-xl px-3 py-2 text-sm text-foreground"
-						>
-							<option value="day">24 hours</option>
-							<option value="week">Week</option>
-							<option value="month">Month</option>
-						</select>
+							onChange={setTimeframe}
+							size="small"
+							ariaLabel="Select timeframe"
+						/>
 						<Button
 							variant="outline"
 							size="small"
@@ -53,10 +64,15 @@ export function RecentActivityPanel({
 							<Activity size={14} />
 							Refresh
 						</Button>
-					</div>
+					</motion.div>
 				}
 			/>
-			<div className="grid gap-3 sm:grid-cols-2">
+			<motion.div
+				className="grid gap-3 sm:grid-cols-2"
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ duration: 0.4, delay: 0.1 }}
+			>
 				<StatTile
 					label="Active raters"
 					value={engagementMetrics.peakActiveUsers}
@@ -64,7 +80,7 @@ export function RecentActivityPanel({
 					accent={true}
 				/>
 				<StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
-			</div>
+			</motion.div>
 		</Panel>
 	);
 }

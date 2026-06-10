@@ -1,6 +1,8 @@
 import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, Users } from "lucide-react";
+import { motion } from "framer-motion";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
+import { SegmentedControl } from "@/shared/components/ui/SegmentedControl";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
@@ -21,6 +23,7 @@ import { TopNamesChart } from "./components/TopNamesChart";
 import { WinLossChart } from "./components/WinLossChart";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { PersonalResults } from "./PersonalResults";
+import type { DashboardTimeframe } from "./hooks/useDashboardData";
 
 interface DashboardProps {
 	personalRatings?: Record<string, RatingData>;
@@ -206,6 +209,12 @@ function CommunityChartsPanel({
 	);
 }
 
+const TIMEFRAME_OPTIONS = [
+	{ value: "day" as const, label: "24h" },
+	{ value: "week" as const, label: "Week" },
+	{ value: "month" as const, label: "Month" },
+] as const;
+
 function EngagementPanel({
 	engagementMetrics,
 	timeframe,
@@ -230,16 +239,19 @@ function EngagementPanel({
 				title="Recent Activity"
 				subtitle="Last window."
 				action={
-					<div className="flex items-center gap-2">
-						<select
+					<motion.div
+						className="flex items-center gap-3"
+						initial={{ opacity: 0, y: -4 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.3, ease: "easeOut" }}
+					>
+						<SegmentedControl
+							options={TIMEFRAME_OPTIONS}
 							value={timeframe}
-							onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
-							className={`rounded-xl px-3 py-2 text-sm text-foreground ${themeSurfaces.panelDense}`}
-						>
-							<option value="day">24 hours</option>
-							<option value="week">Week</option>
-							<option value="month">Month</option>
-						</select>
+							onChange={setTimeframe}
+							size="small"
+							ariaLabel="Select timeframe"
+						/>
 						<Button
 							variant="outline"
 							size="small"
@@ -249,10 +261,15 @@ function EngagementPanel({
 							<Activity size={14} />
 							Refresh
 						</Button>
-					</div>
+					</motion.div>
 				}
 			/>
-			<div className="grid gap-3 sm:grid-cols-2">
+			<motion.div
+				className="grid gap-3 sm:grid-cols-2"
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ duration: 0.4, delay: 0.1 }}
+			>
 				<StatTile
 					label="Active raters"
 					value={engagementMetrics.peakActiveUsers}
@@ -260,7 +277,7 @@ function EngagementPanel({
 					accent={true}
 				/>
 				<StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
-			</div>
+			</motion.div>
 		</Panel>
 	);
 }
