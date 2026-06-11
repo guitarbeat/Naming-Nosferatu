@@ -148,11 +148,11 @@ export function NameSelector() {
 		(nameId: IdType) => {
 			setSelectedNames((prev) => {
 				const next = toggleInSet(prev, nameId);
-				syncSelectionToStore(next);
+				deferredSync(() => syncSelectionToStore(next));
 				return next;
 			});
 		},
-		[syncSelectionToStore],
+		[syncSelectionToStore, deferredSync],
 	);
 
 	// Trigger haptic feedback if available
