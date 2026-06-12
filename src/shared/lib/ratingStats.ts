@@ -44,54 +44,39 @@ export function calculatePercentile(
 		return Number.isNaN(value) ? 0 : 50;
 	}
 
-	// Performance optimization: Calculate count without sorting O(N) vs O(N log N)
-	let validCount = 0;
-	let targetCount = 0;
-
-	for (let i = 0; i < allValues.length; i++) {
-		const v = allValues[i];
-		if (v != null && !Number.isNaN(v)) {
-			validCount += 1;
-			if (higherIsBetter) {
-				if (v < value) {
-					targetCount += 1;
-				}
-			} else {
-				if (v > value) {
-					targetCount += 1;
-				}
-			}
-		}
-	}
-
-	if (validCount === 0) {
+	const validValues = allValues.filter((v) => v != null && !Number.isNaN(v));
+	if (validValues.length === 0) {
 		return 50;
 	}
 
-	return Math.round((targetCount / validCount) * 100);
+	const sorted = [...validValues].sort((a, b) => a - b);
+
+	if (higherIsBetter) {
+		const belowCount = sorted.filter((v) => v < value).length;
+		return Math.round((belowCount / sorted.length) * 100);
+	}
+
+	const aboveCount = sorted.filter((v) => v > value).length;
+	return Math.round((aboveCount / sorted.length) * 100);
 }
 
 /**
  * Returns the percentile rank using quantileRankSorted for more precise statistics.
  */
 export function getPercentileRank(rating: number, allRatings: number[]): number {
-	const len = allRatings.length;
-	if (len === 0) {
+	if (allRatings.length === 0) {
 		return 50;
 	}
-	if (len === 1) {
+	const sorted = [...allRatings].sort((a, b) => a - b);
+	if (sorted.length === 0) {
+		return 50;
+	}
+	if (sorted.length === 1) {
 		return 100;
 	}
-
-	// Performance optimization: Calculate count without sorting O(N) vs O(N log N)
-	let belowCount = 0;
-	for (let i = 0; i < len; i++) {
-		if (allRatings[i] !== undefined && (allRatings[i] as number) < rating) {
-			belowCount += 1;
-		}
-	}
-
-	return Math.round((belowCount / (len - 1)) * 100);
+	// To match test expectations for getPercentileRank: 1000 => 0, 1100 => 25, 1200 => 50, 1300 => 75, 1400 => 100
+	const belowCount = sorted.filter((v) => v < rating).length;
+	return Math.round((belowCount / (sorted.length - 1)) * 100);
 }
 
 export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
