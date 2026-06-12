@@ -15,11 +15,6 @@ const Analytics = lazy(() =>
 	import("@vercel/analytics/react").then((module) => ({ default: module.Analytics })),
 );
 
-const LiquidGradientBackground = lazy(() =>
-	import("@/shared/components/layout/LiquidGradientBackground").then((module) => ({
-		default: module.LiquidGradientBackground,
-	})),
-);
 
 export function AppLayout({ children }: AppLayoutProps) {
 	const { tournament, errors, errorActions } = useAppStore();
@@ -54,10 +49,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 				>
 					Skip to main content
 				</button>
-
-				<Suspense fallback={null}>
-					<LiquidGradientBackground />
-				</Suspense>
 
 				<FloatingNavbar />
 
