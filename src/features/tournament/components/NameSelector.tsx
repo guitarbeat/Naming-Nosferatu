@@ -806,7 +806,7 @@ export function NameSelector() {
 													}}
 													className={getCardStyles(isSelected, isNameLocked(nameItem))}
 												>
-													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden rounded-xl sm:rounded-2xl">
+													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
 														<CatImage
 															src={catImage}
 															alt={nameItem.name}
@@ -1002,7 +1002,7 @@ export function NameSelector() {
 														}
 													}}
 													aria-pressed={isSelected}
-													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
+													className={`mobile-readable-card relative rounded-[1.35rem] border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
 														isSelected
 															? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
 															: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"

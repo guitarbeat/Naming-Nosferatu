@@ -32,8 +32,8 @@ function MobileBottomNav({
 	return (
 		<nav
 			className={cn(
-				"fixed bottom-0 left-0 w-full z-[9998] flex items-center justify-around border-t border-border/50 bg-background/95 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-lg transition-transform duration-300 sm:hidden",
-				isVisible ? "translate-y-0" : "translate-y-full",
+				"fixed bottom-6 left-1/2 -translate-x-1/2 z-[9998] flex items-center justify-center gap-1 px-3 py-2 rounded-full border border-border/30 bg-background/80 backdrop-blur-lg transition-transform duration-300 sm:hidden",
+				isVisible ? "translate-y-0" : "translate-y-[120%]",
 			)}
 		>
 			{topItems.map((item) => {
@@ -44,22 +44,20 @@ function MobileBottomNav({
 						type="button"
 						onClick={item.onClick}
 						className={cn(
-							"flex flex-col items-center justify-center gap-1 px-2 py-1 min-h-[48px] min-w-[48px]",
-							item.isAccent && !isActive && "text-primary",
-							item.isAccent && isActive && "text-primary",
-							!item.isAccent && isActive && "text-foreground",
-							!isActive && !item.isAccent && "text-muted-foreground",
+							"flex items-center justify-center gap-1.5 px-3 py-2 rounded-full transition-colors min-h-[40px]",
+							isActive && "bg-primary/20 text-primary",
+							!isActive && "text-muted-foreground hover:text-foreground",
 						)}
 						aria-label={item.ariaLabel ?? item.label}
 						aria-current={isActive ? "location" : undefined}
 					>
-						<span className="relative flex shrink-0 items-center justify-center">
+						<span className="relative flex shrink-0 items-center justify-center text-lg">
 							{item.icon}
 							{item.hasBadge && (
-								<span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
+								<span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary" />
 							)}
 						</span>
-						<span className="text-xs font-medium tracking-tight">{item.label}</span>
+						<span className="text-sm font-medium tracking-tight hidden xs:inline">{item.label}</span>
 					</button>
 				);
 			})}
