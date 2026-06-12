@@ -22,19 +22,11 @@ interface ModalProps {
 
 const GENIE_DURATION_MS = 480;
 
-export function Modal({
-	title,
-	open,
-	onClose,
-	children,
-	maxWidth = "max-w-md",
-	closeDisabled = false,
-	description,
-	hideTitle = false,
-	originRect = null,
-}: ModalProps) {
-	const isOpenResolved = open ?? true;
-	const modalRef = useRef<HTMLDivElement>(null);
+function useModalAnimation(
+	isOpenResolved: boolean,
+	originRect: OriginRect | null,
+	modalRef: React.RefObject<HTMLDivElement | null>,
+) {
 	const [isClosing, setIsClosing] = useState(false);
 	const [shouldRender, setShouldRender] = useState(isOpenResolved);
 	const [genieVars, setGenieVars] = useState<React.CSSProperties | null>(null);
@@ -56,13 +48,6 @@ export function Modal({
 		return () => window.clearTimeout(timer);
 	}, [isOpenResolved, shouldRender]);
 
-	const requestClose = () => {
-		if (closeDisabled) {
-			return;
-		}
-		onClose();
-	};
-
 	useLayoutEffect(() => {
 		if (!shouldRender || !originRect || !modalRef.current) {
 			setGenieVars(null);
@@ -77,20 +62,81 @@ export function Modal({
 			["--genie-x" as never]: `${originCenterX - modalCenterX}px`,
 			["--genie-y" as never]: `${originCenterY - modalCenterY}px`,
 		});
-	}, [shouldRender, originRect]);
+	}, [shouldRender, originRect, modalRef]);
 
-	useEffect(() => {
-		if (!isOpenResolved || isClosing) {
+	return { isClosing, shouldRender, genieVars };
+}
+
+interface ModalHeaderProps {
+	title: string;
+	hideTitle: boolean;
+	requestClose: () => void;
+	closeDisabled: boolean;
+}
+
+function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
+	if (hideTitle) {
+		return (
+			<>
+				<h2 id="modal-title" className="sr-only">
+					{title}
+				</h2>
+				<button
+					type="button"
+					onClick={requestClose}
+					disabled={closeDisabled}
+					className="absolute top-3 right-3 z-10 rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+					aria-label={`Close ${title.toLowerCase()}`}
+				>
+					<X className="size-4" />
+				</button>
+			</>
+		);
+	}
+
+	return (
+		<div className="flex items-center justify-between mb-5">
+			<h2 id="modal-title" className="text-base font-semibold text-foreground tracking-tight">
+				{title}
+			</h2>
+			<button
+				type="button"
+				onClick={requestClose}
+				disabled={closeDisabled}
+				className="rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+				aria-label={`Close ${title.toLowerCase()}`}
+			>
+				<X className="size-4" />
+			</button>
+		</div>
+	);
+}
+
+export function Modal({
+	title,
+	open,
+	onClose,
+	children,
+	maxWidth = "max-w-md",
+	closeDisabled = false,
+	description,
+	hideTitle = false,
+	originRect = null,
+}: ModalProps) {
+	const isOpenResolved = open ?? true;
+	const modalRef = useRef<HTMLDivElement>(null);
+	const { isClosing, shouldRender, genieVars } = useModalAnimation(
+		isOpenResolved,
+		originRect,
+		modalRef,
+	);
+
+	const requestClose = () => {
+		if (closeDisabled) {
 			return;
 		}
-
-		const modalElement = modalRef.current;
-		if (!modalElement) {
-			return;
-		}
-
-		return undefined;
-	}, [isOpenResolved, isClosing]);
+		onClose();
+	};
 
 	if (!shouldRender) {
 		return null;
@@ -132,38 +178,12 @@ export function Modal({
 				style={genieVars ?? undefined}
 				className={`glass-surface relative z-50 w-full ${maxWidth} overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
 			>
-				{/* Header */}
-				{hideTitle ? (
-					<>
-						<h2 id="modal-title" className="sr-only">
-							{title}
-						</h2>
-						<button
-							type="button"
-							onClick={requestClose}
-							disabled={closeDisabled}
-							className="absolute top-3 right-3 z-10 rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-							aria-label={`Close ${title.toLowerCase()}`}
-						>
-							<X className="size-4" />
-						</button>
-					</>
-				) : (
-					<div className="flex items-center justify-between mb-5">
-						<h2 id="modal-title" className="text-base font-semibold text-foreground tracking-tight">
-							{title}
-						</h2>
-						<button
-							type="button"
-							onClick={requestClose}
-							disabled={closeDisabled}
-							className="rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-							aria-label={`Close ${title.toLowerCase()}`}
-						>
-							<X className="size-4" />
-						</button>
-					</div>
-				)}
+				<ModalHeader
+					title={title}
+					hideTitle={hideTitle}
+					requestClose={requestClose}
+					closeDisabled={closeDisabled}
+				/>
 
 				{description && (
 					<p id="modal-description" className="sr-only">
