@@ -10,10 +10,19 @@ export function countSelectedItems<TId>(
 	items: ReadonlyArray<ItemWithId<TId>>,
 	selectedIds: ReadonlySet<TId>,
 ): number {
+	if (selectedIds.size === 0 || items.length === 0) {
+		return 0;
+	}
+
 	let count = 0;
+	const maxCount = selectedIds.size;
+
 	for (const item of items) {
 		if (selectedIds.has(item.id)) {
 			count += 1;
+			if (count === maxCount) {
+				return count;
+			}
 		}
 	}
 	return count;
