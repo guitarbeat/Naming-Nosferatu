@@ -12,7 +12,8 @@ export const getCardStyles = (isSelected: boolean, isLocked: boolean) => {
 
 // Name overlay styles utility
 export const getNameOverlayClasses = (variant: "grid" | "swipe") => {
-	const baseClasses = "absolute inset-0 flex flex-col items-center justify-center pointer-events-none";
+	const baseClasses =
+		"absolute inset-0 flex flex-col items-center justify-center pointer-events-none";
 	const gridClasses = "p-4 sm:p-5 text-center";
 	const swipeClasses = "z-10 p-6 sm:p-8 text-center";
 
