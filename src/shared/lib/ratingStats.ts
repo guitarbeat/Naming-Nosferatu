@@ -44,20 +44,33 @@ export function calculatePercentile(
 		return Number.isNaN(value) ? 0 : 50;
 	}
 
-	const validValues = allValues.filter((v) => v != null && !Number.isNaN(v));
-	if (validValues.length === 0) {
+	// ⚡ Bolt Optimization: Replaced O(N log N) sorting and O(N) chained array .filter() methods
+	// with a single O(N) pass. This eliminates unnecessary array allocations and garbage collection
+	// overhead, improving percentile calculations across large rating distributions.
+	let validCount = 0;
+	let matchCount = 0;
+
+	for (let i = 0; i < allValues.length; i++) {
+		const v = allValues[i];
+		if (v != null && !Number.isNaN(v)) {
+			validCount++;
+			if (higherIsBetter) {
+				if (v < value) {
+					matchCount++;
+				}
+			} else {
+				if (v > value) {
+					matchCount++;
+				}
+			}
+		}
+	}
+
+	if (validCount === 0) {
 		return 50;
 	}
 
-	const sorted = [...validValues].sort((a, b) => a - b);
-
-	if (higherIsBetter) {
-		const belowCount = sorted.filter((v) => v < value).length;
-		return Math.round((belowCount / sorted.length) * 100);
-	}
-
-	const aboveCount = sorted.filter((v) => v > value).length;
-	return Math.round((aboveCount / sorted.length) * 100);
+	return Math.round((matchCount / validCount) * 100);
 }
 
 /**
@@ -67,16 +80,19 @@ export function getPercentileRank(rating: number, allRatings: number[]): number 
 	if (allRatings.length === 0) {
 		return 50;
 	}
-	const sorted = [...allRatings].sort((a, b) => a - b);
-	if (sorted.length === 0) {
-		return 50;
-	}
-	if (sorted.length === 1) {
+	if (allRatings.length === 1) {
 		return 100;
 	}
+	// ⚡ Bolt Optimization: Eliminated array sorting and .filter() chaining since we only
+	// need a count of elements below the threshold. A single iteration provides an exact O(N) count.
 	// To match test expectations for getPercentileRank: 1000 => 0, 1100 => 25, 1200 => 50, 1300 => 75, 1400 => 100
-	const belowCount = sorted.filter((v) => v < rating).length;
-	return Math.round((belowCount / (sorted.length - 1)) * 100);
+	let belowCount = 0;
+	for (let i = 0; i < allRatings.length; i++) {
+		if (allRatings[i] < rating) {
+			belowCount++;
+		}
+	}
+	return Math.round((belowCount / (allRatings.length - 1)) * 100);
 }
 
 export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
