@@ -1,6 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Search, X } from "lucide-react";
 import { type ChangeEvent, useCallback, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface SelectComboboxOption {
 	value: string;
@@ -60,11 +60,9 @@ export function SelectCombobox({
 					isOpen ? "border-primary/40 ring-2 ring-primary/10" : "hover:border-border/40"
 				} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
 				whileHover={!disabled && !isOpen ? { borderColor: "var(--color-border)" } : {}}
-				whileTap={!disabled ? { scale: 0.98 } : {}}
+				whileTap={disabled ? {} : { scale: 0.98 }}
 			>
-				<span className="truncate text-foreground/80">
-					{selectedOption?.label || placeholder}
-				</span>
+				<span className="truncate text-foreground/80">{selectedOption?.label || placeholder}</span>
 				<motion.div
 					animate={{ rotate: isOpen ? 180 : 0 }}
 					transition={{ duration: 0.2 }}
@@ -91,13 +89,11 @@ export function SelectCombobox({
 								<div className="relative flex items-center">
 									<Search size={14} className="absolute left-2.5 text-foreground/40" />
 									<input
-										autoFocus
+										autoFocus={true}
 										type="text"
 										placeholder="Search..."
 										value={searchTerm}
-										onChange={(e: ChangeEvent<HTMLInputElement>) =>
-											setSearchTerm(e.target.value)
-										}
+										onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
 										onClick={(e) => e.stopPropagation()}
 										className="w-full pl-8 pr-3 py-1.5 text-xs bg-muted border border-border/20 rounded text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
 									/>
