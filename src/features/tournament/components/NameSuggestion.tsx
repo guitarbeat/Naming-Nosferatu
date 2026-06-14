@@ -5,18 +5,10 @@ import { useNameSuggestion } from "@/features/tournament/hooks/useNameSuggestion
 import Button from "@/shared/components/layout/Button";
 import { Input, Textarea } from "@/shared/components/layout/FormPrimitives";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
 interface NameSuggestionProps {
 	variant?: "inline" | "modal";
 	onClose?: () => void;
 }
-
-// ============================================================================
-// STATUS MESSAGE
-// ============================================================================
 
 function StatusMessage({ error, success }: { error?: string; success?: string }) {
 	return (
@@ -73,28 +65,23 @@ export function NameSuggestionInner() {
 	const isFormComplete = values.name.trim().length > 0 && values.description.trim().length > 0;
 
 	return (
-		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto space-y-7">
-			<div className="text-center space-y-3">
-				<h3 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight text-balance">
+		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto space-y-5">
+			<div className="text-center space-y-2">
+				<h3 className="text-2xl sm:text-3xl font-bold text-foreground">
 					Have a suggestion?
 				</h3>
-				<p className="text-base text-muted-foreground/80">
+				<p className="text-sm text-foreground/70">
 					Submit a name and it enters the bracket for everyone to vote on.
 				</p>
 			</div>
 
 			<div className="space-y-3">
-				<div className="flex items-baseline justify-between gap-4">
-					<label
-						htmlFor="suggest-name"
-						className="text-sm font-semibold text-foreground/90 uppercase tracking-wide"
-					>
-						Name
-					</label>
-					<span className="text-xs text-muted-foreground/60 tabular-nums font-mono">
-						{values.name.length}/50
-					</span>
-				</div>
+				<label
+					htmlFor="suggest-name"
+					className="text-sm font-medium text-foreground"
+				>
+					Name
+				</label>
 				<Input
 					id="suggest-name"
 					type="text"
@@ -102,38 +89,31 @@ export function NameSuggestionInner() {
 					onChange={(e) => handleChange("name", e.target.value)}
 					onBlur={() => handleBlur("name")}
 					placeholder="e.g. Count Whiskula, Sir Paws-a-lot"
-					className="h-14 text-base font-medium border-primary/30 focus:border-primary/70 focus:bg-background/95 bg-background/80 rounded-2xl"
+					className="h-11 text-sm"
 					disabled={isSubmitting}
 					maxLength={50}
-					showSuccess={true}
 					error={touched.name ? errors.name : null}
 				/>
 			</div>
 
 			<div className="space-y-3">
-				<div className="flex items-baseline justify-between gap-4">
-					<label
-						htmlFor="suggest-description"
-						className="text-sm font-semibold text-foreground/90 uppercase tracking-wide"
-					>
-						Why This Name?
-					</label>
-					<span className="text-xs text-muted-foreground/60 tabular-nums font-mono">
-						{values.description.length}/500
-					</span>
-				</div>
+				<label
+					htmlFor="suggest-description"
+					className="text-sm font-medium text-foreground"
+				>
+					Why This Name?
+				</label>
 				<Textarea
 					id="suggest-description"
 					value={values.description}
 					onChange={(e) => handleChange("description", e.target.value)}
 					onBlur={() => handleBlur("description")}
-					placeholder="What makes it special? Help voters feel the vibe."
+					placeholder="What makes it special?"
 					rows={4}
-					className="text-base font-medium border-primary/30 focus:border-primary/70 focus:bg-background/95 bg-background/80 rounded-2xl resize-none"
+					className="text-sm resize-none"
 					disabled={isSubmitting}
 					maxLength={500}
-					showCount={false}
-					showSuccess={true}
+					showCount={true}
 					error={touched.description ? errors.description : null}
 				/>
 			</div>
@@ -144,16 +124,12 @@ export function NameSuggestionInner() {
 				type="submit"
 				disabled={!isFormComplete || !isValid || isSubmitting}
 				loading={isSubmitting}
-				variant="gradient"
-				size="large"
+				variant="primary"
+				size="medium"
 				className="w-full"
 			>
 				{isSubmitting ? "Submitting…" : "Add to Bracket"}
 			</Button>
-
-			<p className="text-xs text-center text-muted-foreground/70">
-				Your suggestion enters the shared pool for everyone to discover.
-			</p>
 		</form>
 	);
 }
@@ -217,11 +193,11 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 			}}
 			className="flex flex-col gap-4"
 		>
-			<p className="text-sm text-muted-foreground leading-relaxed">
+			<p className="text-sm text-foreground/80 leading-relaxed">
 				Got an idea? Suggest a cat name and it'll enter the bracket for everyone to vote on.
 			</p>
 
-			<div className="space-y-4">
+			<div className="space-y-3">
 				<Input
 					id="modal-name-input"
 					label="Name"
@@ -237,9 +213,8 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 					onBlur={() => handleBlur("name")}
 					placeholder="e.g., Whiskers, Sir Meowsalot"
 					maxLength={50}
-					showSuccess={true}
 					error={touched.name ? errors.name : null}
-					className="h-11 text-sm"
+					className="h-10 text-sm"
 				/>
 
 				<Textarea
@@ -265,13 +240,13 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 
 			<StatusMessage error={globalError} success={success} />
 
-			<div className="flex justify-end gap-2 pt-3 border-t border-border/30">
+			<div className="flex justify-end gap-2 pt-2">
 				<Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
 					Cancel
 				</Button>
 				<Button
 					type="submit"
-					variant="glass"
+					variant="primary"
 					disabled={isSubmitting || !isValid}
 					loading={isSubmitting}
 				>

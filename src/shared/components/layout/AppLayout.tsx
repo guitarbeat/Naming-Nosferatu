@@ -1,7 +1,6 @@
 import { lazy, type ReactNode, Suspense } from "react";
 import { shouldEnableAnalytics } from "@/app/analytics";
 import { PwaInstallPrompt } from "@/app/components/PwaInstallPrompt";
-import { ScrollToTopButton } from "@/shared/components/layout/Button";
 import { ErrorBoundary, ErrorComponent } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { OfflineIndicator } from "@/shared/components/layout/Feedback/OfflineIndicator";
@@ -21,6 +20,7 @@ const LiquidGradientBackground = lazy(() =>
 		default: module.LiquidGradientBackground,
 	})),
 );
+
 
 export function AppLayout({ children }: AppLayoutProps) {
 	const { tournament, errors, errorActions } = useAppStore();
@@ -91,8 +91,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 							<Loading variant="spinner" text="Initializing Tournament..." />
 						</div>
 					)}
-
-					<ScrollToTopButton />
 				</main>
 			</div>
 		</ErrorBoundary>

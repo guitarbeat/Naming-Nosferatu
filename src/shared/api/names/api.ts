@@ -12,10 +12,6 @@ import {
 import { resolveSupabaseClient, withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
 
-// ============================================================================
-// Types & Constants
-// ============================================================================
-
 export type NamesDataSource = "supabase";
 
 export interface NamesQueryResult {
@@ -31,10 +27,6 @@ export const namesQueryKeys = {
 } as const;
 
 const SUPABASE_UNAVAILABLE = Symbol("SUPABASE_UNAVAILABLE");
-
-// ============================================================================
-// Helpers
-// ============================================================================
 
 async function runAdminMutation<T>(
 	operation: (client: SupabaseClient<Database>) => Promise<T>,
@@ -67,10 +59,6 @@ async function runBooleanAdminRpc(
 		throwOnFailureResponse(data, errorMessage);
 	});
 }
-
-// ============================================================================
-// Queries
-// ============================================================================
 
 async function fetchNamesFromSupabase(includeHidden: boolean): Promise<NameItem[] | null> {
 	if (includeHidden) {
@@ -244,7 +232,6 @@ export async function toggleNameLocked(params: {
 
 export async function unhideAllNames(): Promise<void> {
 	await runAdminMutation(async (client) => {
-		// @ts-expect-error - unhide_all_names is a hypothetical RPC we might need
 		const { data: hiddenData, error: fetchError } = await client
 			.from("cat_names")
 			.select("id")
@@ -256,10 +243,8 @@ export async function unhideAllNames(): Promise<void> {
 		const hiddenIds = (hiddenData ?? []).map((row) => row.id);
 
 		if (hiddenIds.length === 0) {
-			return true;
+			return;
 		}
-
-		// @ts-expect-error - batch_update_name_visibility is a custom RPC
 		const { data, error } = await client.rpc("batch_update_name_visibility", {
 			p_name_ids: hiddenIds.map(String),
 			p_is_hidden: false,

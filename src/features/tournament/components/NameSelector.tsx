@@ -41,7 +41,6 @@ import useAppStore from "@/store/appStore";
 const SWIPE_OFFSET_THRESHOLD = 100;
 const SWIPE_VELOCITY_THRESHOLD = 500;
 
-// Optimized spring physics for smoother interactions
 const SMOOTH_SPRING_CONFIG = {
 	type: "spring" as const,
 	stiffness: 260,
@@ -120,7 +119,6 @@ export function NameSelector() {
 		[names, tournamentActions],
 	);
 
-	// Memoize cat images and build an id->image lookup map
 	const { catImages, catImageById } = useMemo(() => buildNameCardImages(names), [names]);
 
 	const showWarningRef = useRef(toast.showWarning);
@@ -128,7 +126,6 @@ export function NameSelector() {
 		showWarningRef.current = toast.showWarning;
 	});
 
-	// Auto-select locked-in names when names are loaded
 	useEffect(() => {
 		if (names.length === 0) {
 			return;
@@ -151,11 +148,11 @@ export function NameSelector() {
 		(nameId: IdType) => {
 			setSelectedNames((prev) => {
 				const next = toggleInSet(prev, nameId);
-				syncSelectionToStore(next);
+				deferredSync(() => syncSelectionToStore(next));
 				return next;
 			});
 		},
-		[syncSelectionToStore],
+		[syncSelectionToStore, deferredSync],
 	);
 
 	// Trigger haptic feedback if available
@@ -479,14 +476,6 @@ export function NameSelector() {
 
 	return (
 		<div className="mx-auto w-full">
-			{isSupabaseUnavailable && (
-				<div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center">
-					<p className="text-sm text-amber-200">
-						📝 Using sample cat names —{" "}
-						<span className="font-medium">connect Supabase to load your own</span>
-					</p>
-				</div>
-			)}
 			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
 				{isSwipeMode ? (
 					<>
@@ -817,7 +806,7 @@ export function NameSelector() {
 													}}
 													className={getCardStyles(isSelected, isNameLocked(nameItem))}
 												>
-													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden rounded-xl sm:rounded-2xl">
+													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
 														<CatImage
 															src={catImage}
 															alt={nameItem.name}
@@ -1013,7 +1002,7 @@ export function NameSelector() {
 														}
 													}}
 													aria-pressed={isSelected}
-													className={`mobile-readable-card relative rounded-lg sm:rounded-xl border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
+													className={`mobile-readable-card relative rounded-[1.35rem] border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
 														isSelected
 															? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
 															: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"

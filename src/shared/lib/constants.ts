@@ -75,6 +75,13 @@ export const TIMING = {
 	RIPPLE_ANIMATION_DURATION_MS: 400,
 	VOTE_COOLDOWN_MS: 500,
 	TOURNAMENT_INIT_DELAY_MS: 16, // One frame for requestAnimationFrame
+
+	// Unified motion language: startup + entrance animations
+	MOTION_FAST: 0.3, // Quick state changes (icon swap, fade)
+	MOTION_NORMAL: 0.5, // Standard entrance (text, buttons)
+	MOTION_SLOW: 0.6, // Large elements (hero heading, CTA)
+	MOTION_CYCLE: 1500, // Name carousel, loop timing
+	MOTION_EASING: "easeOut", // Standard easing for entrances
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
