@@ -1,0 +1,3 @@
+## 2025-02-12 - Optimized O(n log n) percentile calculations down to O(n)
+**Learning:** In statistical utilities performing repetitive metric extraction on arrays (like `calculatePercentile`), creating defensive array copies (`[...arr]`), sorting (`.sort()`), and chaining filters (`.filter()`) quickly degrades to O(n log n) performance and allocates intermediate arrays causing GC pressure.
+**Action:** When calculating aggregations like counting values above/below a threshold, prefer single-pass O(n) `for`-loop iterations that compute the metric directly in-place without sorting or allocating new array memory.
