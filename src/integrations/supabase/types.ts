@@ -374,6 +374,10 @@ export type Database = {
 				Args: { p_is_hidden: boolean; p_name_ids: string[] };
 				Returns: boolean;
 			};
+			batch_update_name_locked: {
+				Args: { p_is_locked: boolean; p_name_ids: string[] };
+				Returns: boolean;
+			};
 			calculate_elo_change: {
 				Args: {
 					current_rating: number;
@@ -605,6 +609,14 @@ export type Database = {
 			soft_delete_cat_name: { Args: { p_name_id: string }; Returns: boolean };
 			toggle_name_hidden: {
 				Args: { p_hidden: boolean; p_name_id: string; p_user_name?: string };
+				Returns: boolean;
+			};
+			toggle_name_visibility: {
+				Args: { p_hide: boolean; p_name_id: string; p_user_name?: string };
+				Returns: boolean;
+			};
+			toggle_name_locked_in: {
+				Args: { p_locked_in: boolean; p_name_id: string; p_user_name?: string };
 				Returns: boolean;
 			};
 			toggle_name_locked_in_debug:
