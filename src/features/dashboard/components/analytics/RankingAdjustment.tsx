@@ -30,7 +30,8 @@ const RankingItemContent = memo(({ item, index }: { item: NameItem; index: numbe
 		1: "from-slate-300 to-slate-500",
 		2: "from-amber-700 to-orange-800",
 	};
-	const medalBg = index < 3 ? medalColors[index as keyof typeof medalColors] : "from-primary/20 to-accent/20";
+	const medalBg =
+		index < 3 ? medalColors[index as keyof typeof medalColors] : "from-primary/20 to-accent/20";
 	const medalBorder = index < 3 ? "border-yellow-600/50" : "border-primary/30";
 	const medalText = index < 3 ? "text-white" : "text-foreground";
 
