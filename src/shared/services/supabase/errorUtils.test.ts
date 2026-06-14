@@ -36,32 +36,26 @@ describe("errorUtils", () => {
 
 		it("should throw if data is false", () => {
 			expect(() => throwOnFailureResponse(false, "Failure message")).toThrowError(
-				"Failure message"
+				"Failure message",
 			);
 		});
 
 		it("should throw if data is null", () => {
-			expect(() => throwOnFailureResponse(null, "Failure message")).toThrowError(
-				"Failure message"
-			);
+			expect(() => throwOnFailureResponse(null, "Failure message")).toThrowError("Failure message");
 		});
 
 		it("should throw if data is undefined", () => {
 			expect(() => throwOnFailureResponse(undefined, "Failure message")).toThrowError(
-				"Failure message"
+				"Failure message",
 			);
 		});
 
 		it("should throw if data is a truthy value other than boolean true", () => {
 			expect(() => throwOnFailureResponse("true", "Failure message")).toThrowError(
-				"Failure message"
+				"Failure message",
 			);
-			expect(() => throwOnFailureResponse(1, "Failure message")).toThrowError(
-				"Failure message"
-			);
-			expect(() => throwOnFailureResponse({}, "Failure message")).toThrowError(
-				"Failure message"
-			);
+			expect(() => throwOnFailureResponse(1, "Failure message")).toThrowError("Failure message");
+			expect(() => throwOnFailureResponse({}, "Failure message")).toThrowError("Failure message");
 		});
 	});
 });
