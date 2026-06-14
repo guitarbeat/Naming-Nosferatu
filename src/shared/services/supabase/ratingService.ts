@@ -14,7 +14,10 @@ const validateRatingsData = (
 	ratings: Record<string, { rating: number; wins: number; losses: number }>,
 ): { isValid: boolean; error?: string } => {
 	if (!userId || typeof userId !== "string" || userId.trim().length === 0) {
-		return { isValid: false, error: "Invalid userId: must be a non-empty string" };
+		return {
+			isValid: false,
+			error: "Invalid userId: must be a non-empty string",
+		};
 	}
 
 	if (!ratings || typeof ratings !== "object") {
@@ -26,35 +29,59 @@ const validateRatingsData = (
 	for (const nameId in ratings) {
 		ratingsCount++;
 		if (ratingsCount > 200) {
-			return { isValid: false, error: "Invalid ratings: exceeds maximum limit of 200 entries" };
+			return {
+				isValid: false,
+				error: "Invalid ratings: exceeds maximum limit of 200 entries",
+			};
 		}
 
 		const data = ratings[nameId];
 		if (!nameId || typeof nameId !== "string") {
-			return { isValid: false, error: "Invalid nameId: must be a non-empty string" };
+			return {
+				isValid: false,
+				error: "Invalid nameId: must be a non-empty string",
+			};
 		}
 
 		if (!data || typeof data !== "object") {
-			return { isValid: false, error: `Invalid rating data for ${nameId}: must be an object` };
+			return {
+				isValid: false,
+				error: `Invalid rating data for ${nameId}: must be an object`,
+			};
 		}
 
 		const { rating, wins, losses } = data;
 
-		if (typeof rating !== "number" || Number.isNaN(rating) || rating < 800 || rating > 2400) {
+		if (
+			typeof rating !== "number" ||
+			Number.isNaN(rating) ||
+			rating < 800 ||
+			rating > 2400
+		) {
 			return {
 				isValid: false,
 				error: `Invalid rating for ${nameId}: must be a number between 800 and 2400`,
 			};
 		}
 
-		if (typeof wins !== "number" || Number.isNaN(wins) || wins < 0 || wins > 1000) {
+		if (
+			typeof wins !== "number" ||
+			Number.isNaN(wins) ||
+			wins < 0 ||
+			wins > 1000
+		) {
 			return {
 				isValid: false,
 				error: `Invalid wins for ${nameId}: must be a number between 0 and 1000`,
 			};
 		}
 
-		if (typeof losses !== "number" || Number.isNaN(losses) || losses < 0 || losses > 1000) {
+		if (
+			typeof losses !== "number" ||
+			Number.isNaN(losses) ||
+			losses < 0 ||
+			losses > 1000
+		) {
 			return {
 				isValid: false,
 				error: `Invalid losses for ${nameId}: must be a number between 0 and 1000`,
@@ -77,7 +104,6 @@ export const ratingsAPI = {
 		winnerSide,
 	}: ApplyTournamentMatchParams) => {
 		return withSupabaseOrThrow(async (client) => {
-			// @ts-expect-error - apply_tournament_match_elo is a custom RPC not yet reflected in generated types
 			const { data, error } = await client.rpc("apply_tournament_match_elo", {
 				p_user_name: userName.trim(),
 				p_left_name_ids: leftNameIds,
@@ -118,7 +144,12 @@ export const ratingsAPI = {
 			throw new Error(validation.error || "Invalid ratings data");
 		}
 
-		const ratingsList = [];
+		const ratingsList: {
+			nameId: string;
+			rating: number;
+			wins: number;
+			losses: number;
+		}[] = [];
 		for (const nameId in ratings) {
 			const data = ratings[nameId];
 			ratingsList.push({
@@ -130,7 +161,6 @@ export const ratingsAPI = {
 		}
 
 		return withSupabaseOrThrow(async (client) => {
-			// @ts-expect-error - save_user_ratings is a custom RPC not yet reflected in generated types
 			const { data, error } = await client.rpc("save_user_ratings", {
 				p_user_name: userId,
 				p_ratings: ratingsList,
