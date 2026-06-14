@@ -152,22 +152,22 @@ export const updateSupabaseUserContext = (
 	if (!supabaseInstance) {
 		return;
 	}
-	// @ts-expect-error - accessing internal property
-	if (supabaseInstance.rest?.headers) {
+
+	const internalClient = supabaseInstance as unknown as {
+		rest?: { headers?: Record<string, string | undefined> };
+	};
+
+	if (internalClient.rest?.headers) {
 		if (userName) {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-name"] = userName;
+			internalClient.rest.headers["x-user-name"] = userName;
 		} else {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-name"] = undefined;
+			internalClient.rest.headers["x-user-name"] = undefined;
 		}
 
 		if (userId) {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-id"] = userId;
+			internalClient.rest.headers["x-user-id"] = userId;
 		} else {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-id"] = undefined;
+			internalClient.rest.headers["x-user-id"] = undefined;
 		}
 	}
 };
