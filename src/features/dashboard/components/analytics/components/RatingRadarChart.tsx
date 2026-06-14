@@ -19,9 +19,15 @@ export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartPro
 		return null;
 	}
 
-	const maxRating = Math.max(...top.map((e) => e.avg_rating)) || 1;
-	const maxWins = Math.max(...top.map((e) => e.wins)) || 1;
-	const maxTotal = Math.max(...top.map((e) => e.total_ratings)) || 1;
+	const { maxRating, maxWins, maxTotal } = top.reduce(
+		(acc, e) => {
+			acc.maxRating = Math.max(acc.maxRating, e.avg_rating);
+			acc.maxWins = Math.max(acc.maxWins, e.wins);
+			acc.maxTotal = Math.max(acc.maxTotal, e.total_ratings);
+			return acc;
+		},
+		{ maxRating: 1, maxWins: 1, maxTotal: 1 },
+	);
 
 	const data = top.map((e) => ({
 		name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
