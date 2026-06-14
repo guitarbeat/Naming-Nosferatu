@@ -56,8 +56,10 @@ const EXIT_SPRING_CONFIG = {
 	velocity: 50,
 };
 
-import { AdminActionButton } from "./name-selector/AdminActionButton";
+import { AdminActionsPanel } from "./name-selector/AdminActionsPanel";
 import { NameContent } from "./name-selector/NameContent";
+import { NameSelectorActions } from "./name-selector/NameSelectorActions";
+import { NameSelectorToolbar } from "./name-selector/NameSelectorToolbar";
 import { getCardStyles, getNameOverlayClasses } from "./name-selector/nameSelectorUtils";
 import { SelectionBadge } from "./name-selector/SelectionBadge";
 import { useDeferredSync } from "./name-selector/useDeferredSync";
@@ -439,6 +441,32 @@ export function NameSelector() {
 		toast.showSuccess(`Added ${targetCount} random names.`);
 	}, [availableNames, syncSelectionToStore, toast, triggerHaptic, deferredSync]);
 
+	const _handleToggleAll = useCallback(() => {
+		if (selectedNames.size > 0) {
+			setSelectedNames(new Set());
+			return;
+		}
+
+		const newSelected = new Set<IdType>();
+		for (const item of renderItems) {
+			newSelected.add(item.id);
+		}
+		setSelectedNames(newSelected);
+	}, [selectedNames.size, renderItems]);
+
+	const handleToggleAll = useCallback(() => {
+		if (selectedNames.size > 0) {
+			setSelectedNames(new Set());
+			return;
+		}
+
+		const newSelected = new Set<IdType>();
+		for (const item of renderItems) {
+			newSelected.add(item.id);
+		}
+		setSelectedNames(newSelected);
+	}, [selectedNames.size, renderItems]);
+
 	if (isLoading) {
 		return (
 			<div className="mx-auto w-full">
@@ -477,6 +505,14 @@ export function NameSelector() {
 	return (
 		<div className="mx-auto w-full">
 			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
+				<NameSelectorToolbar
+					isSwipeMode={isSwipeMode}
+					onSwipeModeChange={_setSwipeMode}
+					selectedCount={selectedNames.size}
+					totalCount={renderItems.length}
+					onToggleAll={handleToggleAll}
+				/>
+
 				{isSwipeMode ? (
 					<>
 						<div
@@ -829,38 +865,26 @@ export function NameSelector() {
 														<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
 													</div>
 													{isAdmin && !isSwipeMode && (
-														<motion.div
-															initial={{ opacity: 0, y: 10 }}
-															animate={{ opacity: 1, y: 0 }}
-															transition={{ delay: 0.1 }}
-															className="px-3 pb-3 flex gap-2"
-														>
-															<AdminActionButton
-																nameItem={nameItem}
-																actionType="toggle-hidden"
-																isProcessing={togglingHidden.has(nameItem.id)}
-																onClick={() =>
-																	requestAdminAction({
-																		type: "toggle-hidden",
-																		nameId: nameItem.id,
-																		isCurrentlyEnabled: isNameHidden(nameItem),
-																	})
-																}
-															/>
-
-															<AdminActionButton
-																nameItem={nameItem}
-																actionType="toggle-locked"
-																isProcessing={togglingLocked.has(nameItem.id)}
-																onClick={() =>
-																	requestAdminAction({
-																		type: "toggle-locked",
-																		nameId: nameItem.id,
-																		isCurrentlyEnabled: isNameLocked(nameItem),
-																	})
-																}
-															/>
-														</motion.div>
+														<AdminActionsPanel
+															nameItem={nameItem}
+															isAdmin={isAdmin}
+															togglingHidden={togglingHidden}
+															togglingLocked={togglingLocked}
+															onToggleHidden={(nameId, isCurrentlyEnabled) =>
+																requestAdminAction({
+																	type: "toggle-hidden",
+																	nameId,
+																	isCurrentlyEnabled,
+																})
+															}
+															onToggleLocked={(nameId, isCurrentlyEnabled) =>
+																requestAdminAction({
+																	type: "toggle-locked",
+																	nameId,
+																	isCurrentlyEnabled,
+																})
+															}
+														/>
 													)}
 												</motion.div>
 											);
@@ -940,8 +964,8 @@ export function NameSelector() {
 								<div className="mt-4">
 									{isSwipeMode && (
 										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
-											Archived names stay out of the swipe deck, but you can still inspect and select
-											them here without leaving swipe mode.
+											Archived names stay out of the swipe deck, but you can still inspect and
+											select them here without leaving swipe mode.
 										</p>
 									)}
 
@@ -1118,6 +1142,12 @@ export function NameSelector() {
 					);
 				})()}
 			</div>
+
+			<NameSelectorActions
+				selectedCount={selectedNames.size}
+				onStartTournament={() => tournamentActions.setNames(Array.from(selectedNames))}
+				isSwipeMode={isSwipeMode}
+			/>
 
 			{lightboxOpen && (
 				<Lightbox
