@@ -8,7 +8,14 @@ class TouchTexture {
 	maxAge: number;
 	radius: number;
 	speed: number;
-	trail: Array<{ x: number; y: number; age: number; force: number; vx: number; vy: number }>;
+	trail: Array<{
+		x: number;
+		y: number;
+		age: number;
+		force: number;
+		vx: number;
+		vy: number;
+	}>;
 	last: { x: number; y: number } | null;
 	canvas!: HTMLCanvasElement;
 	ctx!: CanvasRenderingContext2D;
@@ -289,23 +296,86 @@ void main() {
 }
 `;
 
-function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null>) {
-	useEffect(() => {
-		const container = containerRef.current;
-		if (!container) {
+class LiquidBackgroundRenderer {
+	container: HTMLDivElement;
+	renderer!: THREE.WebGLRenderer;
+	camera!: THREE.PerspectiveCamera;
+	scene!: THREE.Scene;
+	timer!: THREE.Timer;
+	touchTexture!: TouchTexture;
+	mesh!: THREE.Mesh;
+	material!: THREE.ShaderMaterial;
+	uniforms!: Uniforms;
+	rafId: number = 0;
+	isRendering: boolean = true;
+
+	onMouseMove = (ev: MouseEvent) => {
+		if (!this.isRendering) {
 			return;
 		}
+		this.touchTexture.addTouch({
+			x: ev.clientX / window.innerWidth,
+			y: 1 - ev.clientY / window.innerHeight,
+		});
+	};
 
-		// Bail out gracefully when WebGL is unavailable (e.g. headless environments)
+	onTouchMove = (ev: TouchEvent) => {
+		if (!this.isRendering) {
+			return;
+		}
+		const t = ev.touches[0];
+		this.touchTexture.addTouch({
+			x: t.clientX / window.innerWidth,
+			y: 1 - t.clientY / window.innerHeight,
+		});
+	};
+
+	onResize = () => {
+		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.updateProjectionMatrix();
+		const isMobileResize = window.innerWidth < 768;
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setPixelRatio(isMobileResize ? 1 : Math.min(window.devicePixelRatio, 1.5));
+		this.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+		const vs = this.getViewSize();
+		this.mesh.geometry.dispose();
+		this.mesh.geometry = new THREE.PlaneGeometry(vs.width, vs.height, 1, 1);
+
+		// Re-render once if paused
+		if (!this.isRendering) {
+			this.renderer.render(this.scene, this.camera);
+		}
+	};
+
+	getViewSize = () => {
+		const fovInRadians = (this.camera.fov * Math.PI) / 180;
+		const height = Math.abs(this.camera.position.z * Math.tan(fovInRadians / 2) * 2);
+		return { width: height * this.camera.aspect, height };
+	};
+
+	tick = () => {
+		if (!this.isRendering) {
+			return;
+		}
+		this.timer.update();
+		const delta = Math.min(this.timer.getDelta(), 0.1);
+		this.touchTexture.update();
+		this.uniforms.uTime.value += delta;
+		this.renderer.render(this.scene, this.camera);
+		this.rafId = requestAnimationFrame(this.tick);
+	};
+
+	constructor(container: HTMLDivElement) {
+		this.container = container;
+
 		const testCanvas = document.createElement("canvas");
 		const hasWebGL = !!testCanvas.getContext("webgl") || !!testCanvas.getContext("webgl2");
 		if (!hasWebGL) {
 			return;
 		}
 
-		let renderer: THREE.WebGLRenderer;
 		try {
-			renderer = new THREE.WebGLRenderer({
+			this.renderer = new THREE.WebGLRenderer({
 				antialias: true,
 				powerPreference: "high-performance",
 				alpha: false,
@@ -315,32 +385,26 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		} catch {
 			return;
 		}
-		const isMobile = window.innerWidth < 768;
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		// Lower pixel ratio on mobile to save GPU battery
-		renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
-		container.appendChild(renderer.domElement);
 
-		const camera = new THREE.PerspectiveCamera(
+		const isMobile = window.innerWidth < 768;
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
+		this.container.appendChild(this.renderer.domElement);
+
+		this.camera = new THREE.PerspectiveCamera(
 			45,
 			window.innerWidth / window.innerHeight,
 			0.1,
 			10000,
 		);
-		camera.position.z = 50;
+		this.camera.position.z = 50;
 
-		const scene = new THREE.Scene();
-		scene.background = new THREE.Color(0x0a0a1a);
+		this.scene = new THREE.Scene();
+		this.scene.background = new THREE.Color(0x0a0a1a);
 
-		const timer = new THREE.Timer();
+		this.timer = new THREE.Timer();
 
-		const getViewSize = () => {
-			const fovInRadians = (camera.fov * Math.PI) / 180;
-			const height = Math.abs(camera.position.z * Math.tan(fovInRadians / 2) * 2);
-			return { width: height * camera.aspect, height };
-		};
-
-		const touchTexture = new TouchTexture();
+		this.touchTexture = new TouchTexture();
 
 		const neonPurple = new THREE.Vector3(0.8, 0.0, 1.0);
 		const neonCyan = new THREE.Vector3(0.0, 1.0, 1.0);
@@ -349,9 +413,11 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 		const neonOrange = new THREE.Vector3(1.0, 0.5, 0.0);
 		const neonBlue = new THREE.Vector3(0.2, 0.4, 1.0);
 
-		const uniforms: Uniforms = {
+		this.uniforms = {
 			uTime: { value: 0 },
-			uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+			uResolution: {
+				value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+			},
 			uColor1: { value: neonPurple.clone() },
 			uColor2: { value: neonCyan.clone() },
 			uColor3: { value: neonPink.clone() },
@@ -360,7 +426,7 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			uColor6: { value: neonBlue.clone() },
 			uSpeed: { value: 0.85 },
 			uIntensity: { value: 1.1 },
-			uTouchTexture: { value: touchTexture.texture },
+			uTouchTexture: { value: this.touchTexture.texture },
 			uGrainIntensity: { value: 0.06 },
 			uZoom: { value: 1.0 },
 			uDarkNavy: { value: new THREE.Vector3(0.05, 0.05, 0.15) },
@@ -370,100 +436,72 @@ function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null
 			uColor2Weight: { value: 0.6 },
 		};
 
-		const viewSize = getViewSize();
+		const viewSize = this.getViewSize();
 		const geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height, 1, 1);
-		const material = new THREE.ShaderMaterial({
-			uniforms,
+		this.material = new THREE.ShaderMaterial({
+			uniforms: this.uniforms,
 			vertexShader: VERTEX_SHADER,
 			fragmentShader: FRAGMENT_SHADER,
 		});
-		const mesh = new THREE.Mesh(geometry, material);
-		mesh.position.z = 0;
-		scene.add(mesh);
+		this.mesh = new THREE.Mesh(geometry, this.material);
+		this.mesh.position.z = 0;
+		this.scene.add(this.mesh);
 
-		let rafId: number;
-		let isRendering = true;
-
-		// Respect prefers-reduced-motion
 		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 		if (mediaQuery.matches) {
-			isRendering = false;
-			// Render a single static frame
-			timer.update();
-			uniforms.uTime.value += 1.5; // fast forward a bit for a nice initial frame
-			renderer.render(scene, camera);
+			this.isRendering = false;
+			this.timer.update();
+			this.uniforms.uTime.value += 1.5;
+			this.renderer.render(this.scene, this.camera);
 		}
 
-		const tick = () => {
-			if (!isRendering) {
-				return;
-			}
-			timer.update();
-			const delta = Math.min(timer.getDelta(), 0.1);
-			touchTexture.update();
-			uniforms.uTime.value += delta;
-			renderer.render(scene, camera);
-			rafId = requestAnimationFrame(tick);
-		};
-
-		if (isRendering) {
-			tick();
+		if (this.isRendering) {
+			this.tick();
 		}
 
-		const onMouseMove = (ev: MouseEvent) => {
-			if (!isRendering) {
-				return;
-			}
-			touchTexture.addTouch({
-				x: ev.clientX / window.innerWidth,
-				y: 1 - ev.clientY / window.innerHeight,
-			});
-		};
-		const onTouchMove = (ev: TouchEvent) => {
-			if (!isRendering) {
-				return;
-			}
-			const t = ev.touches[0];
-			touchTexture.addTouch({
-				x: t.clientX / window.innerWidth,
-				y: 1 - t.clientY / window.innerHeight,
-			});
-		};
-		const onResize = () => {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			const isMobileResize = window.innerWidth < 768;
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setPixelRatio(isMobileResize ? 1 : Math.min(window.devicePixelRatio, 1.5));
-			uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-			const vs = getViewSize();
-			mesh.geometry.dispose();
-			mesh.geometry = new THREE.PlaneGeometry(vs.width, vs.height, 1, 1);
+		window.addEventListener("mousemove", this.onMouseMove);
+		window.addEventListener("touchmove", this.onTouchMove, { passive: true });
+		window.addEventListener("resize", this.onResize);
+	}
 
-			// Re-render once if paused
-			if (!isRendering) {
-				renderer.render(scene, camera);
-			}
-		};
+	dispose() {
+		cancelAnimationFrame(this.rafId);
+		window.removeEventListener("mousemove", this.onMouseMove);
+		window.removeEventListener("touchmove", this.onTouchMove);
+		window.removeEventListener("resize", this.onResize);
 
-		window.addEventListener("mousemove", onMouseMove);
-		window.addEventListener("touchmove", onTouchMove, { passive: true });
-		window.addEventListener("resize", onResize);
+		if (this.mesh) {
+			this.mesh.geometry.dispose();
+		}
+		if (this.material) {
+			this.material.dispose();
+		}
+		if (this.touchTexture) {
+			this.touchTexture.dispose();
+		}
+		if (this.renderer) {
+			this.renderer.dispose();
+			if (this.renderer.domElement && this.container.contains(this.renderer.domElement)) {
+				this.container.removeChild(this.renderer.domElement);
+			}
+		}
+	}
+}
+
+function useLiquidBackground(containerRef: React.RefObject<HTMLDivElement | null>) {
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) {
+			return;
+		}
+
+		const renderer = new LiquidBackgroundRenderer(container);
 
 		return () => {
-			cancelAnimationFrame(rafId);
-			window.removeEventListener("mousemove", onMouseMove);
-			window.removeEventListener("touchmove", onTouchMove);
-			window.removeEventListener("resize", onResize);
-			mesh.geometry.dispose();
-			material.dispose();
-			touchTexture.dispose();
 			renderer.dispose();
-			container.removeChild(renderer.domElement);
 		};
 	}, [containerRef]);
 }
-
 export function LiquidGradientBackground() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	useLiquidBackground(containerRef);
