@@ -55,19 +55,25 @@ export function LeaderboardPanel({
 								divided={index < leaderboard.length - 1}
 								className="hover:bg-muted/40 transition-colors"
 							>
-								<div className={cn(
-									"flex items-center justify-center text-sm font-bold min-w-[2.5rem] rounded-lg",
-									index < 3
-										? "bg-gradient-to-br from-yellow-600/20 to-amber-600/20 text-lg"
-										: `flex size-9 items-center justify-center rounded-full ${themeSurfaces.avatar}`
-								)}>
+								<div
+									className={cn(
+										"flex items-center justify-center text-sm font-bold min-w-[2.5rem] rounded-lg",
+										index < 3
+											? "bg-gradient-to-br from-yellow-600/20 to-amber-600/20 text-lg"
+											: `flex size-9 items-center justify-center rounded-full ${themeSurfaces.avatar}`,
+									)}
+								>
 									{medal || index + 1}
 								</div>
 								<div className="min-w-0 flex-1">
 									<p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
 									<div className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground/70">
-										<span>📊 {entry.total_ratings} rating{entry.total_ratings === 1 ? "" : "s"}</span>
-										<span>🏆 {entry.wins} win{entry.wins === 1 ? "" : "s"}</span>
+										<span>
+											📊 {entry.total_ratings} rating{entry.total_ratings === 1 ? "" : "s"}
+										</span>
+										<span>
+											🏆 {entry.wins} win{entry.wins === 1 ? "" : "s"}
+										</span>
 									</div>
 								</div>
 								<div className="text-right flex flex-col items-end gap-1">
