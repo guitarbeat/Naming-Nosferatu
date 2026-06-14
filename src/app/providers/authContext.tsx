@@ -8,6 +8,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { ErrorManager } from "@/shared/services/errorManager";
 
 export type UserRole = "user" | "moderator" | "admin";
 
@@ -91,7 +92,9 @@ function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
 				}
 			})
 			.catch((error) => {
-				console.error("[Providers] Failed to fetch current user:", error);
+				ErrorManager.handleError(error, "Providers", {
+					action: "fetchCurrentUser",
+				});
 			})
 			.finally(() => {
 				if (!cancelled) {
@@ -113,7 +116,9 @@ function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
 			}
 			return success;
 		} catch (error) {
-			console.error("[Providers] Login failed:", error);
+			ErrorManager.handleError(error, "Login", {
+				action: "login",
+			});
 			throw error;
 		}
 	}, []);
@@ -123,7 +128,9 @@ function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
 			await adapterRef.current.logout();
 			setUser(null);
 		} catch (error) {
-			console.error("[Providers] Logout failed:", error);
+			ErrorManager.handleError(error, "Providers", {
+				action: "logout",
+			});
 			throw error;
 		}
 	}, []);
