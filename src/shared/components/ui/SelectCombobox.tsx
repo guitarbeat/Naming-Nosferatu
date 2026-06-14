@@ -100,6 +100,7 @@ export function SelectCombobox({
 										}
 										onClick={(e) => e.stopPropagation()}
 										className="w-full pl-8 pr-3 py-1.5 text-xs bg-muted border border-border/20 rounded text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
+										aria-label="Search options"
 									/>
 									{searchTerm && (
 										<motion.button
