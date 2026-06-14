@@ -1,0 +1,15 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/app[39m
+
+
+ [32m✓[39m src/features/dashboard/components/analytics/components/RatingRadarChart.bench.ts[2m > [22mRatingRadarChart array passes[33m 3828[2mms[22m[39m
+     [1mname                         [22m  [1m          hz[22m  [1m   min[22m  [1m   max[22m  [1m  mean[22m  [1m   p75[22m  [1m   p99[22m  [1m  p995[22m  [1m  p999[22m  [1m   rme[22m  [1msamples[22m
+   [32m·[39m Multiple map passes (Current)  [34m  242,868.39[39m  [36m0.0033[39m  [36m0.7126[39m  [36m0.0041[39m  [36m0.0037[39m  [36m0.0102[39m  [36m0.0340[39m  [36m0.0602[39m  [2m±1.49%[22m  [2m 121435[22m
+   [32m·[39m Single reduce pass (Proposed)  [34m1,941,617.50[39m  [36m0.0005[39m  [36m1.1220[39m  [36m0.0005[39m  [36m0.0005[39m  [36m0.0006[39m  [36m0.0007[39m  [36m0.0065[39m  [2m±0.57%[22m  [2m 970809[22m
+   [32m·[39m Single pass with for-loop      [34m1,932,172.84[39m  [36m0.0004[39m  [36m0.1781[39m  [36m0.0005[39m  [36m0.0005[39m  [36m0.0006[39m  [36m0.0008[39m  [36m0.0064[39m  [2m±0.38%[22m  [2m 966087[22m
+
+[1m[30m[46m BENCH [49m[39m[22m [36mSummary
+[39m
+  Single reduce pass (Proposed)[2m - src/features/dashboard/components/analytics/components/RatingRadarChart.bench.ts[2m > [22m[2mRatingRadarChart array passes[22m
+[32m    1.00x [39m[90mfaster than [39mSingle pass with for-loop
+[32m    7.99x [39m[90mfaster than [39mMultiple map passes (Current)
