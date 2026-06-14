@@ -52,7 +52,7 @@ describe("HomeHeroSection", () => {
 
 		await renderHomeHeroSection({ onStartPicking });
 
-		fireEvent.click(screen.getByText("Get Started"));
+		fireEvent.click(screen.getByText("Narrow It Down"));
 
 		expect(onStartPicking).toHaveBeenCalledTimes(1);
 	});

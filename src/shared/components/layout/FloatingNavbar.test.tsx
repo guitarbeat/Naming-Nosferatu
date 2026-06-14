@@ -168,7 +168,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getAllByRole("button", { name: "Favorites" })[0]).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Pick Names" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
@@ -201,14 +201,14 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		const startButton = screen.getAllByRole("button", { name: "Vote (3)" })[0];
+		const startButton = screen.getAllByRole("button", { name: "Start (3)" })[0];
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("text-primary");
-		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(0);
+		expect(screen.queryAllByRole("button", { name: "Pick Names" }).length).toBe(0);
 	});
 
-	it("shows results as the current destination on the analysis route", () => {
+	it("shows analyze as the current destination on the analysis route", () => {
 		mockStore.tournament.isComplete = true;
 		mockStore.tournament.names = ["Luna", "Fig"];
 		setPastHeroScroll();
@@ -224,7 +224,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getAllByRole("button", { name: "Results" })[0]).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Analyze" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
