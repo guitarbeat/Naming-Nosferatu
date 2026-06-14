@@ -1,4 +1,4 @@
-import { Copy } from "lucide-react";
+import { Copy, X } from "lucide-react";
 import React, { Component, type ReactNode, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 import { ErrorManager } from "@/shared/services/errorManager";
@@ -444,11 +444,11 @@ const ErrorList: React.FC<ErrorListProps> = ({
 						{onDismiss && (
 							<button
 								onClick={() => onDismiss(i)}
-								className="ml-3 p-1 text-red-400 hover:text-red-100 rounded-full hover:bg-red-500/20 transition-colors"
+								className="ml-3 p-1 text-red-400 hover:text-red-100 rounded-full hover:bg-red-500/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
 								aria-label="Dismiss error"
 								type="button"
 							>
-								x
+								<X className="size-3" />
 							</button>
 						)}
 					</div>
