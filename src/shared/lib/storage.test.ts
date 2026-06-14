@@ -23,6 +23,32 @@ describe("parseJsonValue", () => {
 		expect(parseJsonValue("true", false)).toBe(true);
 	});
 
+	describe("obfuscation logic", () => {
+		const STORAGE_KEY = "n0sf3r4tU_k3y!";
+		function obfuscateForTest(text: string): string {
+			const encodedText = encodeURIComponent(text);
+			let result = "";
+			for (let i = 0; i < encodedText.length; i++) {
+				result += String.fromCharCode(
+					encodedText.charCodeAt(i) ^ STORAGE_KEY.charCodeAt(i % STORAGE_KEY.length),
+				);
+			}
+			return btoa(result);
+		}
+
+		it("returns parsed JSON when value is an obfuscated JSON string (object)", () => {
+			const jsonString = JSON.stringify({ key: "value", num: 42 });
+			const obfuscatedString = `OBF:${obfuscateForTest(jsonString)}`;
+			expect(parseJsonValue(obfuscatedString, {})).toEqual({ key: "value", num: 42 });
+		});
+
+		it("returns parsed JSON when value is an obfuscated JSON string (array)", () => {
+			const jsonString = JSON.stringify([1, 2, "three"]);
+			const obfuscatedString = `OBF:${obfuscateForTest(jsonString)}`;
+			expect(parseJsonValue(obfuscatedString, [])).toEqual([1, 2, "three"]);
+		});
+	});
+
 	it("returns fallback when value is a malformed JSON string", () => {
 		expect(parseJsonValue("{ invalid: json }", { fallback: true })).toEqual({
 			fallback: true,
