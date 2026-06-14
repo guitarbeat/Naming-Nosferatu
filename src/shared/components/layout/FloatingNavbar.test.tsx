@@ -164,11 +164,11 @@ describe("FloatingNavbar", () => {
 		renderWithRouter();
 
 		expect(getNav()).toBeInTheDocument();
-		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Pick Names");
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Favorites");
 
 		expandNav();
 
-		expect(screen.getAllByRole("button", { name: "Pick Names" })[0]).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Favorites" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
@@ -197,15 +197,15 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
-		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Start (3)");
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Vote (3)");
 
 		expandNav();
 
-		const startButton = screen.getAllByRole("button", { name: "Start (3)" })[0];
+		const startButton = screen.getAllByRole("button", { name: "Vote (3)" })[0];
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("text-primary");
-		expect(screen.queryAllByRole("button", { name: "Pick Names" }).length).toBe(0);
+		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(0);
 	});
 
 	it("shows analyze as the current destination on the analysis route", () => {
@@ -224,7 +224,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getAllByRole("button", { name: "Analyze" })[0]).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Results" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
