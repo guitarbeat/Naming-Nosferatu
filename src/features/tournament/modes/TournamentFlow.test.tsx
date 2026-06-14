@@ -48,9 +48,7 @@ describe("TournamentFlow responsive behavior", () => {
 		renderWithProviders();
 
 		expect(screen.getByTestId("name-selector")).toBeInTheDocument();
-		expect(
-			screen.queryByRole("button", { name: "See Results" }),
-		).not.toBeInTheDocument();
+		expect(screen.queryByRole("button", { name: "See Results" })).not.toBeInTheDocument();
 	});
 
 	it("keeps completion actions mobile-friendly with stacked buttons", () => {

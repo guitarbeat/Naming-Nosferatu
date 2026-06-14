@@ -164,21 +164,16 @@ describe("FloatingNavbar", () => {
 		renderWithRouter();
 
 		expect(getNav()).toBeInTheDocument();
-		expect(
-			screen.getByTestId("dynamic-island-collapsed-label"),
-		).toHaveTextContent("Pick Names");
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Pick Names");
 
 		expandNav();
 
-		expect(
-			screen.getAllByRole("button", { name: "Favorites" })[0],
-		).toHaveAttribute("aria-current", "location");
-		expect(
-			screen.getAllByRole("button", { name: "Suggest" })[0],
-		).toBeInTheDocument();
-		expect(
-			screen.getAllByRole("button", { name: "Profile" })[0],
-		).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Favorites" })[0]).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
+		expect(screen.getAllByRole("button", { name: "Suggest" })[0]).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Profile" })[0]).toBeInTheDocument();
 	}, 10000);
 
 	it("renders an admin shortcut for admin users", () => {
@@ -192,9 +187,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(
-			screen.getAllByRole("button", { name: "Admin" })[0],
-		).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Admin" })[0]).toBeInTheDocument();
 	});
 
 	it("promotes the first item to a highlighted start action when enough names are selected", () => {
@@ -204,9 +197,7 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
-		expect(
-			screen.getByTestId("dynamic-island-collapsed-label"),
-		).toHaveTextContent("Start (3)");
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Start (3)");
 
 		expandNav();
 
@@ -214,9 +205,7 @@ describe("FloatingNavbar", () => {
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("text-primary");
-		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(
-			0,
-		);
+		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(0);
 	});
 
 	it("shows analyze as the current destination on the analysis route", () => {
@@ -235,9 +224,10 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(
-			screen.getAllByRole("button", { name: "Results" })[0],
-		).toHaveAttribute("aria-current", "location");
+		expect(screen.getAllByRole("button", { name: "Results" })[0]).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
 	});
 
 	it("uses pressed semantics for the layout mode chip without treating it as the current destination", () => {
@@ -295,9 +285,7 @@ describe("FloatingNavbar", () => {
 	it("does not render on the tournament route", () => {
 		renderWithRouter(["/tournament"]);
 
-		expect(
-			screen.queryByRole("navigation", { name: "Primary" }),
-		).not.toBeInTheDocument();
+		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
 	});
 
 	it("marks the admin shortcut as current on the admin route", () => {
