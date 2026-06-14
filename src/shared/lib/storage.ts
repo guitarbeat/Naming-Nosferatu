@@ -7,13 +7,26 @@ const isDev = () => import.meta.env?.DEV ?? false;
 // For client-side storage where the goal is simply to prevent clear-text storage on disk, a static key provides basic obfuscation.
 const STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
 
+// Ensure the key is exactly 256 bits (32 bytes)
+const keyHex = CryptoJS.enc.Utf8.parse(STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32));
+// Using a static IV for client-side obfuscation since we just want to avoid plain-text storage
+const ivHex = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
+
 function encrypt(text: string): string {
-	return CryptoJS.AES.encrypt(text, STORAGE_SECRET_KEY).toString();
+	return CryptoJS.AES.encrypt(text, keyHex, {
+		iv: ivHex,
+		mode: CryptoJS.mode.CBC,
+		padding: CryptoJS.pad.Pkcs7,
+	}).toString();
 }
 
 function decrypt(text: string): string {
 	try {
-		const bytes = CryptoJS.AES.decrypt(text, STORAGE_SECRET_KEY);
+		const bytes = CryptoJS.AES.decrypt(text, keyHex, {
+			iv: ivHex,
+			mode: CryptoJS.mode.CBC,
+			padding: CryptoJS.pad.Pkcs7,
+		});
 		const decrypted = bytes.toString(CryptoJS.enc.Utf8);
 		// If decryption fails or text wasn't encrypted, it might return empty string
 		if (!decrypted) {
