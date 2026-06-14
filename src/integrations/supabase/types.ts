@@ -603,6 +603,10 @@ export type Database = {
 				Returns: undefined;
 			};
 			soft_delete_cat_name: { Args: { p_name_id: string }; Returns: boolean };
+			toggle_name_visibility: {
+				Args: { p_hide: boolean; p_name_id: string; p_user_name?: string };
+				Returns: boolean;
+			};
 			toggle_name_hidden: {
 				Args: { p_hidden: boolean; p_name_id: string; p_user_name?: string };
 				Returns: boolean;
