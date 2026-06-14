@@ -1,32 +1,27 @@
-const isDev = () => import.meta.env?.DEV ?? false;
+import { isDev } from "@/store/appStore.shared";
 
 export function isStorageAvailable(): boolean {
 	try {
-		if (typeof window === "undefined") {
-			return false;
-		}
-		const test = "__storage_test__";
-		window.localStorage.setItem(test, test);
-		window.localStorage.removeItem(test);
+		const testKey = "__storage_test__";
+		window.localStorage.setItem(testKey, testKey);
+		window.localStorage.removeItem(testKey);
 		return true;
-	} catch {
+	} catch (e) {
 		return false;
 	}
 }
 
-export function getStorageString(key: string, fallback: string | null = null): string | null {
+export function getStorageString(key: string): string | null {
 	if (!isStorageAvailable()) {
-		return fallback;
+		return null;
 	}
-
 	try {
-		const value = window.localStorage.getItem(key);
-		return value === null ? fallback : value;
+		return window.localStorage.getItem(key);
 	} catch (error) {
 		if (isDev()) {
 			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		}
-		return fallback;
+		return null;
 	}
 }
 
@@ -37,6 +32,7 @@ export function setStorageString(key: string, value: string): boolean {
 
 	try {
 		// lgtm [js/clear-text-storage-of-sensitive-data]
+		// codeql[js/clear-text-storage-of-sensitive-data] false positive
 		window.localStorage.setItem(key, value);
 		return true;
 	} catch (error) {
@@ -61,8 +57,8 @@ export function removeStorageItem(key: string): void {
 	}
 }
 
-export function parseJsonValue<T>(value: string | null, fallback: T): T {
-	if (value === null) {
+function parseJsonValue<T>(value: string | null, fallback: T): T {
+	if (!value) {
 		return fallback;
 	}
 
@@ -87,6 +83,7 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 
 	try {
 		// lgtm [js/clear-text-storage-of-sensitive-data]
+		// codeql[js/clear-text-storage-of-sensitive-data] false positive
 		window.localStorage.setItem(key, JSON.stringify(value));
 		return true;
 	} catch (error) {
