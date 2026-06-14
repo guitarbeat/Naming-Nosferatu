@@ -125,6 +125,21 @@ vi.mock("@/app/routes/components/HomeSections", () => ({
 			</button>
 		</div>
 	),
+	TournamentBracketSection: ({ onComplete, onGoToAnalysis }: any) => (
+		<div>
+			<button
+				type="button"
+				onClick={() => {
+					onComplete({ Miso: { rating: 1200, wins: 1, losses: 0 } });
+				}}
+			>
+				Complete Tournament
+			</button>
+			<button type="button" onClick={onGoToAnalysis}>
+				Go to Analysis
+			</button>
+		</div>
+	),
 }));
 
 vi.mock("@/shared/hooks/useBrowserState", () => ({

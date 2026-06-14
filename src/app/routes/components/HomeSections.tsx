@@ -4,8 +4,8 @@ import Button from "@/shared/components/layout/Button";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { SectionHeading } from "@/shared/components/layout/SectionHeading";
-import { themeText } from "@/shared/lib/themeClasses";
 import { TIMING } from "@/shared/lib/constants";
+import { themeText } from "@/shared/lib/themeClasses";
 import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
@@ -28,6 +28,7 @@ interface TournamentBracketSectionProps {
 	ratings: Record<string, RatingData>;
 	onComplete: (ratings: Record<string, RatingData>) => void;
 	onGoToPicker: () => void;
+	onGoToAnalysis?: () => void;
 }
 
 function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNames: NameItem[] }) {
@@ -137,6 +138,7 @@ export function TournamentBracketSection({
 	ratings,
 	onComplete,
 	onGoToPicker,
+	onGoToAnalysis,
 }: TournamentBracketSectionProps) {
 	return (
 		<Section
@@ -145,22 +147,46 @@ export function TournamentBracketSection({
 			padding="comfortable"
 			maxWidth="2xl"
 			separator={true}
+			fullpage={true}
 		>
-			<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
-			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-				{names && names.length > 0 ? (
-					<LazyTournament names={names} existingRatings={ratings} onComplete={onComplete} />
-				) : (
-					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
-						<p className="text-pretty text-sm text-muted-foreground/70">
-							Pick at least 2 names to start comparing them.
-						</p>
-						<Button variant="glass" onClick={onGoToPicker}>
-							← Back
-						</Button>
+			<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
+				<div className="w-full flex flex-col items-center gap-8 md:gap-12">
+					<div>
+						<SectionHeading
+							title="Compare Names"
+							subtitle="Vote on which name you prefer in each matchup."
+						/>
 					</div>
-				)}
-			</Suspense>
+					<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+						{names && names.length > 0 ? (
+							<>
+								<div className="w-full">
+									<LazyTournament names={names} existingRatings={ratings} onComplete={onComplete} />
+								</div>
+								{onGoToAnalysis && (
+									<div className="mt-auto pt-8 flex justify-center gap-4">
+										<Button variant="glass" size="lg" onClick={onGoToPicker}>
+											← Back
+										</Button>
+										<Button variant="glass" size="lg" onClick={onGoToAnalysis}>
+											See Results →
+										</Button>
+									</div>
+								)}
+							</>
+						) : (
+							<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
+								<p className="text-pretty text-sm text-muted-foreground/70">
+									Pick at least 2 names to start comparing them.
+								</p>
+								<Button variant="glass" onClick={onGoToPicker}>
+									← Back
+								</Button>
+							</div>
+						)}
+					</Suspense>
+				</div>
+			</div>
 		</Section>
 	);
 }
