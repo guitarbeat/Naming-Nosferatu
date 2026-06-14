@@ -25,6 +25,12 @@ export function useFuzzySearch<T>(
 		if (!trimmed) {
 			return items;
 		}
-		return fuse.search(trimmed).map((r) => r.item);
+		const results = fuse.search(trimmed);
+		const length = results.length;
+		const matchedItems = new Array(length);
+		for (let i = 0; i < length; i++) {
+			matchedItems[i] = results[i].item;
+		}
+		return matchedItems;
 	}, [fuse, items, query]);
 }
