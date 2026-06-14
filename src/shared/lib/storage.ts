@@ -6,7 +6,7 @@ export function isStorageAvailable(): boolean {
 		window.localStorage.setItem(testKey, testKey);
 		window.localStorage.removeItem(testKey);
 		return true;
-	} catch (e) {
+	} catch (_e) {
 		return false;
 	}
 }
@@ -32,7 +32,7 @@ export function setStorageString(key: string, value: string): boolean {
 
 	try {
 		// lgtm [js/clear-text-storage-of-sensitive-data]
-		// codeql[js/clear-text-storage-of-sensitive-data] false positive
+		// codeql[js/clear-text-storage-of-sensitive-data] - CodeQL thinks this is storing passwords but we are only storing usernames
 		window.localStorage.setItem(key, value);
 		return true;
 	} catch (error) {
@@ -57,7 +57,7 @@ export function removeStorageItem(key: string): void {
 	}
 }
 
-function parseJsonValue<T>(value: string | null, fallback: T): T {
+export function parseJsonValue<T>(value: string | null, fallback: T): T {
 	if (!value) {
 		return fallback;
 	}
@@ -83,7 +83,7 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 
 	try {
 		// lgtm [js/clear-text-storage-of-sensitive-data]
-		// codeql[js/clear-text-storage-of-sensitive-data] false positive
+		// codeql[js/clear-text-storage-of-sensitive-data] - CodeQL thinks this is storing passwords but we are only storing usernames
 		window.localStorage.setItem(key, JSON.stringify(value));
 		return true;
 	} catch (error) {

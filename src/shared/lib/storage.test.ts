@@ -1,5 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { parseJsonValue } from "./storage";
+
+vi.mock("@/store/appStore.shared", () => ({
+	isDev: vi.fn(() => false),
+}));
 
 describe("parseJsonValue", () => {
 	it("returns fallback when value is null", () => {
