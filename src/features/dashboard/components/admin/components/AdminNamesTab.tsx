@@ -62,6 +62,7 @@ export function AdminNamesTab({
 						value={filterStatus}
 						onChange={onFilterChange}
 						className="px-4 py-2 bg-foreground/10 border border-border/20 rounded-lg text-foreground"
+						aria-label="Filter names by status"
 					>
 						{filterOptions.map((option) => (
 							<option value={option.value} key={option.value}>

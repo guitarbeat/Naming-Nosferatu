@@ -303,6 +303,7 @@ function EngagementPanel({
 							value={timeframe}
 							onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
 							className={`rounded-xl px-3 py-2 text-sm text-foreground ${themeSurfaces.panelDense}`}
+							aria-label="Select timeframe for dashboard analytics"
 						>
 							<option value="day">24 hours</option>
 							<option value="week">Week</option>

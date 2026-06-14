@@ -39,6 +39,7 @@ export function RecentActivityPanel({
 							value={timeframe}
 							onChange={(event) => setTimeframe(event.target.value as DashboardTimeframe)}
 							className="surface-panel-inset rounded-xl px-3 py-2 text-sm text-foreground"
+							aria-label="Select timeframe for recent activity"
 						>
 							<option value="day">24 hours</option>
 							<option value="week">Week</option>
