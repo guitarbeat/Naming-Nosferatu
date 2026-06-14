@@ -28,7 +28,7 @@ describe("SentryTelemetryAdapter", () => {
 		vi.restoreAllMocks();
 		process.env.NODE_ENV = originalNodeEnv;
 		// @ts-expect-error
-		delete globalThis.Sentry;
+		globalThis.Sentry = undefined;
 	});
 
 	describe("captureException", () => {
@@ -52,7 +52,7 @@ describe("SentryTelemetryAdapter", () => {
 
 		it("should safely do nothing if Sentry object is missing", () => {
 			// @ts-expect-error
-			delete globalThis.Sentry;
+			globalThis.Sentry = undefined;
 			const error = new Error("Test error");
 
 			expect(() => adapter.captureException(error, "context")).not.toThrow();
