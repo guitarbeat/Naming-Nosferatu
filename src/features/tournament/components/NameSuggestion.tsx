@@ -67,19 +67,14 @@ export function NameSuggestionInner() {
 	return (
 		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto space-y-5">
 			<div className="text-center space-y-2">
-				<h3 className="text-2xl sm:text-3xl font-bold text-foreground">
-					Have a suggestion?
-				</h3>
+				<h3 className="text-2xl sm:text-3xl font-bold text-foreground">Have a suggestion?</h3>
 				<p className="text-sm text-foreground/70">
 					Submit a name and it enters the bracket for everyone to vote on.
 				</p>
 			</div>
 
 			<div className="space-y-3">
-				<label
-					htmlFor="suggest-name"
-					className="text-sm font-medium text-foreground"
-				>
+				<label htmlFor="suggest-name" className="text-sm font-medium text-foreground">
 					Name
 				</label>
 				<Input
@@ -97,10 +92,7 @@ export function NameSuggestionInner() {
 			</div>
 
 			<div className="space-y-3">
-				<label
-					htmlFor="suggest-description"
-					className="text-sm font-medium text-foreground"
-				>
+				<label htmlFor="suggest-description" className="text-sm font-medium text-foreground">
 					Why This Name?
 				</label>
 				<Textarea

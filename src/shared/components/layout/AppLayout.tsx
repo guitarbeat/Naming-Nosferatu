@@ -21,7 +21,6 @@ const LiquidGradientBackground = lazy(() =>
 	})),
 );
 
-
 export function AppLayout({ children }: AppLayoutProps) {
 	const { tournament, errors, errorActions } = useAppStore();
 

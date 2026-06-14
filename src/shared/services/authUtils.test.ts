@@ -1,46 +1,46 @@
-import { describe, it, expect, vi } from 'vitest';
-import { assertAdmin } from './authUtils';
-import useAppStore from '@/store/appStore';
+import { describe, expect, it, vi } from "vitest";
+import useAppStore from "@/store/appStore";
+import { assertAdmin } from "./authUtils";
 
 // Mock useAppStore
-vi.mock('@/store/appStore', () => ({
+vi.mock("@/store/appStore", () => ({
 	default: {
-		getState: vi.fn()
-	}
+		getState: vi.fn(),
+	},
 }));
 
-describe('authUtils', () => {
-	describe('assertAdmin', () => {
-		it('does not throw when user is an admin', () => {
+describe("authUtils", () => {
+	describe("assertAdmin", () => {
+		it("does not throw when user is an admin", () => {
 			vi.mocked(useAppStore.getState).mockReturnValue({
-				user: { isAdmin: true }
+				user: { isAdmin: true },
 			} as any);
 
 			expect(() => assertAdmin()).not.toThrow();
 		});
 
-		it('throws an error when user is not an admin', () => {
+		it("throws an error when user is not an admin", () => {
 			vi.mocked(useAppStore.getState).mockReturnValue({
-				user: { isAdmin: false }
+				user: { isAdmin: false },
 			} as any);
 
-			expect(() => assertAdmin()).toThrow('Admin privileges required');
+			expect(() => assertAdmin()).toThrow("Admin privileges required");
 		});
 
-		it('throws an error when user is null/undefined', () => {
+		it("throws an error when user is null/undefined", () => {
 			vi.mocked(useAppStore.getState).mockReturnValue({
-				user: null
+				user: null,
 			} as any);
 
-			expect(() => assertAdmin()).toThrow('Admin privileges required');
+			expect(() => assertAdmin()).toThrow("Admin privileges required");
 		});
 
-		it('throws an error with custom message', () => {
+		it("throws an error with custom message", () => {
 			vi.mocked(useAppStore.getState).mockReturnValue({
-				user: null
+				user: null,
 			} as any);
 
-			expect(() => assertAdmin('Custom error message')).toThrow('Custom error message');
+			expect(() => assertAdmin("Custom error message")).toThrow("Custom error message");
 		});
 	});
 });
