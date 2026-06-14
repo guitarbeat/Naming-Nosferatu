@@ -57,7 +57,9 @@ function MobileBottomNav({
 								<span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary" />
 							)}
 						</span>
-						<span className="text-sm font-medium tracking-tight hidden xs:inline">{item.label}</span>
+						<span className="text-sm font-medium tracking-tight hidden xs:inline">
+							{item.label}
+						</span>
 					</button>
 				);
 			})}
@@ -108,7 +110,7 @@ export function FloatingNavbar() {
 	const isHomeRoute = location.pathname === "/";
 	const isAdminRoute = location.pathname === "/admin";
 	const isTournamentRoute = location.pathname === "/tournament";
-	const [isPastHero, setIsPastHero] = useState(false);
+	const [_isPastHero, setIsPastHero] = useState(false);
 
 	const selectedCount = selectedNames?.length || 0;
 	const isTournamentActive = Boolean(tournament.names);
@@ -480,7 +482,7 @@ export function FloatingNavbar() {
 		return null;
 	}
 
-	const shouldShow = !isHomeRoute ? isNavVisible : true;
+	const shouldShow = isHomeRoute ? true : isNavVisible;
 
 	return (
 		<>

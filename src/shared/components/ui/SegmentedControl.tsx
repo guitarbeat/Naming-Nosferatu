@@ -71,8 +71,8 @@ export function SegmentedControl<T extends string = string>({
 					className={`relative flex-1 ${sizeStyles.button} text-foreground/70 transition-colors z-10 ${
 						value === option.value ? "text-foreground font-semibold" : ""
 					} ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:text-foreground/90"}`}
-					whileHover={!disabled ? { scale: 1.02 } : {}}
-					whileTap={!disabled ? { scale: 0.98 } : {}}
+					whileHover={disabled ? {} : { scale: 1.02 }}
+					whileTap={disabled ? {} : { scale: 0.98 }}
 				>
 					<div className="flex items-center justify-center gap-1.5">
 						{option.icon && <span className="flex items-center justify-center">{option.icon}</span>}
