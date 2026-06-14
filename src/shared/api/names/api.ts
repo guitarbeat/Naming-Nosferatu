@@ -45,13 +45,14 @@ async function runAdminMutation<T>(
 	return result;
 }
 
-async function runBooleanAdminRpc(
-	rpcName: string,
-	args: Record<string, unknown>,
+type DbFunctions = Database["public"]["Functions"];
+
+async function runBooleanAdminRpc<FunctionName extends keyof DbFunctions>(
+	rpcName: FunctionName,
+	args: DbFunctions[FunctionName]["Args"],
 	errorMessage: string,
 ): Promise<void> {
 	await runAdminMutation(async (client) => {
-		// @ts-expect-error - custom RPCs are not in generated types
 		const { data, error } = await client.rpc(rpcName, args);
 		if (error) {
 			throw error;
@@ -189,7 +190,6 @@ export async function toggleNameHidden(params: {
 	const { isCurrentlyHidden, nameId, userName } = params;
 	const trimmedUserName = userName.trim();
 	await runAdminMutation(async (client) => {
-		// @ts-expect-error - toggle_name_visibility is a custom RPC not in generated types
 		const { data, error } = await client.rpc("toggle_name_visibility", {
 			p_name_id: String(nameId),
 			p_hide: !isCurrentlyHidden,
