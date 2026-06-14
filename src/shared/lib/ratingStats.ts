@@ -44,39 +44,46 @@ export function calculatePercentile(
 		return Number.isNaN(value) ? 0 : 50;
 	}
 
-	const validValues = allValues.filter((v) => v != null && !Number.isNaN(v));
-	if (validValues.length === 0) {
+	let validLen = 0;
+	let count = 0;
+
+	for (let i = 0; i < allValues.length; i++) {
+		const v = allValues[i];
+		if (v != null && !Number.isNaN(v)) {
+			validLen++;
+			if (higherIsBetter ? v < value : v > value) {
+				count++;
+			}
+		}
+	}
+
+	if (validLen === 0) {
 		return 50;
 	}
 
-	const sorted = [...validValues].sort((a, b) => a - b);
-
-	if (higherIsBetter) {
-		const belowCount = sorted.filter((v) => v < value).length;
-		return Math.round((belowCount / sorted.length) * 100);
-	}
-
-	const aboveCount = sorted.filter((v) => v > value).length;
-	return Math.round((aboveCount / sorted.length) * 100);
+	return Math.round((count / validLen) * 100);
 }
 
 /**
  * Returns the percentile rank using quantileRankSorted for more precise statistics.
  */
 export function getPercentileRank(rating: number, allRatings: number[]): number {
-	if (allRatings.length === 0) {
+	const len = allRatings.length;
+	if (len === 0) {
 		return 50;
 	}
-	const sorted = [...allRatings].sort((a, b) => a - b);
-	if (sorted.length === 0) {
-		return 50;
-	}
-	if (sorted.length === 1) {
+	if (len === 1) {
 		return 100;
 	}
-	// To match test expectations for getPercentileRank: 1000 => 0, 1100 => 25, 1200 => 50, 1300 => 75, 1400 => 100
-	const belowCount = sorted.filter((v) => v < rating).length;
-	return Math.round((belowCount / (sorted.length - 1)) * 100);
+
+	let belowCount = 0;
+	for (let i = 0; i < len; i++) {
+		if (allRatings[i] < rating) {
+			belowCount++;
+		}
+	}
+
+	return Math.round((belowCount / (len - 1)) * 100);
 }
 
 export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
