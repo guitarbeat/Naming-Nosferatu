@@ -11,6 +11,7 @@ import {
 	VolumeX,
 	X,
 } from "lucide-react";
+import { type UseAudioManagerResult } from "../hooks/useAudioManager";
 import { getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
 
@@ -22,7 +23,7 @@ interface TournamentHeaderProps {
 	currentMatchNumber: number;
 	totalMatches: number;
 	etaMinutes: number;
-	audioManager: any;
+	audioManager: UseAudioManagerResult;
 	showCatPictures: boolean;
 	setCatPictures: (show: boolean) => void;
 	canUndo: boolean;
