@@ -140,7 +140,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 		const errorDetails = `
 === Error Report ===
 Generated: ${new Date().toISOString()}
-URL: ${window.location.href}
+URL: ${window.location.origin}${window.location.pathname}
 
 === Error Info ===
 Error ID: ${errorId}

@@ -133,7 +133,7 @@ function createLogEntry(level, args) {
     level,
     message,
     timestamp: new Date(),
-    url: window.location.href,
+    url: window.location.origin + window.location.pathname,
     userAgent: navigator.userAgent,
     stacks,
     extra,
