@@ -1,27 +1,32 @@
-import { isDev } from "@/store/appStore.shared";
+const isDev = () => import.meta.env?.DEV ?? false;
 
 export function isStorageAvailable(): boolean {
 	try {
-		const testKey = "__storage_test__";
-		window.localStorage.setItem(testKey, testKey);
-		window.localStorage.removeItem(testKey);
+		if (typeof window === "undefined") {
+			return false;
+		}
+		const test = "__storage_test__";
+		window.localStorage.setItem(test, test);
+		window.localStorage.removeItem(test);
 		return true;
-	} catch (_e) {
+	} catch {
 		return false;
 	}
 }
 
-export function getStorageString(key: string): string | null {
+export function getStorageString(key: string, fallback: string | null = null): string | null {
 	if (!isStorageAvailable()) {
-		return null;
+		return fallback;
 	}
+
 	try {
-		return window.localStorage.getItem(key);
+		const value = window.localStorage.getItem(key);
+		return value === null ? fallback : value;
 	} catch (error) {
 		if (isDev()) {
 			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		}
-		return null;
+		return fallback;
 	}
 }
 
@@ -58,7 +63,7 @@ export function removeStorageItem(key: string): void {
 }
 
 export function parseJsonValue<T>(value: string | null, fallback: T): T {
-	if (!value) {
+	if (value === null) {
 		return fallback;
 	}
 
