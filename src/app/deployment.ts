@@ -339,7 +339,7 @@ function renderDeploymentList(
 	const fullReport = `
 === Deployment Error Report ===
 Generated: ${new Date().toISOString()}
-URL: ${window.location.href}
+URL: ${window.location.origin}${window.location.pathname}
 User Agent: ${navigator.userAgent}
 
 === Diagnostics ===
