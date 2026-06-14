@@ -501,7 +501,7 @@ function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 		baseDelay?: number;
 	};
 	return (async (...args: unknown[]) => {
-		let lastErr;
+		let lastErr: unknown;
 		for (let a = 1; a <= maxAttempts; a++) {
 			try {
 				return await operation(...args);
@@ -510,7 +510,10 @@ function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 				if (a === maxAttempts || !isRetryable(parseError(e), {})) {
 					throw e;
 				}
-				await sleep(baseDelay << (a - 1));
+				const delay = baseDelay << (a - 1);
+				if (delay > 0) {
+					await sleep(delay);
+				}
 			}
 		}
 		throw lastErr;
