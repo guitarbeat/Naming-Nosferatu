@@ -1,5 +1,5 @@
-import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
@@ -69,7 +69,9 @@ export function AdminNamesTab({
 						<SelectCombobox
 							options={filterOptions}
 							value={filterStatus}
-							onChange={(value) => onFilterChange({ target: { value } } as ChangeEvent<HTMLSelectElement>)}
+							onChange={(value) =>
+								onFilterChange({ target: { value } } as ChangeEvent<HTMLSelectElement>)
+							}
 							placeholder="Filter by status..."
 							ariaLabel="Filter names by status"
 						/>
