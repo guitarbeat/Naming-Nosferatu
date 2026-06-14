@@ -4,7 +4,7 @@
 
 /* Hide Builder.io dev attributes */
 [data-loc] {
-	outline: none !important;
+	outline: none;
 }
 
 /* Section visibility toggle animation */
