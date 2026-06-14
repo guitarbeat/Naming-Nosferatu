@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SpinnerCircle } from "@/shared/components/layout/Feedback/Loading";
-import { themeText } from "@/shared/lib/themeClasses";
 import { TIMING } from "@/shared/lib/constants";
+import { themeText } from "@/shared/lib/themeClasses";
 import useAppStore from "@/store/appStore";
 
 const LOADING_PREVIEW = "/assets/images/loading-preview.png";
