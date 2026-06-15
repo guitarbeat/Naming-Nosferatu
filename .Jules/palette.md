@@ -1,0 +1,3 @@
+## 2025-02-28 - Missing accessibility attributes in standard navigation layouts
+**Learning:** Found that custom layout panels containing toggles, filters, and dynamic inline controls inside `NameSelector.tsx` lacked explicitly provided `aria-label` tags for screen-readers, even though they contained readable content or clear icons. Text-bearing buttons like "Clear search" often omit specific ARIA labels, which limits explicit context when read in isolation.
+**Action:** Always verify complex or floating UI components (like dashboards, admin controls, or toggleable panels) and manually apply `aria-label` traits to explicit interactive actions (e.g. toggle states and specific actions that don't rely entirely on a standard UI component template).
