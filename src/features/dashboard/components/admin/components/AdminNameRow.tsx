@@ -1,7 +1,7 @@
 import { Eye, EyeOff, Lock, Trash2 } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
-import type { NameWithStats } from "./AdminNamesTab";
+import type { NameWithStats } from "./AdminNamesTypes";
 
 interface AdminNameRowProps {
 	name: NameWithStats;

@@ -1,15 +1,8 @@
 import type { ChangeEvent } from "react";
-import type { NameItem } from "@/shared/types";
 import { AdminNameRow } from "./AdminNameRow";
 import { AdminNamesBulkActions } from "./AdminNamesBulkActions";
 import { AdminNamesToolbar } from "./AdminNamesToolbar";
-
-export type NameWithStats = NameItem & {
-	votes?: number;
-	popularityScore?: number;
-};
-
-export type BulkAction = "hide" | "unhide" | "lock" | "unlock";
+import type { BulkAction, NameWithStats } from "./AdminNamesTypes";
 
 interface AdminNamesTabProps {
 	searchTerm: string;

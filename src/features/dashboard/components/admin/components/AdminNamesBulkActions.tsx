@@ -1,6 +1,6 @@
 import { Eye, EyeOff, Lock } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
-import type { BulkAction } from "./AdminNamesTab";
+import type { BulkAction } from "./AdminNamesTypes";
 
 interface AdminNamesBulkActionsProps {
 	selectedCount: number;
