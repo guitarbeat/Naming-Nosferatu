@@ -629,6 +629,7 @@ export function NameSelector() {
 																				? "text-muted-foreground cursor-not-allowed"
 																				: "text-warning hover:text-warning/80 hover:scale-105 active:scale-95"
 																		}`}
+																		aria-label="Toggle hidden status"
 																	>
 																		{togglingHidden.has(nameItem.id) ? (
 																			<>
@@ -892,6 +893,7 @@ export function NameSelector() {
 									}}
 									aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
 									aria-controls="hidden-names-panel"
+									aria-label="Toggle archived names panel"
 									className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
 								>
 									<div className="flex items-center gap-2">
@@ -940,8 +942,8 @@ export function NameSelector() {
 								<div className="mt-4">
 									{isSwipeMode && (
 										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
-											Archived names stay out of the swipe deck, but you can still inspect and select
-											them here without leaving swipe mode.
+											Archived names stay out of the swipe deck, but you can still inspect and
+											select them here without leaving swipe mode.
 										</p>
 									)}
 
@@ -964,6 +966,7 @@ export function NameSelector() {
 														setHiddenRenderCount(24);
 													}}
 													className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
+													aria-label="Clear search"
 												>
 													Clear search
 												</button>
@@ -976,6 +979,7 @@ export function NameSelector() {
 														? "bg-primary/20 border-primary/40 text-foreground"
 														: "bg-foreground/5 border-border/10 text-foreground/80"
 												}`}
+												aria-label="Toggle selected only"
 											>
 												Selected only
 											</button>
@@ -1076,6 +1080,7 @@ export function NameSelector() {
 																		? "opacity-50 cursor-not-allowed"
 																		: ""
 																}`}
+																aria-label="Toggle hidden status"
 															>
 																{togglingHidden.has(nameItem.id) ? (
 																	<div className="flex items-center justify-center gap-1">
