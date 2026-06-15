@@ -12,6 +12,7 @@ import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
+import { MagicNav } from "./components/ui/MagicNav";
 
 const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 
@@ -73,14 +74,12 @@ export default function HomeRoute() {
 								<TournamentFlow />
 							</Suspense>
 						</div>
-						<div className="mt-auto pt-8 flex justify-center gap-4">
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("")}>
-								← Back
-							</Button>
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
-								Compare →
-							</Button>
-						</div>
+						<MagicNav
+							actions={[
+								{ label: "← Back", onClick: () => scrollToSection("") },
+								{ label: "Compare →", onClick: () => scrollToSection("tournament") },
+							]}
+						/>
 					</div>
 				</div>
 			</Section>
@@ -114,14 +113,12 @@ export default function HomeRoute() {
 											}}
 										/>
 									</div>
-									<div className="mt-auto pt-8 flex justify-center gap-4">
-										<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
-											← Back
-										</Button>
-										<Button variant="glass" size="lg" onClick={() => scrollToSection("analysis")}>
-											See Results →
-										</Button>
-									</div>
+									<MagicNav
+										actions={[
+											{ label: "← Back", onClick: () => scrollToSection("pick") },
+											{ label: "See Results →", onClick: () => scrollToSection("analysis") },
+										]}
+									/>
 								</>
 							) : (
 								<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
@@ -167,14 +164,12 @@ export default function HomeRoute() {
 								</ErrorBoundary>
 							</Suspense>
 						</div>
-						<div className="mt-auto pt-8 flex justify-center gap-4">
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
-								← Back
-							</Button>
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
-								Pick Different Names
-							</Button>
-						</div>
+						<MagicNav
+							actions={[
+								{ label: "← Back", onClick: () => scrollToSection("tournament") },
+								{ label: "Pick Different Names", onClick: () => scrollToSection("pick") },
+							]}
+						/>
 					</div>
 				</div>
 			</Section>
