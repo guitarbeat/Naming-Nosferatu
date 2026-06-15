@@ -11,9 +11,21 @@ export function countSelectedItems<TId>(
 	selectedIds: ReadonlySet<TId>,
 ): number {
 	let count = 0;
-	for (const item of items) {
-		if (selectedIds.has(item.id)) {
+	const limit = selectedIds.size;
+	if (limit === 0 || items.length === 0) {
+		return 0;
+	}
+
+	// ⚡ Bolt Performance Optimization:
+	// Use an indexed loop and an early exit condition.
+	// When we've found all the selected items, we can stop iterating.
+	// Impact: Reduces O(N) full array scans to O(K) where K is the index of the last matched item.
+	for (let i = 0; i < items.length; i++) {
+		if (selectedIds.has(items[i].id)) {
 			count += 1;
+			if (count === limit) {
+				break;
+			}
 		}
 	}
 	return count;
