@@ -1,5 +1,5 @@
-import { Activity, TrendingUp, Trophy, Users } from "lucide-react";
 import { motion } from "framer-motion";
+import { Activity, TrendingUp, Trophy, Users } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { SegmentedControl } from "@/shared/components/ui/SegmentedControl";
 import type { DashboardTimeframe } from "../hooks/useDashboardData";
@@ -79,7 +79,11 @@ export function RecentActivityPanel({
 					icon={Users}
 					accent={true}
 				/>
-				<StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
+				<StatTile
+					label="Matches played"
+					value={engagementMetrics.totalMatches}
+					icon={Trophy}
+				/>
 			</motion.div>
 		</Panel>
 	);

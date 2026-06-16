@@ -10,7 +10,13 @@ interface NameSuggestionProps {
 	onClose?: () => void;
 }
 
-function StatusMessage({ error, success }: { error?: string; success?: string }) {
+function StatusMessage({
+	error,
+	success,
+}: {
+	error?: string;
+	success?: string;
+}) {
 	return (
 		<AnimatePresence mode="wait">
 			{error && (
@@ -62,10 +68,14 @@ export function NameSuggestionInner() {
 		await handleSubmit();
 	};
 
-	const isFormComplete = values.name.trim().length > 0 && values.description.trim().length > 0;
+	const isFormComplete =
+		values.name.trim().length > 0 && values.description.trim().length > 0;
 
 	return (
-		<form onSubmit={handleLocalSubmit} className="w-full max-w-2xl mx-auto space-y-5">
+		<form
+			onSubmit={handleLocalSubmit}
+			className="w-full max-w-2xl mx-auto space-y-5"
+		>
 			<div className="text-center space-y-2">
 				<h3 className="text-2xl sm:text-3xl font-bold text-foreground">
 					Have a suggestion?
@@ -194,7 +204,8 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 			className="flex flex-col gap-4"
 		>
 			<p className="text-sm text-foreground/80 leading-relaxed">
-				Got an idea? Suggest a cat name and it'll enter the bracket for everyone to vote on.
+				Got an idea? Suggest a cat name and it'll enter the bracket for everyone
+				to vote on.
 			</p>
 
 			<div className="space-y-3">
@@ -241,7 +252,12 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 			<StatusMessage error={globalError} success={success} />
 
 			<div className="flex justify-end gap-2 pt-2">
-				<Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
+				<Button
+					type="button"
+					variant="ghost"
+					onClick={handleClose}
+					disabled={isSubmitting}
+				>
 					Cancel
 				</Button>
 				<Button
@@ -261,7 +277,10 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 // UNIFIED EXPORT
 // ============================================================================
 
-export function NameSuggestion({ variant = "inline", onClose }: NameSuggestionProps) {
+export function NameSuggestion({
+	variant = "inline",
+	onClose,
+}: NameSuggestionProps) {
 	const handleClose = onClose ?? (() => undefined);
 
 	if (variant === "modal") {

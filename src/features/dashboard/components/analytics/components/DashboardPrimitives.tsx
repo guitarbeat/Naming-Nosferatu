@@ -55,20 +55,32 @@ export function ChartFrame({
 
 	const chart =
 		size.width > 0 && size.height > 0 && isValidElement(children)
-			? cloneElement(children as React.ReactElement<{ width?: number; height?: number }>, {
-					width: size.width,
-					height: size.height,
-				})
+			? cloneElement(
+					children as React.ReactElement<{ width?: number; height?: number }>,
+					{
+						width: size.width,
+						height: size.height,
+					},
+				)
 			: null;
 
 	return (
-		<div ref={frameRef} className={`chart-frame ${variant === "tall" ? "chart-frame--tall" : ""}`}>
+		<div
+			ref={frameRef}
+			className={`chart-frame ${variant === "tall" ? "chart-frame--tall" : ""}`}
+		>
 			{chart}
 		</div>
 	);
 }
 
-export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function Panel({
+	children,
+	className = "",
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
 	return (
 		<Card variant="default" shadow="large" className={className}>
 			{children}
@@ -77,8 +89,16 @@ export function Panel({ children, className = "" }: { children: ReactNode; class
 }
 
 /** Bordered list container shared by leaderboard, hidden names, and similar panels. */
-export function ListPanel({ children, className }: { children: ReactNode; className?: string }) {
-	return <div className={cn(themeSurfaces.panelInset, className)}>{children}</div>;
+export function ListPanel({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
+	return (
+		<div className={cn(themeSurfaces.panelInset, className)}>{children}</div>
+	);
 }
 
 export function ListPanelRow({
@@ -119,17 +139,30 @@ export function StatTile({
 			<div className="absolute -top-6 -right-6 size-12 rounded-full bg-primary/5 blur-xl transition-transform group-hover:scale-110" />
 			<div className="relative space-y-2">
 				<div className="flex items-center justify-between">
-					<p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+					<p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+						{label}
+					</p>
 					{Icon && (
-						<div className={cn(
-							"rounded-lg p-2 transition-colors",
-							accent ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-						)}>
+						<div
+							className={cn(
+								"rounded-lg p-2 transition-colors",
+								accent
+									? "bg-primary/20 text-primary"
+									: "bg-muted text-muted-foreground",
+							)}
+						>
 							<Icon size={14} />
 						</div>
 					)}
 				</div>
-				<p className={cn("text-2xl font-bold tracking-tight", accent && "text-primary")}>{value}</p>
+				<p
+					className={cn(
+						"text-2xl font-bold tracking-tight",
+						accent && "text-primary",
+					)}
+				>
+					{value}
+				</p>
 			</div>
 		</div>
 	);
@@ -143,7 +176,11 @@ export function ContextBadge({
 	tone?: "default" | "accent";
 }) {
 	return (
-		<span className={tone === "accent" ? themeSurfaces.badgeAccent : themeSurfaces.badge}>
+		<span
+			className={
+				tone === "accent" ? themeSurfaces.badgeAccent : themeSurfaces.badge
+			}
+		>
 			{label}
 		</span>
 	);
@@ -167,7 +204,9 @@ export function SectionHeader({
 					<Icon size={13} className="text-primary/70 shrink-0" />
 					<span className={themeText.sectionLabel}>{title}</span>
 				</div>
-				{subtitle && <p className={cn("max-w-2xl", themeText.subtitle)}>{subtitle}</p>}
+				{subtitle && (
+					<p className={cn("max-w-2xl", themeText.subtitle)}>{subtitle}</p>
+				)}
 			</div>
 			{action}
 		</div>
