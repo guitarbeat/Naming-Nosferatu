@@ -6,10 +6,15 @@ export function AdminTabNav<TTab extends string>({
 	onTabChange,
 }: AdminTabNavProps<TTab>) {
 	return (
-		<div className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 border-b border-border/10 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+		<div
+			className="flex gap-1 sm:gap-2 mb-4 sm:mb-6 border-b border-border/10 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0"
+			role="tablist"
+		>
 			{tabs.map((tab) => (
 				<button
 					key={tab.id}
+					role="tab"
+					aria-selected={activeTab === tab.id}
 					onClick={() => onTabChange(tab.id)}
 					className={`px-3 sm:px-4 py-2 font-medium text-sm whitespace-nowrap transition-colors ${
 						activeTab === tab.id
