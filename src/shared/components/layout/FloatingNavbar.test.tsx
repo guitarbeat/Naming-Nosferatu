@@ -39,9 +39,7 @@ const mockStore = {
 	ui: {
 		isSwipeMode: false,
 	},
-	uiActions: {
-		setSwipeMode: setSwipeModeMock,
-	},
+	uiActions: {},
 };
 
 vi.mock("@/store/appStore", () => ({
@@ -109,7 +107,7 @@ describe("FloatingNavbar", () => {
 		mockStore.user.isAdmin = false;
 		mockStore.ui.isSwipeMode = false;
 
-		setSwipeModeMock.mockReset();
+
 		setNamesMock.mockReset();
 
 		Object.defineProperty(window, "matchMedia", {
@@ -168,7 +166,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getAllByRole("button", { name: "Pick Names" })[0]).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Favorites" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
@@ -201,7 +199,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		const startButton = screen.getAllByRole("button", { name: "Start (3)" })[0];
+		const startButton = screen.getAllByRole("button", { name: "Vote (3)" })[0];
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("text-primary");
@@ -224,29 +222,13 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getAllByRole("button", { name: "Analyze" })[0]).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Results" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
 	});
 
-	it("uses pressed semantics for the layout mode chip without treating it as the current destination", () => {
-		mountSections({ pick: 0, tournament: 200, analysis: 400 });
-		setPastHeroScroll();
-		mockStore.ui.isSwipeMode = true;
 
-		renderWithRouter();
-
-		expandNav();
-
-		const modeChip = screen.getAllByRole("button", { name: "Swipe mode active" })[0];
-
-		expect(modeChip).toHaveAttribute("aria-pressed", "true");
-		expect(modeChip).not.toHaveAttribute("aria-current");
-
-		fireEvent.click(modeChip);
-		expect(setSwipeModeMock).toHaveBeenCalledWith(false);
-	});
 
 	it("renders the logged-in avatar when available", () => {
 		mountSections({ pick: 0, tournament: 200, analysis: 400 });
