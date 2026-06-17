@@ -34,6 +34,7 @@ export function computeRatingStats(ratings: number[]): RatingStats | null {
 /**
  * Calculates the percentile rank of a value within a distribution.
  * Higher is better by default (percentile is percentage of values below).
+ * Optimized to run in O(n) time by iterating once without sorting or filtering arrays.
  */
 export function calculatePercentile(
 	value: number,
@@ -44,39 +45,63 @@ export function calculatePercentile(
 		return Number.isNaN(value) ? 0 : 50;
 	}
 
-	const validValues = allValues.filter((v) => v != null && !Number.isNaN(v));
-	if (validValues.length === 0) {
+	let validCount = 0;
+	let targetCount = 0;
+
+	for (let i = 0; i < allValues.length; i++) {
+		const v = allValues[i];
+		if (v != null && !Number.isNaN(v)) {
+			validCount++;
+			if (higherIsBetter) {
+				if (v < value) {
+					targetCount++;
+				}
+			} else {
+				if (v > value) {
+					targetCount++;
+				}
+			}
+		}
+	}
+
+	if (validCount === 0) {
 		return 50;
 	}
 
-	const sorted = [...validValues].sort((a, b) => a - b);
-
-	if (higherIsBetter) {
-		const belowCount = sorted.filter((v) => v < value).length;
-		return Math.round((belowCount / sorted.length) * 100);
-	}
-
-	const aboveCount = sorted.filter((v) => v > value).length;
-	return Math.round((aboveCount / sorted.length) * 100);
+	return Math.round((targetCount / validCount) * 100);
 }
 
 /**
  * Returns the percentile rank using quantileRankSorted for more precise statistics.
+ * Optimized to run in O(n) time by iterating once without sorting or filtering arrays.
  */
 export function getPercentileRank(rating: number, allRatings: number[]): number {
-	if (allRatings.length === 0) {
+	if (!allRatings || allRatings.length === 0) {
 		return 50;
 	}
-	const sorted = [...allRatings].sort((a, b) => a - b);
-	if (sorted.length === 0) {
+
+	let validCount = 0;
+	let belowCount = 0;
+
+	for (let i = 0; i < allRatings.length; i++) {
+		const v = allRatings[i];
+		if (v != null && !Number.isNaN(v)) {
+			validCount++;
+			if (v < rating) {
+				belowCount++;
+			}
+		}
+	}
+
+	if (validCount === 0) {
 		return 50;
 	}
-	if (sorted.length === 1) {
+	if (validCount === 1) {
 		return 100;
 	}
+
 	// To match test expectations for getPercentileRank: 1000 => 0, 1100 => 25, 1200 => 50, 1300 => 75, 1400 => 100
-	const belowCount = sorted.filter((v) => v < rating).length;
-	return Math.round((belowCount / (sorted.length - 1)) * 100);
+	return Math.round((belowCount / (validCount - 1)) * 100);
 }
 
 export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
