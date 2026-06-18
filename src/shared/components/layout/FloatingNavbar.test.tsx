@@ -224,7 +224,7 @@ describe("FloatingNavbar", () => {
 
 		expandNav();
 
-		expect(screen.getAllByRole("button", { name: "Analyze" })[0]).toHaveAttribute(
+		expect(screen.getAllByRole("button", { name: "Results" })[0]).toHaveAttribute(
 			"aria-current",
 			"location",
 		);
