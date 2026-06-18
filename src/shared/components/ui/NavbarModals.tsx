@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
-import { Modal } from "@/shared/components/layout/Modal";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { Modal } from "@/shared/components/layout/Modal";
 
 const LazyProfileInner = lazy(() =>
 	import("@/shared/components/profile/ProfileInner").then((module) => ({

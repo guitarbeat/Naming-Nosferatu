@@ -6,7 +6,9 @@ export function useSectionScroll() {
 	const pendingScrollRef = useRef<number | null>(null);
 
 	const clearPendingScroll = useCallback(() => {
-		if (pendingScrollRef.current === null) return;
+		if (pendingScrollRef.current === null) {
+			return;
+		}
 		window.clearTimeout(pendingScrollRef.current);
 		pendingScrollRef.current = null;
 	}, []);
