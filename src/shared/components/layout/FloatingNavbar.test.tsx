@@ -17,7 +17,6 @@ const queryClient = new QueryClient({
 	},
 });
 
-const setSwipeModeMock = vi.fn();
 const setNamesMock = vi.fn();
 
 const mockStore = {
@@ -35,12 +34,6 @@ const mockStore = {
 		name: "",
 		avatarUrl: "",
 		isAdmin: false,
-	},
-	ui: {
-		isSwipeMode: false,
-	},
-	uiActions: {
-		setSwipeMode: setSwipeModeMock,
 	},
 };
 
@@ -107,9 +100,7 @@ describe("FloatingNavbar", () => {
 		mockStore.user.name = "";
 		mockStore.user.avatarUrl = "";
 		mockStore.user.isAdmin = false;
-		mockStore.ui.isSwipeMode = false;
 
-		setSwipeModeMock.mockReset();
 		setNamesMock.mockReset();
 
 		Object.defineProperty(window, "matchMedia", {
@@ -228,24 +219,6 @@ describe("FloatingNavbar", () => {
 			"aria-current",
 			"location",
 		);
-	});
-
-	it("uses pressed semantics for the layout mode chip without treating it as the current destination", () => {
-		mountSections({ pick: 0, tournament: 200, analysis: 400 });
-		setPastHeroScroll();
-		mockStore.ui.isSwipeMode = true;
-
-		renderWithRouter();
-
-		expandNav();
-
-		const modeChip = screen.getAllByRole("button", { name: "Swipe mode active" })[0];
-
-		expect(modeChip).toHaveAttribute("aria-pressed", "true");
-		expect(modeChip).not.toHaveAttribute("aria-current");
-
-		fireEvent.click(modeChip);
-		expect(setSwipeModeMock).toHaveBeenCalledWith(false);
 	});
 
 	it("renders the logged-in avatar when available", () => {

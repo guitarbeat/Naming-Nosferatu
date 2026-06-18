@@ -1,13 +1,4 @@
-import {
-	BarChart3,
-	CheckCircle,
-	Layers,
-	LayoutGrid,
-	Lightbulb,
-	Lock,
-	Trophy,
-	User,
-} from "lucide-react";
+import { BarChart3, CheckCircle, Lightbulb, Lock, Trophy, User } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
@@ -80,11 +71,9 @@ export function FloatingNavbar() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { login, logout } = useAuth();
-	const { tournament, tournamentActions, user, ui, uiActions } = appStore;
+	const { tournament, tournamentActions, user } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
-	const { isSwipeMode } = ui;
-	const { setSwipeMode } = uiActions;
 	const [activeSection, setActiveSection] = useState<NavSection>("pick");
 	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -440,21 +429,6 @@ export function FloatingNavbar() {
 			onClick: openProfileModal,
 		});
 
-		if (isHomeRoute) {
-			items.push({
-				id: "layout-mode",
-				label: isSwipeMode ? "Swipe mode" : "Grid mode",
-				level: 2,
-				icon: isSwipeMode ? <Layers className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />,
-				ariaLabel: isSwipeMode ? "Swipe mode active" : "Grid mode active",
-				ariaPressed: isSwipeMode,
-				onClick: () => {
-					hapticNavTap();
-					setSwipeMode(!isSwipeMode);
-				},
-			});
-		}
-
 		return items;
 	}, [
 		activeSection,
@@ -468,13 +442,11 @@ export function FloatingNavbar() {
 		isLoggedIn,
 		isProfileOpen,
 		isSuggestOpen,
-		isSwipeMode,
 		isTournamentActive,
 		openProfileModal,
 		openSuggestModal,
 		profileLabel,
 		selectedCount,
-		setSwipeMode,
 		tournament.ratings,
 	]);
 
