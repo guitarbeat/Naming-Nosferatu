@@ -1,0 +1,72 @@
+import { motion } from "framer-motion";
+import type { ReactNode } from "react";
+import { hapticNavTap } from "@/shared/lib/browser/haptics";
+
+export interface MagicToggleOption<T extends string> {
+	value: T;
+	label: string;
+	icon?: ReactNode;
+}
+
+export interface MagicToggleProps<T extends string> {
+	options: readonly MagicToggleOption<T>[];
+	value: T;
+	onChange: (value: T) => void;
+	ariaLabel?: string;
+}
+
+export function MagicToggle<T extends string>({
+	options,
+	value,
+	onChange,
+	ariaLabel,
+}: MagicToggleProps<T>) {
+	return (
+		<div
+			className="relative inline-flex items-center p-1.5 bg-foreground/5 backdrop-blur-md rounded-2xl border border-border/20 shadow-inner"
+			role="tablist"
+			aria-label={ariaLabel}
+		>
+			<motion.div
+				className="absolute inset-y-1.5 bg-primary/15 border border-primary/20 rounded-xl shadow-[0_0_15px_rgba(var(--primary),0.1)] pointer-events-none"
+				initial={false}
+				animate={{
+					x: `calc(${options.findIndex((o) => o.value === value) * 100}% + ${options.findIndex((o) => o.value === value) * 4}px)`,
+					width: `calc(${100 / options.length}% - 4px)`,
+				}}
+				transition={{
+					type: "spring",
+					stiffness: 400,
+					damping: 25,
+					mass: 0.8,
+				}}
+			/>
+			{options.map((option) => {
+				const isSelected = value === option.value;
+				return (
+					<motion.button
+						key={option.value}
+						role="tab"
+						aria-selected={isSelected}
+						onClick={() => {
+							hapticNavTap();
+							onChange(option.value);
+						}}
+						className={`relative flex-1 px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm font-bold tracking-wide transition-colors z-10 rounded-xl ${
+							isSelected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+						}`}
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+					>
+						<div className="flex items-center justify-center gap-2">
+							{option.icon && (
+								<span className="flex items-center justify-center">{option.icon}</span>
+							)}
+							<span>{option.label}</span>
+						</div>
+					</motion.button>
+				);
+			})}
+		</div>
+	);
+}

@@ -1,6 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { Check, ChevronDown, ChevronRight, Eye, EyeOff, Heart, X, ZoomIn } from "lucide-react";
+import {
+	Check,
+	ChevronDown,
+	ChevronRight,
+	Eye,
+	EyeOff,
+	Heart,
+	Layers,
+	LayoutGrid,
+	X,
+	ZoomIn,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -56,6 +67,7 @@ const EXIT_SPRING_CONFIG = {
 	velocity: 50,
 };
 
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { AdminActionButton } from "./name-selector/AdminActionButton";
 import { NameContent } from "./name-selector/NameContent";
 import { getCardStyles, getNameOverlayClasses } from "./name-selector/nameSelectorUtils";
@@ -67,7 +79,7 @@ export function NameSelector() {
 	const toast = useToast();
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
-	const _setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
+	const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
@@ -477,6 +489,18 @@ export function NameSelector() {
 	return (
 		<div className="mx-auto w-full">
 			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
+				<div className="flex justify-center pb-4 pt-2">
+					<MagicToggle
+						options={[
+							{ value: "swipe", label: "Swipe", icon: <Layers size={16} /> },
+							{ value: "grid", label: "Grid", icon: <LayoutGrid size={16} /> },
+						]}
+						value={isSwipeMode ? "swipe" : "grid"}
+						onChange={(v) => setSwipeMode(v === "swipe")}
+						ariaLabel="Select Layout Mode"
+					/>
+				</div>
+
 				{isSwipeMode ? (
 					<>
 						<div

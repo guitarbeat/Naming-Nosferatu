@@ -73,14 +73,6 @@ export default function HomeRoute() {
 								<TournamentFlow />
 							</Suspense>
 						</div>
-						<div className="mt-auto pt-8 flex justify-center gap-4">
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("")}>
-								← Back
-							</Button>
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
-								Compare →
-							</Button>
-						</div>
 					</div>
 				</div>
 			</Section>
@@ -103,26 +95,16 @@ export default function HomeRoute() {
 						</div>
 						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 							{tournament.names && tournament.names.length > 0 ? (
-								<>
-									<div className="w-full">
-										<LazyTournament
-											names={tournament.names}
-											existingRatings={tournament.ratings}
-											onComplete={(ratings) => {
-												tournamentActions.completeTournament(ratings);
-												scheduleAnalysisScroll();
-											}}
-										/>
-									</div>
-									<div className="mt-auto pt-8 flex justify-center gap-4">
-										<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
-											← Back
-										</Button>
-										<Button variant="glass" size="lg" onClick={() => scrollToSection("analysis")}>
-											See Results →
-										</Button>
-									</div>
-								</>
+								<div className="w-full">
+									<LazyTournament
+										names={tournament.names}
+										existingRatings={tournament.ratings}
+										onComplete={(ratings) => {
+											tournamentActions.completeTournament(ratings);
+											scheduleAnalysisScroll();
+										}}
+									/>
+								</div>
 							) : (
 								<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
 									<p className="text-pretty text-sm text-muted-foreground/70">
@@ -166,14 +148,6 @@ export default function HomeRoute() {
 									/>
 								</ErrorBoundary>
 							</Suspense>
-						</div>
-						<div className="mt-auto pt-8 flex justify-center gap-4">
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("tournament")}>
-								← Back
-							</Button>
-							<Button variant="glass" size="lg" onClick={() => scrollToSection("pick")}>
-								Pick Different Names
-							</Button>
 						</div>
 					</div>
 				</div>
