@@ -1,0 +1,4 @@
+- Momentum: Built on navbar merge from last turn, continuing the "Caveman UI Pruner" mandate.
+- Smash: Grouped split buttons into `SegmentedControl` in Dashboard and AdminTabNav. Unified scattered HomeRoute navigation with `SectionNavigation`. Upgraded plain filter button to `MagicToggle` in NameSelector. Fixed accessibility on `SegmentedControl`.
+- Clean: Extracted the playful toggle into `components/ui/MagicToggle.tsx` and reused `SectionNavigation` component for consistency.
+- Memory Update: Avoid running Biome format/check across the entire `src` directory to prevent massive unintended diffs; always target specific files. Verify file existence with `ls` before recreating files the code reviewer claims are missing.
