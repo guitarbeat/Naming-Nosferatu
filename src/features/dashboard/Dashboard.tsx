@@ -1,6 +1,6 @@
 import { LayoutDashboard, Shield } from "lucide-react";
 import { useState } from "react";
-import Button from "@/shared/components/layout/Button";
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import type { NameItem, RatingData } from "@/shared/types";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { Dashboard as AnalyticsDashboard } from "./components/analytics/Dashboard";
@@ -28,23 +28,16 @@ export function Dashboard(props: UnifiedDashboardProps) {
 	return (
 		<div className="w-full space-y-6">
 			{props.isAdmin && (
-				<div className="flex items-center gap-4 border-b border-border pb-4">
-					<Button
-						variant={activeView === "analytics" ? "default" : "ghost"}
-						onClick={() => setActiveView("analytics")}
-						className="gap-2"
-					>
-						<LayoutDashboard size={18} />
-						Analytics
-					</Button>
-					<Button
-						variant={activeView === "moderation" ? "default" : "ghost"}
-						onClick={() => setActiveView("moderation")}
-						className="gap-2"
-					>
-						<Shield size={18} />
-						Moderation
-					</Button>
+				<div className="flex items-center justify-center pb-2">
+					<MagicToggle
+						options={[
+							{ value: "analytics", label: "Analytics", icon: <LayoutDashboard size={16} /> },
+							{ value: "moderation", label: "Moderation", icon: <Shield size={16} /> },
+						]}
+						value={activeView}
+						onChange={(v) => setActiveView(v as "analytics" | "moderation")}
+						ariaLabel="Select Dashboard View"
+					/>
 				</div>
 			)}
 

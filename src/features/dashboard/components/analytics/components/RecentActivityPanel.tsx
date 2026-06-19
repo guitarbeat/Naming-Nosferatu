@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Activity, TrendingUp, Trophy, Users } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
-import { SegmentedControl } from "@/shared/components/ui/SegmentedControl";
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import type { DashboardTimeframe } from "../hooks/useDashboardData";
 import { Panel, SectionHeader, StatTile } from "./DashboardPrimitives";
 
@@ -48,7 +48,7 @@ export function RecentActivityPanel({
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.3, ease: "easeOut" }}
 					>
-						<SegmentedControl
+						<MagicToggle
 							options={TIMEFRAME_OPTIONS}
 							value={timeframe}
 							onChange={setTimeframe}
