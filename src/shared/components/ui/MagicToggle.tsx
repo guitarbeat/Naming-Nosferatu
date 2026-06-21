@@ -13,6 +13,7 @@ export interface MagicToggleProps<T extends string> {
 	value: T;
 	onChange: (value: T) => void;
 	ariaLabel?: string;
+	size?: "small" | "default";
 }
 
 export function MagicToggle<T extends string>({
@@ -20,19 +21,20 @@ export function MagicToggle<T extends string>({
 	value,
 	onChange,
 	ariaLabel,
+	size = "default",
 }: MagicToggleProps<T>) {
 	return (
 		<div
-			className="relative inline-flex items-center p-1.5 bg-foreground/5 backdrop-blur-md rounded-2xl border border-border/20 shadow-inner"
+			className={`relative inline-flex items-center ${size === "small" ? "p-1" : "p-1.5"} bg-foreground/5 backdrop-blur-md ${size === "small" ? "rounded-xl" : "rounded-2xl"} border border-border/20 shadow-inner`}
 			role="tablist"
 			aria-label={ariaLabel}
 		>
 			<motion.div
-				className="absolute inset-y-1.5 bg-primary/15 border border-primary/20 rounded-xl shadow-[0_0_15px_rgba(var(--primary),0.1)] pointer-events-none"
+				className={`absolute ${size === "small" ? "inset-y-1 rounded-lg" : "inset-y-1.5 rounded-xl"} bg-primary/15 border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)] pointer-events-none`}
 				initial={false}
 				animate={{
-					x: `calc(${options.findIndex((o) => o.value === value) * 100}% + ${options.findIndex((o) => o.value === value) * 4}px)`,
-					width: `calc(${100 / options.length}% - 4px)`,
+					x: `calc(${options.findIndex((o) => o.value === value) * 100}% + ${options.findIndex((o) => o.value === value) * (size === "small" ? 2 : 4)}px)`,
+					width: `calc(${100 / options.length}% - ${size === "small" ? 2 : 4}px)`,
 				}}
 				transition={{
 					type: "spring",
@@ -52,15 +54,19 @@ export function MagicToggle<T extends string>({
 							hapticNavTap();
 							onChange(option.value);
 						}}
-						className={`relative flex-1 px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm font-bold tracking-wide transition-colors z-10 rounded-xl ${
-							isSelected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+						className={`relative flex-1 ${size === "small" ? "px-3 py-1.5 text-xs" : "px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm"} font-bold tracking-wide transition-colors z-10 ${size === "small" ? "rounded-lg" : "rounded-xl"} ${
+							isSelected
+								? "text-primary"
+								: "text-muted-foreground hover:text-foreground"
 						}`}
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
 					>
 						<div className="flex items-center justify-center gap-2">
 							{option.icon && (
-								<span className="flex items-center justify-center">{option.icon}</span>
+								<span className="flex items-center justify-center">
+									{option.icon}
+								</span>
 							)}
 							<span>{option.label}</span>
 						</div>
