@@ -79,11 +79,7 @@ export function RecentActivityPanel({
 					icon={Users}
 					accent={true}
 				/>
-				<StatTile
-					label="Matches played"
-					value={engagementMetrics.totalMatches}
-					icon={Trophy}
-				/>
+				<StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
 			</motion.div>
 		</Panel>
 	);

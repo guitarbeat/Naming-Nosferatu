@@ -1,21 +1,9 @@
 import { motion } from "framer-motion";
-import {
-	Activity,
-	BarChart3,
-	Eye,
-	EyeOff,
-	Target,
-	TrendingUp,
-	Trophy,
-	Users,
-} from "lucide-react";
+import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, Users } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
-import type {
-	SiteStats,
-	UserStats,
-} from "@/shared/services/supabase/statsService";
+import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import {
 	ContextBadge,
@@ -128,11 +116,7 @@ function DashboardHeader({
 	return (
 		<div className="grid gap-4 xl:grid-cols-[minmax(0,20rem)_1fr]">
 			{isLoggedIn && userName && (
-				<ProfilePanel
-					userName={userName}
-					isAdmin={isAdmin}
-					avatarUrl={avatarUrl}
-				/>
+				<ProfilePanel userName={userName} isAdmin={isAdmin} avatarUrl={avatarUrl} />
 			)}
 
 			{quickStats.length > 0 && (
@@ -163,9 +147,7 @@ function CommunityChartsPanel({
 	leaderboard,
 	siteStats,
 }: {
-	leaderboard: typeof leaderboard extends any[]
-		? typeof leaderboard
-		: NameItem[];
+	leaderboard: typeof leaderboard extends any[] ? typeof leaderboard : NameItem[];
 	siteStats: SiteStats | null;
 }) {
 	return (
@@ -174,11 +156,7 @@ function CommunityChartsPanel({
 				<>
 					<div className="grid gap-6 xl:grid-cols-2">
 						<Panel>
-							<SectionHeader
-								icon={BarChart3}
-								title="Top Names by Rating"
-								subtitle="Top scores."
-							/>
+							<SectionHeader icon={BarChart3} title="Top Names by Rating" subtitle="Top scores." />
 							<TopNamesChart leaderboard={leaderboard} />
 						</Panel>
 
@@ -194,21 +172,13 @@ function CommunityChartsPanel({
 
 					<div className="grid gap-6 xl:grid-cols-2">
 						<Panel>
-							<SectionHeader
-								icon={Activity}
-								title="Rating Distribution"
-								subtitle="Score spread."
-							/>
+							<SectionHeader icon={Activity} title="Rating Distribution" subtitle="Score spread." />
 							<RatingDistributionChart leaderboard={leaderboard} />
 						</Panel>
 
 						{leaderboard.length >= 3 && (
 							<Panel>
-								<SectionHeader
-									icon={Target}
-									title="Comparison Radar"
-									subtitle="Side by side."
-								/>
+								<SectionHeader icon={Target} title="Comparison Radar" subtitle="Side by side." />
 								<RatingRadarChart leaderboard={leaderboard} />
 							</Panel>
 						)}
@@ -218,28 +188,12 @@ function CommunityChartsPanel({
 
 			{siteStats && (
 				<Panel>
-					<SectionHeader
-						icon={Users}
-						title="Site Statistics"
-						subtitle="Pool totals."
-					/>
+					<SectionHeader icon={Users} title="Site Statistics" subtitle="Pool totals." />
 					<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-						<StatTile
-							label="Total names"
-							value={siteStats.totalNames}
-							icon={Activity}
-						/>
-						<StatTile
-							label="Active names"
-							value={siteStats.activeNames}
-							icon={Target}
-						/>
+						<StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
+						<StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
 						<StatTile label="Users" value={siteStats.totalUsers} icon={Users} />
-						<StatTile
-							label="Ratings"
-							value={siteStats.totalRatings}
-							icon={BarChart3}
-						/>
+						<StatTile label="Ratings" value={siteStats.totalRatings} icon={BarChart3} />
 						<StatTile
 							label="Average rating"
 							value={Math.round(siteStats.avgRating)}
@@ -320,11 +274,7 @@ function EngagementPanel({
 					icon={Users}
 					accent={true}
 				/>
-				<StatTile
-					label="Matches played"
-					value={engagementMetrics.totalMatches}
-					icon={Trophy}
-				/>
+				<StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
 			</motion.div>
 		</Panel>
 	);
@@ -368,14 +318,8 @@ function AdminPanel({
 								divided={index < hiddenNames.length - 1}
 								className="justify-between"
 							>
-								<span className="text-sm font-medium text-foreground">
-									{name.name}
-								</span>
-								<Button
-									variant="ghost"
-									size="small"
-									onClick={() => handleUnhideName(name.id)}
-								>
+								<span className="text-sm font-medium text-foreground">{name.name}</span>
+								<Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
 									<Eye size={14} />
 									Unhide
 								</Button>
@@ -423,9 +367,7 @@ export function Dashboard({
 		userStats,
 	} = useDashboardData({ isAdmin, userName });
 	const quickStats = getQuickStats({ siteStats, userName, userStats });
-	const hasPersonalRatings = Boolean(
-		personalRatings && Object.keys(personalRatings).length > 0,
-	);
+	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
 	const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
 	const _shouldShowDashboardPrimer =
 		!hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
