@@ -10,7 +10,13 @@ interface ProfileInnerProps {
 	onLogout: () => Promise<void>;
 }
 
-function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () => void }) {
+function ProfileAvatar({
+	avatarSrc,
+	onError,
+}: {
+	avatarSrc: string;
+	onError: () => void;
+}) {
 	return (
 		<div className="relative mb-1">
 			<div
@@ -18,7 +24,12 @@ function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () 
 				aria-hidden="true"
 			/>
 			<div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
-				<img src={avatarSrc} alt="Profile" className="size-full object-cover" onError={onError} />
+				<img
+					src={avatarSrc}
+					alt="Profile"
+					className="size-full object-cover"
+					onError={onError}
+				/>
 			</div>
 		</div>
 	);
@@ -62,6 +73,7 @@ function ProfileEditForm({
 						}
 					}}
 					placeholder="Who are you?"
+					aria-label="Your name"
 					onKeyDown={(e) => e.key === "Enter" && handleSave()}
 					className="w-full h-11 pl-10 pr-4 text-sm"
 				/>
@@ -75,7 +87,12 @@ function ProfileEditForm({
 
 			<div className="flex gap-2">
 				{isLoggedIn && (
-					<Button type="button" variant="ghost" onClick={handleCancel} className="flex-1">
+					<Button
+						type="button"
+						variant="ghost"
+						onClick={handleCancel}
+						className="flex-1"
+					>
 						Cancel
 					</Button>
 				)}
@@ -102,7 +119,12 @@ interface ProfileViewProps {
 	handleLogout: () => void;
 }
 
-function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: ProfileViewProps) {
+function ProfileView({
+	userName,
+	isLoggingOut,
+	handleEdit,
+	handleLogout,
+}: ProfileViewProps) {
 	return (
 		<div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
 			<div className="flex items-center gap-2">
@@ -117,7 +139,9 @@ function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: Profi
 				</button>
 			</div>
 
-			<p className="text-xs text-muted-foreground/80">Your preferences are saved for ranking.</p>
+			<p className="text-xs text-muted-foreground/80">
+				Your preferences are saved for ranking.
+			</p>
 
 			<button
 				type="button"
@@ -204,7 +228,10 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 
 	return (
 		<div className="flex flex-col items-center gap-5 w-full">
-			<ProfileAvatar avatarSrc={avatarSrc} onError={() => setAvatarSrc(defaultAvatar)} />
+			<ProfileAvatar
+				avatarSrc={avatarSrc}
+				onError={() => setAvatarSrc(defaultAvatar)}
+			/>
 
 			{isEditing ? (
 				<ProfileEditForm
