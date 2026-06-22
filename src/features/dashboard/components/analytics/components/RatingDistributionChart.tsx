@@ -33,8 +33,12 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 			return [];
 		}
 
-		const minBucket = Math.floor(Math.min(...ratings) / BUCKET_SIZE) * BUCKET_SIZE;
-		const maxBucket = Math.ceil(Math.max(...ratings) / BUCKET_SIZE) * BUCKET_SIZE;
+		const minBucket =
+			Math.floor(ratings.reduce((min, val) => (val < min ? val : min), ratings[0]) / BUCKET_SIZE) *
+			BUCKET_SIZE;
+		const maxBucket =
+			Math.ceil(ratings.reduce((max, val) => (val > max ? val : max), ratings[0]) / BUCKET_SIZE) *
+			BUCKET_SIZE;
 
 		const buckets: Record<number, number> = {};
 		for (let b = minBucket; b <= maxBucket; b += BUCKET_SIZE) {
@@ -82,7 +86,7 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 	}
 
 	const meanRange = meanBucket === null ? null : bucketLabel(meanBucket);
-	const maxCount = Math.max(...data.map((d) => d.count));
+	const maxCount = data.reduce((max, d) => (d.count > max ? d.count : max), 0);
 
 	return (
 		<div className="space-y-3">
@@ -103,9 +107,9 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 					/>
 					<Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR} />
 					<Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
-						{data.map((d, i) => (
+						{data.map((d) => (
 							<Cell
-								key={i}
+								key={d.range}
 								fill={CHART_PALETTE.teal}
 								fillOpacity={0.45 + (d.count / maxCount) * 0.55}
 							/>
