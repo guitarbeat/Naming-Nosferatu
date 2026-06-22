@@ -62,6 +62,7 @@ function ProfileEditForm({
 						}
 					}}
 					placeholder="Who are you?"
+					aria-label="Your name"
 					onKeyDown={(e) => e.key === "Enter" && handleSave()}
 					className="w-full h-11 pl-10 pr-4 text-sm"
 				/>
