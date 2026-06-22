@@ -1,10 +1,14 @@
-1. **Add `aria-label` to Search Input in SelectCombobox**
-   - The `<input>` element at `src/shared/components/ui/SelectCombobox.tsx:91` is used as a search box within the combobox dropdown but lacks an `aria-label` or explicit label, which is bad for accessibility (screen readers).
-   - I'll add `aria-label="Search options"` to this input.
-   - This fits perfectly with the `Palette` persona's goal of fixing small UX/a11y issues, and is safe and isolated.
-   - This single micro-UX improvement is well within the 50 lines constraint and significantly helps keyboard and screen reader accessibility for this custom component.
-
-2. **Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.**
-   - I will use the `pre_commit_instructions` tool to run tests and verification.
-3. **Submit the change.**
-   - Commit and submit.
+1. **Create MagicToggle component**
+   - Use `write_file` to create `src/shared/components/ui/MagicToggle.tsx` with a playful framer-motion toggle for the layout mode.
+2. **Update NameSelector to use MagicToggle**
+   - Use `replace_with_git_merge_diff` on `src/features/tournament/components/NameSelector.tsx` to add `MagicToggle` for the Swipe vs Grid layout, moving it to a contextual location at the top of the selector.
+3. **Prune redundant buttons from HomeRoute**
+   - Use `replace_with_git_merge_diff` on `src/app/routes/HomeRoute.tsx` to rip out the dead "Back" and "Compare" buttons at the bottom of the page sections since `FloatingNavbar` handles this better.
+4. **Prune layout-mode from FloatingNavbar**
+   - Use `replace_with_git_merge_diff` on `src/shared/components/layout/FloatingNavbar.tsx` to remove the hidden `layout-mode` button.
+   - Use `replace_with_git_merge_diff` on `src/shared/components/layout/FloatingNavbar.test.tsx` to remove the tests expecting `layout-mode` button.
+5. **Lint and Test**
+   - Run `pnpm dlx @biomejs/biome check --config-path config/biome.json --write src/` to ensure formatting.
+   - Run `pnpm test run` to verify tests pass.
+6. **Pre-commit Steps**
+   - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
