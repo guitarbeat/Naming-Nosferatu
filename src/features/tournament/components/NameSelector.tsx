@@ -800,16 +800,13 @@ export function NameSelector() {
 					</>
 				) : (
 					<div className="space-y-8">
-						{(() => {
-							const activeNames = getActiveNames(names);
-							return (
-								activeNames.length > 0 && (
-									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-										{activeNames.map((nameItem) => {
-											const isSelected = selectedNames.has(nameItem.id);
-											const catImage = catImageById.get(nameItem.id) ?? "";
-											return (
-												<motion.div
+						{availableNames.length > 0 && (
+							<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+								{availableNames.map((nameItem) => {
+									const isSelected = selectedNames.has(nameItem.id);
+									const catImage = catImageById.get(nameItem.id) ?? "";
+									return (
+										<motion.div
 													key={nameItem.id}
 													role="button"
 													tabIndex={0}
@@ -889,10 +886,8 @@ export function NameSelector() {
 												</motion.div>
 											);
 										})}
-									</div>
-								)
-							);
-						})()}
+							</div>
+						)}
 					</div>
 				)}
 
