@@ -1,6 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Trophy } from "lucide-react";
-import { getFlameCount, getHeatTextClasses, type HeatLevel } from "../utils/heat";
+import { memo } from "react";
+import {
+	getFlameCount,
+	getHeatTextClasses,
+	type HeatLevel,
+} from "../utils/heat";
 import { BracketTree } from "./BracketTree";
 
 interface StreakBurst {
@@ -23,7 +28,10 @@ interface TournamentAnnouncementsProps {
 	roundAnnouncement: number | null;
 }
 
-export function TournamentAnnouncements({
+// ⚡ Bolt Performance Optimization: Wrapped TournamentAnnouncements in React.memo()
+// Prevents unnecessary re-renders of complex Framer Motion animations when parent tournament states
+// (like timers or user input events) change without affecting announcement states.
+export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 	prefersReducedMotion,
 	openingBracketReveal,
 	openingEntrants,
@@ -40,14 +48,21 @@ export function TournamentAnnouncements({
 				{openingBracketReveal && "The bracket is set. First match begins now."}
 				{roundAnnouncement !== null && `Round ${roundAnnouncement} begins.`}
 				{voteAnnouncement && `${voteAnnouncement} advances.`}
-				{streakBurst && `${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
+				{streakBurst &&
+					`${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
 			</div>
 
 			<AnimatePresence>
 				{openingBracketReveal && openingEntrants.length > 1 && (
 					<motion.div
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, scale: 0.97 }
+						}
+						animate={
+							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+						}
 						exit={
 							prefersReducedMotion
 								? { opacity: 0 }
@@ -58,9 +73,15 @@ export function TournamentAnnouncements({
 					>
 						<div className="absolute inset-0 bg-slate-950/82 backdrop-blur-md" />
 						<motion.div
-							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-							exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }}
+							initial={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
+							}
+							animate={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+							}
+							exit={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }
+							}
 							transition={{ duration: prefersReducedMotion ? 0.08 : 0.38 }}
 							className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 overflow-hidden rounded-[2rem] border border-primary/20 bg-[radial-gradient(circle_at_top,rgba(57,189,216,0.18),rgba(2,6,23,0.96)_46%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-8"
 						>
@@ -95,8 +116,16 @@ export function TournamentAnnouncements({
 									{openingEntrants.slice(0, 8).map((entrant, index) => (
 										<motion.div
 											key={`opening-entrant-${entrant.id}`}
-											initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
-											animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+											initial={
+												prefersReducedMotion
+													? { opacity: 1 }
+													: { opacity: 0, y: 18 }
+											}
+											animate={
+												prefersReducedMotion
+													? { opacity: 1 }
+													: { opacity: 1, y: 0 }
+											}
 											transition={{
 												duration: prefersReducedMotion ? 0.08 : 0.3,
 												delay: prefersReducedMotion ? 0 : 0.12 + index * 0.06,
@@ -115,7 +144,8 @@ export function TournamentAnnouncements({
 								</div>
 								{openingEntrants.length > 8 && (
 									<p className="mt-4 text-center text-xs uppercase tracking-[0.18em] text-white/48">
-										+ {openingEntrants.length - 8} more contenders in the shadows
+										+ {openingEntrants.length - 8} more contenders in the
+										shadows
 									</p>
 								)}
 							</div>
@@ -128,9 +158,21 @@ export function TournamentAnnouncements({
 				{voteAnnouncement && (
 					<motion.div
 						key={`${voteAnnouncement}-${currentMatchKey}`}
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.95 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -16, scale: 0.95 }
+						}
+						animate={
+							prefersReducedMotion
+								? { opacity: 1 }
+								: { opacity: 1, y: 0, scale: 1 }
+						}
+						exit={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -20, scale: 0.98 }
+						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
 						className="pointer-events-none absolute left-1/2 top-2 z-30 w-[calc(100%-1.5rem)] max-w-full -translate-x-1/2 sm:w-auto"
 					>
@@ -150,12 +192,26 @@ export function TournamentAnnouncements({
 				{streakBurst && (
 					<motion.div
 						key={`streak-burst-${streakBurst.key}`}
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.94 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 1.03 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: 18, scale: 0.94 }
+						}
+						animate={
+							prefersReducedMotion
+								? { opacity: 1 }
+								: { opacity: 1, y: 0, scale: 1 }
+						}
+						exit={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -18, scale: 1.03 }
+						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
 						className={`pointer-events-none absolute top-[20%] z-30 ${
-							streakBurst.side === "left" ? "left-3 sm:left-6" : "right-3 text-right sm:right-6"
+							streakBurst.side === "left"
+								? "left-3 sm:left-6"
+								: "right-3 text-right sm:right-6"
 						}`}
 					>
 						<div
@@ -168,7 +224,9 @@ export function TournamentAnnouncements({
 								{streakBurst.winnerName} x{streakBurst.streak}
 							</p>
 							<div className="mt-2 flex gap-1.5">
-								{Array.from({ length: getFlameCount(streakBurst.streak, 9) }).map((_, i) => (
+								{Array.from({
+									length: getFlameCount(streakBurst.streak, 9),
+								}).map((_, i) => (
 									<span
 										key={`streak-flame-${streakBurst.key}-${i}`}
 										className="h-1.5 w-5 animate-pulse rounded-full bg-current opacity-80 sm:h-2 sm:w-6"
@@ -185,16 +243,32 @@ export function TournamentAnnouncements({
 				{roundAnnouncement !== null && (
 					<motion.div
 						key={`round-announcement-${roundAnnouncement}`}
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, scale: 0.96 }
+						}
+						animate={
+							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+						}
+						exit={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, scale: 1.02 }
+						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.35 }}
 						className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
 					>
 						<motion.div
-							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-							exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
+							initial={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }
+							}
+							animate={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+							}
+							exit={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }
+							}
 							transition={{ duration: prefersReducedMotion ? 0.01 : 0.3 }}
 							className="relative overflow-hidden rounded-2xl border border-primary/35 bg-slate-900/80 px-5 py-5 text-center shadow-[0_0_80px_rgba(39,135,153,0.25)] backdrop-blur-xl sm:px-8 sm:py-6"
 						>
@@ -216,4 +290,4 @@ export function TournamentAnnouncements({
 			</AnimatePresence>
 		</>
 	);
-}
+});
