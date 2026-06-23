@@ -331,7 +331,7 @@ export function FloatingNavbar() {
 			return "Tournament";
 		}
 		if (selectedCount >= 2) {
-			return `Start (${selectedCount})`;
+			return `Vote (${selectedCount})`;
 		}
 		if (activeSection === "analysis") {
 			return "Bracket";
@@ -339,7 +339,7 @@ export function FloatingNavbar() {
 		if (activeSection === "tournament") {
 			return "Bracket";
 		}
-		return "Pick Names";
+		return "Favorites";
 	}, [activeSection, isAdminRoute, isHomeRoute, isTournamentActive, selectedCount]);
 
 	const navItems = useMemo((): DynamicIslandNavItem[] => {

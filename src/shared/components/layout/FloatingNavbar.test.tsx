@@ -155,7 +155,7 @@ describe("FloatingNavbar", () => {
 		renderWithRouter();
 
 		expect(getNav()).toBeInTheDocument();
-		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Pick Names");
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Favorites");
 
 		expandNav();
 
@@ -188,7 +188,7 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
-		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Start (3)");
+		expect(screen.getByTestId("dynamic-island-collapsed-label")).toHaveTextContent("Vote (3)");
 
 		expandNav();
 
