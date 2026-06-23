@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import { useCallback, useState } from "react";
 import { addName } from "@/shared/api/names/api";
 
@@ -62,7 +63,13 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 		setSuccessMessage("");
 
 		try {
-			await addName({ name: values.name, description: values.description });
+			// Sanitize inputs before sending to the backend
+			const sanitizedName = DOMPurify.sanitize(values.name, { ALLOWED_TAGS: [] }).trim();
+			const sanitizedDescription = DOMPurify.sanitize(values.description, {
+				ALLOWED_TAGS: [],
+			}).trim();
+
+			await addName({ name: sanitizedName, description: sanitizedDescription });
 
 			setSuccessMessage("Name suggestion submitted successfully!");
 			setValues({ name: "", description: "" });
