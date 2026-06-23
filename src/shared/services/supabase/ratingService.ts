@@ -144,7 +144,12 @@ export const ratingsAPI = {
 			throw new Error(validation.error || "Invalid ratings data");
 		}
 
-		const ratingsList = [];
+		const ratingsList: {
+			nameId: string;
+			rating: number;
+			wins: number;
+			losses: number;
+		}[] = [];
 		for (const nameId in ratings) {
 			const data = ratings[nameId];
 			ratingsList.push({
