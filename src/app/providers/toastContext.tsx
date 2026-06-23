@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import {
 	createContext,
 	type ReactNode,
@@ -106,11 +107,11 @@ function ToastContainer({
 						<span className="flex-1">{toast.message}</span>
 						<button
 							onClick={() => onDismiss(toast.id)}
-							className="ml-2 rounded p-0.5 opacity-70 transition-opacity hover:opacity-100"
+							className="ml-2 rounded p-0.5 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
 							aria-label="Dismiss"
 							type="button"
 						>
-							X
+							<X className="size-4" />
 						</button>
 					</div>
 				);
