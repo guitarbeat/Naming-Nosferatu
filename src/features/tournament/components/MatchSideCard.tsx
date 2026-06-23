@@ -1,3 +1,4 @@
+import { memo } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
 import {
 	getFlameCount,
@@ -52,7 +53,7 @@ function StreakMarkers({
 	);
 }
 
-export function MatchSideCard({
+export const MatchSideCard = memo(function MatchSideCard({
 	side,
 	name,
 	img,
@@ -189,4 +190,4 @@ export function MatchSideCard({
 			</button>
 		</div>
 	);
-}
+});
