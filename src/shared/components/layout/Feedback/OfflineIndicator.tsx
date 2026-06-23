@@ -63,7 +63,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
 	};
 
 	return (
-		<div className={`indicator ${position} ${getStatusClass()}`}>
+		<div className={`indicator ${position} ${getStatusClass()}`} role="status" aria-live="polite">
 			<div className="indicator-content">
 				<span className="indicator-dot" />
 				<span className="indicator-message">{getStatusMessage()}</span>

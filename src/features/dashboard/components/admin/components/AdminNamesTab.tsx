@@ -121,6 +121,7 @@ export function AdminNamesTab({
 										checked={selectedNames.has(nameId)}
 										onChange={(event) => onSelectionChange(nameId, event.target.checked)}
 										className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
+										aria-label={`Select ${name.name}`}
 									/>
 									<div className="min-w-0">
 										<div className="flex items-center gap-2 flex-wrap">
