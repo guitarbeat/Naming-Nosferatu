@@ -14,7 +14,7 @@ import { getStorageString, isStorageAvailable, setStorageString } from "@/shared
    AUDIO MANAGER HOOK
    ========================================================================= */
 
-interface UseAudioManagerResult {
+export interface UseAudioManagerResult {
 	isMuted: boolean;
 	handleToggleMute: () => void;
 	playVoteSound: () => void;
