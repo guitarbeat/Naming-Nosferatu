@@ -1,3 +1,3 @@
-## 2026-06-18 - Added Proper ARIA roles to custom Tab Navigation
-**Learning:** When building custom tab components from mapped arrays of button elements, using `role="tablist"`, `role="tab"`, and `aria-selected={condition}` is essential for proper screen reader communication and accessibility standards.
-**Action:** Always ensure mapped button lists acting as tabs in custom navigation components include these explicit ARIA roles.
+## 2024-06-19 - Adding loading states to destructive/logout actions
+**Learning:** Adding a spinner to the logout button makes the UI feel more responsive during state transitions, and `aria-busy` is a simple but critical attribute for screen readers to understand an action is pending.
+**Action:** When creating form submissions or auth actions, ensure an `aria-busy` state and loading indicator are added.

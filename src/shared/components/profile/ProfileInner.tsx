@@ -1,4 +1,4 @@
-import { LogOut, Pencil, User } from "lucide-react";
+import { Loader2, LogOut, Pencil, User } from "lucide-react";
 import { type RefObject, useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
@@ -123,9 +123,14 @@ function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: Profi
 				type="button"
 				onClick={handleLogout}
 				disabled={isLoggingOut}
+				aria-busy={isLoggingOut}
 				className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
 			>
-				<LogOut size={13} />
+				{isLoggingOut ? (
+					<Loader2 size={13} className="animate-spin" aria-hidden="true" />
+				) : (
+					<LogOut size={13} aria-hidden="true" />
+				)}
 				{isLoggingOut ? "Logging out..." : "Logout"}
 			</button>
 		</div>
