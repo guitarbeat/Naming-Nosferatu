@@ -15,13 +15,35 @@ import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
+	// Fast path: reference equality
+	if (newItems === oldRankings) {
+		return false;
+	}
+
 	if (newItems.length !== oldRankings.length) {
 		return true;
 	}
-	return newItems.some(
-		(item, index) =>
-			item.name !== oldRankings[index]?.name || item.rating !== oldRankings[index]?.rating,
-	);
+
+	// Fast path: standard for-loop avoids callback overhead of .some()
+	for (let i = 0; i < newItems.length; i++) {
+		const newItem = newItems[i];
+		const oldItem = oldRankings[i];
+
+		// Fast path: item reference equality
+		if (newItem === oldItem) {
+			continue;
+		}
+
+		if (
+			!newItem ||
+			!oldItem ||
+			newItem.name !== oldItem.name ||
+			newItem.rating !== oldItem.rating
+		) {
+			return true;
+		}
+	}
+	return false;
 }
 
 const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => {

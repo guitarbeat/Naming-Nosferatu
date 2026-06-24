@@ -1,0 +1,25 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/app[39m
+
+
+ [32m✓[39m benchmark.bench.ts[2m > [22mhaveRankingsChanged[33m 9038[2mms[22m[39m
+     [1mname                                                      [22m  [1m          hz[22m  [1m   min[22m  [1m   max[22m  [1m  mean[22m  [1m   p75[22m  [1m   p99[22m  [1m  p995[22m  [1m  p999[22m  [1m   rme[22m  [1msamples[22m
+   [32m·[39m original - same array ref                                   [34m    4,443.42[39m  [36m0.2054[39m  [36m0.4137[39m  [36m0.2251[39m  [36m0.2385[39m  [36m0.2937[39m  [36m0.3147[39m  [36m0.3888[39m  [2m±0.48%[22m  [2m   2222[22m
+   [32m·[39m optimized - same array ref                                  [34m9,210,137.06[39m  [36m0.0001[39m  [36m0.9051[39m  [36m0.0001[39m  [36m0.0001[39m  [36m0.0002[39m  [36m0.0002[39m  [36m0.0004[39m  [2m±0.55%[22m  [2m4605069[22m
+   [32m·[39m original - diff array ref, same object refs                 [34m    8,020.89[39m  [36m0.1076[39m  [36m0.3411[39m  [36m0.1247[39m  [36m0.1240[39m  [36m0.2198[39m  [36m0.2347[39m  [36m0.2865[39m  [2m±0.60%[22m  [2m   4011[22m
+   [32m·[39m optimized - diff array ref, same object refs                [34m   33,755.96[39m  [36m0.0267[39m  [36m0.2583[39m  [36m0.0296[39m  [36m0.0277[39m  [36m0.0712[39m  [36m0.0769[39m  [36m0.1124[39m  [2m±0.45%[22m  [2m  16878[22m
+   [32m·[39m original - diff array ref, diff object refs, same content   [34m    3,897.12[39m  [36m0.2298[39m  [36m0.4785[39m  [36m0.2566[39m  [36m0.2803[39m  [36m0.3583[39m  [36m0.3904[39m  [36m0.4695[39m  [2m±0.53%[22m  [2m   1949[22m
+   [32m·[39m optimized - diff array ref, diff object refs, same content  [34m    3,420.86[39m  [36m0.2585[39m  [36m0.5920[39m  [36m0.2923[39m  [36m0.3141[39m  [36m0.3890[39m  [36m0.4167[39m  [36m0.5272[39m  [2m±0.51%[22m  [2m   1711[22m
+   [32m·[39m original - diff array ref, diff object refs, diff content   [34m    8,054.89[39m  [36m0.1074[39m  [36m0.3428[39m  [36m0.1241[39m  [36m0.1228[39m  [36m0.2000[39m  [36m0.2142[39m  [36m0.2658[39m  [2m±0.57%[22m  [2m   4028[22m
+   [32m·[39m optimized - diff array ref, diff object refs, diff content  [34m   34,057.12[39m  [36m0.0266[39m  [36m0.2286[39m  [36m0.0294[39m  [36m0.0276[39m  [36m0.0711[39m  [36m0.0787[39m  [36m0.1062[39m  [2m±0.43%[22m  [2m  17029[22m
+
+[1m[30m[46m BENCH [49m[39m[22m [36mSummary
+[39m
+  optimized - same array ref[2m - benchmark.bench.ts[2m > [22m[2mhaveRankingsChanged[22m
+[32m    270.43x [39m[90mfaster than [39moptimized - diff array ref, diff object refs, diff content
+[32m    272.84x [39m[90mfaster than [39moptimized - diff array ref, same object refs
+[32m    1143.42x [39m[90mfaster than [39moriginal - diff array ref, diff object refs, diff content
+[32m    1148.27x [39m[90mfaster than [39moriginal - diff array ref, same object refs
+[32m    2072.76x [39m[90mfaster than [39moriginal - same array ref
+[32m    2363.32x [39m[90mfaster than [39moriginal - diff array ref, diff object refs, same content
+[32m    2692.35x [39m[90mfaster than [39moptimized - diff array ref, diff object refs, same content
