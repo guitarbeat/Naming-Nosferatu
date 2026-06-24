@@ -12,6 +12,7 @@ export function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 						accept="image/*"
 						onChange={onImageUpload}
 						className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+						aria-label="Upload image file"
 					/>
 					<p className="text-xs text-muted-foreground mt-2">
 						Upload errors will appear in the console.
