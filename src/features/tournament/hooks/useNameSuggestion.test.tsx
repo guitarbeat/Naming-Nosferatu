@@ -84,4 +84,43 @@ describe("useNameSuggestion", () => {
 		expect(result.current.globalError).toBe("Duplicate name");
 		expect(result.current.successMessage).toBe("");
 	});
+
+	it("handles non-Error submission rejection", async () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		mockAddName.mockRejectedValue("Something went wrong");
+
+		act(() => {
+			result.current.handleChange("name", "Duplicate Cat");
+			result.current.handleChange("description", "Another cat");
+		});
+
+		await act(async () => {
+			await result.current.handleSubmit();
+		});
+
+		expect(mockAddName).toHaveBeenCalledTimes(1);
+		expect(result.current.globalError).toBe("Failed to submit suggestion");
+		expect(result.current.successMessage).toBe("");
+	});
+
+	it("resets state", () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		act(() => {
+			result.current.handleChange("name", "Test Cat");
+			result.current.handleChange("description", "A cute test cat");
+			result.current.setGlobalError("Global error");
+		});
+
+		act(() => {
+			result.current.reset();
+		});
+
+		expect(result.current.values).toEqual({ name: "", description: "" });
+		expect(result.current.errors).toEqual({});
+		expect(result.current.touched).toEqual({});
+		expect(result.current.globalError).toBe("");
+		expect(result.current.successMessage).toBe("");
+	});
 });
