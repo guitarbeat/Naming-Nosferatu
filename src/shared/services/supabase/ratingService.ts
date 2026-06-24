@@ -24,18 +24,24 @@ const validateRatingsData = (
 		return { isValid: false, error: "Invalid ratings: must be an object" };
 	}
 
-	let ratingsCount = 0;
+	// ⚡ OPTIMIZATION: Use Object.entries to get length without iterating,
+	// enabling O(1) fail-fast for > 200 limit and empty checks.
+	const entries = Object.entries(ratings);
+	const entriesCount = entries.length;
 
-	for (const nameId in ratings) {
-		ratingsCount++;
-		if (ratingsCount > 200) {
-			return {
-				isValid: false,
-				error: "Invalid ratings: exceeds maximum limit of 200 entries",
-			};
-		}
+	if (entriesCount === 0) {
+		return { isValid: false, error: "Invalid ratings: cannot be empty" };
+	}
 
-		const data = ratings[nameId];
+	if (entriesCount > 200) {
+		return {
+			isValid: false,
+			error: "Invalid ratings: exceeds maximum limit of 200 entries",
+		};
+	}
+
+	// ⚡ OPTIMIZATION: Destructure entry tuple for clean access and better performance
+	for (const [nameId, data] of entries) {
 		if (!nameId || typeof nameId !== "string") {
 			return {
 				isValid: false,
@@ -52,45 +58,26 @@ const validateRatingsData = (
 
 		const { rating, wins, losses } = data;
 
-		if (
-			typeof rating !== "number" ||
-			Number.isNaN(rating) ||
-			rating < 800 ||
-			rating > 2400
-		) {
+		if (typeof rating !== "number" || Number.isNaN(rating) || rating < 800 || rating > 2400) {
 			return {
 				isValid: false,
 				error: `Invalid rating for ${nameId}: must be a number between 800 and 2400`,
 			};
 		}
 
-		if (
-			typeof wins !== "number" ||
-			Number.isNaN(wins) ||
-			wins < 0 ||
-			wins > 1000
-		) {
+		if (typeof wins !== "number" || Number.isNaN(wins) || wins < 0 || wins > 1000) {
 			return {
 				isValid: false,
 				error: `Invalid wins for ${nameId}: must be a number between 0 and 1000`,
 			};
 		}
 
-		if (
-			typeof losses !== "number" ||
-			Number.isNaN(losses) ||
-			losses < 0 ||
-			losses > 1000
-		) {
+		if (typeof losses !== "number" || Number.isNaN(losses) || losses < 0 || losses > 1000) {
 			return {
 				isValid: false,
 				error: `Invalid losses for ${nameId}: must be a number between 0 and 1000`,
 			};
 		}
-	}
-
-	if (ratingsCount === 0) {
-		return { isValid: false, error: "Invalid ratings: cannot be empty" };
 	}
 
 	return { isValid: true };
