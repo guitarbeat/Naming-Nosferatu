@@ -42,15 +42,11 @@ export const PersonalResults = ({
 
 		return Object.entries(personalRatings)
 			.map(([id, rating]: [string, unknown]) => {
-				const r = rating as
-					| { rating?: number; wins?: number; losses?: number }
-					| number;
+				const r = rating as { rating?: number; wins?: number; losses?: number } | number;
 				const actualName = idToNameMap.get(id) || id;
 				return {
 					name: actualName,
-					rating: Math.round(
-						typeof r === "number" ? r : r?.rating || ELO_RATING.DEFAULT_RATING,
-					),
+					rating: Math.round(typeof r === "number" ? r : r?.rating || ELO_RATING.DEFAULT_RATING),
 					wins: typeof r === "number" ? 0 : r?.wins || 0,
 					losses: typeof r === "number" ? 0 : r?.losses || 0,
 					id,
@@ -70,13 +66,12 @@ export const PersonalResults = ({
 							Adjustment table
 						</p>
 						<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">
-							Reorder your results if you want a final manual pass before saving
-							the bracket back to your profile.
+							Reorder your results if you want a final manual pass before saving the bracket back to
+							your profile.
 						</p>
 						<p className="max-w-2xl text-xs leading-relaxed text-muted-foreground/60">
-							This panel is your personal ordering layer. It helps you tune your
-							saved bracket without reframing the broader community averages by
-							itself.
+							This panel is your personal ordering layer. It helps you tune your saved bracket
+							without reframing the broader community averages by itself.
 						</p>
 					</div>
 					<Button variant="outline" size="small" onClick={onStartNew}>
