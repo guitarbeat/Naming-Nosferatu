@@ -41,9 +41,7 @@ describe("useNameSuggestion", () => {
 
 	it("submits valid data successfully", async () => {
 		const onSuccessMock = vi.fn();
-		const { result } = renderHook(() =>
-			useNameSuggestion({ onSuccess: onSuccessMock }),
-		);
+		const { result } = renderHook(() => useNameSuggestion({ onSuccess: onSuccessMock }));
 
 		mockAddName.mockResolvedValue({
 			id: "123",
@@ -63,9 +61,7 @@ describe("useNameSuggestion", () => {
 			name: "Test Cat",
 			description: "A cute test cat",
 		});
-		expect(result.current.successMessage).toBe(
-			"Name suggestion submitted successfully!",
-		);
+		expect(result.current.successMessage).toBe("Name suggestion submitted successfully!");
 		expect(result.current.values).toEqual({ name: "", description: "" });
 		expect(onSuccessMock).toHaveBeenCalledTimes(1);
 	});
