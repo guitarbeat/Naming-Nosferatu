@@ -4,3 +4,7 @@
 ## 2025-06-18 - Optimize array equality checks with for loop and reference check
 **Learning:** `Array.prototype.some` incurs significant callback overhead per element. When comparing two arrays for equality, using a traditional `for` loop combined with an upfront array reference check (`if (a === b)`) and an element reference check (`if (a[i] === b[i])`) can result in a 200x-2000x performance improvement in hot paths.
 **Action:** Replace functional array methods with `for` loops and reference checks for hot-path array comparisons.
+
+## 2025-06-18 - Avoid array index for keys
+**Learning:** Using array indices as `key` props in React lists is strictly forbidden by Biome's `lint/suspicious/noArrayIndexKey` rule and can cause performance/rendering issues.
+**Action:** Always use unique identifiers from the iterated data (e.g., `key={item.id}`) instead of index.
