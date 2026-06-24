@@ -31,7 +31,9 @@ export const PersonalResults = ({
 
 		const idToNameMap = new Map<string, string>();
 		if (currentTournamentNames) {
-			for (const n of currentTournamentNames) {
+			// PERF: use standard for-loop to avoid iterator overhead
+			for (let i = 0, len = currentTournamentNames.length; i < len; i++) {
+				const n = currentTournamentNames[i];
 				if (n.id !== undefined) {
 					idToNameMap.set(String(n.id), n.name);
 				}
