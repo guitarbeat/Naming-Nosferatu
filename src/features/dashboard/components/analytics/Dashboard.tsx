@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, Users } from "lucide-react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
-import { SegmentedControl } from "@/shared/components/ui/SegmentedControl";
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import {
@@ -15,7 +15,7 @@ import {
 } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
 import { ProfilePanel } from "./components/ProfilePanel";
-import { type QuickStat } from "./components/QuickStatsPanel";
+import type { QuickStat } from "./components/QuickStatsPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
@@ -243,11 +243,10 @@ function EngagementPanel({
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.3, ease: "easeOut" }}
 					>
-						<SegmentedControl
+						<MagicToggle
 							options={TIMEFRAME_OPTIONS}
 							value={timeframe}
 							onChange={setTimeframe}
-							size="small"
 							ariaLabel="Select timeframe"
 						/>
 						<Button
