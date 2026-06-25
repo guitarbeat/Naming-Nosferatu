@@ -15,7 +15,7 @@ import {
 } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
 import { ProfilePanel } from "./components/ProfilePanel";
-import { type QuickStat } from "./components/QuickStatsPanel";
+import type { QuickStat } from "./components/QuickStatsPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
