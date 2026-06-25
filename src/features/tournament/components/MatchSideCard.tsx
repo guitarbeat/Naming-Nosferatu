@@ -1,3 +1,4 @@
+import { type KeyboardEvent, memo } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
 import {
 	getFlameCount,
@@ -23,6 +24,8 @@ export interface MatchSideCardProps {
 	description?: string;
 	pronunciation?: string;
 	onVote: () => void;
+	onKeyDown?: (event: KeyboardEvent<HTMLButtonElement>) => void;
+	shortcutHint?: string;
 	animationDelay?: string;
 }
 
@@ -52,7 +55,10 @@ function StreakMarkers({
 	);
 }
 
-export function MatchSideCard({
+// ⚡ Bolt Performance Optimization: Wrapped MatchSideCard in React.memo()
+// Prevents unnecessary re-renders of the image, DOM structure, and complex CSS computations
+// during parent Tournament component state updates (e.g., ticking timers, round announcements).
+export const MatchSideCard = memo(function MatchSideCard({
 	side,
 	name,
 	img,
@@ -68,6 +74,8 @@ export function MatchSideCard({
 	description,
 	pronunciation,
 	onVote,
+	onKeyDown,
+	shortcutHint,
 	animationDelay,
 }: MatchSideCardProps) {
 	const isRight = side === "right";
@@ -94,6 +102,7 @@ export function MatchSideCard({
 				aria-label={`Vote for ${isTeam ? "team" : "name"} ${name}`}
 				aria-disabled={isVoting}
 				onClick={onVote}
+				onKeyDown={onKeyDown}
 			>
 				<div className="relative flex h-full w-full items-center justify-center bg-foreground/10">
 					{img ? (
@@ -159,6 +168,11 @@ export function MatchSideCard({
 						>
 							{name}
 						</h3>
+						{shortcutHint && (
+							<span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
+								{shortcutHint}
+							</span>
+						)}
 						{pronunciation && (
 							<span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/65">
 								[{pronunciation}]
@@ -189,4 +203,4 @@ export function MatchSideCard({
 			</button>
 		</div>
 	);
-}
+});

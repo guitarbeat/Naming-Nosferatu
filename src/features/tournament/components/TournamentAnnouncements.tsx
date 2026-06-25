@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Trophy } from "lucide-react";
+import { memo } from "react";
 import { getFlameCount, getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
 
@@ -23,7 +24,10 @@ interface TournamentAnnouncementsProps {
 	roundAnnouncement: number | null;
 }
 
-export function TournamentAnnouncements({
+// ⚡ Bolt Performance Optimization: Wrapped TournamentAnnouncements in React.memo()
+// Prevents unnecessary re-renders of complex Framer Motion animations when parent tournament states
+// (like timers or user input events) change without affecting announcement states.
+export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 	prefersReducedMotion,
 	openingBracketReveal,
 	openingEntrants,
@@ -168,7 +172,9 @@ export function TournamentAnnouncements({
 								{streakBurst.winnerName} x{streakBurst.streak}
 							</p>
 							<div className="mt-2 flex gap-1.5">
-								{Array.from({ length: getFlameCount(streakBurst.streak, 9) }).map((_, i) => (
+								{Array.from({
+									length: getFlameCount(streakBurst.streak, 9),
+								}).map((_, i) => (
 									<span
 										key={`streak-flame-${streakBurst.key}-${i}`}
 										className="h-1.5 w-5 animate-pulse rounded-full bg-current opacity-80 sm:h-2 sm:w-6"
@@ -216,4 +222,4 @@ export function TournamentAnnouncements({
 			</AnimatePresence>
 		</>
 	);
-}
+});

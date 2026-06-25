@@ -11,6 +11,7 @@ import {
 	VolumeX,
 	X,
 } from "lucide-react";
+import { memo } from "react";
 import { getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
 
@@ -37,7 +38,9 @@ interface TournamentHeaderProps {
 	roundMatchesLeft: number;
 }
 
-export function TournamentHeader({
+// ⚡ Bolt Performance Optimization: Wrapped TournamentHeader in React.memo()
+// Prevents unnecessary re-renders when parent match data changes but header props (like progress or round number) do not.
+export const TournamentHeader = memo(function TournamentHeader({
 	roundNumber,
 	totalRounds,
 	bracketStage,
@@ -250,4 +253,4 @@ export function TournamentHeader({
 			</div>
 		</header>
 	);
-}
+});
