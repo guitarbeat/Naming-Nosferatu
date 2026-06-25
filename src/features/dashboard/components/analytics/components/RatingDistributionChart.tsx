@@ -33,8 +33,15 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 			return [];
 		}
 
-		const minBucket = Math.floor(Math.min(...ratings) / BUCKET_SIZE) * BUCKET_SIZE;
-		const maxBucket = Math.ceil(Math.max(...ratings) / BUCKET_SIZE) * BUCKET_SIZE;
+		let minRating = Number.POSITIVE_INFINITY;
+		let maxRating = Number.NEGATIVE_INFINITY;
+		for (const r of ratings) {
+			if (r < minRating) minRating = r;
+			if (r > maxRating) maxRating = r;
+		}
+
+		const minBucket = Math.floor(minRating / BUCKET_SIZE) * BUCKET_SIZE;
+		const maxBucket = Math.ceil(maxRating / BUCKET_SIZE) * BUCKET_SIZE;
 
 		const buckets: Record<number, number> = {};
 		for (let b = minBucket; b <= maxBucket; b += BUCKET_SIZE) {
@@ -82,7 +89,7 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 	}
 
 	const meanRange = meanBucket === null ? null : bucketLabel(meanBucket);
-	const maxCount = Math.max(...data.map((d) => d.count));
+	const maxCount = data.reduce((max, d) => Math.max(max, d.count), 0);
 
 	return (
 		<div className="space-y-3">
