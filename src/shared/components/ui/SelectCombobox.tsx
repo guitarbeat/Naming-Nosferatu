@@ -51,9 +51,10 @@ export function SelectCombobox({
 	const sizeStyles = size === "small" ? "px-3 py-1.5 text-xs" : "px-3 py-2 text-sm";
 
 	return (
-		<div className="relative w-full max-w-xs" aria-label={ariaLabel}>
+		<div className="relative w-full max-w-xs">
 			{/* Trigger button */}
 			<motion.button
+				aria-label={ariaLabel}
 				onClick={() => !disabled && setIsOpen(!isOpen)}
 				disabled={disabled}
 				className={`w-full flex items-center justify-between gap-2 rounded-lg border border-border/20 bg-background ${sizeStyles} text-foreground transition-all ${
@@ -104,6 +105,7 @@ export function SelectCombobox({
 											animate={{ opacity: 1, scale: 1 }}
 											exit={{ opacity: 0, scale: 0 }}
 											className="absolute right-2.5 text-foreground/40 hover:text-foreground/60 transition-colors"
+											aria-label="Clear search"
 										>
 											<X size={14} />
 										</motion.button>
