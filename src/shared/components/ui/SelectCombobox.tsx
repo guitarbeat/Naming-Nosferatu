@@ -104,6 +104,7 @@ export function SelectCombobox({
 											animate={{ opacity: 1, scale: 1 }}
 											exit={{ opacity: 0, scale: 0 }}
 											className="absolute right-2.5 text-foreground/40 hover:text-foreground/60 transition-colors"
+											aria-label="Clear search"
 										>
 											<X size={14} />
 										</motion.button>
