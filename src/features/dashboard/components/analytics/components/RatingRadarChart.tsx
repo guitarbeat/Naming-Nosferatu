@@ -1,4 +1,11 @@
-import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, Tooltip } from "recharts";
+import {
+	PolarAngleAxis,
+	PolarGrid,
+	PolarRadiusAxis,
+	Radar,
+	RadarChart,
+	Tooltip,
+} from "recharts";
 import { CHART_GRID, CHART_PALETTE, CHART_TEXT_MUTED } from "./chartTheme";
 import { CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
 
@@ -13,15 +20,26 @@ interface RatingRadarChartProps {
 	limit?: number;
 }
 
-export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartProps) {
-	const top = leaderboard.filter((e) => (e.total_ratings ?? 0) > 0).slice(0, limit);
+export function RatingRadarChart({
+	leaderboard,
+	limit = 6,
+}: RatingRadarChartProps) {
+	const top = leaderboard
+		.filter((e) => (e.total_ratings ?? 0) > 0)
+		.slice(0, limit);
 	if (top.length < 3) {
 		return null;
 	}
 
-	const maxRating = Math.max(...top.map((e) => e.avg_rating)) || 1;
-	const maxWins = Math.max(...top.map((e) => e.wins)) || 1;
-	const maxTotal = Math.max(...top.map((e) => e.total_ratings)) || 1;
+	// ⚡ BOLT: Replace multiple Math.max(...array.map()) calls with a single loop to avoid multiple array allocations and call stack limit risks
+	let maxRating = 1;
+	let maxWins = 1;
+	let maxTotal = 1;
+	for (let i = 0; i < top.length; i++) {
+		if (top[i].avg_rating > maxRating) maxRating = top[i].avg_rating;
+		if (top[i].wins > maxWins) maxWins = top[i].wins;
+		if (top[i].total_ratings > maxTotal) maxTotal = top[i].total_ratings;
+	}
 
 	const data = top.map((e) => ({
 		name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
@@ -32,9 +50,15 @@ export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartPro
 
 	return (
 		<ChartFrame variant="tall">
-			<RadarChart data={data} margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
+			<RadarChart
+				data={data}
+				margin={{ top: 8, right: 24, bottom: 8, left: 24 }}
+			>
 				<PolarGrid stroke={CHART_GRID} />
-				<PolarAngleAxis dataKey="name" tick={{ fontSize: 10, fill: CHART_TEXT_MUTED }} />
+				<PolarAngleAxis
+					dataKey="name"
+					tick={{ fontSize: 10, fill: CHART_TEXT_MUTED }}
+				/>
 				<PolarRadiusAxis
 					angle={30}
 					domain={[0, 100]}
