@@ -92,6 +92,7 @@ export function SelectCombobox({
 										autoFocus={true}
 										type="text"
 										placeholder="Search..."
+										aria-label="Search options"
 										value={searchTerm}
 										onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
 										onClick={(e) => e.stopPropagation()}
