@@ -21,7 +21,8 @@ const DashboardLazy = routeComponents.DashboardLazy;
 export default function HomeRoute() {
 	const { user, tournament, tournamentActions } = useAppStore();
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
-	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } =
+		useSectionScroll();
 
 	const hasNamesData = typeof namesQuery.data !== "undefined";
 	const heroState =
@@ -110,7 +111,10 @@ export default function HomeRoute() {
 									<p className="text-pretty text-sm text-muted-foreground/70">
 										Pick at least 2 names to start comparing them.
 									</p>
-									<Button variant="glass" onClick={() => scrollToSection("pick")}>
+									<Button
+										variant="glass"
+										onClick={() => scrollToSection("pick")}
+									>
 										← Back
 									</Button>
 								</div>
@@ -131,7 +135,10 @@ export default function HomeRoute() {
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Results" subtitle="See how all the names ranked." />
+							<SectionHeading
+								title="Results"
+								subtitle="See how all the names ranked."
+							/>
 						</div>
 						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={600} />}>

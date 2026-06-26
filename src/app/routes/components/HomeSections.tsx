@@ -1,12 +1,8 @@
 import { motion } from "framer-motion";
-import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
 import Button from "@/shared/components/layout/Button";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
-import { Section } from "@/shared/components/layout/Section";
-import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { TIMING } from "@/shared/lib/constants";
 import { themeText } from "@/shared/lib/themeClasses";
-import type { NameItem, RatingData } from "@/shared/types";
+import type { NameItem } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
 
@@ -16,21 +12,13 @@ interface HomeHeroSectionProps {
 	onStartPicking: () => void;
 }
 
-interface TournamentBracketSectionProps {
-	LazyTournament: LazyExoticComponent<
-		ComponentType<{
-			names: NameItem[];
-			existingRatings?: Record<string, RatingData>;
-			onComplete: (ratings: Record<string, RatingData>) => void;
-		}>
-	>;
-	names: NameItem[] | null | undefined;
-	ratings: Record<string, RatingData>;
-	onComplete: (ratings: Record<string, RatingData>) => void;
-	onGoToPicker: () => void;
-}
-
-function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNames: NameItem[] }) {
+function HeroNameWords({
+	state,
+	lockedNames,
+}: {
+	state: HomeHeroState;
+	lockedNames: NameItem[];
+}) {
 	if (state === "loading") {
 		return <span className={themeText.heroPlaceholder}>________</span>;
 	}
@@ -38,20 +26,31 @@ function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNam
 		return <span>Nosferatu</span>;
 	}
 
-	const words = [...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)), "WOODS"];
+	const words = [
+		...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
+		"WOODS",
+	];
+	const wordObjects = words.map((word, i) => ({
+		id: `hero-word-${word}-${i}`,
+		text: word,
+	}));
 
 	return (
 		<span>
-			{words.map((word, i) => (
-				<span key={`${word}-${i}`} className="block sm:inline-block">
-					{i < words.length - 1 ? `${word}\u00a0` : word}
+			{wordObjects.map((wordObj, i) => (
+				<span key={wordObj.id} className="block sm:inline-block">
+					{i < wordObjects.length - 1 ? `${wordObj.text}\u00a0` : wordObj.text}
 				</span>
 			))}
 		</span>
 	);
 }
 
-export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
+export function HomeHeroSection({
+	state,
+	lockedNames,
+	onStartPicking,
+}: HomeHeroSectionProps) {
 	return (
 		<div className="home-hero-wrapper w-full">
 			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center">
@@ -64,7 +63,11 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					<motion.p
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.1, duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
+						transition={{
+							delay: 0.1,
+							duration: TIMING.MOTION_NORMAL,
+							ease: TIMING.MOTION_EASING,
+						}}
 						className="text-sm font-medium uppercase tracking-wider text-muted-foreground/70"
 					>
 						What should we name my cat?
@@ -73,11 +76,18 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					<motion.div
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
-						transition={{ delay: 0.2, duration: TIMING.MOTION_SLOW, ease: TIMING.MOTION_EASING }}
+						transition={{
+							delay: 0.2,
+							duration: TIMING.MOTION_SLOW,
+							ease: TIMING.MOTION_EASING,
+						}}
 					>
 						<h1
 							className={`${themeText.heroDisplay} tracking-tighter`}
-							style={{ fontSize: "clamp(2.5rem, 8vw, 6.5rem)", lineHeight: 1.05 }}
+							style={{
+								fontSize: "clamp(2.5rem, 8vw, 6.5rem)",
+								lineHeight: 1.05,
+							}}
 						>
 							<HeroNameWords state={state} lockedNames={lockedNames} />
 						</h1>
@@ -86,17 +96,26 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					<motion.h2
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.35, duration: TIMING.MOTION_SLOW, ease: TIMING.MOTION_EASING }}
+						transition={{
+							delay: 0.35,
+							duration: TIMING.MOTION_SLOW,
+							ease: TIMING.MOTION_EASING,
+						}}
 						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.4 }}
 					>
-						Pick your favorites and see which names score highest with your friends.
+						Pick your favorites and see which names score highest with your
+						friends.
 					</motion.h2>
 
 					<motion.div
 						initial={{ opacity: 0, y: 20, scale: 0.95 }}
 						animate={{ opacity: 1, y: 0, scale: 1 }}
-						transition={{ delay: 0.5, duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
+						transition={{
+							delay: 0.5,
+							duration: TIMING.MOTION_NORMAL,
+							ease: TIMING.MOTION_EASING,
+						}}
 						className="mt-6"
 					>
 						<Button variant="glass" size="lg" onClick={onStartPicking}>
@@ -106,39 +125,5 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 				</motion.div>
 			</section>
 		</div>
-	);
-}
-
-export function TournamentBracketSection({
-	LazyTournament,
-	names,
-	ratings,
-	onComplete,
-	onGoToPicker,
-}: TournamentBracketSectionProps) {
-	return (
-		<Section
-			id="tournament"
-			variant="minimal"
-			padding="comfortable"
-			maxWidth="2xl"
-			separator={true}
-		>
-			<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
-			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-				{names && names.length > 0 ? (
-					<LazyTournament names={names} existingRatings={ratings} onComplete={onComplete} />
-				) : (
-					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
-						<p className="text-pretty text-sm text-muted-foreground/70">
-							Pick at least 2 names to start comparing them.
-						</p>
-						<Button variant="glass" onClick={onGoToPicker}>
-							← Back
-						</Button>
-					</div>
-				)}
-			</Suspense>
-		</Section>
 	);
 }
