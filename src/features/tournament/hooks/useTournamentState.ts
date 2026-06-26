@@ -73,9 +73,41 @@ function haveSameIds(a: string[], b: string[]): boolean {
 	if (a.length !== b.length) {
 		return false;
 	}
-	const left = [...a].sort();
-	const right = [...b].sort();
-	return left.every((id, index) => id === right[index]);
+
+	// ⚡ Bolt Optimization: Replacing O(N log N) `[...arr].sort()` chains
+	// with a fast-path sequential check and an O(N) Frequency Map-based comparison.
+	// This avoids expensive array allocations, improves comparison performance significantly,
+	// and accurately handles identical duplicate occurrences.
+	if (a === b) {
+		return true;
+	}
+	let isSequentialMatch = true;
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) {
+			isSequentialMatch = false;
+			break;
+		}
+	}
+	if (isSequentialMatch) {
+		return true;
+	}
+
+	const counts = new Map<string, number>();
+	for (let i = 0; i < a.length; i++) {
+		counts.set(a[i], (counts.get(a[i]) || 0) + 1);
+	}
+	for (let i = 0; i < b.length; i++) {
+		const count = counts.get(b[i]);
+		if (!count) {
+			return false;
+		}
+		if (count === 1) {
+			counts.delete(b[i]);
+		} else {
+			counts.set(b[i], count - 1);
+		}
+	}
+	return counts.size === 0;
 }
 
 export function useTournamentState(names: NameItem[], userName?: string): UseTournamentStateResult {

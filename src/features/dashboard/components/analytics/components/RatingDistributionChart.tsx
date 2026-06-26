@@ -36,8 +36,12 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 		let minRating = Number.POSITIVE_INFINITY;
 		let maxRating = Number.NEGATIVE_INFINITY;
 		for (const r of ratings) {
-			if (r < minRating) minRating = r;
-			if (r > maxRating) maxRating = r;
+			if (r < minRating) {
+				minRating = r;
+			}
+			if (r > maxRating) {
+				maxRating = r;
+			}
 		}
 
 		const minBucket = Math.floor(minRating / BUCKET_SIZE) * BUCKET_SIZE;
