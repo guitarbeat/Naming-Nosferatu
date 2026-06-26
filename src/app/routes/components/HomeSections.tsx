@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
+import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
 import Button from "@/shared/components/layout/Button";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { Section } from "@/shared/components/layout/Section";
+import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { TIMING } from "@/shared/lib/constants";
 import { themeText } from "@/shared/lib/themeClasses";
-import type { NameItem } from "@/shared/types";
+import type { NameItem, RatingData } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
 
@@ -12,13 +16,21 @@ interface HomeHeroSectionProps {
 	onStartPicking: () => void;
 }
 
-function HeroNameWords({
-	state,
-	lockedNames,
-}: {
-	state: HomeHeroState;
-	lockedNames: NameItem[];
-}) {
+interface TournamentBracketSectionProps {
+	LazyTournament: LazyExoticComponent<
+		ComponentType<{
+			names: NameItem[];
+			existingRatings?: Record<string, RatingData>;
+			onComplete: (ratings: Record<string, RatingData>) => void;
+		}>
+	>;
+	names: NameItem[] | null | undefined;
+	ratings: Record<string, RatingData>;
+	onComplete: (ratings: Record<string, RatingData>) => void;
+	onGoToPicker: () => void;
+}
+
+function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNames: NameItem[] }) {
 	if (state === "loading") {
 		return <span className={themeText.heroPlaceholder}>________</span>;
 	}
@@ -26,31 +38,25 @@ function HeroNameWords({
 		return <span>Nosferatu</span>;
 	}
 
-	const words = [
-		...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
-		"WOODS",
-	];
+	const words = [...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)), "WOODS"];
 	const wordObjects = words.map((word, i) => ({
 		id: `hero-word-${word}-${i}`,
-		text: word,
+		word,
+		isLast: i === words.length - 1,
 	}));
 
 	return (
 		<span>
-			{wordObjects.map((wordObj, i) => (
-				<span key={wordObj.id} className="block sm:inline-block">
-					{i < wordObjects.length - 1 ? `${wordObj.text}\u00a0` : wordObj.text}
+			{wordObjects.map((item) => (
+				<span key={item.id} className="block sm:inline-block">
+					{item.isLast ? item.word : `${item.word}\u00a0`}
 				</span>
 			))}
 		</span>
 	);
 }
 
-export function HomeHeroSection({
-	state,
-	lockedNames,
-	onStartPicking,
-}: HomeHeroSectionProps) {
+export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
 	return (
 		<div className="home-hero-wrapper w-full">
 			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center">
@@ -104,8 +110,7 @@ export function HomeHeroSection({
 						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.4 }}
 					>
-						Pick your favorites and see which names score highest with your
-						friends.
+						Pick your favorites and see which names score highest with your friends.
 					</motion.h2>
 
 					<motion.div
@@ -125,5 +130,39 @@ export function HomeHeroSection({
 				</motion.div>
 			</section>
 		</div>
+	);
+}
+
+export function TournamentBracketSection({
+	LazyTournament,
+	names,
+	ratings,
+	onComplete,
+	onGoToPicker,
+}: TournamentBracketSectionProps) {
+	return (
+		<Section
+			id="tournament"
+			variant="minimal"
+			padding="comfortable"
+			maxWidth="2xl"
+			separator={true}
+		>
+			<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
+			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+				{names && names.length > 0 ? (
+					<LazyTournament names={names} existingRatings={ratings} onComplete={onComplete} />
+				) : (
+					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
+						<p className="text-pretty text-sm text-muted-foreground/70">
+							Pick at least 2 names to start comparing them.
+						</p>
+						<Button variant="glass" onClick={onGoToPicker}>
+							← Back
+						</Button>
+					</div>
+				)}
+			</Suspense>
+		</Section>
 	);
 }
