@@ -36,8 +36,12 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 		let minRating = Number.POSITIVE_INFINITY;
 		let maxRating = Number.NEGATIVE_INFINITY;
 		for (const r of ratings) {
-			if (r < minRating) minRating = r;
-			if (r > maxRating) maxRating = r;
+			if (r < minRating) {
+				minRating = r;
+			}
+			if (r > maxRating) {
+				maxRating = r;
+			}
 		}
 
 		const minBucket = Math.floor(minRating / BUCKET_SIZE) * BUCKET_SIZE;
@@ -110,9 +114,9 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 					/>
 					<Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR} />
 					<Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
-						{data.map((d, i) => (
+						{data.map((d, _i) => (
 							<Cell
-								key={i}
+								key={d.range}
 								fill={CHART_PALETTE.teal}
 								fillOpacity={0.45 + (d.count / maxCount) * 0.55}
 							/>

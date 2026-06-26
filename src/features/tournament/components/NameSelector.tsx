@@ -916,6 +916,7 @@ export function NameSelector() {
 									}}
 									aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
 									aria-controls="hidden-names-panel"
+									aria-label="Toggle Archived Names panel"
 									className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
 								>
 									<div className="flex items-center gap-2">
