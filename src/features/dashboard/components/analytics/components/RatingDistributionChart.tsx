@@ -20,11 +20,18 @@ function bucketLabel(bucketStart: number) {
 }
 
 export function RatingDistributionChart({ leaderboard }: RatingDistributionChartProps) {
-	const ratings = useMemo(
-		() =>
-			leaderboard.filter((e) => (e.total_ratings ?? 0) > 0).map((e) => Math.round(e.avg_rating)),
-		[leaderboard],
-	);
+	const ratings = useMemo(() => {
+		// ⚡ Bolt Optimization: Replacing O(N) `.filter().map()` chain with a single pass
+		// loop to avoid intermediate array allocations and improve mapping speed.
+		const result = [];
+		for (let i = 0; i < leaderboard.length; i++) {
+			const e = leaderboard[i];
+			if ((e.total_ratings ?? 0) > 0) {
+				result.push(Math.round(e.avg_rating));
+			}
+		}
+		return result;
+	}, [leaderboard]);
 
 	const stats = useMemo(() => computeRatingStats(ratings), [ratings]);
 
@@ -36,8 +43,12 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 		let minRating = Number.POSITIVE_INFINITY;
 		let maxRating = Number.NEGATIVE_INFINITY;
 		for (const r of ratings) {
-			if (r < minRating) minRating = r;
-			if (r > maxRating) maxRating = r;
+			if (r < minRating) {
+				minRating = r;
+			}
+			if (r > maxRating) {
+				maxRating = r;
+			}
 		}
 
 		const minBucket = Math.floor(minRating / BUCKET_SIZE) * BUCKET_SIZE;
@@ -110,9 +121,9 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 					/>
 					<Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR} />
 					<Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
-						{data.map((d, i) => (
+						{data.map((d) => (
 							<Cell
-								key={i}
+								key={d.bucketStart}
 								fill={CHART_PALETTE.teal}
 								fillOpacity={0.45 + (d.count / maxCount) * 0.55}
 							/>
