@@ -1,8 +1,21 @@
 import { useMemo } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	ReferenceLine,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from "recharts";
 import { computeRatingStats } from "@/shared/lib/ratingStats";
 import { CHART_GRID, CHART_PALETTE, CHART_TEXT_MUTED } from "./chartTheme";
-import { CHART_CURSOR, CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
+import {
+	CHART_CURSOR,
+	CHART_TOOLTIP_STYLE,
+	ChartFrame,
+} from "./DashboardPrimitives";
 
 interface RatingDistributionChartProps {
 	leaderboard: Array<{
@@ -19,12 +32,21 @@ function bucketLabel(bucketStart: number) {
 	return `${bucketStart}–${bucketStart + BUCKET_SIZE}`;
 }
 
-export function RatingDistributionChart({ leaderboard }: RatingDistributionChartProps) {
-	const ratings = useMemo(
-		() =>
-			leaderboard.filter((e) => (e.total_ratings ?? 0) > 0).map((e) => Math.round(e.avg_rating)),
-		[leaderboard],
-	);
+export function RatingDistributionChart({
+	leaderboard,
+}: RatingDistributionChartProps) {
+	const ratings = useMemo(() => {
+		// ⚡ Bolt Optimization: Replacing O(N) `.filter().map()` chain with a single pass
+		// loop to avoid intermediate array allocations and improve mapping speed.
+		const result = [];
+		for (let i = 0; i < leaderboard.length; i++) {
+			const e = leaderboard[i];
+			if ((e.total_ratings ?? 0) > 0) {
+				result.push(Math.round(e.avg_rating));
+			}
+		}
+		return result;
+	}, [leaderboard]);
 
 	const stats = useMemo(() => computeRatingStats(ratings), [ratings]);
 
@@ -75,8 +97,10 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 		if (!stats || stats.stdDev <= 0) {
 			return null;
 		}
-		const lo = Math.floor((stats.mean - stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
-		const hi = Math.floor((stats.mean + stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
+		const lo =
+			Math.floor((stats.mean - stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
+		const hi =
+			Math.floor((stats.mean + stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
 		return { lo: bucketLabel(lo), hi: bucketLabel(hi) };
 	}, [stats]);
 
@@ -94,7 +118,10 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 	return (
 		<div className="space-y-3">
 			<ChartFrame>
-				<BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+				<BarChart
+					data={data}
+					margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
+				>
 					<CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} />
 					<XAxis
 						dataKey="range"
@@ -110,9 +137,9 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 					/>
 					<Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={CHART_CURSOR} />
 					<Bar dataKey="count" radius={[6, 6, 0, 0]} maxBarSize={40}>
-						{data.map((d, i) => (
+						{data.map((d) => (
 							<Cell
-								key={i}
+								key={d.bucketStart}
 								fill={CHART_PALETTE.teal}
 								fillOpacity={0.45 + (d.count / maxCount) * 0.55}
 							/>
@@ -167,15 +194,21 @@ export function RatingDistributionChart({ leaderboard }: RatingDistributionChart
 			{stats && (
 				<div className="grid grid-cols-3 gap-2 text-center text-xs text-muted-foreground">
 					<div className="rounded-lg bg-card/40 px-2 py-1.5">
-						<div className="font-semibold text-foreground">{Math.round(stats.mean)}</div>
+						<div className="font-semibold text-foreground">
+							{Math.round(stats.mean)}
+						</div>
 						<div>Mean (μ)</div>
 					</div>
 					<div className="rounded-lg bg-card/40 px-2 py-1.5">
-						<div className="font-semibold text-foreground">{Math.round(stats.median)}</div>
+						<div className="font-semibold text-foreground">
+							{Math.round(stats.median)}
+						</div>
 						<div>Median</div>
 					</div>
 					<div className="rounded-lg bg-card/40 px-2 py-1.5">
-						<div className="font-semibold text-foreground">±{Math.round(stats.stdDev)}</div>
+						<div className="font-semibold text-foreground">
+							±{Math.round(stats.stdDev)}
+						</div>
 						<div>Std Dev (σ)</div>
 					</div>
 				</div>
