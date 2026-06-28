@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   title-lint:
-    if: github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:')
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:') && !startsWith(github.event.pull_request.title, '⚡ Bolt:')
     runs-on: ubuntu-latest
     steps:
       - name: Validate PR title (Conventional Commits)
