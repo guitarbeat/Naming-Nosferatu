@@ -1,7 +1,7 @@
 name: PR Quality
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, edited, synchronize, reopened]
 
 permissions:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   title-lint:
-    if: github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:') && !startsWith(github.event.pull_request.title, '⚡ Bolt:')
+    if: github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:') && !startsWith(github.event.pull_request.title, '⚡')
     runs-on: ubuntu-latest
     steps:
       - name: Validate PR title (Conventional Commits)
