@@ -16,7 +16,6 @@ export const CHART_SERIES = [
 	CHART_PALETTE.rose,
 ] as const;
 
-export const CHART_TEXT = "#c8d2de";
 export const CHART_TEXT_MUTED = "rgba(200, 210, 222, 0.55)";
 export const CHART_GRID = "rgba(200, 210, 222, 0.12)";
 export const CHART_AXIS = "rgba(200, 210, 222, 0.18)";

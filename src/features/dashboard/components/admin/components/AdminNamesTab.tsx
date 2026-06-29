@@ -3,7 +3,6 @@ import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
-import { SelectCombobox } from "@/shared/components/ui/SelectCombobox";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
 
@@ -65,17 +64,18 @@ export function AdminNamesTab({
 					/>
 				</div>
 				<div className="flex gap-2">
-					<div className="w-full max-w-xs">
-						<SelectCombobox
-							options={filterOptions}
-							value={filterStatus}
-							onChange={(value) =>
-								onFilterChange({ target: { value } } as ChangeEvent<HTMLSelectElement>)
-							}
-							placeholder="Filter by status..."
-							ariaLabel="Filter names by status"
-						/>
-					</div>
+					<select
+						value={filterStatus}
+						onChange={onFilterChange}
+						aria-label="Filter names by status"
+						className="w-full max-w-xs rounded-lg border border-border/20 bg-background px-3 py-2 text-sm text-foreground transition-colors hover:border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
+					>
+						{filterOptions.map((option) => (
+							<option key={option.value} value={option.value}>
+								{option.label}
+							</option>
+						))}
+					</select>
 
 					<Button onClick={onRefresh} variant="ghost" size="small">
 						<Loader2 size={16} />

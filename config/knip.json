@@ -10,7 +10,6 @@
 	],
 	"ignoreDependencies": [
 		"@capacitor/cli",
-		"@radix-ui/react-slot",
 		"playwright",
 		"tailwindcss"
 	],

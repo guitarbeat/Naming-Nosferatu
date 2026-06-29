@@ -1,8 +1,20 @@
 import { motion } from "framer-motion";
-import { Activity, BarChart3, Eye, EyeOff, Target, TrendingUp, Trophy, Users } from "lucide-react";
+import {
+	Activity,
+	BarChart3,
+	Eye,
+	EyeOff,
+	Target,
+	TrendingUp,
+	Trophy,
+	User,
+	Users,
+} from "lucide-react";
+import type { ElementType } from "react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
+import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import {
@@ -14,8 +26,6 @@ import {
 	StatTile,
 } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
-import { ProfilePanel } from "./components/ProfilePanel";
-import type { QuickStat } from "./components/QuickStatsPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
 import { TopNamesChart } from "./components/TopNamesChart";
@@ -39,6 +49,13 @@ interface DashboardProps {
 	avatarUrl?: string;
 	canHideNames?: boolean;
 	onNameHidden?: (nameId: string) => void;
+}
+
+interface QuickStat {
+	accent?: boolean;
+	icon: ElementType;
+	label: string;
+	value: string | number;
 }
 
 function getQuickStats({
@@ -116,7 +133,39 @@ function DashboardHeader({
 	return (
 		<div className="grid gap-4 xl:grid-cols-[minmax(0,20rem)_1fr]">
 			{isLoggedIn && userName && (
-				<ProfilePanel userName={userName} isAdmin={isAdmin} avatarUrl={avatarUrl} />
+				<Panel>
+					<div className="flex items-center gap-4">
+						<div className="relative">
+							{avatarUrl ? (
+								<img
+									src={avatarUrl}
+									alt={userName}
+									className={`size-16 rounded-full object-cover ring-2 ring-primary/20 ${themeSurfaces.avatar}`}
+								/>
+							) : (
+								<div
+									className={`flex size-16 items-center justify-center rounded-full ring-2 ring-primary/20 text-primary ${themeSurfaces.avatar}`}
+								>
+									<User size={22} />
+								</div>
+							)}
+							{isAdmin && (
+								<div className="absolute -bottom-0.5 -right-0.5 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 p-1">
+									<div className="rounded-full bg-card p-0.5">
+										<span className="text-xs font-bold">👑</span>
+									</div>
+								</div>
+							)}
+						</div>
+						<div className="min-w-0">
+							<p className={themeText.eyebrowWide}>Profile</p>
+							<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
+							<p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground/75">
+								<span>{isAdmin ? "👤 Administrator" : "🎮 Tournament participant"}</span>
+							</p>
+						</div>
+					</div>
+				</Panel>
 			)}
 
 			{quickStats.length > 0 && (

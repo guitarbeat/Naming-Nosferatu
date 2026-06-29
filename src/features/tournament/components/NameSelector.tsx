@@ -31,10 +31,9 @@ import {
 import Button from "@/shared/components/layout/Button";
 import { Card } from "@/shared/components/layout/Card/Card";
 import CatImage from "@/shared/components/layout/CatImage";
-import { CollapsibleContent } from "@/shared/components/layout/CollapsibleHeader";
-import { ConfirmDialog } from "@/shared/components/layout/ConfirmDialog";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
+import { Modal } from "@/shared/components/layout/Modal";
 import { useCollapsible } from "@/shared/hooks/useCollapsible";
 import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
 import {
@@ -44,7 +43,12 @@ import {
 	isNameHidden,
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
-import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
+import {
+	addManyToSet,
+	addToSet,
+	removeFromSet,
+	toggleInSet,
+} from "@/shared/lib/setUtils";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import type { IdType } from "@/shared/types";
 import useAppStore from "@/store/appStore";
@@ -70,7 +74,10 @@ const EXIT_SPRING_CONFIG = {
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { AdminActionButton } from "./name-selector/AdminActionButton";
 import { NameContent } from "./name-selector/NameContent";
-import { getCardStyles, getNameOverlayClasses } from "./name-selector/nameSelectorUtils";
+import {
+	getCardStyles,
+	getNameOverlayClasses,
+} from "./name-selector/nameSelectorUtils";
 import { SelectionBadge } from "./name-selector/SelectionBadge";
 import { useDeferredSync } from "./name-selector/useDeferredSync";
 import { ZoomButton } from "./name-selector/ZoomButton";
@@ -83,10 +90,14 @@ export function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
-	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const storeSelectedNames = useAppStore(
+		(state) => state.tournament.selectedNames,
+	);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
-	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
+	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(
+		null,
+	);
 	const [dragOffset, setDragOffset] = useState(0);
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
@@ -120,18 +131,25 @@ export function NameSelector() {
 				? "Failed to load names"
 				: null;
 	const isSupabaseUnavailable = error === SUPABASE_UNAVAILABLE_MSG;
-	const names = isSupabaseUnavailable ? sampleNames : (namesQuery.data?.names ?? []);
+	const names = isSupabaseUnavailable
+		? sampleNames
+		: (namesQuery.data?.names ?? []);
 	const isLoading = namesQuery.isPending && !isSupabaseUnavailable;
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
-			const selectedNameItems = names.filter((nameItem) => nextSelectedIds.has(nameItem.id));
+			const selectedNameItems = names.filter((nameItem) =>
+				nextSelectedIds.has(nameItem.id),
+			);
 			tournamentActions.setSelection(selectedNameItems);
 		},
 		[names, tournamentActions],
 	);
 
-	const { catImages, catImageById } = useMemo(() => buildNameCardImages(names), [names]);
+	const { catImages, catImageById } = useMemo(
+		() => buildNameCardImages(names),
+		[names],
+	);
 
 	const showWarningRef = useRef(toast.showWarning);
 	useEffect(() => {
@@ -142,7 +160,9 @@ export function NameSelector() {
 		if (names.length === 0) {
 			return;
 		}
-		const lockedInIds = new Set(getLockedNames(names).map((nameItem) => nameItem.id));
+		const lockedInIds = new Set(
+			getLockedNames(names).map((nameItem) => nameItem.id),
+		);
 		if (lockedInIds.size === 0) {
 			return;
 		}
@@ -197,9 +217,12 @@ export function NameSelector() {
 		[],
 	);
 
-	const markSwiped = useCallback((nameId: IdType, _direction: "left" | "right") => {
-		setSwipedIds((prev) => addToSet(prev, nameId));
-	}, []);
+	const markSwiped = useCallback(
+		(nameId: IdType, _direction: "left" | "right") => {
+			setSwipedIds((prev) => addToSet(prev, nameId));
+		},
+		[],
+	);
 
 	const handleSwipe = useCallback(
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
@@ -247,7 +270,8 @@ export function NameSelector() {
 			}
 
 			// Determine direction based on offset and velocity
-			const isRightSwipe = offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
+			const isRightSwipe =
+				offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
 			const direction = isRightSwipe ? "right" : "left";
 
 			updateDragState(0, direction);
@@ -266,7 +290,9 @@ export function NameSelector() {
 
 			try {
 				await toggleHidden({ nameId, isCurrentlyHidden });
-				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
+				toast.showSuccess(
+					isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
+				);
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
@@ -287,7 +313,9 @@ export function NameSelector() {
 
 			try {
 				await toggleLocked({ nameId, isCurrentlyLocked });
-				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
+				toast.showSuccess(
+					isCurrentlyLocked ? "Name unlocked." : "Name locked in.",
+				);
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
@@ -298,7 +326,8 @@ export function NameSelector() {
 		[isAdmin, toast, toggleLocked, userName],
 	);
 
-	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
+	const [pendingAdminAction, setPendingAdminAction] =
+		useState<PendingAdminAction | null>(null);
 
 	const requestAdminAction = useCallback(
 		(action: PendingAdminAction) => {
@@ -308,7 +337,9 @@ export function NameSelector() {
 			}
 
 			if (!userName?.trim()) {
-				toast.showError("Admin actions require a valid user session. Please log in again.");
+				toast.showError(
+					"Admin actions require a valid user session. Please log in again.",
+				);
 				return;
 			}
 
@@ -346,9 +377,15 @@ export function NameSelector() {
 
 		try {
 			if (pendingAdminAction.type === "toggle-hidden") {
-				await handleToggleHidden(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+				await handleToggleHidden(
+					pendingAdminAction.nameId,
+					pendingAdminAction.isCurrentlyEnabled,
+				);
 			} else {
-				await handleToggleLocked(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+				await handleToggleLocked(
+					pendingAdminAction.nameId,
+					pendingAdminAction.isCurrentlyEnabled,
+				);
 			}
 		} finally {
 			setPendingAdminAction(null);
@@ -364,7 +401,11 @@ export function NameSelector() {
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
 	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
 	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
-	const hiddenFuzzy = useFuzzySearch(hiddenNamesAll, ["name", "description"], hiddenQuery);
+	const hiddenFuzzy = useFuzzySearch(
+		hiddenNamesAll,
+		["name", "description"],
+		hiddenQuery,
+	);
 	const hiddenFiltered = useMemo(() => {
 		return hiddenFuzzy.filter((name) => {
 			if (hiddenShowSelectedOnly && !selectedNames.has(name.id)) {
@@ -373,7 +414,10 @@ export function NameSelector() {
 			return true;
 		});
 	}, [hiddenFuzzy, hiddenShowSelectedOnly, selectedNames]);
-	const previewItems = useMemo(() => hiddenNamesAll.slice(0, 6), [hiddenNamesAll]);
+	const previewItems = useMemo(
+		() => hiddenNamesAll.slice(0, 6),
+		[hiddenNamesAll],
+	);
 	const renderItems = useMemo(
 		() => hiddenFiltered.slice(0, hiddenRenderCount),
 		[hiddenFiltered, hiddenRenderCount],
@@ -394,6 +438,25 @@ export function NameSelector() {
 	const _hasAnySelection = selectedIdsSet.size > 0;
 	const _canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
 	const _selectionFloor = lockedInNames.length;
+	const isHiddenAction = pendingAdminAction?.type === "toggle-hidden";
+	const isDisablingAction = Boolean(pendingAdminAction?.isCurrentlyEnabled);
+	const confirmTitle = isHiddenAction
+		? isDisablingAction
+			? "Unhide this name?"
+			: "Hide this name?"
+		: isDisablingAction
+			? "Unlock this name?"
+			: "Lock this name?";
+	const confirmDescription = isHiddenAction
+		? `${confirmActionName} will ${isDisablingAction ? "be visible to everyone again." : "be removed from public view."}`
+		: `${confirmActionName} will ${isDisablingAction ? "be removed from the locked list." : "stay selected for all users."}`;
+	const confirmLabel = isHiddenAction
+		? isDisablingAction
+			? "Unhide"
+			: "Hide"
+		: isDisablingAction
+			? "Unlock"
+			: "Lock";
 
 	const handleOpenLightbox = useCallback(
 		(nameId: IdType) => {
@@ -410,7 +473,9 @@ export function NameSelector() {
 		if (storeSelectedNames && storeSelectedNames.length >= 2) {
 			tournamentActions.setNames(storeSelectedNames);
 		}
-		document.getElementById("tournament")?.scrollIntoView({ behavior: "smooth", block: "start" });
+		document
+			.getElementById("tournament")
+			?.scrollIntoView({ behavior: "smooth", block: "start" });
 	}, [storeSelectedNames, tournamentActions]);
 
 	const _handleSelectAllAvailable = useCallback(() => {
@@ -449,7 +514,13 @@ export function NameSelector() {
 		});
 		triggerHaptic();
 		toast.showSuccess(`Added ${targetCount} random names.`);
-	}, [availableNames, syncSelectionToStore, toast, triggerHaptic, deferredSync]);
+	}, [
+		availableNames,
+		syncSelectionToStore,
+		toast,
+		triggerHaptic,
+		deferredSync,
+	]);
 
 	if (isLoading) {
 		return (
@@ -476,7 +547,11 @@ export function NameSelector() {
 							<p className="text-sm leading-relaxed text-white/68">{error}</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+							<Button
+								onClick={() => void namesQuery.refetch()}
+								variant="glass"
+								size="small"
+							>
 								Try Again
 							</Button>
 						</div>
@@ -578,7 +653,10 @@ export function NameSelector() {
 																	}}
 																>
 																	<div className="flex items-center gap-2 px-6 py-3 bg-destructive/90 backdrop-blur-md rounded-full border-2 border-destructive shadow-lg rotate-[-20deg]">
-																		<X size={24} className="text-destructive-foreground" />
+																		<X
+																			size={24}
+																			className="text-destructive-foreground"
+																		/>
 																		<span className="text-destructive-foreground font-black text-lg uppercase">
 																			Nope
 																		</span>
@@ -633,7 +711,10 @@ export function NameSelector() {
 															{/* Name and Info Overlay */}
 															<div className={getNameOverlayClasses("swipe")}>
 																<div className="flex flex-col gap-1.5 max-w-full">
-																	<NameContent nameItem={nameItem} variant="swipe" />
+																	<NameContent
+																		nameItem={nameItem}
+																		variant="swipe"
+																	/>
 																</div>
 
 																{isAdmin && (
@@ -644,7 +725,8 @@ export function NameSelector() {
 																			requestAdminAction({
 																				type: "toggle-hidden",
 																				nameId: nameItem.id,
-																				isCurrentlyEnabled: isNameHidden(nameItem),
+																				isCurrentlyEnabled:
+																					isNameHidden(nameItem),
 																			});
 																		}}
 																		disabled={togglingHidden.has(nameItem.id)}
@@ -707,7 +789,11 @@ export function NameSelector() {
 												}}
 												className="mx-auto w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center shadow-xl shadow-success/30"
 											>
-												<Check size={40} className="text-success-foreground" strokeWidth={3} />
+												<Check
+													size={40}
+													className="text-success-foreground"
+													strokeWidth={3}
+												/>
 											</motion.div>
 											<div className="isolate space-y-3">
 												<h2 className="blend-difference-text text-3xl font-bold text-white sm:text-4xl">
@@ -723,7 +809,10 @@ export function NameSelector() {
 												transition={{ delay: 0.4 }}
 												className="pt-4"
 											>
-												<Button onClick={startTournament} className="min-w-[12rem]">
+												<Button
+													onClick={startTournament}
+													className="min-w-[12rem]"
+												>
 													Compare Names
 												</Button>
 											</motion.div>
@@ -759,7 +848,9 @@ export function NameSelector() {
 										</div>
 									</Button>
 									<div className="text-center mt-2">
-										<span className="text-xs text-muted-foreground font-medium">Skip</span>
+										<span className="text-xs text-muted-foreground font-medium">
+											Skip
+										</span>
 									</div>
 								</motion.div>
 
@@ -792,7 +883,9 @@ export function NameSelector() {
 										</div>
 									</Button>
 									<div className="text-center mt-2">
-										<span className="text-xs text-muted-foreground font-medium">Select</span>
+										<span className="text-xs text-muted-foreground font-medium">
+											Select
+										</span>
 									</div>
 								</motion.div>
 							</div>
@@ -807,85 +900,91 @@ export function NameSelector() {
 									const catImage = catImageById.get(nameItem.id) ?? "";
 									return (
 										<motion.div
-													key={nameItem.id}
-													role="button"
-													tabIndex={0}
-													onClick={() => handleToggleName(nameItem.id)}
-													onKeyDown={(e) => {
-														if (e.key === "Enter" || e.key === " ") {
-															e.preventDefault();
-															handleToggleName(nameItem.id);
-														}
-													}}
-													aria-pressed={isSelected}
-													whileHover={{ scale: 1.03, y: -2 }}
-													whileTap={{ scale: 0.97 }}
-													transition={{
-														type: "spring",
-														stiffness: 400,
-														damping: 25,
-													}}
-													className={getCardStyles(isSelected, isNameLocked(nameItem))}
-												>
-													<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
-														<CatImage
-															src={catImage}
-															alt={nameItem.name}
-															objectFit="cover"
-															containerClassName="w-full h-full"
-															imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-														/>
+											key={nameItem.id}
+											role="button"
+											tabIndex={0}
+											onClick={() => handleToggleName(nameItem.id)}
+											onKeyDown={(e) => {
+												if (e.key === "Enter" || e.key === " ") {
+													e.preventDefault();
+													handleToggleName(nameItem.id);
+												}
+											}}
+											aria-pressed={isSelected}
+											whileHover={{ scale: 1.03, y: -2 }}
+											whileTap={{ scale: 0.97 }}
+											transition={{
+												type: "spring",
+												stiffness: 400,
+												damping: 25,
+											}}
+											className={getCardStyles(
+												isSelected,
+												isNameLocked(nameItem),
+											)}
+										>
+											<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
+												<CatImage
+													src={catImage}
+													alt={nameItem.name}
+													objectFit="cover"
+													containerClassName="w-full h-full"
+													imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+												/>
 
-														{/* Selection Badge */}
-														{isSelected && <SelectionBadge />}
+												{/* Selection Badge */}
+												{isSelected && <SelectionBadge />}
 
-														{/* Enhanced Name Overlay */}
-														<div className={getNameOverlayClasses("grid")}>
-															<div className="flex flex-col items-center gap-1.5 max-w-full">
-																<NameContent nameItem={nameItem} variant="grid" />
-															</div>
-														</div>
-
-														{/* Enhanced Zoom Button */}
-														<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+												{/* Enhanced Name Overlay */}
+												<div className={getNameOverlayClasses("grid")}>
+													<div className="flex flex-col items-center gap-1.5 max-w-full">
+														<NameContent nameItem={nameItem} variant="grid" />
 													</div>
-													{isAdmin && !isSwipeMode && (
-														<motion.div
-															initial={{ opacity: 0, y: 10 }}
-															animate={{ opacity: 1, y: 0 }}
-															transition={{ delay: 0.1 }}
-															className="px-3 pb-3 flex gap-2"
-														>
-															<AdminActionButton
-																nameItem={nameItem}
-																actionType="toggle-hidden"
-																isProcessing={togglingHidden.has(nameItem.id)}
-																onClick={() =>
-																	requestAdminAction({
-																		type: "toggle-hidden",
-																		nameId: nameItem.id,
-																		isCurrentlyEnabled: isNameHidden(nameItem),
-																	})
-																}
-															/>
+												</div>
 
-															<AdminActionButton
-																nameItem={nameItem}
-																actionType="toggle-locked"
-																isProcessing={togglingLocked.has(nameItem.id)}
-																onClick={() =>
-																	requestAdminAction({
-																		type: "toggle-locked",
-																		nameId: nameItem.id,
-																		isCurrentlyEnabled: isNameLocked(nameItem),
-																	})
-																}
-															/>
-														</motion.div>
-													)}
+												{/* Enhanced Zoom Button */}
+												<ZoomButton
+													nameId={nameItem.id}
+													onClick={handleOpenLightbox}
+												/>
+											</div>
+											{isAdmin && !isSwipeMode && (
+												<motion.div
+													initial={{ opacity: 0, y: 10 }}
+													animate={{ opacity: 1, y: 0 }}
+													transition={{ delay: 0.1 }}
+													className="px-3 pb-3 flex gap-2"
+												>
+													<AdminActionButton
+														nameItem={nameItem}
+														actionType="toggle-hidden"
+														isProcessing={togglingHidden.has(nameItem.id)}
+														onClick={() =>
+															requestAdminAction({
+																type: "toggle-hidden",
+																nameId: nameItem.id,
+																isCurrentlyEnabled: isNameHidden(nameItem),
+															})
+														}
+													/>
+
+													<AdminActionButton
+														nameItem={nameItem}
+														actionType="toggle-locked"
+														isProcessing={togglingLocked.has(nameItem.id)}
+														onClick={() =>
+															requestAdminAction({
+																type: "toggle-locked",
+																nameId: nameItem.id,
+																isCurrentlyEnabled: isNameLocked(nameItem),
+															})
+														}
+													/>
 												</motion.div>
-											);
-										})}
+											)}
+										</motion.div>
+									);
+								})}
 							</div>
 						)}
 					</div>
@@ -946,7 +1045,9 @@ export function NameSelector() {
 														imageClassName="w-full h-full object-cover opacity-20"
 													/>
 													<div className="absolute inset-0 flex items-center justify-center">
-														<span className="text-muted-foreground/50 text-sm font-bold">?</span>
+														<span className="text-muted-foreground/50 text-sm font-bold">
+															?
+														</span>
 													</div>
 												</div>
 											);
@@ -955,12 +1056,16 @@ export function NameSelector() {
 								)}
 							</div>
 
-							<CollapsibleContent id="hidden-names-panel" isCollapsed={hiddenPanel.isCollapsed}>
-								<div className="mt-4">
+							{!hiddenPanel.isCollapsed && (
+								<div
+									id="hidden-names-panel"
+									className="mt-4 animate-in slide-in-from-top-2 duration-200 fade-in zoom-in-95"
+								>
 									{isSwipeMode && (
 										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
-											Archived names stay out of the swipe deck, but you can still inspect and
-											select them here without leaving swipe mode.
+											Archived names stay out of the swipe deck, but you can
+											still inspect and select them here without leaving swipe
+											mode.
 										</p>
 									)}
 
@@ -1048,7 +1153,10 @@ export function NameSelector() {
 																			animate={{ scale: 1, opacity: 1 }}
 																			className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
 																		>
-																			<Check size={10} className="text-primary-foreground" />
+																			<Check
+																				size={10}
+																				className="text-primary-foreground"
+																			/>
 																		</motion.div>
 																	)}
 																</div>
@@ -1132,7 +1240,7 @@ export function NameSelector() {
 										</div>
 									)}
 								</div>
-							</CollapsibleContent>
+							)}
 						</div>
 					);
 				})()}
@@ -1147,36 +1255,33 @@ export function NameSelector() {
 				/>
 			)}
 
-			<ConfirmDialog
+			<Modal
 				open={Boolean(pendingAdminAction)}
-				title={
-					pendingAdminAction?.type === "toggle-hidden"
-						? pendingAdminAction.isCurrentlyEnabled
-							? "Unhide this name?"
-							: "Hide this name?"
-						: pendingAdminAction?.isCurrentlyEnabled
-							? "Unlock this name?"
-							: "Lock this name?"
-				}
-				description={
-					pendingAdminAction?.type === "toggle-hidden"
-						? `${confirmActionName} will ${pendingAdminAction.isCurrentlyEnabled ? "be visible to everyone again." : "be removed from public view."}`
-						: `${confirmActionName} will ${pendingAdminAction?.isCurrentlyEnabled ? "be removed from the locked list." : "stay selected for all users."}`
-				}
-				confirmLabel={
-					pendingAdminAction?.type === "toggle-hidden"
-						? pendingAdminAction?.isCurrentlyEnabled
-							? "Unhide"
-							: "Hide"
-						: pendingAdminAction?.isCurrentlyEnabled
-							? "Unlock"
-							: "Lock"
-				}
-				confirmTone="danger"
-				loading={isPendingActionBusy}
-				onCancel={cancelAdminAction}
-				onConfirm={confirmAdminAction}
-			/>
+				title={confirmTitle}
+				description={confirmDescription}
+				onClose={cancelAdminAction}
+				closeDisabled={isPendingActionBusy}
+				maxWidth="max-w-md"
+			>
+				<div className="flex flex-col">
+					<p className="text-sm text-muted-foreground">{confirmDescription}</p>
+
+					<div className="mt-6 flex items-center justify-end gap-3">
+						<Button type="button" variant="ghost" onClick={cancelAdminAction} disabled={isPendingActionBusy}>
+							Cancel
+						</Button>
+						<Button
+							type="button"
+							variant="danger"
+							onClick={() => void confirmAdminAction()}
+							loading={isPendingActionBusy}
+							className="bg-red-600 hover:bg-red-500"
+						>
+							{confirmLabel}
+						</Button>
+					</div>
+				</div>
+			</Modal>
 		</div>
 	);
 }

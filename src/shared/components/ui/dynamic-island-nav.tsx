@@ -1,5 +1,5 @@
+import { AnimatePresence, motion, type Transition } from "framer-motion";
 import { X } from "lucide-react";
-import { AnimatePresence, motion, type Transition } from "motion/react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 
@@ -104,7 +104,7 @@ export function DynamicIslandNav({
 
 	return (
 		<>
-			<AnimatePresence>
+			<AnimatePresence initial={false}>
 				{isExpanded && (
 					<motion.div
 						initial={{ opacity: 0 }}
@@ -207,7 +207,7 @@ export function DynamicIslandNav({
 									e.stopPropagation();
 									setIsExpanded(false);
 								}}
-								className="flex h-6.5 w-6.5 items-center justify-center rounded-full text-muted-foreground/70 hover:bg-foreground/5 dark:hover:bg-white/5 hover:text-foreground active:scale-90 transition-all duration-200"
+								className="flex min-h-10 min-w-10 items-center justify-center rounded-full text-muted-foreground/70 transition-[scale,background-color,color] duration-200 hover:bg-foreground/5 hover:text-foreground active:scale-[0.96] dark:hover:bg-white/5"
 								aria-label="Close navigation menu"
 							>
 								<X className="h-4.5 w-4.5" />

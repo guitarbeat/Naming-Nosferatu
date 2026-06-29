@@ -1,17 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
+import { BarChart3, Eye, EyeOff, Lock } from "lucide-react";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
 import { namesQueryOptions } from "@/shared/api/names/api";
 import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { addToSet, removeFromSet } from "@/shared/lib/setUtils";
 import { statsAPI } from "@/shared/services/supabase/statsService";
 import useAppStore from "@/store/appStore";
 import { AdminNamesTab } from "./components/AdminNamesTab";
-import { AdminOverviewTab } from "./components/AdminOverviewTab";
-import { AdminPlaceholderTab } from "./components/AdminPlaceholderTab";
-import { AdminStatsGrid } from "./components/AdminStatsGrid";
-import { AdminTabNav } from "./components/AdminTabNav";
 import { ADMIN_TABS, FILTER_OPTIONS } from "./constants";
 import type { BulkAction, DashboardTab, NameFilter } from "./types";
 import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
@@ -127,10 +125,6 @@ export function AdminDashboard() {
 		});
 	}, []);
 
-	const handleTabChange = useCallback((tab: DashboardTab) => {
-		setActiveTab(tab);
-	}, []);
-
 	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
 		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
 		if (option) {
@@ -163,9 +157,44 @@ export function AdminDashboard() {
 				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
 			</div>
 
-			{stats && <AdminStatsGrid stats={stats} />}
+			{stats && (
+				<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
+					{[
+						{
+							icon: BarChart3,
+							colorClass: "text-primary",
+							label: "Total",
+							value: stats.totalNames,
+						},
+						{ icon: Eye, colorClass: "text-chart-2", label: "Active", value: stats.activeNames },
+						{ icon: Lock, colorClass: "text-chart-4", label: "Locked", value: stats.lockedInNames },
+						{
+							icon: EyeOff,
+							colorClass: "text-destructive",
+							label: "Hidden",
+							value: stats.hiddenNames,
+						},
+					].map(({ icon: Icon, colorClass, label, value }) => (
+						<div key={label} className="p-3 sm:p-6">
+							<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+								<Icon className={colorClass} size={18} />
+								<h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>{label}</h3>
+							</div>
+							<p className="text-2xl sm:text-3xl font-bold text-foreground">{value}</p>
+						</div>
+					))}
+				</div>
+			)}
 
-			<AdminTabNav activeTab={activeTab} tabs={ADMIN_TABS} onTabChange={handleTabChange} />
+			<div className="mb-4 sm:mb-6 overflow-x-auto">
+				<MagicToggle
+					options={ADMIN_TABS}
+					value={activeTab}
+					onChange={setActiveTab}
+					ariaLabel="Admin dashboard sections"
+					size="small"
+				/>
+			</div>
 
 			<AnimatePresence mode="wait">
 				<motion.div
@@ -192,17 +221,37 @@ export function AdminDashboard() {
 							onDelete={(nameId) => void handleSoftDelete(nameId)}
 						/>
 					) : activeTab === "overview" ? (
-						<AdminOverviewTab onImageUpload={handleImageUpload} />
+						<div className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
+									<input
+										type="file"
+										accept="image/*"
+										onChange={handleImageUpload}
+										className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+									/>
+									<p className="text-xs text-muted-foreground mt-2">
+										Upload errors will appear in the console.
+									</p>
+								</div>
+								<div>
+									<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
+									<p className="text-muted-foreground">Activity tracking coming soon...</p>
+								</div>
+							</div>
+						</div>
 					) : activeTab === "users" ? (
-						<AdminPlaceholderTab
-							title="User Analytics"
-							message="User tracking and analytics coming soon..."
-						/>
+						<div className="p-6">
+							<h2 className="text-2xl font-bold mb-4">User Analytics</h2>
+							<p className="text-muted-foreground">User tracking and analytics coming soon...</p>
+						</div>
 					) : (
-						<AdminPlaceholderTab
-							title="Site Analytics"
-							message="Advanced analytics coming soon..."
-						/>
+						<div className="p-6">
+							<h2 className="text-2xl font-bold mb-4">Site Analytics</h2>
+							<p className="text-muted-foreground">Advanced analytics coming soon...</p>
+						</div>
 					)}
 				</motion.div>
 			</AnimatePresence>

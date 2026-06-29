@@ -15,12 +15,3 @@ export function hapticTournamentStart(): void {
 		navigator.vibrate?.([50, 50, 50]);
 	}
 }
-
-/**
- * Triggers a subtle select haptic feedback.
- */
-export function hapticSelect(): void {
-	if (typeof navigator !== "undefined") {
-		navigator.vibrate?.(25);
-	}
-}

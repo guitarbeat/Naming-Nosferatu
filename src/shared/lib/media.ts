@@ -3,7 +3,7 @@ import { CAT_IMAGES } from "./constants";
 /**
  * Generates a simple hash for a string or number.
  */
-export function hashString(str: string): number {
+function hashString(str: string): number {
 	let hash = 2166136261;
 	for (let i = 0; i < str.length; i += 1) {
 		hash ^= str.charCodeAt(i);

@@ -1,9 +1,16 @@
 import { LayoutDashboard, Shield } from "lucide-react";
-import { useState } from "react";
-import Button from "@/shared/components/layout/Button";
+import { type ReactNode, useState } from "react";
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import type { NameItem, RatingData } from "@/shared/types";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { Dashboard as AnalyticsDashboard } from "./components/analytics/Dashboard";
+
+type DashboardView = "analytics" | "moderation";
+
+const DASHBOARD_VIEW_OPTIONS = [
+	{ value: "analytics", label: "Analytics", icon: <LayoutDashboard size={18} /> },
+	{ value: "moderation", label: "Moderation", icon: <Shield size={18} /> },
+] as const satisfies readonly { value: DashboardView; label: string; icon: ReactNode }[];
 
 interface UnifiedDashboardProps {
 	personalRatings?: Record<string, RatingData>;
@@ -23,28 +30,18 @@ interface UnifiedDashboardProps {
 }
 
 export function Dashboard(props: UnifiedDashboardProps) {
-	const [activeView, setActiveView] = useState<"analytics" | "moderation">("analytics");
+	const [activeView, setActiveView] = useState<DashboardView>("analytics");
 
 	return (
 		<div className="w-full space-y-6">
 			{props.isAdmin && (
 				<div className="flex items-center gap-4 border-b border-border pb-4">
-					<Button
-						variant={activeView === "analytics" ? "default" : "ghost"}
-						onClick={() => setActiveView("analytics")}
-						className="gap-2"
-					>
-						<LayoutDashboard size={18} />
-						Analytics
-					</Button>
-					<Button
-						variant={activeView === "moderation" ? "default" : "ghost"}
-						onClick={() => setActiveView("moderation")}
-						className="gap-2"
-					>
-						<Shield size={18} />
-						Moderation
-					</Button>
+					<MagicToggle
+						options={DASHBOARD_VIEW_OPTIONS}
+						value={activeView}
+						onChange={setActiveView}
+						ariaLabel="Dashboard view"
+					/>
 				</div>
 			)}
 

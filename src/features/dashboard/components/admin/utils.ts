@@ -7,7 +7,7 @@ import {
 import type { NameItem } from "@/shared/types";
 import type { AdminStats, NameFilter, NameWithStats, SiteStatsLike } from "./types";
 
-export function toNumber(value: unknown): number {
+function toNumber(value: unknown): number {
 	const parsed = Number(value);
 	return Number.isFinite(parsed) ? parsed : 0;
 }

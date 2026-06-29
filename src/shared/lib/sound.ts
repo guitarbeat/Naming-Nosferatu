@@ -338,7 +338,7 @@ const soundManager = new SoundManager();
 /**
  * Core Audio Service Exports
  */
-export const playSound = (soundName: string, config?: SoundConfig) => {
+const playSound = (soundName: string, config?: SoundConfig) => {
 	if (soundManager.canPlaySounds()) {
 		soundManager.play(soundName, config);
 	}
@@ -350,7 +350,6 @@ export const setBackgroundMusicVolume = (volume: number) =>
 	soundManager.setBackgroundMusicVolume(volume);
 export const playNextTrack = () => soundManager.playNextTrack();
 export const playPreviousTrack = () => soundManager.playPreviousTrack();
-export const getCurrentTrack = () => soundManager.getCurrentTrack();
 
 /**
  * Consolidated Sound Effects

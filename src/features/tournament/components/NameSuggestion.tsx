@@ -43,7 +43,7 @@ function StatusMessage({ error, success }: { error?: string; success?: string })
 // INLINE INNER
 // ============================================================================
 
-export function NameSuggestionInner() {
+function NameSuggestionInner() {
 	const {
 		values,
 		errors,
