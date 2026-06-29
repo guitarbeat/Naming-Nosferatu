@@ -189,7 +189,6 @@ export async function toggleNameHidden(params: {
 	const { isCurrentlyHidden, nameId, userName } = params;
 	const trimmedUserName = userName.trim();
 	await runAdminMutation(async (client) => {
-		// @ts-expect-error - toggle_name_visibility is a custom RPC not in generated types
 		const { data, error } = await client.rpc("toggle_name_visibility", {
 			p_name_id: String(nameId),
 			p_hide: !isCurrentlyHidden,
