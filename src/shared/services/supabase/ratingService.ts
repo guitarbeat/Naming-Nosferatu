@@ -52,21 +52,36 @@ const validateRatingsData = (
 
 		const { rating, wins, losses } = data;
 
-		if (typeof rating !== "number" || Number.isNaN(rating) || rating < 800 || rating > 2400) {
+		if (
+			typeof rating !== "number" ||
+			Number.isNaN(rating) ||
+			rating < 800 ||
+			rating > 2400
+		) {
 			return {
 				isValid: false,
 				error: `Invalid rating for ${nameId}: must be a number between 800 and 2400`,
 			};
 		}
 
-		if (typeof wins !== "number" || Number.isNaN(wins) || wins < 0 || wins > 1000) {
+		if (
+			typeof wins !== "number" ||
+			Number.isNaN(wins) ||
+			wins < 0 ||
+			wins > 1000
+		) {
 			return {
 				isValid: false,
 				error: `Invalid wins for ${nameId}: must be a number between 0 and 1000`,
 			};
 		}
 
-		if (typeof losses !== "number" || Number.isNaN(losses) || losses < 0 || losses > 1000) {
+		if (
+			typeof losses !== "number" ||
+			Number.isNaN(losses) ||
+			losses < 0 ||
+			losses > 1000
+		) {
 			return {
 				isValid: false,
 				error: `Invalid losses for ${nameId}: must be a number between 0 and 1000`,
@@ -129,7 +144,12 @@ export const ratingsAPI = {
 			throw new Error(validation.error || "Invalid ratings data");
 		}
 
-		const ratingsList = [];
+		const ratingsList: {
+			nameId: string;
+			rating: number;
+			wins: number;
+			losses: number;
+		}[] = [];
 		for (const nameId in ratings) {
 			const data = ratings[nameId];
 			ratingsList.push({
