@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
+import { getStorageString } from "@/shared/lib/storage";
 import { readStoredUserSnapshot, writeStoredUserSnapshot } from "@/shared/lib/userStorage";
 
 vi.mock("@/shared/services/supabase/runtime", () => ({
@@ -111,6 +112,6 @@ describe("supabaseAuthAdapter", () => {
 			isAdmin: true,
 			email: "ada@example.com",
 		});
-		expect(window.localStorage.getItem(STORAGE_KEYS.USER)).toBe("Ada");
+		expect(getStorageString(STORAGE_KEYS.USER)).toBe("Ada");
 	});
 });
