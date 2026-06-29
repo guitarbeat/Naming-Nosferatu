@@ -1,3 +1,5 @@
+import { IS_BROWSER } from "@/store/appStore.shared";
+
 interface ErrorInfo {
 	title: string;
 	message: string;
@@ -41,7 +43,9 @@ window.addEventListener("error", (event) => {
 	const errorMsg = event.error
 		? `${event.error.name || "Error"}: ${event.error.message}`
 		: event.message;
-	capturedErrors.push(`[Uncaught] ${errorMsg} at ${event.filename}:${event.lineno}:${event.colno}`);
+	capturedErrors.push(
+		`[Uncaught] ${errorMsg} at ${event.filename}:${event.lineno}:${event.colno}`,
+	);
 });
 
 window.addEventListener("unhandledrejection", (event) => {
@@ -121,14 +125,19 @@ function runDiagnostics(): DiagnosticResult[] {
 	results.push({
 		name: "Console Errors",
 		status: capturedErrors.length === 0 ? "ok" : "error",
-		value: capturedErrors.length === 0 ? "None" : `${capturedErrors.length} error(s)`,
+		value:
+			capturedErrors.length === 0
+				? "None"
+				: `${capturedErrors.length} error(s)`,
 		hint: capturedErrors.length > 0 ? "Check error details below" : undefined,
 	});
 
 	return results;
 }
 
-function renderDiagnostics(diagnostics: DiagnosticResult[]): HTMLElement | null {
+function renderDiagnostics(
+	diagnostics: DiagnosticResult[],
+): HTMLElement | null {
 	if (!diagnostics || diagnostics.length === 0) {
 		return null;
 	}
@@ -329,11 +338,16 @@ function renderDeploymentList(
 }
 
 // Expose copy function globally for the button
-(window as unknown as { copyErrorsToClipboard: () => void }).copyErrorsToClipboard = () => {
+(
+	window as unknown as { copyErrorsToClipboard: () => void }
+).copyErrorsToClipboard = () => {
 	const errorText = capturedErrors.join("\n\n---\n\n");
 	const diagnostics = runDiagnostics();
 	const diagnosticText = diagnostics
-		.map((d) => `${d.name}: ${d.status} - ${d.value}${d.hint ? ` (${d.hint})` : ""}`)
+		.map(
+			(d) =>
+				`${d.name}: ${d.status} - ${d.value}${d.hint ? ` (${d.hint})` : ""}`,
+		)
 		.join("\n");
 
 	const fullReport = `
@@ -351,7 +365,9 @@ ${errorText || "No errors captured"}
 
 	navigator.clipboard.writeText(fullReport).then(
 		() => {
-			const btn = document.getElementById("copy-errors-btn") as HTMLButtonElement;
+			const btn = document.getElementById(
+				"copy-errors-btn",
+			) as HTMLButtonElement;
 			if (btn) {
 				const original = btn.textContent;
 				btn.textContent = "Copied!";
@@ -417,7 +433,11 @@ function showDeploymentError(errorInfo: ErrorInfo): void {
 		content.appendChild(detailsList);
 	}
 
-	const fixList = renderDeploymentList("How to Fix:", errorInfo.suggestions, "ol");
+	const fixList = renderDeploymentList(
+		"How to Fix:",
+		errorInfo.suggestions,
+		"ol",
+	);
 	if (fixList) {
 		content.appendChild(fixList);
 	}
@@ -465,7 +485,8 @@ export function initDeploymentCheck(): void {
 	if (!root) {
 		showDeploymentError({
 			title: "Root Element Missing",
-			message: "The application root element (#root) was not found in the HTML.",
+			message:
+				"The application root element (#root) was not found in the HTML.",
 			suggestions: [
 				'Verify index.html contains <div id="root"></div>',
 				"Check that the HTML file is being served correctly",
@@ -496,7 +517,8 @@ export function initDeploymentCheck(): void {
 			scriptError = true;
 			showDeploymentError({
 				title: "JavaScript Failed to Load",
-				message: "The application's JavaScript files could not be loaded. This is often caused by:",
+				message:
+					"The application's JavaScript files could not be loaded. This is often caused by:",
 				details: [
 					"Content Security Policy (CSP) blocking scripts",
 					"Incorrect build output paths",
@@ -521,7 +543,9 @@ export function initDeploymentCheck(): void {
 			}
 
 			showDeploymentError({
-				title: scriptLoaded ? "Something went wrong" : "Taking longer than expected",
+				title: scriptLoaded
+					? "Something went wrong"
+					: "Taking longer than expected",
 				message: scriptLoaded
 					? "The app loaded but couldn't start up. A few things that might explain it:"
 					: "The app is taking a while to download or start. Possible reasons:",
@@ -558,10 +582,14 @@ export function initDeploymentCheck(): void {
 
 	// Monitor CSP violations
 	document.addEventListener("securitypolicyviolation", (event) => {
-		if (event.violatedDirective === "script-src" || event.effectiveDirective === "script-src") {
+		if (
+			event.violatedDirective === "script-src" ||
+			event.effectiveDirective === "script-src"
+		) {
 			showDeploymentError({
 				title: "Content Security Policy Violation",
-				message: "The application's scripts are being blocked by Content Security Policy:",
+				message:
+					"The application's scripts are being blocked by Content Security Policy:",
 				details: [
 					`Blocked resource: ${event.blockedURI || "Unknown"}`,
 					`Violated directive: ${event.violatedDirective}`,
@@ -580,6 +608,6 @@ export function initDeploymentCheck(): void {
 }
 
 // Auto-initialize if running in browser context
-if (typeof window !== "undefined") {
+if (IS_BROWSER) {
 	initDeploymentCheck();
 }
