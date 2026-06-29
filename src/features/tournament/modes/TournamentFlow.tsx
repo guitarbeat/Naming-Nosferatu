@@ -36,9 +36,12 @@ export default function TournamentFlow() {
 
 			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
 				(acc, [nameId, ratingData]) => {
-					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-					const wins = typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
-					const losses = typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
+					const rating =
+						typeof ratingData === "number" ? ratingData : ratingData.rating;
+					const wins =
+						typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
+					const losses =
+						typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
 					acc[nameId] = {
 						rating,
 						wins,
@@ -51,13 +54,10 @@ export default function TournamentFlow() {
 
 			mutateAsyncRef
 				.current({ userId, ratings: ratingsWithStats })
-				.then((result) => {
-					if (result?.success) {
-						console.log(`Successfully saved ${result.count} ratings to database`);
-					}
-				})
 				.catch((_error) => {
-					console.warn("Tournament ratings save failed — ratings were not persisted");
+					console.warn(
+						"Tournament ratings save failed — ratings were not persisted",
+					);
 				});
 		}
 	}, [tournament.isComplete, tournament.ratings, user.name]);
@@ -86,8 +86,8 @@ export default function TournamentFlow() {
 								</div>
 								<p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">
 									Your personal rankings have been updated. Head over to the{" "}
-									<strong className="text-primary">Analyze</strong> section to see the full
-									breakdown and compare results!
+									<strong className="text-primary">Analyze</strong> section to
+									see the full breakdown and compare results!
 								</p>
 								<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
 									<button
