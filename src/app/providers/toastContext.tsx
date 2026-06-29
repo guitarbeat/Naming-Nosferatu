@@ -1,3 +1,4 @@
+import { AlertTriangle, CheckCircle, Info, X, XCircle } from "lucide-react";
 import {
 	createContext,
 	type ReactNode,
@@ -53,11 +54,11 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
 	"bottom-right": "bottom-4 right-4 items-end",
 };
 
-const TYPE_STYLES: Record<ToastType, { bg: string; icon: string }> = {
-	success: { bg: "bg-chart-2", icon: "OK" },
-	error: { bg: "bg-destructive", icon: "X" },
-	warning: { bg: "bg-chart-4 text-foreground", icon: "!" },
-	info: { bg: "bg-primary", icon: "i" },
+const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
+	success: { bg: "bg-chart-2", icon: <CheckCircle className="size-5" /> },
+	error: { bg: "bg-destructive", icon: <XCircle className="size-5" /> },
+	warning: { bg: "bg-chart-4 text-foreground", icon: <AlertTriangle className="size-5" /> },
+	info: { bg: "bg-primary", icon: <Info className="size-5" /> },
 };
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -106,11 +107,11 @@ function ToastContainer({
 						<span className="flex-1">{toast.message}</span>
 						<button
 							onClick={() => onDismiss(toast.id)}
-							className="ml-2 rounded p-0.5 opacity-70 transition-opacity hover:opacity-100"
+							className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
 							aria-label="Dismiss"
 							type="button"
 						>
-							X
+							<X className="size-4" />
 						</button>
 					</div>
 				);
