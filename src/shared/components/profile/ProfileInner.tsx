@@ -3,6 +3,7 @@ import { type RefObject, useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { ErrorManager } from "@/shared/services/errorManager";
 import useAppStore from "@/store/appStore";
 
 interface ProfileInnerProps {
@@ -183,7 +184,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 			}
 			setIsEditing(false);
 		} catch (err) {
-			console.error("Failed to update name:", err);
+			ErrorManager.handleError(err, "ProfileInner.handleSave");
 			setSaveError("We couldn't log you in right now. Try again.");
 		} finally {
 			setIsSaving(false);
@@ -196,7 +197,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 			await onLogout();
 			setIsEditing(true);
 		} catch (err) {
-			console.error("Failed to logout:", err);
+			ErrorManager.handleError(err, "ProfileInner.handleLogout");
 		} finally {
 			setIsLoggingOut(false);
 		}
