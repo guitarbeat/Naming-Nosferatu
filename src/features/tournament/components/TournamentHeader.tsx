@@ -132,6 +132,8 @@ export const TournamentHeader = memo(function TournamentHeader({
 										: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
 								}`}
 								aria-label={label}
+								aria-pressed={active !== undefined ? active : undefined}
+								title={label}
 							>
 								<Icon className="size-4" />
 							</button>
@@ -141,6 +143,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 							onClick={audioManager.handlePreviousTrack}
 							className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
 							aria-label="Previous track"
+							title="Previous track"
 						>
 							<SkipBack className="size-4" />
 						</button>
@@ -149,6 +152,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 							onClick={audioManager.handleNextTrack}
 							className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
 							aria-label="Next track"
+							title="Next track"
 						>
 							<SkipForward className="size-4" />
 						</button>
@@ -161,6 +165,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 									: "cursor-not-allowed border-white/10 bg-white/[0.03] text-white/35"
 							}`}
 							aria-label="Undo last vote"
+							title={canUndo ? "Undo last vote" : "No actions to undo"}
 							disabled={!canUndo}
 						>
 							<Undo2 className="size-4" />

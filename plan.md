@@ -1,8 +1,10 @@
-1. Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/MatchSideCard.tsx`. We will wrap `MatchSideCard` in `memo` from `react` to prevent unnecessary re-renders. Add `onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;` and `shortcutHint?: string;` to `MatchSideCardProps`. Add code comments explaining why `memo` is used.
-2. Use `run_in_bash_session` to run `git diff` to visually inspect the applied changes in `MatchSideCard.tsx`.
-3. Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/TournamentHeader.tsx` and `src/features/tournament/components/TournamentAnnouncements.tsx` by importing `memo` from `react` and wrapping the components. Add code comments explaining why `memo` is used.
-4. Use `run_in_bash_session` to run `git diff` to visually inspect the applied changes.
-5. Use `run_in_bash_session` to run `pnpm test run` and `pnpm dlx @biomejs/biome check src/features/tournament/components/MatchSideCard.tsx src/features/tournament/components/TournamentHeader.tsx src/features/tournament/components/TournamentAnnouncements.tsx` to ensure no regressions were introduced.
-6. Use `run_in_bash_session` to write a simple react render measurement script, execute it, redirect output to a file, and read it to get concrete metrics.
-7. Complete pre commit steps to ensure proper testing, verification, review, and reflection are done.
-8. Use the `submit` tool to create a PR, providing the required `branch_name`, `commit_message`, `title` (following Conventional Commits like `perf: add React.memo to tournament components`), and `description` arguments including the metrics from step 6.
+1. **Enhance TournamentHeader button accessibility and UX**
+   - Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/TournamentHeader.tsx` to add `title` attributes (tooltips) to the icon-only control buttons (Mute/Music/Cats, Previous, Next).
+   - Add a dynamic `title` to the Undo button to explain its disabled state (`"No actions to undo"` vs `"Undo last vote"`).
+   - Add `aria-pressed` to the toggle buttons in the mapped array for better screen reader support.
+2. **Run tests & verify changes**
+   - Run `pnpm run lint` and `pnpm test run` to ensure no regressions are introduced.
+3. **Complete pre-commit steps**
+   - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
+4. **Submit the PR**
+   - Use the `submit` tool to create the PR with branch name, commit message, and description.
