@@ -1,4 +1,4 @@
-import { Copy } from "lucide-react";
+import { Copy, X } from "lucide-react";
 import React, { Component, type ReactNode, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 import { ErrorManager } from "@/shared/services/errorManager";
@@ -70,9 +70,15 @@ function collectDiagnostics(error: Error | null): DiagnosticItem[] {
 			errorType = "Reference Error";
 		} else if (error.name === "SyntaxError") {
 			errorType = "Syntax Error";
-		} else if (error.message?.includes("fetch") || error.message?.includes("network")) {
+		} else if (
+			error.message?.includes("fetch") ||
+			error.message?.includes("network")
+		) {
 			errorType = "Network Error";
-		} else if (error.message?.includes("supabase") || error.message?.includes("database")) {
+		} else if (
+			error.message?.includes("supabase") ||
+			error.message?.includes("database")
+		) {
 			errorType = "Database Error";
 		} else {
 			errorType = error.name || "Runtime Error";
@@ -95,7 +101,9 @@ function collectDiagnostics(error: Error | null): DiagnosticItem[] {
 	return diagnostics;
 }
 
-function parseStackTrace(stack: string): { file: string; line: string; func: string }[] {
+function parseStackTrace(
+	stack: string,
+): { file: string; line: string; func: string }[] {
 	const lines = stack.split("\n").slice(1, 6); // Get first 5 stack frames
 	return lines.map((line) => {
 		const match =
@@ -136,7 +144,9 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	};
 
 	const copyErrorToClipboard = async () => {
-		const diagText = diagnostics.map((d) => `${d.label}: ${d.value}`).join("\n");
+		const diagText = diagnostics
+			.map((d) => `${d.label}: ${d.value}`)
+			.join("\n");
 		const errorDetails = `
 === Error Report ===
 Generated: ${new Date().toISOString()}
@@ -200,7 +210,9 @@ ${error?.stack || "No stack trace available"}
 								{error?.message || "An unexpected error occurred"}
 							</p>
 							{errorId && (
-								<p className="text-xs text-muted-foreground mt-1 font-mono">ID: {errorId}</p>
+								<p className="text-xs text-muted-foreground mt-1 font-mono">
+									ID: {errorId}
+								</p>
 							)}
 						</div>
 					</div>
@@ -223,7 +235,9 @@ ${error?.stack || "No stack trace available"}
 									{statusIcons[item.status] === "close" && "ERR"}
 								</span>
 								<span className="text-muted-foreground">{item.label}:</span>
-								<span className="text-foreground/80 truncate font-mono text-xs">{item.value}</span>
+								<span className="text-foreground/80 truncate font-mono text-xs">
+									{item.value}
+								</span>
 							</div>
 						))}
 					</div>
@@ -265,7 +279,9 @@ ${error?.stack || "No stack trace available"}
 										className="flex items-center gap-2 text-xs font-mono p-2 bg-black/20 rounded"
 									>
 										<span className="text-muted-foreground w-4">{i + 1}.</span>
-										<span className="text-blue-300 truncate flex-1">{frame.func}</span>
+										<span className="text-blue-300 truncate flex-1">
+											{frame.func}
+										</span>
 										<span className="text-muted-foreground">{frame.file}</span>
 										<span className="text-yellow-400">:{frame.line}</span>
 									</div>
@@ -320,15 +336,21 @@ ${error?.stack || "No stack trace available"}
 
 				{/* Help text */}
 				<p className="text-xs text-muted-foreground">
-					Press <kbd className="px-1.5 py-0.5 bg-black/30 rounded text-foreground/60">F12</kbd> to
-					open DevTools for more details
+					Press{" "}
+					<kbd className="px-1.5 py-0.5 bg-black/30 rounded text-foreground/60">
+						F12
+					</kbd>{" "}
+					to open DevTools for more details
 				</p>
 			</div>
 		</div>
 	);
 };
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+	ErrorBoundaryProps,
+	ErrorBoundaryState
+> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -448,7 +470,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
 								aria-label="Dismiss error"
 								type="button"
 							>
-								x
+								<X size={14} />
 							</button>
 						)}
 					</div>
@@ -472,7 +494,8 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	if (!error) {
 		return null;
 	}
-	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
+	const msg =
+		typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
 		<div
 			className={cn(
