@@ -1,4 +1,4 @@
-import { Copy } from "lucide-react";
+import { Copy, X } from "lucide-react";
 import React, { Component, type ReactNode, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 import { ErrorManager } from "@/shared/services/errorManager";
@@ -448,7 +448,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
 								aria-label="Dismiss error"
 								type="button"
 							>
-								x
+								<X size={14} />
 							</button>
 						)}
 					</div>
