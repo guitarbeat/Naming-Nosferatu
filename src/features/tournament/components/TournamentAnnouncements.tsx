@@ -15,7 +15,7 @@ interface StreakBurst {
 interface TournamentAnnouncementsProps {
 	prefersReducedMotion: boolean | null;
 	openingBracketReveal: boolean;
-	openingEntrants: any[];
+	openingEntrants: Array<{ id: string; label: string }>;
 	tournamentMode: string;
 	totalRounds: number;
 	voteAnnouncement: string | null;
