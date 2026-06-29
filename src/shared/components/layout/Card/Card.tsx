@@ -4,6 +4,7 @@ import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/shared/components/layout/CatImage";
 import { TIMING } from "@/shared/lib/constants";
 import { cn } from "@/shared/lib/utils";
+import { IS_BROWSER } from "@/store/appStore.shared";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 type CardVariant =
@@ -400,7 +401,7 @@ const CardNameBase = memo(function CardName({
 	const [isTouchDevice, setIsTouchDevice] = useState(false);
 	useEffect(() => {
 		setIsTouchDevice(
-			typeof window !== "undefined" &&
+			IS_BROWSER &&
 				typeof window.matchMedia === "function" &&
 				window.matchMedia("(pointer: coarse)").matches,
 		);
