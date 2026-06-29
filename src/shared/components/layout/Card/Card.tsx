@@ -105,6 +105,8 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	liquidGlass?: boolean | GlassConfig;
 	interactive?: boolean;
 	enableTilt?: boolean;
+	disabled?: boolean;
+	type?: "button" | "submit" | "reset";
 }
 
 const CardBase = memo(
