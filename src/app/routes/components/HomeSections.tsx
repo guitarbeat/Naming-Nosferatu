@@ -147,7 +147,7 @@ export function HomeHeroSection({
 	);
 }
 
-function TournamentBracketSection({
+function _TournamentBracketSection({
 	LazyTournament,
 	names,
 	ratings,
