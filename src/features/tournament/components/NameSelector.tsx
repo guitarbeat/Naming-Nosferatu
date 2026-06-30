@@ -1092,17 +1092,16 @@ export function NameSelector() {
 													Clear search
 												</button>
 											)}
-											<button
-												type="button"
-												onClick={() => setHiddenShowSelectedOnly((v) => !v)}
-												className={`px-3 py-2 border text-xs font-medium ${
-													hiddenShowSelectedOnly
-														? "bg-primary/20 border-primary/40 text-foreground"
-														: "bg-foreground/5 border-border/10 text-foreground/80"
-												}`}
-											>
-												Selected only
-											</button>
+											<MagicToggle
+												options={[
+													{ value: "all", label: "All" },
+													{ value: "selected", label: "Selected only" },
+												]}
+												value={hiddenShowSelectedOnly ? "selected" : "all"}
+												onChange={(v) => setHiddenShowSelectedOnly(v === "selected")}
+												ariaLabel="Filter selected names"
+												size="small"
+											/>
 											<span className="text-xs text-muted-foreground">
 												{hiddenFiltered.length} / {hiddenNamesAll.length}
 											</span>

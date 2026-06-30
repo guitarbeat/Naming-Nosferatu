@@ -125,8 +125,8 @@ export function AdminDashboard() {
 		});
 	}, []);
 
-	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
+	const handleFilterChange = useCallback((value: string) => {
+		const option = FILTER_OPTIONS.find((item) => item.value === value);
 		if (option) {
 			setFilterStatus(option.value);
 		}

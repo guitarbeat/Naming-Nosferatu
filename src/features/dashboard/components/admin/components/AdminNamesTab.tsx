@@ -3,6 +3,7 @@ import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
 
@@ -18,7 +19,7 @@ interface AdminNamesTabProps {
 	onSearchTermChange: (value: string) => void;
 	filterStatus: string;
 	filterOptions: readonly { value: string; label: string }[];
-	onFilterChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+	onFilterChange: (value: string) => void;
 	onRefresh: () => void;
 	selectedNames: ReadonlySet<string>;
 	onBulkAction: (action: BulkAction) => void;
@@ -63,19 +64,14 @@ export function AdminNamesTab({
 						className="w-full"
 					/>
 				</div>
-				<div className="flex gap-2">
-					<select
+				<div className="flex gap-2 overflow-x-auto pb-1 -mb-1">
+					<MagicToggle
+						options={filterOptions}
 						value={filterStatus}
 						onChange={onFilterChange}
-						aria-label="Filter names by status"
-						className="w-full max-w-xs rounded-lg border border-border/20 bg-background px-3 py-2 text-sm text-foreground transition-colors hover:border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
-					>
-						{filterOptions.map((option) => (
-							<option key={option.value} value={option.value}>
-								{option.label}
-							</option>
-						))}
-					</select>
+						ariaLabel="Filter names by status"
+						size="small"
+					/>
 
 					<Button onClick={onRefresh} variant="ghost" size="small">
 						<Loader2 size={16} />
