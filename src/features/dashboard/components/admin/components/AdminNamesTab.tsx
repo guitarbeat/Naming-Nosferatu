@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
-import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";

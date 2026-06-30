@@ -133,7 +133,7 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 	);
 }
 
-function TournamentBracketSection({
+function _TournamentBracketSection({
 	LazyTournament,
 	names,
 	ratings,

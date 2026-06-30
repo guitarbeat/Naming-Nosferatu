@@ -132,7 +132,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 										: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
 								}`}
 								aria-label={label}
-								aria-pressed={active !== undefined ? active : undefined}
+								aria-pressed={active === undefined ? undefined : active}
 								title={label}
 							>
 								<Icon className="size-4" />
