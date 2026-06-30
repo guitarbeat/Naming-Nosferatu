@@ -312,12 +312,14 @@ ${error?.stack || "No stack trace available"}
 				{/* Action Buttons */}
 				<div className="flex flex-wrap gap-3 justify-center">
 					<button
+						type="button"
 						onClick={resetError}
 						className="px-6 py-2.5 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold rounded-xl shadow-lg hover:shadow-primary/25 active:scale-95 transition-all duration-200"
 					>
 						Try Again
 					</button>
 					<button
+						type="button"
 						onClick={() => {
 							handleGoHome();
 						}}
@@ -326,6 +328,7 @@ ${error?.stack || "No stack trace available"}
 						Go Home
 					</button>
 					<button
+						type="button"
 						onClick={copyErrorToClipboard}
 						className="px-6 py-2.5 bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-foreground font-medium rounded-xl transition-all duration-200 flex items-center gap-2"
 					>
@@ -448,8 +451,10 @@ const ErrorList: React.FC<ErrorListProps> = ({
 		<div className={cn("flex flex-col gap-2 w-full", className)}>
 			{onClearAll && (
 				<button
+					type="button"
 					onClick={onClearAll}
 					className="self-end text-xs font-medium text-red-300 hover:text-red-100 hover:scale-105 transition-all outline-none focus:ring-2 focus:ring-red-500/50 rounded px-1"
+					aria-label="Clear all errors"
 				>
 					Clear All
 				</button>
