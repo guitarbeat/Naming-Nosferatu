@@ -1116,17 +1116,10 @@ export function NameSelector() {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage = catImageById.get(nameItem.id) ?? "";
 											return (
-												<div
+												<button
+													type="button"
 													key={nameItem.id}
-													role="button"
-													tabIndex={0}
 													onClick={() => handleToggleName(nameItem.id)}
-													onKeyDown={(e) => {
-														if (e.key === "Enter" || e.key === " ") {
-															e.preventDefault();
-															handleToggleName(nameItem.id);
-														}
-													}}
 													aria-pressed={isSelected}
 													className={`mobile-readable-card relative rounded-[1.35rem] border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
 														isSelected
@@ -1220,7 +1213,7 @@ export function NameSelector() {
 															</button>
 														</div>
 													)}
-												</div>
+												</button>
 											);
 										})}
 									</div>
