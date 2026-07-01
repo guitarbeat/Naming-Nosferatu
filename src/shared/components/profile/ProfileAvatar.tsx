@@ -1,6 +1,12 @@
 import { motion } from "framer-motion";
 
-export function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () => void }) {
+export function ProfileAvatar({
+	avatarSrc,
+	onError,
+}: {
+	avatarSrc: string;
+	onError: () => void;
+}) {
 	return (
 		<div className="relative mb-1">
 			<div
@@ -8,12 +14,17 @@ export function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onErr
 				aria-hidden="true"
 			/>
 			<motion.div
-			    whileHover={{ scale: 1.05, rotate: [-2, 2, -2, 0] }}
-               whileTap={{ scale: 0.95 }}
-               transition={{ type: "spring", stiffness: 400, damping: 15 }}
-			    className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg"
+				whileHover={{ scale: 1.05, rotate: [-2, 2, -2, 0] }}
+				whileTap={{ scale: 0.95 }}
+				transition={{ type: "spring", stiffness: 400, damping: 15 }}
+				className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg"
 			>
-				<img src={avatarSrc} alt="Profile" className="size-full object-cover" onError={onError} />
+				<img
+					src={avatarSrc}
+					alt="Profile"
+					className="size-full object-cover"
+					onError={onError}
+				/>
 			</motion.div>
 		</div>
 	);

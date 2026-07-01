@@ -83,7 +83,10 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 
 	return (
 		<div className="flex flex-col items-center gap-5 w-full">
-			<ProfileAvatar avatarSrc={avatarSrc} onError={() => setAvatarSrc(defaultAvatar)} />
+			<ProfileAvatar
+				avatarSrc={avatarSrc}
+				onError={() => setAvatarSrc(defaultAvatar)}
+			/>
 
 			{isEditing ? (
 				<ProfileEditForm

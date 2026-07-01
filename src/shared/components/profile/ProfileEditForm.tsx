@@ -1,5 +1,5 @@
 import { User } from "lucide-react";
-import { type RefObject } from "react";
+import type { RefObject } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 
@@ -54,7 +54,12 @@ export function ProfileEditForm({
 
 			<div className="flex gap-2">
 				{isLoggedIn && (
-					<Button type="button" variant="ghost" onClick={handleCancel} className="flex-1">
+					<Button
+						type="button"
+						variant="ghost"
+						onClick={handleCancel}
+						className="flex-1"
+					>
 						Cancel
 					</Button>
 				)}
