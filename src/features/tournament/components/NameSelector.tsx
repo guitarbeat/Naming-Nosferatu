@@ -1077,6 +1077,7 @@ export function NameSelector() {
 												setHiddenRenderCount(24);
 											}}
 											placeholder="Search hidden names"
+											aria-label="Search hidden names"
 											className="w-full sm:max-w-sm px-3 py-2 bg-foreground/5 border border-border/10 text-foreground text-sm"
 										/>
 										<div className="flex items-center justify-between sm:justify-end gap-3">
@@ -1095,6 +1096,7 @@ export function NameSelector() {
 											<button
 												type="button"
 												onClick={() => setHiddenShowSelectedOnly((v) => !v)}
+												aria-pressed={hiddenShowSelectedOnly}
 												className={`px-3 py-2 border text-xs font-medium ${
 													hiddenShowSelectedOnly
 														? "bg-primary/20 border-primary/40 text-foreground"
@@ -1267,7 +1269,12 @@ export function NameSelector() {
 					<p className="text-sm text-muted-foreground">{confirmDescription}</p>
 
 					<div className="mt-6 flex items-center justify-end gap-3">
-						<Button type="button" variant="ghost" onClick={cancelAdminAction} disabled={isPendingActionBusy}>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={cancelAdminAction}
+							disabled={isPendingActionBusy}
+						>
 							Cancel
 						</Button>
 						<Button
