@@ -17,12 +17,7 @@ function CircleProgress({ percentage }: { percentage: number }) {
 	const offset = circumference - (percentage / 100) * circumference;
 
 	return (
-		<svg
-			width={size}
-			height={size}
-			className="-rotate-90 shrink-0"
-			aria-hidden="true"
-		>
+		<svg width={size} height={size} className="-rotate-90 shrink-0" aria-hidden="true">
 			<circle
 				cx={size / 2}
 				cy={size / 2}
@@ -89,15 +84,7 @@ export function DynamicIslandNav({
 		if (items.length === 0) {
 			return 1;
 		}
-		// ⚡ Bolt Optimization: Replaced Math.min(...items.map()) with a single-pass loop.
-		// This avoids creating an intermediate array (preventing garbage collection overhead)
-		// and prevents maximum call stack size errors for extremely large lists of items.
-		let min = Number.POSITIVE_INFINITY;
-		for (let i = 0; i < items.length; i++) {
-			const level = items[i].level ?? 1;
-			if (level < min) min = level;
-		}
-		return min;
+		return Math.min(...items.map((item) => item.level ?? 1));
 	}, [items]);
 
 	const expandedHeight = Math.min(420, Math.max(220, 72 + items.length * 44));
@@ -139,9 +126,7 @@ export function DynamicIslandNav({
 					opacity: isVisible ? 1 : 0,
 				}}
 				transition={
-					prefersReducedMotion
-						? { duration: 0 }
-						: { type: "spring", stiffness: 300, damping: 25 }
+					prefersReducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 25 }
 				}
 				className={cn(
 					"fixed bottom-2 sm:bottom-6 left-1/2 z-[9999] flex -translate-x-1/2 flex-col items-center w-[calc(100%-1rem)] sm:w-auto",
@@ -191,9 +176,7 @@ export function DynamicIslandNav({
 									key={collapsedLabelKey ?? collapsedLabel}
 									initial={prefersReducedMotion ? false : { opacity: 0, y: 15 }}
 									animate={{ opacity: 1, y: 0 }}
-									exit={
-										prefersReducedMotion ? undefined : { opacity: 0, y: -15 }
-									}
+									exit={prefersReducedMotion ? undefined : { opacity: 0, y: -15 }}
 									transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
 									className="block w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium text-foreground"
 								>
@@ -212,10 +195,7 @@ export function DynamicIslandNav({
 							scale: isExpanded ? 1 : 1.05,
 						}}
 						transition={{ ...islandTransition, delay: isExpanded ? 0.1 : 0 }}
-						className={cn(
-							"absolute inset-0 flex flex-col",
-							!isExpanded && "pointer-events-none",
-						)}
+						className={cn("absolute inset-0 flex flex-col", !isExpanded && "pointer-events-none")}
 					>
 						<div className="flex shrink-0 items-center justify-between px-7 pb-3 pt-7">
 							<span className="text-[10px] font-bold tracking-[0.12em] uppercase text-muted-foreground/60">
@@ -249,9 +229,7 @@ export function DynamicIslandNav({
 											aria-label={item.ariaLabel ?? item.label}
 											aria-current={isActive ? "location" : undefined}
 											aria-pressed={
-												typeof item.ariaPressed === "boolean"
-													? item.ariaPressed
-													: undefined
+												typeof item.ariaPressed === "boolean" ? item.ariaPressed : undefined
 											}
 											onMouseEnter={() => setHoveredId(item.id)}
 											onMouseLeave={() => setHoveredId(null)}
@@ -264,18 +242,12 @@ export function DynamicIslandNav({
 											className={cn(
 												"group flex w-full shrink-0 cursor-pointer items-center gap-2.5 rounded-xl border-none py-2.5 pr-3 text-left text-sm transition-[transform,background-color,color] active:scale-[0.96] duration-200 ease-out relative",
 												item.isAccent && !isActive && "text-primary",
-												item.isAccent &&
-													isActive &&
-													"bg-primary/15 font-semibold text-primary",
+												item.isAccent && isActive && "bg-primary/15 font-semibold text-primary",
 												!item.isAccent &&
 													isActive &&
 													"bg-foreground/10 font-semibold text-foreground",
-												!isActive &&
-													isHovered &&
-													"bg-foreground/5 text-foreground/90",
-												!isActive &&
-													!isHovered &&
-													"bg-transparent text-foreground/50",
+												!isActive && isHovered && "bg-foreground/5 text-foreground/90",
+												!isActive && !isHovered && "bg-transparent text-foreground/50",
 												indentLevel > 0 && "opacity-90",
 											)}
 										>
@@ -304,10 +276,7 @@ export function DynamicIslandNav({
 											</span>
 											<motion.div
 												initial={false}
-												animate={{
-													scale: isActive ? 1 : 0,
-													opacity: isActive ? 1 : 0,
-												}}
+												animate={{ scale: isActive ? 1 : 0, opacity: isActive ? 1 : 0 }}
 												transition={{ duration: 0.25, ease: "easeOut" }}
 												className={cn(
 													"ml-1 h-1.5 w-1.5 shrink-0 rounded-full",
