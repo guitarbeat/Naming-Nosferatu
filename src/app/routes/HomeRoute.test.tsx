@@ -127,10 +127,6 @@ vi.mock("@/app/routes/components/HomeSections", () => ({
 	),
 }));
 
-vi.mock("@/shared/hooks/useBrowserState", () => ({
-	useMediaQuery: (query: string) => window.matchMedia(query).matches,
-}));
-
 vi.mock("@/features/tournament/components/NameSuggestion", () => ({
 	NameSuggestionInner: () => <div data-testid="name-suggestion" />,
 }));

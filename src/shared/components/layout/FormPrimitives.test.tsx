@@ -17,33 +17,10 @@ describe("Input", () => {
 		expect(label).toHaveClass("cursor-not-allowed", "opacity-50");
 	});
 
-	it("renders validation success icon when showSuccess is true and input is valid", () => {
-		const { container } = render(
-			<Input
-				label="Email"
-				value="test@example.com"
-				showSuccess={true}
-				externalTouched={true}
-				externalError={null}
-				onChange={() => {}}
-			/>,
-		);
-		// Lucide SVG wrapper check
-		const successIcon = container.querySelector(".text-chart-2 svg");
-		expect(successIcon).toBeInTheDocument();
-	});
-
 	it("renders error state icon when error is present", () => {
 		const { container } = render(
-			<Input
-				label="Password"
-				value="short"
-				externalTouched={true}
-				externalError="Too short"
-				onChange={() => {}}
-			/>,
+			<Input label="Password" value="short" error="Too short" onChange={() => {}} />,
 		);
-		// Lucide SVG wrapper check
 		const errorIcon = container.querySelector(".text-destructive svg");
 		expect(errorIcon).toBeInTheDocument();
 		expect(screen.getByText("Too short")).toBeInTheDocument();

@@ -1,47 +1,24 @@
-import { Cat, Heart, PawPrint } from "lucide-react";
 import type React from "react";
-import { memo, Suspense, useMemo } from "react";
+import { memo } from "react";
 import { cn } from "@/shared/lib/utils";
 
-const LOADING_ASSETS = ["/assets/images/cat.gif"];
-
-type CatVariant = "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orbit";
-type CatColor = "neon" | "pastel" | "warm";
-type CardSkeletonVariant = "name-card" | "elevated-card" | "mosaic-card";
+const LOADING_ASSET = "/assets/images/cat.gif";
 
 interface LoadingProps {
-	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton" | "card-skeleton" | "cat-gif";
-	catVariant?: CatVariant;
-	catColor?: CatColor;
-	showCatFace?: boolean;
-	cardSkeletonVariant?: CardSkeletonVariant;
+	variant?: "spinner" | "skeleton" | "card-skeleton" | "cat-gif";
 	text?: string;
-	message?: string;
-	overlay?: boolean;
 	className?: string;
-	children?: React.ReactNode;
-	width?: string | number;
 	height?: string | number;
-	size?: "small" | "medium" | "large";
-}
-
-function getRandomLoadingAsset() {
-	return LOADING_ASSETS[Math.floor(Math.random() * LOADING_ASSETS.length)];
 }
 
 export function SpinnerCircle({
 	size = "medium",
 	className,
 }: {
-	size?: "small" | "medium" | "large";
+	size?: "small" | "medium";
 	className?: string;
 }) {
-	const dimensions =
-		size === "large"
-			? "h-12 w-12 border-4"
-			: size === "small"
-				? "h-6 w-6 border-2"
-				: "h-8 w-8 border-4";
+	const dimensions = size === "small" ? "h-6 w-6 border-2" : "h-8 w-8 border-4";
 
 	return (
 		<div
@@ -68,120 +45,24 @@ function SkeletonBlock({ className, style }: { className?: string; style?: React
 	);
 }
 
-const CatSpinnerContent: React.FC<{
-	catVariant: CatVariant;
-	showFace: boolean;
-	size?: "small" | "medium" | "large";
-}> = memo(({ catVariant, showFace, size = "medium" }) => {
-	const iconSize = size === "large" ? 48 : size === "medium" ? 32 : 24;
-
-	switch (catVariant) {
-		case "paw":
-			return (
-				<div className="text-pink-500 motion-safe:animate-[float_1.1s_ease-in-out_infinite]">
-					<PawPrint size={iconSize} />
-				</div>
-			);
-		case "tail":
-		case "bounce":
-			return (
-				<div className="text-purple-500 motion-safe:animate-[bounce_900ms_ease-in-out_infinite]">
-					<Cat size={iconSize} />
-				</div>
-			);
-		case "spin":
-			return (
-				<div className="text-cyan-500 motion-safe:animate-spin [animation-duration:2s]">
-					<Cat size={iconSize} />
-				</div>
-			);
-		case "heartbeat":
-			return (
-				<div className="relative flex items-center justify-center">
-					<div className="absolute text-red-500 motion-safe:animate-[bounce_800ms_ease-in-out_infinite]">
-						<Heart size={iconSize} fill="currentColor" />
-					</div>
-					{showFace && (
-						<Cat size={iconSize * 0.6} className="relative z-10 text-white drop-shadow-md" />
-					)}
-				</div>
-			);
-		case "orbit":
-			return (
-				<div className="relative flex h-12 w-12 items-center justify-center">
-					<div className="absolute h-full w-full motion-safe:animate-spin [animation-duration:3s]">
-						<div className="absolute left-1/2 top-0 -translate-x-1/2 text-yellow-500">
-							<Cat size={16} />
-						</div>
-					</div>
-					{showFace && <div className="text-xl">🐱</div>}
-				</div>
-			);
-		default:
-			return <SpinnerCircle size={size} />;
-	}
-});
-
-CatSpinnerContent.displayName = "CatSpinnerContent";
-
 export const Loading: React.FC<LoadingProps> = memo(
-	({
-		variant = "spinner",
-		catVariant = "paw",
-		showCatFace = true,
-		text,
-		message,
-		overlay = false,
-		className = "",
-		children,
-		width = "100%",
-		height = 20,
-		size = "medium",
-		cardSkeletonVariant = "name-card",
-	}) => {
-		const resolvedText = text ?? message;
-		const randomAsset = useMemo(() => getRandomLoadingAsset(), []);
-		const isVideo = randomAsset.endsWith(".webm");
+		({
+			variant = "spinner",
+			text,
+			className = "",
+			height = 20,
+		}) => {
 		const containerClasses = cn(
 			"flex flex-col items-center justify-center gap-3 p-4",
-			overlay && "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
 			className,
 		);
-
-		if (variant === "suspense") {
-			if (!children) {
-				return null;
-			}
-
-			const fallback = (
-				<div className={containerClasses}>
-					{isVideo ? (
-						<video
-							src={randomAsset}
-							className="h-24 w-24 rounded-full bg-white/5 p-2 object-contain"
-							autoPlay={true}
-							muted={true}
-							loop={true}
-						/>
-					) : (
-						<img src={randomAsset} alt="Loading..." className="h-24 w-24 object-contain" />
-					)}
-					{resolvedText && (
-						<p className="animate-pulse text-sm font-medium text-white/70">{resolvedText}</p>
-					)}
-					<span className="sr-only">Loading...</span>
-				</div>
-			);
-
-			return <Suspense fallback={fallback}>{children}</Suspense>;
-		}
 
 		if (variant === "skeleton") {
 			return (
 				<SkeletonBlock
 					className={cn("rounded-lg", className)}
 					style={{
-						width,
+						width: "100%",
 						height: typeof height === "number" ? `${height}px` : height,
 					}}
 				/>
@@ -193,18 +74,12 @@ export const Loading: React.FC<LoadingProps> = memo(
 				<div
 					className={cn(
 						"flex flex-col gap-3 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm",
-						cardSkeletonVariant === "elevated-card" && "shadow-lg",
 						className,
 					)}
 					style={{
-						width,
+						width: "100%",
 						height: typeof height === "number" ? `${height}px` : height,
-						minHeight:
-							typeof height === "number"
-								? `${height}px`
-								: cardSkeletonVariant === "name-card"
-									? "200px"
-									: "auto",
+						minHeight: typeof height === "number" ? `${height}px` : "200px",
 					}}
 				>
 					<div className="flex items-center gap-3">
@@ -218,8 +93,8 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{resolvedText && (
-						<div className="pt-2 text-center text-xs text-white/50">{resolvedText}</div>
+					{text && (
+						<div className="pt-2 text-center text-xs text-white/50">{text}</div>
 					)}
 				</div>
 			);
@@ -229,52 +104,25 @@ export const Loading: React.FC<LoadingProps> = memo(
 			return (
 				<div className={containerClasses} role="status" aria-label="Loading">
 					<img
-						src={randomAsset}
+						src={LOADING_ASSET}
 						alt=""
 						aria-hidden="true"
 						className="h-44 w-auto select-none object-contain opacity-95"
 					/>
-					{resolvedText && (
+					{text && (
 						<p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
-							{resolvedText}
+							{text}
 						</p>
 					)}
 				</div>
 			);
 		}
 
-		if (variant === "bongo") {
-			return (
-				<div className={containerClasses} role="status" aria-label="Loading">
-					<div className="relative flex items-center justify-center rounded-full border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-						<CatSpinnerContent catVariant="bounce" showFace={true} size={size} />
-					</div>
-					{resolvedText && (
-						<p className="animate-pulse text-sm font-medium text-white/70">{resolvedText}</p>
-					)}
-				</div>
-			);
-		}
-
-		if (variant === "cat") {
-			return (
-				<div className={containerClasses} role="status" aria-label="Loading">
-					<div className="relative flex items-center justify-center rounded-full border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-						<CatSpinnerContent catVariant={catVariant} showFace={showCatFace} size={size} />
-					</div>
-					{resolvedText && (
-						<p className="animate-pulse text-sm font-medium text-white/70">{resolvedText}</p>
-					)}
-					<span className="sr-only">Loading...</span>
-				</div>
-			);
-		}
-
 		return (
 			<div className={containerClasses} role="status" aria-label="Loading">
-				<SpinnerCircle size={size} />
-				{resolvedText ? (
-					<p className="mt-2 text-sm font-medium text-white/70">{resolvedText}</p>
+				<SpinnerCircle />
+				{text ? (
+					<p className="mt-2 text-sm font-medium text-white/70">{text}</p>
 				) : (
 					<span className="sr-only">Loading...</span>
 				)}

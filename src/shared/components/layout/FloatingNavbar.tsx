@@ -1,33 +1,42 @@
 import { BarChart3, CheckCircle, Lightbulb, Lock, Trophy, User } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, type ReactNode, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
-import {
-	DynamicIslandNav,
-	type DynamicIslandNavItem,
-} from "@/shared/components/ui/dynamic-island-nav";
-import { NavbarModals } from "@/shared/components/ui/NavbarModals";
+import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { Modal } from "@/shared/components/layout/Modal";
 import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptics";
 import { cn } from "@/shared/lib/utils";
 import useAppStore from "@/store/appStore";
 
-function MobileBottomNav({
-	items,
-	isVisible,
-}: {
-	items: DynamicIslandNavItem[];
-	isVisible: boolean;
-}) {
-	const topItems = items.filter((i) => i.level === 1).slice(0, 5);
+const LazyProfileInner = lazy(() =>
+	import("@/shared/components/profile/ProfileInner").then((module) => ({
+		default: module.ProfileInner,
+	})),
+);
 
+const LazyNameSuggestion = lazy(() =>
+	import("@/features/tournament/components/NameSuggestion").then((module) => ({
+		default: module.NameSuggestion,
+	})),
+);
+
+type NavItem = {
+	id: string;
+	label: string;
+	icon: ReactNode;
+	isActive?: boolean;
+	isAccent?: boolean;
+	hasBadge?: boolean;
+	onClick: () => void;
+};
+
+function FloatingNav({ items }: { items: NavItem[] }) {
 	return (
 		<nav
-			className={cn(
-				"fixed bottom-6 left-1/2 -translate-x-1/2 z-[9998] flex items-center justify-center gap-1 px-3 py-2 rounded-full border border-border/30 bg-background/80 backdrop-blur-lg transition-transform duration-300 sm:hidden",
-				isVisible ? "translate-y-0" : "translate-y-[120%]",
-			)}
+			aria-label="Primary"
+			className="fixed bottom-6 left-1/2 z-[9998] flex max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center justify-center gap-1 rounded-full border border-border/30 bg-background/85 px-3 py-2 shadow-[0_18px_45px_-18px_rgba(0,0,0,0.45)] backdrop-blur-lg"
 		>
-			{topItems.map((item) => {
+			{items.slice(0, 5).map((item) => {
 				const isActive = Boolean(item.isActive);
 				return (
 					<button
@@ -36,10 +45,11 @@ function MobileBottomNav({
 						onClick={item.onClick}
 						className={cn(
 							"flex items-center justify-center gap-1.5 px-3 py-2 rounded-full transition-colors min-h-[40px]",
-							isActive && "bg-primary/20 text-primary",
+							(item.isAccent || isActive) && "text-primary",
+							isActive && "bg-primary/20",
 							!isActive && "text-muted-foreground hover:text-foreground",
 						)}
-						aria-label={item.ariaLabel ?? item.label}
+						aria-label={item.label}
 						aria-current={isActive ? "location" : undefined}
 					>
 						<span className="relative flex shrink-0 items-center justify-center text-lg">
@@ -48,7 +58,7 @@ function MobileBottomNav({
 								<span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary" />
 							)}
 						</span>
-						<span className="text-sm font-medium tracking-tight hidden xs:inline">
+						<span className="hidden text-sm font-medium tracking-tight xs:inline sm:inline">
 							{item.label}
 						</span>
 					</button>
@@ -75,31 +85,14 @@ export function FloatingNavbar() {
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
 	const [activeSection, setActiveSection] = useState<NavSection>("pick");
-	const [isNavVisible, setIsNavVisible] = useState(true);
 	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-	const [scrollProgress, setScrollProgress] = useState(0);
 	const [pendingScroll, setPendingScroll] = useState<NavSection | null>(null);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const [isSuggestOpen, setIsSuggestOpen] = useState(false);
-	const profileButtonRef = useRef<HTMLDivElement | null>(null);
-	const suggestButtonRef = useRef<HTMLDivElement | null>(null);
-	const [profileOriginRect, setProfileOriginRect] = useState<{
-		x: number;
-		y: number;
-		width: number;
-		height: number;
-	} | null>(null);
-	const [suggestOriginRect, setSuggestOriginRect] = useState<{
-		x: number;
-		y: number;
-		width: number;
-		height: number;
-	} | null>(null);
 
 	const isHomeRoute = location.pathname === "/";
 	const isAdminRoute = location.pathname === "/admin";
 	const isTournamentRoute = location.pathname === "/tournament";
-	const [_isPastHero, setIsPastHero] = useState(false);
 
 	const selectedCount = selectedNames?.length || 0;
 	const isTournamentActive = Boolean(tournament.names);
@@ -160,31 +153,11 @@ export function FloatingNavbar() {
 
 	const openProfileModal = useCallback(() => {
 		hapticNavTap();
-		const buttonEl = profileButtonRef.current;
-		if (buttonEl) {
-			const rect = buttonEl.getBoundingClientRect();
-			setProfileOriginRect({
-				x: rect.left,
-				y: rect.top,
-				width: rect.width,
-				height: rect.height,
-			});
-		}
 		setIsProfileOpen(true);
 	}, []);
 
 	const openSuggestModal = useCallback(() => {
 		hapticNavTap();
-		const buttonEl = suggestButtonRef.current;
-		if (buttonEl) {
-			const rect = buttonEl.getBoundingClientRect();
-			setSuggestOriginRect({
-				x: rect.left,
-				y: rect.top,
-				width: rect.width,
-				height: rect.height,
-			});
-		}
 		setIsSuggestOpen(true);
 	}, []);
 
@@ -227,10 +200,6 @@ export function FloatingNavbar() {
 				}
 				setActiveSection(current);
 
-				const total = document.documentElement.scrollHeight - window.innerHeight;
-				setScrollProgress(
-					total > 0 ? Math.min(100, Math.max(0, (window.scrollY / total) * 100)) : 0,
-				);
 			});
 		};
 
@@ -245,12 +214,6 @@ export function FloatingNavbar() {
 	}, [isHomeRoute]);
 
 	useEffect(() => {
-		if (!isHomeRoute) {
-			setScrollProgress(0);
-		}
-	}, [isHomeRoute]);
-
-	useEffect(() => {
 		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 		const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
 		updatePreference();
@@ -258,92 +221,8 @@ export function FloatingNavbar() {
 		return () => mediaQuery.removeEventListener("change", updatePreference);
 	}, []);
 
-	useEffect(() => {
-		if (!isHomeRoute) {
-			setIsPastHero(true);
-			return;
-		}
-		const check = () => {
-			setIsPastHero(window.scrollY > window.innerHeight * 0.85);
-		};
-		check();
-		window.addEventListener("scroll", check, { passive: true });
-		return () => {
-			window.removeEventListener("scroll", check);
-			setIsPastHero(false);
-		};
-	}, [isHomeRoute]);
-
-	useEffect(() => {
-		let lastScrollY = window.scrollY;
-		let ticking = false;
-		const mobileMediaQuery = window.matchMedia("(max-width: 768px)");
-
-		const onScroll = () => {
-			if (!mobileMediaQuery.matches) {
-				lastScrollY = window.scrollY;
-				return;
-			}
-
-			if (ticking) {
-				return;
-			}
-
-			ticking = true;
-			requestAnimationFrame(() => {
-				const currentScrollY = window.scrollY;
-				const delta = currentScrollY - lastScrollY;
-
-				if (delta > 12) {
-					setIsNavVisible(false);
-				} else if (delta < -12) {
-					setIsNavVisible(true);
-				}
-
-				lastScrollY = currentScrollY;
-				ticking = false;
-			});
-		};
-
-		const onViewportChange = () => {
-			if (!mobileMediaQuery.matches) {
-				setIsNavVisible(true);
-			}
-		};
-
-		window.addEventListener("scroll", onScroll, { passive: true });
-		mobileMediaQuery.addEventListener("change", onViewportChange);
-
-		return () => {
-			window.removeEventListener("scroll", onScroll);
-			mobileMediaQuery.removeEventListener("change", onViewportChange);
-		};
-	}, []);
-
-	const primaryLabel = useMemo(() => {
-		if (isAdminRoute) {
-			return "Admin";
-		}
-		if (!isHomeRoute) {
-			return "Navigation";
-		}
-		if (isTournamentActive) {
-			return "Tournament";
-		}
-		if (selectedCount >= 2) {
-			return `Start (${selectedCount})`;
-		}
-		if (activeSection === "analysis") {
-			return "Bracket";
-		}
-		if (activeSection === "tournament") {
-			return "Bracket";
-		}
-		return "Pick Names";
-	}, [activeSection, isAdminRoute, isHomeRoute, isTournamentActive, selectedCount]);
-
-	const navItems = useMemo((): DynamicIslandNavItem[] => {
-		const items: DynamicIslandNavItem[] = [];
+	const navItems = useMemo((): NavItem[] => {
+		const items: NavItem[] = [];
 
 		if (isHomeRoute) {
 			items.push({
@@ -353,7 +232,6 @@ export function FloatingNavbar() {
 					: selectedCount >= 2
 						? `Vote (${selectedCount})`
 						: "Favorites",
-				level: 1,
 				icon: isTournamentActive ? (
 					<Trophy className="h-4 w-4" />
 				) : selectedCount >= 2 ? (
@@ -377,7 +255,6 @@ export function FloatingNavbar() {
 			items.push({
 				id: "analysis",
 				label: "Results",
-				level: 1,
 				icon: <BarChart3 className="h-4 w-4" />,
 				isActive: activeSection === "analysis",
 				hasBadge: Object.keys(tournament.ratings).length > 0 && activeSection !== "analysis",
@@ -388,7 +265,6 @@ export function FloatingNavbar() {
 		items.push({
 			id: "suggest",
 			label: "Suggest",
-			level: isHomeRoute ? 1 : 1,
 			icon: <Lightbulb className="h-4 w-4" />,
 			isActive: isSuggestOpen,
 			onClick: openSuggestModal,
@@ -398,7 +274,6 @@ export function FloatingNavbar() {
 			items.push({
 				id: "admin",
 				label: "Admin",
-				level: 1,
 				icon: <Lock className="h-4 w-4" />,
 				isActive: isAdminRoute,
 				onClick: handleAdminClick,
@@ -408,7 +283,6 @@ export function FloatingNavbar() {
 		items.push({
 			id: "profile",
 			label: profileLabel,
-			level: 1,
 			icon:
 				isLoggedIn && avatarUrl ? (
 					<img
@@ -454,48 +328,45 @@ export function FloatingNavbar() {
 		return null;
 	}
 
-	const shouldShow = isHomeRoute ? true : isNavVisible;
-
 	return (
 		<>
-			<div ref={profileButtonRef} className="sr-only" aria-hidden="true" />
-			<div ref={suggestButtonRef} className="sr-only" aria-hidden="true" />
+			<FloatingNav items={navItems} />
 
-			<div className="hidden sm:block">
-				<DynamicIslandNav
-					items={navItems}
-					collapsedLabel={primaryLabel}
-					collapsedLabelKey={
-						isAdminRoute
-							? "admin"
-							: isHomeRoute
-								? `${activeSection}-${selectedCount}-${isTournamentActive}`
-								: "away"
-					}
-					progress={scrollProgress}
-					isVisible={shouldShow}
-					prefersReducedMotion={prefersReducedMotion}
-				/>
-			</div>
-
-			<MobileBottomNav items={navItems} isVisible={shouldShow} />
-
-			<NavbarModals
-				isProfileOpen={isProfileOpen}
-				isSuggestOpen={isSuggestOpen}
-				onProfileClose={() => setIsProfileOpen(false)}
-				onSuggestClose={() => setIsSuggestOpen(false)}
-				profileOriginRect={profileOriginRect}
-				suggestOriginRect={suggestOriginRect}
-				onLogin={async (name) => {
-					const ok = await login({ name });
-					if (ok !== false) {
-						setIsProfileOpen(false);
-					}
-					return ok;
-				}}
-				onLogout={logout}
-			/>
+			{isProfileOpen && (
+				<Modal
+					title="Your Profile"
+					hideTitle={true}
+					open={isProfileOpen}
+					onClose={() => setIsProfileOpen(false)}
+					description="Sign in to save your rankings."
+				>
+					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
+						<LazyProfileInner
+							onLogin={async (name) => {
+								const ok = await login({ name });
+								if (ok !== false) {
+									setIsProfileOpen(false);
+								}
+								return ok;
+							}}
+							onLogout={logout}
+						/>
+					</Suspense>
+				</Modal>
+			)}
+			{isSuggestOpen && (
+				<Modal
+					title="Suggest a Name"
+					hideTitle={true}
+					open={isSuggestOpen}
+					onClose={() => setIsSuggestOpen(false)}
+					description="Suggest a cat name."
+				>
+					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
+						<LazyNameSuggestion variant="modal" onClose={() => setIsSuggestOpen(false)} />
+					</Suspense>
+				</Modal>
+			)}
 		</>
 	);
 }

@@ -374,12 +374,13 @@ function AdminPanel({
 							</ListPanelRow>
 						))
 					) : (
-						<EmptyState variant="inline" title="No hidden names." />
+						<div className="px-4 py-8 text-center text-sm text-muted-foreground/75">
+							No hidden names.
+						</div>
 					)}
 				</ListPanel>
 			) : (
 				<EmptyState
-					variant="box"
 					title="Open the list to review and restore hidden names."
 					className="border-dashed bg-muted/20"
 				/>

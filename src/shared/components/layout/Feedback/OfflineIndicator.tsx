@@ -1,73 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { useBrowserState } from "@/shared/hooks/useBrowserState";
+import { useEffect, useState } from "react";
 
-interface OfflineIndicatorProps {
-	showWhenOnline?: boolean;
-	position?: "top" | "bottom";
-}
-
-export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
-	showWhenOnline = false,
-	position = "top",
-}) => {
-	const { isOnline, isSlowConnection } = useBrowserState();
-	const [showIndicator, setShowIndicator] = useState(false);
-	const [justCameOnline, setJustCameOnline] = useState(false);
+export function OfflineIndicator() {
+	const [isOnline, setIsOnline] = useState(
+		typeof navigator === "undefined" ? true : navigator.onLine,
+	);
 
 	useEffect(() => {
-		if (!isOnline) {
-			setShowIndicator(true);
-			setJustCameOnline(false);
-		} else if (showWhenOnline || justCameOnline) {
-			setShowIndicator(true);
-			if (!justCameOnline) {
-				setJustCameOnline(true);
-				setTimeout(() => {
-					setShowIndicator(false);
-					setJustCameOnline(false);
-				}, 3000);
-			}
-		} else {
-			setShowIndicator(false);
-		}
-	}, [isOnline, showWhenOnline, justCameOnline]);
+		const handleOnline = () => setIsOnline(true);
+		const handleOffline = () => setIsOnline(false);
+		window.addEventListener("online", handleOnline);
+		window.addEventListener("offline", handleOffline);
+		return () => {
+			window.removeEventListener("online", handleOnline);
+			window.removeEventListener("offline", handleOffline);
+		};
+	}, []);
 
-	if (!showIndicator) {
+	if (isOnline) {
 		return null;
 	}
 
-	const getStatusMessage = () => {
-		if (!isOnline) {
-			return "You are offline";
-		}
-		if (justCameOnline) {
-			return "Back online";
-		}
-		if (isSlowConnection) {
-			return "Slow connection detected";
-		}
-		return "Connected";
-	};
-
-	const getStatusClass = () => {
-		if (!isOnline) {
-			return "offline";
-		}
-		if (justCameOnline) {
-			return "online";
-		}
-		if (isSlowConnection) {
-			return "slow";
-		}
-		return "online";
-	};
-
 	return (
-		<div className={`indicator ${position} ${getStatusClass()}`} role="status" aria-live="polite">
+		<div className="indicator" role="status" aria-live="polite">
 			<div className="indicator-content">
 				<span className="indicator-dot" />
-				<span className="indicator-message">{getStatusMessage()}</span>
+				<span className="indicator-message">You are offline</span>
 			</div>
 		</div>
 	);
-};
+}

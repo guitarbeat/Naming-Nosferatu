@@ -5,6 +5,7 @@
 
 .indicator {
 	position: fixed;
+	top: var(--space-4);
 	left: 50%;
 	transform: translateX(-50%);
 	z-index: var(--z-sticky);
@@ -31,14 +32,9 @@
 .indicator-message {
 	white-space: nowrap;
 }
-.indicator.offline .indicator-dot {
+
+.indicator-dot {
 	background: var(--color-error);
-}
-.indicator.online .indicator-dot {
-	background: var(--color-success);
-}
-.indicator.slow .indicator-dot {
-	background: var(--color-warning);
 }
 
 @media (max-width: 640px) {

@@ -250,9 +250,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		}
 	}, [isComplete, ratings, onComplete, matchHistory, audioManager]);
 
-	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
-	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
-
 	const matchData = useMemo(
 		() => (currentMatch ? extractMatchData(currentMatch) : null),
 		[currentMatch],
@@ -301,7 +298,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			if (isVoting || openingBracketReveal.value || !matchData) {
 				return;
 			}
-			audioManager.primeAudioExperience();
 
 			const winnerId = side === "left" ? matchData.leftId : matchData.rightId;
 			const loserId = side === "left" ? matchData.rightId : matchData.leftId;
@@ -350,10 +346,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[handleVoteForSide],
 	);
 
-	const leftImg =
-		showCatPictures && matchData ? getRandomCatImage(matchData.leftId, CAT_IMAGES) : null;
-	const rightImg =
-		showCatPictures && matchData ? getRandomCatImage(matchData.rightId, CAT_IMAGES) : null;
+	const leftImg = matchData ? getRandomCatImage(matchData.leftId, CAT_IMAGES) : null;
+	const rightImg = matchData ? getRandomCatImage(matchData.rightId, CAT_IMAGES) : null;
 	const hasSelectionFeedback = selectedSide !== null;
 	const currentMatchKey = matchData
 		? `${roundNumber}-${currentMatchNumber}-${matchData.leftId}-${matchData.rightId}`
@@ -480,8 +474,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				totalMatches={totalMatches}
 				etaMinutes={etaMinutes}
 				audioManager={audioManager}
-				showCatPictures={showCatPictures}
-				setCatPictures={setCatPictures}
 				canUndo={canUndo}
 				handleUndo={handleUndo}
 				quitTournament={quitTournament}

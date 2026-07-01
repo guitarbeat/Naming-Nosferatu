@@ -2,10 +2,6 @@ import {
 	Clock,
 	Gamepad2,
 	Medal,
-	Music,
-	PawPrint,
-	SkipBack,
-	SkipForward,
 	Undo2,
 	Volume2,
 	VolumeX,
@@ -24,8 +20,6 @@ interface TournamentHeaderProps {
 	totalMatches: number;
 	etaMinutes: number;
 	audioManager: any;
-	showCatPictures: boolean;
-	setCatPictures: (show: boolean) => void;
 	canUndo: boolean;
 	handleUndo: () => void;
 	quitTournament: () => void;
@@ -49,8 +43,6 @@ export const TournamentHeader = memo(function TournamentHeader({
 	totalMatches,
 	etaMinutes,
 	audioManager,
-	showCatPictures,
-	setCatPictures,
 	canUndo,
 	handleUndo,
 	quitTournament,
@@ -108,18 +100,6 @@ export const TournamentHeader = memo(function TournamentHeader({
 									icon: audioManager.isMuted ? VolumeX : Volume2,
 									label: audioManager.isMuted ? "Unmute" : "Mute",
 								},
-								{
-									action: audioManager.toggleBackgroundMusic,
-									icon: Music,
-									label: audioManager.backgroundMusicEnabled ? "Stop music" : "Play music",
-									active: audioManager.backgroundMusicEnabled,
-								},
-								{
-									action: () => setCatPictures(!showCatPictures),
-									icon: PawPrint,
-									label: showCatPictures ? "Names only" : "Show cats",
-									active: showCatPictures,
-								},
 							] as const
 						).map(({ action, icon: Icon, label, active }) => (
 							<button
@@ -138,24 +118,6 @@ export const TournamentHeader = memo(function TournamentHeader({
 								<Icon className="size-4" />
 							</button>
 						))}
-						<button
-							type="button"
-							onClick={audioManager.handlePreviousTrack}
-							className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
-							aria-label="Previous track"
-							title="Previous track"
-						>
-							<SkipBack className="size-4" />
-						</button>
-						<button
-							type="button"
-							onClick={audioManager.handleNextTrack}
-							className="hidden h-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white sm:inline-flex"
-							aria-label="Next track"
-							title="Next track"
-						>
-							<SkipForward className="size-4" />
-						</button>
 						<button
 							type="button"
 							onClick={() => handleUndo()}

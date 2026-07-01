@@ -48,56 +48,6 @@
 	}
 }
 
-@keyframes genie-in {
-	0% {
-		opacity: 0;
-		transform: translate(var(--genie-x, 0px), var(--genie-y, 0px)) scaleX(0.06) scaleY(0.02);
-		filter: blur(6px);
-	}
-	45% {
-		opacity: 0.85;
-		transform: translate(calc(var(--genie-x, 0px) * 0.45), calc(var(--genie-y, 0px) * 0.55))
-			scaleX(0.5) scaleY(0.18);
-		filter: blur(2px);
-	}
-	75% {
-		opacity: 1;
-		transform: translate(calc(var(--genie-x, 0px) * 0.12), calc(var(--genie-y, 0px) * 0.18))
-			scaleX(0.95) scaleY(0.85);
-		filter: blur(0);
-	}
-	100% {
-		opacity: 1;
-		transform: translate(0, 0) scale(1);
-		filter: blur(0);
-	}
-}
-
-@keyframes genie-out {
-	0% {
-		opacity: 1;
-		transform: translate(0, 0) scale(1);
-		filter: blur(0);
-	}
-	30% {
-		opacity: 1;
-		transform: translate(calc(var(--genie-x, 0px) * 0.15), calc(var(--genie-y, 0px) * 0.25))
-			scaleX(0.92) scaleY(0.7);
-		filter: blur(0);
-	}
-	65% {
-		opacity: 0.75;
-		transform: translate(calc(var(--genie-x, 0px) * 0.55), calc(var(--genie-y, 0px) * 0.65))
-			scaleX(0.4) scaleY(0.14);
-		filter: blur(2px);
-	}
-	100% {
-		opacity: 0;
-		transform: translate(var(--genie-x, 0px), var(--genie-y, 0px)) scaleX(0.06) scaleY(0.02);
-		filter: blur(6px);
-	}
-}
-
 @keyframes spin {
 	from {
 		transform: rotate(0deg);

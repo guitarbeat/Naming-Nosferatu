@@ -1,9 +1,99 @@
 /**
  * @file components.css
- * @description Core UI component styles (scroll-to-top, random generator, locked name tooltip)
+ * @description Core UI component styles (random generator, locked name tooltip)
  *
  * Navbar styles live in navbar.css
  */
+
+/* ==========================================================================
+   GLASS SURFACE
+   ========================================================================== */
+
+@utility glass-surface {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	border-radius: var(--glass-radius, 1.5rem);
+	border: 1px solid var(--glass-border, color-mix(in srgb, white 14%, transparent));
+	background: linear-gradient(
+		155deg,
+		color-mix(in srgb, var(--glass-bg-light, rgb(255 255 255 / 14%)) 90%, transparent) 0%,
+		color-mix(in srgb, var(--glass-bg, rgb(15 23 42 / 48%)) 88%, transparent) 52%,
+		color-mix(in srgb, var(--glass-bg-strong, rgb(15 23 42 / 72%)) 92%, transparent) 100%
+	);
+	backdrop-filter: blur(var(--glass-blur, 18px)) saturate(var(--glass-saturation, 1.08));
+	-webkit-backdrop-filter: blur(var(--glass-blur, 18px)) saturate(var(--glass-saturation, 1.08));
+	box-shadow:
+		0 24px 60px color-mix(in srgb, var(--overlay-darker) 34%, transparent),
+		0 14px 28px color-mix(in srgb, var(--overlay-medium) 22%, transparent),
+		inset 0 1px 0 rgb(255 255 255 / 0.2),
+		inset 0 -1px 0 rgb(255 255 255 / 0.04);
+}
+
+.glass-surface::before {
+	content: "";
+	position: absolute;
+	inset: 1px;
+	border-radius: calc(var(--glass-radius, 1.5rem) - 1px);
+	background:
+		radial-gradient(140% 120% at 12% 0%, rgb(255 255 255 / 0.28), transparent 42%),
+		linear-gradient(
+			135deg,
+			color-mix(in srgb, white 12%, transparent),
+			transparent 36%,
+			color-mix(in srgb, var(--nav-highlight, white) 8%, transparent) 72%,
+			transparent
+		);
+	opacity: min(0.96, calc(0.62 + var(--glass-frost, 0.12)));
+	pointer-events: none;
+	z-index: 0;
+}
+
+.glass-surface::after {
+	content: "";
+	position: absolute;
+	left: 12%;
+	right: 12%;
+	bottom: -24%;
+	height: 38%;
+	border-radius: 9999px;
+	background: radial-gradient(
+		ellipse at center,
+		color-mix(in srgb, var(--nav-highlight, white) 16%, transparent),
+		transparent 72%
+	);
+	filter: blur(calc(20px + (var(--glass-depth, 1) * 10px)));
+	opacity: 0.3;
+	pointer-events: none;
+	z-index: 0;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+	.glass-surface {
+		background: linear-gradient(
+			155deg,
+			color-mix(in srgb, var(--surface-muted) 92%, white 4%) 0%,
+			color-mix(in srgb, var(--surface-muted) 96%, black 4%) 100%
+		);
+	}
+
+	.glass-surface::after {
+		display: none;
+	}
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+	.glass-surface {
+		background: linear-gradient(
+			155deg,
+			color-mix(in srgb, var(--surface-muted) 92%, white 6%) 0%,
+			color-mix(in srgb, var(--surface-muted) 96%, black 6%) 100%
+		);
+		box-shadow:
+			0 18px 36px color-mix(in srgb, var(--overlay-darker) 40%, transparent),
+			inset 0 1px 0 rgb(255 255 255 / 0.08);
+	}
+}
 
 /* ==========================================================================
    BLEND TEXT
@@ -12,77 +102,6 @@
 .blend-difference-text {
 	color: rgb(255 255 255);
 	mix-blend-mode: difference;
-}
-
-/* ==========================================================================
-   SCROLL TO TOP
-   ========================================================================== */
-
-.scroll-to-top {
-	position: fixed;
-	right: var(--space-8);
-	bottom: max(5.5rem, calc(90px + env(safe-area-inset-bottom)));
-	z-index: var(--z-toast);
-	min-width: 2.75rem;
-	min-height: 2.75rem;
-	padding: var(--space-3);
-	border-radius: var(--radius-full);
-	box-shadow: 0 8px 24px rgb(0 0 0 / 0.28);
-	transform: translate3d(0, var(--space-4), 0) scale(0.95);
-	opacity: 0;
-	visibility: hidden;
-	pointer-events: none;
-	transition:
-		transform var(--duration-normal) var(--ease-out-expo),
-		opacity var(--duration-normal) var(--ease-out-expo),
-		box-shadow var(--duration-normal) var(--ease-out-expo);
-	color: var(--pw-text-strong);
-	background: color-mix(in srgb, var(--pw-bg-2) 92%, transparent);
-	border: 1px solid var(--glass-border);
-	backdrop-filter: blur(12px);
-	font-size: var(--text-lg);
-	font-weight: var(--font-weight-bold);
-}
-
-.scroll-to-top.visible {
-	transform: translate3d(0, 0, 0) scale(1);
-	opacity: 1;
-	visibility: visible;
-	pointer-events: auto;
-}
-
-@media (width <= 768px) {
-	.scroll-to-top {
-		right: var(--mobile-safe-spacing);
-		bottom: var(--app-scroll-to-top-bottom);
-	}
-}
-
-@media (width <= 430px) {
-	.scroll-to-top {
-		right: var(--mobile-safe-spacing-small);
-		bottom: var(--mobile-safe-spacing-small);
-	}
-}
-
-@supports (padding: max(0px)) {
-	@media (width <= 768px) {
-		.scroll-to-top {
-			right: max(
-				var(--mobile-safe-spacing),
-				env(safe-area-inset-right) +
-				var(--mobile-safe-spacing)
-			);
-			bottom: var(--app-scroll-to-top-bottom);
-		}
-	}
-}
-
-@media screen and (width <= 768px) and (orientation: landscape) {
-	.scroll-to-top {
-		right: var(--mobile-safe-spacing-small);
-		bottom: var(--app-scroll-to-top-bottom);
-	}
 }
 
 /* ==========================================================================

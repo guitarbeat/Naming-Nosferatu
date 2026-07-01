@@ -189,8 +189,6 @@ export interface CatChosenName {
 export interface UserPreferences {
 	theme?: string;
 	notifications?: boolean;
-	showCatPictures?: boolean;
-	matrixMode?: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -216,14 +214,7 @@ export interface UIState {
 	theme: ThemeValue;
 	themePreference: ThemePreference;
 	isBootLoading: boolean;
-	showGlobalAnalytics: boolean;
-	showUserComparison: boolean;
-	matrixMode: boolean;
 	isSwipeMode: boolean;
-	showCatPictures: boolean;
-	isEditingProfile: boolean;
-	isProfileOpen: boolean;
-	isSuggestionOpen: boolean;
 }
 
 export interface TournamentState {

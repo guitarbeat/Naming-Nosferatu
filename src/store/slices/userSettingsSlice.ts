@@ -186,14 +186,7 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 	ui: {
 		...getInitialTheme(),
 		isBootLoading: true,
-		showGlobalAnalytics: false,
-		showUserComparison: false,
-		matrixMode: false,
 		isSwipeMode: getInitialSwipeMode(),
-		showCatPictures: true,
-		isEditingProfile: false,
-		isProfileOpen: false,
-		isSuggestionOpen: false,
 	},
 
 	uiActions: {
@@ -232,19 +225,11 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 		},
 
 		setBootLoading: (loading) => patch(set, "ui", { isBootLoading: loading }),
-		setMatrixMode: (enabled) => patch(set, "ui", { matrixMode: enabled }),
-		setGlobalAnalytics: (show) => patch(set, "ui", { showGlobalAnalytics: show }),
 
 		setSwipeMode: (enabled) => {
 			patch(set, "ui", { isSwipeMode: enabled });
 			setStorageString(STORAGE_KEYS.SWIPE_MODE, String(enabled));
 		},
-
-		setCatPictures: (show) => patch(set, "ui", { showCatPictures: show }),
-		setUserComparison: (show) => patch(set, "ui", { showUserComparison: show }),
-		setEditingProfile: (editing) => patch(set, "ui", { isEditingProfile: editing }),
-		setProfileOpen: (open) => patch(set, "ui", { isProfileOpen: open }),
-		setSuggestionOpen: (open) => patch(set, "ui", { isSuggestionOpen: open }),
 	},
 
 	siteSettings: {

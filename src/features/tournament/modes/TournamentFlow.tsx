@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { CatConfetti } from "@/shared/components/layout/Feedback/CatConfetti";
 import { AudioEffects } from "@/shared/lib/sound";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import useAppStore from "@/store/appStore";
@@ -66,9 +65,7 @@ export default function TournamentFlow() {
 		<div className="w-full flex flex-col gap-2">
 			<AnimatePresence mode="wait">
 				{tournament.isComplete && tournament.names !== null ? (
-					<>
-						<CatConfetti />
-						<motion.div
+					<motion.div
 							key="complete"
 							initial={{ opacity: 0, scale: 0.95 }}
 							animate={{ opacity: 1, scale: 1 }}
@@ -110,8 +107,7 @@ export default function TournamentFlow() {
 									</button>
 								</div>
 							</div>
-						</motion.div>
-					</>
+					</motion.div>
 				) : (
 					<motion.div
 						key="setup"

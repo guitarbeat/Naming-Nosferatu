@@ -88,7 +88,6 @@ export function LeaderboardPanel({
 				</ListPanel>
 			) : (
 				<EmptyState
-					variant="box"
 					title="No community ratings yet."
 					description="Complete a few tournament sessions to start separating the personal bracket layer from the shared leaderboard."
 				/>

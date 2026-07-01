@@ -109,7 +109,6 @@ export const MatchSideCard = memo(function MatchSideCard({
 						<CatImage
 							src={img}
 							alt={name}
-							objectFit="cover"
 							containerClassName="h-full w-full"
 							imageClassName="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
 						/>

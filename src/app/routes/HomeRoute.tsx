@@ -8,7 +8,6 @@ import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
-import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
@@ -17,6 +16,19 @@ const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
+
+function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
+	return (
+		<div className="mx-auto mb-[var(--space-phi-4)] flex w-full max-w-2xl flex-col items-center text-center sm:mb-[var(--space-phi-5)]">
+			<h2 className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground">
+				{title}
+			</h2>
+			<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+				{subtitle}
+			</p>
+		</div>
+	);
+}
 
 export default function HomeRoute() {
 	const { user, tournament, tournamentActions } = useAppStore();
@@ -54,8 +66,6 @@ export default function HomeRoute() {
 
 			<Section
 				id="pick"
-				variant="minimal"
-				padding="comfortable"
 				maxWidth="xl"
 				separator={true}
 				fullpage={true}
@@ -79,9 +89,6 @@ export default function HomeRoute() {
 
 			<Section
 				id="tournament"
-				variant="minimal"
-				padding="comfortable"
-				maxWidth="2xl"
 				separator={true}
 				fullpage={true}
 			>
@@ -122,9 +129,6 @@ export default function HomeRoute() {
 
 			<Section
 				id="analysis"
-				variant="minimal"
-				padding="comfortable"
-				maxWidth="2xl"
 				separator={true}
 				fullpage={true}
 			>

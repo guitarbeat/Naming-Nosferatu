@@ -1,41 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import { motion } from "framer-motion";
 import {
 	Check,
+	CheckCircle,
 	ChevronDown,
 	ChevronRight,
 	Eye,
-	EyeOff,
-	Heart,
-	Layers,
-	LayoutGrid,
-	X,
 	ZoomIn,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/shared/api/names/api";
 import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
-
-type PendingAdminAction = {
-	type: "toggle-hidden" | "toggle-locked";
-	nameId: IdType;
-	isCurrentlyEnabled: boolean;
-};
-
-import {
-	buildNameCardImages,
-	countSelectedItems,
-	pickRandomItemIds,
-} from "@/features/tournament/utils/nameSelection";
 import Button from "@/shared/components/layout/Button";
-import { Card } from "@/shared/components/layout/Card/Card";
 import CatImage from "@/shared/components/layout/CatImage";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { Modal } from "@/shared/components/layout/Modal";
 import { useCollapsible } from "@/shared/hooks/useCollapsible";
 import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
+import { CAT_IMAGES } from "@/shared/lib/constants";
+import { getRandomCatImage } from "@/shared/lib/media";
 import {
 	getActiveNames,
 	getHiddenNames,
@@ -43,50 +28,140 @@ import {
 	isNameHidden,
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
-import {
-	addManyToSet,
-	addToSet,
-	removeFromSet,
-	toggleInSet,
-} from "@/shared/lib/setUtils";
+import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
-import type { IdType } from "@/shared/types";
+import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
 
-const SWIPE_OFFSET_THRESHOLD = 100;
-const SWIPE_VELOCITY_THRESHOLD = 500;
-
-const SMOOTH_SPRING_CONFIG = {
-	type: "spring" as const,
-	stiffness: 260,
-	damping: 20,
-	mass: 0.8,
-	velocity: 2,
+type PendingAdminAction = {
+	type: "toggle-hidden" | "toggle-locked";
+	nameId: IdType;
+	isCurrentlyEnabled: boolean;
 };
 
-const EXIT_SPRING_CONFIG = {
-	type: "spring" as const,
-	stiffness: 400,
-	damping: 25,
-	velocity: 50,
-};
+const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
+	[
+		"mobile-readable-card relative group overflow-hidden rounded-[1.35rem] border cursor-pointer transition-[transform,box-shadow,background-color,border-color,opacity] duration-300 active:scale-[0.96]",
+		isSelected
+			? "z-10 border-primary/45 bg-gradient-to-br from-primary/14 to-white/[0.04] shadow-[0_20px_45px_rgba(39,135,153,0.2)] ring-1 ring-primary/25"
+			: "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_40px_rgba(6,12,24,0.18)]",
+		isLocked ? "cursor-not-allowed opacity-55 saturate-50" : "",
+	].join(" ");
 
-import { MagicToggle } from "@/shared/components/ui/MagicToggle";
-import { AdminActionButton } from "./name-selector/AdminActionButton";
-import { NameContent } from "./name-selector/NameContent";
-import {
-	getCardStyles,
-	getNameOverlayClasses,
-} from "./name-selector/nameSelectorUtils";
-import { SelectionBadge } from "./name-selector/SelectionBadge";
-import { useDeferredSync } from "./name-selector/useDeferredSync";
-import { ZoomButton } from "./name-selector/ZoomButton";
+const nameOverlayClasses =
+	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
+
+function NameContent({
+	nameItem,
+}: {
+	nameItem: NameItem;
+}) {
+	return (
+		<>
+			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
+				{nameItem.name}
+			</span>
+			{nameItem.pronunciation ? (
+				<span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">
+					[{nameItem.pronunciation}]
+				</span>
+			) : null}
+			{nameItem.description ? (
+				<p className="mt-2 line-clamp-2 text-xs leading-relaxed text-white/72 sm:text-sm">
+					{nameItem.description}
+				</p>
+			) : null}
+		</>
+	);
+}
+
+function AdminActionButton({
+	nameItem,
+	actionType,
+	isProcessing,
+	onClick,
+}: {
+	nameItem: NameItem;
+	actionType: "toggle-hidden" | "toggle-locked";
+	isProcessing: boolean;
+	onClick: () => void;
+}) {
+	const isHidden = actionType === "toggle-hidden";
+	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
+	const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+		isHidden
+			? isEnabled
+				? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
+				: "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
+			: isEnabled
+				? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
+				: "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
+	} ${isProcessing ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`;
+
+	return (
+		<motion.button
+			type="button"
+			onClick={onClick}
+			disabled={isProcessing}
+			whileHover={{ scale: 1.05 }}
+			whileTap={{ scale: 0.95 }}
+			transition={{ type: "spring", stiffness: 400, damping: 25 }}
+			className={buttonClasses}
+		>
+			{isProcessing ? (
+				<div className="flex items-center justify-center gap-1">
+					<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+					<span>Processing...</span>
+				</div>
+			) : isHidden ? (
+				<>
+					<Eye size={12} className="mr-1" />
+					{isEnabled ? "Unhide" : "Hide"}
+				</>
+			) : (
+				<>
+					<CheckCircle size={12} className="mr-1" />
+					{isEnabled ? "Unlock" : "Lock"}
+				</>
+			)}
+		</motion.button>
+	);
+}
+
+const SelectionBadge = () => (
+	<motion.div
+		initial={{ scale: 0, opacity: 0 }}
+		animate={{ scale: 1, opacity: 1 }}
+		className="absolute top-3 right-3 z-20"
+	>
+		<div className="relative">
+			<div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+			<div className="relative size-6 sm:size-7 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-primary/50">
+				<Check size={14} className="text-primary-foreground" strokeWidth={3} />
+			</div>
+		</div>
+	</motion.div>
+);
+
+function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) {
+	return (
+		<button
+			type="button"
+			onClick={(e) => {
+				e.stopPropagation();
+				onClick(nameId);
+			}}
+			className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
+			aria-label="View full size"
+		>
+			<ZoomIn size={14} />
+		</button>
+	);
+}
 
 export function NameSelector() {
 	const toast = useToast();
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
-	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
-	const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
@@ -94,11 +169,6 @@ export function NameSelector() {
 		(state) => state.tournament.selectedNames,
 	);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
-	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
-	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(
-		null,
-	);
-	const [dragOffset, setDragOffset] = useState(0);
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
 	const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -107,13 +177,15 @@ export function NameSelector() {
 	const [hiddenQuery, setHiddenQuery] = useState("");
 	const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
 	const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
-	const deferredSync = useDeferredSync();
+	const deferredSync = useCallback((syncFn: () => void) => {
+		setTimeout(syncFn, 0);
+	}, []);
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
 		retry: 2,
 	});
 
-	const sampleNames: NameItem[] = [
+	const sampleNames = [
 		{ id: "1", name: "Luna", description: "Graceful and mysterious" },
 		{ id: "2", name: "Miso", description: "Sweet and playful" },
 		{ id: "3", name: "Pixel", description: "Tech-savvy and clever" },
@@ -122,7 +194,7 @@ export function NameSelector() {
 		{ id: "6", name: "Ziggy", description: "Bold and energetic" },
 		{ id: "7", name: "Whiskers", description: "Classic and timeless" },
 		{ id: "8", name: "Pepper", description: "Small but mighty" },
-	];
+	] satisfies NameItem[];
 
 	const error =
 		namesQuery.error instanceof Error
@@ -147,7 +219,18 @@ export function NameSelector() {
 	);
 
 	const { catImages, catImageById } = useMemo(
-		() => buildNameCardImages(names),
+		() => {
+			const catImages = names.map((nameItem) =>
+				getRandomCatImage(nameItem.id, CAT_IMAGES),
+			);
+			const catImageById = new Map<IdType, string>();
+			for (let i = 0; i < names.length; i++) {
+				if (catImages[i]) {
+					catImageById.set(names[i].id, catImages[i]);
+				}
+			}
+			return { catImages, catImageById };
+		},
 		[names],
 	);
 
@@ -187,97 +270,18 @@ export function NameSelector() {
 		[syncSelectionToStore, deferredSync],
 	);
 
-	// Trigger haptic feedback if available
 	const triggerHaptic = useCallback(() => {
 		if ("vibrate" in navigator) {
 			navigator.vibrate(50);
 		}
 	}, []);
 
-	// Add haptic feedback for better UX
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
-			// Add subtle haptic feedback if supported
 			triggerHaptic();
 			toggleName(nameId);
 		},
 		[triggerHaptic, toggleName],
-	);
-
-	// Optimized drag state update with batching
-	const updateDragState = useCallback(
-		(offset: number, direction: "left" | "right" | null = null) => {
-			requestAnimationFrame(() => {
-				setDragOffset(offset);
-				if (direction) {
-					setDragDirection(direction);
-				}
-			});
-		},
-		[],
-	);
-
-	const markSwiped = useCallback(
-		(nameId: IdType, _direction: "left" | "right") => {
-			setSwipedIds((prev) => addToSet(prev, nameId));
-		},
-		[],
-	);
-
-	const handleSwipe = useCallback(
-		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
-			if (direction === "right") {
-				setSelectedNames((prev) => {
-					const next = addToSet(prev, nameId);
-					// Use deferred sync to prevent render cycle issue
-					deferredSync(() => syncSelectionToStore(next));
-					return next;
-				});
-			}
-			markSwiped(nameId, direction);
-			triggerHaptic();
-
-			// Dynamic reset delay based on velocity for smoother feel
-			const baseDelay = 200;
-			const velocityFactor = Math.min(Math.abs(velocity) * 0.05, 150);
-			const resetDelay = Math.max(baseDelay, 350 - velocityFactor);
-
-			// Batch state updates for better performance
-			requestAnimationFrame(() => {
-				setTimeout(() => {
-					requestAnimationFrame(() => {
-						setDragDirection(null);
-						setDragOffset(0);
-					});
-				}, resetDelay);
-			});
-		},
-		[markSwiped, syncSelectionToStore, triggerHaptic, deferredSync],
-	);
-
-	const handleDragEnd = useCallback(
-		(nameId: IdType, info: PanInfo) => {
-			const offset = info.offset.x;
-			const velocity = info.velocity.x;
-
-			if (
-				Math.abs(offset) < SWIPE_OFFSET_THRESHOLD &&
-				Math.abs(velocity) < SWIPE_VELOCITY_THRESHOLD
-			) {
-				// Smooth snap back animation
-				updateDragState(0);
-				return;
-			}
-
-			// Determine direction based on offset and velocity
-			const isRightSwipe =
-				offset > SWIPE_OFFSET_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD;
-			const direction = isRightSwipe ? "right" : "left";
-
-			updateDragState(0, direction);
-			handleSwipe(nameId, direction, Math.abs(velocity));
-		},
-		[handleSwipe, updateDragState],
 	);
 
 	const handleToggleHidden = useCallback(
@@ -392,14 +396,7 @@ export function NameSelector() {
 		}
 	}, [pendingAdminAction, handleToggleHidden, handleToggleLocked]);
 
-	const visibleCards = useMemo(() => {
-		const unlockedNames = names.filter((name) => !isNameLocked(name));
-		return unlockedNames.filter((name) => !swipedIds.has(name.id));
-	}, [names, swipedIds]);
-	const cardsToRender = useMemo(() => visibleCards.slice(0, 3), [visibleCards]);
-
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
-	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
 	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
 	const hiddenFuzzy = useFuzzySearch(
 		hiddenNamesAll,
@@ -422,22 +419,6 @@ export function NameSelector() {
 		() => hiddenFiltered.slice(0, hiddenRenderCount),
 		[hiddenFiltered, hiddenRenderCount],
 	);
-	const selectedIdsSet = selectedNames;
-	const _selectedAvailableCount = useMemo(
-		() => countSelectedItems(availableNames, selectedNames),
-		[availableNames, selectedNames],
-	);
-	const _selectedHiddenCount = useMemo(
-		() => countSelectedItems(hiddenNamesAll, selectedNames),
-		[hiddenNamesAll, selectedNames],
-	);
-	const _canSelectAllAvailable = useMemo(
-		() => availableNames.some((name) => !selectedIdsSet.has(name.id)),
-		[availableNames, selectedIdsSet],
-	);
-	const _hasAnySelection = selectedIdsSet.size > 0;
-	const _canStartTournament = (storeSelectedNames?.length ?? 0) >= 2;
-	const _selectionFloor = lockedInNames.length;
 	const isHiddenAction = pendingAdminAction?.type === "toggle-hidden";
 	const isDisablingAction = Boolean(pendingAdminAction?.isCurrentlyEnabled);
 	const confirmTitle = isHiddenAction
@@ -468,59 +449,6 @@ export function NameSelector() {
 		},
 		[names],
 	);
-
-	const startTournament = useCallback(() => {
-		if (storeSelectedNames && storeSelectedNames.length >= 2) {
-			tournamentActions.setNames(storeSelectedNames);
-		}
-		document
-			.getElementById("tournament")
-			?.scrollIntoView({ behavior: "smooth", block: "start" });
-	}, [storeSelectedNames, tournamentActions]);
-
-	const _handleSelectAllAvailable = useCallback(() => {
-		setSelectedNames((prev) => {
-			const next = addManyToSet(
-				prev,
-				availableNames.map((name) => name.id),
-			);
-			// Use deferred sync to prevent render cycle issue
-			deferredSync(() => syncSelectionToStore(next));
-			return next;
-		});
-		triggerHaptic();
-	}, [availableNames, syncSelectionToStore, triggerHaptic, deferredSync]);
-
-	const _handleClearSelection = useCallback(() => {
-		const lockedIds = new Set(getLockedNames(names).map((name) => name.id));
-		setSelectedNames(lockedIds);
-		// Use deferred sync to prevent render cycle issue
-		deferredSync(() => syncSelectionToStore(lockedIds));
-		triggerHaptic();
-	}, [names, syncSelectionToStore, triggerHaptic, deferredSync]);
-
-	const _handleSelectRandomAvailable = useCallback(() => {
-		if (availableNames.length === 0) {
-			return;
-		}
-
-		const targetCount = Math.min(8, availableNames.length);
-		const randomIds = pickRandomItemIds(availableNames, targetCount);
-		setSelectedNames((prev) => {
-			const next = addManyToSet(prev, randomIds);
-			// Use deferred sync to prevent render cycle issue
-			deferredSync(() => syncSelectionToStore(next));
-			return next;
-		});
-		triggerHaptic();
-		toast.showSuccess(`Added ${targetCount} random names.`);
-	}, [
-		availableNames,
-		syncSelectionToStore,
-		toast,
-		triggerHaptic,
-		deferredSync,
-	]);
 
 	if (isLoading) {
 		return (
@@ -564,431 +492,84 @@ export function NameSelector() {
 	return (
 		<div className="mx-auto w-full">
 			<div className="space-y-4 sm:space-y-6 mobile-nav-safe-bottom">
-				<div className="flex justify-center pb-4 pt-2">
-					<MagicToggle
-						options={[
-							{ value: "swipe", label: "Swipe", icon: <Layers size={16} /> },
-							{ value: "grid", label: "Grid", icon: <LayoutGrid size={16} /> },
-						]}
-						value={isSwipeMode ? "swipe" : "grid"}
-						onChange={(v) => setSwipeMode(v === "swipe")}
-						ariaLabel="Select Layout Mode"
-					/>
-				</div>
-
-				{isSwipeMode ? (
-					<>
-						<div
-							className="relative w-full flex items-center justify-center"
-							style={{ minHeight: "min(70dvh, 550px)" }}
-						>
-							<AnimatePresence mode="popLayout">
-								{visibleCards.length > 0 ? (
-									cardsToRender.map((nameItem, index) => {
-										const catImage = catImageById.get(nameItem.id) ?? "";
-										return (
-											<motion.div
-												key={nameItem.id}
-												layout={true}
-												layoutId={String(nameItem.id)}
-												className="absolute inset-0 flex items-center justify-center"
-												style={{ zIndex: 10 - index }}
-												exit={{
-													opacity: 0,
-													x: dragDirection === "right" ? 400 : -400,
-													rotate: dragDirection === "right" ? 25 : -25,
-													scale: 0.8,
-													transition: EXIT_SPRING_CONFIG,
-												}}
-											>
-												<motion.div
-													drag={index === 0 ? "x" : false}
-													dragConstraints={{ left: -250, right: 250 }}
-													onDrag={(_, info) => {
-														if (index === 0) {
-															updateDragState(info.offset.x);
-														}
-													}}
-													onDragEnd={(_, info) => {
-														if (index === 0) {
-															handleDragEnd(nameItem.id, info);
-														}
-													}}
-													animate={{
-														scale: index === 0 ? 1 : 0.95,
-														opacity: 1,
-														rotate: index === 0 ? dragOffset / 30 : 0,
-														x: index === 0 ? dragOffset * 0.15 : 0,
-														y: index * 8,
-													}}
-													transition={SMOOTH_SPRING_CONFIG}
-													whileDrag={{
-														scale: 1.02,
-														transition: { duration: 0.15 },
-													}}
-													className="w-full max-w-md"
-													style={{ height: "min(65dvh, 500px)" }}
-												>
-													<Card
-														className={`relative overflow-hidden group transition-all duration-200 h-full ${
-															selectedNames.has(nameItem.id)
-																? "shadow-[0_0_30px_hsl(var(--success)/0.3)]"
-																: ""
-														} ${
-															index === 0
-																? "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95"
-																: "pointer-events-none"
-														}`}
-														variant="filled"
-														padding="none"
-													>
-														{index === 0 && (
-															<>
-																<motion.div
-																	className="absolute left-8 top-1/2 -translate-y-1/2 z-20"
-																	initial={{ opacity: 0, scale: 0.8 }}
-																	animate={{
-																		opacity: dragOffset < -50 ? 1 : 0,
-																		scale: dragOffset < -50 ? 1 : 0.8,
-																	}}
-																>
-																	<div className="flex items-center gap-2 px-6 py-3 bg-destructive/90 backdrop-blur-md rounded-full border-2 border-destructive shadow-lg rotate-[-20deg]">
-																		<X
-																			size={24}
-																			className="text-destructive-foreground"
-																		/>
-																		<span className="text-destructive-foreground font-black text-lg uppercase">
-																			Nope
-																		</span>
-																	</div>
-																</motion.div>
-
-																<motion.div
-																	className="absolute right-8 top-1/2 -translate-y-1/2 z-20"
-																	initial={{ opacity: 0, scale: 0.8 }}
-																	animate={{
-																		opacity: dragOffset > 50 ? 1 : 0,
-																		scale: dragOffset > 50 ? 1 : 0.8,
-																	}}
-																>
-																	<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
-																		<Heart
-																			size={24}
-																			className="text-success-foreground fill-success-foreground"
-																		/>
-																		<span className="text-success-foreground font-black text-lg uppercase">
-																			Like
-																		</span>
-																	</div>
-																</motion.div>
-															</>
-														)}
-
-														<div className="relative w-full h-full flex flex-col justify-end bg-foreground/10">
-															<CatImage
-																src={catImage}
-																alt={nameItem.name}
-																objectFit="cover"
-																containerClassName="absolute inset-0 w-full h-full"
-																imageClassName="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
-															/>
-
-															{/* Zoom Button Overlay */}
-															{index === 0 && (
-																<button
-																	type="button"
-																	onClick={(e) => {
-																		e.stopPropagation();
-																		handleOpenLightbox(nameItem.id);
-																	}}
-																	className="absolute top-4 right-4 p-2.5 rounded-full bg-foreground/50 backdrop-blur-sm text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/70 z-30"
-																	aria-label="View full size"
-																>
-																	<ZoomIn size={18} />
-																</button>
-															)}
-
-															{/* Name and Info Overlay */}
-															<div className={getNameOverlayClasses("swipe")}>
-																<div className="flex flex-col gap-1.5 max-w-full">
-																	<NameContent
-																		nameItem={nameItem}
-																		variant="swipe"
-																	/>
-																</div>
-
-																{isAdmin && (
-																	<button
-																		type="button"
-																		onClick={(e) => {
-																			e.stopPropagation();
-																			requestAdminAction({
-																				type: "toggle-hidden",
-																				nameId: nameItem.id,
-																				isCurrentlyEnabled:
-																					isNameHidden(nameItem),
-																			});
-																		}}
-																		disabled={togglingHidden.has(nameItem.id)}
-																		className={`mt-4 flex items-center gap-2 pointer-events-auto w-fit text-sm font-bold tracking-wider uppercase transition-all ${
-																			togglingHidden.has(nameItem.id)
-																				? "text-muted-foreground cursor-not-allowed"
-																				: "text-warning hover:text-warning/80 hover:scale-105 active:scale-95"
-																		}`}
-																	>
-																		{togglingHidden.has(nameItem.id) ? (
-																			<>
-																				<div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-																				<span>Processing...</span>
-																			</>
-																		) : isNameHidden(nameItem) ? (
-																			<>
-																				<Eye size={16} />
-																				<span>Unhide From Public</span>
-																			</>
-																		) : (
-																			<>
-																				<EyeOff size={16} />
-																				<span>Hide From Public</span>
-																			</>
-																		)}
-																	</button>
-																)}
-
-																{selectedNames.has(nameItem.id) && (
-																	<div className="px-4 py-1.5 bg-success/30 backdrop-blur-md border border-success/40 rounded-full flex items-center gap-2 shadow-lg shadow-success/20 mt-4">
-																		<Check size={16} className="text-success" />
-																		<span className="text-success font-black text-xs tracking-[0.2em] uppercase">
-																			Selected
-																		</span>
-																	</div>
-																)}
-															</div>
-														</div>
-													</Card>
-												</motion.div>
-											</motion.div>
-										);
-									})
-								) : (
-									<div className="absolute inset-0 flex items-center justify-center">
-										<motion.div
-											initial={{ opacity: 0, y: 20 }}
-											animate={{ opacity: 1, y: 0 }}
-											transition={{ duration: 0.6, ease: "easeOut" }}
-											className="text-center space-y-6 max-w-md mx-auto px-6"
-										>
-											<motion.div
-												initial={{ scale: 0 }}
-												animate={{ scale: 1 }}
-												transition={{
-													delay: 0.2,
-													type: "spring",
-													stiffness: 400,
-													damping: 25,
-												}}
-												className="mx-auto w-20 h-20 bg-gradient-to-br from-success to-success/80 rounded-full flex items-center justify-center shadow-xl shadow-success/30"
-											>
-												<Check
-													size={40}
-													className="text-success-foreground"
-													strokeWidth={3}
-												/>
-											</motion.div>
-											<div className="isolate space-y-3">
-												<h2 className="blend-difference-text text-3xl font-bold text-white sm:text-4xl">
-													Great!
-												</h2>
-												<p className="blend-difference-text text-lg leading-relaxed text-white">
-													You've picked all the names. Let's compare them!
-												</p>
-											</div>
-											<motion.div
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-												transition={{ delay: 0.4 }}
-												className="pt-4"
-											>
-												<Button
-													onClick={startTournament}
-													className="min-w-[12rem]"
-												>
-													Compare Names
-												</Button>
-											</motion.div>
-										</motion.div>
-									</div>
-								)}
-							</AnimatePresence>
-						</div>
-
-						{visibleCards.length > 0 && (
-							<div className="flex items-center justify-center gap-6 sm:gap-8 mt-8 pb-6">
-								<motion.div
-									whileHover={{ scale: 1.05, y: -2 }}
-									whileTap={{ scale: 0.95 }}
-									transition={{ type: "spring", stiffness: 400, damping: 25 }}
-								>
-									<Button
-										variant="outline"
-										iconOnly={true}
-										className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-destructive/30 hover:border-destructive/50 bg-gradient-to-br from-destructive/5 to-destructive/10 hover:from-destructive/15 hover:to-destructive/20 text-destructive transition-all duration-300 shadow-xl hover:shadow-destructive/30 hover:scale-110 active:scale-95"
-										onClick={() => {
-											const currentCard = visibleCards[0];
-											if (currentCard) {
-												handleSwipe(currentCard.id, "left");
+				<div className="space-y-8">
+					{availableNames.length > 0 && (
+						<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+							{availableNames.map((nameItem) => {
+								const isSelected = selectedNames.has(nameItem.id);
+								const catImage = catImageById.get(nameItem.id) ?? "";
+								return (
+									<motion.div
+										key={nameItem.id}
+										role="button"
+										tabIndex={0}
+										onClick={() => handleToggleName(nameItem.id)}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												e.preventDefault();
+												handleToggleName(nameItem.id);
 											}
 										}}
-										aria-label="Skip (Left Arrow)"
-										title="Skip (Left Arrow)"
+										aria-pressed={isSelected}
+										whileHover={{ scale: 1.03, y: -2 }}
+										whileTap={{ scale: 0.97 }}
+										transition={{ type: "spring", stiffness: 400, damping: 25 }}
+										className={getCardStyles(isSelected, isNameLocked(nameItem))}
 									>
-										<div className="relative">
-											<X size={28} className="sm:size-8" strokeWidth={2.5} />
-											<div className="absolute inset-0 bg-destructive/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-										</div>
-									</Button>
-									<div className="text-center mt-2">
-										<span className="text-xs text-muted-foreground font-medium">
-											Skip
-										</span>
-									</div>
-								</motion.div>
-
-								<motion.div
-									whileHover={{ scale: 1.05, y: -2 }}
-									whileTap={{ scale: 0.95 }}
-									transition={{ type: "spring", stiffness: 400, damping: 25 }}
-								>
-									<Button
-										variant="outline"
-										iconOnly={true}
-										className="group relative h-16 w-16 sm:h-20 sm:w-20 rounded-full border-3 border-success/30 hover:border-success/50 bg-gradient-to-br from-success/5 to-success/10 hover:from-success/15 hover:to-success/20 text-success transition-all duration-300 shadow-xl hover:shadow-success/30 hover:scale-110 active:scale-95"
-										onClick={() => {
-											const currentCard = visibleCards[0];
-											if (currentCard) {
-												handleSwipe(currentCard.id, "right");
-											}
-										}}
-										aria-label="Select (Right Arrow)"
-										title="Select (Right Arrow)"
-									>
-										<div className="relative">
-											<Heart
-												size={28}
-												className="sm:size-8"
-												strokeWidth={2.5}
-												fill="currentColor"
+										<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
+											<CatImage
+												src={catImage}
+												alt={nameItem.name}
+												containerClassName="w-full h-full"
+												imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 											/>
-											<div className="absolute inset-0 bg-success/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-										</div>
-									</Button>
-									<div className="text-center mt-2">
-										<span className="text-xs text-muted-foreground font-medium">
-											Select
-										</span>
-									</div>
-								</motion.div>
-							</div>
-						)}
-					</>
-				) : (
-					<div className="space-y-8">
-						{availableNames.length > 0 && (
-							<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-								{availableNames.map((nameItem) => {
-									const isSelected = selectedNames.has(nameItem.id);
-									const catImage = catImageById.get(nameItem.id) ?? "";
-									return (
-										<motion.div
-											key={nameItem.id}
-											role="button"
-											tabIndex={0}
-											onClick={() => handleToggleName(nameItem.id)}
-											onKeyDown={(e) => {
-												if (e.key === "Enter" || e.key === " ") {
-													e.preventDefault();
-													handleToggleName(nameItem.id);
-												}
-											}}
-											aria-pressed={isSelected}
-											whileHover={{ scale: 1.03, y: -2 }}
-											whileTap={{ scale: 0.97 }}
-											transition={{
-												type: "spring",
-												stiffness: 400,
-												damping: 25,
-											}}
-											className={getCardStyles(
-												isSelected,
-												isNameLocked(nameItem),
-											)}
-										>
-											<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
-												<CatImage
-													src={catImage}
-													alt={nameItem.name}
-													objectFit="cover"
-													containerClassName="w-full h-full"
-													imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-												/>
-
-												{/* Selection Badge */}
-												{isSelected && <SelectionBadge />}
-
-												{/* Enhanced Name Overlay */}
-												<div className={getNameOverlayClasses("grid")}>
-													<div className="flex flex-col items-center gap-1.5 max-w-full">
-														<NameContent nameItem={nameItem} variant="grid" />
-													</div>
+											{isSelected && <SelectionBadge />}
+											<div className={nameOverlayClasses}>
+												<div className="flex flex-col items-center gap-1.5 max-w-full">
+													<NameContent nameItem={nameItem} />
 												</div>
-
-												{/* Enhanced Zoom Button */}
-												<ZoomButton
-													nameId={nameItem.id}
-													onClick={handleOpenLightbox}
-												/>
 											</div>
-											{isAdmin && !isSwipeMode && (
-												<motion.div
-													initial={{ opacity: 0, y: 10 }}
-													animate={{ opacity: 1, y: 0 }}
-													transition={{ delay: 0.1 }}
-													className="px-3 pb-3 flex gap-2"
-												>
-													<AdminActionButton
-														nameItem={nameItem}
-														actionType="toggle-hidden"
-														isProcessing={togglingHidden.has(nameItem.id)}
-														onClick={() =>
-															requestAdminAction({
-																type: "toggle-hidden",
-																nameId: nameItem.id,
-																isCurrentlyEnabled: isNameHidden(nameItem),
-															})
-														}
-													/>
-
-													<AdminActionButton
-														nameItem={nameItem}
-														actionType="toggle-locked"
-														isProcessing={togglingLocked.has(nameItem.id)}
-														onClick={() =>
-															requestAdminAction({
-																type: "toggle-locked",
-																nameId: nameItem.id,
-																isCurrentlyEnabled: isNameLocked(nameItem),
-															})
-														}
-													/>
-												</motion.div>
-											)}
-										</motion.div>
-									);
-								})}
-							</div>
-						)}
-					</div>
-				)}
+											<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+										</div>
+										{isAdmin && (
+											<motion.div
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.1 }}
+												className="px-3 pb-3 flex gap-2"
+											>
+												<AdminActionButton
+													nameItem={nameItem}
+													actionType="toggle-hidden"
+													isProcessing={togglingHidden.has(nameItem.id)}
+													onClick={() =>
+														requestAdminAction({
+															type: "toggle-hidden",
+															nameId: nameItem.id,
+															isCurrentlyEnabled: isNameHidden(nameItem),
+														})
+													}
+												/>
+												<AdminActionButton
+													nameItem={nameItem}
+													actionType="toggle-locked"
+													isProcessing={togglingLocked.has(nameItem.id)}
+													onClick={() =>
+														requestAdminAction({
+															type: "toggle-locked",
+															nameId: nameItem.id,
+															isCurrentlyEnabled: isNameLocked(nameItem),
+														})
+													}
+												/>
+											</motion.div>
+										)}
+									</motion.div>
+								);
+							})}
+						</div>
+					)}
+				</div>
 
 				{(() => {
 					if (hiddenNamesAll.length === 0) {
@@ -1136,7 +717,6 @@ export function NameSelector() {
 														<CatImage
 															src={catImage}
 															alt={nameItem.name}
-															objectFit="cover"
 															containerClassName="w-full h-full"
 															imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 														/>
@@ -1261,7 +841,6 @@ export function NameSelector() {
 				description={confirmDescription}
 				onClose={cancelAdminAction}
 				closeDisabled={isPendingActionBusy}
-				maxWidth="max-w-md"
 			>
 				<div className="flex flex-col">
 					<p className="text-sm text-muted-foreground">{confirmDescription}</p>

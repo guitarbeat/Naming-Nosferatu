@@ -15,12 +15,6 @@ const Analytics = lazy(() =>
 	import("@vercel/analytics/react").then((module) => ({ default: module.Analytics })),
 );
 
-const LiquidGradientBackground = lazy(() =>
-	import("@/shared/components/layout/LiquidGradientBackground").then((module) => ({
-		default: module.LiquidGradientBackground,
-	})),
-);
-
 export function AppLayout({ children }: AppLayoutProps) {
 	const { tournament, errors, errorActions } = useAppStore();
 
@@ -55,10 +49,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 					Skip to main content
 				</button>
 
-				<Suspense fallback={null}>
-					<LiquidGradientBackground />
-				</Suspense>
-
 				<FloatingNavbar />
 
 				<main
@@ -70,7 +60,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 						<div className="mx-auto mb-4 w-full max-w-4xl px-3 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
 							<ErrorComponent
 								error={String(errors.current)}
-								onRetry={() => errorActions.clearError()}
 								onDismiss={() => errorActions.clearError()}
 							/>
 						</div>

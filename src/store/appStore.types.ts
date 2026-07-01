@@ -45,14 +45,7 @@ export interface UIActions {
 	setTheme: (theme: ThemePreference) => void;
 	initializeTheme: () => void;
 	setBootLoading: (loading: boolean) => void;
-	setMatrixMode: (enabled: boolean) => void;
-	setGlobalAnalytics: (show: boolean) => void;
 	setSwipeMode: (enabled: boolean) => void;
-	setCatPictures: (show: boolean) => void;
-	setUserComparison: (show: boolean) => void;
-	setEditingProfile: (editing: boolean) => void;
-	setProfileOpen: (open: boolean) => void;
-	setSuggestionOpen: (open: boolean) => void;
 }
 
 export interface SiteSettingsActions {

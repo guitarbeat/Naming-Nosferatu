@@ -1,35 +1,21 @@
 import { X } from "lucide-react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-
-interface OriginRect {
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-}
+import React, { useEffect, useState } from "react";
 
 interface ModalProps {
 	title: string;
 	open?: boolean;
 	onClose: () => void;
 	children: React.ReactNode;
-	maxWidth?: "max-w-sm" | "max-w-md" | "max-w-lg" | "max-w-xl" | "max-w-2xl";
 	closeDisabled?: boolean;
 	description?: string;
 	hideTitle?: boolean;
-	originRect?: OriginRect | null;
 }
 
-const GENIE_DURATION_MS = 480;
+const EXIT_DURATION_MS = 220;
 
-function useModalAnimation(
-	isOpenResolved: boolean,
-	originRect: OriginRect | null,
-	modalRef: React.RefObject<HTMLDivElement | null>,
-) {
+function useModalAnimation(isOpenResolved: boolean) {
 	const [isClosing, setIsClosing] = useState(false);
 	const [shouldRender, setShouldRender] = useState(isOpenResolved);
-	const [genieVars, setGenieVars] = useState<React.CSSProperties | null>(null);
 
 	useEffect(() => {
 		if (isOpenResolved) {
@@ -44,27 +30,11 @@ function useModalAnimation(
 		const timer = window.setTimeout(() => {
 			setShouldRender(false);
 			setIsClosing(false);
-		}, GENIE_DURATION_MS);
+		}, EXIT_DURATION_MS);
 		return () => window.clearTimeout(timer);
 	}, [isOpenResolved, shouldRender]);
 
-	useLayoutEffect(() => {
-		if (!shouldRender || !originRect || !modalRef.current) {
-			setGenieVars(null);
-			return;
-		}
-		const rect = modalRef.current.getBoundingClientRect();
-		const modalCenterX = rect.left + rect.width / 2;
-		const modalCenterY = rect.top + rect.height / 2;
-		const originCenterX = originRect.x + originRect.width / 2;
-		const originCenterY = originRect.y + originRect.height / 2;
-		setGenieVars({
-			["--genie-x" as never]: `${originCenterX - modalCenterX}px`,
-			["--genie-y" as never]: `${originCenterY - modalCenterY}px`,
-		});
-	}, [shouldRender, originRect, modalRef]);
-
-	return { isClosing, shouldRender, genieVars };
+	return { isClosing, shouldRender };
 }
 
 interface ModalHeaderProps {
@@ -117,19 +87,12 @@ export function Modal({
 	open,
 	onClose,
 	children,
-	maxWidth = "max-w-md",
 	closeDisabled = false,
 	description,
 	hideTitle = false,
-	originRect = null,
 }: ModalProps) {
 	const isOpenResolved = open ?? true;
-	const modalRef = useRef<HTMLDivElement>(null);
-	const { isClosing, shouldRender, genieVars } = useModalAnimation(
-		isOpenResolved,
-		originRect,
-		modalRef,
-	);
+	const { isClosing, shouldRender } = useModalAnimation(isOpenResolved);
 
 	const requestClose = () => {
 		if (closeDisabled) {
@@ -142,14 +105,9 @@ export function Modal({
 		return null;
 	}
 
-	const useGenie = Boolean(originRect);
-	const surfaceAnimation = useGenie
-		? isClosing
-			? "motion-safe:animate-[genie-out_460ms_cubic-bezier(0.7,0,0.84,0)_forwards]"
-			: "motion-safe:animate-[genie-in_460ms_cubic-bezier(0.16,1,0.3,1)_both]"
-		: isClosing
-			? "motion-safe:animate-[fadeIn_180ms_ease-out_reverse_forwards]"
-			: "motion-safe:animate-[surface-enter_220ms_var(--ease-out-expo)]";
+	const surfaceAnimation = isClosing
+		? "motion-safe:animate-[fadeIn_180ms_ease-out_reverse_forwards]"
+		: "motion-safe:animate-[surface-enter_220ms_var(--ease-out-expo)]";
 	const overlayAnimation = isClosing
 		? "motion-safe:animate-[fadeIn_220ms_ease-out_reverse_forwards]"
 		: "motion-safe:animate-[fadeIn_180ms_ease-out]";
@@ -169,14 +127,12 @@ export function Modal({
 			/>
 
 			<div
-				ref={modalRef}
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="modal-title"
 				aria-describedby={description ? "modal-description" : undefined}
 				tabIndex={-1}
-				style={genieVars ?? undefined}
-				className={`glass-surface relative z-50 w-full ${maxWidth} overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
+				className={`glass-surface relative z-50 w-full max-w-md overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
 			>
 				<ModalHeader
 					title={title}

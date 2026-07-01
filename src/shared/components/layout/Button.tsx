@@ -1,108 +1,33 @@
-import { cva } from "class-variance-authority";
-import { ChevronDown, Loader2 } from "lucide-react";
-import React, { memo } from "react";
+import { Loader2 } from "lucide-react";
+import type React from "react";
+import { memo } from "react";
 import { cn } from "@/shared/lib/utils";
-import "./FancyButton.css";
 
-/**
- * Unified button variants - single source of truth
- */
-const buttonVariants = cva(
-	[
-		"inline-flex items-center justify-center gap-2 whitespace-nowrap",
-		"font-medium tracking-wide",
-		"rounded-[var(--radius-button)]",
-		"transition-[transform,box-shadow,background-color,opacity,filter] duration-200 ease-in-out",
-		"motion-safe:transition-[transform,box-shadow,background-color,opacity,filter] motion-safe:duration-200",
-		"focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-		"disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
-		"[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-		"select-none",
-	].join(" "),
-	{
-		variants: {
-			variant: {
-				primary: [
-					"bg-primary text-primary-foreground",
-					"shadow-sm",
-					"motion-safe:hover:brightness-110 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-px",
-					"hover:brightness-110",
-					"motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96] active:shadow-sm active:brightness-95",
-				].join(" "),
-				secondary: [
-					"bg-secondary text-secondary-foreground",
-					"border border-border/40",
-					"shadow-sm",
-					"hover:bg-secondary/80 hover:border-border/60 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-px",
-					"motion-safe:active:translate-y-0 active:shadow-sm active:bg-secondary/70 motion-safe:active:scale-[0.96]",
-				].join(" "),
-				danger: [
-					"bg-destructive text-destructive-foreground",
-					"shadow-sm",
-					"motion-safe:hover:brightness-110 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-px",
-					"hover:brightness-110",
-					"motion-safe:active:translate-y-0 active:shadow-sm active:brightness-95 motion-safe:active:scale-[0.96]",
-				].join(" "),
-				ghost: [
-					"text-foreground/80",
-					"hover:bg-accent/50 hover:text-accent-foreground",
-					"active:bg-accent/70",
-				].join(" "),
-				outline: [
-					"border border-border bg-transparent text-foreground",
-					"shadow-sm",
-					"hover:bg-accent/30 hover:border-border/80 hover:text-accent-foreground motion-safe:hover:-translate-y-px",
-					"motion-safe:active:translate-y-0 active:bg-accent/50 motion-safe:active:scale-[0.96]",
-				].join(" "),
-				link: [
-					"text-primary underline-offset-4",
-					"hover:underline hover:text-primary/80",
-					"active:text-primary/70",
-				].join(" "),
-				gradient: [
-					"rounded-xl bg-gradient-to-r from-primary to-accent",
-					"text-primary-foreground font-bold",
-					"shadow-lg shadow-primary/20",
-					"hover:from-primary/90 hover:to-accent/90 hover:shadow-xl hover:shadow-primary/30 motion-safe:hover:-translate-y-px",
-					"motion-safe:active:scale-[0.96] active:shadow-md",
-					"disabled:motion-safe:active:scale-100",
-				].join(" "),
-				secondaryGradient: [
-					"rounded-xl bg-gradient-to-r from-chart-2 to-chart-3",
-					"text-primary-foreground font-bold",
-					"shadow-lg shadow-chart-2/20",
-					"hover:from-chart-2/90 hover:to-chart-3/90 hover:shadow-xl hover:shadow-chart-2/30 motion-safe:hover:-translate-y-px",
-					"motion-safe:active:scale-[0.98] active:shadow-md",
-					"disabled:motion-safe:active:scale-100",
-				].join(" "),
-				glass: "",
-			},
-			size: {
-				small: "h-8 px-3 py-1.5 text-xs rounded-md sm:h-8 md:h-8 min-h-[44px] sm:min-h-auto",
-				medium: "h-10 px-4 py-2.5 text-sm sm:h-9 min-h-[44px] sm:min-h-auto",
-				large: "h-12 px-6 py-3 text-base sm:h-11 min-h-[44px]",
-				xl: "h-14 px-8 py-3 text-base sm:h-[50px] min-h-[44px]",
-				icon: "h-10 w-10 p-0 sm:h-9 sm:w-9 min-h-[44px] min-w-[44px]",
-			},
-		},
-		defaultVariants: {
-			variant: "primary",
-			size: "medium",
-		},
-	},
-);
+type ButtonVariant = "primary" | "danger" | "ghost" | "outline" | "flat" | "glass";
+type ButtonSize = "small" | "medium" | "large" | "icon";
 
-type ButtonVariant =
-	| "primary"
-	| "secondary"
-	| "danger"
-	| "ghost"
-	| "outline"
-	| "link"
-	| "gradient"
-	| "secondaryGradient"
-	| "glass";
-type ButtonSize = "small" | "medium" | "large" | "xl" | "icon";
+const baseButtonClass =
+	"inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium tracking-wide rounded-[var(--radius-button)] transition-[transform,box-shadow,background-color,opacity,filter] duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 select-none";
+
+const variantClasses: Record<ButtonVariant, string> = {
+	primary:
+		"bg-primary text-primary-foreground shadow-sm hover:brightness-110 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96] active:shadow-sm active:brightness-95",
+	danger:
+		"bg-destructive text-destructive-foreground shadow-sm hover:brightness-110 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 active:shadow-sm active:brightness-95 motion-safe:active:scale-[0.96]",
+	ghost: "text-foreground/80 hover:bg-accent/50 hover:text-accent-foreground active:bg-accent/70",
+	outline:
+		"border border-border bg-transparent text-foreground shadow-sm hover:bg-accent/30 hover:border-border/80 hover:text-accent-foreground motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 active:bg-accent/50 motion-safe:active:scale-[0.96]",
+	flat: "text-foreground/80 hover:bg-accent/40 active:bg-accent/60",
+	glass:
+		"border border-white/15 bg-white/10 text-foreground shadow-sm backdrop-blur-md hover:bg-white/15 hover:border-white/25 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 active:bg-white/20 motion-safe:active:scale-[0.96]",
+};
+
+const sizeClasses: Record<ButtonSize, string> = {
+	small: "h-8 px-3 py-1.5 text-xs rounded-md sm:h-8 md:h-8 min-h-[44px] sm:min-h-auto",
+	medium: "h-10 px-4 py-2.5 text-sm sm:h-9 min-h-[44px] sm:min-h-auto",
+	large: "h-12 px-6 py-3 text-base sm:h-11 min-h-[44px]",
+	icon: "h-10 w-10 p-0 sm:h-9 sm:w-9 min-h-[44px] min-w-[44px]",
+};
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
@@ -113,8 +38,6 @@ interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>
 	type?: "button" | "submit" | "reset";
 	className?: string;
 	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-	startIcon?: React.ReactNode | null;
-	endIcon?: React.ReactNode | null;
 	iconOnly?: boolean;
 }
 
@@ -127,22 +50,10 @@ const Button = ({
 	type = "button",
 	className = "",
 	onClick,
-	startIcon = null,
-	endIcon = null,
 	iconOnly = false,
 	...rest
 }: ButtonProps) => {
 	const finalSize = iconOnly ? "icon" : size;
-	const glassSizeClass =
-		finalSize === "small"
-			? "fancy-button--small"
-			: finalSize === "large"
-				? "fancy-button--large"
-				: finalSize === "xl"
-					? "fancy-button--xl"
-					: finalSize === "icon"
-						? "fancy-button--icon"
-						: "fancy-button--medium";
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		if (disabled || loading) {
@@ -152,104 +63,21 @@ const Button = ({
 		onClick?.(event);
 	};
 
-	const content = (
-		<>
-			{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-			{startIcon && !loading && startIcon}
-			{!iconOnly && children}
-			{iconOnly && !startIcon && !loading && children}
-			{endIcon && !loading && endIcon}
-		</>
-	);
-
-	if (variant === "glass") {
-		return (
-			<div className={cn("fancy-button-wrap", className)}>
-				<button
-					type={type}
-					disabled={disabled || loading}
-					className={cn("fancy-button", glassSizeClass)}
-					onClick={handleClick}
-					{...rest}
-				>
-					<span className="fancy-button-content">{content}</span>
-				</button>
-				<div className="fancy-button-shadow" aria-hidden={true} />
-			</div>
-		);
-	}
-
 	return (
 		<button
 			type={type}
 			disabled={disabled || loading}
-			className={cn(buttonVariants({ variant, size: finalSize }), className)}
+			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
 			onClick={handleClick}
 			{...rest}
 		>
 			{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-			{startIcon && !loading && <span className="mr-2">{startIcon}</span>}
 			{!iconOnly && children}
-			{iconOnly && !startIcon && !loading && children}
-			{endIcon && !loading && <span className="ml-2">{endIcon}</span>}
+			{iconOnly && !loading && children}
 		</button>
 	);
 };
 
 Button.displayName = "Button";
 
-/**
- * ScrollToTopButton component - floating button that scrolls to top of page
- */
-const ScrollToTopButton = ({ className = "" }: { className?: string }) => {
-	const [showScrollTop, setShowScrollTop] = React.useState(false);
-
-	React.useEffect(() => {
-		let scrollTimeout: number | null = null;
-
-		const checkScroll = () => {
-			const threshold = window.innerHeight <= 768 ? window.innerHeight * 1.5 : window.innerHeight;
-			setShowScrollTop(window.scrollY > threshold);
-		};
-
-		const throttledCheckScroll = () => {
-			if (scrollTimeout) {
-				return;
-			}
-			scrollTimeout = requestAnimationFrame(() => {
-				checkScroll();
-				scrollTimeout = null;
-			});
-		};
-
-		checkScroll();
-		window.addEventListener("scroll", throttledCheckScroll, { passive: true });
-
-		return () => {
-			window.removeEventListener("scroll", throttledCheckScroll);
-			if (scrollTimeout) {
-				cancelAnimationFrame(scrollTimeout);
-			}
-		};
-	}, []);
-
-	if (!showScrollTop) {
-		return null;
-	}
-
-	return (
-		<button
-			type="button"
-			className={`scroll-to-top visible ${className}`.trim()}
-			onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-			aria-label="Scroll to top"
-		>
-			<ChevronDown className="size-5 -rotate-180" aria-hidden="true" />
-		</button>
-	);
-};
-
-ScrollToTopButton.displayName = "ScrollToTopButton";
-
 export default memo(Button);
-export { ScrollToTopButton };

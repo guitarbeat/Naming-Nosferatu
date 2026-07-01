@@ -5,75 +5,9 @@ export interface SynthNote {
 	wave?: OscillatorType;
 }
 
-// Background music tracks (songs)
-export const BACKGROUND_TRACKS = [
-	"Main Menu 1 (Ruins)",
-	"AdhesiveWombat - Night Shade",
-	"Lemon Demon - The Ultimate Showdown (8-Bit Remix)",
-	"what-is-love",
-	"MiseryBusiness",
-];
-
 // Sound effect identifiers
 export const SOUND_EFFECTS = ["vote", "undo", "level-up", "wow", "surprise", "streak", "meow"];
 
-// Synthesis fallback patterns for music when files are missing
-export const FALLBACK_MUSIC_PATTERNS: SynthNote[][] = [
-	[
-		{ frequency: 261.63, duration: 0.18 },
-		{ frequency: 329.63, duration: 0.18 },
-		{ frequency: 392, duration: 0.18 },
-		{ frequency: 523.25, duration: 0.18 },
-		{ frequency: 392, duration: 0.18 },
-		{ frequency: 329.63, duration: 0.18 },
-		{ frequency: 293.66, duration: 0.18 },
-		{ frequency: 349.23, duration: 0.18 },
-	],
-	[
-		{ frequency: 220, duration: 0.18 },
-		{ frequency: 293.66, duration: 0.18 },
-		{ frequency: 329.63, duration: 0.18 },
-		{ frequency: 440, duration: 0.18 },
-		{ frequency: 392, duration: 0.18 },
-		{ frequency: 329.63, duration: 0.18 },
-		{ frequency: 293.66, duration: 0.18 },
-		{ frequency: 261.63, duration: 0.18 },
-	],
-	[
-		{ frequency: 174.61, duration: 0.18 },
-		{ frequency: 220, duration: 0.18 },
-		{ frequency: 261.63, duration: 0.18 },
-		{ frequency: 349.23, duration: 0.18 },
-		{ frequency: 392, duration: 0.18 },
-		{ frequency: 349.23, duration: 0.18 },
-		{ frequency: 261.63, duration: 0.18 },
-		{ frequency: 220, duration: 0.18 },
-	],
-	[
-		{ frequency: 196, duration: 0.18 },
-		{ frequency: 246.94, duration: 0.18 },
-		{ frequency: 293.66, duration: 0.18 },
-		{ frequency: 392, duration: 0.18 },
-		{ frequency: 329.63, duration: 0.18 },
-		{ frequency: 293.66, duration: 0.18 },
-		{ frequency: 246.94, duration: 0.18 },
-		{ frequency: 220, duration: 0.18 },
-	],
-	[
-		{ frequency: 233.08, duration: 0.18 },
-		{ frequency: 293.66, duration: 0.18 },
-		{ frequency: 349.23, duration: 0.18 },
-		{ frequency: 466.16, duration: 0.18 },
-		{ frequency: 392, duration: 0.18 },
-		{ frequency: 349.23, duration: 0.18 },
-		{ frequency: 293.66, duration: 0.18 },
-		{ frequency: 261.63, duration: 0.18 },
-	],
-];
-
-/**
- * Returns a synth note sequence for fallback sound effects.
- */
 export function getFallbackEffectPattern(soundName: string): SynthNote[] | null {
 	switch (soundName) {
 		case "vote":

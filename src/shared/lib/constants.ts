@@ -63,7 +63,6 @@ export const STORAGE_KEYS = {
 	ADMIN_ANALYTICS_COLLAPSED: "admin-analytics-collapsed",
 	NAVBAR_COLLAPSED: "navbar-collapsed",
 	SOUND_ENABLED: "soundEnabled",
-	MUSIC_VOLUME: "musicVolume",
 	EFFECTS_VOLUME: "effectsVolume",
 } as const;
 
@@ -90,8 +89,5 @@ export const TIMING = {
 
 export const AUDIO = {
 	DEFAULT_EFFECTS_VOLUME: 0.3,
-	DEFAULT_MUSIC_VOLUME: 0.1,
-	FALLBACK_LOOP_MIN_DURATION_MS: 650,
-	FALLBACK_LOOP_OVERLAP_MS: 35,
 	MAX_RETRIES: 3,
 } as const;

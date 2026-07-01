@@ -23,7 +23,7 @@ export default function AdminRoute() {
 
 	if (!authUser?.isAdmin) {
 		return (
-			<Section id="admin" variant="minimal" padding="comfortable" maxWidth="md">
+			<Section id="admin" maxWidth="md">
 				<div className="flex flex-col items-center gap-4 py-10 text-center">
 					<h2 className="text-3xl font-bold text-destructive">Access Denied</h2>
 					<p className="max-w-md text-muted-foreground">
@@ -39,7 +39,7 @@ export default function AdminRoute() {
 	}
 
 	return (
-		<Section id="admin" variant="minimal" padding="comfortable" maxWidth="2xl">
+		<Section id="admin">
 			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
 				<ErrorBoundary context={errorContexts.analysisDashboard}>
 					<DashboardLazy

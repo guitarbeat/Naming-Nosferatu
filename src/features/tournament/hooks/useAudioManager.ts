@@ -1,13 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { AUDIO, STORAGE_KEYS } from "@/shared/lib/constants";
-import {
-	AudioEffects,
-	playBackgroundMusic,
-	playNextTrack,
-	playPreviousTrack,
-	setBackgroundMusicVolume,
-	stopBackgroundMusic,
-} from "@/shared/lib/sound";
+import { AudioEffects } from "@/shared/lib/sound";
 import { getStorageString, isStorageAvailable, setStorageString } from "@/shared/lib/storage";
 
 /* =========================================================================
@@ -20,17 +13,10 @@ interface UseAudioManagerResult {
 	playVoteSound: () => void;
 	playUndoSound: () => void;
 	playStreakSound: (streakSize?: number) => void;
-	handleNextTrack: () => void;
-	handlePreviousTrack: () => void;
-	backgroundMusicEnabled: boolean;
-	toggleBackgroundMusic: () => void;
 	playLevelUpSound: () => void;
 	playWowSound: () => void;
 	playSurpriseSound: () => void;
-	primeAudioExperience: () => void;
 }
-
-const BACKGROUND_MUSIC_ENABLED_KEY = "tournamentBackgroundMusicEnabled";
 
 function readStoredNumber(key: string, fallback: number): number {
 	if (!isStorageAvailable()) {
@@ -72,18 +58,6 @@ export function useAudioManager(): UseAudioManagerResult {
 	const [volume, _setVolume] = useState(() =>
 		readStoredNumber(STORAGE_KEYS.EFFECTS_VOLUME, AUDIO.DEFAULT_EFFECTS_VOLUME),
 	);
-	const [backgroundMusicEnabled, setBackgroundMusicEnabled] = useState(() => {
-		const stored = readStoredBoolean(BACKGROUND_MUSIC_ENABLED_KEY);
-		return stored ?? false;
-	});
-	const [backgroundMusicVolume, _setBackgroundMusicVolumeState] = useState(() =>
-		readStoredNumber(STORAGE_KEYS.MUSIC_VOLUME, AUDIO.DEFAULT_MUSIC_VOLUME),
-	);
-	const audioPrimedRef = useRef(false);
-
-	useEffect(() => {
-		setBackgroundMusicVolume(backgroundMusicVolume);
-	}, [backgroundMusicVolume]);
 
 	const soundEffects = useMemo(
 		() => ({
@@ -127,60 +101,13 @@ export function useAudioManager(): UseAudioManagerResult {
 		setIsMuted((previous) => {
 			const nextMuted = !previous;
 			writeStorage(STORAGE_KEYS.SOUND_ENABLED, String(!nextMuted));
-
-			if (nextMuted) {
-				stopBackgroundMusic();
-				setBackgroundMusicEnabled(false);
-				writeStorage(BACKGROUND_MUSIC_ENABLED_KEY, "false");
-			}
 			return nextMuted;
 		});
 	}, []);
 
-	const toggleBackgroundMusic = useCallback(() => {
-		setBackgroundMusicEnabled((previous) => {
-			if (isMuted) {
-				stopBackgroundMusic();
-				writeStorage(BACKGROUND_MUSIC_ENABLED_KEY, "false");
-				return false;
-			}
-
-			const nextEnabled = !previous;
-			if (nextEnabled) {
-				playBackgroundMusic();
-			} else {
-				stopBackgroundMusic();
-			}
-			writeStorage(BACKGROUND_MUSIC_ENABLED_KEY, String(nextEnabled));
-			return nextEnabled;
-		});
-	}, [isMuted]);
-
-	const primeAudioExperience = useCallback(() => {
-		if (audioPrimedRef.current || isMuted) {
-			return;
-		}
-
-		audioPrimedRef.current = true;
-		setBackgroundMusicEnabled((previous) => {
-			if (previous) {
-				playBackgroundMusic();
-				return previous;
-			}
-			playBackgroundMusic();
-			writeStorage(BACKGROUND_MUSIC_ENABLED_KEY, "true");
-			return true;
-		});
-	}, [isMuted]);
-
 	return {
 		isMuted,
 		handleToggleMute,
-		handleNextTrack: playNextTrack,
-		handlePreviousTrack: playPreviousTrack,
-		backgroundMusicEnabled,
-		toggleBackgroundMusic,
-		primeAudioExperience,
 		...soundEffects,
 	};
 }

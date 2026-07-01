@@ -1,29 +1,17 @@
 import { AUDIO, STORAGE_KEYS } from "@/shared/lib/constants";
 import { getStorageString, isStorageAvailable } from "@/shared/lib/storage";
-import {
-	BACKGROUND_TRACKS,
-	FALLBACK_MUSIC_PATTERNS,
-	getFallbackEffectPattern,
-	SOUND_EFFECTS,
-} from "./sound/resources";
+import { getFallbackEffectPattern, SOUND_EFFECTS } from "./sound/resources";
 import { synthEngine } from "./sound/synthEngine";
 
 interface SoundConfig {
 	volume?: number;
-	preload?: boolean;
 }
 
 class SoundManager {
 	private audioCache: Map<string, HTMLAudioElement> = new Map();
-	private backgroundMusic: HTMLAudioElement | null = null;
 	private audioContext: AudioContext | null = null;
-	private fallbackMusicTimeout: number | null = null;
-	private fallbackMusicActive = false;
-	private backgroundMusicRequested = false;
 	private failedAssets: Set<string> = new Set();
 	private defaultVolume = AUDIO.DEFAULT_EFFECTS_VOLUME;
-	private backgroundMusicVolume = AUDIO.DEFAULT_MUSIC_VOLUME;
-	private currentTrackIndex = 0;
 	private readonly isBrowser = isStorageAvailable();
 
 	constructor() {
@@ -31,7 +19,6 @@ class SoundManager {
 			return;
 		}
 		this.preloadSounds();
-		this.preloadBackgroundMusic();
 	}
 
 	private createAudioElement(name: string): HTMLAudioElement | null {
@@ -92,69 +79,6 @@ class SoundManager {
 		synthEngine.playSequence(this.getAudioContext(), pattern, volume);
 	}
 
-	private stopFallbackMusic() {
-		this.fallbackMusicActive = false;
-		if (this.fallbackMusicTimeout !== null) {
-			window.clearTimeout(this.fallbackMusicTimeout);
-			this.fallbackMusicTimeout = null;
-		}
-	}
-
-	private startFallbackMusic() {
-		if (!this.isBrowser || !this.canPlaySounds()) {
-			return;
-		}
-
-		this.stopFallbackMusic();
-		this.fallbackMusicActive = true;
-
-		const playLoop = () => {
-			if (!this.fallbackMusicActive || !this.backgroundMusicRequested) {
-				return;
-			}
-
-			const pattern =
-				FALLBACK_MUSIC_PATTERNS[this.currentTrackIndex % FALLBACK_MUSIC_PATTERNS.length] ??
-				FALLBACK_MUSIC_PATTERNS[0];
-			if (!pattern) {
-				return;
-			}
-
-			const context = this.getAudioContext();
-			const leadDuration = synthEngine.playSequence(
-				context,
-				pattern,
-				Math.max(0.04, this.backgroundMusicVolume * 0.7),
-			);
-
-			// Add a low bass pulse every other beat to keep loop energy up.
-			const bassPattern = pattern
-				.filter((_, index) => index % 2 === 0)
-				.map((note) => ({
-					frequency: note.frequency / 2,
-					duration: note.duration * 2,
-					gain: 0.5,
-					wave: "sine" as OscillatorType,
-				}));
-			const bassDuration = synthEngine.playSequence(
-				context,
-				bassPattern,
-				Math.max(0.03, this.backgroundMusicVolume * 0.5),
-			);
-
-			const loopDurationMs = Math.max(
-				AUDIO.FALLBACK_LOOP_MIN_DURATION_MS,
-				Math.round(Math.max(leadDuration, bassDuration, 1.35) * 1000),
-			);
-			this.fallbackMusicTimeout = window.setTimeout(
-				playLoop,
-				loopDurationMs - AUDIO.FALLBACK_LOOP_OVERLAP_MS,
-			);
-		};
-
-		playLoop();
-	}
-
 	private preloadSounds() {
 		SOUND_EFFECTS.forEach((soundName) => {
 			const audio = this.createAudioElement(soundName);
@@ -163,69 +87,6 @@ class SoundManager {
 				this.audioCache.set(soundName, audio);
 			}
 		});
-	}
-
-	private preloadBackgroundMusic() {
-		this.loadBackgroundTrack(BACKGROUND_TRACKS[this.currentTrackIndex] ?? "");
-	}
-
-	playNextTrack() {
-		this.currentTrackIndex = (this.currentTrackIndex + 1) % BACKGROUND_TRACKS.length;
-		const nextTrack = BACKGROUND_TRACKS[this.currentTrackIndex];
-		if (nextTrack) {
-			this.loadBackgroundTrack(nextTrack);
-			if (this.backgroundMusicRequested) {
-				this.playBackgroundMusic();
-			}
-		}
-	}
-
-	playPreviousTrack() {
-		this.currentTrackIndex =
-			(this.currentTrackIndex - 1 + BACKGROUND_TRACKS.length) % BACKGROUND_TRACKS.length;
-		const prevTrack = BACKGROUND_TRACKS[this.currentTrackIndex];
-		if (prevTrack) {
-			this.loadBackgroundTrack(prevTrack);
-			if (this.backgroundMusicRequested) {
-				this.playBackgroundMusic();
-			}
-		}
-	}
-
-	private loadBackgroundTrack(trackName: string) {
-		if (this.backgroundMusic) {
-			this.backgroundMusic.pause();
-		}
-
-		const audio = this.createAudioElement(trackName);
-		if (!audio) {
-			this.backgroundMusic = null;
-			return;
-		}
-
-		this.backgroundMusic = audio;
-		this.backgroundMusic.loop = true;
-		this.backgroundMusic.volume = this.backgroundMusicVolume;
-	}
-
-	getCurrentTrack(): string {
-		return BACKGROUND_TRACKS[this.currentTrackIndex] || "Unknown Track";
-	}
-
-	getAvailableSongs(): string[] {
-		return [...BACKGROUND_TRACKS];
-	}
-
-	getAvailableSoundEffects(): string[] {
-		return [...SOUND_EFFECTS];
-	}
-
-	isSong(soundName: string): boolean {
-		return BACKGROUND_TRACKS.includes(soundName);
-	}
-
-	isSoundEffect(soundName: string): boolean {
-		return SOUND_EFFECTS.includes(soundName);
 	}
 
 	play(soundName: string, config: SoundConfig = {}) {
@@ -280,49 +141,6 @@ class SoundManager {
 		}
 	}
 
-	setDefaultVolume(volume: number) {
-		this.defaultVolume = Math.max(0, Math.min(1, volume));
-	}
-
-	playBackgroundMusic() {
-		this.backgroundMusicRequested = true;
-		if (!this.canPlaySounds()) {
-			return;
-		}
-
-		const trackName = BACKGROUND_TRACKS[this.currentTrackIndex];
-		if (!trackName || this.failedAssets.has(trackName) || !this.backgroundMusic) {
-			this.startFallbackMusic();
-			return;
-		}
-
-		this.stopFallbackMusic();
-		this.backgroundMusic.currentTime = 0;
-		this.backgroundMusic.play().catch((error) => {
-			if (this.isAutoplayError(error)) {
-				return;
-			}
-			this.failedAssets.add(trackName);
-			this.startFallbackMusic();
-		});
-	}
-
-	stopBackgroundMusic() {
-		this.backgroundMusicRequested = false;
-		if (this.backgroundMusic) {
-			this.backgroundMusic.pause();
-			this.backgroundMusic.currentTime = 0;
-		}
-		this.stopFallbackMusic();
-	}
-
-	setBackgroundMusicVolume(volume: number) {
-		this.backgroundMusicVolume = Math.max(0, Math.min(1, volume));
-		if (this.backgroundMusic) {
-			this.backgroundMusic.volume = this.backgroundMusicVolume;
-		}
-	}
-
 	canPlaySounds(): boolean {
 		if (!this.isBrowser) {
 			return false;
@@ -343,13 +161,6 @@ const playSound = (soundName: string, config?: SoundConfig) => {
 		soundManager.play(soundName, config);
 	}
 };
-
-export const playBackgroundMusic = () => soundManager.playBackgroundMusic();
-export const stopBackgroundMusic = () => soundManager.stopBackgroundMusic();
-export const setBackgroundMusicVolume = (volume: number) =>
-	soundManager.setBackgroundMusicVolume(volume);
-export const playNextTrack = () => soundManager.playNextTrack();
-export const playPreviousTrack = () => soundManager.playPreviousTrack();
 
 /**
  * Consolidated Sound Effects

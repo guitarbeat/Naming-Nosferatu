@@ -1,12 +1,8 @@
 import { motion } from "framer-motion";
-import { type ComponentType, type LazyExoticComponent, Suspense } from "react";
 import Button from "@/shared/components/layout/Button";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
-import { Section } from "@/shared/components/layout/Section";
-import { SectionHeading } from "@/shared/components/layout/SectionHeading";
 import { TIMING } from "@/shared/lib/constants";
 import { themeText } from "@/shared/lib/themeClasses";
-import type { NameItem, RatingData } from "@/shared/types";
+import type { NameItem } from "@/shared/types";
 
 type HomeHeroState = "loading" | "ready" | "error";
 
@@ -14,20 +10,6 @@ interface HomeHeroSectionProps {
 	state: HomeHeroState;
 	lockedNames: NameItem[];
 	onStartPicking: () => void;
-}
-
-interface TournamentBracketSectionProps {
-	LazyTournament: LazyExoticComponent<
-		ComponentType<{
-			names: NameItem[];
-			existingRatings?: Record<string, RatingData>;
-			onComplete: (ratings: Record<string, RatingData>) => void;
-		}>
-	>;
-	names: NameItem[] | null | undefined;
-	ratings: Record<string, RatingData>;
-	onComplete: (ratings: Record<string, RatingData>) => void;
-	onGoToPicker: () => void;
 }
 
 function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNames: NameItem[] }) {
@@ -123,46 +105,12 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 						}}
 						className="mt-6"
 					>
-						<Button variant="glass" size="lg" onClick={onStartPicking}>
+						<Button variant="glass" size="large" onClick={onStartPicking}>
 							Get Started
 						</Button>
 					</motion.div>
 				</motion.div>
 			</section>
 		</div>
-	);
-}
-
-function TournamentBracketSection({
-	LazyTournament,
-	names,
-	ratings,
-	onComplete,
-	onGoToPicker,
-}: TournamentBracketSectionProps) {
-	return (
-		<Section
-			id="tournament"
-			variant="minimal"
-			padding="comfortable"
-			maxWidth="2xl"
-			separator={true}
-		>
-			<SectionHeading title="Bracket" subtitle="Head-to-head matchups." />
-			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-				{names && names.length > 0 ? (
-					<LazyTournament names={names} existingRatings={ratings} onComplete={onComplete} />
-				) : (
-					<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-4 py-12 text-center">
-						<p className="text-pretty text-sm text-muted-foreground/70">
-							Pick at least 2 names to start comparing them.
-						</p>
-						<Button variant="glass" onClick={onGoToPicker}>
-							← Back
-						</Button>
-					</div>
-				)}
-			</Suspense>
-		</Section>
 	);
 }
