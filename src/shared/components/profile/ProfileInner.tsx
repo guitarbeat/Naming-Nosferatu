@@ -1,136 +1,14 @@
-import { LogOut, Pencil, User } from "lucide-react";
-import { type RefObject, useEffect, useRef, useState } from "react";
-import Button from "@/shared/components/layout/Button";
-import { Input } from "@/shared/components/layout/FormPrimitives";
+import { useEffect, useRef, useState } from "react";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { ErrorManager } from "@/shared/services/errorManager";
 import useAppStore from "@/store/appStore";
+import { ProfileAvatar } from "./ProfileAvatar";
+import { ProfileEditForm } from "./ProfileEditForm";
+import { ProfileView } from "./ProfileView";
 
 interface ProfileInnerProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;
 	onLogout: () => Promise<void>;
-}
-
-function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () => void }) {
-	return (
-		<div className="relative mb-1">
-			<div
-				className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/30 to-accent/20 blur-2xl opacity-50"
-				aria-hidden="true"
-			/>
-			<div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
-				<img src={avatarSrc} alt="Profile" className="size-full object-cover" onError={onError} />
-			</div>
-		</div>
-	);
-}
-
-interface ProfileEditFormProps {
-	editedName: string;
-	setEditedName: (val: string) => void;
-	saveError: string | null;
-	setSaveError: (val: string | null) => void;
-	isSaving: boolean;
-	isLoggedIn: boolean;
-	handleSave: () => void;
-	handleCancel: () => void;
-	nameInputRef: RefObject<HTMLInputElement | null>;
-}
-
-function ProfileEditForm({
-	editedName,
-	setEditedName,
-	saveError,
-	setSaveError,
-	isSaving,
-	isLoggedIn,
-	handleSave,
-	handleCancel,
-	nameInputRef,
-}: ProfileEditFormProps) {
-	return (
-		<div className="w-full space-y-4 animate-in fade-in duration-200">
-			<div className="relative">
-				<User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none" />
-				<Input
-					ref={nameInputRef}
-					type="text"
-					value={editedName}
-					onChange={(e) => {
-						setEditedName(e.target.value);
-						if (saveError) {
-							setSaveError(null);
-						}
-					}}
-					placeholder="Who are you?"
-					onKeyDown={(e) => e.key === "Enter" && handleSave()}
-					className="w-full h-11 pl-10 pr-4 text-sm"
-				/>
-			</div>
-
-			{saveError && (
-				<p role="alert" className="text-sm text-destructive">
-					{saveError}
-				</p>
-			)}
-
-			<div className="flex gap-2">
-				{isLoggedIn && (
-					<Button type="button" variant="ghost" onClick={handleCancel} className="flex-1">
-						Cancel
-					</Button>
-				)}
-				<Button
-					type="submit"
-					variant="glass"
-					size="large"
-					onClick={handleSave}
-					disabled={!editedName.trim() || isSaving}
-					loading={isSaving}
-					className={isLoggedIn ? "flex-[2]" : "w-full"}
-				>
-					{isLoggedIn ? "Save" : "Begin Journey"}
-				</Button>
-			</div>
-		</div>
-	);
-}
-
-interface ProfileViewProps {
-	userName: string | undefined;
-	isLoggingOut: boolean;
-	handleEdit: () => void;
-	handleLogout: () => void;
-}
-
-function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: ProfileViewProps) {
-	return (
-		<div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
-			<div className="flex items-center gap-2">
-				<h3 className="text-xl font-bold text-foreground">{userName}</h3>
-				<button
-					type="button"
-					onClick={handleEdit}
-					className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
-					aria-label="Edit name"
-				>
-					<Pencil size={14} />
-				</button>
-			</div>
-
-			<p className="text-xs text-muted-foreground/80">Your preferences are saved for ranking.</p>
-
-			<button
-				type="button"
-				onClick={handleLogout}
-				disabled={isLoggingOut}
-				className="mt-1 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-colors"
-			>
-				<LogOut size={13} />
-				{isLoggingOut ? "Logging out..." : "Logout"}
-			</button>
-		</div>
-	);
 }
 
 export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
