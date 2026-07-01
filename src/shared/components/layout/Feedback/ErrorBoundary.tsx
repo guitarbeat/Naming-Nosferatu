@@ -275,7 +275,8 @@ ${error?.stack || "No stack trace available"}
 							<div className="space-y-1">
 								{parsedStack.map((frame, i) => (
 									<div
-										key={i}
+										// biome-ignore lint/suspicious/noArrayIndexKey: stack frames
+										key={`${frame.file}-${frame.line}-${i}`}
 										className="flex items-center gap-2 text-xs font-mono p-2 bg-black/20 rounded"
 									>
 										<span className="text-muted-foreground w-4">{i + 1}.</span>
@@ -312,12 +313,14 @@ ${error?.stack || "No stack trace available"}
 				{/* Action Buttons */}
 				<div className="flex flex-wrap gap-3 justify-center">
 					<button
+						type="button"
 						onClick={resetError}
 						className="px-6 py-2.5 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold rounded-xl shadow-lg hover:shadow-primary/25 active:scale-95 transition-all duration-200"
 					>
 						Try Again
 					</button>
 					<button
+						type="button"
 						onClick={() => {
 							handleGoHome();
 						}}
@@ -326,6 +329,7 @@ ${error?.stack || "No stack trace available"}
 						Go Home
 					</button>
 					<button
+						type="button"
 						onClick={copyErrorToClipboard}
 						className="px-6 py-2.5 bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-foreground font-medium rounded-xl transition-all duration-200 flex items-center gap-2"
 					>
@@ -448,6 +452,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
 		<div className={cn("flex flex-col gap-2 w-full", className)}>
 			{onClearAll && (
 				<button
+					type="button"
 					onClick={onClearAll}
 					className="self-end text-xs font-medium text-red-300 hover:text-red-100 hover:scale-105 transition-all outline-none focus:ring-2 focus:ring-red-500/50 rounded px-1"
 				>
@@ -457,6 +462,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
 			<div className="flex flex-col gap-2">
 				{errors.map((err, i) => (
 					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: error list items
 						key={i}
 						className="relative flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-sm animate-in fade-in slide-in-from-top-1 shadow-sm backdrop-blur-sm"
 					>
