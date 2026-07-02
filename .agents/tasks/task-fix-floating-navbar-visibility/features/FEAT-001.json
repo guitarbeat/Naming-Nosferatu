@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "fix",
   "description": "Fix the floating bottom navigation bar so its labels are visible on desktop. The root cause is a broken Tailwind breakpoint: the label <span> in FloatingNavbar.tsx uses 'hidden xs:inline sm:inline' but 'xs' is not a defined breakpoint in config/tailwind.config.js, so the span is always hidden (class 'hidden' is never overridden). Additionally, align the component with the well-designed navbar.css BEM system already imported in index.css, or at minimum remove the dead CSS to keep the codebase clean.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "1. Read /projects/sandbox/Naming-Nosferatu/src/shared/components/layout/FloatingNavbar.tsx carefully. Focus on the FloatingNav inner component, specifically line 61: <span className='hidden text-sm font-medium tracking-tight xs:inline sm:inline'>. The 'xs:' prefix refers to a breakpoint that does NOT exist in config/tailwind.config.js.",
     "2. Fix the label visibility: change 'hidden text-sm font-medium tracking-tight xs:inline sm:inline' to 'text-sm font-medium tracking-tight' (remove 'hidden' and the broken 'xs:inline' - labels should always be visible since this is a desktop app and the nav bar has enough space). If labels on very small screens (< 480px) need hiding, use 'hidden sm:inline' instead, but 'inline' (always visible) is the simplest correct fix.",
@@ -26,5 +26,5 @@
     "pnpm --dir /projects/sandbox/Naming-Nosferatu run test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Rewrote FloatingNav inner function to use the BEM classes from navbar.css instead of raw Tailwind utilities. The root cause (label always hidden due to 'xs:inline' referencing a non-existent Tailwind breakpoint) is fixed: the label now uses the floating-navbar__label class which has no hidden/breakpoint logic. All BEM elements are wired up: floating-navbar-frame, floating-navbar-shell, floating-navbar, floating-navbar__primary (grid with dynamic column count), floating-navbar__item, floating-navbar__item--primary, floating-navbar__item--accent, floating-navbar__icon, floating-navbar__badge, floating-navbar__label. One test was updated to assert on floating-navbar__item--accent instead of the removed text-primary Tailwind utility. Build, lint (pre-existing errors only, count went from 13 to 12 by also fixing a FloatingNavbar format issue), and all 374 tests pass."
 }
