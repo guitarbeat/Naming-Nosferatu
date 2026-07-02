@@ -1,0 +1,10 @@
+--- src/features/tournament/components/NameSelector.tsx
++++ src/features/tournament/components/NameSelector.tsx
+@@ -176,6 +176,7 @@
+	const [hiddenQuery, setHiddenQuery] = useState("");
+	const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
+	const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
++	const [isSwipeMode, setIsSwipeMode] = useState(true);
+	const deferredSync = useCallback((syncFn: () => void) => {
+		setTimeout(syncFn, 0);
+	}, []);
