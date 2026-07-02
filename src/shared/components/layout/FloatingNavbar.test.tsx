@@ -182,7 +182,7 @@ describe("FloatingNavbar", () => {
 		const startButton = screen.getAllByRole("button", { name: "Vote (3)" })[0];
 
 		expect(startButton).toBeInTheDocument();
-		expect(startButton).toHaveClass("text-primary");
+		expect(startButton).toHaveClass("floating-navbar__item--accent");
 		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(0);
 	});
 
@@ -232,6 +232,17 @@ describe("FloatingNavbar", () => {
 
 		expect(profileIcon).not.toBeNull();
 		expect(profileIcon).toHaveClass("text-chart-4");
+	});
+
+	it("renders label text visibly in the DOM", () => {
+		renderWithRouter();
+
+		// "Suggest" is always present regardless of route or login state.
+		// This assertion guards against a regression where label content
+		// becomes hidden (e.g., via a broken Tailwind class like the original
+		// `hidden xs:inline sm:inline` where `xs:` is not a defined breakpoint).
+		expect(screen.getByText("Suggest")).toBeInTheDocument();
+		expect(screen.getByText("Profile")).toBeInTheDocument();
 	});
 
 	it("does not render on the tournament route", () => {
