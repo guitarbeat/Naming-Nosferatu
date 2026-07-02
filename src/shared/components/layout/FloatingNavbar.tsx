@@ -31,39 +31,40 @@ type NavItem = {
 };
 
 function FloatingNav({ items }: { items: NavItem[] }) {
+	const visibleItems = items.slice(0, 5);
 	return (
-		<nav
-			aria-label="Primary"
-			className="fixed bottom-6 left-1/2 z-[9998] flex max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center justify-center gap-1 rounded-full border border-border/30 bg-background/85 px-3 py-2 shadow-[0_18px_45px_-18px_rgba(0,0,0,0.45)] backdrop-blur-lg"
-		>
-			{items.slice(0, 5).map((item) => {
-				const isActive = Boolean(item.isActive);
-				return (
-					<button
-						key={item.id}
-						type="button"
-						onClick={item.onClick}
-						className={cn(
-							"flex items-center justify-center gap-1.5 px-3 py-2 rounded-full transition-colors min-h-[40px]",
-							(item.isAccent || isActive) && "text-primary",
-							isActive && "bg-primary/20",
-							!isActive && "text-muted-foreground hover:text-foreground",
-						)}
-						aria-label={item.label}
-						aria-current={isActive ? "location" : undefined}
+		<nav aria-label="Primary" className="floating-navbar-frame">
+			<div className="floating-navbar-shell">
+				<div className="floating-navbar">
+					<div
+						className="floating-navbar__primary"
+						style={{ gridTemplateColumns: `repeat(${visibleItems.length}, minmax(0, 1fr))` }}
 					>
-						<span className="relative flex shrink-0 items-center justify-center text-lg">
-							{item.icon}
-							{item.hasBadge && (
-								<span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary" />
-							)}
-						</span>
-						<span className="hidden text-sm font-medium tracking-tight xs:inline sm:inline">
-							{item.label}
-						</span>
-					</button>
-				);
-			})}
+						{visibleItems.map((item) => {
+							const isActive = Boolean(item.isActive);
+							return (
+								<button
+									key={item.id}
+									type="button"
+									onClick={item.onClick}
+									className={cn(
+										"floating-navbar__item floating-navbar__item--primary",
+										item.isAccent && "floating-navbar__item--accent",
+									)}
+									aria-label={item.label}
+									aria-current={isActive ? "location" : undefined}
+								>
+									<span className="floating-navbar__icon">
+										{item.icon}
+										{item.hasBadge && <span className="floating-navbar__badge" />}
+									</span>
+									<span className="floating-navbar__label">{item.label}</span>
+								</button>
+							);
+						})}
+					</div>
+				</div>
+			</div>
 		</nav>
 	);
 }
@@ -199,7 +200,6 @@ export function FloatingNavbar() {
 					}
 				}
 				setActiveSection(current);
-
 			});
 		};
 

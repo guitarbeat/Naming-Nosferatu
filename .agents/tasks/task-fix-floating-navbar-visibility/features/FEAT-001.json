@@ -1,0 +1,30 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Fix the floating bottom navigation bar so its labels are visible on desktop. The root cause is a broken Tailwind breakpoint: the label <span> in FloatingNavbar.tsx uses 'hidden xs:inline sm:inline' but 'xs' is not a defined breakpoint in config/tailwind.config.js, so the span is always hidden (class 'hidden' is never overridden). Additionally, align the component with the well-designed navbar.css BEM system already imported in index.css, or at minimum remove the dead CSS to keep the codebase clean.",
+  "status": "in_progress",
+  "steps": [
+    "1. Read /projects/sandbox/Naming-Nosferatu/src/shared/components/layout/FloatingNavbar.tsx carefully. Focus on the FloatingNav inner component, specifically line 61: <span className='hidden text-sm font-medium tracking-tight xs:inline sm:inline'>. The 'xs:' prefix refers to a breakpoint that does NOT exist in config/tailwind.config.js.",
+    "2. Fix the label visibility: change 'hidden text-sm font-medium tracking-tight xs:inline sm:inline' to 'text-sm font-medium tracking-tight' (remove 'hidden' and the broken 'xs:inline' - labels should always be visible since this is a desktop app and the nav bar has enough space). If labels on very small screens (< 480px) need hiding, use 'hidden sm:inline' instead, but 'inline' (always visible) is the simplest correct fix.",
+    "3. While in FloatingNavbar.tsx, review the FloatingNav component's <nav> and <button> styles. The navbar.css file at /projects/sandbox/Naming-Nosferatu/src/styles/navbar.css defines a complete, well-designed BEM class system (.floating-navbar-frame, .floating-navbar-shell, .floating-navbar__item, .floating-navbar__label, etc.) that is already imported in index.css but is completely unused by the TSX. Two acceptable resolutions: (a) Rewrite FloatingNav to use those BEM classes from navbar.css instead of raw Tailwind utilities, leveraging all the polish (glass effect, hover transitions, focus rings, responsive padding, etc.) already in that CSS file. OR (b) Keep the Tailwind approach but remove/comment-out navbar.css dead code. Option (a) is preferred because it produces a better visual result and the CSS is already designed for this purpose.",
+    "4. If choosing option (a) - rewrite FloatingNav to use BEM classes: The FloatingNav <nav> should get class 'floating-navbar-frame' (wrapper) containing a div with 'floating-navbar-shell' and inside it a div with 'floating-navbar'. Items use 'floating-navbar__item' on each button. The label span gets 'floating-navbar__label'. The icon wrapper gets 'floating-navbar__icon'. Badge gets 'floating-navbar__badge'. Active items: the button should have aria-current set appropriately (already done via aria-current={isActive ? 'location' : undefined}). Accent items: add 'floating-navbar__item--accent' class. For the primary/utility split: since all items are currently in one flat list, consider all items as primary (using 'floating-navbar__item--primary') or split based on item type.",
+    "5. After making changes, run: pnpm --dir /projects/sandbox/Naming-Nosferatu run build to verify TypeScript compiles and Vite builds successfully.",
+    "6. Run: pnpm --dir /projects/sandbox/Naming-Nosferatu run lint to check for Biome or TypeScript errors. Fix any issues found.",
+    "7. Run: pnpm --dir /projects/sandbox/Naming-Nosferatu run test to verify existing tests pass."
+  ],
+  "acceptance_criteria": [
+    "The label <span> in FloatingNavbar.tsx no longer uses the undefined 'xs:' breakpoint",
+    "Nav item labels are visible on desktop (not always-hidden due to broken breakpoint class)",
+    "The component's CSS approach is consistent - either navbar.css BEM classes are used by the TSX, or navbar.css dead code is removed/documented",
+    "pnpm build completes with no errors",
+    "pnpm lint completes with no errors",
+    "pnpm test passes"
+  ],
+  "verification": [
+    "pnpm --dir /projects/sandbox/Naming-Nosferatu run build",
+    "pnpm --dir /projects/sandbox/Naming-Nosferatu run lint",
+    "pnpm --dir /projects/sandbox/Naming-Nosferatu run test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -182,7 +182,7 @@ describe("FloatingNavbar", () => {
 		const startButton = screen.getAllByRole("button", { name: "Vote (3)" })[0];
 
 		expect(startButton).toBeInTheDocument();
-		expect(startButton).toHaveClass("text-primary");
+		expect(startButton).toHaveClass("floating-navbar__item--accent");
 		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(0);
 	});
 
