@@ -234,6 +234,17 @@ describe("FloatingNavbar", () => {
 		expect(profileIcon).toHaveClass("text-chart-4");
 	});
 
+	it("renders label text visibly in the DOM", () => {
+		renderWithRouter();
+
+		// "Suggest" is always present regardless of route or login state.
+		// This assertion guards against a regression where label content
+		// becomes hidden (e.g., via a broken Tailwind class like the original
+		// `hidden xs:inline sm:inline` where `xs:` is not a defined breakpoint).
+		expect(screen.getByText("Suggest")).toBeInTheDocument();
+		expect(screen.getByText("Profile")).toBeInTheDocument();
+	});
+
 	it("does not render on the tournament route", () => {
 		renderWithRouter(["/tournament"]);
 
