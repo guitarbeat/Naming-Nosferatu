@@ -28,7 +28,12 @@ import {
 	isNameHidden,
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
-import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
+import {
+	addManyToSet,
+	addToSet,
+	removeFromSet,
+	toggleInSet,
+} from "@/shared/lib/setUtils";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
@@ -51,11 +56,7 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
 const nameOverlayClasses =
 	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
 
-function NameContent({
-	nameItem,
-}: {
-	nameItem: NameItem;
-}) {
+function NameContent({ nameItem }: { nameItem: NameItem }) {
 	return (
 		<>
 			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
@@ -143,7 +144,13 @@ const SelectionBadge = () => (
 	</motion.div>
 );
 
-function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) {
+function ZoomButton({
+	nameId,
+	onClick,
+}: {
+	nameId: IdType;
+	onClick: (id: IdType) => void;
+}) {
 	return (
 		<button
 			type="button"
@@ -165,9 +172,6 @@ export function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
-	const storeSelectedNames = useAppStore(
-		(state) => state.tournament.selectedNames,
-	);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
@@ -218,21 +222,18 @@ export function NameSelector() {
 		[names, tournamentActions],
 	);
 
-	const { catImages, catImageById } = useMemo(
-		() => {
-			const catImages = names.map((nameItem) =>
-				getRandomCatImage(nameItem.id, CAT_IMAGES),
-			);
-			const catImageById = new Map<IdType, string>();
-			for (let i = 0; i < names.length; i++) {
-				if (catImages[i]) {
-					catImageById.set(names[i].id, catImages[i]);
-				}
+	const { catImages, catImageById } = useMemo(() => {
+		const catImages = names.map((nameItem) =>
+			getRandomCatImage(nameItem.id, CAT_IMAGES),
+		);
+		const catImageById = new Map<IdType, string>();
+		for (let i = 0; i < names.length; i++) {
+			if (catImages[i]) {
+				catImageById.set(names[i].id, catImages[i]);
 			}
-			return { catImages, catImageById };
-		},
-		[names],
-	);
+		}
+		return { catImages, catImageById };
+	}, [names]);
 
 	const showWarningRef = useRef(toast.showWarning);
 	useEffect(() => {
@@ -514,7 +515,10 @@ export function NameSelector() {
 										whileHover={{ scale: 1.03, y: -2 }}
 										whileTap={{ scale: 0.97 }}
 										transition={{ type: "spring", stiffness: 400, damping: 25 }}
-										className={getCardStyles(isSelected, isNameLocked(nameItem))}
+										className={getCardStyles(
+											isSelected,
+											isNameLocked(nameItem),
+										)}
 									>
 										<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
 											<CatImage
@@ -529,7 +533,10 @@ export function NameSelector() {
 													<NameContent nameItem={nameItem} />
 												</div>
 											</div>
-											<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+											<ZoomButton
+												nameId={nameItem.id}
+												onClick={handleOpenLightbox}
+											/>
 										</div>
 										{isAdmin && (
 											<motion.div
@@ -577,7 +584,7 @@ export function NameSelector() {
 					}
 
 					return (
-						<div className={isSwipeMode ? "" : "mt-2"}>
+						<div className="mt-2">
 							<div className="select-none">
 								<button
 									type="button"
@@ -642,14 +649,6 @@ export function NameSelector() {
 									id="hidden-names-panel"
 									className="mt-4 animate-in slide-in-from-top-2 duration-200 fade-in zoom-in-95"
 								>
-									{isSwipeMode && (
-										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
-											Archived names stay out of the swipe deck, but you can
-											still inspect and select them here without leaving swipe
-											mode.
-										</p>
-									)}
-
 									<div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between mb-3">
 										<input
 											value={hiddenQuery}
@@ -695,10 +694,9 @@ export function NameSelector() {
 											const isSelected = selectedNames.has(nameItem.id);
 											const catImage = catImageById.get(nameItem.id) ?? "";
 											return (
-												<div
+												<button
+													type="button"
 													key={nameItem.id}
-													role="button"
-													tabIndex={0}
 													onClick={() => handleToggleName(nameItem.id)}
 													onKeyDown={(e) => {
 														if (e.key === "Enter" || e.key === " ") {
@@ -798,7 +796,7 @@ export function NameSelector() {
 															</button>
 														</div>
 													)}
-												</div>
+												</button>
 											);
 										})}
 									</div>
@@ -846,7 +844,12 @@ export function NameSelector() {
 					<p className="text-sm text-muted-foreground">{confirmDescription}</p>
 
 					<div className="mt-6 flex items-center justify-end gap-3">
-						<Button type="button" variant="ghost" onClick={cancelAdminAction} disabled={isPendingActionBusy}>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={cancelAdminAction}
+							disabled={isPendingActionBusy}
+						>
 							Cancel
 						</Button>
 						<Button
