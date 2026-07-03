@@ -7,7 +7,6 @@ import {
 	toggleNameHidden,
 	toggleNameLocked,
 	unhideAllNames,
-	unhideName,
 } from "./api";
 
 vi.mock("@/store/appStore", () => ({
@@ -373,47 +372,5 @@ describe("batchUpdateLocked", () => {
 		await expect(batchUpdateLocked({ nameIds: ["id-1"], isLocked: true })).rejects.toThrow(
 			"Admin privileges required",
 		);
-	});
-});
-
-describe("unhideName", () => {
-	it("returns success: true when unhiding succeeds", async () => {
-		mockRpc.mockResolvedValueOnce({ data: true, error: null });
-
-		const result = await unhideName("admin", "name-123");
-
-		expect(result).toEqual({ success: true });
-		expect(mockRpc).toHaveBeenCalledWith("toggle_name_visibility", {
-			p_name_id: "name-123",
-			p_hide: false, // Since unhideName unhides the name
-			p_user_name: "admin",
-		});
-	});
-
-	it("returns success: false with error message when unhiding fails", async () => {
-		mockRpc.mockImplementationOnce(() => {
-			throw new Error("Permission denied");
-		});
-
-		const result = await unhideName("admin", "name-123");
-
-		expect(result).toEqual({
-			success: false,
-			error: "Permission denied",
-		});
-	});
-
-	it("returns generic error message if a non-Error is thrown", async () => {
-		// Mock withSupabase or resolveSupabaseClient to throw a string instead of Error
-		vi.mocked(useAppStore.getState).mockReturnValueOnce({
-			user: { isAdmin: false },
-		} as never);
-
-		const result = await unhideName("admin", "name-123");
-
-		expect(result).toEqual({
-			success: false,
-			error: "Admin privileges required", // The assertAdmin function throws an Error object
-		});
 	});
 });

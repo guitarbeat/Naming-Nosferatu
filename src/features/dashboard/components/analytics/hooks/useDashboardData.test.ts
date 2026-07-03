@@ -1,6 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchHiddenNames, unhideName } from "@/shared/api/names/api";
 import { leaderboardAPI, statsAPI } from "@/shared/services/supabase/statsService";
 import { useDashboardData } from "./useDashboardData";
 
@@ -13,11 +12,6 @@ vi.mock("@/shared/services/supabase/statsService", () => ({
 		getSiteStats: vi.fn(),
 		getUserStats: vi.fn(),
 	},
-}));
-
-vi.mock("@/shared/api/names/api", () => ({
-	fetchHiddenNames: vi.fn(),
-	unhideName: vi.fn(),
 }));
 
 describe("useDashboardData", () => {
@@ -64,14 +58,6 @@ describe("useDashboardData", () => {
 			totalPageViews: 99,
 			bounceRate: 24,
 		});
-		vi.mocked(fetchHiddenNames).mockResolvedValue({
-			names: [{ id: "hidden-1", name: "Ghost" }],
-			source: "supabase",
-		});
-		vi.mocked(unhideName).mockResolvedValue({
-			success: true,
-			error: undefined,
-		});
 	});
 
 	it("loads leaderboard, stats, and engagement data on mount", async () => {
@@ -95,31 +81,6 @@ describe("useDashboardData", () => {
 		expect(result.current.siteStats?.totalNames).toBe(20);
 		expect(result.current.userStats?.totalWins).toBe(2);
 		expect(result.current.engagementMetrics?.completedTournaments).toBe(3);
-	});
-
-	it("loads hidden names on demand and removes names after unhiding", async () => {
-		const { result } = renderHook(() =>
-			useDashboardData({
-				isAdmin: true,
-				userName: "  Ada  ",
-			}),
-		);
-
-		await act(async () => {
-			result.current.toggleHiddenNames();
-		});
-
-		await waitFor(() => {
-			expect(fetchHiddenNames).toHaveBeenCalledTimes(1);
-		});
-		expect(result.current.hiddenNames).toEqual([{ id: "hidden-1", name: "Ghost" }]);
-
-		await act(async () => {
-			await result.current.handleUnhideName("hidden-1");
-		});
-
-		expect(unhideName).toHaveBeenCalledWith("Ada", "hidden-1");
-		expect(result.current.hiddenNames).toEqual([]);
 	});
 
 	it("skips user stats when no user name is provided", async () => {

@@ -59,19 +59,6 @@ function getInitialTheme(): Pick<UIState, "theme" | "themePreference"> {
 	return { theme: "dark", themePreference: "dark" };
 }
 
-function getInitialSwipeMode(): boolean {
-	if (!IS_BROWSER) {
-		return false;
-	}
-
-	const stored = getStorageString(STORAGE_KEYS.SWIPE_MODE);
-	if (stored !== null) {
-		return stored === "true";
-	}
-
-	return window.matchMedia("(max-width: 768px)").matches;
-}
-
 function persistOptionalString(key: string, value: string | undefined): void {
 	if (value) {
 		setStorageString(key, value);
@@ -186,7 +173,6 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 	ui: {
 		...getInitialTheme(),
 		isBootLoading: true,
-		isSwipeMode: getInitialSwipeMode(),
 	},
 
 	uiActions: {
@@ -225,11 +211,6 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 		},
 
 		setBootLoading: (loading) => patch(set, "ui", { isBootLoading: loading }),
-
-		setSwipeMode: (enabled) => {
-			patch(set, "ui", { isSwipeMode: enabled });
-			setStorageString(STORAGE_KEYS.SWIPE_MODE, String(enabled));
-		},
 	},
 
 	siteSettings: {

@@ -23,7 +23,6 @@ export const namesQueryKeys = {
 	all: ["names"] as const,
 	lists: () => [...namesQueryKeys.all, "list"] as const,
 	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
-	hiddenList: () => [...namesQueryKeys.all, "hidden"] as const,
 } as const;
 
 const SUPABASE_UNAVAILABLE = Symbol("SUPABASE_UNAVAILABLE");
@@ -89,33 +88,6 @@ async function fetchNamesFromSupabase(includeHidden: boolean): Promise<NameItem[
 	return (data ?? []).map((row) => mapNameRow(row));
 }
 
-export async function fetchHiddenNames(): Promise<NamesQueryResult> {
-	assertAdmin("Admin privileges required to view hidden names");
-	const client = await resolveSupabaseClient();
-	if (!client) {
-		throwSupabaseUnavailable();
-	}
-
-	const { data, error } = await client
-		.from("cat_names")
-		.select(
-			"id, name, description, pronunciation, avg_rating, global_wins, global_losses, created_at, is_hidden, is_active, locked_in, status, provenance, is_deleted",
-		)
-		.eq("is_hidden", true)
-		.eq("is_active", true)
-		.eq("is_deleted", false)
-		.order("avg_rating", { ascending: false });
-
-	if (error) {
-		throw error;
-	}
-
-	return {
-		names: (data ?? []).map((row) => mapNameRow(row)),
-		source: "supabase",
-	};
-}
-
 export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	const names = await fetchNamesFromSupabase(includeHidden);
 	if (names === null) {
@@ -128,13 +100,6 @@ export const namesQueryOptions = (includeHidden: boolean) =>
 	queryOptions({
 		queryKey: namesQueryKeys.list(includeHidden),
 		queryFn: () => fetchNames(includeHidden),
-		staleTime: 30_000,
-	});
-
-export const hiddenNamesQueryOptions = () =>
-	queryOptions({
-		queryKey: namesQueryKeys.hiddenList(),
-		queryFn: () => fetchHiddenNames(),
 		staleTime: 30_000,
 	});
 
@@ -268,23 +233,4 @@ export async function addName(params: { name: string; description?: string }): P
 		}
 		return mapNameRow(row);
 	}, null);
-}
-
-export async function unhideName(
-	userName: string,
-	nameId: IdType,
-): Promise<{ success: boolean; error?: string }> {
-	try {
-		await toggleNameHidden({
-			nameId,
-			isCurrentlyHidden: true, // We are unhiding, so currently it is hidden
-			userName,
-		});
-		return { success: true };
-	} catch (error) {
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Failed to unhide name",
-		};
-	}
 }

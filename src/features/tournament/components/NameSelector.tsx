@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import {
 	Check,
 	CheckCircle,
-	ChevronDown,
-	ChevronRight,
 	Eye,
 	ZoomIn,
 } from "lucide-react";
@@ -17,13 +15,10 @@ import CatImage from "@/shared/components/layout/CatImage";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { Modal } from "@/shared/components/layout/Modal";
-import { useCollapsible } from "@/shared/hooks/useCollapsible";
-import { useFuzzySearch } from "@/shared/hooks/useFuzzySearch";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getRandomCatImage } from "@/shared/lib/media";
 import {
 	getActiveNames,
-	getHiddenNames,
 	getLockedNames,
 	isNameHidden,
 	isNameLocked,
@@ -165,18 +160,11 @@ export function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
-	const storeSelectedNames = useAppStore(
-		(state) => state.tournament.selectedNames,
-	);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [lightboxIndex, setLightboxIndex] = useState(0);
-	const hiddenPanel = useCollapsible(true, "hidden-names-collapsed");
-	const [hiddenQuery, setHiddenQuery] = useState("");
-	const [hiddenShowSelectedOnly, setHiddenShowSelectedOnly] = useState(false);
-	const [hiddenRenderCount, setHiddenRenderCount] = useState(24);
 	const deferredSync = useCallback((syncFn: () => void) => {
 		setTimeout(syncFn, 0);
 	}, []);
@@ -397,28 +385,6 @@ export function NameSelector() {
 	}, [pendingAdminAction, handleToggleHidden, handleToggleLocked]);
 
 	const availableNames = useMemo(() => getActiveNames(names), [names]);
-	const hiddenNamesAll = useMemo(() => getHiddenNames(names), [names]);
-	const hiddenFuzzy = useFuzzySearch(
-		hiddenNamesAll,
-		["name", "description"],
-		hiddenQuery,
-	);
-	const hiddenFiltered = useMemo(() => {
-		return hiddenFuzzy.filter((name) => {
-			if (hiddenShowSelectedOnly && !selectedNames.has(name.id)) {
-				return false;
-			}
-			return true;
-		});
-	}, [hiddenFuzzy, hiddenShowSelectedOnly, selectedNames]);
-	const previewItems = useMemo(
-		() => hiddenNamesAll.slice(0, 6),
-		[hiddenNamesAll],
-	);
-	const renderItems = useMemo(
-		() => hiddenFiltered.slice(0, hiddenRenderCount),
-		[hiddenFiltered, hiddenRenderCount],
-	);
 	const isHiddenAction = pendingAdminAction?.type === "toggle-hidden";
 	const isDisablingAction = Boolean(pendingAdminAction?.isCurrentlyEnabled);
 	const confirmTitle = isHiddenAction
@@ -570,260 +536,6 @@ export function NameSelector() {
 						</div>
 					)}
 				</div>
-
-				{(() => {
-					if (hiddenNamesAll.length === 0) {
-						return null;
-					}
-
-					return (
-						<div className={isSwipeMode ? "" : "mt-2"}>
-							<div className="select-none">
-								<button
-									type="button"
-									onClick={() => {
-										if (!hiddenPanel.isCollapsed) {
-											hiddenPanel.collapse();
-											return;
-										}
-										hiddenPanel.expand();
-										setHiddenRenderCount(24);
-									}}
-									aria-expanded={hiddenPanel.isCollapsed ? "false" : "true"}
-									aria-controls="hidden-names-panel"
-									className="w-full flex flex-wrap items-center justify-between gap-2 sm:gap-3"
-								>
-									<div className="flex items-center gap-2">
-										<span className="text-muted-foreground">
-											{hiddenPanel.isCollapsed ? (
-												<ChevronRight size={20} />
-											) : (
-												<ChevronDown size={20} />
-											)}
-										</span>
-										<span className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
-											Archived Names ({hiddenNamesAll.length})
-										</span>
-									</div>
-									<span className="text-[11px] sm:text-xs text-muted-foreground">
-										{hiddenPanel.isCollapsed ? "Show panel" : "Hide panel"}
-									</span>
-								</button>
-
-								{hiddenPanel.isCollapsed && (
-									<div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
-										{previewItems.map((n) => {
-											const img = catImageById.get(n.id) ?? "";
-											return (
-												<div
-													key={n.id}
-													className="relative aspect-square overflow-hidden border border-border/10"
-												>
-													<CatImage
-														src={img}
-														alt="Hidden name"
-														containerClassName="w-full h-full"
-														imageClassName="w-full h-full object-cover opacity-20"
-													/>
-													<div className="absolute inset-0 flex items-center justify-center">
-														<span className="text-muted-foreground/50 text-sm font-bold">
-															?
-														</span>
-													</div>
-												</div>
-											);
-										})}
-									</div>
-								)}
-							</div>
-
-							{!hiddenPanel.isCollapsed && (
-								<div
-									id="hidden-names-panel"
-									className="mt-4 animate-in slide-in-from-top-2 duration-200 fade-in zoom-in-95"
-								>
-									{isSwipeMode && (
-										<p className="mb-3 text-sm leading-relaxed text-muted-foreground/75">
-											Archived names stay out of the swipe deck, but you can
-											still inspect and select them here without leaving swipe
-											mode.
-										</p>
-									)}
-
-									<div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between mb-3">
-										<input
-											value={hiddenQuery}
-											onChange={(e) => {
-												setHiddenQuery(e.target.value);
-												setHiddenRenderCount(24);
-											}}
-											placeholder="Search hidden names"
-											className="w-full sm:max-w-sm px-3 py-2 bg-foreground/5 border border-border/10 text-foreground text-sm"
-										/>
-										<div className="flex items-center justify-between sm:justify-end gap-3">
-											{hiddenQuery.trim().length > 0 && (
-												<button
-													type="button"
-													onClick={() => {
-														setHiddenQuery("");
-														setHiddenRenderCount(24);
-													}}
-													className="px-3 py-2 border border-border/10 bg-foreground/5 text-xs text-foreground/80 hover:bg-foreground/10"
-												>
-													Clear search
-												</button>
-											)}
-											<button
-												type="button"
-												onClick={() => setHiddenShowSelectedOnly((v) => !v)}
-												className={`px-3 py-2 border text-xs font-medium ${
-													hiddenShowSelectedOnly
-														? "bg-primary/20 border-primary/40 text-foreground"
-														: "bg-foreground/5 border-border/10 text-foreground/80"
-												}`}
-											>
-												Selected only
-											</button>
-											<span className="text-xs text-muted-foreground">
-												{hiddenFiltered.length} / {hiddenNamesAll.length}
-											</span>
-										</div>
-									</div>
-
-									<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-3">
-										{renderItems.map((nameItem) => {
-											const isSelected = selectedNames.has(nameItem.id);
-											const catImage = catImageById.get(nameItem.id) ?? "";
-											return (
-												<div
-													key={nameItem.id}
-													role="button"
-													tabIndex={0}
-													onClick={() => handleToggleName(nameItem.id)}
-													onKeyDown={(e) => {
-														if (e.key === "Enter" || e.key === " ") {
-															e.preventDefault();
-															handleToggleName(nameItem.id);
-														}
-													}}
-													aria-pressed={isSelected}
-													className={`mobile-readable-card relative rounded-[1.35rem] border-2 transition-all overflow-hidden group transform hover:scale-105 active:scale-95 cursor-pointer text-left w-full ${
-														isSelected
-															? "border-primary bg-primary/20 shadow-lg shadow-primary/20 ring-2 ring-primary/50"
-															: "border-border/10 bg-foreground/5 hover:border-border/20 hover:bg-foreground/10 hover:shadow-lg"
-													}`}
-												>
-													<div className="aspect-[5/4] sm:aspect-[4/3] w-full relative group/hidden">
-														<CatImage
-															src={catImage}
-															alt={nameItem.name}
-															containerClassName="w-full h-full"
-															imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-														/>
-
-														<div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 bg-gradient-to-t from-background/95 via-background/65 to-transparent flex flex-col justify-end pointer-events-none">
-															<div className="flex flex-col gap-0.5">
-																<div className="flex items-center justify-between gap-2">
-																	<span className="mobile-readable-title font-bold text-foreground text-[13px] sm:text-base leading-tight drop-shadow-md truncate">
-																		{nameItem.name}
-																	</span>
-																	{isSelected && (
-																		<motion.div
-																			initial={{ scale: 0, opacity: 0 }}
-																			animate={{ scale: 1, opacity: 1 }}
-																			className="shrink-0 size-4 bg-primary rounded-full flex items-center justify-center shadow-md"
-																		>
-																			<Check
-																				size={10}
-																				className="text-primary-foreground"
-																			/>
-																		</motion.div>
-																	)}
-																</div>
-																{nameItem.pronunciation ? (
-																	<span className="mobile-readable-meta text-warning text-[11px] sm:text-sm leading-tight font-bold italic opacity-95 drop-shadow-md truncate">
-																		[{nameItem.pronunciation}]
-																	</span>
-																) : null}
-																{nameItem.description ? (
-																	<p className="mobile-readable-description text-foreground/95 text-[11px] sm:text-sm leading-snug line-clamp-2 sm:line-clamp-3 mt-1 drop-shadow-sm italic">
-																		{nameItem.description}
-																	</p>
-																) : null}
-															</div>
-														</div>
-
-														<button
-															type="button"
-															onClick={(e) => {
-																e.stopPropagation();
-																handleOpenLightbox(nameItem.id);
-															}}
-															className="absolute top-1.5 right-1.5 p-1.5 sm:top-2 sm:right-2 sm:p-2 rounded-full bg-foreground/60 backdrop-blur-sm text-background opacity-100 md:opacity-0 md:group-hover/hidden:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-opacity hover:bg-foreground/80 z-10"
-															aria-label="View full size"
-														>
-															<ZoomIn size={14} />
-														</button>
-													</div>
-													{isAdmin && (
-														<div className="px-3 pb-3">
-															<button
-																type="button"
-																onClick={(e) => {
-																	e.stopPropagation();
-																	requestAdminAction({
-																		type: "toggle-hidden",
-																		nameId: nameItem.id,
-																		isCurrentlyEnabled: true,
-																	});
-																}}
-																disabled={togglingHidden.has(nameItem.id)}
-																className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-success hover:bg-success/80 text-success-foreground ${
-																	togglingHidden.has(nameItem.id)
-																		? "opacity-50 cursor-not-allowed"
-																		: ""
-																}`}
-															>
-																{togglingHidden.has(nameItem.id) ? (
-																	<div className="flex items-center justify-center gap-1">
-																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-																		<span>Processing...</span>
-																	</div>
-																) : (
-																	<>
-																		<Eye size={12} className="mr-1 inline" />
-																		Unhide
-																	</>
-																)}
-															</button>
-														</div>
-													)}
-												</div>
-											);
-										})}
-									</div>
-									{hiddenFiltered.length === 0 && (
-										<div className="mt-4 rounded-xl border border-border/10 bg-foreground/5 px-4 py-6 text-center text-sm text-foreground/70">
-											No hidden names match this filter.
-										</div>
-									)}
-
-									{hiddenFiltered.length > hiddenRenderCount && (
-										<div className="mt-4 flex justify-center">
-											<Button
-												onClick={() => setHiddenRenderCount((c) => c + 24)}
-												variant="glass"
-												size="small"
-											>
-												Load more
-											</Button>
-										</div>
-									)}
-								</div>
-							)}
-						</div>
-					);
-				})()}
 			</div>
 
 			{lightboxOpen && (

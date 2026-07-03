@@ -2,8 +2,6 @@ import { motion } from "framer-motion";
 import {
 	Activity,
 	BarChart3,
-	Eye,
-	EyeOff,
 	Target,
 	TrendingUp,
 	Trophy,
@@ -12,15 +10,12 @@ import {
 } from "lucide-react";
 import type { ElementType } from "react";
 import Button from "@/shared/components/layout/Button";
-import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import {
 	ContextBadge,
-	ListPanel,
-	ListPanelRow,
 	Panel,
 	SectionHeader,
 	StatTile,
@@ -328,67 +323,6 @@ function EngagementPanel({
 	);
 }
 
-function AdminPanel({
-	isAdmin,
-	showHiddenNames,
-	toggleHiddenNames,
-	hiddenNames,
-	handleUnhideName,
-}: {
-	isAdmin: boolean;
-	showHiddenNames: boolean;
-	toggleHiddenNames: () => void;
-	hiddenNames: NameItem[];
-	handleUnhideName: (id: string) => void;
-}) {
-	if (!isAdmin) {
-		return null;
-	}
-
-	return (
-		<Panel>
-			<SectionHeader
-				icon={EyeOff}
-				title="Hidden Names"
-				subtitle="Hidden from the pool."
-				action={
-					<Button variant="outline" size="small" onClick={toggleHiddenNames}>
-						{showHiddenNames ? "Hide List" : "Show List"}
-					</Button>
-				}
-			/>
-			{showHiddenNames ? (
-				<ListPanel>
-					{hiddenNames.length > 0 ? (
-						hiddenNames.map((name, index) => (
-							<ListPanelRow
-								key={name.id}
-								divided={index < hiddenNames.length - 1}
-								className="justify-between"
-							>
-								<span className="text-sm font-medium text-foreground">{name.name}</span>
-								<Button variant="ghost" size="small" onClick={() => handleUnhideName(name.id)}>
-									<Eye size={14} />
-									Unhide
-								</Button>
-							</ListPanelRow>
-						))
-					) : (
-						<div className="px-4 py-8 text-center text-sm text-muted-foreground/75">
-							No hidden names.
-						</div>
-					)}
-				</ListPanel>
-			) : (
-				<EmptyState
-					title="Open the list to review and restore hidden names."
-					className="border-dashed bg-muted/20"
-				/>
-			)}
-		</Panel>
-	);
-}
-
 export function Dashboard({
 	userName = "",
 	isAdmin = false,
@@ -402,19 +336,15 @@ export function Dashboard({
 	const handleStartNew = onStartNew ?? (() => undefined);
 	const {
 		engagementMetrics,
-		handleUnhideName,
-		hiddenNames,
 		isLoadingEngagement,
 		isLoadingLeaderboard,
 		leaderboard,
 		refreshEngagementMetrics,
 		setTimeframe,
-		showHiddenNames,
 		siteStats,
 		timeframe,
-		toggleHiddenNames,
 		userStats,
-	} = useDashboardData({ isAdmin, userName });
+	} = useDashboardData({ userName });
 	const quickStats = getQuickStats({ siteStats, userName, userStats });
 	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
 	const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
@@ -468,13 +398,6 @@ export function Dashboard({
 				isLoadingEngagement={isLoadingEngagement}
 			/>
 
-			<AdminPanel
-				isAdmin={isAdmin}
-				showHiddenNames={showHiddenNames}
-				toggleHiddenNames={toggleHiddenNames}
-				hiddenNames={hiddenNames}
-				handleUnhideName={handleUnhideName}
-			/>
 		</div>
 	);
 }

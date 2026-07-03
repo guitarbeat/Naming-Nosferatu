@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
-import { fetchHiddenNames, unhideName } from "@/shared/api/names/api";
+import { useState } from "react";
 import { useAsyncData } from "@/shared/hooks/useAsyncData";
 import {
 	type EngagementMetrics,
@@ -12,22 +11,14 @@ import {
 
 export type DashboardTimeframe = "day" | "week" | "month";
 
-export interface HiddenNameListItem {
-	id: string | number;
-	name: string;
-}
-
 interface UseDashboardDataParams {
-	isAdmin?: boolean;
 	userName?: string;
 }
 
-export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboardDataParams) {
+export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 	const normalizedUserName = userName.trim();
 
 	const [timeframe, setTimeframe] = useState<DashboardTimeframe>("week");
-	const [showHiddenNames, setShowHiddenNames] = useState(false);
-	const [hiddenNames, setHiddenNames] = useState<HiddenNameListItem[]>([]);
 
 	const {
 		data: leaderboard,
@@ -57,66 +48,19 @@ export function useDashboardData({ isAdmin = false, userName = "" }: UseDashboar
 		{ deps: [normalizedUserName] },
 	);
 
-	useEffect(() => {
-		if (!isAdmin || !showHiddenNames) {
-			return;
-		}
-
-		let isActive = true;
-		fetchHiddenNames()
-			.then((result) => {
-				if (isActive) {
-					setHiddenNames(result.names);
-				}
-			})
-			.catch((error) => {
-				console.error("Failed to fetch hidden names:", error);
-			});
-
-		return () => {
-			isActive = false;
-		};
-	}, [isAdmin, showHiddenNames]);
-
-	const toggleHiddenNames = useCallback(() => {
-		setShowHiddenNames((current) => !current);
-	}, []);
-
-	const handleUnhideName = useCallback(
-		async (nameId: string | number) => {
-			if (!normalizedUserName) {
-				return;
-			}
-			try {
-				const result = await unhideName(normalizedUserName, String(nameId));
-				if (!result.success) {
-					throw new Error(result.error || "Failed to unhide name");
-				}
-				setHiddenNames((current) => current.filter((name) => name.id !== nameId));
-			} catch (error) {
-				console.error("Failed to unhide name:", error);
-			}
-		},
-		[normalizedUserName],
-	);
-
 	return {
 		engagementMetrics,
 		errorEngagement,
 		errorLeaderboard,
 		errorSiteStats,
 		errorUserStats,
-		handleUnhideName,
-		hiddenNames,
 		isLoadingEngagement,
 		isLoadingLeaderboard,
 		leaderboard,
 		refreshEngagementMetrics,
 		setTimeframe,
-		showHiddenNames,
 		siteStats,
 		timeframe,
-		toggleHiddenNames,
 		userStats,
 	};
 }

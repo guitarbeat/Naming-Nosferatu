@@ -214,7 +214,6 @@ export interface UIState {
 	theme: ThemeValue;
 	themePreference: ThemePreference;
 	isBootLoading: boolean;
-	isSwipeMode: boolean;
 }
 
 export interface TournamentState {

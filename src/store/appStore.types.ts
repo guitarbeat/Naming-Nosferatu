@@ -45,7 +45,6 @@ export interface UIActions {
 	setTheme: (theme: ThemePreference) => void;
 	initializeTheme: () => void;
 	setBootLoading: (loading: boolean) => void;
-	setSwipeMode: (enabled: boolean) => void;
 }
 
 export interface SiteSettingsActions {
