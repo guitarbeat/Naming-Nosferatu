@@ -45,7 +45,7 @@ function CatImage({
 
 	useEffect(() => {
 		setHasError(false);
-	}, [src]);
+	}, []);
 
 	if (!src && !hasError) {
 		return null;
