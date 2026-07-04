@@ -1,11 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import {
-	Check,
-	CheckCircle,
-	Eye,
-	ZoomIn,
-} from "lucide-react";
+import { Check, CheckCircle, Eye, ZoomIn } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -23,7 +18,12 @@ import {
 	isNameHidden,
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
-import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
+import {
+	addManyToSet,
+	addToSet,
+	removeFromSet,
+	toggleInSet,
+} from "@/shared/lib/setUtils";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
@@ -46,11 +46,7 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
 const nameOverlayClasses =
 	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
 
-function NameContent({
-	nameItem,
-}: {
-	nameItem: NameItem;
-}) {
+function NameContent({ nameItem }: { nameItem: NameItem }) {
 	return (
 		<>
 			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
@@ -138,7 +134,13 @@ const SelectionBadge = () => (
 	</motion.div>
 );
 
-function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) {
+function ZoomButton({
+	nameId,
+	onClick,
+}: {
+	nameId: IdType;
+	onClick: (id: IdType) => void;
+}) {
 	return (
 		<button
 			type="button"
@@ -148,6 +150,7 @@ function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType)
 			}}
 			className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
 			aria-label="View full size"
+			title="View full size"
 		>
 			<ZoomIn size={14} />
 		</button>
@@ -206,21 +209,18 @@ export function NameSelector() {
 		[names, tournamentActions],
 	);
 
-	const { catImages, catImageById } = useMemo(
-		() => {
-			const catImages = names.map((nameItem) =>
-				getRandomCatImage(nameItem.id, CAT_IMAGES),
-			);
-			const catImageById = new Map<IdType, string>();
-			for (let i = 0; i < names.length; i++) {
-				if (catImages[i]) {
-					catImageById.set(names[i].id, catImages[i]);
-				}
+	const { catImages, catImageById } = useMemo(() => {
+		const catImages = names.map((nameItem) =>
+			getRandomCatImage(nameItem.id, CAT_IMAGES),
+		);
+		const catImageById = new Map<IdType, string>();
+		for (let i = 0; i < names.length; i++) {
+			if (catImages[i]) {
+				catImageById.set(names[i].id, catImages[i]);
 			}
-			return { catImages, catImageById };
-		},
-		[names],
-	);
+		}
+		return { catImages, catImageById };
+	}, [names]);
 
 	const showWarningRef = useRef(toast.showWarning);
 	useEffect(() => {
@@ -480,7 +480,10 @@ export function NameSelector() {
 										whileHover={{ scale: 1.03, y: -2 }}
 										whileTap={{ scale: 0.97 }}
 										transition={{ type: "spring", stiffness: 400, damping: 25 }}
-										className={getCardStyles(isSelected, isNameLocked(nameItem))}
+										className={getCardStyles(
+											isSelected,
+											isNameLocked(nameItem),
+										)}
 									>
 										<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
 											<CatImage
@@ -495,7 +498,10 @@ export function NameSelector() {
 													<NameContent nameItem={nameItem} />
 												</div>
 											</div>
-											<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+											<ZoomButton
+												nameId={nameItem.id}
+												onClick={handleOpenLightbox}
+											/>
 										</div>
 										{isAdmin && (
 											<motion.div
@@ -558,7 +564,12 @@ export function NameSelector() {
 					<p className="text-sm text-muted-foreground">{confirmDescription}</p>
 
 					<div className="mt-6 flex items-center justify-end gap-3">
-						<Button type="button" variant="ghost" onClick={cancelAdminAction} disabled={isPendingActionBusy}>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={cancelAdminAction}
+							disabled={isPendingActionBusy}
+						>
 							Cancel
 						</Button>
 						<Button
