@@ -1,2 +1,0 @@
-Baseline with baseDelay=0 (always sleeping): 126ms
-Optimized with baseDelay=0: 3ms
