@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { useEffect, useRef } from "react";
-import Button from "@/shared/components/layout/Button";
 import { AudioEffects } from "@/shared/lib/sound";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import useAppStore from "@/store/appStore";
@@ -88,25 +87,24 @@ export default function TournamentFlow() {
 								the full breakdown and compare results!
 							</p>
 							<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-								<Button
+								<button
 									type="button"
 									onClick={() =>
 										document
 											.getElementById("analysis")
 											?.scrollIntoView({ behavior: "smooth", block: "start" })
 									}
-									className="w-full sm:w-auto"
+									className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
 								>
 									See Results
-								</Button>
-								<Button
+								</button>
+								<button
 									type="button"
 									onClick={() => tournamentActions.resetTournament()}
-									className="w-full sm:w-auto"
-									variant="ghost"
+									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
 								>
 									Pick Different Names
-								</Button>
+								</button>
 							</div>
 						</div>
 					</motion.div>
