@@ -3,7 +3,9 @@ import { isStorageAvailable } from "@/shared/lib/storage";
 
 // Mock the storage utility
 vi.mock("@/shared/lib/storage", async () => {
-	const actual = await vi.importActual("@/shared/lib/storage");
+	const actual = await vi.importActual<typeof import("@/shared/lib/storage")>(
+		"@/shared/lib/storage",
+	);
 	return {
 		...actual,
 		isStorageAvailable: vi.fn(),
@@ -44,7 +46,7 @@ describe("sound initialization", () => {
 		vi.stubGlobal("Audio", MockAudio);
 
 		// Dynamic import to get a fresh instance of the module
-		await import("./sound.ts");
+		await import("./sound");
 
 		expect(isStorageAvailable).toHaveBeenCalled();
 		expect(mockAddEventListener).not.toHaveBeenCalled();
@@ -56,7 +58,7 @@ describe("sound initialization", () => {
 		vi.stubGlobal("Audio", undefined);
 
 		// Should not throw
-		await import("./sound.ts");
+		await import("./sound");
 
 		expect(isStorageAvailable).toHaveBeenCalled();
 	});
@@ -75,7 +77,7 @@ describe("sound initialization", () => {
 
 		vi.stubGlobal("Audio", SpiedMockAudio);
 
-		await import("./sound.ts");
+		await import("./sound");
 
 		expect(isStorageAvailable).toHaveBeenCalled();
 
