@@ -24,7 +24,10 @@ interface UseNameSuggestionResult {
 export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
 	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
-	const [touched, setTouched] = useState<{ name?: boolean; description?: boolean }>({});
+	const [touched, setTouched] = useState<{
+		name?: boolean;
+		description?: boolean;
+	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [globalError, setGlobalError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
@@ -64,7 +67,9 @@ export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSu
 
 		try {
 			// Sanitize inputs before sending to the backend
-			const sanitizedName = DOMPurify.sanitize(values.name, { ALLOWED_TAGS: [] }).trim();
+			const sanitizedName = DOMPurify.sanitize(values.name, {
+				ALLOWED_TAGS: [],
+			}).trim();
 			const sanitizedDescription = DOMPurify.sanitize(values.description, {
 				ALLOWED_TAGS: [],
 			}).trim();

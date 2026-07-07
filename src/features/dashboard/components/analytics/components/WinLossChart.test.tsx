@@ -98,7 +98,15 @@ describe("WinLossChart", () => {
 	it("renders empty state when leaderboard has items with 0 wins and losses", () => {
 		render(
 			<WinLossChart
-				leaderboard={[{ name: "Alice", avg_rating: 1500, wins: 0, losses: 0, total_ratings: 0 }]}
+				leaderboard={[
+					{
+						name: "Alice",
+						avg_rating: 1500,
+						wins: 0,
+						losses: 0,
+						total_ratings: 0,
+					},
+				]}
 			/>,
 		);
 		expect(
@@ -112,8 +120,20 @@ describe("WinLossChart", () => {
 		render(
 			<WinLossChart
 				leaderboard={[
-					{ name: "Alice", avg_rating: 1500, wins: 5, losses: 2, total_ratings: 7 },
-					{ name: "BobTheBuilder", avg_rating: 1400, wins: 1, losses: 6, total_ratings: 7 },
+					{
+						name: "Alice",
+						avg_rating: 1500,
+						wins: 5,
+						losses: 2,
+						total_ratings: 7,
+					},
+					{
+						name: "BobTheBuilder",
+						avg_rating: 1400,
+						wins: 1,
+						losses: 6,
+						total_ratings: 7,
+					},
 				]}
 			/>,
 		);
@@ -146,9 +166,27 @@ describe("WinLossChart", () => {
 			<WinLossChart
 				limit={2}
 				leaderboard={[
-					{ name: "Name1", avg_rating: 1500, wins: 1, losses: 0, total_ratings: 1 },
-					{ name: "Name2", avg_rating: 1500, wins: 1, losses: 0, total_ratings: 1 },
-					{ name: "Name3", avg_rating: 1500, wins: 1, losses: 0, total_ratings: 1 },
+					{
+						name: "Name1",
+						avg_rating: 1500,
+						wins: 1,
+						losses: 0,
+						total_ratings: 1,
+					},
+					{
+						name: "Name2",
+						avg_rating: 1500,
+						wins: 1,
+						losses: 0,
+						total_ratings: 1,
+					},
+					{
+						name: "Name3",
+						avg_rating: 1500,
+						wins: 1,
+						losses: 0,
+						total_ratings: 1,
+					},
 				]}
 			/>,
 		);
@@ -187,8 +225,20 @@ describe("WinLossChart", () => {
 	it("handles null/undefined wins and losses gracefully", async () => {
 		// Since the interface dictates numbers, but the implementation handles null/undefined
 		const mockData = [
-			{ name: "NullTest", avg_rating: 1500, wins: null, losses: 1, total_ratings: 1 },
-			{ name: "UndefinedTest", avg_rating: 1500, wins: 2, losses: undefined, total_ratings: 2 },
+			{
+				name: "NullTest",
+				avg_rating: 1500,
+				wins: null,
+				losses: 1,
+				total_ratings: 1,
+			},
+			{
+				name: "UndefinedTest",
+				avg_rating: 1500,
+				wins: 2,
+				losses: undefined,
+				total_ratings: 2,
+			},
 		] as unknown as Array<{
 			name: string;
 			avg_rating: number;

@@ -137,7 +137,10 @@ describe("leaderboardAPI", () => {
 	});
 
 	it("returns empty array when RPC returns an error", async () => {
-		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "Database error" } });
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: { message: "Database error" },
+		});
 
 		const result = await leaderboardAPI.getLeaderboard(50);
 

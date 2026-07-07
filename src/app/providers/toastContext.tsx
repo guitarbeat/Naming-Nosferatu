@@ -57,7 +57,10 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
 const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
 	success: { bg: "bg-chart-2", icon: <CheckCircle className="size-5" /> },
 	error: { bg: "bg-destructive", icon: <XCircle className="size-5" /> },
-	warning: { bg: "bg-chart-4 text-foreground", icon: <AlertTriangle className="size-5" /> },
+	warning: {
+		bg: "bg-chart-4 text-foreground",
+		icon: <AlertTriangle className="size-5" />,
+	},
 	info: { bg: "bg-primary", icon: <Info className="size-5" /> },
 };
 

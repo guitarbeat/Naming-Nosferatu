@@ -341,7 +341,10 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			add_app_access_to_user: { Args: { app_name: string }; Returns: undefined };
+			add_app_access_to_user: {
+				Args: { app_name: string };
+				Returns: undefined;
+			};
 			add_cat_name: {
 				Args: { p_description?: string; p_name: string };
 				Returns: {

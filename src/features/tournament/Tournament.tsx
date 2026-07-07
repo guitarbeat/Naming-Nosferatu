@@ -175,7 +175,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 						: typeof participant === "object"
 							? participant.name
 							: String(participant);
-				return { name, id, description: "", outcome: winnerId === id ? "winner" : "loser" };
+				return {
+					name,
+					id,
+					description: "",
+					outcome: winnerId === id ? "winner" : "loser",
+				};
 			};
 			try {
 				await Promise.resolve(
@@ -307,7 +312,13 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 			if (heatLevel) {
 				streakBurst.setTimed(
-					{ key: Date.now(), side, winnerName, streak: expectedStreak, heatLevel },
+					{
+						key: Date.now(),
+						side,
+						winnerName,
+						streak: expectedStreak,
+						heatLevel,
+					},
 					prefersReducedMotion ? 280 : 950,
 				);
 				audioManager.playStreakSound(expectedStreak);

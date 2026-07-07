@@ -69,7 +69,8 @@ export function LeaderboardPanel({
 									<p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
 									<div className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground/70">
 										<span>
-											📊 {entry.total_ratings} rating{entry.total_ratings === 1 ? "" : "s"}
+											📊 {entry.total_ratings} rating
+											{entry.total_ratings === 1 ? "" : "s"}
 										</span>
 										<span>
 											🏆 {entry.wins} win{entry.wins === 1 ? "" : "s"}

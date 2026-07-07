@@ -166,8 +166,18 @@ export function AdminDashboard() {
 							label: "Total",
 							value: stats.totalNames,
 						},
-						{ icon: Eye, colorClass: "text-chart-2", label: "Active", value: stats.activeNames },
-						{ icon: Lock, colorClass: "text-chart-4", label: "Locked", value: stats.lockedInNames },
+						{
+							icon: Eye,
+							colorClass: "text-chart-2",
+							label: "Active",
+							value: stats.activeNames,
+						},
+						{
+							icon: Lock,
+							colorClass: "text-chart-4",
+							label: "Locked",
+							value: stats.lockedInNames,
+						},
 						{
 							icon: EyeOff,
 							colorClass: "text-destructive",

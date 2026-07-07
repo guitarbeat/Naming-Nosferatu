@@ -38,7 +38,9 @@ function FloatingNav({ items }: { items: NavItem[] }) {
 				<div className="floating-navbar">
 					<div
 						className="floating-navbar__primary"
-						style={{ gridTemplateColumns: `repeat(${visibleItems.length}, minmax(0, 1fr))` }}
+						style={{
+							gridTemplateColumns: `repeat(${visibleItems.length}, minmax(0, 1fr))`,
+						}}
 					>
 						{visibleItems.map((item) => {
 							const isActive = Boolean(item.isActive);

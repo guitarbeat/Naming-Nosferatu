@@ -14,12 +14,20 @@ export const imagesAPI = {
 	upload: async (
 		file: File | Blob,
 		userName: string,
-	): Promise<{ path: string | null; error: string | null; success: boolean }> => {
+	): Promise<{
+		path: string | null;
+		error: string | null;
+		success: boolean;
+	}> => {
 		const maxSize = 5 * 1024 * 1024;
 		const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
 		if (file.size > maxSize) {
-			return { path: null, error: "File size exceeds 5MB limit", success: false };
+			return {
+				path: null,
+				error: "File size exceeds 5MB limit",
+				success: false,
+			};
 		}
 		if (!allowedTypes.includes(file.type)) {
 			return {

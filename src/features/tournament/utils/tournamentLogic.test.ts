@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MatchRecord, NameItem, Team } from "@/shared/types";
-import {
-	createTeamsById,
-	deriveBracketState,
-	resolveCurrentMatch,
-} from "./tournamentLogic";
+import { createTeamsById, deriveBracketState, resolveCurrentMatch } from "./tournamentLogic";
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {

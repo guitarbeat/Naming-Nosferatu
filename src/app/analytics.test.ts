@@ -13,9 +13,12 @@ describe("shouldEnableAnalytics", () => {
 
 	it("disables analytics for replit preview environments", () => {
 		expect(shouldEnableAnalytics({ hostname: "workspace.replit.dev", isProd: true })).toBe(false);
-		expect(shouldEnableAnalytics({ hostname: "some-random-id.replit.dev", isProd: true })).toBe(
-			false,
-		);
+		expect(
+			shouldEnableAnalytics({
+				hostname: "some-random-id.replit.dev",
+				isProd: true,
+			}),
+		).toBe(false);
 	});
 
 	it("disables analytics for hostnames containing local", () => {

@@ -58,7 +58,9 @@ describe("TournamentFlow responsive behavior", () => {
 		renderWithProviders();
 
 		const analyzeButton = screen.getByRole("button", { name: "See Results" });
-		const startButton = screen.getByRole("button", { name: "Pick Different Names" });
+		const startButton = screen.getByRole("button", {
+			name: "Pick Different Names",
+		});
 		const heading = screen.getByRole("heading", {
 			name: "A victor emerges from the eternal tournament",
 		});

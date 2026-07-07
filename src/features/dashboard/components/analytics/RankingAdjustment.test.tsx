@@ -37,7 +37,9 @@ describe("RankingAdjustment", () => {
 			</Card>,
 		);
 
-		const cancelButton = screen.getByRole("button", { name: /Back to Tournament/i });
+		const cancelButton = screen.getByRole("button", {
+			name: /Back to Tournament/i,
+		});
 		fireEvent.click(cancelButton);
 
 		expect(onCancel).toHaveBeenCalledTimes(1);
