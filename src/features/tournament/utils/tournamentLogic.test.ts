@@ -1,6 +1,75 @@
 import { describe, expect, it } from "vitest";
 import type { MatchRecord, Team } from "@/shared/types";
-import { createTeamsById, deriveBracketState } from "./tournamentLogic";
+import {
+	computeUpdatedRatings,
+	createTeamsById,
+	deriveBracketState,
+} from "./tournamentLogic";
+
+describe("computeUpdatedRatings", () => {
+	const ratingsSnapshot = {
+		p1: 1500,
+		p2: 1500,
+		p3: 1200,
+		p4: 1800,
+	};
+
+	it("computes updated ratings for a 1v1 match where left side wins", () => {
+		const result = computeUpdatedRatings({
+			currentMatch: {
+				mode: "1v1",
+				left: { id: "p1", name: "Player 1" },
+				right: { id: "p2", name: "Player 2" },
+			},
+			ratingsSnapshot,
+			winnerId: "p1",
+			loserId: "p2",
+		});
+		expect(result).toEqual({ p1: 1540, p2: 1460, p3: 1200, p4: 1800 });
+	});
+
+	it("computes updated ratings for a 1v1 match where right side wins", () => {
+		const result = computeUpdatedRatings({
+			currentMatch: {
+				mode: "1v1",
+				left: { id: "p1", name: "Player 1" },
+				right: { id: "p2", name: "Player 2" },
+			},
+			ratingsSnapshot,
+			winnerId: "p2",
+			loserId: "p1",
+		});
+		expect(result).toEqual({ p1: 1460, p2: 1540, p3: 1200, p4: 1800 });
+	});
+
+	it("computes updated ratings for a 2v2 match where left side wins", () => {
+		const result = computeUpdatedRatings({
+			currentMatch: {
+				mode: "2v2",
+				left: { id: "team1", memberIds: ["p1", "p3"], memberNames: [] },
+				right: { id: "team2", memberIds: ["p2", "p4"], memberNames: [] },
+			},
+			ratingsSnapshot,
+			winnerId: "p3", // Either p1 or p3 works, this simulates p3 making the winning play
+			loserId: "p2",
+		});
+		expect(result).toEqual({ p1: 1568, p2: 1432, p3: 1268, p4: 1732 });
+	});
+
+	it("computes updated ratings for a 2v2 match where right side wins", () => {
+		const result = computeUpdatedRatings({
+			currentMatch: {
+				mode: "2v2",
+				left: { id: "team1", memberIds: ["p1", "p3"], memberNames: [] },
+				right: { id: "team2", memberIds: ["p2", "p4"], memberNames: [] },
+			},
+			ratingsSnapshot,
+			winnerId: "p4", // Either p2 or p4 works
+			loserId: "p1",
+		});
+		expect(result).toEqual({ p1: 1488, p2: 1512, p3: 1188, p4: 1812 });
+	});
+});
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -22,8 +91,16 @@ describe("createTeamsById", () => {
 	});
 
 	it("overrides earlier teams if duplicate IDs exist", () => {
-		const teamA: Team = { id: "team1", memberIds: ["u1"], memberNames: ["User 1"] };
-		const teamB: Team = { id: "team1", memberIds: ["u2"], memberNames: ["User 2"] };
+		const teamA: Team = {
+			id: "team1",
+			memberIds: ["u1"],
+			memberNames: ["User 1"],
+		};
+		const teamB: Team = {
+			id: "team1",
+			memberIds: ["u2"],
+			memberNames: ["User 2"],
+		};
 		const teams: Team[] = [teamA, teamB];
 
 		const result = createTeamsById(teams);
