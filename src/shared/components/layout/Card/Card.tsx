@@ -34,11 +34,7 @@ const CardBase = memo(
 			);
 
 			return (
-				<div
-					ref={ref}
-					className={finalClasses}
-					{...props}
-				>
+				<div ref={ref} className={finalClasses} {...props}>
 					<div className="relative z-10 h-full">{children}</div>
 				</div>
 			);
