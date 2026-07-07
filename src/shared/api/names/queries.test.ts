@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
-import { fetchNames, namesQueryKeys, namesQueryOptions } from "./api";
+import {
+	fetchNames,
+	namesQueryKeys,
+	namesQueryOptions,
+} from "./api";
 
 vi.mock("@/store/appStore", () => ({
 	default: {
@@ -88,11 +92,7 @@ describe("namesQueryKeys", () => {
 	it("returns correct keys", () => {
 		expect(namesQueryKeys.all).toEqual(["names"]);
 		expect(namesQueryKeys.lists()).toEqual(["names", "list"]);
-		expect(namesQueryKeys.list(true)).toEqual([
-			"names",
-			"list",
-			{ includeHidden: true },
-		]);
+		expect(namesQueryKeys.list(true)).toEqual(["names", "list", { includeHidden: true }]);
 	});
 });
 
