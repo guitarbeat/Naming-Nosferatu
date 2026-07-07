@@ -1,12 +1,4 @@
-import {
-	Clock,
-	Gamepad2,
-	Medal,
-	Undo2,
-	Volume2,
-	VolumeX,
-	X,
-} from "lucide-react";
+import { Clock, Gamepad2, Medal, Undo2, Volume2, VolumeX, X } from "lucide-react";
 import { memo } from "react";
 import { getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
@@ -19,7 +11,7 @@ interface TournamentHeaderProps {
 	currentMatchNumber: number;
 	totalMatches: number;
 	etaMinutes: number;
-	audioManager: any;
+	audioManager: unknown;
 	canUndo: boolean;
 	handleUndo: () => void;
 	quitTournament: () => void;
@@ -112,7 +104,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 										: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
 								}`}
 								aria-label={label}
-								aria-pressed={active !== undefined ? active : undefined}
+								aria-pressed={active === undefined ? undefined : active}
 								title={label}
 							>
 								<Icon className="size-4" />

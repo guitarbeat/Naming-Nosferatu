@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MatchRecord, Team } from "@/shared/types";
-import {
-	calculateTournamentMetrics,
-	createTeamsById,
-	deriveBracketState,
-} from "./tournamentLogic";
+import { calculateTournamentMetrics, createTeamsById, deriveBracketState } from "./tournamentLogic";
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -48,7 +44,11 @@ describe("createTeamsById", () => {
 describe("deriveBracketState", () => {
 	function mockRecord(winner: string): MatchRecord {
 		return {
-			match: { mode: "1v1", left: "any", right: "any" } as any,
+			match: {
+				mode: "1v1",
+				left: "any",
+				right: "any",
+			} as unknown as MatchRecord["match"],
 			winner,
 			loser: "any",
 			voteType: "manual",

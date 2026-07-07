@@ -64,12 +64,7 @@ export default function HomeRoute() {
 				onStartPicking={() => scrollToSection("pick")}
 			/>
 
-			<Section
-				id="pick"
-				maxWidth="xl"
-				separator={true}
-				fullpage={true}
-			>
+			<Section id="pick" maxWidth="xl" separator={true} fullpage={true}>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
@@ -87,11 +82,7 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section
-				id="tournament"
-				separator={true}
-				fullpage={true}
-			>
+			<Section id="tournament" separator={true} fullpage={true}>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
@@ -127,11 +118,7 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section
-				id="analysis"
-				separator={true}
-				fullpage={true}
-			>
+			<Section id="analysis" separator={true} fullpage={true}>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
