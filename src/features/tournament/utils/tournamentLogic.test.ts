@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { MatchRecord, Team } from "@/shared/types";
-import { createTeamsById, deriveBracketState } from "./tournamentLogic";
+import type { MatchRecord, NameItem, Team } from "@/shared/types";
+import {
+	createTeamsById,
+	deriveBracketState,
+	resolveCurrentMatch,
+} from "./tournamentLogic";
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -22,8 +26,16 @@ describe("createTeamsById", () => {
 	});
 
 	it("overrides earlier teams if duplicate IDs exist", () => {
-		const teamA: Team = { id: "team1", memberIds: ["u1"], memberNames: ["User 1"] };
-		const teamB: Team = { id: "team1", memberIds: ["u2"], memberNames: ["User 2"] };
+		const teamA: Team = {
+			id: "team1",
+			memberIds: ["u1"],
+			memberNames: ["User 1"],
+		};
+		const teamB: Team = {
+			id: "team1",
+			memberIds: ["u2"],
+			memberNames: ["User 2"],
+		};
 		const teams: Team[] = [teamA, teamB];
 
 		const result = createTeamsById(teams);
@@ -144,5 +156,113 @@ describe("deriveBracketState", () => {
 		const result4 = deriveBracketState(entrants, history);
 		expect(result3).toBe(result4);
 		expect(result3).not.toBe(result1);
+	});
+});
+
+describe("resolveCurrentMatch", () => {
+	it("returns null when pendingMatchIds is null", () => {
+		const result = resolveCurrentMatch({
+			tournamentMode: "1v1",
+			pendingMatchIds: null,
+			teamsById: new Map(),
+			idToNameMap: new Map(),
+		});
+		expect(result).toBeNull();
+	});
+
+	describe("1v1 mode", () => {
+		it("resolves a match using idToNameMap when names are present", () => {
+			const map = new Map<string, NameItem>([
+				["a", { id: "a", name: "Alice" }],
+				["b", { id: "b", name: "Bob" }],
+			]);
+			const result = resolveCurrentMatch({
+				tournamentMode: "1v1",
+				pendingMatchIds: { leftId: "a", rightId: "b" },
+				teamsById: new Map(),
+				idToNameMap: map,
+			});
+			expect(result).toEqual({
+				mode: "1v1",
+				left: { id: "a", name: "Alice" },
+				right: { id: "b", name: "Bob" },
+			});
+		});
+
+		it("falls back to generating a NameItem when names are missing from map", () => {
+			const result = resolveCurrentMatch({
+				tournamentMode: "1v1",
+				pendingMatchIds: { leftId: "x", rightId: "y" },
+				teamsById: new Map(),
+				idToNameMap: new Map(),
+			});
+			expect(result).toEqual({
+				mode: "1v1",
+				left: { id: "x", name: "x" },
+				right: { id: "y", name: "y" },
+			});
+		});
+	});
+
+	describe("2v2 mode", () => {
+		it("returns null if the left team is missing", () => {
+			const rightTeam: Team = {
+				id: "t2",
+				memberIds: ["u2"],
+				memberNames: ["User 2"],
+			};
+			const map = new Map<string, Team>([["t2", rightTeam]]);
+			const result = resolveCurrentMatch({
+				tournamentMode: "2v2",
+				pendingMatchIds: { leftId: "t1", rightId: "t2" },
+				teamsById: map,
+				idToNameMap: new Map(),
+			});
+			expect(result).toBeNull();
+		});
+
+		it("returns null if the right team is missing", () => {
+			const leftTeam: Team = {
+				id: "t1",
+				memberIds: ["u1"],
+				memberNames: ["User 1"],
+			};
+			const map = new Map<string, Team>([["t1", leftTeam]]);
+			const result = resolveCurrentMatch({
+				tournamentMode: "2v2",
+				pendingMatchIds: { leftId: "t1", rightId: "t2" },
+				teamsById: map,
+				idToNameMap: new Map(),
+			});
+			expect(result).toBeNull();
+		});
+
+		it("resolves a match when both teams are present", () => {
+			const leftTeam: Team = {
+				id: "t1",
+				memberIds: ["u1"],
+				memberNames: ["User 1"],
+			};
+			const rightTeam: Team = {
+				id: "t2",
+				memberIds: ["u2"],
+				memberNames: ["User 2"],
+			};
+			const map = new Map<string, Team>([
+				["t1", leftTeam],
+				["t2", rightTeam],
+			]);
+			const result = resolveCurrentMatch({
+				tournamentMode: "2v2",
+				pendingMatchIds: { leftId: "t1", rightId: "t2" },
+				teamsById: map,
+				idToNameMap: new Map(),
+			});
+			expect(result).toEqual({
+				mode: "2v2",
+				left: leftTeam,
+				right: rightTeam,
+			});
+		});
 	});
 });
