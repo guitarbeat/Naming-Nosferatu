@@ -5,15 +5,12 @@ import { isStorageAvailable } from "@/shared/lib/storage";
 vi.mock("@/shared/lib/storage", async () => {
 	const actual = await vi.importActual("@/shared/lib/storage");
 	return {
-		...(actual as any),
+		...actual,
 		isStorageAvailable: vi.fn(),
 	};
 });
 
 describe("sound initialization", () => {
-	let originalAudio: typeof globalThis.Audio | undefined;
-	let originalAudioContext: typeof globalThis.AudioContext | undefined;
-
 	// We need to use a real class for the Audio mock so it can be instantiated with `new`
 	const mockAddEventListener = vi.fn();
 	class MockAudio {
@@ -31,36 +28,20 @@ describe("sound initialization", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		mockAddEventListener.mockClear();
-		originalAudio = globalThis.Audio;
-		originalAudioContext = globalThis.AudioContext;
-
 		// Default to not having Audio or AudioContext to start clean
-		// @ts-expect-error
-		globalThis.Audio = undefined;
-		// @ts-expect-error
-		globalThis.AudioContext = undefined;
+		vi.stubGlobal("Audio", undefined);
+		vi.stubGlobal("AudioContext", undefined);
 	});
 
 	afterEach(() => {
+		vi.unstubAllGlobals();
 		vi.restoreAllMocks();
 		vi.resetModules();
-		if (originalAudio === undefined) {
-			// @ts-expect-error
-			globalThis.Audio = undefined;
-		} else {
-			globalThis.Audio = originalAudio;
-		}
-		if (originalAudioContext === undefined) {
-			// @ts-expect-error
-			globalThis.AudioContext = undefined;
-		} else {
-			globalThis.AudioContext = originalAudioContext;
-		}
 	});
 
 	it("should skip initialization if not in a browser environment", async () => {
 		vi.mocked(isStorageAvailable).mockReturnValue(false);
-		globalThis.Audio = MockAudio as any;
+		vi.stubGlobal("Audio", MockAudio);
 
 		// Dynamic import to get a fresh instance of the module
 		await import("./sound.ts");
@@ -72,8 +53,7 @@ describe("sound initialization", () => {
 	it("should handle initialization when Audio is undefined in browser environment", async () => {
 		vi.mocked(isStorageAvailable).mockReturnValue(true);
 		// Explicitly ensure Audio is undefined
-		// @ts-expect-error
-		globalThis.Audio = undefined;
+		vi.stubGlobal("Audio", undefined);
 
 		// Should not throw
 		await import("./sound.ts");
@@ -93,7 +73,7 @@ describe("sound initialization", () => {
 			}
 		}
 
-		globalThis.Audio = SpiedMockAudio as any;
+		vi.stubGlobal("Audio", SpiedMockAudio);
 
 		await import("./sound.ts");
 
@@ -108,8 +88,12 @@ describe("sound initialization", () => {
 		const calledUrls = audioSpy.mock.calls.map((call) => call[0]);
 		expect(calledUrls.some((url) => url.includes("vote.mp3"))).toBe(true);
 		expect(calledUrls.some((url) => url.includes("undo.mp3"))).toBe(true);
-		expect(mockAddEventListener).toHaveBeenCalledWith("error", expect.any(Function), {
-			once: true,
-		});
+		expect(mockAddEventListener).toHaveBeenCalledWith(
+			"error",
+			expect.any(Function),
+			{
+				once: true,
+			},
+		);
 	});
 });
