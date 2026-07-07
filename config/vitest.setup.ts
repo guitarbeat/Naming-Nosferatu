@@ -40,6 +40,11 @@ if (typeof window !== "undefined" && window.localStorage) {
 		};
 	}
 } else {
+	if (typeof window === "undefined") {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		globalThis.window = globalThis as any;
+	}
+
 	// Fallback mock if window.localStorage is missing
 	class LocalStorageMock {
 		private store: Record<string, string> = {};
