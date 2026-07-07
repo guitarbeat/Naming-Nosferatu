@@ -1,25 +1,12 @@
 import { motion } from "framer-motion";
-import {
-	Activity,
-	BarChart3,
-	Target,
-	TrendingUp,
-	Trophy,
-	User,
-	Users,
-} from "lucide-react";
+import { Activity, BarChart3, Target, TrendingUp, Trophy, User, Users } from "lucide-react";
 import type { ElementType } from "react";
 import Button from "@/shared/components/layout/Button";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
 import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
-import {
-	ContextBadge,
-	Panel,
-	SectionHeader,
-	StatTile,
-} from "./components/DashboardPrimitives";
+import { ContextBadge, Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
@@ -397,7 +384,6 @@ export function Dashboard({
 				refreshEngagementMetrics={refreshEngagementMetrics}
 				isLoadingEngagement={isLoadingEngagement}
 			/>
-
 		</div>
 	);
 }
