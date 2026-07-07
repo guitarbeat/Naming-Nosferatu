@@ -10,6 +10,7 @@ import {
 import {
 	clearStoredUserSnapshot,
 	readStoredUserSnapshot,
+	type StoredUserSnapshot,
 	writeStoredUserSnapshot,
 } from "./userStorage";
 
@@ -133,8 +134,7 @@ describe("userStorage", () => {
 		});
 
 		it("clears storage if normalized snapshot is invalid (missing name)", () => {
-			// @ts-expect-error Testing invalid input
-			writeStoredUserSnapshot({ id: "123" });
+			writeStoredUserSnapshot({ id: "123" } as unknown as StoredUserSnapshot);
 			expect(removeStorageItem).toHaveBeenCalledWith(STORAGE_KEYS.USER_STORAGE);
 		});
 
@@ -168,7 +168,10 @@ describe("userStorage", () => {
 				email: "bob@example.com",
 			});
 			expect(setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.USER, "Bob");
-			expect(setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID, "123");
+			expect(setStorageString).toHaveBeenCalledWith(
+				STORAGE_KEYS.USER_ID,
+				"123",
+			);
 			expect(setStorageString).toHaveBeenCalledWith(
 				STORAGE_KEYS.USER_AVATAR,
 				"https://example.com/avatar.jpg",
