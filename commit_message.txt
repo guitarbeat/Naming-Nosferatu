@@ -1,6 +1,0 @@
-🧹 chore: fix incorrect typing for Supabase Headers
-
-🎯 What: Refactored the `updateSupabaseUserContext` function in `runtime.ts` to correctly handle `rest.headers` as a `Headers` instance instead of an object map.
-💡 Why: Previously, `@ts-expect-error` was used to suppress TypeScript errors when modifying headers, which hid the correct usage (`.set()` and `.delete()`). By using a `Headers` type check, we preserve type safety and improve code health.
-✅ Verification: Ran TypeScript compilation and Vitest unit tests. Tests pass, and TS now correctly validates header interactions.
-✨ Result: Cleaner code, no more hidden type violations in the runtime context setup.
