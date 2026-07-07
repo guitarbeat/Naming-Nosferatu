@@ -16,13 +16,13 @@ describe("buildAdminStats", () => {
 	});
 
 	it("calculates active, hidden, and locked names correctly", () => {
-		const names: NameWithStats[] = [
+		const names = [
 			{ id: "1", name: "Active1", isHidden: false, lockedIn: false },
 			{ id: "2", name: "Active2", isHidden: false }, // implicitly not locked
 			{ id: "3", name: "Hidden1", isHidden: true, lockedIn: false },
 			{ id: "4", name: "Locked1", isHidden: false, lockedIn: true },
 			{ id: "5", name: "HiddenAndLocked", isHidden: true, lockedIn: true },
-		];
+		] as unknown as NameWithStats[];
 
 		const siteStats: SiteStatsLike = {
 			totalUsers: 42,
@@ -42,21 +42,30 @@ describe("buildAdminStats", () => {
 	});
 
 	it("handles site stats missing values safely", () => {
-		const result = buildAdminStats([], { totalUsers: undefined, totalRatings: null });
+		const result = buildAdminStats([], {
+			totalUsers: undefined,
+			totalRatings: null,
+		} as unknown as SiteStatsLike);
 
 		expect(result.totalUsers).toBe(0);
 		expect(result.recentVotes).toBe(0);
 	});
 
 	it("handles string values in siteStats gracefully via toNumber", () => {
-		const result = buildAdminStats([], { totalUsers: "55", totalRatings: "230" });
+		const result = buildAdminStats([], {
+			totalUsers: "55",
+			totalRatings: "230",
+		} as unknown as SiteStatsLike);
 
 		expect(result.totalUsers).toBe(55);
 		expect(result.recentVotes).toBe(230);
 	});
 
 	it("handles invalid number values in siteStats by returning 0", () => {
-		const result = buildAdminStats([], { totalUsers: "invalid", totalRatings: {} });
+		const result = buildAdminStats([], {
+			totalUsers: "invalid",
+			totalRatings: {},
+		} as unknown as SiteStatsLike);
 
 		expect(result.totalUsers).toBe(0);
 		expect(result.recentVotes).toBe(0);
