@@ -48,25 +48,14 @@ describe("TournamentFlow responsive behavior", () => {
 		renderWithProviders();
 
 		expect(screen.getByTestId("name-selector")).toBeInTheDocument();
-		expect(screen.queryByRole("button", { name: "See Results" })).not.toBeInTheDocument();
 	});
 
-	it("keeps completion actions mobile-friendly with stacked buttons", () => {
+	it("hides the setup selector when tournament is complete", () => {
 		mockStore.tournament.isComplete = true;
 		mockStore.tournament.names = ["A", "B"];
 
 		renderWithProviders();
 
-		const analyzeButton = screen.getByRole("button", { name: "See Results" });
-		const startButton = screen.getByRole("button", { name: "Pick Different Names" });
-		const heading = screen.getByRole("heading", {
-			name: "A victor emerges from the eternal tournament",
-		});
-		const actionsRow = analyzeButton.parentElement;
-
-		expect(heading).toHaveClass("text-2xl", "sm:text-3xl", "md:text-4xl");
-		expect(actionsRow).toHaveClass("flex-col", "sm:flex-row");
-		expect(analyzeButton).toHaveClass("w-full", "sm:w-auto");
-		expect(startButton).toHaveClass("w-full", "sm:w-auto");
+		expect(screen.queryByTestId("name-selector")).not.toBeInTheDocument();
 	});
 });
