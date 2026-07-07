@@ -1,6 +1,33 @@
 import { describe, expect, it } from "vitest";
 import type { MatchRecord, Team } from "@/shared/types";
-import { createTeamsById, deriveBracketState } from "./tournamentLogic";
+import {
+	createMatchRecord,
+	createTeamsById,
+	deriveBracketState,
+} from "./tournamentLogic";
+
+describe("createMatchRecord", () => {
+	it("creates a valid MatchRecord from inputs", () => {
+		const currentMatch = { mode: "1v1", left: "teamA", right: "teamB" } as any;
+		const result = createMatchRecord({
+			currentMatch,
+			winnerId: "teamA",
+			loserId: "teamB",
+			matchNumber: 5,
+			round: 2,
+		});
+
+		expect(result).toEqual({
+			match: currentMatch,
+			winner: "teamA",
+			loser: "teamB",
+			voteType: "normal",
+			matchNumber: 5,
+			roundNumber: 2,
+			timestamp: expect.any(Number),
+		});
+	});
+});
 
 describe("createTeamsById", () => {
 	it("returns an empty map when given an empty array", () => {
@@ -22,8 +49,16 @@ describe("createTeamsById", () => {
 	});
 
 	it("overrides earlier teams if duplicate IDs exist", () => {
-		const teamA: Team = { id: "team1", memberIds: ["u1"], memberNames: ["User 1"] };
-		const teamB: Team = { id: "team1", memberIds: ["u2"], memberNames: ["User 2"] };
+		const teamA: Team = {
+			id: "team1",
+			memberIds: ["u1"],
+			memberNames: ["User 1"],
+		};
+		const teamB: Team = {
+			id: "team1",
+			memberIds: ["u2"],
+			memberNames: ["User 2"],
+		};
 		const teams: Team[] = [teamA, teamB];
 
 		const result = createTeamsById(teams);
