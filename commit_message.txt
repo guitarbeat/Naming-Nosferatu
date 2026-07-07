@@ -1,3 +1,0 @@
-perf: ⚡ Bolt: Optimize name lookup inside NameSelector
-
-Replaced the `Array.prototype.find` method call with a standard `for` loop inside the `useMemo` block in `NameSelector.tsx` to avoid callback overhead.
