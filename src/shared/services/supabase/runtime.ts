@@ -156,20 +156,20 @@ export const updateSupabaseUserContext = (
 	}
 
 	const internalClient = supabaseInstance as unknown as {
-		rest?: { headers?: Record<string, string | undefined> };
+		rest?: { headers?: Headers };
 	};
 
-	if (internalClient.rest?.headers) {
+	if (internalClient.rest?.headers instanceof Headers) {
 		if (userName) {
-			internalClient.rest.headers["x-user-name"] = userName;
+			internalClient.rest.headers.set("x-user-name", userName);
 		} else {
-			internalClient.rest.headers["x-user-name"] = undefined;
+			internalClient.rest.headers.delete("x-user-name");
 		}
 
 		if (userId) {
-			internalClient.rest.headers["x-user-id"] = userId;
+			internalClient.rest.headers.set("x-user-id", userId);
 		} else {
-			internalClient.rest.headers["x-user-id"] = undefined;
+			internalClient.rest.headers.delete("x-user-id");
 		}
 	}
 };
