@@ -10,12 +10,12 @@ describe("tournamentSlice", () => {
 	beforeEach(() => {
 		useStore = create<StoreType>()((set, get, api) => ({
 			...createTournamentSlice(
-				// biome-ignore lint/suspicious/noExplicitAny: Mocking zustand store
-				set as unknown as any,
-				// biome-ignore lint/suspicious/noExplicitAny: Mocking zustand store
-				get as unknown as any,
-				// biome-ignore lint/suspicious/noExplicitAny: Mocking zustand store
-				api as unknown as any,
+				// @ts-expect-error Mocking zustand store args
+				set,
+				// @ts-expect-error Mocking zustand store args
+				get,
+				// @ts-expect-error Mocking zustand store args
+				api,
 			),
 		}));
 	});
@@ -57,10 +57,7 @@ describe("tournamentSlice", () => {
 				Alice: { rating: 1600, rd: 30, vol: 0.06 },
 			});
 
-			setNames([
-				{ id: "1", name: "Alice" } as NameItem,
-				{ id: "2", name: "Bob" } as NameItem,
-			]);
+			setNames([{ id: "1", name: "Alice" } as NameItem, { id: "2", name: "Bob" } as NameItem]);
 
 			const state = useStore.getState().tournament;
 			expect(state.names).toEqual([
@@ -134,8 +131,7 @@ describe("tournamentSlice", () => {
 
 	describe("completeTournament", () => {
 		it("merges ratings and sets isComplete to true", () => {
-			const { setRatings, completeTournament } =
-				useStore.getState().tournamentActions;
+			const { setRatings, completeTournament } = useStore.getState().tournamentActions;
 
 			setRatings({
 				Alice: { rating: 1600, rd: 30, vol: 0.06 },
@@ -223,8 +219,7 @@ describe("tournamentSlice", () => {
 		});
 
 		it("clears vote history", () => {
-			const { recordVote, clearVoteHistory } =
-				useStore.getState().tournamentActions;
+			const { recordVote, clearVoteHistory } = useStore.getState().tournamentActions;
 
 			recordVote("1", "2");
 			recordVote("3", "4");
