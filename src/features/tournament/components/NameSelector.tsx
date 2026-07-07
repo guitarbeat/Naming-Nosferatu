@@ -1,11 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import {
-	Check,
-	CheckCircle,
-	Eye,
-	ZoomIn,
-} from "lucide-react";
+import { Check, CheckCircle, Eye, ZoomIn } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -46,11 +41,7 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
 const nameOverlayClasses =
 	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
 
-function NameContent({
-	nameItem,
-}: {
-	nameItem: NameItem;
-}) {
+function NameContent({ nameItem }: { nameItem: NameItem }) {
 	return (
 		<>
 			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
@@ -191,36 +182,27 @@ export function NameSelector() {
 				? "Failed to load names"
 				: null;
 	const isSupabaseUnavailable = error === SUPABASE_UNAVAILABLE_MSG;
-	const names = isSupabaseUnavailable
-		? sampleNames
-		: (namesQuery.data?.names ?? []);
+	const names = isSupabaseUnavailable ? sampleNames : (namesQuery.data?.names ?? []);
 	const isLoading = namesQuery.isPending && !isSupabaseUnavailable;
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
-			const selectedNameItems = names.filter((nameItem) =>
-				nextSelectedIds.has(nameItem.id),
-			);
+			const selectedNameItems = names.filter((nameItem) => nextSelectedIds.has(nameItem.id));
 			tournamentActions.setSelection(selectedNameItems);
 		},
 		[names, tournamentActions],
 	);
 
-	const { catImages, catImageById } = useMemo(
-		() => {
-			const catImages = names.map((nameItem) =>
-				getRandomCatImage(nameItem.id, CAT_IMAGES),
-			);
-			const catImageById = new Map<IdType, string>();
-			for (let i = 0; i < names.length; i++) {
-				if (catImages[i]) {
-					catImageById.set(names[i].id, catImages[i]);
-				}
+	const { catImages, catImageById } = useMemo(() => {
+		const catImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
+		const catImageById = new Map<IdType, string>();
+		for (let i = 0; i < names.length; i++) {
+			if (catImages[i]) {
+				catImageById.set(names[i].id, catImages[i]);
 			}
-			return { catImages, catImageById };
-		},
-		[names],
-	);
+		}
+		return { catImages, catImageById };
+	}, [names]);
 
 	const showWarningRef = useRef(toast.showWarning);
 	useEffect(() => {
@@ -231,9 +213,7 @@ export function NameSelector() {
 		if (names.length === 0) {
 			return;
 		}
-		const lockedInIds = new Set(
-			getLockedNames(names).map((nameItem) => nameItem.id),
-		);
+		const lockedInIds = new Set(getLockedNames(names).map((nameItem) => nameItem.id));
 		if (lockedInIds.size === 0) {
 			return;
 		}
@@ -282,9 +262,7 @@ export function NameSelector() {
 
 			try {
 				await toggleHidden({ nameId, isCurrentlyHidden });
-				toast.showSuccess(
-					isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
-				);
+				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
@@ -305,9 +283,7 @@ export function NameSelector() {
 
 			try {
 				await toggleLocked({ nameId, isCurrentlyLocked });
-				toast.showSuccess(
-					isCurrentlyLocked ? "Name unlocked." : "Name locked in.",
-				);
+				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
@@ -318,8 +294,7 @@ export function NameSelector() {
 		[isAdmin, toast, toggleLocked, userName],
 	);
 
-	const [pendingAdminAction, setPendingAdminAction] =
-		useState<PendingAdminAction | null>(null);
+	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
 
 	const requestAdminAction = useCallback(
 		(action: PendingAdminAction) => {
@@ -329,9 +304,7 @@ export function NameSelector() {
 			}
 
 			if (!userName?.trim()) {
-				toast.showError(
-					"Admin actions require a valid user session. Please log in again.",
-				);
+				toast.showError("Admin actions require a valid user session. Please log in again.");
 				return;
 			}
 
@@ -348,8 +321,15 @@ export function NameSelector() {
 		if (!pendingAdminAction) {
 			return "";
 		}
-		const target = names.find((n) => n.id === pendingAdminAction.nameId);
-		return target?.name ?? "this name";
+
+		// OPTIMIZATION: Use for-loop instead of Array.find to avoid callback overhead
+		for (let i = 0; i < names.length; i++) {
+			if (names[i].id === pendingAdminAction.nameId) {
+				return names[i].name;
+			}
+		}
+
+		return "this name";
 	}, [names, pendingAdminAction]);
 
 	const isPendingActionBusy = useMemo(() => {
@@ -369,15 +349,9 @@ export function NameSelector() {
 
 		try {
 			if (pendingAdminAction.type === "toggle-hidden") {
-				await handleToggleHidden(
-					pendingAdminAction.nameId,
-					pendingAdminAction.isCurrentlyEnabled,
-				);
+				await handleToggleHidden(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
 			} else {
-				await handleToggleLocked(
-					pendingAdminAction.nameId,
-					pendingAdminAction.isCurrentlyEnabled,
-				);
+				await handleToggleLocked(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
 			}
 		} finally {
 			setPendingAdminAction(null);
@@ -441,11 +415,7 @@ export function NameSelector() {
 							<p className="text-sm leading-relaxed text-white/68">{error}</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button
-								onClick={() => void namesQuery.refetch()}
-								variant="glass"
-								size="small"
-							>
+							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
 								Try Again
 							</Button>
 						</div>
@@ -558,7 +528,12 @@ export function NameSelector() {
 					<p className="text-sm text-muted-foreground">{confirmDescription}</p>
 
 					<div className="mt-6 flex items-center justify-end gap-3">
-						<Button type="button" variant="ghost" onClick={cancelAdminAction} disabled={isPendingActionBusy}>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={cancelAdminAction}
+							disabled={isPendingActionBusy}
+						>
 							Cancel
 						</Button>
 						<Button
