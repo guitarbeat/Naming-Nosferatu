@@ -82,8 +82,12 @@ const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
 // Using a fast-path sequential loop check first, falling back to an O(N) frequency Map
 // to efficiently compare arrays without creating garbage overhead from [...a].sort().
 function haveSameIds(a: string[], b: string[]): boolean {
-	if (a === b) return true;
-	if (a.length !== b.length) return false;
+	if (a === b) {
+		return true;
+	}
+	if (a.length !== b.length) {
+		return false;
+	}
 
 	let isIdentical = true;
 	for (let i = 0; i < a.length; i++) {
@@ -92,7 +96,9 @@ function haveSameIds(a: string[], b: string[]): boolean {
 			break;
 		}
 	}
-	if (isIdentical) return true;
+	if (isIdentical) {
+		return true;
+	}
 
 	const counts = new Map<string, number>();
 	for (let i = 0; i < a.length; i++) {
@@ -100,7 +106,9 @@ function haveSameIds(a: string[], b: string[]): boolean {
 	}
 	for (let i = 0; i < b.length; i++) {
 		const count = counts.get(b[i]);
-		if (!count) return false;
+		if (!count) {
+			return false;
+		}
 		counts.set(b[i], count - 1);
 	}
 	return true;
