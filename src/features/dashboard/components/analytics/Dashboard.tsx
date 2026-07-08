@@ -126,64 +126,68 @@ function DashboardHeader({
 	}
 
 	return (
-		<div className="grid gap-4 xl:grid-cols-[minmax(0,20rem)_1fr]">
-			{isLoggedIn && userName && (
-				<Panel>
-					<div className="flex items-center gap-4">
-						<div className="relative">
+		<Panel className="overflow-hidden relative">
+			<div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full pointer-events-none" />
+			<div className="flex flex-col xl:flex-row gap-8 xl:items-center justify-between relative z-10">
+
+				{isLoggedIn && userName && (
+					<div className="flex items-center gap-5 shrink-0">
+						<div className="relative group">
+							<div className="absolute -inset-2 rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 							{avatarUrl ? (
 								<img
 									src={avatarUrl}
 									alt={userName}
-									className={`size-16 rounded-full object-cover ring-2 ring-primary/20 ${themeSurfaces.avatar}`}
+									className={`relative size-20 rounded-2xl object-cover ring-2 ring-primary/20 shadow-lg ${themeSurfaces.avatar}`}
 								/>
 							) : (
 								<div
-									className={`flex size-16 items-center justify-center rounded-full ring-2 ring-primary/20 text-primary ${themeSurfaces.avatar}`}
+									className={`relative flex size-20 items-center justify-center rounded-2xl ring-2 ring-primary/20 shadow-lg text-primary ${themeSurfaces.avatar}`}
 								>
-									<User size={22} />
+									<User size={28} />
 								</div>
 							)}
 							{isAdmin && (
-								<div className="absolute -bottom-0.5 -right-0.5 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 p-1">
-									<div className="rounded-full bg-card p-0.5">
-										<span className="text-xs font-bold">👑</span>
+								<div className="absolute -bottom-2 -right-2 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-600 p-1.5 shadow-lg">
+									<div className="rounded-lg bg-card p-0.5">
+										<span className="text-sm font-bold leading-none">👑</span>
 									</div>
 								</div>
 							)}
 						</div>
 						<div className="min-w-0">
 							<p className={themeText.eyebrowWide}>Profile</p>
-							<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
-							<p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground/75">
-								<span>{isAdmin ? "👤 Administrator" : "🎮 Tournament participant"}</span>
+							<h2 className="mt-1 truncate text-3xl font-black tracking-tight text-foreground">{userName}</h2>
+							<p className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground/80 bg-foreground/5 px-2.5 py-1 rounded-md">
+								<span>{isAdmin ? "Administrator" : "Tournament Participant"}</span>
 							</p>
 						</div>
 					</div>
-				</Panel>
-			)}
+				)}
 
-			{quickStats.length > 0 && (
-				<Panel>
-					<SectionHeader
-						icon={BarChart3}
-						title={userStats ? "Your Snapshot" : "Community Snapshot"}
-						subtitle={userStats ? "Your totals." : "Pool totals."}
-					/>
-					<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-						{quickStats.map((item) => (
-							<StatTile
-								key={item.label}
-								label={item.label}
-								value={item.value}
-								icon={item.icon}
-								accent={Boolean(item.accent)}
-							/>
-						))}
+				{quickStats.length > 0 && (
+					<div className="flex-1 w-full xl:max-w-3xl">
+						<div className="flex items-center gap-2 mb-4">
+							<BarChart3 size={16} className="text-primary/70" />
+							<span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+								{userStats ? "Your Snapshot" : "Community Snapshot"}
+							</span>
+						</div>
+						<div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+							{quickStats.map((item) => (
+								<StatTile
+									key={item.label}
+									label={item.label}
+									value={item.value}
+									icon={item.icon}
+									accent={Boolean(item.accent)}
+								/>
+							))}
+						</div>
 					</div>
-				</Panel>
-			)}
-		</div>
+				)}
+			</div>
+		</Panel>
 	);
 }
 
