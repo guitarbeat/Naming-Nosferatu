@@ -201,7 +201,7 @@ function CommunityChartsPanel({
 	leaderboard,
 	siteStats,
 }: {
-	leaderboard: typeof leaderboard extends any[]
+	leaderboard: typeof leaderboard extends unknown[]
 		? typeof leaderboard
 		: NameItem[];
 	siteStats: SiteStats | null;
