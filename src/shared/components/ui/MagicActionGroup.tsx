@@ -8,7 +8,11 @@ interface MagicActionGroupProps {
 	isLoggingOut: boolean;
 }
 
-export function MagicActionGroup({ onEdit, onLogout, isLoggingOut }: MagicActionGroupProps) {
+export function MagicActionGroup({
+	onEdit,
+	onLogout,
+	isLoggingOut,
+}: MagicActionGroupProps) {
 	return (
 		<div className="flex items-center gap-1.5 p-1.5 bg-foreground/5 border border-border/30 rounded-2xl backdrop-blur-md shadow-inner">
 			<motion.button

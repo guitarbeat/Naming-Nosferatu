@@ -85,7 +85,10 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 
 	return (
 		<div className="flex flex-col items-center gap-6 w-full px-2 py-4">
-			<MagicAvatar avatarSrc={avatarSrc} onError={() => setAvatarSrc(defaultAvatar)} />
+			<MagicAvatar
+				avatarSrc={avatarSrc}
+				onError={() => setAvatarSrc(defaultAvatar)}
+			/>
 
 			{isEditing ? (
 				<div className="w-full space-y-5 animate-in fade-in zoom-in-95 duration-300">
@@ -102,14 +105,22 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 					/>
 
 					{saveError && (
-						<p role="alert" className="text-sm text-destructive text-center font-medium">
+						<p
+							role="alert"
+							className="text-sm text-destructive text-center font-medium"
+						>
 							{saveError}
 						</p>
 					)}
 
 					<div className="flex gap-3 pt-2">
 						{user.isLoggedIn && (
-							<Button type="button" variant="ghost" onClick={() => setIsEditing(false)} className="flex-1 rounded-xl">
+							<Button
+								type="button"
+								variant="ghost"
+								onClick={() => setIsEditing(false)}
+								className="flex-1 rounded-xl"
+							>
 								Cancel
 							</Button>
 						)}
@@ -120,7 +131,9 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 							onClick={handleSave}
 							disabled={!editedName.trim() || isSaving}
 							loading={isSaving}
-							className={user.isLoggedIn ? "flex-[2] rounded-xl" : "w-full rounded-xl"}
+							className={
+								user.isLoggedIn ? "flex-[2] rounded-xl" : "w-full rounded-xl"
+							}
 						>
 							{user.isLoggedIn ? "Save" : "Begin Journey"}
 						</Button>
@@ -132,7 +145,9 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 						<h3 className="text-2xl font-black tracking-tight text-foreground bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
 							{user.name}
 						</h3>
-						<p className="text-sm text-muted-foreground/80 font-medium">Your preferences are saved for ranking.</p>
+						<p className="text-sm text-muted-foreground/80 font-medium">
+							Your preferences are saved for ranking.
+						</p>
 					</div>
 
 					<div className="pt-2">

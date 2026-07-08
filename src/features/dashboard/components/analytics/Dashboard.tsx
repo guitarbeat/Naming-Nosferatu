@@ -12,7 +12,10 @@ import type { ElementType } from "react";
 import Button from "@/shared/components/layout/Button";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
-import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
+import type {
+	SiteStats,
+	UserStats,
+} from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import {
 	ContextBadge,
@@ -129,7 +132,6 @@ function DashboardHeader({
 		<Panel className="overflow-hidden relative">
 			<div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full pointer-events-none" />
 			<div className="flex flex-col xl:flex-row gap-8 xl:items-center justify-between relative z-10">
-
 				{isLoggedIn && userName && (
 					<div className="flex items-center gap-5 shrink-0">
 						<div className="relative group">
@@ -157,9 +159,13 @@ function DashboardHeader({
 						</div>
 						<div className="min-w-0">
 							<p className={themeText.eyebrowWide}>Profile</p>
-							<h2 className="mt-1 truncate text-3xl font-black tracking-tight text-foreground">{userName}</h2>
+							<h2 className="mt-1 truncate text-3xl font-black tracking-tight text-foreground">
+								{userName}
+							</h2>
 							<p className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground/80 bg-foreground/5 px-2.5 py-1 rounded-md">
-								<span>{isAdmin ? "Administrator" : "Tournament Participant"}</span>
+								<span>
+									{isAdmin ? "Administrator" : "Tournament Participant"}
+								</span>
 							</p>
 						</div>
 					</div>
@@ -195,7 +201,9 @@ function CommunityChartsPanel({
 	leaderboard,
 	siteStats,
 }: {
-	leaderboard: typeof leaderboard extends any[] ? typeof leaderboard : NameItem[];
+	leaderboard: typeof leaderboard extends any[]
+		? typeof leaderboard
+		: NameItem[];
 	siteStats: SiteStats | null;
 }) {
 	return (
@@ -204,7 +212,11 @@ function CommunityChartsPanel({
 				<>
 					<div className="grid gap-6 xl:grid-cols-2">
 						<Panel>
-							<SectionHeader icon={BarChart3} title="Top Names by Rating" subtitle="Top scores." />
+							<SectionHeader
+								icon={BarChart3}
+								title="Top Names by Rating"
+								subtitle="Top scores."
+							/>
 							<TopNamesChart leaderboard={leaderboard} />
 						</Panel>
 
@@ -220,13 +232,21 @@ function CommunityChartsPanel({
 
 					<div className="grid gap-6 xl:grid-cols-2">
 						<Panel>
-							<SectionHeader icon={Activity} title="Rating Distribution" subtitle="Score spread." />
+							<SectionHeader
+								icon={Activity}
+								title="Rating Distribution"
+								subtitle="Score spread."
+							/>
 							<RatingDistributionChart leaderboard={leaderboard} />
 						</Panel>
 
 						{leaderboard.length >= 3 && (
 							<Panel>
-								<SectionHeader icon={Target} title="Comparison Radar" subtitle="Side by side." />
+								<SectionHeader
+									icon={Target}
+									title="Comparison Radar"
+									subtitle="Side by side."
+								/>
 								<RatingRadarChart leaderboard={leaderboard} />
 							</Panel>
 						)}
@@ -236,12 +256,28 @@ function CommunityChartsPanel({
 
 			{siteStats && (
 				<Panel>
-					<SectionHeader icon={Users} title="Site Statistics" subtitle="Pool totals." />
+					<SectionHeader
+						icon={Users}
+						title="Site Statistics"
+						subtitle="Pool totals."
+					/>
 					<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-						<StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
-						<StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
+						<StatTile
+							label="Total names"
+							value={siteStats.totalNames}
+							icon={Activity}
+						/>
+						<StatTile
+							label="Active names"
+							value={siteStats.activeNames}
+							icon={Target}
+						/>
 						<StatTile label="Users" value={siteStats.totalUsers} icon={Users} />
-						<StatTile label="Ratings" value={siteStats.totalRatings} icon={BarChart3} />
+						<StatTile
+							label="Ratings"
+							value={siteStats.totalRatings}
+							icon={BarChart3}
+						/>
 						<StatTile
 							label="Average rating"
 							value={Math.round(siteStats.avgRating)}
@@ -321,7 +357,11 @@ function EngagementPanel({
 					icon={Users}
 					accent={true}
 				/>
-				<StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
+				<StatTile
+					label="Matches played"
+					value={engagementMetrics.totalMatches}
+					icon={Trophy}
+				/>
 			</motion.div>
 		</Panel>
 	);
@@ -350,7 +390,9 @@ export function Dashboard({
 		userStats,
 	} = useDashboardData({ userName });
 	const quickStats = getQuickStats({ siteStats, userName, userStats });
-	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
+	const hasPersonalRatings = Boolean(
+		personalRatings && Object.keys(personalRatings).length > 0,
+	);
 	const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
 	const _shouldShowDashboardPrimer =
 		!hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;
@@ -401,7 +443,6 @@ export function Dashboard({
 				refreshEngagementMetrics={refreshEngagementMetrics}
 				isLoadingEngagement={isLoadingEngagement}
 			/>
-
 		</div>
 	);
 }

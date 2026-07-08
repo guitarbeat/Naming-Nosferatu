@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { type RefObject, type ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { Input } from "@/shared/components/layout/FormPrimitives";
 
 interface MagicInputProps {
@@ -11,7 +11,14 @@ interface MagicInputProps {
 	inputRef?: RefObject<HTMLInputElement | null>;
 }
 
-export function MagicInput({ value, onChange, onKeyDown, placeholder, icon, inputRef }: MagicInputProps) {
+export function MagicInput({
+	value,
+	onChange,
+	onKeyDown,
+	placeholder,
+	icon,
+	inputRef,
+}: MagicInputProps) {
 	return (
 		<motion.div
 			className="relative group w-full"
