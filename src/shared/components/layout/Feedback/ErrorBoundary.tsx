@@ -41,7 +41,9 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	return (
 		<div className="mx-auto my-8 flex min-h-[40vh] w-full max-w-xl items-center justify-center px-4">
 			<div className="w-full rounded-lg border border-destructive/30 bg-background/80 p-6 text-center shadow-xl backdrop-blur">
-				<h2 className="text-2xl font-bold text-foreground">Something went wrong</h2>
+				<h2 className="text-2xl font-bold text-foreground">
+					Something went wrong
+				</h2>
 				<p className="mt-2 text-sm text-muted-foreground">
 					{context} could not finish loading.
 				</p>
@@ -49,7 +51,9 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 					{error?.message || "An unexpected error occurred."}
 				</p>
 				{errorId && (
-					<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
+					<p className="mt-2 font-mono text-xs text-muted-foreground">
+						ID: {errorId}
+					</p>
 				)}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
@@ -173,6 +177,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 					onClick={onDismiss}
 					className="rounded-full p-1 text-yellow-100/70 transition-colors hover:bg-yellow-500/20 hover:text-yellow-50"
 					aria-label="Dismiss error"
+					title="Dismiss error"
 					type="button"
 				>
 					<X size={14} />
@@ -192,10 +197,14 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 }) => {
 	if (variant === "boundary") {
 		return (
-			<ErrorBoundary context={context || "Component Boundary"}>{children}</ErrorBoundary>
+			<ErrorBoundary context={context || "Component Boundary"}>
+				{children}
+			</ErrorBoundary>
 		);
 	}
-	return <ErrorInline error={error} onDismiss={onDismiss} className={className} />;
+	return (
+		<ErrorInline error={error} onDismiss={onDismiss} className={className} />
+	);
 };
 
 ErrorComponent.displayName = "ErrorComponent";
