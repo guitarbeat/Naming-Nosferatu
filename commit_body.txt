@@ -1,0 +1,8 @@
+Focus front page. Scan path. Group like features. Make logical sense.
+Find lone button, scattered menu, split view. Drag together.
+Execute large, comprehensive batch smash now.
+
+- Momentum: Built on navbar merge from last turn.
+- Smash: Grouped scattered inline primitives from NameSelector and HomeRoute.
+- Clean: Extracted to `components/ui/NameCardPrimitives.tsx` and `components/ui/SectionHeading.tsx`.
+- Memory Update: Remember front page unified. Strike next: user profile widget.
