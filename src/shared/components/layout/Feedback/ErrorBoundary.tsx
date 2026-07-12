@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import React, { Component, type ReactNode } from "react";
+import Button from "@/shared/components/layout/Button";
 import { cn } from "@/shared/lib/utils";
 import { ErrorManager } from "@/shared/services/errorManager";
 
@@ -41,7 +42,9 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	return (
 		<div className="mx-auto my-8 flex min-h-[40vh] w-full max-w-xl items-center justify-center px-4">
 			<div className="w-full rounded-lg border border-destructive/30 bg-background/80 p-6 text-center shadow-xl backdrop-blur">
-				<h2 className="text-2xl font-bold text-foreground">Something went wrong</h2>
+				<h2 className="text-2xl font-bold text-foreground">
+					Something went wrong
+				</h2>
 				<p className="mt-2 text-sm text-muted-foreground">
 					{context} could not finish loading.
 				</p>
@@ -49,23 +52,15 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 					{error?.message || "An unexpected error occurred."}
 				</p>
 				{errorId && (
-					<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
+					<p className="mt-2 font-mono text-xs text-muted-foreground">
+						ID: {errorId}
+					</p>
 				)}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
-					<button
-						onClick={resetError}
-						className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-						type="button"
-					>
-						Try again
-					</button>
-					<button
-						onClick={handleGoHome}
-						className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
-						type="button"
-					>
+					<Button onClick={resetError}>Try again</Button>
+					<Button variant="outline" onClick={handleGoHome}>
 						Go home
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -169,14 +164,15 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 			<span className="text-lg leading-none select-none">!</span>
 			<span className="flex-1 font-medium pt-0.5 leading-tight">{msg}</span>
 			{onDismiss && (
-				<button
+				<Button
 					onClick={onDismiss}
+					variant="ghost"
+					iconOnly
 					className="rounded-full p-1 text-yellow-100/70 transition-colors hover:bg-yellow-500/20 hover:text-yellow-50"
 					aria-label="Dismiss error"
-					type="button"
 				>
 					<X size={14} />
-				</button>
+				</Button>
 			)}
 		</div>
 	);
@@ -192,10 +188,14 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 }) => {
 	if (variant === "boundary") {
 		return (
-			<ErrorBoundary context={context || "Component Boundary"}>{children}</ErrorBoundary>
+			<ErrorBoundary context={context || "Component Boundary"}>
+				{children}
+			</ErrorBoundary>
 		);
 	}
-	return <ErrorInline error={error} onDismiss={onDismiss} className={className} />;
+	return (
+		<ErrorInline error={error} onDismiss={onDismiss} className={className} />
+	);
 };
 
 ErrorComponent.displayName = "ErrorComponent";
