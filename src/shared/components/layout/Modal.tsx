@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface ModalProps {
 	title: string;
@@ -44,7 +45,12 @@ interface ModalHeaderProps {
 	closeDisabled: boolean;
 }
 
-function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
+function ModalHeader({
+	title,
+	hideTitle,
+	requestClose,
+	closeDisabled,
+}: ModalHeaderProps) {
 	if (hideTitle) {
 		return (
 			<>
@@ -66,7 +72,10 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 
 	return (
 		<div className="flex items-center justify-between mb-5">
-			<h2 id="modal-title" className="text-base font-semibold text-foreground tracking-tight">
+			<h2
+				id="modal-title"
+				className="text-base font-semibold text-foreground tracking-tight"
+			>
 				{title}
 			</h2>
 			<button

@@ -36,9 +36,17 @@ vi.mock("@/app/AppShell", () => ({
 }));
 
 vi.mock("@/app/components/AppBootScreen", () => ({
-	AppBootScreen: ({ message, visible = true }: { message?: string; visible?: boolean }) =>
+	AppBootScreen: ({
+		message,
+		visible = true,
+	}: {
+		message?: string;
+		visible?: boolean;
+	}) =>
 		visible ? (
-			<div data-testid="boot-screen">{message ?? "Preparing the tournament..."}</div>
+			<div data-testid="boot-screen">
+				{message ?? "Preparing the tournament..."}
+			</div>
 		) : null,
 }));
 
@@ -66,7 +74,9 @@ describe("App", () => {
 
 		render(<App />);
 
-		expect(screen.getByTestId("boot-screen")).toHaveTextContent("Preparing the tournament...");
+		expect(screen.getByTestId("boot-screen")).toHaveTextContent(
+			"Preparing the tournament...",
+		);
 	});
 
 	it("renders the lazy app shell after boot completes", async () => {

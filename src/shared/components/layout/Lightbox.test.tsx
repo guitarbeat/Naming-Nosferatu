@@ -38,7 +38,9 @@ describe("Lightbox", () => {
 
 		await waitFor(() => {
 			expect(
-				screen.queryByRole("button", { name: "Close lightbox and return to gallery" }),
+				screen.queryByRole("button", {
+					name: "Close lightbox and return to gallery",
+				}),
 			).not.toBeInTheDocument();
 		});
 		expect(opener).toBeInTheDocument();

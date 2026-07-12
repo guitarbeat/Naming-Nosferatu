@@ -1,7 +1,10 @@
 import { lazy, type ReactNode, Suspense } from "react";
 import { shouldEnableAnalytics } from "@/app/analytics";
 import { PwaInstallPrompt } from "@/app/components/PwaInstallPrompt";
-import { ErrorBoundary, ErrorComponent } from "@/shared/components/layout/Feedback/ErrorBoundary";
+import {
+	ErrorBoundary,
+	ErrorComponent,
+} from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { OfflineIndicator } from "@/shared/components/layout/Feedback/OfflineIndicator";
 import { FloatingNavbar } from "@/shared/components/layout/FloatingNavbar";
@@ -12,7 +15,9 @@ interface AppLayoutProps {
 }
 
 const Analytics = lazy(() =>
-	import("@vercel/analytics/react").then((module) => ({ default: module.Analytics })),
+	import("@vercel/analytics/react").then((module) => ({
+		default: module.Analytics,
+	})),
 );
 
 export function AppLayout({ children }: AppLayoutProps) {
@@ -29,11 +34,12 @@ export function AppLayout({ children }: AppLayoutProps) {
 				<div className="app-ambient" aria-hidden="true" />
 				<PwaInstallPrompt />
 				<OfflineIndicator />
-				{analyticsEnabled && import.meta.env.VITE_VERCEL_ANALYTICS === "true" && (
-					<Suspense fallback={null}>
-						<Analytics />
-					</Suspense>
-				)}
+				{analyticsEnabled &&
+					import.meta.env.VITE_VERCEL_ANALYTICS === "true" && (
+						<Suspense fallback={null}>
+							<Analytics />
+						</Suspense>
+					)}
 
 				<button
 					type="button"

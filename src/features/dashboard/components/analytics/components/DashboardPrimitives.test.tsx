@@ -2,7 +2,13 @@ import { act, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { Activity } from "lucide-react";
-import { ChartFrame, ContextBadge, Panel, SectionHeader, StatTile } from "./DashboardPrimitives";
+import {
+	ChartFrame,
+	ContextBadge,
+	Panel,
+	SectionHeader,
+	StatTile,
+} from "./DashboardPrimitives";
 
 const MockChild = ({ width, height }: { width?: number; height?: number }) => (
 	<div data-testid="mock-child">
@@ -15,19 +21,21 @@ describe("ChartFrame", () => {
 
 	beforeEach(() => {
 		// Mock getBoundingClientRect
-		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue({
-			width: 500,
-			height: 300,
-			top: 0,
-			left: 0,
-			bottom: 300,
-			right: 500,
-			x: 0,
-			y: 0,
-			toJSON: () => {
-				/* noop */
+		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue(
+			{
+				width: 500,
+				height: 300,
+				top: 0,
+				left: 0,
+				bottom: 300,
+				right: 500,
+				x: 0,
+				y: 0,
+				toJSON: () => {
+					/* noop */
+				},
 			},
-		});
+		);
 
 		// Mock ResizeObserver
 		global.ResizeObserver = class ResizeObserver {
@@ -72,19 +80,21 @@ describe("ChartFrame", () => {
 	});
 
 	it("does not render children when dimensions are 0", () => {
-		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue({
-			width: 0,
-			height: 0,
-			top: 0,
-			left: 0,
-			bottom: 0,
-			right: 0,
-			x: 0,
-			y: 0,
-			toJSON: () => {
-				/* noop */
+		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue(
+			{
+				width: 0,
+				height: 0,
+				top: 0,
+				left: 0,
+				bottom: 0,
+				right: 0,
+				x: 0,
+				y: 0,
+				toJSON: () => {
+					/* noop */
+				},
 			},
-		});
+		);
 
 		render(
 			<ChartFrame>
@@ -108,19 +118,21 @@ describe("ChartFrame", () => {
 	});
 
 	it("updates dimensions on resize", () => {
-		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue({
-			width: 100,
-			height: 100,
-			top: 0,
-			left: 0,
-			bottom: 100,
-			right: 100,
-			x: 0,
-			y: 0,
-			toJSON: () => {
-				/* noop */
+		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue(
+			{
+				width: 100,
+				height: 100,
+				top: 0,
+				left: 0,
+				bottom: 100,
+				right: 100,
+				x: 0,
+				y: 0,
+				toJSON: () => {
+					/* noop */
+				},
 			},
-		});
+		);
 
 		render(
 			<ChartFrame>
@@ -128,22 +140,26 @@ describe("ChartFrame", () => {
 			</ChartFrame>,
 		);
 
-		expect(screen.getByTestId("mock-child")).toHaveTextContent("Child - 100x100");
+		expect(screen.getByTestId("mock-child")).toHaveTextContent(
+			"Child - 100x100",
+		);
 
 		// Simulate resize
-		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue({
-			width: 800,
-			height: 600,
-			top: 0,
-			left: 0,
-			bottom: 600,
-			right: 800,
-			x: 0,
-			y: 0,
-			toJSON: () => {
-				/* noop */
+		vi.spyOn(HTMLDivElement.prototype, "getBoundingClientRect").mockReturnValue(
+			{
+				width: 800,
+				height: 600,
+				top: 0,
+				left: 0,
+				bottom: 600,
+				right: 800,
+				x: 0,
+				y: 0,
+				toJSON: () => {
+					/* noop */
+				},
 			},
-		});
+		);
 
 		act(() => {
 			resizeObserverCallback(
@@ -174,7 +190,9 @@ describe("ChartFrame", () => {
 			);
 		});
 
-		expect(screen.getByTestId("mock-child")).toHaveTextContent("Child - 800x600");
+		expect(screen.getByTestId("mock-child")).toHaveTextContent(
+			"Child - 800x600",
+		);
 	});
 });
 

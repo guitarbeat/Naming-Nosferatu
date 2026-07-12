@@ -60,7 +60,9 @@ function App() {
 	}
 
 	return (
-		<Suspense fallback={<AppBootScreen visible={true} message="Opening the app..." />}>
+		<Suspense
+			fallback={<AppBootScreen visible={true} message="Opening the app..." />}
+		>
 			<AppShell />
 		</Suspense>
 	);

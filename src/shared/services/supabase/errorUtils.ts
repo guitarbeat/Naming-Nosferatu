@@ -13,7 +13,10 @@ export function throwSupabaseUnavailable(): never {
  * Throws a descriptive Error when a Supabase RPC returns an error object.
  * Used by ratingService and statsService for consistent error handling.
  */
-export function throwOnRpcError(error: { message?: string } | null, fallbackMsg: string): void {
+export function throwOnRpcError(
+	error: { message?: string } | null,
+	fallbackMsg: string,
+): void {
 	if (error) {
 		throw new Error(error.message || fallbackMsg);
 	}

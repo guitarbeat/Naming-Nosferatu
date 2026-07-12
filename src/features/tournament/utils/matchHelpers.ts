@@ -2,7 +2,9 @@ import type { Match, NameItem } from "@/shared/types";
 
 export function getMatchSideId(match: Match, side: "left" | "right"): string {
 	const participant = match[side];
-	return typeof participant === "object" ? String(participant.id) : String(participant);
+	return typeof participant === "object"
+		? String(participant.id)
+		: String(participant);
 }
 
 export function getMatchSideName(match: Match, side: "left" | "right"): string {
@@ -11,7 +13,9 @@ export function getMatchSideName(match: Match, side: "left" | "right"): string {
 		return team.memberNames.join(" + ");
 	}
 	const participant = match[side];
-	return typeof participant === "object" ? participant.name : String(participant);
+	return typeof participant === "object"
+		? participant.name
+		: String(participant);
 }
 
 export interface MatchSideData {

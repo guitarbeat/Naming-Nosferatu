@@ -24,7 +24,10 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		data: leaderboard,
 		isLoading: isLoadingLeaderboard,
 		error: errorLeaderboard,
-	} = useAsyncData<LeaderboardItem[]>(() => leaderboardAPI.getLeaderboard(10), []);
+	} = useAsyncData<LeaderboardItem[]>(
+		() => leaderboardAPI.getLeaderboard(10),
+		[],
+	);
 
 	const {
 		data: engagementMetrics,
@@ -32,21 +35,26 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		error: errorEngagement,
 		refresh: refreshEngagementMetrics,
 	} = useAsyncData<EngagementMetrics | null>(
-		() => statsAPI.getEngagementMetrics(timeframe as "day" | "week" | "month" | "year"),
+		() =>
+			statsAPI.getEngagementMetrics(
+				timeframe as "day" | "week" | "month" | "year",
+			),
 		null,
 		{ deps: [timeframe] },
 	);
 
-	const { data: siteStats, error: errorSiteStats } = useAsyncData<SiteStats | null>(
-		() => statsAPI.getSiteStats(),
-		null,
-	);
+	const { data: siteStats, error: errorSiteStats } =
+		useAsyncData<SiteStats | null>(() => statsAPI.getSiteStats(), null);
 
-	const { data: userStats, error: errorUserStats } = useAsyncData<UserStats | null>(
-		() => (normalizedUserName ? statsAPI.getUserStats(normalizedUserName) : Promise.resolve(null)),
-		null,
-		{ deps: [normalizedUserName] },
-	);
+	const { data: userStats, error: errorUserStats } =
+		useAsyncData<UserStats | null>(
+			() =>
+				normalizedUserName
+					? statsAPI.getUserStats(normalizedUserName)
+					: Promise.resolve(null),
+			null,
+			{ deps: [normalizedUserName] },
+		);
 
 	return {
 		engagementMetrics,

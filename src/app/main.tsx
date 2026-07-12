@@ -34,7 +34,10 @@ async function initSentry(): Promise<void> {
 			release: `name-nosferatu@${import.meta.env.VITE_APP_VERSION || "1.0.2"}`,
 		});
 	} catch (error) {
-		console.warn("Sentry not available, continuing without error tracking:", error);
+		console.warn(
+			"Sentry not available, continuing without error tracking:",
+			error,
+		);
 	}
 }
 

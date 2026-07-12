@@ -5,7 +5,10 @@ export interface TelemetryAdapter {
 		tags?: Record<string, string>,
 		extra?: Record<string, unknown>,
 	): void;
-	logError(formattedError: { type: string; userMessage: string }, context: string): void;
+	logError(
+		formattedError: { type: string; userMessage: string },
+		context: string,
+	): void;
 }
 
 class ConsoleTelemetryAdapter implements TelemetryAdapter {
@@ -26,7 +29,10 @@ class ConsoleTelemetryAdapter implements TelemetryAdapter {
 		);
 	}
 
-	logError(formattedError: { type: string; userMessage: string }, context: string): void {
+	logError(
+		formattedError: { type: string; userMessage: string },
+		context: string,
+	): void {
 		console.error(
 			`🔴 [Telemetry Error] [${formattedError.type}] Context: ${context}. Msg: ${formattedError.userMessage}`,
 		);

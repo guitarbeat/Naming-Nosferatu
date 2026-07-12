@@ -55,7 +55,10 @@ describe("ProfileInner", () => {
 		const onLogin = vi
 			.fn()
 			.mockImplementation(
-				() => new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 0)),
+				() =>
+					new Promise<boolean>((resolve) =>
+						setTimeout(() => resolve(false), 0),
+					),
 			);
 
 		render(<ProfileInner onLogin={onLogin} onLogout={vi.fn()} />);
@@ -71,6 +74,8 @@ describe("ProfileInner", () => {
 				screen.getByText("We couldn't log you in with that name. Try again."),
 			).toBeInTheDocument();
 		});
-		expect(screen.getByRole("button", { name: "Begin Journey" })).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "Begin Journey" }),
+		).toBeInTheDocument();
 	});
 });

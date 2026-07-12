@@ -74,7 +74,10 @@ const queryState: {
 
 function createMatchMedia(prefersReducedMotion: boolean) {
 	return vi.fn().mockImplementation((query: string) => ({
-		matches: query === "(prefers-reduced-motion: reduce)" ? prefersReducedMotion : false,
+		matches:
+			query === "(prefers-reduced-motion: reduce)"
+				? prefersReducedMotion
+				: false,
 		media: query,
 		onchange: null,
 		addEventListener: vi.fn(),
@@ -108,7 +111,9 @@ vi.mock("@/store/appStore", () => ({
 vi.mock("@/app/appConfig", () => ({
 	errorContexts: { analysisDashboard: "Analysis dashboard" },
 	routeComponents: {
-		TournamentFlow: () => <div data-testid="tournament-flow">Tournament flow</div>,
+		TournamentFlow: () => (
+			<div data-testid="tournament-flow">Tournament flow</div>
+		),
 		DashboardLazy: ({ onStartNew }: { onStartNew: () => void }) => (
 			<button type="button" onClick={onStartNew}>
 				Start New Tournament
@@ -187,7 +192,9 @@ describe("HomeRoute", () => {
 		}
 
 		fireEvent.click(screen.getByRole("button", { name: "Start Picking" }));
-		fireEvent.click(screen.getByRole("button", { name: "Complete Tournament" }));
+		fireEvent.click(
+			screen.getByRole("button", { name: "Complete Tournament" }),
+		);
 		act(() => {
 			vi.advanceTimersByTime(800);
 		});
@@ -212,8 +219,12 @@ describe("HomeRoute", () => {
 			analysisSection.scrollIntoView = analysisScroll;
 		}
 
-		fireEvent.click(screen.getByRole("button", { name: "Complete Tournament" }));
-		fireEvent.click(screen.getByRole("button", { name: "Start New Tournament" }));
+		fireEvent.click(
+			screen.getByRole("button", { name: "Complete Tournament" }),
+		);
+		fireEvent.click(
+			screen.getByRole("button", { name: "Start New Tournament" }),
+		);
 		act(() => {
 			vi.advanceTimersByTime(800);
 		});

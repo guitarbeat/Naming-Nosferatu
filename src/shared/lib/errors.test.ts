@@ -8,7 +8,9 @@ describe("isRpcSignatureError", () => {
 	});
 
 	it("returns true for errors containing 'function' and 'no function matches'", () => {
-		expect(isRpcSignatureError("no function matches the given signature")).toBe(true);
+		expect(isRpcSignatureError("no function matches the given signature")).toBe(
+			true,
+		);
 	});
 
 	it("returns true for errors containing 'function' and 'could not find'", () => {

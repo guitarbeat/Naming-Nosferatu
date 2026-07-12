@@ -8,7 +8,9 @@ import type {
 	TournamentMode,
 } from "@/shared/types";
 
-export function createDefaultPersistentState(userName: string): PersistentTournamentState {
+export function createDefaultPersistentState(
+	userName: string,
+): PersistentTournamentState {
 	return {
 		matchHistory: [],
 		currentRound: 1,
@@ -38,7 +40,10 @@ export function createNamesKey(names: NameItem[]): string {
 	return createSortedKey(names.map((n) => n?.id || ""));
 }
 
-export function createTournamentId(names: NameItem[], userName?: string): string {
+export function createTournamentId(
+	names: NameItem[],
+	userName?: string,
+): string {
 	const sortedNames = names
 		.map((n) => n.name || String(n.id))
 		.sort()
@@ -70,7 +75,10 @@ function isValidTeamMatch(value: unknown): value is TeamMatch {
 		return false;
 	}
 	const candidate = value as TeamMatch;
-	return typeof candidate.leftTeamId === "string" && typeof candidate.rightTeamId === "string";
+	return (
+		typeof candidate.leftTeamId === "string" &&
+		typeof candidate.rightTeamId === "string"
+	);
 }
 
 export function sanitizePersistentState(
@@ -91,7 +99,9 @@ export function sanitizePersistentState(
 	};
 
 	const mode: TournamentMode = merged.mode === "2v2" ? "2v2" : "1v1";
-	const teams = Array.isArray(merged.teams) ? merged.teams.filter(isValidTeam) : [];
+	const teams = Array.isArray(merged.teams)
+		? merged.teams.filter(isValidTeam)
+		: [];
 	const teamMatches = Array.isArray(merged.teamMatches)
 		? merged.teamMatches.filter(isValidTeamMatch)
 		: [];
@@ -100,7 +110,10 @@ export function sanitizePersistentState(
 		...merged,
 		mode,
 		matchHistory: Array.isArray(merged.matchHistory) ? merged.matchHistory : [],
-		ratings: merged.ratings && typeof merged.ratings === "object" ? merged.ratings : {},
+		ratings:
+			merged.ratings && typeof merged.ratings === "object"
+				? merged.ratings
+				: {},
 		namesKey: typeof merged.namesKey === "string" ? merged.namesKey : "",
 		teams,
 		teamMatches,

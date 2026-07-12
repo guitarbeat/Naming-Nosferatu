@@ -6,7 +6,9 @@ export { errorContexts } from "@/store/appStore";
 // Lazy-Loaded Route Components
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
+const TournamentFlow = lazy(
+	() => import("@/features/tournament/modes/TournamentFlow"),
+);
 
 const DashboardLazy = lazy(() =>
 	import("@/features/dashboard/Dashboard").then((m) => ({

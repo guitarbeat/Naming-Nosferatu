@@ -1,12 +1,25 @@
 import { STORAGE_KEYS } from "@/shared/lib/constants";
-import { getStorageString, removeStorageItem, setStorageString } from "@/shared/lib/storage";
+import {
+	getStorageString,
+	removeStorageItem,
+	setStorageString,
+} from "@/shared/lib/storage";
 import {
 	clearStoredUserSnapshot,
 	readStoredUserSnapshot,
 	writeStoredUserSnapshot,
 } from "@/shared/lib/userStorage";
-import type { ThemePreference, ThemeValue, UIState, UserState } from "@/shared/types";
-import { type AppSliceCreator, IS_BROWSER, patch } from "@/store/appStore.shared";
+import type {
+	ThemePreference,
+	ThemeValue,
+	UIState,
+	UserState,
+} from "@/shared/types";
+import {
+	type AppSliceCreator,
+	IS_BROWSER,
+	patch,
+} from "@/store/appStore.shared";
 import type { AppState } from "@/store/appStore.types";
 
 let systemThemeCleanup: (() => void) | null = null;
@@ -70,7 +83,9 @@ function persistOptionalString(key: string, value: string | undefined): void {
 
 function readThemePreferenceFromStorage(): ThemePreference {
 	const stored = getStorageString(STORAGE_KEYS.THEME) ?? "dark";
-	return ["light", "dark", "system"].includes(stored) ? (stored as ThemePreference) : "dark";
+	return ["light", "dark", "system"].includes(stored)
+		? (stored as ThemePreference)
+		: "dark";
 }
 
 function persistUserState(user: UserState): void {
@@ -90,7 +105,12 @@ function persistUserState(user: UserState): void {
 export const createUserAndSettingsSlice: AppSliceCreator<
 	Pick<
 		AppState,
-		"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
+		| "user"
+		| "userActions"
+		| "ui"
+		| "uiActions"
+		| "siteSettings"
+		| "siteSettingsActions"
 	>
 > = (set, get) => ({
 	user: getInitialUserState(),
@@ -160,7 +180,10 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 				updates.isAdmin = Boolean(storedUser.isAdmin);
 			}
 
-			if (storedUser?.avatarUrl && get().user.avatarUrl !== storedUser.avatarUrl) {
+			if (
+				storedUser?.avatarUrl &&
+				get().user.avatarUrl !== storedUser.avatarUrl
+			) {
 				updates.avatarUrl = storedUser.avatarUrl;
 			}
 
@@ -193,7 +216,8 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 				};
 
 				mediaQuery.addEventListener("change", handleChange);
-				systemThemeCleanup = () => mediaQuery.removeEventListener("change", handleChange);
+				systemThemeCleanup = () =>
+					mediaQuery.removeEventListener("change", handleChange);
 			} else {
 				resolved = preference === "light" ? "light" : "dark";
 			}
@@ -219,7 +243,8 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 	},
 
 	siteSettingsActions: {
-		setCatChosenName: (data) => patch(set, "siteSettings", { catChosenName: data }),
+		setCatChosenName: (data) =>
+			patch(set, "siteSettings", { catChosenName: data }),
 		markSettingsLoaded: () => patch(set, "siteSettings", { isLoaded: true }),
 	},
 });

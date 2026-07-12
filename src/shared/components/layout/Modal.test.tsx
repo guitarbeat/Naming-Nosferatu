@@ -57,8 +57,12 @@ describe("Modal", () => {
 
 		fireEvent.click(screen.getByRole("button", { name: "Open Modal" }));
 
-		expect(screen.getByRole("button", { name: "First Action" })).toBeInTheDocument();
-		expect(screen.getByRole("button", { name: "Second Action" })).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "First Action" }),
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "Second Action" }),
+		).toBeInTheDocument();
 		expect(screen.getByLabelText("Close test modal")).toBeInTheDocument();
 	});
 

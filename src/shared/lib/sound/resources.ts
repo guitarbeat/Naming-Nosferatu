@@ -6,9 +6,19 @@ export interface SynthNote {
 }
 
 // Sound effect identifiers
-export const SOUND_EFFECTS = ["vote", "undo", "level-up", "wow", "surprise", "streak", "meow"];
+export const SOUND_EFFECTS = [
+	"vote",
+	"undo",
+	"level-up",
+	"wow",
+	"surprise",
+	"streak",
+	"meow",
+];
 
-export function getFallbackEffectPattern(soundName: string): SynthNote[] | null {
+export function getFallbackEffectPattern(
+	soundName: string,
+): SynthNote[] | null {
 	switch (soundName) {
 		case "vote":
 			return [
