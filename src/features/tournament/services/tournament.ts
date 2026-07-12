@@ -78,9 +78,7 @@ export function resolveTournamentMode(selectedCount: number): TournamentMode {
 	return selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2" : "1v1";
 }
 
-export function generateRandomTeams(
-	participants: Array<{ id: string; name: string }>,
-): Team[] {
+export function generateRandomTeams(participants: Array<{ id: string; name: string }>): Team[] {
 	const shuffled = shuffleArray(participants);
 	const teams: Team[] = [];
 
@@ -145,10 +143,7 @@ export function applyTeamMatchElo({
 	}).ratings;
 }
 
-export function getBracketStageLabel(
-	round: number,
-	totalRounds: number,
-): string {
+export function getBracketStageLabel(round: number, totalRounds: number): string {
 	const safeRound = Math.max(1, round);
 	const safeTotal = Math.max(1, totalRounds);
 	const remaining = safeTotal - safeRound;

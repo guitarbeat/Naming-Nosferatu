@@ -3,9 +3,10 @@ import type { ErrorLog } from "@/shared/types";
 import { type AppSliceCreator, patch } from "@/store/appStore.shared";
 import type { AppState } from "@/store/appStore.types";
 
-export const createErrorSlice: AppSliceCreator<
-	Pick<AppState, "errors" | "errorActions">
-> = (set, get) => ({
+export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
+	set,
+	get,
+) => ({
 	errors: {
 		current: null,
 		history: [],

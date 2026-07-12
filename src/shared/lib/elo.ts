@@ -64,25 +64,14 @@ function clampRating(rating: number, config: Required<EloConfig>): number {
 	return Math.max(config.minRating, Math.min(config.maxRating, rating));
 }
 
-function normalizeRating(
-	rating: number | undefined,
-	config: Required<EloConfig>,
-): number {
-	return typeof rating === "number" && Number.isFinite(rating)
-		? rating
-		: config.defaultRating;
+function normalizeRating(rating: number | undefined, config: Required<EloConfig>): number {
+	return typeof rating === "number" && Number.isFinite(rating) ? rating : config.defaultRating;
 }
 
 function normalizeStats(stats?: EloStats): { wins: number; losses: number } {
 	return {
-		wins:
-			typeof stats?.wins === "number" && Number.isFinite(stats.wins)
-				? stats.wins
-				: 0,
-		losses:
-			typeof stats?.losses === "number" && Number.isFinite(stats.losses)
-				? stats.losses
-				: 0,
+		wins: typeof stats?.wins === "number" && Number.isFinite(stats.wins) ? stats.wins : 0,
+		losses: typeof stats?.losses === "number" && Number.isFinite(stats.losses) ? stats.losses : 0,
 	};
 }
 
@@ -110,9 +99,7 @@ export function getExpectedEloScore(
 	config?: EloConfig,
 ): number {
 	const resolved = resolveConfig(config);
-	return (
-		1 / (1 + 10 ** ((opponentRating - currentRating) / resolved.ratingDivisor))
-	);
+	return 1 / (1 + 10 ** ((opponentRating - currentRating) / resolved.ratingDivisor));
 }
 
 export function updateEloRating({
@@ -130,9 +117,7 @@ export function updateEloRating({
 }): number {
 	const resolved = resolveConfig(config);
 	const multiplier =
-		gamesPlayed < resolved.newPlayerGameThreshold
-			? resolved.newPlayerKMultiplier
-			: 1;
+		gamesPlayed < resolved.newPlayerGameThreshold ? resolved.newPlayerKMultiplier : 1;
 	const updated = Math.round(
 		rating + resolved.kFactor * multiplier * (actualScore - expectedScore),
 	);
@@ -201,12 +186,8 @@ export function applyEloMatchUpdate({
 	config?: EloConfig;
 }): EloMatchResult {
 	const resolved = resolveConfig(config);
-	const leftRatings = leftParticipantIds.map((id) =>
-		normalizeRating(ratings[id], resolved),
-	);
-	const rightRatings = rightParticipantIds.map((id) =>
-		normalizeRating(ratings[id], resolved),
-	);
+	const leftRatings = leftParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
+	const rightRatings = rightParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
 	const leftAverageRating = average(leftRatings);
 	const rightAverageRating = average(rightRatings);
 	const leftAggregateStats = leftParticipantIds.reduce(
@@ -247,10 +228,7 @@ export function applyEloMatchUpdate({
 	for (const participantId of leftParticipantIds) {
 		const currentRating = normalizeRating(ratings[participantId], resolved);
 		const currentStats = normalizeStats(stats?.[participantId]);
-		const updatedRating = clampRating(
-			Math.round(currentRating + leftDelta),
-			resolved,
-		);
+		const updatedRating = clampRating(Math.round(currentRating + leftDelta), resolved);
 
 		nextRatings[participantId] = updatedRating;
 		nextStats[participantId] = {
@@ -268,10 +246,7 @@ export function applyEloMatchUpdate({
 	for (const participantId of rightParticipantIds) {
 		const currentRating = normalizeRating(ratings[participantId], resolved);
 		const currentStats = normalizeStats(stats?.[participantId]);
-		const updatedRating = clampRating(
-			Math.round(currentRating + rightDelta),
-			resolved,
-		);
+		const updatedRating = clampRating(Math.round(currentRating + rightDelta), resolved);
 
 		nextRatings[participantId] = updatedRating;
 		nextStats[participantId] = {

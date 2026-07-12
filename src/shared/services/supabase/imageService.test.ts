@@ -70,9 +70,7 @@ describe("imagesAPI", () => {
 
 	describe("upload", () => {
 		it("uploads file and returns public URL", async () => {
-			const mockFile = new File(["dummy content"], "my-cat.png", {
-				type: "image/png",
-			});
+			const mockFile = new File(["dummy content"], "my-cat.png", { type: "image/png" });
 			Object.defineProperty(mockFile, "size", { value: 1024 });
 
 			const mockStorageClient = {
@@ -132,9 +130,7 @@ describe("imagesAPI", () => {
 		});
 
 		it("returns error if upload fails", async () => {
-			const mockFile = new File(["dummy content"], "my-cat.png", {
-				type: "image/png",
-			});
+			const mockFile = new File(["dummy content"], "my-cat.png", { type: "image/png" });
 			Object.defineProperty(mockFile, "size", { value: 1024 });
 
 			const mockStorageClient = {

@@ -46,17 +46,8 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
 	return {
 		...actual,
 		QueryClient: MockQueryClient,
-		QueryClientProvider: ({
-			children,
-			client,
-		}: {
-			children: ReactNode;
-			client: unknown;
-		}) => (
-			<div
-				data-testid="query-client-provider"
-				data-has-client={String(Boolean(client))}
-			>
+		QueryClientProvider: ({ children, client }: { children: ReactNode; client: unknown }) => (
+			<div data-testid="query-client-provider" data-has-client={String(Boolean(client))}>
 				{children}
 			</div>
 		),
@@ -78,17 +69,8 @@ vi.mock("@/shared/services/supabase/runtime", () => ({
 }));
 
 vi.mock("./providers/Providers", () => ({
-	Providers: ({
-		children,
-		auth,
-	}: {
-		children: ReactNode;
-		auth?: { adapter?: unknown };
-	}) => (
-		<div
-			data-testid="providers"
-			data-has-adapter={String(Boolean(auth?.adapter))}
-		>
+	Providers: ({ children, auth }: { children: ReactNode; auth?: { adapter?: unknown } }) => (
+		<div data-testid="providers" data-has-adapter={String(Boolean(auth?.adapter))}>
 			{children}
 		</div>
 	),
@@ -114,9 +96,7 @@ describe("main bootstrap", () => {
 	it("mounts App inside the expected providers", async () => {
 		await import("./main");
 
-		expect(bootstrapMocks.createRootMock).toHaveBeenCalledWith(
-			document.getElementById("root"),
-		);
+		expect(bootstrapMocks.createRootMock).toHaveBeenCalledWith(document.getElementById("root"));
 		expect(bootstrapMocks.renderMock).toHaveBeenCalledTimes(1);
 
 		const renderedTree = bootstrapMocks.renderMock.mock.calls[0]?.[0];
@@ -124,14 +104,8 @@ describe("main bootstrap", () => {
 
 		render(renderedTree);
 
-		expect(screen.getByTestId("query-client-provider")).toHaveAttribute(
-			"data-has-client",
-			"true",
-		);
-		expect(screen.getByTestId("providers")).toHaveAttribute(
-			"data-has-adapter",
-			"true",
-		);
+		expect(screen.getByTestId("query-client-provider")).toHaveAttribute("data-has-client", "true");
+		expect(screen.getByTestId("providers")).toHaveAttribute("data-has-adapter", "true");
 		expect(screen.getByTestId("browser-router")).toBeInTheDocument();
 		expect(screen.getByTestId("app")).toBeInTheDocument();
 		expect(screen.queryByTestId("analytics")).not.toBeInTheDocument();
@@ -140,9 +114,7 @@ describe("main bootstrap", () => {
 	it("throws when the root element is missing", async () => {
 		document.body.innerHTML = "";
 
-		await expect(import("./main")).rejects.toThrow(
-			"Root element #root not found",
-		);
+		await expect(import("./main")).rejects.toThrow("Root element #root not found");
 		expect(bootstrapMocks.createRootMock).not.toHaveBeenCalled();
 	});
 });

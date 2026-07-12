@@ -22,16 +22,8 @@ describe("createTeamsById", () => {
 	});
 
 	it("overrides earlier teams if duplicate IDs exist", () => {
-		const teamA: Team = {
-			id: "team1",
-			memberIds: ["u1"],
-			memberNames: ["User 1"],
-		};
-		const teamB: Team = {
-			id: "team1",
-			memberIds: ["u2"],
-			memberNames: ["User 2"],
-		};
+		const teamA: Team = { id: "team1", memberIds: ["u1"], memberNames: ["User 1"] };
+		const teamB: Team = { id: "team1", memberIds: ["u2"], memberNames: ["User 2"] };
 		const teams: Team[] = [teamA, teamB];
 
 		const result = createTeamsById(teams);

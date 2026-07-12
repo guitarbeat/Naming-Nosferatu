@@ -1,13 +1,6 @@
-import type {
-	Match,
-	MatchRecord,
-	PersistentTournamentState,
-} from "@/shared/types";
+import type { Match, MatchRecord, PersistentTournamentState } from "@/shared/types";
 import type { HistoryEntry } from "../utils/tournamentLogic";
-import {
-	computeUpdatedRatings,
-	createMatchRecord,
-} from "../utils/tournamentLogic";
+import { computeUpdatedRatings, createMatchRecord } from "../utils/tournamentLogic";
 
 export type TournamentAction =
 	| {
@@ -63,14 +56,7 @@ export function tournamentReducer(
 			};
 		}
 		case "VOTE": {
-			const {
-				currentMatch,
-				winnerId,
-				loserId,
-				matchNumber,
-				round,
-				voteTimestamp,
-			} = action.payload;
+			const { currentMatch, winnerId, loserId, matchNumber, round, voteTimestamp } = action.payload;
 
 			const newRatings = computeUpdatedRatings({
 				currentMatch,
@@ -100,10 +86,7 @@ export function tournamentReducer(
 				history: [...state.history, newHistoryEntry],
 				persistentState: {
 					...state.persistentState,
-					matchHistory: [
-						...(state.persistentState.matchHistory || []),
-						matchRecord,
-					],
+					matchHistory: [...(state.persistentState.matchHistory || []), matchRecord],
 					currentMatch: matchNumber + 1,
 					currentRound: round,
 					ratings: newRatings,
@@ -115,10 +98,7 @@ export function tournamentReducer(
 		case "UNDO": {
 			const { lastEntry } = action.payload;
 			const newHistory = state.history.slice(0, -1);
-			const newMatchHistory = (state.persistentState.matchHistory || []).slice(
-				0,
-				-1,
-			);
+			const newMatchHistory = (state.persistentState.matchHistory || []).slice(0, -1);
 
 			return {
 				...state,

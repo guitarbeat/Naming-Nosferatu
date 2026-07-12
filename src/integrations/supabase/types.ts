@@ -1,10 +1,4 @@
-export type Json =
-	| string
-	| number
-	| boolean
-	| null
-	| { [key: string]: Json | undefined }
-	| Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
 	// Allows to automatically instantiate createClient with right options
@@ -347,10 +341,7 @@ export type Database = {
 			[_ in never]: never;
 		};
 		Functions: {
-			add_app_access_to_user: {
-				Args: { app_name: string };
-				Returns: undefined;
-			};
+			add_app_access_to_user: { Args: { app_name: string }; Returns: undefined };
 			add_cat_name: {
 				Args: { p_description?: string; p_name: string };
 				Returns: {
@@ -668,12 +659,7 @@ export type Database = {
 		};
 		Enums: {
 			app_role: "admin" | "user";
-			name_status:
-				| "candidate"
-				| "intake"
-				| "tournament"
-				| "eliminated"
-				| "archived";
+			name_status: "candidate" | "intake" | "tournament" | "eliminated" | "archived";
 		};
 		CompositeTypes: {
 			[_ in never]: never;
@@ -683,10 +669,7 @@ export type Database = {
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<
-	keyof Database,
-	"public"
->];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
 	DefaultSchemaTableNameOrOptions extends
@@ -707,10 +690,8 @@ export type Tables<
 		}
 		? R
 		: never
-	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-				DefaultSchema["Views"])
-		? (DefaultSchema["Tables"] &
-				DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+		? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
 				Row: infer R;
 			}
 			? R
@@ -805,13 +786,7 @@ export const Constants = {
 	public: {
 		Enums: {
 			app_role: ["admin", "user"],
-			name_status: [
-				"candidate",
-				"intake",
-				"tournament",
-				"eliminated",
-				"archived",
-			],
+			name_status: ["candidate", "intake", "tournament", "eliminated", "archived"],
 		},
 	},
 } as const;

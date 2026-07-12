@@ -46,9 +46,7 @@ describe("authUtils", () => {
 				user: { isAdmin: false },
 			} as any);
 
-			expect(() => assertAdmin("Custom admin error")).toThrow(
-				"Custom admin error",
-			);
+			expect(() => assertAdmin("Custom admin error")).toThrow("Custom admin error");
 		});
 	});
 });

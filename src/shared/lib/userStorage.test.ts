@@ -168,10 +168,7 @@ describe("userStorage", () => {
 				email: "bob@example.com",
 			});
 			expect(setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.USER, "Bob");
-			expect(setStorageString).toHaveBeenCalledWith(
-				STORAGE_KEYS.USER_ID,
-				"123",
-			);
+			expect(setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.USER_ID, "123");
 			expect(setStorageString).toHaveBeenCalledWith(
 				STORAGE_KEYS.USER_AVATAR,
 				"https://example.com/avatar.jpg",

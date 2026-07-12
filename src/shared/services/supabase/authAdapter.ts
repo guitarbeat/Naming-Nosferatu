@@ -1,8 +1,4 @@
-import type {
-	AuthAdapter,
-	AuthUser,
-	LoginCredentials,
-} from "@/app/providers/Providers";
+import type { AuthAdapter, AuthUser, LoginCredentials } from "@/app/providers/Providers";
 import { isStorageAvailable } from "@/shared/lib/storage";
 import {
 	clearStoredUserSnapshot,
@@ -101,19 +97,16 @@ export const supabaseAuthAdapter: AuthAdapter = {
 			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
 
 			if (!demoPassword) {
-				console.error(
-					"[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.",
-				);
+				console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
 				return false;
 			}
 
 			let authUser: import("@supabase/supabase-js").User | null = null;
 
-			const { data: signInData, error: signInError } =
-				await client.auth.signInWithPassword({
-					email: sanitizedEmail,
-					password: demoPassword,
-				});
+			const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+				email: sanitizedEmail,
+				password: demoPassword,
+			});
 
 			if (signInError) {
 				const isInvalidCredentials =
@@ -126,14 +119,13 @@ export const supabaseAuthAdapter: AuthAdapter = {
 					return false;
 				}
 
-				const { data: signUpData, error: signUpError } =
-					await client.auth.signUp({
-						email: sanitizedEmail,
-						password: demoPassword,
-						options: {
-							data: { user_name: trimmedName },
-						},
-					});
+				const { data: signUpData, error: signUpError } = await client.auth.signUp({
+					email: sanitizedEmail,
+					password: demoPassword,
+					options: {
+						data: { user_name: trimmedName },
+					},
+				});
 
 				if (signUpError) {
 					console.error("Supabase sign-up failed:", signUpError);
@@ -171,9 +163,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 	 * Register new user with Supabase Auth
 	 */
 	async register(): Promise<void> {
-		throw new Error(
-			"Registration not implemented. Please use Supabase Auth directly.",
-		);
+		throw new Error("Registration not implemented. Please use Supabase Auth directly.");
 	},
 
 	/**

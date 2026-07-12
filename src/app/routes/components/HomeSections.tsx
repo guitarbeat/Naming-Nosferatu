@@ -12,13 +12,7 @@ interface HomeHeroSectionProps {
 	onStartPicking: () => void;
 }
 
-function HeroNameWords({
-	state,
-	lockedNames,
-}: {
-	state: HomeHeroState;
-	lockedNames: NameItem[];
-}) {
+function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNames: NameItem[] }) {
 	if (state === "loading") {
 		return <span className={themeText.heroPlaceholder}>________</span>;
 	}
@@ -26,10 +20,7 @@ function HeroNameWords({
 		return <span>Nosferatu</span>;
 	}
 
-	const words = [
-		...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
-		"WOODS",
-	];
+	const words = [...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)), "WOODS"];
 	const wordObjects = words.map((word, i) => ({
 		id: `hero-word-${word}-${i}`,
 		word,
@@ -47,11 +38,7 @@ function HeroNameWords({
 	);
 }
 
-export function HomeHeroSection({
-	state,
-	lockedNames,
-	onStartPicking,
-}: HomeHeroSectionProps) {
+export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
 	return (
 		<div className="home-hero-wrapper w-full">
 			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center">
@@ -105,8 +92,7 @@ export function HomeHeroSection({
 						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.4 }}
 					>
-						Pick your favorites and see which names score highest with your
-						friends.
+						Pick your favorites and see which names score highest with your friends.
 					</motion.h2>
 
 					<motion.div

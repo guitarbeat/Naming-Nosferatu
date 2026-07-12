@@ -52,9 +52,7 @@ export function mapNameRow(row: RawNameRow): NameItem {
 
 	const hidden = Boolean(row.is_hidden ?? row.isHidden ?? false);
 	const active =
-		row.is_active == null && row.isActive == null
-			? true
-			: Boolean(row.is_active ?? row.isActive);
+		row.is_active == null && row.isActive == null ? true : Boolean(row.is_active ?? row.isActive);
 	const locked = Boolean(row.locked_in ?? row.lockedIn ?? false);
 
 	const wins =
@@ -79,8 +77,7 @@ export function mapNameRow(row: RawNameRow): NameItem {
 		id: String(row.id ?? ""),
 		name: String(row.name ?? ""),
 		description: typeof row.description === "string" ? row.description : "",
-		pronunciation:
-			typeof row.pronunciation === "string" ? row.pronunciation : undefined,
+		pronunciation: typeof row.pronunciation === "string" ? row.pronunciation : undefined,
 		avgRating: rating,
 		avg_rating: rating,
 		createdAt,
@@ -93,14 +90,9 @@ export function mapNameRow(row: RawNameRow): NameItem {
 		locked_in: locked,
 		wins,
 		losses,
-		status: (typeof row.status === "string"
-			? row.status
-			: "candidate") as NameItem["status"],
+		status: (typeof row.status === "string" ? row.status : "candidate") as NameItem["status"],
 		provenance: Array.isArray(row.provenance) ? row.provenance : [],
 		has_user_rating: Boolean(row.has_user_rating),
-		popularity_score:
-			typeof row.popularity_score === "number"
-				? row.popularity_score
-				: undefined,
+		popularity_score: typeof row.popularity_score === "number" ? row.popularity_score : undefined,
 	};
 }

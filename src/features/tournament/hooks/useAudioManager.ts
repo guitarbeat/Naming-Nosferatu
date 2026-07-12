@@ -1,11 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { AUDIO, STORAGE_KEYS } from "@/shared/lib/constants";
 import { AudioEffects } from "@/shared/lib/sound";
-import {
-	getStorageString,
-	isStorageAvailable,
-	setStorageString,
-} from "@/shared/lib/storage";
+import { getStorageString, isStorageAvailable, setStorageString } from "@/shared/lib/storage";
 
 /* =========================================================================
    AUDIO MANAGER HOOK

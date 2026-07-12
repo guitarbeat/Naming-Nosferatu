@@ -9,10 +9,7 @@ import {
 	throwOnRpcError,
 	throwSupabaseUnavailable,
 } from "@/shared/services/supabase/errorUtils";
-import {
-	resolveSupabaseClient,
-	withSupabase,
-} from "@/shared/services/supabase/runtime";
+import { resolveSupabaseClient, withSupabase } from "@/shared/services/supabase/runtime";
 import type { IdType, NameItem } from "@/shared/types";
 
 export type NamesDataSource = "supabase";
@@ -25,8 +22,7 @@ export interface NamesQueryResult {
 export const namesQueryKeys = {
 	all: ["names"] as const,
 	lists: () => [...namesQueryKeys.all, "list"] as const,
-	list: (includeHidden: boolean) =>
-		[...namesQueryKeys.lists(), { includeHidden }] as const,
+	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
 const SUPABASE_UNAVAILABLE = Symbol("SUPABASE_UNAVAILABLE");
@@ -63,9 +59,7 @@ async function runBooleanAdminRpc(
 	});
 }
 
-async function fetchNamesFromSupabase(
-	includeHidden: boolean,
-): Promise<NameItem[] | null> {
+async function fetchNamesFromSupabase(includeHidden: boolean): Promise<NameItem[] | null> {
 	if (includeHidden) {
 		assertAdmin("Admin privileges required to view hidden names");
 	}
@@ -94,9 +88,7 @@ async function fetchNamesFromSupabase(
 	return (data ?? []).map((row) => mapNameRow(row));
 }
 
-export async function fetchNames(
-	includeHidden: boolean,
-): Promise<NamesQueryResult> {
+export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	const names = await fetchNamesFromSupabase(includeHidden);
 	if (names === null) {
 		throwSupabaseUnavailable();
@@ -115,9 +107,7 @@ export const namesQueryOptions = (includeHidden: boolean) =>
 // Mutations
 // ============================================================================
 
-export async function softDeleteName(params: {
-	nameId: IdType;
-}): Promise<void> {
+export async function softDeleteName(params: { nameId: IdType }): Promise<void> {
 	const { nameId } = params;
 	await runBooleanAdminRpc(
 		"soft_delete_cat_name",
@@ -198,9 +188,7 @@ export async function toggleNameLocked(params: {
 		}
 
 		if (rpcResult.error) {
-			throw new Error(
-				rpcResult.error.message || "Failed to toggle locked status",
-			);
+			throw new Error(rpcResult.error.message || "Failed to toggle locked status");
 		}
 		throwOnFailureResponse(rpcResult.data, "Failed to toggle locked status");
 	});
@@ -232,10 +220,7 @@ export async function unhideAllNames(): Promise<void> {
 	});
 }
 
-export async function addName(params: {
-	name: string;
-	description?: string;
-}): Promise<NameItem> {
+export async function addName(params: { name: string; description?: string }): Promise<NameItem> {
 	return withSupabase(async (client) => {
 		const { data, error } = await client.rpc("add_cat_name", {
 			p_name: params.name,

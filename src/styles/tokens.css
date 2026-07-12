@@ -33,17 +33,16 @@
 	--navbar-border: hsl(214deg 26% 78%);
 	--navbar-ring: hsl(190deg 55% 34%);
 	--font-sans:
-		"Space Grotesk", ui-sans-serif, system-ui, -apple-system,
-		blinkmacsystemfont, "Segoe UI", roboto, "Helvetica Neue", arial,
-		"Noto Sans", sans-serif;
+		"Space Grotesk", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI",
+		roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
 	--font-ui: "Inter", var(--font-sans);
 	--font-ui-mono: "Inter", var(--font-mono);
 	--font-display: "Syne", var(--font-sans);
 	--font-whimsical: "Patrick Hand", cursive;
 	--font-serif: ui-serif, georgia, cambria, "Times New Roman", times, serif;
 	--font-mono:
-		"Space Mono", ui-monospace, sfmono-regular, menlo, monaco, consolas,
-		"Liberation Mono", "Courier New", monospace;
+		"Space Mono", ui-monospace, sfmono-regular, menlo, monaco, consolas, "Liberation Mono",
+		"Courier New", monospace;
 	--radius: 0.75rem;
 	--shadow-2xs: 1px 1px 0px 0px var(--color-neutral-900);
 	--shadow-xs: 2px 2px 0px 0px var(--color-neutral-900);
@@ -177,10 +176,7 @@
 	--app-main-gap: 0;
 	--app-nav-frame-width: min(95vw, 58rem);
 	--app-nav-frame-width-compact: min(calc(100vw - 1rem), 32rem);
-	--app-nav-bottom-offset: max(
-		var(--space-4),
-		calc(env(safe-area-inset-bottom) + var(--space-3))
-	);
+	--app-nav-bottom-offset: max(var(--space-4), calc(env(safe-area-inset-bottom) + var(--space-3)));
 	--app-nav-shell-height: 4.75rem;
 	--app-nav-safe-bottom: calc(
 		var(--app-nav-shell-height) +
@@ -201,10 +197,7 @@
 	--app-section-max-2xl: 80rem;
 	--app-hero-min-height: calc(100dvh - var(--app-nav-shell-height));
 	--app-hero-padding-block-start: var(--space-24);
-	--app-hero-padding-block-end: max(
-		var(--space-24),
-		var(--app-nav-safe-bottom)
-	);
+	--app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
 	--app-hero-preview-min-height: 26rem;
 	--app-chart-frame-height: 13rem;
 	--app-chart-frame-height-tall: 14rem;
@@ -216,14 +209,9 @@
 		--app-section-padding-inline: var(--space-6);
 		--app-section-padding-block: var(--space-phi-5); /* 4.236rem ≈ space-16 */
 		--app-section-scroll-margin: var(--space-16);
-		--app-section-separator-padding: var(
-			--space-phi-6
-		); /* 6.854rem ≈ space-28; = block × φ */
+		--app-section-separator-padding: var(--space-phi-6); /* 6.854rem ≈ space-28; = block × φ */
 		--app-hero-padding-block-start: var(--space-28, 7rem);
-		--app-hero-padding-block-end: max(
-			var(--space-24),
-			var(--app-nav-safe-bottom)
-		);
+		--app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
 		--app-chart-frame-height: 16rem;
 		--app-chart-frame-height-tall: 18rem;
 	}
@@ -349,11 +337,7 @@
 	--pw-text-base: #d4c8b8;
 	--pw-text-muted: #9a8b7a;
 	--pw-border-soft: color-mix(in srgb, var(--pw-text-strong) 16%, transparent);
-	--pw-border-strong: color-mix(
-		in srgb,
-		var(--pw-text-strong) 28%,
-		transparent
-	);
+	--pw-border-strong: color-mix(in srgb, var(--pw-text-strong) 28%, transparent);
 
 	/* Rhythm + sizing */
 	--pw-space-rhythm: 0.25rem;
@@ -379,24 +363,9 @@
          *   h1 range: φ² → φ³  (2.618rem → 4.236rem)  h1_min = h2_max
          * Fluid slopes derived so each heading reaches max at ~1440px.
          */
-	--pw-heading-1-size: clamp(
-		var(--space-phi-4),
-		2.31vw +
-		2.156rem,
-		var(--space-phi-5)
-	);
-	--pw-heading-2-size: clamp(
-		var(--space-phi-3),
-		1.43vw +
-		1.333rem,
-		var(--space-phi-4)
-	);
-	--pw-heading-3-size: clamp(
-		var(--space-phi-2),
-		0.88vw +
-		0.82rem,
-		var(--space-phi-3)
-	);
+	--pw-heading-1-size: clamp(var(--space-phi-4), 2.31vw + 2.156rem, var(--space-phi-5));
+	--pw-heading-2-size: clamp(var(--space-phi-3), 1.43vw + 1.333rem, var(--space-phi-4));
+	--pw-heading-3-size: clamp(var(--space-phi-2), 0.88vw + 0.82rem, var(--space-phi-3));
 	--pw-heading-weight: 700;
 	--pw-heading-tracking: 0.02em;
 	--pw-heading-transform: uppercase;
@@ -407,13 +376,8 @@
 	--chart-tooltip-bg: color-mix(in srgb, var(--card) 96%, transparent);
 	--chart-tooltip-border: color-mix(in srgb, var(--foreground) 9%, transparent);
 	--chart-tooltip-fg: var(--pw-text-base);
-	--chart-tooltip-shadow: 0 8px 24px
-		color-mix(in srgb, var(--background-color) 55%, transparent);
-	--chart-cursor-fill: color-mix(
-		in srgb,
-		hsl(var(--pw-sage-hsl)) 8%,
-		transparent
-	);
+	--chart-tooltip-shadow: 0 8px 24px color-mix(in srgb, var(--background-color) 55%, transparent);
+	--chart-cursor-fill: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 8%, transparent);
 	--app-boot-bg: var(--pw-bg-0);
 
 	/* Tailwind color tuple support */
@@ -493,21 +457,9 @@
 
 	/* Shadow colors */
 	--shadow-color: color-mix(in srgb, var(--background-color) 60%, transparent);
-	--shadow-color-light: color-mix(
-		in srgb,
-		var(--background-color) 35%,
-		transparent
-	);
-	--shadow-color-medium: color-mix(
-		in srgb,
-		var(--background-color) 50%,
-		transparent
-	);
-	--shadow-color-strong: color-mix(
-		in srgb,
-		var(--background-color) 65%,
-		transparent
-	);
+	--shadow-color-light: color-mix(in srgb, var(--background-color) 35%, transparent);
+	--shadow-color-medium: color-mix(in srgb, var(--background-color) 50%, transparent);
+	--shadow-color-strong: color-mix(in srgb, var(--background-color) 65%, transparent);
 
 	/* Overlay colors */
 	--overlay-light: color-mix(in srgb, var(--surface-muted) 35%, transparent);
@@ -520,11 +472,7 @@
 	--glass-bg-light: color-mix(in srgb, var(--surface-muted) 24%, transparent);
 	--glass-bg-strong: color-mix(in srgb, var(--surface-muted) 68%, transparent);
 	--glass-border: color-mix(in srgb, var(--pw-text-strong) 9%, transparent);
-	--glass-border-hover: color-mix(
-		in srgb,
-		var(--pw-text-strong) 16%,
-		transparent
-	);
+	--glass-border-hover: color-mix(in srgb, var(--pw-text-strong) 16%, transparent);
 	--glass-blur: 12px;
 	--glass-shadow: var(--pw-shadow-md);
 	--glass-shadow-colored:
@@ -546,37 +494,17 @@
 	/* Button colors */
 	--button-primary-bg: hsl(var(--pw-sage-hsl));
 	--button-primary-hover: hsl(var(--pw-coral-hsl));
-	--button-secondary-bg: color-mix(
-		in srgb,
-		var(--pw-text-strong) 14%,
-		transparent
-	);
-	--button-secondary-hover: color-mix(
-		in srgb,
-		var(--pw-text-strong) 24%,
-		transparent
-	);
+	--button-secondary-bg: color-mix(in srgb, var(--pw-text-strong) 14%, transparent);
+	--button-secondary-hover: color-mix(in srgb, var(--pw-text-strong) 24%, transparent);
 	--button-text-light: #0f1419;
 
 	/* Start section colors */
 	--start-section-bg-start: var(--pw-bg-1);
 	--start-section-bg-end: var(--pw-bg-2);
 	--start-section-border: var(--pw-border-soft);
-	--start-section-pattern: color-mix(
-		in srgb,
-		hsl(var(--pw-sage-hsl)) 35%,
-		var(--pw-bg-3)
-	);
-	--accent-subtle: color-mix(
-		in srgb,
-		hsl(var(--pw-coral-hsl)) 12%,
-		transparent
-	);
-	--accent-medium: color-mix(
-		in srgb,
-		hsl(var(--pw-coral-hsl)) 20%,
-		transparent
-	);
+	--start-section-pattern: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 35%, var(--pw-bg-3));
+	--accent-subtle: color-mix(in srgb, hsl(var(--pw-coral-hsl)) 12%, transparent);
+	--accent-medium: color-mix(in srgb, hsl(var(--pw-coral-hsl)) 20%, transparent);
 
 	/* NameCard selected state */
 	--namecard-selected-bg: linear-gradient(
@@ -584,16 +512,8 @@
 		color-mix(in srgb, hsl(var(--pw-sage-hsl)) 60%, var(--pw-bg-2)),
 		color-mix(in srgb, hsl(var(--pw-coral-hsl)) 48%, var(--pw-bg-2))
 	);
-	--namecard-selected-border: color-mix(
-		in srgb,
-		hsl(var(--pw-sage-hsl)) 62%,
-		white
-	);
-	--namecard-selected-description: color-mix(
-		in srgb,
-		hsl(var(--pw-sage-hsl)) 82%,
-		white
-	);
+	--namecard-selected-border: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 62%, white);
+	--namecard-selected-description: color-mix(in srgb, hsl(var(--pw-sage-hsl)) 82%, white);
 	--muted: hsl(28deg 10% 16%);
 	--muted-foreground: hsl(32deg 12% 62%);
 
@@ -603,16 +523,8 @@
 	--nav-text-muted: color-mix(in srgb, var(--pw-text-base) 70%, transparent);
 	--nav-highlight: hsl(var(--pw-sage-hsl));
 	--nav-accent: hsl(var(--pw-coral-hsl));
-	--nav-shell-bg: color-mix(
-		in srgb,
-		var(--surface-floating-bg) 84%,
-		transparent
-	);
-	--nav-shell-border: color-mix(
-		in srgb,
-		var(--nav-highlight) 18%,
-		var(--border-color)
-	);
+	--nav-shell-bg: color-mix(in srgb, var(--surface-floating-bg) 84%, transparent);
+	--nav-shell-border: color-mix(in srgb, var(--nav-highlight) 18%, var(--border-color));
 	--nav-shell-shadow:
 		0 20px 44px color-mix(in srgb, var(--overlay-darker) 42%, transparent),
 		inset 0 1px 0 color-mix(in srgb, white 18%, transparent);
@@ -621,48 +533,20 @@
 		color-mix(in srgb, var(--nav-highlight) 24%, transparent),
 		color-mix(in srgb, var(--nav-accent) 16%, transparent)
 	);
-	--nav-pill-hover-bg: color-mix(
-		in srgb,
-		var(--nav-highlight) 12%,
-		transparent
-	);
-	--nav-pill-border: color-mix(
-		in srgb,
-		var(--nav-highlight) 30%,
-		var(--border-color)
-	);
-	--nav-pill-hover-border: color-mix(
-		in srgb,
-		var(--nav-accent) 28%,
-		transparent
-	);
+	--nav-pill-hover-bg: color-mix(in srgb, var(--nav-highlight) 12%, transparent);
+	--nav-pill-border: color-mix(in srgb, var(--nav-highlight) 30%, var(--border-color));
+	--nav-pill-hover-border: color-mix(in srgb, var(--nav-accent) 28%, transparent);
 	--nav-pill-shadow:
 		0 10px 22px color-mix(in srgb, var(--nav-highlight) 14%, transparent),
 		inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
 	--nav-utility-bg: color-mix(in srgb, var(--surface-muted) 28%, transparent);
-	--nav-utility-border: color-mix(
-		in srgb,
-		var(--text-primary) 10%,
-		transparent
-	);
-	--nav-utility-active-bg: color-mix(
-		in srgb,
-		var(--nav-highlight) 18%,
-		transparent
-	);
-	--nav-utility-active-border: color-mix(
-		in srgb,
-		var(--nav-highlight) 32%,
-		transparent
-	);
+	--nav-utility-border: color-mix(in srgb, var(--text-primary) 10%, transparent);
+	--nav-utility-active-bg: color-mix(in srgb, var(--nav-highlight) 18%, transparent);
+	--nav-utility-active-border: color-mix(in srgb, var(--nav-highlight) 32%, transparent);
 	--nav-utility-shadow:
 		0 8px 18px color-mix(in srgb, var(--overlay-darker) 20%, transparent),
 		inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
-	--nav-accent-text: color-mix(
-		in srgb,
-		var(--chart-4) 80%,
-		var(--text-primary)
-	);
+	--nav-accent-text: color-mix(in srgb, var(--chart-4) 80%, var(--text-primary));
 
 	/* Semantic color overrides */
 	--success-color: var(--color-success);
@@ -683,11 +567,7 @@
 	--pw-text-base: #4a4034;
 	--pw-text-muted: #7a6e5e;
 	--pw-border-soft: color-mix(in srgb, var(--pw-text-strong) 18%, transparent);
-	--pw-border-strong: color-mix(
-		in srgb,
-		var(--pw-text-strong) 28%,
-		transparent
-	);
+	--pw-border-strong: color-mix(in srgb, var(--pw-text-strong) 28%, transparent);
 	--pw-shadow-sm: 0 1px 3px rgb(15 23 42 / 12%);
 	--pw-shadow-md: 0 10px 20px rgb(15 23 42 / 14%);
 	--pw-shadow-lg: 0 24px 48px rgb(15 23 42 / 16%);
@@ -695,16 +575,8 @@
 	--pw-analysis-accent-rgb: 72, 108, 92;
 
 	/* Keep semantic tokens coherent with light mode contrast */
-	--button-secondary-bg: color-mix(
-		in srgb,
-		var(--pw-text-strong) 8%,
-		transparent
-	);
-	--button-secondary-hover: color-mix(
-		in srgb,
-		var(--pw-text-strong) 14%,
-		transparent
-	);
+	--button-secondary-bg: color-mix(in srgb, var(--pw-text-strong) 8%, transparent);
+	--button-secondary-hover: color-mix(in srgb, var(--pw-text-strong) 14%, transparent);
 	--button-text-light: #1f1a14;
 
 	/* Align major semantic tokens used by utility-driven components */
@@ -733,39 +605,18 @@
 :root {
 	--analysis-accent: var(--pw-analysis-accent);
 	--analysis-accent-rgb: var(--pw-analysis-accent-rgb);
-	--analysis-accent-muted: color-mix(
-		in srgb,
-		var(--analysis-accent) 15%,
-		transparent
-	);
-	--analysis-accent-subtle: color-mix(
-		in srgb,
-		var(--analysis-accent) 8%,
-		transparent
-	);
-	--analysis-accent-glow: 0 0 24px
-		color-mix(in srgb, var(--analysis-accent) 25%, transparent);
+	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 15%, transparent);
+	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 8%, transparent);
+	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 25%, transparent);
 
 	--analysis-surface-0: var(--background-color);
 	--analysis-surface-1: var(--card-background);
 	--analysis-surface-2: var(--surface-elevated);
-	--analysis-surface-elevated: color-mix(
-		in srgb,
-		var(--text-primary) 6%,
-		transparent
-	);
+	--analysis-surface-elevated: color-mix(in srgb, var(--text-primary) 6%, transparent);
 
 	--analysis-border: color-mix(in srgb, var(--text-primary) 12%, transparent);
-	--analysis-border-accent: color-mix(
-		in srgb,
-		var(--analysis-accent) 30%,
-		transparent
-	);
-	--analysis-border-hover: color-mix(
-		in srgb,
-		var(--analysis-accent) 50%,
-		transparent
-	);
+	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 30%, transparent);
+	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 50%, transparent);
 
 	--analysis-text-headline: 1.5rem;
 	--analysis-text-title: 1.125rem;
@@ -787,8 +638,7 @@
 	--analysis-shadow-sm: var(--shadow-sm);
 	--analysis-shadow-md: var(--shadow-md);
 	--analysis-shadow-lg: var(--shadow-xl), 0 0 0 1px var(--analysis-border);
-	--analysis-shadow-glow:
-		var(--shadow-cyan), 0 0 0 1px var(--analysis-border-accent);
+	--analysis-shadow-glow: var(--shadow-cyan), 0 0 0 1px var(--analysis-border-accent);
 
 	--analysis-radius-sm: 0.375rem;
 	--analysis-radius-md: var(--radius-md);
@@ -801,34 +651,13 @@
 :root[data-theme="light"] {
 	--analysis-accent: var(--pw-analysis-accent);
 	--analysis-accent-rgb: var(--pw-analysis-accent-rgb);
-	--analysis-accent-muted: color-mix(
-		in srgb,
-		var(--analysis-accent) 12%,
-		transparent
-	);
-	--analysis-accent-subtle: color-mix(
-		in srgb,
-		var(--analysis-accent) 6%,
-		transparent
-	);
-	--analysis-accent-glow: 0 0 24px
-		color-mix(in srgb, var(--analysis-accent) 15%, transparent);
-	--analysis-surface-elevated: color-mix(
-		in srgb,
-		var(--text-primary) 5%,
-		transparent
-	);
+	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 12%, transparent);
+	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 6%, transparent);
+	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 15%, transparent);
+	--analysis-surface-elevated: color-mix(in srgb, var(--text-primary) 5%, transparent);
 	--analysis-border: color-mix(in srgb, var(--text-primary) 16%, transparent);
-	--analysis-border-accent: color-mix(
-		in srgb,
-		var(--analysis-accent) 25%,
-		transparent
-	);
-	--analysis-border-hover: color-mix(
-		in srgb,
-		var(--analysis-accent) 40%,
-		transparent
-	);
+	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 25%, transparent);
+	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 40%, transparent);
 }
 
 /* ==========================================================================

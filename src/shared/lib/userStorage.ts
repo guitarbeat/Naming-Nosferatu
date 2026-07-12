@@ -15,9 +15,7 @@ export interface StoredUserSnapshot {
 	email?: string;
 }
 
-function normalizeStoredUserSnapshot(
-	value: unknown,
-): StoredUserSnapshot | null {
+function normalizeStoredUserSnapshot(value: unknown): StoredUserSnapshot | null {
 	if (!value || typeof value !== "object") {
 		return null;
 	}
@@ -29,17 +27,10 @@ function normalizeStoredUserSnapshot(
 	}
 
 	return {
-		id:
-			typeof candidate.id === "string"
-				? candidate.id
-				: candidate.id === null
-					? null
-					: undefined,
+		id: typeof candidate.id === "string" ? candidate.id : candidate.id === null ? null : undefined,
 		name,
-		isAdmin:
-			typeof candidate.isAdmin === "boolean" ? candidate.isAdmin : undefined,
-		avatarUrl:
-			typeof candidate.avatarUrl === "string" ? candidate.avatarUrl : undefined,
+		isAdmin: typeof candidate.isAdmin === "boolean" ? candidate.isAdmin : undefined,
+		avatarUrl: typeof candidate.avatarUrl === "string" ? candidate.avatarUrl : undefined,
 		email: typeof candidate.email === "string" ? candidate.email : undefined,
 	};
 }
@@ -59,9 +50,7 @@ export function readStoredUserSnapshot(): StoredUserSnapshot | null {
 	return null;
 }
 
-export function writeStoredUserSnapshot(
-	snapshot: StoredUserSnapshot | null,
-): void {
+export function writeStoredUserSnapshot(snapshot: StoredUserSnapshot | null): void {
 	if (!isStorageAvailable()) {
 		return;
 	}

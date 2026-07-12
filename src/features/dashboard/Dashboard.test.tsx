@@ -4,15 +4,11 @@ import "@testing-library/jest-dom/vitest";
 import { Dashboard } from "./Dashboard";
 
 vi.mock("./components/admin/AdminDashboard", () => ({
-	AdminDashboard: () => (
-		<div data-testid="admin-dashboard">Admin Dashboard</div>
-	),
+	AdminDashboard: () => <div data-testid="admin-dashboard">Admin Dashboard</div>,
 }));
 
 vi.mock("./components/analytics/Dashboard", () => ({
-	Dashboard: () => (
-		<div data-testid="analytics-dashboard">Analytics Dashboard</div>
-	),
+	Dashboard: () => <div data-testid="analytics-dashboard">Analytics Dashboard</div>,
 }));
 
 describe("Dashboard", () => {

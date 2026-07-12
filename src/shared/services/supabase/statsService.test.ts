@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	computeRatingStats,
-	getPercentileRank,
-} from "@/shared/lib/ratingStats";
+import { computeRatingStats, getPercentileRank } from "@/shared/lib/ratingStats";
 import { withSupabase } from "./runtime";
 import { leaderboardAPI } from "./statsService";
 
@@ -140,10 +137,7 @@ describe("leaderboardAPI", () => {
 	});
 
 	it("returns empty array when RPC returns an error", async () => {
-		mockRpc.mockResolvedValueOnce({
-			data: null,
-			error: { message: "Database error" },
-		});
+		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "Database error" } });
 
 		const result = await leaderboardAPI.getLeaderboard(50);
 

@@ -27,9 +27,7 @@ export function isNameActive(name: NameItem | null | undefined): boolean {
 /**
  * Filters a list of names to only those that are not hidden.
  */
-export function getVisibleNames(
-	names: NameItem[] | null | undefined,
-): NameItem[] {
+export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -39,9 +37,7 @@ export function getVisibleNames(
 /**
  * Filters a list of names to only those that are active (neither hidden nor locked).
  */
-export function getActiveNames(
-	names: NameItem[] | null | undefined,
-): NameItem[] {
+export function getActiveNames(names: NameItem[] | null | undefined): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -51,9 +47,7 @@ export function getActiveNames(
 /**
  * Filters a list of names to only those that are hidden.
  */
-export function getHiddenNames(
-	names: NameItem[] | null | undefined,
-): NameItem[] {
+export function getHiddenNames(names: NameItem[] | null | undefined): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -63,9 +57,7 @@ export function getHiddenNames(
 /**
  * Filters a list of names to only those that are locked in.
  */
-export function getLockedNames(
-	names: NameItem[] | null | undefined,
-): NameItem[] {
+export function getLockedNames(names: NameItem[] | null | undefined): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}

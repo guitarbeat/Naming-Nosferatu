@@ -21,29 +21,19 @@ interface UseNameSuggestionResult {
 	setGlobalError: (error: string) => void;
 }
 
-export function useNameSuggestion(
-	props: UseNameSuggestionProps = {},
-): UseNameSuggestionResult {
+export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
-	const [errors, setErrors] = useState<{ name?: string; description?: string }>(
-		{},
-	);
-	const [touched, setTouched] = useState<{
-		name?: boolean;
-		description?: boolean;
-	}>({});
+	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
+	const [touched, setTouched] = useState<{ name?: boolean; description?: boolean }>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [globalError, setGlobalError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 
-	const handleChange = useCallback(
-		(field: "name" | "description", value: string) => {
-			setValues((previous) => ({ ...previous, [field]: value }));
-			setErrors((previous) => ({ ...previous, [field]: undefined }));
-			setGlobalError("");
-		},
-		[],
-	);
+	const handleChange = useCallback((field: "name" | "description", value: string) => {
+		setValues((previous) => ({ ...previous, [field]: value }));
+		setErrors((previous) => ({ ...previous, [field]: undefined }));
+		setGlobalError("");
+	}, []);
 
 	const handleBlur = useCallback((field: "name" | "description") => {
 		setTouched((previous) => ({ ...previous, [field]: true }));
@@ -74,9 +64,7 @@ export function useNameSuggestion(
 
 		try {
 			// Sanitize inputs before sending to the backend
-			const sanitizedName = DOMPurify.sanitize(values.name, {
-				ALLOWED_TAGS: [],
-			}).trim();
+			const sanitizedName = DOMPurify.sanitize(values.name, { ALLOWED_TAGS: [] }).trim();
 			const sanitizedDescription = DOMPurify.sanitize(values.description, {
 				ALLOWED_TAGS: [],
 			}).trim();
@@ -89,9 +77,7 @@ export function useNameSuggestion(
 			props.onSuccess?.();
 		} catch (submitError) {
 			setGlobalError(
-				submitError instanceof Error
-					? submitError.message
-					: "Failed to submit suggestion",
+				submitError instanceof Error ? submitError.message : "Failed to submit suggestion",
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -106,8 +92,7 @@ export function useNameSuggestion(
 		setSuccessMessage("");
 	}, []);
 
-	const isValid =
-		!errors.name && !errors.description && values.name.trim() !== "";
+	const isValid = !errors.name && !errors.description && values.name.trim() !== "";
 
 	return {
 		values,

@@ -152,15 +152,12 @@ describe("FloatingNavbar", () => {
 
 		expect(getNav()).toBeInTheDocument();
 
-		expect(
-			screen.getAllByRole("button", { name: "Favorites" })[0],
-		).toHaveAttribute("aria-current", "location");
-		expect(
-			screen.getAllByRole("button", { name: "Suggest" })[0],
-		).toBeInTheDocument();
-		expect(
-			screen.getAllByRole("button", { name: "Profile" })[0],
-		).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Favorites" })[0]).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
+		expect(screen.getAllByRole("button", { name: "Suggest" })[0]).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Profile" })[0]).toBeInTheDocument();
 	}, 10000);
 
 	it("renders an admin shortcut for admin users", () => {
@@ -172,9 +169,7 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter();
 
-		expect(
-			screen.getAllByRole("button", { name: "Admin" })[0],
-		).toBeInTheDocument();
+		expect(screen.getAllByRole("button", { name: "Admin" })[0]).toBeInTheDocument();
 	});
 
 	it("promotes the first item to a highlighted start action when enough names are selected", () => {
@@ -188,9 +183,7 @@ describe("FloatingNavbar", () => {
 
 		expect(startButton).toBeInTheDocument();
 		expect(startButton).toHaveClass("floating-navbar__item--accent");
-		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(
-			0,
-		);
+		expect(screen.queryAllByRole("button", { name: "Favorites" }).length).toBe(0);
 	});
 
 	it("shows analyze as the current destination on the analysis route", () => {
@@ -207,9 +200,10 @@ describe("FloatingNavbar", () => {
 
 		renderWithRouter(["/"]);
 
-		expect(
-			screen.getAllByRole("button", { name: "Results" })[0],
-		).toHaveAttribute("aria-current", "location");
+		expect(screen.getAllByRole("button", { name: "Results" })[0]).toHaveAttribute(
+			"aria-current",
+			"location",
+		);
 	});
 
 	it("renders the logged-in avatar when available", () => {
@@ -254,9 +248,7 @@ describe("FloatingNavbar", () => {
 	it("does not render on the tournament route", () => {
 		renderWithRouter(["/tournament"]);
 
-		expect(
-			screen.queryByRole("navigation", { name: "Primary" }),
-		).not.toBeInTheDocument();
+		expect(screen.queryByRole("navigation", { name: "Primary" })).not.toBeInTheDocument();
 	});
 
 	it("marks the admin shortcut as current on the admin route", () => {

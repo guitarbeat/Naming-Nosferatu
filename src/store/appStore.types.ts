@@ -55,11 +55,7 @@ export interface SiteSettingsActions {
 export interface ErrorActions {
 	setError: (error: unknown | null) => void;
 	clearError: () => void;
-	logError: (
-		error: unknown,
-		context: string,
-		metadata?: Record<string, unknown>,
-	) => void;
+	logError: (error: unknown, context: string, metadata?: Record<string, unknown>) => void;
 }
 
 export interface AppState {

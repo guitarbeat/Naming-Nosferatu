@@ -143,11 +143,7 @@
 
 .floating-navbar__item--utility:hover {
 	border-color: var(--nav-pill-hover-border);
-	background: color-mix(
-		in srgb,
-		var(--nav-utility-bg) 88%,
-		var(--nav-pill-hover-bg)
-	);
+	background: color-mix(in srgb, var(--nav-utility-bg) 88%, var(--nav-pill-hover-bg));
 }
 
 .floating-navbar__item--utility[aria-pressed="true"] {

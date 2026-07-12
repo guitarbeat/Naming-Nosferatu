@@ -35,9 +35,7 @@ describe("useNameAdminActions", () => {
 	let invalidateQueriesSpy: ReturnType<typeof vi.spyOn>;
 
 	function wrapper({ children }: { children: ReactNode }) {
-		return (
-			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-		);
+		return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 	}
 
 	beforeEach(() => {
@@ -64,15 +62,10 @@ describe("useNameAdminActions", () => {
 	});
 
 	it("invalidates the names query after toggling hidden status", async () => {
-		const { result } = renderHook(() => useNameAdminActions(" admin "), {
-			wrapper,
-		});
+		const { result } = renderHook(() => useNameAdminActions(" admin "), { wrapper });
 
 		await act(async () => {
-			await result.current.toggleHidden({
-				nameId: "abc",
-				isCurrentlyHidden: false,
-			});
+			await result.current.toggleHidden({ nameId: "abc", isCurrentlyHidden: false });
 		});
 
 		expect(toggleNameHidden).toHaveBeenCalledWith({
@@ -80,26 +73,16 @@ describe("useNameAdminActions", () => {
 			isCurrentlyHidden: false,
 			userName: "admin",
 		});
-		expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-			queryKey: namesQueryKeys.all,
-		});
+		expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: namesQueryKeys.all });
 	});
 
 	it("routes delete and bulk update actions through the shared mutations", async () => {
-		const { result } = renderHook(() => useNameAdminActions("admin"), {
-			wrapper,
-		});
+		const { result } = renderHook(() => useNameAdminActions("admin"), { wrapper });
 
 		await act(async () => {
 			await result.current.deleteName({ nameId: "deadbeef" });
-			await result.current.batchUpdateVisibility({
-				nameIds: ["1", "2"],
-				isHidden: true,
-			});
-			await result.current.batchUpdateLocked({
-				nameIds: ["1", "2"],
-				isLocked: false,
-			});
+			await result.current.batchUpdateVisibility({ nameIds: ["1", "2"], isHidden: true });
+			await result.current.batchUpdateLocked({ nameIds: ["1", "2"], isLocked: false });
 		});
 
 		expect(softDeleteName).toHaveBeenCalledWith({ nameId: "deadbeef" });
@@ -115,15 +98,10 @@ describe("useNameAdminActions", () => {
 	});
 
 	it("passes trimmed user names to lock toggles", async () => {
-		const { result } = renderHook(() => useNameAdminActions("  mod-user  "), {
-			wrapper,
-		});
+		const { result } = renderHook(() => useNameAdminActions("  mod-user  "), { wrapper });
 
 		await act(async () => {
-			await result.current.toggleLocked({
-				nameId: 42,
-				isCurrentlyLocked: true,
-			});
+			await result.current.toggleLocked({ nameId: 42, isCurrentlyLocked: true });
 		});
 
 		expect(toggleNameLocked).toHaveBeenCalledWith({
@@ -134,9 +112,7 @@ describe("useNameAdminActions", () => {
 	});
 
 	it("reuses the shared image upload helper", async () => {
-		const { result } = renderHook(() => useNameAdminActions(" uploader "), {
-			wrapper,
-		});
+		const { result } = renderHook(() => useNameAdminActions(" uploader "), { wrapper });
 		const file = new File(["cat"], "cat.png", { type: "image/png" });
 
 		await act(async () => {

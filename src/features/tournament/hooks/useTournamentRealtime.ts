@@ -39,10 +39,7 @@ class TournamentRealtimeService {
 	private messageHandlers = new Map<string, Set<MessageHandler>>();
 
 	async connect(): Promise<void> {
-		if (
-			this.connectionState === "connected" ||
-			this.connectionState === "connecting"
-		) {
+		if (this.connectionState === "connected" || this.connectionState === "connecting") {
 			return;
 		}
 		this.connectionState = "connecting";
@@ -194,9 +191,7 @@ class TournamentRealtimeService {
 		};
 	}
 
-	subscribeToUserActivity(
-		callback: (activity: UserActivity) => void,
-	): () => void {
+	subscribeToUserActivity(callback: (activity: UserActivity) => void): () => void {
 		let presenceChannel: RealtimeChannel | null = null;
 		let cancelled = false;
 
@@ -211,8 +206,7 @@ class TournamentRealtimeService {
 					for (const presence of newPresences) {
 						callback({
 							userId: String(
-								(presence as Record<string, unknown>).user_id ??
-									presence.presence_ref,
+								(presence as Record<string, unknown>).user_id ?? presence.presence_ref,
 							),
 							action: "joined",
 							timestamp: Date.now(),
@@ -223,8 +217,7 @@ class TournamentRealtimeService {
 					for (const presence of leftPresences) {
 						callback({
 							userId: String(
-								(presence as Record<string, unknown>).user_id ??
-									presence.presence_ref,
+								(presence as Record<string, unknown>).user_id ?? presence.presence_ref,
 							),
 							action: "left",
 							timestamp: Date.now(),
@@ -259,9 +252,7 @@ interface UseTournamentRealtimeOptions {
 	autoConnect?: boolean;
 }
 
-export function useTournamentRealtime(
-	options: UseTournamentRealtimeOptions = {},
-) {
+export function useTournamentRealtime(options: UseTournamentRealtimeOptions = {}) {
 	const serviceRef = useRef<TournamentRealtimeService | null>(null);
 
 	useEffect(() => {
@@ -292,19 +283,13 @@ export function useTournamentRealtime(
 		[],
 	);
 
-	const subscribeToMatches = useCallback(
-		(callback: (result: MatchResult) => void) => {
-			return serviceRef.current?.subscribeToMatches(callback);
-		},
-		[],
-	);
+	const subscribeToMatches = useCallback((callback: (result: MatchResult) => void) => {
+		return serviceRef.current?.subscribeToMatches(callback);
+	}, []);
 
-	const subscribeToUserActivity = useCallback(
-		(callback: (activity: UserActivity) => void) => {
-			return serviceRef.current?.subscribeToUserActivity(callback);
-		},
-		[],
-	);
+	const subscribeToUserActivity = useCallback((callback: (activity: UserActivity) => void) => {
+		return serviceRef.current?.subscribeToUserActivity(callback);
+	}, []);
 
 	const cleanup = useCallback(() => {
 		serviceRef.current?.cleanup();

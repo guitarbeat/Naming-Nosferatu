@@ -29,8 +29,7 @@ export const createTournamentSlice: AppSliceCreator<
 
 		setRatings: (ratingsOrFn) => {
 			const current = get().tournament.ratings;
-			const next =
-				typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
+			const next = typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
 			patch(set, "tournament", { ratings: { ...current, ...next } });
 		},
 
@@ -51,8 +50,7 @@ export const createTournamentSlice: AppSliceCreator<
 				voteHistory: [],
 			}),
 
-		setSelection: (selectedNames) =>
-			patch(set, "tournament", { selectedNames }),
+		setSelection: (selectedNames) => patch(set, "tournament", { selectedNames }),
 
 		recordVote: (winnerId, loserId, winnerMemberIds, loserMemberIds) => {
 			const prev = get().tournament.voteHistory;

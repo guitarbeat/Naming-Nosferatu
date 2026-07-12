@@ -1,18 +1,6 @@
-import {
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Legend,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts";
 import { CHART_GRID, CHART_PALETTE, CHART_TEXT_MUTED } from "./chartTheme";
-import {
-	CHART_CURSOR,
-	CHART_TOOLTIP_STYLE,
-	ChartFrame,
-} from "./DashboardPrimitives";
+import { CHART_CURSOR, CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
 
 interface WinLossChartProps {
 	leaderboard: Array<{
@@ -38,8 +26,7 @@ export function WinLossChart({ leaderboard, limit = 8 }: WinLossChartProps) {
 	if (data.length === 0) {
 		return (
 			<div className="surface-panel-inset flex h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center text-sm text-muted-foreground/70">
-				No head-to-head matches recorded yet. Run a tournament to populate this
-				chart.
+				No head-to-head matches recorded yet. Run a tournament to populate this chart.
 			</div>
 		);
 	}

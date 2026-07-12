@@ -19,12 +19,7 @@ describe("Input", () => {
 
 	it("renders error state icon when error is present", () => {
 		const { container } = render(
-			<Input
-				label="Password"
-				value="short"
-				error="Too short"
-				onChange={() => {}}
-			/>,
+			<Input label="Password" value="short" error="Too short" onChange={() => {}} />,
 		);
 		const errorIcon = container.querySelector(".text-destructive svg");
 		expect(errorIcon).toBeInTheDocument();

@@ -16,11 +16,7 @@ describe("RankingAdjustment", () => {
 
 		render(
 			<Card>
-				<RankingAdjustment
-					rankings={mockRankings as any}
-					onSave={onSave}
-					onCancel={onCancel}
-				/>
+				<RankingAdjustment rankings={mockRankings as any} onSave={onSave} onCancel={onCancel} />
 			</Card>,
 		);
 
@@ -37,17 +33,11 @@ describe("RankingAdjustment", () => {
 
 		render(
 			<Card>
-				<RankingAdjustment
-					rankings={mockRankings as any}
-					onSave={onSave}
-					onCancel={onCancel}
-				/>
+				<RankingAdjustment rankings={mockRankings as any} onSave={onSave} onCancel={onCancel} />
 			</Card>,
 		);
 
-		const cancelButton = screen.getByRole("button", {
-			name: /Back to Tournament/i,
-		});
+		const cancelButton = screen.getByRole("button", { name: /Back to Tournament/i });
 		fireEvent.click(cancelButton);
 
 		expect(onCancel).toHaveBeenCalledTimes(1);

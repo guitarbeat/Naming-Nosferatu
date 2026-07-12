@@ -3,10 +3,7 @@ export interface AnalyticsEnv {
 	isProd: boolean;
 }
 
-export function shouldEnableAnalytics({
-	hostname,
-	isProd,
-}: AnalyticsEnv): boolean {
+export function shouldEnableAnalytics({ hostname, isProd }: AnalyticsEnv): boolean {
 	if (!isProd) {
 		return false;
 	}
