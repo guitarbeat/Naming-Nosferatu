@@ -63,7 +63,6 @@ function ModalHeader({
 					disabled={closeDisabled}
 					className="absolute top-3 right-3 z-10 rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 					aria-label={`Close ${title.toLowerCase()}`}
-					title={closeDisabled ? "Closing is currently disabled" : "Close"}
 				>
 					<X className="size-4" />
 				</button>
@@ -85,7 +84,6 @@ function ModalHeader({
 				disabled={closeDisabled}
 				className="rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				aria-label={`Close ${title.toLowerCase()}`}
-				title={closeDisabled ? "Closing is currently disabled" : "Close"}
 			>
 				<X className="size-4" />
 			</button>

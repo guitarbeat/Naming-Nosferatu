@@ -104,7 +104,6 @@ function ProfileEditForm({
 					disabled={!editedName.trim() || isSaving}
 					loading={isSaving}
 					className={isLoggedIn ? "flex-[2]" : "w-full"}
-					title={!editedName.trim() ? "Please enter a name first" : undefined}
 				>
 					{isLoggedIn ? "Save" : "Begin Journey"}
 				</Button>
@@ -135,7 +134,6 @@ function ProfileView({
 					onClick={handleEdit}
 					className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
 					aria-label="Edit name"
-					title="Edit name"
 				>
 					<Pencil size={14} />
 				</button>

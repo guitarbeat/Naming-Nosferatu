@@ -137,13 +137,6 @@ function NameSuggestionInner() {
 				variant="primary"
 				size="medium"
 				className="w-full"
-				title={
-					!isFormComplete
-						? "Please fill out both the name and description"
-						: !isValid
-							? "Please fix the errors above"
-							: undefined
-				}
 			>
 				{isSubmitting ? "Submitting…" : "Add to Bracket"}
 			</Button>
@@ -272,9 +265,6 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 					variant="primary"
 					disabled={isSubmitting || !isValid}
 					loading={isSubmitting}
-					title={
-						!isValid ? "Please provide a valid name and description" : undefined
-					}
 				>
 					Submit Suggestion
 				</Button>
