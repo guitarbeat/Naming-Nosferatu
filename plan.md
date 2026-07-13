@@ -1,15 +1,10 @@
-1. **Optimize Array Iteration in `PersonalResults.tsx`**
-   - Replace the `Object.entries(personalRatings).map().sort()` chain with a single-pass implementation.
-   - Use `Object.keys()` to pre-allocate an array or avoid unnecessary tuple creations via `Object.entries()`, then loop to populate and sort the array, as benchmarked to be significantly faster for iterating over dynamically-sized objects.
-   - Update `src/features/dashboard/components/analytics/PersonalResults.tsx` to apply this optimization.
-
-2. **Optimize `haveRankingsChanged` in `RankingAdjustment.tsx`**
-   - Replace the array `.some()` method with a standard `for` loop that includes an initial reference equality check (`if (a === b) continue;`) before inspecting properties.
-   - This complies with the memory rule regarding avoiding functional array methods for optimizing array element comparisons.
-   - Update `src/features/dashboard/components/analytics/RankingAdjustment.tsx` to implement this optimization.
-
+1. **Enhance TournamentHeader button accessibility and UX**
+   - Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/TournamentHeader.tsx` to add `title` attributes (tooltips) to the icon-only control buttons (Mute/Music/Cats, Previous, Next).
+   - Add a dynamic `title` to the Undo button to explain its disabled state (`"No actions to undo"` vs `"Undo last vote"`).
+   - Add `aria-pressed` to the toggle buttons in the mapped array for better screen reader support.
+2. **Run tests & verify changes**
+   - Run `pnpm run lint` and `pnpm test run` to ensure no regressions are introduced.
 3. **Complete pre-commit steps**
    - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
-
-4. **Submit PR**
-   - Create a branch, commit with the specified message format (`⚡ Bolt: [performance improvement]`), and submit the changes. Include structured PR description sections (`💡 What`, `🎯 Why`, `📊 Impact`, `🔬 Measurement`).
+4. **Submit the PR**
+   - Use the `submit` tool to create the PR with branch name, commit message, and description.
