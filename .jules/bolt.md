@@ -9,3 +9,7 @@
 ## 2025-06-21 - Optimize object iteration and functional array checks
 **Learning:** `Object.entries().map()` chaining creates significant garbage due to tuple allocation and intermediate arrays. Additionally, functional array methods like `.some()` add callback overhead, and lack early short-circuits like `if (a === b)` that standard `for` loops allow when comparing references.
 **Action:** For performance-sensitive components, especially during dragging or reordering lists, replace `Object.entries().map()` with a single-pass `Object.keys()` pre-allocated loop. Replace `.some()` and `.every()` with standard `for` loops incorporating an initial reference equality check to skip deep comparisons.
+
+## 2025-06-21 - PR Title Formatting for CI
+**Learning:** The GitHub Actions CI check `title-lint` uses `amannn/action-semantic-pull-request`, which requires standard conventional commit prefixes (e.g., `perf:`, `fix:`) that strictly follow a lowercase format and cannot contain emojis within the type. When a persona instructs to use a specific title like `⚡ Bolt: [description]`, it fails this strict regex (`^([a-z]+)(?:\([^)]+\))?!?: (.+)$`).
+**Action:** When a persona constraint requires a specific prefix (like `⚡ Bolt: `), place it in the *subject* (or scope), keeping the type strictly conventional lowercase: `perf: ⚡ Bolt: [description]`.
