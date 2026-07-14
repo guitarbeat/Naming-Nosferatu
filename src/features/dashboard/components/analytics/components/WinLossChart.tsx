@@ -14,14 +14,23 @@ interface WinLossChartProps {
 }
 
 export function WinLossChart({ leaderboard, limit = 8 }: WinLossChartProps) {
-	const data = leaderboard
-		.filter((e) => (e.wins ?? 0) + (e.losses ?? 0) > 0)
-		.slice(0, limit)
-		.map((e) => ({
-			name: e.name.length > 8 ? `${e.name.slice(0, 7)}…` : e.name,
-			wins: e.wins ?? 0,
-			losses: e.losses ?? 0,
-		}));
+	// ⚡ Bolt: Optimized data preparation.
+	// Replaced .filter().slice(0, limit).map() with a single for loop and early exit.
+	// This reduces time complexity from O(N) to O(limit) for large leaderboards by avoiding full array iteration.
+	const data = [];
+	for (let i = 0; i < leaderboard.length; i++) {
+		const e = leaderboard[i];
+		if ((e.wins ?? 0) + (e.losses ?? 0) > 0) {
+			data.push({
+				name: e.name.length > 8 ? `${e.name.slice(0, 7)}…` : e.name,
+				wins: e.wins ?? 0,
+				losses: e.losses ?? 0,
+			});
+			if (data.length >= limit) {
+				break;
+			}
+		}
+	}
 
 	if (data.length === 0) {
 		return (
