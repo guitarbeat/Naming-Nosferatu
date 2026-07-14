@@ -99,7 +99,9 @@ function getCacheKey(
 	for (let i = 0; i < bracketEntrants.length; i++) {
 		const str = bracketEntrants[i];
 		if (str) {
-			if (entrantsKey.length > 0) entrantsKey += ",";
+			if (entrantsKey.length > 0) {
+				entrantsKey += ",";
+			}
 			entrantsKey += str;
 		}
 	}
