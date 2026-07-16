@@ -91,25 +91,19 @@ function getCacheKey(
 	bracketEntrants: string[],
 	matchHistory: MatchRecord[],
 ): string {
-	// ⚡ Bolt Optimization: Replaced expensive O(N log N) reduce().sort().join() and map().join() chains
-	// with single-pass O(N) string concatenation loops. Bracket entrant order dictates seeding,
-	// so omitting the sort not only improves speed but prevents cache collision bugs on hot paths.
-	let entrantsKey = "";
-	for (let i = 0; i < bracketEntrants.length; i++) {
-		const str = String(bracketEntrants[i]);
-		if (str) {
-			if (entrantsKey.length > 0) entrantsKey += ",";
-			entrantsKey += str;
-		}
-	}
-
-	let historyKey = "";
-	for (let i = 0; i < matchHistory.length; i++) {
-		const m = matchHistory[i];
-		if (historyKey.length > 0) historyKey += "|";
-		historyKey += `${m.winner}-${m.loser}`;
-	}
-
+	const entrantsKey = bracketEntrants
+		.reduce<string[]>((acc, id) => {
+			const str = String(id);
+			if (str) {
+				acc.push(str);
+			}
+			return acc;
+		}, [])
+		.sort()
+		.join(",");
+	const historyKey = matchHistory
+		.map((m) => `${m.winner}-${m.loser}`)
+		.join("|");
 	return `${entrantsKey}:${historyKey}`;
 }
 
