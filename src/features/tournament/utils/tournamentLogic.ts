@@ -105,7 +105,7 @@ function getCacheKey(
 	let historyKey = "";
 	for (let i = 0; i < matchHistory.length; i++) {
 		const m = matchHistory[i];
-		historyKey += (historyKey.length > 0 ? "|" : "") + `${m.winner}-${m.loser}`;
+		historyKey += `${historyKey.length > 0 ? "|" : ""}${m.winner}-${m.loser}`;
 	}
 
 	return `${entrantsKey}:${historyKey}`;
