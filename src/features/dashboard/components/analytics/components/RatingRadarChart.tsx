@@ -1,11 +1,4 @@
-import {
-	PolarAngleAxis,
-	PolarGrid,
-	PolarRadiusAxis,
-	Radar,
-	RadarChart,
-	Tooltip,
-} from "recharts";
+import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, Tooltip } from "recharts";
 import { CHART_GRID, CHART_PALETTE, CHART_TEXT_MUTED } from "./chartTheme";
 import { CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
 
@@ -20,10 +13,7 @@ interface RatingRadarChartProps {
 	limit?: number;
 }
 
-export function RatingRadarChart({
-	leaderboard,
-	limit = 6,
-}: RatingRadarChartProps) {
+export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartProps) {
 	// ⚡ Bolt Optimization: Replacing O(N) `.filter().slice()` chain
 	// with a single O(limit) `for` loop to avoid intermediate array allocations
 	// and short-circuit early when the limit is reached.
@@ -61,15 +51,9 @@ export function RatingRadarChart({
 
 	return (
 		<ChartFrame variant="tall">
-			<RadarChart
-				data={data}
-				margin={{ top: 8, right: 24, bottom: 8, left: 24 }}
-			>
+			<RadarChart data={data} margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
 				<PolarGrid stroke={CHART_GRID} />
-				<PolarAngleAxis
-					dataKey="name"
-					tick={{ fontSize: 10, fill: CHART_TEXT_MUTED }}
-				/>
+				<PolarAngleAxis dataKey="name" tick={{ fontSize: 10, fill: CHART_TEXT_MUTED }} />
 				<PolarRadiusAxis
 					angle={30}
 					domain={[0, 100]}
