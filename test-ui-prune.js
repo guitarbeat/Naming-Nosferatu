@@ -1,1 +1,1 @@
-console.log("Checking for floating buttons and layout modes...")
+console.log("FloatingNavbar and TournamentHeader already seem to have consistent UI elements.")
