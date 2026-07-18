@@ -3,13 +3,7 @@ import type React from "react";
 import { memo } from "react";
 import { cn } from "@/shared/lib/utils";
 
-type ButtonVariant =
-	| "primary"
-	| "danger"
-	| "ghost"
-	| "outline"
-	| "flat"
-	| "glass";
+type ButtonVariant = "primary" | "danger" | "ghost" | "outline" | "flat" | "glass";
 type ButtonSize = "small" | "medium" | "large" | "icon";
 
 const baseButtonClass =
@@ -20,8 +14,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 		"bg-primary text-primary-foreground shadow-sm hover:brightness-110 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96] active:shadow-sm active:brightness-95",
 	danger:
 		"bg-destructive text-destructive-foreground shadow-sm hover:brightness-110 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 active:shadow-sm active:brightness-95 motion-safe:active:scale-[0.96]",
-	ghost:
-		"text-foreground/80 hover:bg-accent/50 hover:text-accent-foreground active:bg-accent/70",
+	ghost: "text-foreground/80 hover:bg-accent/50 hover:text-accent-foreground active:bg-accent/70",
 	outline:
 		"border border-border bg-transparent text-foreground shadow-sm hover:bg-accent/30 hover:border-border/80 hover:text-accent-foreground motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 active:bg-accent/50 motion-safe:active:scale-[0.96]",
 	flat: "text-foreground/80 hover:bg-accent/40 active:bg-accent/60",
@@ -30,15 +23,13 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-	small:
-		"h-8 px-3 py-1.5 text-xs rounded-md sm:h-8 md:h-8 min-h-[44px] sm:min-h-auto",
+	small: "h-8 px-3 py-1.5 text-xs rounded-md sm:h-8 md:h-8 min-h-[44px] sm:min-h-auto",
 	medium: "h-10 px-4 py-2.5 text-sm sm:h-9 min-h-[44px] sm:min-h-auto",
 	large: "h-12 px-6 py-3 text-base sm:h-11 min-h-[44px]",
 	icon: "h-10 w-10 p-0 sm:h-9 sm:w-9 min-h-[44px] min-w-[44px]",
 };
 
-interface ButtonProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
 	variant?: ButtonVariant;
 	size?: ButtonSize;
@@ -47,6 +38,7 @@ interface ButtonProps
 	type?: "button" | "submit" | "reset";
 	className?: string;
 	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+	iconOnly?: boolean;
 }
 
 const Button = ({
@@ -58,8 +50,11 @@ const Button = ({
 	type = "button",
 	className = "",
 	onClick,
+	iconOnly = false,
 	...rest
 }: ButtonProps) => {
+	const finalSize = iconOnly ? "icon" : size;
+
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		if (disabled || loading) {
 			event.preventDefault();
@@ -72,18 +67,13 @@ const Button = ({
 		<button
 			type={type}
 			disabled={disabled || loading}
-			className={cn(
-				baseButtonClass,
-				variantClasses[variant],
-				sizeClasses[size],
-				className,
-			)}
+			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
 			onClick={handleClick}
 			{...rest}
 		>
 			{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-			{size !== "icon" && children}
-			{size === "icon" && !loading && children}
+			{!iconOnly && children}
+			{iconOnly && !loading && children}
 		</button>
 	);
 };
