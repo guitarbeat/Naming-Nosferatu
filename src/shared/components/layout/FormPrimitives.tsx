@@ -21,8 +21,7 @@ interface BaseFieldProps {
 const inputBaseStyles =
 	"flex h-12 w-full rounded-xl border border-border/10 bg-background/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-foreground backdrop-blur-sm";
 
-const errorStyles =
-	"border-destructive/50 focus-visible:ring-destructive/50 animate-pulse";
+const errorStyles = "border-destructive/50 focus-visible:ring-destructive/50 animate-pulse";
 
 // ============================================================================
 // FORM FIELD WRAPPER
@@ -94,13 +93,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 		const hasError = Boolean(error);
 
 		return (
-			<FormField
-				id={id}
-				label={label}
-				error={error}
-				required={required}
-				disabled={props.disabled}
-			>
+			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
 				<div className="relative">
 					<input
 						{...props}
@@ -134,18 +127,7 @@ interface TextareaProps
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-	(
-		{
-			label,
-			error,
-			required,
-			value,
-			showCount = false,
-			className = "",
-			...props
-		},
-		ref,
-	) => {
+	({ label, error, required, value, showCount = false, className = "", ...props }, ref) => {
 		const internalId = useId();
 		const id = props.id || internalId;
 		const hasError = Boolean(error);
@@ -162,24 +144,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			.join(" ");
 
 		return (
-			<FormField
-				id={id}
-				label={label}
-				error={error}
-				required={required}
-				disabled={props.disabled}
-			>
+			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
 				<textarea
 					{...props}
 					id={id}
 					ref={ref}
 					value={value}
-					className={cn(
-						inputBaseStyles,
-						"min-h-[80px] py-3",
-						hasError && errorStyles,
-						className,
-					)}
+					className={cn(inputBaseStyles, "min-h-[80px] py-3", hasError && errorStyles, className)}
 					aria-invalid={hasError || undefined}
 					aria-describedby={describedBy || undefined}
 				/>

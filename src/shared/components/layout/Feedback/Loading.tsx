@@ -32,13 +32,7 @@ export function SpinnerCircle({
 	);
 }
 
-function SkeletonBlock({
-	className,
-	style,
-}: {
-	className?: string;
-	style?: React.CSSProperties;
-}) {
+function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
 	return (
 		<div
 			className={cn(
@@ -53,10 +47,7 @@ function SkeletonBlock({
 
 export const Loading: React.FC<LoadingProps> = memo(
 	({ variant = "spinner", text, className = "", height = 20 }) => {
-		const containerClasses = cn(
-			"flex flex-col items-center justify-center gap-3 p-4",
-			className,
-		);
+		const containerClasses = cn("flex flex-col items-center justify-center gap-3 p-4", className);
 
 		if (variant === "skeleton") {
 			return (
@@ -94,9 +85,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{text && (
-						<div className="pt-2 text-center text-xs text-white/50">{text}</div>
-					)}
+					{text && <div className="pt-2 text-center text-xs text-white/50">{text}</div>}
 				</div>
 			);
 		}
