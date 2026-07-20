@@ -30,22 +30,14 @@ export function TournamentFlowComplete({
 				</div>
 				<p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">
 					Your personal rankings have been updated. Head over to the{" "}
-					<strong className="text-primary">Analyze</strong> section to see the
-					full breakdown and compare results!
+					<strong className="text-primary">Analyze</strong> section to see the full breakdown and
+					compare results!
 				</p>
 				<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-					<Button
-						variant="primary"
-						onClick={onSeeResults}
-						className="w-full sm:w-auto"
-					>
+					<Button variant="primary" onClick={onSeeResults} className="w-full sm:w-auto">
 						See Results
 					</Button>
-					<Button
-						variant="outline"
-						onClick={onPickDifferent}
-						className="w-full sm:w-auto"
-					>
+					<Button variant="outline" onClick={onPickDifferent} className="w-full sm:w-auto">
 						Pick Different Names
 					</Button>
 				</div>
