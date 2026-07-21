@@ -7,6 +7,3 @@
 ## 2026-06-28 - Unified Iconography in Error Boundaries
 **Learning:** Dismiss buttons in global components like `ErrorBoundary` often use plain text `x` characters for simplicity, but this breaks the visual consistency of the design system that relies on `lucide-react` for iconography.
 **Action:** Always ensure that structural or global feedback components utilize the same standard icon library (`lucide-react` `<X />`) as the rest of the UI to maintain a cohesive look and feel.
-## 2026-07-21 - Native Tooltips for Icon-Only Buttons
-**Learning:** When assigning `aria-label` attributes to icon-only buttons for screen reader support, sighted mouse-users are often left without contextual hints. Browsers don't automatically expose `aria-label` as a hover tooltip.
-**Action:** Always pair `aria-label` with a matching native `title` attribute on icon-only interactive elements to provide an accessible, visual tooltip hint.
