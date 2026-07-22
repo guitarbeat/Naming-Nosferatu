@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-	type TelemetryAdapter,
 	getTelemetryAdapter,
 	registerTelemetryAdapter,
+	type TelemetryAdapter,
 } from "./telemetrySeam";
 
 describe("telemetrySeam", () => {
