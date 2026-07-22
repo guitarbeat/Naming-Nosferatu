@@ -1,9 +1,15 @@
-🎯 **What:** The code health issue addressed was the use of an explicit `any[]` type for the `openingEntrants` prop in `src/features/tournament/components/TournamentAnnouncements.tsx`. It has been replaced with the more specific and correct structural type `Array<{ id: string; label: string }>`.
+💡 What:
+- Extracted the scattered inline `SectionHeading` component from `HomeRoute` into a unified `components/ui/SectionHeading.tsx` reusable component.
+- Reduced excessive vertical padding (`min-h-[100dvh] py-12` -> `min-h-[80dvh] py-8`) between homepage sections to compress the scanning path and tighten up the layout.
+- Added a subtle rotational spring animation on hover for `MagicToggle` to make interaction feel more playful and tactile.
 
-💡 **Why:** Using `any` bypasses TypeScript's type checking, which can lead to runtime errors and reduces the maintainability and readability of the codebase. By specifying the exact shape of the objects inside the array, TypeScript can properly validate the component's internal usage of `openingEntrants`, successfully resolving the code health/linting issue.
+🎯 Why:
+- Fulfills the 'continuous UI prune' trigger instructions to group like features, clean up the main view file, and make inputs like the toggle feel "magic to touch".
+- The tighter vertical rhythm gives the page more momentum when scrolling through the sections.
 
-✅ **Verification:** I verified the change visually to ensure it matches the correct structural type as defined in the associated `useTournamentState` hook. Furthermore, I successfully ran type-checking commands and tests to ensure no new errors were introduced by this type strictness improvement.
+📸 Before/After:
+Before: `SectionHeading` was inlined. Sections had forced 100dvh heights causing huge gaps. Toggle was a static scale.
+After: `SectionHeading` is shared. Sections flow cleanly. Toggle wriggles slightly on hover.
 
-✨ **Result:** The `openingEntrants` prop is correctly strictly typed, improving maintainability, code safety, and satisfying code health requirements without altering runtime behavior.
-
-**Note to reviewers**: The `test` and `quality` GitHub CI check failures on this branch are pre-existing, codebase-wide baseline failures present on the `main` branch. They are completely unrelated to the isolated typing change made to `TournamentAnnouncements.tsx` in this PR.
+♿ Accessibility:
+- No structural or ARIA regressions. Kept the toggle tab roles intact.

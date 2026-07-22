@@ -8,6 +8,7 @@ import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
+import { SectionHeading } from "@/shared/components/ui/SectionHeading";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
@@ -17,23 +18,11 @@ const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
 
-function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
-	return (
-		<div className="mx-auto mb-[var(--space-phi-4)] flex w-full max-w-2xl flex-col items-center text-center sm:mb-[var(--space-phi-5)]">
-			<h2 className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground">
-				{title}
-			</h2>
-			<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-				{subtitle}
-			</p>
-		</div>
-	);
-}
-
 export default function HomeRoute() {
 	const { user, tournament, tournamentActions } = useAppStore();
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
-	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } =
+		useSectionScroll();
 
 	const hasNamesData = typeof namesQuery.data !== "undefined";
 	const heroState =
@@ -64,13 +53,8 @@ export default function HomeRoute() {
 				onStartPicking={() => scrollToSection("pick")}
 			/>
 
-			<Section
-				id="pick"
-				maxWidth="xl"
-				separator={true}
-				fullpage={true}
-			>
-				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
+			<Section id="pick" maxWidth="xl" separator={true} fullpage={true}>
+				<div className="flex flex-col items-center justify-center min-h-[80dvh] py-8 md:py-12">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
 							<SectionHeading
@@ -87,12 +71,8 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section
-				id="tournament"
-				separator={true}
-				fullpage={true}
-			>
-				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
+			<Section id="tournament" separator={true} fullpage={true}>
+				<div className="flex flex-col items-center justify-center min-h-[80dvh] py-8 md:py-12">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
 							<SectionHeading
@@ -117,7 +97,10 @@ export default function HomeRoute() {
 									<p className="text-pretty text-sm text-muted-foreground/70">
 										Pick at least 2 names to start comparing them.
 									</p>
-									<Button variant="glass" onClick={() => scrollToSection("pick")}>
+									<Button
+										variant="glass"
+										onClick={() => scrollToSection("pick")}
+									>
 										← Back
 									</Button>
 								</div>
@@ -127,15 +110,14 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section
-				id="analysis"
-				separator={true}
-				fullpage={true}
-			>
-				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
+			<Section id="analysis" separator={true} fullpage={true}>
+				<div className="flex flex-col items-center justify-center min-h-[80dvh] py-8 md:py-12">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Results" subtitle="See how all the names ranked." />
+							<SectionHeading
+								title="Results"
+								subtitle="See how all the names ranked."
+							/>
 						</div>
 						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={600} />}>
