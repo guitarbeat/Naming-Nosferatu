@@ -21,7 +21,8 @@ interface BaseFieldProps {
 const inputBaseStyles =
 	"flex h-12 w-full rounded-2xl border border-border/20 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 focus-visible:border-primary/50 focus-visible:bg-white/10 hover:bg-white/10 hover:border-border/40 disabled:cursor-not-allowed disabled:opacity-50 text-foreground backdrop-blur-md shadow-inner transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out focus-visible:-translate-y-0.5 focus-visible:shadow-[0_8px_20px_-6px_rgba(var(--primary),0.3)]";
 
-const errorStyles = "border-destructive/50 focus-visible:ring-destructive/30 focus-visible:border-destructive/50 motion-safe:animate-pulse";
+const errorStyles =
+	"border-destructive/50 focus-visible:ring-destructive/30 focus-visible:border-destructive/50 motion-safe:animate-pulse";
 
 // ============================================================================
 // FORM FIELD WRAPPER
@@ -87,16 +88,7 @@ interface InputProps
 		BaseFieldProps {}
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-	(
-		{
-			label,
-			error,
-			required,
-			className = "",
-			...props
-		},
-		ref,
-	) => {
+	({ label, error, required, className = "", ...props }, ref) => {
 		const internalId = useId();
 		const id = props.id || internalId;
 		const hasError = Boolean(error);
