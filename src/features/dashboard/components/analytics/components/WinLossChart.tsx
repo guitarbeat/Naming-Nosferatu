@@ -1,6 +1,18 @@
-import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts";
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Legend,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from "recharts";
 import { CHART_GRID, CHART_PALETTE, CHART_TEXT_MUTED } from "./chartTheme";
-import { CHART_CURSOR, CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
+import {
+	CHART_CURSOR,
+	CHART_TOOLTIP_STYLE,
+	ChartFrame,
+} from "./DashboardPrimitives";
 
 interface WinLossChartProps {
 	leaderboard: Array<{
@@ -14,19 +26,34 @@ interface WinLossChartProps {
 }
 
 export function WinLossChart({ leaderboard, limit = 8 }: WinLossChartProps) {
-	const data = leaderboard
-		.filter((e) => (e.wins ?? 0) + (e.losses ?? 0) > 0)
-		.slice(0, limit)
-		.map((e) => ({
-			name: e.name.length > 8 ? `${e.name.slice(0, 7)}…` : e.name,
-			wins: e.wins ?? 0,
-			losses: e.losses ?? 0,
-		}));
+	// ⚡ Bolt Optimization: Replacing O(N) `.filter().slice().map()` chain with a
+	// single O(limit) `for` loop that short-circuits. This prevents iterating the
+	// entire array and creating intermediate allocations when we only need the top items.
+	const data = [];
+	if (limit > 0) {
+		for (let i = 0; i < leaderboard.length; i++) {
+			const e = leaderboard[i];
+			const wins = e.wins ?? 0;
+			const losses = e.losses ?? 0;
+
+			if (wins + losses > 0) {
+				data.push({
+					name: e.name.length > 8 ? `${e.name.slice(0, 7)}…` : e.name,
+					wins,
+					losses,
+				});
+				if (data.length >= limit) {
+					break;
+				}
+			}
+		}
+	}
 
 	if (data.length === 0) {
 		return (
 			<div className="surface-panel-inset flex h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center text-sm text-muted-foreground/70">
-				No head-to-head matches recorded yet. Run a tournament to populate this chart.
+				No head-to-head matches recorded yet. Run a tournament to populate this
+				chart.
 			</div>
 		);
 	}

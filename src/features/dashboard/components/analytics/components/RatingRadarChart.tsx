@@ -1,4 +1,11 @@
-import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, Tooltip } from "recharts";
+import {
+	PolarAngleAxis,
+	PolarGrid,
+	PolarRadiusAxis,
+	Radar,
+	RadarChart,
+	Tooltip,
+} from "recharts";
 import { CHART_GRID, CHART_PALETTE, CHART_TEXT_MUTED } from "./chartTheme";
 import { CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
 
@@ -13,8 +20,25 @@ interface RatingRadarChartProps {
 	limit?: number;
 }
 
-export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartProps) {
-	const top = leaderboard.filter((e) => (e.total_ratings ?? 0) > 0).slice(0, limit);
+export function RatingRadarChart({
+	leaderboard,
+	limit = 6,
+}: RatingRadarChartProps) {
+	// ⚡ Bolt Optimization: Replacing O(N) `.filter().slice()` chain with a
+	// single O(limit) `for` loop that short-circuits. This prevents iterating the
+	// entire array and creating intermediate allocations when we only need the top items.
+	const top = [];
+	if (limit > 0) {
+		for (let i = 0; i < leaderboard.length; i++) {
+			if ((leaderboard[i].total_ratings ?? 0) > 0) {
+				top.push(leaderboard[i]);
+				if (top.length >= limit) {
+					break;
+				}
+			}
+		}
+	}
+
 	if (top.length < 3) {
 		return null;
 	}
@@ -42,9 +66,15 @@ export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartPro
 
 	return (
 		<ChartFrame variant="tall">
-			<RadarChart data={data} margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
+			<RadarChart
+				data={data}
+				margin={{ top: 8, right: 24, bottom: 8, left: 24 }}
+			>
 				<PolarGrid stroke={CHART_GRID} />
-				<PolarAngleAxis dataKey="name" tick={{ fontSize: 10, fill: CHART_TEXT_MUTED }} />
+				<PolarAngleAxis
+					dataKey="name"
+					tick={{ fontSize: 10, fill: CHART_TEXT_MUTED }}
+				/>
 				<PolarRadiusAxis
 					angle={30}
 					domain={[0, 100]}
