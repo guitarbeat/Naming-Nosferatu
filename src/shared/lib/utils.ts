@@ -28,10 +28,17 @@ export function shuffleArray<T>(array: T[]): T[] {
 export function createSortedKey(
 	items: Array<string | number | { id: string | number } | null | undefined>,
 ): string {
-	return items
-		.map((item) => (item && typeof item === "object" ? item.id : item))
-		.filter(Boolean)
-		.map(String)
-		.sort()
-		.join(",");
+	// ⚡ Bolt Optimization: Replaced `.map().filter(Boolean).map(String)` chain with a
+	// single `for` loop to eliminate intermediate array allocations on hot paths.
+	const result: string[] = [];
+	for (let i = 0; i < items.length; i++) {
+		const item = items[i];
+		if (item) {
+			const val = typeof item === "object" ? item.id : item;
+			if (val) {
+				result.push(String(val));
+			}
+		}
+	}
+	return result.sort().join(",");
 }
