@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
-    "@heroui/react": "^2.8.10",
+    "@heroui/react": "^3.2.2",
     "@khmyznikov/pwa-install": "^0.6.4",
     "@sentry/react": "^8.55.2",
     "@supabase/supabase-js": "^2.110.8",
