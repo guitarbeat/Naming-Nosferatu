@@ -70,7 +70,7 @@
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.1",
     "recharts": "^3.9.0",
-    "simple-statistics": "^7.9.1",
+    "simple-statistics": "^7.9.3",
     "tailwind-merge": "3.6.0",
     "zustand": "^5.0.14"
   },
