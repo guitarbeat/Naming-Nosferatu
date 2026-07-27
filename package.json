@@ -56,7 +56,7 @@
     "@hello-pangea/dnd": "^18.0.1",
     "@heroui/react": "^2.8.10",
     "@khmyznikov/pwa-install": "^0.6.4",
-    "@sentry/react": "^8.55.2",
+    "@sentry/react": "^10.68.0",
     "@supabase/supabase-js": "^2.108.2",
     "@tanstack/react-query": "^5.101.2",
     "@vercel/analytics": "^2.0.1",
