@@ -77,14 +77,7 @@ export function AdminNamesTab({
 						))}
 					</select>
 
-					<Button
-						onClick={onRefresh}
-						variant="ghost"
-						size="small"
-						iconOnly
-						aria-label="Refresh list"
-						title="Refresh list"
-					>
+					<Button onClick={onRefresh} variant="ghost" size="small">
 						<Loader2 size={16} />
 					</Button>
 				</div>
@@ -92,9 +85,7 @@ export function AdminNamesTab({
 
 			{selectedNames.size > 0 && (
 				<div className="mb-4 py-3 sm:py-4 border-y border-border/10">
-					<p className="text-sm text-primary mb-2">
-						{selectedNames.size} selected
-					</p>
+					<p className="text-sm text-primary mb-2">{selectedNames.size} selected</p>
 					<div className="flex flex-wrap gap-2">
 						<Button onClick={() => onBulkAction("hide")} size="small">
 							<EyeOff size={14} /> Hide
@@ -128,9 +119,7 @@ export function AdminNamesTab({
 									<input
 										type="checkbox"
 										checked={selectedNames.has(nameId)}
-										onChange={(event) =>
-											onSelectionChange(nameId, event.target.checked)
-										}
+										onChange={(event) => onSelectionChange(nameId, event.target.checked)}
 										className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
 										aria-label={`Select ${name.name}`}
 									/>
@@ -159,9 +148,7 @@ export function AdminNamesTab({
 											<span>Votes: {name.votes}</span>
 											<span>
 												Score:{" "}
-												{name.popularityScore == null
-													? "?"
-													: name.popularityScore.toFixed(1)}
+												{name.popularityScore == null ? "?" : name.popularityScore.toFixed(1)}
 											</span>
 										</div>
 									</div>
@@ -172,9 +159,7 @@ export function AdminNamesTab({
 										onClick={() => onToggleHidden(name.id, hidden)}
 										variant="ghost"
 										size="small"
-										iconOnly
 										aria-label={hidden ? "Unhide name" : "Hide name"}
-										title={hidden ? "Unhide name" : "Hide name"}
 									>
 										{hidden ? <Eye size={14} /> : <EyeOff size={14} />}
 									</Button>
@@ -182,9 +167,7 @@ export function AdminNamesTab({
 										onClick={() => onToggleLocked(name.id, locked)}
 										variant="ghost"
 										size="small"
-										iconOnly
 										aria-label={locked ? "Unlock name" : "Lock name"}
-										title={locked ? "Unlock name" : "Lock name"}
 									>
 										<Lock size={14} />
 									</Button>
@@ -192,9 +175,7 @@ export function AdminNamesTab({
 										onClick={() => onDelete(name.id)}
 										variant="ghost"
 										size="small"
-										iconOnly
 										aria-label="Delete name"
-										title="Delete name"
 										className="text-destructive hover:text-destructive"
 									>
 										<Trash2 size={14} />
