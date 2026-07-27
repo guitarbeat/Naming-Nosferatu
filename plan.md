@@ -1,10 +1,17 @@
-1. **Enhance TournamentHeader button accessibility and UX**
-   - Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/TournamentHeader.tsx` to add `title` attributes (tooltips) to the icon-only control buttons (Mute/Music/Cats, Previous, Next).
-   - Add a dynamic `title` to the Undo button to explain its disabled state (`"No actions to undo"` vs `"Undo last vote"`).
-   - Add `aria-pressed` to the toggle buttons in the mapped array for better screen reader support.
-2. **Run tests & verify changes**
-   - Run `pnpm run lint` and `pnpm test run` to ensure no regressions are introduced.
-3. **Complete pre-commit steps**
+1. **Add `aria-label` to the Refresh button in `AdminNamesTab.tsx`**
+   - The `<Button onClick={onRefresh} variant="ghost" size="small">` only contains a `<Loader2 />` icon and is missing an `aria-label`.
+   - I will use `replace_with_git_merge_diff` to add `aria-label="Refresh list"` to this button.
+
+2. **Add `iconOnly` prop to the icon buttons in `AdminNamesTab.tsx`**
+   - The hide/unhide, lock/unlock, and delete buttons in the table rows are icon-only but they don't have the `iconOnly={true}` prop passed to the `<Button>`.
+   - The refresh button is also icon-only.
+   - I will use `replace_with_git_merge_diff` to add `iconOnly` to these buttons.
+
+3. **Verify Frontend UI**
+   - Use `frontend_verification_instructions` and create a Playwright script to verify the admin page renders correctly and the tooltips/aria-labels are correctly applied.
+
+4. **Complete Pre-commit Steps**
    - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
-4. **Submit the PR**
-   - Use the `submit` tool to create the PR with branch name, commit message, and description.
+
+5. **Submit the PR**
+   - Submit the PR as Palette with the correct persona structure.
