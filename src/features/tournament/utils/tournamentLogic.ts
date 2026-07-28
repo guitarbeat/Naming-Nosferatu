@@ -1,6 +1,12 @@
 import { getBracketStageLabel } from "@/features/tournament/services/tournament";
 import { applyEloMatchUpdate } from "@/shared/lib/elo";
-import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/shared/types";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	Team,
+	TournamentMode,
+} from "@/shared/types";
 
 export interface HistoryEntry {
 	match: Match;
@@ -46,7 +52,10 @@ function evictIfNeeded<V>(cache: Map<string, V>, limit: number): void {
 	}
 }
 
-function setBracketCache(key: string, result: BracketDerivation): BracketDerivation {
+function setBracketCache(
+	key: string,
+	result: BracketDerivation,
+): BracketDerivation {
 	bracketStateCache.set(key, result);
 	evictIfNeeded(bracketStateCache, MAX_CACHE_SIZE);
 	return result;
@@ -78,18 +87,36 @@ function makePendingResult(
 	return result;
 }
 
-function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
-	const entrantsKey = bracketEntrants
-		.reduce<string[]>((acc, id) => {
-			const str = String(id);
-			if (str) {
-				acc.push(str);
-			}
-			return acc;
-		}, [])
-		.sort()
-		.join(",");
-	const historyKey = matchHistory.map((m) => `${m.winner}-${m.loser}`).join("|");
+// ⚡ Bolt Performance Optimization: Single-pass string building for cache keys
+// Reduces array allocations and closure overhead on hot path bracket state derivation.
+// Note: We retain .sort() on entrants to ensure structurally identical brackets
+// hit the cache regardless of initial array ordering.
+function getCacheKey(
+	bracketEntrants: string[],
+	matchHistory: MatchRecord[],
+): string {
+	const validEntrants: string[] = [];
+	for (let i = 0; i < bracketEntrants.length; i++) {
+		const str = String(bracketEntrants[i]);
+		if (str) {
+			validEntrants.push(str);
+		}
+	}
+	validEntrants.sort();
+
+	let entrantsKey = "";
+	for (let i = 0; i < validEntrants.length; i++) {
+		if (i > 0) entrantsKey += ",";
+		entrantsKey += validEntrants[i];
+	}
+
+	let historyKey = "";
+	for (let i = 0; i < matchHistory.length; i++) {
+		const m = matchHistory[i];
+		if (i > 0) historyKey += "|";
+		historyKey += `${m.winner}-${m.loser}`;
+	}
+
 	return `${entrantsKey}:${historyKey}`;
 }
 
@@ -200,7 +227,9 @@ export function deriveBracketState(
 
 	while (currentRoundEntrants.length > 1) {
 		const winners: string[] = [];
-		const activeRoundSize = currentRoundEntrants.filter((id) => !isBye(id)).length;
+		const activeRoundSize = currentRoundEntrants.filter(
+			(id) => !isBye(id),
+		).length;
 
 		for (let i = 0; i < currentRoundEntrants.length; i += 2) {
 			const left = currentRoundEntrants[i];
@@ -334,11 +363,20 @@ export function calculateTournamentMetrics({
 }: {
 	derived: BracketDerivation;
 }): TournamentMetrics {
-	const { totalMatches, completedMatches, round, totalRounds, stageLabel, roundSize, isComplete } =
-		derived;
+	const {
+		totalMatches,
+		completedMatches,
+		round,
+		totalRounds,
+		stageLabel,
+		roundSize,
+		isComplete,
+	} = derived;
 	const matchNumber = isComplete ? completedMatches : completedMatches + 1;
 	const progress = totalMatches
-		? Math.round((Math.min(completedMatches, totalMatches) / totalMatches) * 100)
+		? Math.round(
+				(Math.min(completedMatches, totalMatches) / totalMatches) * 100,
+			)
 		: 0;
 	const etaMinutes =
 		!totalMatches || completedMatches >= totalMatches
@@ -372,9 +410,13 @@ export function computeUpdatedRatings({
 	void loserId;
 
 	const leftParticipantIds =
-		currentMatch.mode === "2v2" ? currentMatch.left.memberIds : [String(currentMatch.left.id)];
+		currentMatch.mode === "2v2"
+			? currentMatch.left.memberIds
+			: [String(currentMatch.left.id)];
 	const rightParticipantIds =
-		currentMatch.mode === "2v2" ? currentMatch.right.memberIds : [String(currentMatch.right.id)];
+		currentMatch.mode === "2v2"
+			? currentMatch.right.memberIds
+			: [String(currentMatch.right.id)];
 	const winnerSide = leftParticipantIds.includes(winnerId) ? "left" : "right";
 
 	return applyEloMatchUpdate({
