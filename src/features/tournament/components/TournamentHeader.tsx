@@ -8,6 +8,7 @@ import {
 	X,
 } from "lucide-react";
 import { memo } from "react";
+import Button from "@/shared/components/layout/Button";
 import { getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
 
@@ -72,20 +73,25 @@ export const TournamentHeader = memo(function TournamentHeader({
 								<span className="text-white/25" aria-hidden="true">
 									&middot;
 								</span>
-								<span>{tournamentMode === "2v2" ? "Team mode" : "Head to head"}</span>
+								<span>
+									{tournamentMode === "2v2" ? "Team mode" : "Head to head"}
+								</span>
 							</div>
 							<h2 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
-								Match <span className="tabular-nums">{currentMatchNumber}</span> of{" "}
-								<span className="tabular-nums">{totalMatches}</span>
+								Match <span className="tabular-nums">{currentMatchNumber}</span>{" "}
+								of <span className="tabular-nums">{totalMatches}</span>
 							</h2>
 							<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
 								<span>
-									<span className="tabular-nums">{totalRounds}</span> rounds total
+									<span className="tabular-nums">{totalRounds}</span> rounds
+									total
 								</span>
 								{etaMinutes > 0 && (
 									<span className="inline-flex items-center gap-1">
 										<Clock className="size-3" />
-										About <span className="tabular-nums ml-1">{etaMinutes}</span> minutes left
+										About{" "}
+										<span className="tabular-nums ml-1">{etaMinutes}</span>{" "}
+										minutes left
 									</span>
 								)}
 							</div>
@@ -102,46 +108,39 @@ export const TournamentHeader = memo(function TournamentHeader({
 								},
 							] as const
 						).map(({ action, icon: Icon, label, active }) => (
-							<button
+							<Button
 								key={label}
 								type="button"
 								onClick={action}
-								className={`inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm transition-[background-color,color,opacity] active:scale-[0.96] ${
-									active
-										? "border-primary/30 bg-primary/15 text-primary"
-										: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
-								}`}
+								variant="glass"
 								aria-label={label}
 								aria-pressed={active !== undefined ? active : undefined}
 								title={label}
+								iconOnly
 							>
 								<Icon className="size-4" />
-							</button>
+							</Button>
 						))}
-						<button
+						<Button
 							type="button"
 							onClick={() => handleUndo()}
-							className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
-								canUndo
-									? "border-primary/30 bg-primary/12 text-primary hover:bg-primary/18"
-									: "cursor-not-allowed border-white/10 bg-white/[0.03] text-white/35"
-							}`}
+							variant="glass"
 							aria-label="Undo last vote"
 							title={canUndo ? "Undo last vote" : "No actions to undo"}
 							disabled={!canUndo}
 						>
 							<Undo2 className="size-4" />
 							<span className="hidden sm:inline">Undo</span>
-						</button>
-						<button
+						</Button>
+						<Button
 							type="button"
 							onClick={quitTournament}
-							className="inline-flex h-10 items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/12 px-3 text-sm text-destructive transition-colors hover:bg-destructive/18"
+							variant="danger"
 							aria-label="Quit tournament"
 						>
 							<X className="size-4" />
 							<span className="hidden sm:inline">Exit</span>
-						</button>
+						</Button>
 					</div>
 				</div>
 
@@ -166,7 +165,9 @@ export const TournamentHeader = memo(function TournamentHeader({
 							<span
 								className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${getHeatTextClasses(dominantStreak.heatLevel)}`}
 							>
-								<span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px]">HOT</span>
+								<span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px]">
+									HOT
+								</span>
 								<span>
 									{dominantStreak.name} x{dominantStreak.streak}
 								</span>
@@ -183,8 +184,12 @@ export const TournamentHeader = memo(function TournamentHeader({
 							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
 								Match pulse
 							</p>
-							<p className="mt-2 text-sm font-semibold text-white">{matchupTone}</p>
-							<p className="mt-1 text-xs leading-relaxed text-white/58">{pressureCopy}</p>
+							<p className="mt-2 text-sm font-semibold text-white">
+								{matchupTone}
+							</p>
+							<p className="mt-1 text-xs leading-relaxed text-white/58">
+								{pressureCopy}
+							</p>
 						</div>
 						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
 							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
@@ -195,8 +200,10 @@ export const TournamentHeader = memo(function TournamentHeader({
 								{matchesRemaining === 1 ? "" : "es"} after this
 							</p>
 							<p className="mt-1 text-xs leading-relaxed text-white/58">
-								Roughly <span className="tabular-nums">{roundMatchesLeft}</span> duel
-								{roundMatchesLeft === 1 ? "" : "s"} remain in the live bracket cycle.
+								Roughly <span className="tabular-nums">{roundMatchesLeft}</span>{" "}
+								duel
+								{roundMatchesLeft === 1 ? "" : "s"} remain in the live bracket
+								cycle.
 							</p>
 						</div>
 						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">

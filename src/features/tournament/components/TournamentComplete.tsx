@@ -1,4 +1,5 @@
 import { LogOut, Trophy } from "lucide-react";
+import Button from "@/shared/components/layout/Button";
 
 interface TournamentCompleteProps {
 	totalMatches: number;
@@ -60,38 +61,45 @@ export function TournamentComplete({
 						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
 							Total matches
 						</p>
-						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">
+							{totalMatches}
+						</p>
 					</div>
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
 						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
 							Participants
 						</p>
-						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">
+							{participantCount}
+						</p>
 					</div>
 				</div>
 
 				<div className="mt-10 flex w-full flex-col gap-3">
-					<button
+					<Button
 						type="button"
 						onClick={() =>
 							document
 								.getElementById("analysis")
 								?.scrollIntoView({ behavior: "smooth", block: "start" })
 						}
-						className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-white/30 bg-white/15 px-6 py-4 text-sm font-semibold text-white shadow-[0_0_30px_rgba(180,120,255,0.35)] backdrop-blur-sm transition-all hover:bg-white/22 hover:shadow-[0_0_40px_rgba(180,120,255,0.55)] active:scale-[0.98]"
+						className="w-full flex gap-2.5"
+						size="large"
 					>
 						<Trophy size={15} />
 						View Analysis
-					</button>
+					</Button>
 
-					<button
+					<Button
 						type="button"
+						variant="outline"
 						onClick={onNewTournament}
-						className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-white/15 bg-white/[0.05] px-6 py-4 text-sm font-medium text-white/70 backdrop-blur-sm transition-all hover:border-white/25 hover:bg-white/10 hover:text-white active:scale-[0.98]"
+						className="w-full flex gap-2.5"
+						size="large"
 					>
 						<LogOut size={15} />
 						Start New Tournament
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
