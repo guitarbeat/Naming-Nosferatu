@@ -3,7 +3,7 @@ import { CheckCircle, X } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
 import { useNameSuggestion } from "@/features/tournament/hooks/useNameSuggestion";
 import Button from "@/shared/components/layout/Button";
-import { Input, Textarea } from "@/shared/components/ui/FormPrimitives";
+import { Input, Textarea } from "@/shared/components/layout/FormPrimitives";
 
 interface NameSuggestionProps {
 	variant?: "inline" | "modal";
