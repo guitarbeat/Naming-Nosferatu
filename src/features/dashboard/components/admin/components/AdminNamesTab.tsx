@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
-import { Input } from "@/shared/components/layout/FormPrimitives";
+import { Input } from "@/shared/components/ui/FormPrimitives";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
 

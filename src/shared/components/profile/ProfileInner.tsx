@@ -1,8 +1,8 @@
 import { LogOut, Pencil, User } from "lucide-react";
 import { type RefObject, useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
-import { Input } from "@/shared/components/layout/FormPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { Input } from "@/shared/components/ui/FormPrimitives";
 import { ErrorManager } from "@/shared/services/errorManager";
 import useAppStore from "@/store/appStore";
 
