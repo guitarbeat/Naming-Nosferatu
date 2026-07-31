@@ -10,9 +10,14 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: branch-cleanup
+  cancel-in-progress: false
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -65,7 +70,7 @@ jobs:
                   # Attempt auto merge
                   if ! gh pr merge "$pr_url" --auto --merge; then
                     echo "Auto-merge failed (possible conflict). Opening issue..."
-                    gh issue create --title "Merge conflict in stale branch: $branch" --body "Automated branch cleanup attempted to merge \`$branch\` into \`$DEFAULT_BRANCH\` via PR $pr_url, but encountered a conflict. Please resolve manually." --label "stale-branch"
+                    gh issue create --title "Merge conflict in stale branch: $branch" --body "Automated branch cleanup attempted to merge `$branch` into `$DEFAULT_BRANCH` via PR $pr_url, but encountered a conflict. Please resolve manually." --label "stale-branch"
                   fi
                 else
                   echo "Failed to create PR for $branch (maybe no commits difference or other error)."
