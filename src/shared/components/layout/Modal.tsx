@@ -45,12 +45,7 @@ interface ModalHeaderProps {
 	closeDisabled: boolean;
 }
 
-function ModalHeader({
-	title,
-	hideTitle,
-	requestClose,
-	closeDisabled,
-}: ModalHeaderProps) {
+function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
 	if (hideTitle) {
 		return (
 			<>
@@ -73,10 +68,7 @@ function ModalHeader({
 
 	return (
 		<div className="flex items-center justify-between mb-5">
-			<h2
-				id="modal-title"
-				className="text-base font-semibold text-foreground tracking-tight"
-			>
+			<h2 id="modal-title" className="text-base font-semibold text-foreground tracking-tight">
 				{title}
 			</h2>
 			<button
