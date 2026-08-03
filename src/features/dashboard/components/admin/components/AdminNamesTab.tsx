@@ -1,8 +1,7 @@
-import { motion } from "framer-motion";
-import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Lock, Trash2 } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
-import { Input } from "@/shared/components/layout/FormPrimitives";
+import { SearchFilterBar } from "@/shared/components/ui/SearchFilterBar";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
 
@@ -48,44 +47,20 @@ export function AdminNamesTab({
 }: AdminNamesTabProps) {
 	return (
 		<>
-			<motion.div
-				className="flex flex-col lg:flex-row gap-4 mb-6"
-				initial={{ opacity: 0, y: -8 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.3 }}
-			>
-				<div className="flex-1">
-					<Input
-						type="text"
-						placeholder="Search names..."
-						value={searchTerm}
-						onChange={(event) => onSearchTermChange(event.target.value)}
-						className="w-full"
-					/>
-				</div>
-				<div className="flex gap-2">
-					<select
-						value={filterStatus}
-						onChange={onFilterChange}
-						aria-label="Filter names by status"
-						className="w-full max-w-xs rounded-lg border border-border/20 bg-background px-3 py-2 text-sm text-foreground transition-colors hover:border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
-					>
-						{filterOptions.map((option) => (
-							<option key={option.value} value={option.value}>
-								{option.label}
-							</option>
-						))}
-					</select>
-
-					<Button onClick={onRefresh} variant="ghost" size="small">
-						<Loader2 size={16} />
-					</Button>
-				</div>
-			</motion.div>
+			<SearchFilterBar
+				searchTerm={searchTerm}
+				onSearchTermChange={onSearchTermChange}
+				filterStatus={filterStatus}
+				filterOptions={filterOptions}
+				onFilterChange={onFilterChange}
+				onRefresh={onRefresh}
+			/>
 
 			{selectedNames.size > 0 && (
 				<div className="mb-4 py-3 sm:py-4 border-y border-border/10">
-					<p className="text-sm text-primary mb-2">{selectedNames.size} selected</p>
+					<p className="text-sm text-primary mb-2">
+						{selectedNames.size} selected
+					</p>
 					<div className="flex flex-wrap gap-2">
 						<Button onClick={() => onBulkAction("hide")} size="small">
 							<EyeOff size={14} /> Hide
@@ -119,7 +94,9 @@ export function AdminNamesTab({
 									<input
 										type="checkbox"
 										checked={selectedNames.has(nameId)}
-										onChange={(event) => onSelectionChange(nameId, event.target.checked)}
+										onChange={(event) =>
+											onSelectionChange(nameId, event.target.checked)
+										}
 										className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
 										aria-label={`Select ${name.name}`}
 									/>
@@ -148,7 +125,9 @@ export function AdminNamesTab({
 											<span>Votes: {name.votes}</span>
 											<span>
 												Score:{" "}
-												{name.popularityScore == null ? "?" : name.popularityScore.toFixed(1)}
+												{name.popularityScore == null
+													? "?"
+													: name.popularityScore.toFixed(1)}
 											</span>
 										</div>
 									</div>
@@ -160,6 +139,7 @@ export function AdminNamesTab({
 										variant="ghost"
 										size="small"
 										aria-label={hidden ? "Unhide name" : "Hide name"}
+										title={hidden ? "Unhide name" : "Hide name"}
 									>
 										{hidden ? <Eye size={14} /> : <EyeOff size={14} />}
 									</Button>
@@ -168,6 +148,7 @@ export function AdminNamesTab({
 										variant="ghost"
 										size="small"
 										aria-label={locked ? "Unlock name" : "Lock name"}
+										title={locked ? "Unlock name" : "Lock name"}
 									>
 										<Lock size={14} />
 									</Button>
@@ -176,6 +157,7 @@ export function AdminNamesTab({
 										variant="ghost"
 										size="small"
 										aria-label="Delete name"
+										title="Delete name"
 										className="text-destructive hover:text-destructive"
 									>
 										<Trash2 size={14} />
