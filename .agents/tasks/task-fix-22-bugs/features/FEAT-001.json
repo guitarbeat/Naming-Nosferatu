@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "fix",
   "description": "Fix critical and high-severity bugs: type errors, missing types, singleton disconnect, infinite loop, stale headers, collision-prone IDs, and process.env usage",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Bug #1 - src/shared/api/names/api.ts: The addName function uses withSupabase(operation, null) which means if Supabase is unavailable it returns null, but the return type is Promise<NameItem>. Fix by throwing an error in the null fallback case. Change the implementation to: after withSupabase returns, check if result is null and throw, OR better: restructure to throw inside withSupabase's operation on error cases. The simplest fix: change `}, null)` to throw if result is null: wrap the withSupabase call and throw if null is returned.",
     "Bug #2 - src/features/tournament/hooks/useTournamentRealtime.ts: MessageHandler type is used on line `private messageHandlers = new Map<string, Set<MessageHandler>>()` but never defined. Add a type definition: `type MessageHandler = (payload: unknown) => void;` before the class.",
@@ -30,5 +30,5 @@
     "bun run biome check --config-path config/biome.json src"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 8 bugs fixed successfully. TypeScript type checking passes cleanly. Biome check shows 2 pre-existing format errors in AdminNamesTab.tsx and RatingDistributionChart.tsx, and 2 pre-existing lint warnings in useTournamentState.ts and SearchFilterBar.tsx - all unrelated to this change. No new errors or warnings introduced."
 }
