@@ -92,7 +92,7 @@
     "jsdom": "^29.1.1",
     "knip": "^5.88.1",
     "playwright": "^1.61.1",
-    "postcss": "^8.5.18",
+    "postcss": "^8.5.23",
     "sass": "^1.102.0",
     "tailwindcss": "4.3.2",
     "terser": "^5.48.0",
