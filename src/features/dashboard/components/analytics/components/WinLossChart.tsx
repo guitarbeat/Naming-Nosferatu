@@ -26,23 +26,14 @@ interface WinLossChartProps {
 }
 
 export function WinLossChart({ leaderboard, limit = 8 }: WinLossChartProps) {
-	// ⚡ Bolt Optimization: Replacing O(N) array filter+slice with single-pass short-circuiting loop
-	const data: Array<{ name: string; wins: number; losses: number }> = [];
-	if (limit > 0) {
-		for (let i = 0; i < leaderboard.length; i++) {
-			if (data.length >= limit) {
-				break;
-			}
-			const e = leaderboard[i];
-			if ((e.wins ?? 0) + (e.losses ?? 0) > 0) {
-				data.push({
-					name: e.name.length > 8 ? `${e.name.slice(0, 7)}…` : e.name,
-					wins: e.wins ?? 0,
-					losses: e.losses ?? 0,
-				});
-			}
-		}
-	}
+	const data = leaderboard
+		.filter((e) => (e.wins ?? 0) + (e.losses ?? 0) > 0)
+		.slice(0, limit)
+		.map((e) => ({
+			name: e.name.length > 8 ? `${e.name.slice(0, 7)}…` : e.name,
+			wins: e.wins ?? 0,
+			losses: e.losses ?? 0,
+		}));
 
 	if (data.length === 0) {
 		return (
