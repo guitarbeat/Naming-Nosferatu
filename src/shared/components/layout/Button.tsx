@@ -69,6 +69,7 @@ const Button = ({
 			disabled={disabled || loading}
 			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
 			onClick={handleClick}
+			title={iconOnly && !rest.title && rest["aria-label"] ? rest["aria-label"] : rest.title}
 			{...rest}
 		>
 			{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

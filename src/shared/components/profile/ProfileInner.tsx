@@ -113,6 +113,7 @@ function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: Profi
 					onClick={handleEdit}
 					className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
 					aria-label="Edit name"
+					title="Edit name"
 				>
 					<Pencil size={14} />
 				</button>

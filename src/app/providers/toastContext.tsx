@@ -57,7 +57,10 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
 const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
 	success: { bg: "bg-chart-2", icon: <CheckCircle className="size-5" /> },
 	error: { bg: "bg-destructive", icon: <XCircle className="size-5" /> },
-	warning: { bg: "bg-chart-4 text-foreground", icon: <AlertTriangle className="size-5" /> },
+	warning: {
+		bg: "bg-chart-4 text-foreground",
+		icon: <AlertTriangle className="size-5" />,
+	},
 	info: { bg: "bg-primary", icon: <Info className="size-5" /> },
 };
 
@@ -88,7 +91,7 @@ function ToastContainer({
 	}
 
 	return (
-		<div
+		<section
 			className={`fixed z-[9999] flex flex-col gap-2 ${POSITION_CLASSES[position]}`}
 			aria-live="polite"
 			aria-label="Notifications"
@@ -109,6 +112,7 @@ function ToastContainer({
 							onClick={() => onDismiss(toast.id)}
 							className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
 							aria-label="Dismiss"
+							title="Dismiss"
 							type="button"
 						>
 							<X className="size-4" />
@@ -116,7 +120,7 @@ function ToastContainer({
 					</div>
 				);
 			})}
-		</div>
+		</section>
 	);
 }
 

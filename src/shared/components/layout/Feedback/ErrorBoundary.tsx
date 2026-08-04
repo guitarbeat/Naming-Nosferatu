@@ -161,6 +161,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className =
 					onClick={onDismiss}
 					className="rounded-full p-1 text-yellow-100/70 transition-colors hover:bg-yellow-500/20 hover:text-yellow-50"
 					aria-label="Dismiss error"
+					title="Dismiss error"
 					type="button"
 				>
 					<X size={14} />
