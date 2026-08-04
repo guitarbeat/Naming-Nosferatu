@@ -14,7 +14,19 @@ interface RatingRadarChartProps {
 }
 
 export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartProps) {
-	const top = leaderboard.filter((e) => (e.total_ratings ?? 0) > 0).slice(0, limit);
+	// ⚡ Bolt Optimization: Replacing O(N) array filter+slice with single-pass short-circuiting loop
+	const top = [];
+	if (limit > 0) {
+		for (let i = 0; i < leaderboard.length; i++) {
+			if (top.length >= limit) {
+				break;
+			}
+			const e = leaderboard[i];
+			if ((e.total_ratings ?? 0) > 0) {
+				top.push(e);
+			}
+		}
+	}
 	if (top.length < 3) {
 		return null;
 	}
