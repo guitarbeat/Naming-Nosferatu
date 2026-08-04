@@ -558,7 +558,12 @@ export function NameSelector() {
 					<p className="text-sm text-muted-foreground">{confirmDescription}</p>
 
 					<div className="mt-6 flex items-center justify-end gap-3">
-						<Button type="button" variant="ghost" onClick={cancelAdminAction} disabled={isPendingActionBusy}>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={cancelAdminAction}
+							disabled={isPendingActionBusy}
+						>
 							Cancel
 						</Button>
 						<Button
