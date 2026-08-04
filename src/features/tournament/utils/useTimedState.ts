@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export function useTimedState<T>(defaultValue: T) {
 	const [value, setValue] = useState<T>(defaultValue);
 	const timeoutRef = useRef<number | null>(null);
+	const defaultRef = useRef(defaultValue);
+	defaultRef.current = defaultValue;
 
 	const clear = useCallback(() => {
 		if (timeoutRef.current !== null) {
@@ -16,11 +18,11 @@ export function useTimedState<T>(defaultValue: T) {
 			clear();
 			setValue(newValue);
 			timeoutRef.current = window.setTimeout(() => {
-				setValue(defaultValue);
+				setValue(defaultRef.current);
 				timeoutRef.current = null;
 			}, durationMs);
 		},
-		[clear, defaultValue],
+		[clear],
 	);
 
 	useEffect(() => clear, [clear]);

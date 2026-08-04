@@ -13,6 +13,7 @@ function hashString(str: string): number {
 }
 
 const imageCache = new Map<string, string>();
+const MAX_IMAGE_CACHE_SIZE = 500;
 
 /**
  * Consistently returns a "random" cat image for a given ID.
@@ -36,5 +37,13 @@ export function getRandomCatImage(
 	const index = Math.abs(seed) % images.length;
 	const selected = images[index] ?? images[0] ?? "";
 	imageCache.set(cacheKey, selected);
+	while (imageCache.size > MAX_IMAGE_CACHE_SIZE) {
+		const firstKey = imageCache.keys().next().value;
+		if (firstKey) {
+			imageCache.delete(firstKey);
+		} else {
+			break;
+		}
+	}
 	return selected;
 }

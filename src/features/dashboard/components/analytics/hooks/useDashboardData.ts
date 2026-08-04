@@ -24,6 +24,7 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		data: leaderboard,
 		isLoading: isLoadingLeaderboard,
 		error: errorLeaderboard,
+		refresh: refreshLeaderboard,
 	} = useAsyncData<LeaderboardItem[]>(() => leaderboardAPI.getLeaderboard(10), []);
 
 	const {
@@ -58,6 +59,7 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		isLoadingLeaderboard,
 		leaderboard,
 		refreshEngagementMetrics,
+		refreshLeaderboard,
 		setTimeframe,
 		siteStats,
 		timeframe,

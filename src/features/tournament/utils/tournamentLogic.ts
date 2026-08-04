@@ -38,10 +38,12 @@ const roundCache = new Map<string, number>(); // Cache round calculations by ent
 const MAX_CACHE_SIZE = 100;
 
 function evictIfNeeded<V>(cache: Map<string, V>, limit: number): void {
-	if (cache.size > limit) {
+	while (cache.size > limit) {
 		const firstKey = cache.keys().next().value;
 		if (firstKey) {
 			cache.delete(firstKey);
+		} else {
+			break;
 		}
 	}
 }
