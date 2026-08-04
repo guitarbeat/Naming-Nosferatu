@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-	type TelemetryAdapter,
 	getTelemetryAdapter,
 	registerTelemetryAdapter,
+	type TelemetryAdapter,
 } from "./telemetrySeam";
 
 describe("telemetrySeam", () => {
@@ -41,7 +41,10 @@ describe("telemetrySeam", () => {
 		it("should log error and log to console.error", () => {
 			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 			const adapter = getTelemetryAdapter();
-			const formattedError = { type: "TEST_TYPE", userMessage: "Test user message" };
+			const formattedError = {
+				type: "TEST_TYPE",
+				userMessage: "Test user message",
+			};
 
 			adapter.logError(formattedError, "TestContext");
 
