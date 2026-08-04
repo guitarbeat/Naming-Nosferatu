@@ -12,11 +12,12 @@ import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
  * Removes special characters, spaces, and converts to lowercase
  */
 function sanitizeNameForEmail(name: string): string {
-	return name
+	const sanitized = name
 		.toLowerCase()
 		.replace(/[^a-z0-9._-]/g, "") // Keep only alphanumeric, dots, underscores, hyphens
 		.replace(/^[.-]+|[.-]+$/g, "") // Remove leading/trailing dots or hyphens
 		.slice(0, 64); // Email local-part max length is 64 chars
+	return sanitized || `user_${Date.now()}`;
 }
 
 function buildAuthUserFromStoredSnapshot(): AuthUser | null {

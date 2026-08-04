@@ -12,7 +12,7 @@ interface UseAsyncDataResult<T> {
 }
 
 export function useAsyncData<T>(
-	fetcher: () => Promise<T>,
+	fetcher: (signal?: AbortSignal) => Promise<T>,
 	initialValue: T,
 	options: UseAsyncDataOptions = {},
 ): UseAsyncDataResult<T> {
@@ -23,34 +23,45 @@ export function useAsyncData<T>(
 	const fetcherRef = useRef(fetcher);
 	fetcherRef.current = fetcher;
 
+	const abortRef = useRef<AbortController | null>(null);
+
 	const run = useCallback(async () => {
+		abortRef.current?.abort();
+		const controller = new AbortController();
+		abortRef.current = controller;
 		setIsLoading(true);
 		setError(null);
 		try {
-			const result = await fetcherRef.current();
-			setData(result);
+			const result = await fetcherRef.current(controller.signal);
+			if (!controller.signal.aborted) {
+				setData(result);
+			}
 		} catch (error) {
-			// Errors are typically handled by the consumer
-			setError(error instanceof Error ? error : new Error(String(error)));
+			if (!controller.signal.aborted) {
+				setError(error instanceof Error ? error : new Error(String(error)));
+			}
 		} finally {
-			setIsLoading(false);
+			if (!controller.signal.aborted) {
+				setIsLoading(false);
+			}
 		}
 	}, []);
 
 	useEffect(() => {
 		let isActive = true;
+		const controller = new AbortController();
 		setIsLoading(true);
 		setError(null);
 
 		fetcherRef
-			.current()
+			.current(controller.signal)
 			.then((result) => {
 				if (isActive) {
 					setData(result);
 				}
 			})
 			.catch((error) => {
-				if (isActive) {
+				if (isActive && error?.name !== "AbortError") {
 					setError(error instanceof Error ? error : new Error(String(error)));
 				}
 			})
@@ -62,6 +73,7 @@ export function useAsyncData<T>(
 
 		return () => {
 			isActive = false;
+			controller.abort();
 		};
 		// biome-ignore lint/correctness/useExhaustiveDependencies: caller supplies dependency list
 	}, deps);

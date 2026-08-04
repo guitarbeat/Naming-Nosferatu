@@ -386,16 +386,25 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	);
 
 	const voteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const currentMatchRef = useRef(currentMatch);
+
+	useEffect(() => {
+		currentMatchRef.current = currentMatch;
+	}, [currentMatch]);
 
 	const handleVoteWithAnimation = useCallback(
 		(winnerId: string, loserId: string) => {
 			if (isVoting) {
 				return;
 			}
+			const matchAtVoteTime = currentMatchRef.current;
 			setIsVoting(true);
 			audioManager.playVoteSound();
 			voteTimeoutRef.current = setTimeout(() => {
-				handleVote(winnerId, loserId);
+				// Validate match hasn't changed during animation
+				if (currentMatchRef.current === matchAtVoteTime) {
+					handleVote(winnerId, loserId);
+				}
 				setIsVoting(false);
 			}, VOTE_COOLDOWN);
 		},

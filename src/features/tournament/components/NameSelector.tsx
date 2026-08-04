@@ -13,8 +13,8 @@ import { Modal } from "@/shared/components/layout/Modal";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getRandomCatImage } from "@/shared/lib/media";
 import {
-	getActiveNames,
 	getLockedNames,
+	getVisibleNames,
 	isNameHidden,
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
@@ -247,10 +247,15 @@ export function NameSelector() {
 
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
+			// Prevent toggling locked names
+			const nameItem = names.find((n) => n.id === nameId);
+			if (nameItem && isNameLocked(nameItem)) {
+				return;
+			}
 			triggerHaptic();
 			toggleName(nameId);
 		},
-		[triggerHaptic, toggleName],
+		[triggerHaptic, toggleName, names],
 	);
 
 	const handleToggleHidden = useCallback(
@@ -352,7 +357,7 @@ export function NameSelector() {
 		}
 	}, [pendingAdminAction, handleToggleHidden, handleToggleLocked]);
 
-	const availableNames = useMemo(() => getActiveNames(names), [names]);
+	const availableNames = useMemo(() => getVisibleNames(names), [names]);
 	const isHiddenAction = pendingAdminAction?.type === "toggle-hidden";
 	const isDisablingAction = Boolean(pendingAdminAction?.isCurrentlyEnabled);
 	const confirmTitle = isHiddenAction

@@ -3,6 +3,8 @@ import type { ErrorLog } from "@/shared/types";
 import { type AppSliceCreator, patch } from "@/store/appStore.shared";
 import type { AppState } from "@/store/appStore.types";
 
+const MAX_ERROR_HISTORY = 100;
+
 export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
 	set,
 	get,
@@ -25,7 +27,9 @@ export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorA
 
 			patch(set, "errors", {
 				current: error,
-				history: log ? [...get().errors.history, log] : get().errors.history,
+				history: log
+					? [...get().errors.history, log].slice(-MAX_ERROR_HISTORY)
+					: get().errors.history,
 			});
 		},
 
@@ -40,7 +44,7 @@ export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorA
 			};
 
 			patch(set, "errors", {
-				history: [...get().errors.history, entry],
+				history: [...get().errors.history, entry].slice(-MAX_ERROR_HISTORY),
 			});
 
 			// Defer to ErrorManager for standardized logging

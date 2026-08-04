@@ -13,17 +13,31 @@ const keyHex = CryptoJS.enc.Utf8.parse(STORAGE_SECRET_KEY.padEnd(32, "0").substr
 const ivHex = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
 function encrypt(text: string): string {
-	return CryptoJS.AES.encrypt(text, keyHex, {
-		iv: ivHex,
+	const iv = CryptoJS.lib.WordArray.random(16);
+	const encrypted = CryptoJS.AES.encrypt(text, keyHex, {
+		iv,
 		mode: CryptoJS.mode.CBC,
 		padding: CryptoJS.pad.Pkcs7,
 	}).toString();
+	const ivHexStr = CryptoJS.enc.Hex.stringify(iv);
+	return `${ivHexStr}:${encrypted}`;
 }
 
 function decrypt(text: string): string {
 	try {
-		const bytes = CryptoJS.AES.decrypt(text, keyHex, {
-			iv: ivHex,
+		let iv: CryptoJS.lib.WordArray = ivHex; // Default static IV for legacy data
+		let ciphertext = text;
+
+		// Check for new format with prepended IV (16 bytes = 32 hex chars)
+		const colonIndex = text.indexOf(":");
+		if (colonIndex === 32) {
+			const ivStr = text.slice(0, 32);
+			iv = CryptoJS.enc.Hex.parse(ivStr);
+			ciphertext = text.slice(33);
+		}
+
+		const bytes = CryptoJS.AES.decrypt(ciphertext, keyHex, {
+			iv,
 			mode: CryptoJS.mode.CBC,
 			padding: CryptoJS.pad.Pkcs7,
 		});
