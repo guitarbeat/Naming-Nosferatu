@@ -29,16 +29,13 @@ export interface UserActivity {
 }
 
 type ConnectionState = "connecting" | "connected" | "disconnected" | "error";
-type MessageHandler = (payload: unknown) => void;
 
 class TournamentRealtimeService {
 	private dbChannel: RealtimeChannel | null = null;
-	private appChannel: RealtimeChannel | null = null;
 	private tournamentChannels = new Map<string, RealtimeChannel>();
 	private connectionState: ConnectionState = "disconnected";
 	private nameChangeCallbacks = new Set<(payload: unknown) => void>();
 	private ratingChangeCallbacks = new Set<(payload: unknown) => void>();
-	private messageHandlers = new Map<string, Set<MessageHandler>>();
 	private refCount = 0;
 
 	acquire(): void {
@@ -128,25 +125,6 @@ class TournamentRealtimeService {
 		return () => {
 			this.ratingChangeCallbacks.delete(callback);
 		};
-	}
-
-	onMessage(type: string, handler: MessageHandler): void {
-		if (!this.messageHandlers.has(type)) {
-			this.messageHandlers.set(type, new Set());
-		}
-		this.messageHandlers.get(type)?.add(handler);
-	}
-
-	offMessage(type: string): void {
-		this.messageHandlers.delete(type);
-	}
-
-	sendMessage(message: unknown): void {
-		this.appChannel?.send({
-			type: "broadcast",
-			event: "message",
-			payload: message,
-		});
 	}
 
 	subscribeToTournament(

@@ -72,6 +72,7 @@ export function useLocalStorage<T>(
 
 	// Track true unmount (not key changes)
 	useEffect(() => {
+		isUnmountingRef.current = false; // Reset on (re)mount (handles strict mode)
 		return () => {
 			isUnmountingRef.current = true;
 		};

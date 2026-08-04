@@ -49,7 +49,7 @@ export function createTournamentId(names: NameItem[], userName?: string): string
 	for (let i = 0; i < sortedIds.length; i++) {
 		hash = ((hash << 5) - hash + sortedIds.charCodeAt(i)) | 0;
 	}
-	return `tournament-${prefix}-${Math.abs(hash).toString(36)}`;
+	return `tournament-${prefix}-${Math.abs(hash).toString(36)}-${names.length}`;
 }
 
 export function createBracketEntrants(participantIds: string[]): string[] {

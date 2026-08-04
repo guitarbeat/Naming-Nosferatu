@@ -404,11 +404,13 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				// Validate match hasn't changed during animation
 				if (currentMatchRef.current === matchAtVoteTime) {
 					handleVote(winnerId, loserId);
+				} else {
+					toast.showWarning("Match changed, vote not counted");
 				}
 				setIsVoting(false);
 			}, VOTE_COOLDOWN);
 		},
-		[handleVote, isVoting, audioManager],
+		[handleVote, isVoting, audioManager, toast],
 	);
 
 	useEffect(() => {
