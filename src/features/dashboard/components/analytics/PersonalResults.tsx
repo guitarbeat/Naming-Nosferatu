@@ -38,19 +38,30 @@ export const PersonalResults = ({
 			}
 		}
 
-		return Object.entries(personalRatings)
-			.map(([id, rating]: [string, unknown]) => {
-				const r = rating as { rating?: number; wins?: number; losses?: number } | number;
-				const actualName = idToNameMap.get(id) || id;
-				return {
-					name: actualName,
-					rating: Math.round(typeof r === "number" ? r : r?.rating || ELO_RATING.DEFAULT_RATING),
-					wins: typeof r === "number" ? 0 : r?.wins || 0,
-					losses: typeof r === "number" ? 0 : r?.losses || 0,
-					id,
-				};
-			})
-			.sort((a, b) => b.rating - a.rating) as NameItem[];
+		// ⚡ Bolt Optimization: Replace `Object.entries().map()` with a single-pass loop over `Object.keys()` to prevent intermediate arrays
+		const keys = Object.keys(personalRatings);
+		const items: NameItem[] = [];
+
+		for (let i = 0; i < keys.length; i++) {
+			const id = keys[i];
+			const rating = personalRatings[id];
+			const r = rating as
+				| { rating?: number; wins?: number; losses?: number }
+				| number;
+			const actualName = idToNameMap.get(id) || id;
+
+			items.push({
+				name: actualName,
+				rating: Math.round(
+					typeof r === "number" ? r : r?.rating || ELO_RATING.DEFAULT_RATING,
+				),
+				wins: typeof r === "number" ? 0 : r?.wins || 0,
+				losses: typeof r === "number" ? 0 : r?.losses || 0,
+				id,
+			});
+		}
+
+		return items.sort((a, b) => (b.rating as number) - (a.rating as number));
 	}, [personalRatings, currentTournamentNames]);
 
 	const { showToast } = useToast();
@@ -64,12 +75,13 @@ export const PersonalResults = ({
 							Adjustment table
 						</p>
 						<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/75">
-							Reorder your results if you want a final manual pass before saving the bracket back to
-							your profile.
+							Reorder your results if you want a final manual pass before saving
+							the bracket back to your profile.
 						</p>
 						<p className="max-w-2xl text-xs leading-relaxed text-muted-foreground/60">
-							This panel is your personal ordering layer. It helps you tune your saved bracket
-							without reframing the broader community averages by itself.
+							This panel is your personal ordering layer. It helps you tune your
+							saved bracket without reframing the broader community averages by
+							itself.
 						</p>
 					</div>
 					<Button variant="outline" size="small" onClick={onStartNew}>
@@ -81,16 +93,17 @@ export const PersonalResults = ({
 				<RankingAdjustment
 					rankings={rankings}
 					onSave={async (updatedRankings: NameItem[]) => {
-						const ratingsMap = Object.fromEntries(
-							updatedRankings.map((name) => [
-								name.id || name.name,
-								{
-									rating: name.rating as number,
-									wins: name.wins ?? 0,
-									losses: name.losses ?? 0,
-								},
-							]),
-						);
+						// ⚡ Bolt Optimization: Replace `Object.fromEntries(arr.map())` with a single-pass loop
+						const ratingsMap: Record<string, RatingData> = {};
+						for (let i = 0; i < updatedRankings.length; i++) {
+							const name = updatedRankings[i];
+							ratingsMap[name.id || name.name] = {
+								rating: name.rating as number,
+								wins: name.wins ?? 0,
+								losses: name.losses ?? 0,
+							};
+						}
+
 						await onUpdateRatings(ratingsMap);
 						showToast("Updated!", "success");
 					}}

@@ -33,24 +33,30 @@ export default function TournamentFlow() {
 		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
 			const userId = user.name || "anonymous";
 
-			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
-				(acc, [nameId, ratingData]) => {
-					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-					const wins = typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
-					const losses = typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
-					acc[nameId] = {
-						rating,
-						wins,
-						losses,
-					};
-					return acc;
-				},
-				{} as Record<string, { rating: number; wins: number; losses: number }>,
-			);
+			// ⚡ Bolt Optimization: Replace `Object.entries().reduce()` with a single-pass loop over keys
+			const ratingsWithStats: Record<
+				string,
+				{ rating: number; wins: number; losses: number }
+			> = {};
+			const keys = Object.keys(tournament.ratings);
+			for (let i = 0; i < keys.length; i++) {
+				const nameId = keys[i];
+				const ratingData = tournament.ratings[nameId];
+				const isNum = typeof ratingData === "number";
+				ratingsWithStats[nameId] = {
+					rating: isNum ? ratingData : ratingData.rating,
+					wins: isNum ? 0 : (ratingData.wins ?? 0),
+					losses: isNum ? 0 : (ratingData.losses ?? 0),
+				};
+			}
 
-			mutateAsyncRef.current({ userId, ratings: ratingsWithStats }).catch((_error) => {
-				console.warn("Tournament ratings save failed — ratings were not persisted");
-			});
+			mutateAsyncRef
+				.current({ userId, ratings: ratingsWithStats })
+				.catch((_error) => {
+					console.warn(
+						"Tournament ratings save failed — ratings were not persisted",
+					);
+				});
 		}
 	}, [tournament.isComplete, tournament.ratings, user.name]);
 
@@ -76,8 +82,8 @@ export default function TournamentFlow() {
 							</div>
 							<p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">
 								Your personal rankings have been updated. Head over to the{" "}
-								<strong className="text-primary">Analyze</strong> section to see the full breakdown
-								and compare results!
+								<strong className="text-primary">Analyze</strong> section to see
+								the full breakdown and compare results!
 							</p>
 							<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
 								<button
