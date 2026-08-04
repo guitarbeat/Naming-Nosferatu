@@ -221,7 +221,7 @@ export async function unhideAllNames(): Promise<void> {
 }
 
 export async function addName(params: { name: string; description?: string }): Promise<NameItem> {
-	return withSupabase(async (client) => {
+	const result = await withSupabase(async (client) => {
 		const { data, error } = await client.rpc("add_cat_name", {
 			p_name: params.name,
 			p_description: params.description || "",
@@ -233,4 +233,8 @@ export async function addName(params: { name: string; description?: string }): P
 		}
 		return mapNameRow(row);
 	}, null);
+	if (result === null) {
+		throwSupabaseUnavailable();
+	}
+	return result as NameItem;
 }

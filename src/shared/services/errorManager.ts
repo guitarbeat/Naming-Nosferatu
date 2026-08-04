@@ -422,7 +422,7 @@ function logError(
 	metadata: Record<string, unknown>,
 ) {
 	getTelemetryAdapter().logError(formattedError, context);
-	if (process.env.NODE_ENV !== "development") {
+	if (!import.meta.env?.DEV) {
 		sendToErrorService({ error: formattedError, context, metadata });
 	}
 }

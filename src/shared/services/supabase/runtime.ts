@@ -94,20 +94,21 @@ const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> 
 			})(),
 		} as const;
 
-		const currentUserName: string | null = getStorageString(STORAGE_KEYS.USER);
-
-		/* ----------------------------------------------------------------------
-                   MIGRATION UPDATE: Using x-user-id for future RLS policies
-                   ---------------------------------------------------------------------- */
-		const currentUserId: string | null = getStorageString(STORAGE_KEYS.USER_ID);
-
 		const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
 			auth: authOptions,
 			global: {
-				headers: {
-					"X-Client-Info": "cat-name-tournament",
-					...(currentUserName ? { "x-user-name": currentUserName } : {}),
-					...(currentUserId ? { "x-user-id": currentUserId } : {}),
+				fetch: (url: URL | RequestInfo, options: RequestInit = {}) => {
+					const currentUserName = getStorageString(STORAGE_KEYS.USER);
+					const currentUserId = getStorageString(STORAGE_KEYS.USER_ID);
+					const headers = new Headers(options.headers);
+					headers.set("X-Client-Info", "cat-name-tournament");
+					if (currentUserName) {
+						headers.set("x-user-name", currentUserName);
+					}
+					if (currentUserId) {
+						headers.set("x-user-id", currentUserId);
+					}
+					return fetch(url, { ...options, headers });
 				},
 			},
 			db: { schema: "public" },
@@ -147,34 +148,18 @@ const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Databas
 
 export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
 
+/**
+ * No-op retained for backward compatibility.
+ * Headers are now dynamically resolved via the custom fetch wrapper in createClient.
+ */
 export const updateSupabaseUserContext = (
-	userName: string | null,
-	userId: string | null = null,
+	_userName: string | null,
+	_userId: string | null = null,
 ): void => {
-	if (!supabaseInstance) {
-		return;
-	}
-
-	const internalClient = supabaseInstance as unknown as {
-		rest?: { headers?: Record<string, string | undefined> };
-	};
-
-	if (internalClient.rest?.headers) {
-		if (userName) {
-			internalClient.rest.headers["x-user-name"] = userName;
-		} else {
-			internalClient.rest.headers["x-user-name"] = undefined;
-		}
-
-		if (userId) {
-			internalClient.rest.headers["x-user-id"] = userId;
-		} else {
-			internalClient.rest.headers["x-user-id"] = undefined;
-		}
-	}
+	// Headers are injected dynamically per-request via the global fetch wrapper.
 };
 
-const isDev = typeof process !== "undefined" && process.env?.NODE_ENV === "development";
+const isDev = import.meta.env?.DEV ?? false;
 
 const isSupabaseAvailable = async () => {
 	const client = await resolveSupabaseClient();

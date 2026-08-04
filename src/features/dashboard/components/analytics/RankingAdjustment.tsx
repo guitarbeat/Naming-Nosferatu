@@ -120,6 +120,9 @@ export const RankingAdjustment = memo(
 		}, [rankings, hasUnsavedChanges, items]);
 
 		useEffect(() => {
+			if (!hasUnsavedChanges) {
+				return;
+			}
 			if (items && rankings && haveRankingsChanged(items, rankings)) {
 				setSaveStatus("saving");
 				if (saveTimerRef.current) {
@@ -164,7 +167,7 @@ export const RankingAdjustment = memo(
 					saveStatusTimerRef.current = null;
 				}
 			};
-		}, [items, rankings, onSave]);
+		}, [items, rankings, onSave, hasUnsavedChanges]);
 
 		const handleDragEnd = (result: DropResult) => {
 			setIsDragging(false);
