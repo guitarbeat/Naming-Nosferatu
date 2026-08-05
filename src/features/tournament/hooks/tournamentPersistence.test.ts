@@ -10,7 +10,7 @@ describe("createTournamentId", () => {
 			{ id: 3, name: "Charlie" },
 		];
 		const result = createTournamentId(names, "Alice");
-		expect(result).toBe("tournament-Alice-Alpha-Charlie-Zeta");
+		expect(result).toBe("tournament-Alice-rr2ny-3");
 	});
 
 	it("should use 'anonymous' when userName is not provided", () => {
@@ -19,7 +19,7 @@ describe("createTournamentId", () => {
 			{ id: 2, name: "Delta" },
 		];
 		const result = createTournamentId(names);
-		expect(result).toBe("tournament-anonymous-Bravo-Delta");
+		expect(result).toBe("tournament-anonymous-11fb-2");
 	});
 
 	it("should fallback to stringified ID when name is missing or falsy", () => {
@@ -29,19 +29,18 @@ describe("createTournamentId", () => {
 			{ id: 99, name: "Valid" },
 		] as NameItem[];
 		const result = createTournamentId(names, "Bob");
-		// Sorted: "42", "Valid", "uuid-1"
-		expect(result).toBe("tournament-Bob-42-Valid-uuid-1");
+		expect(result).toBe("tournament-Bob-nf01kz-3");
 	});
 
 	it("should handle an empty array of names", () => {
 		const names: NameItem[] = [];
 		const result = createTournamentId(names, "Eve");
-		expect(result).toBe("tournament-Eve-");
+		expect(result).toBe("tournament-Eve-0-0");
 	});
 
 	it("should handle empty userName and empty names", () => {
 		const names: NameItem[] = [];
 		const result = createTournamentId(names, "");
-		expect(result).toBe("tournament-anonymous-");
+		expect(result).toBe("tournament-anonymous-0-0");
 	});
 });

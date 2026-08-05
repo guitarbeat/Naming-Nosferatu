@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-002",
+  "type": "fix",
+  "description": "Fix 4 follow-up issues from the semantic review: stale onClose in Modal Escape handler, focus-restore overwrite on rapid toggle, decryptValue missing null guard, and FOCUSABLE_SELECTOR constant re-created every render.",
+  "status": "in_progress",
+  "steps": [
+    "1. Fix stale onClose in Modal Escape handler: Store onClose in a ref (onCloseRef) and use onCloseRef.current() in requestClose. This ensures Escape always fires the latest onClose callback regardless of memoization.",
+    "2. Fix focus-restore overwrite on rapid toggle: Add a hasCapturedRef flag that is set when the trigger element is first captured on open. Only capture document.activeElement if hasCapturedRef is false. Reset the flag only when the modal fully unmounts (shouldRender becomes false).",
+    "3. Add null guard to decryptValue: Accept string | null | undefined and return empty string or the input for null/undefined values before calling decrypt.",
+    "4. Move FOCUSABLE_SELECTOR to module level: Extract the constant string outside the component body so it is not re-created on every render."
+  ],
+  "acceptance_criteria": [
+    "Modal Escape handler always calls the latest onClose via a ref pattern",
+    "Focus restore does not overwrite the original trigger element on rapid open/close cycles",
+    "decryptValue handles null/undefined gracefully without throwing",
+    "FOCUSABLE_SELECTOR is defined at module level, not inside the component",
+    "pnpm run build succeeds",
+    "pnpm run test passes all tests"
+  ],
+  "verification": [
+    "Run: export PATH=\"/opt/toolchains/.nvm/versions/node/v20.20.2/bin:$PATH\" && cd /projects/sandbox/Naming-Nosferatu && pnpm run test",
+    "Run: export PATH=\"/opt/toolchains/.nvm/versions/node/v20.20.2/bin:$PATH\" && cd /projects/sandbox/Naming-Nosferatu && pnpm run build"
+  ],
+  "blocked_reason": null,
+  "findings": null
+}

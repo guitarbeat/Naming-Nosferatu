@@ -80,7 +80,7 @@ export const PersonalResults = ({
 
 				<RankingAdjustment
 					rankings={rankings}
-					onSave={(updatedRankings: NameItem[]) => {
+					onSave={async (updatedRankings: NameItem[]) => {
 						const ratingsMap = Object.fromEntries(
 							updatedRankings.map((name) => [
 								name.id || name.name,
