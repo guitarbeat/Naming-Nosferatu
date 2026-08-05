@@ -51,6 +51,8 @@ const Button = ({
 	className = "",
 	onClick,
 	iconOnly = false,
+	title,
+	"aria-label": ariaLabel,
 	...rest
 }: ButtonProps) => {
 	const finalSize = iconOnly ? "icon" : size;
