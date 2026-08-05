@@ -41,7 +41,11 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
 const nameOverlayClasses =
 	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
 
-const NameContent = memo(function NameContent({ nameItem }: { nameItem: NameItem }) {
+const NameContent = memo(function NameContent({
+	nameItem,
+}: {
+	nameItem: NameItem;
+}) {
 	return (
 		<>
 			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
@@ -116,7 +120,11 @@ const AdminActionButton = memo(function AdminActionButton({
 	);
 });
 
-const SelectionBadge = ({ prefersReducedMotion }: { prefersReducedMotion: boolean }) => (
+const SelectionBadge = ({
+	prefersReducedMotion,
+}: {
+	prefersReducedMotion: boolean;
+}) => (
 	<motion.div
 		initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0, opacity: 0 }}
 		animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
@@ -131,7 +139,13 @@ const SelectionBadge = ({ prefersReducedMotion }: { prefersReducedMotion: boolea
 	</motion.div>
 );
 
-function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) {
+function ZoomButton({
+	nameId,
+	onClick,
+}: {
+	nameId: IdType;
+	onClick: (id: IdType) => void;
+}) {
 	return (
 		<button
 			type="button"
@@ -152,7 +166,9 @@ export function NameSelector() {
 	const toast = useToast();
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
-	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const storeSelectedNames = useAppStore(
+		(state) => state.tournament.selectedNames,
+	);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
@@ -183,7 +199,9 @@ export function NameSelector() {
 				? "Failed to load names"
 				: null;
 	const isSupabaseUnavailable = error === SUPABASE_UNAVAILABLE_MSG;
-	const names = isSupabaseUnavailable ? sampleNames : (namesQuery.data?.names ?? []);
+	const names = isSupabaseUnavailable
+		? sampleNames
+		: (namesQuery.data?.names ?? []);
 	const isLoading = namesQuery.isPending && !isSupabaseUnavailable;
 
 	const selectedIds = useMemo(
@@ -191,15 +209,19 @@ export function NameSelector() {
 		[storeSelectedNames],
 	);
 
-	const { catImages, catImageById } = useMemo(() => {
-		const catImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
+	const { catImages, catImageById, nameIndexById } = useMemo(() => {
+		const catImages = names.map((nameItem) =>
+			getRandomCatImage(nameItem.id, CAT_IMAGES),
+		);
 		const catImageById = new Map<IdType, string>();
+		const nameIndexById = new Map<IdType, number>();
 		for (let i = 0; i < names.length; i++) {
+			nameIndexById.set(names[i].id, i);
 			if (catImages[i]) {
 				catImageById.set(names[i].id, catImages[i]);
 			}
 		}
-		return { catImages, catImageById };
+		return { catImages, catImageById, nameIndexById };
 	}, [names]);
 
 	useEffect(() => {
@@ -211,7 +233,9 @@ export function NameSelector() {
 			return;
 		}
 		const currentSelectedIds = new Set(storeSelectedNames.map((n) => n.id));
-		const missingLocked = lockedInNames.filter((n) => !currentSelectedIds.has(n.id));
+		const missingLocked = lockedInNames.filter(
+			(n) => !currentSelectedIds.has(n.id),
+		);
 		if (missingLocked.length > 0) {
 			tournamentActions.setSelection([...storeSelectedNames, ...missingLocked]);
 		}
@@ -225,7 +249,8 @@ export function NameSelector() {
 
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
-			const nameItem = names.find((n) => n.id === nameId);
+			const index = nameIndexById.get(nameId);
+			const nameItem = index !== undefined ? names[index] : undefined;
 			if (!nameItem || isNameLocked(nameItem)) {
 				return;
 			}
@@ -237,7 +262,14 @@ export function NameSelector() {
 				: [...storeSelectedNames, nameItem];
 			tournamentActions.setSelection(nextSelection);
 		},
-		[names, triggerHaptic, selectedIds, storeSelectedNames, tournamentActions],
+		[
+			names,
+			nameIndexById,
+			triggerHaptic,
+			selectedIds,
+			storeSelectedNames,
+			tournamentActions,
+		],
 	);
 
 	const handleToggleHidden = useCallback(
@@ -250,7 +282,9 @@ export function NameSelector() {
 
 			try {
 				await toggleHidden({ nameId, isCurrentlyHidden });
-				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
+				toast.showSuccess(
+					isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
+				);
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
@@ -271,7 +305,9 @@ export function NameSelector() {
 
 			try {
 				await toggleLocked({ nameId, isCurrentlyLocked });
-				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
+				toast.showSuccess(
+					isCurrentlyLocked ? "Name unlocked." : "Name locked in.",
+				);
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
@@ -282,7 +318,8 @@ export function NameSelector() {
 		[isAdmin, toast, toggleLocked, userName],
 	);
 
-	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
+	const [pendingAdminAction, setPendingAdminAction] =
+		useState<PendingAdminAction | null>(null);
 
 	const requestAdminAction = useCallback(
 		(action: PendingAdminAction) => {
@@ -292,7 +329,9 @@ export function NameSelector() {
 			}
 
 			if (!userName?.trim()) {
-				toast.showError("Admin actions require a valid user session. Please log in again.");
+				toast.showError(
+					"Admin actions require a valid user session. Please log in again.",
+				);
 				return;
 			}
 
@@ -309,9 +348,10 @@ export function NameSelector() {
 		if (!pendingAdminAction) {
 			return "";
 		}
-		const target = names.find((n) => n.id === pendingAdminAction.nameId);
+		const index = nameIndexById.get(pendingAdminAction.nameId);
+		const target = index !== undefined ? names[index] : undefined;
 		return target?.name ?? "this name";
-	}, [names, pendingAdminAction]);
+	}, [names, nameIndexById, pendingAdminAction]);
 
 	const isPendingActionBusy = useMemo(() => {
 		if (!pendingAdminAction) {
@@ -330,9 +370,15 @@ export function NameSelector() {
 
 		try {
 			if (pendingAdminAction.type === "toggle-hidden") {
-				await handleToggleHidden(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+				await handleToggleHidden(
+					pendingAdminAction.nameId,
+					pendingAdminAction.isCurrentlyEnabled,
+				);
 			} else {
-				await handleToggleLocked(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+				await handleToggleLocked(
+					pendingAdminAction.nameId,
+					pendingAdminAction.isCurrentlyEnabled,
+				);
 			}
 		} finally {
 			setPendingAdminAction(null);
@@ -362,13 +408,13 @@ export function NameSelector() {
 
 	const handleOpenLightbox = useCallback(
 		(nameId: IdType) => {
-			const index = names.findIndex((n) => n.id === nameId);
-			if (index !== -1) {
+			const index = nameIndexById.get(nameId);
+			if (index !== undefined) {
 				setLightboxIndex(index);
 				setLightboxOpen(true);
 			}
 		},
-		[names],
+		[nameIndexById],
 	);
 
 	if (isLoading) {
@@ -396,7 +442,11 @@ export function NameSelector() {
 							<p className="text-sm leading-relaxed text-white/68">{error}</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+							<Button
+								onClick={() => void namesQuery.refetch()}
+								variant="glass"
+								size="small"
+							>
 								Try Again
 							</Button>
 						</div>
@@ -429,10 +479,17 @@ export function NameSelector() {
 										}}
 										aria-pressed={isSelected}
 										aria-label={`${isSelected ? "Deselect" : "Select"} name: ${nameItem.name}`}
-										whileHover={prefersReducedMotion ? undefined : { scale: 1.03, y: -2 }}
-										whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
+										whileHover={
+											prefersReducedMotion ? undefined : { scale: 1.03, y: -2 }
+										}
+										whileTap={
+											prefersReducedMotion ? undefined : { scale: 0.97 }
+										}
 										transition={{ type: "spring", stiffness: 400, damping: 25 }}
-										className={getCardStyles(isSelected, isNameLocked(nameItem))}
+										className={getCardStyles(
+											isSelected,
+											isNameLocked(nameItem),
+										)}
 									>
 										<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
 											<CatImage
@@ -441,13 +498,20 @@ export function NameSelector() {
 												containerClassName="w-full h-full"
 												imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 											/>
-											{isSelected && <SelectionBadge prefersReducedMotion={prefersReducedMotion} />}
+											{isSelected && (
+												<SelectionBadge
+													prefersReducedMotion={prefersReducedMotion}
+												/>
+											)}
 											<div className={nameOverlayClasses}>
 												<div className="flex flex-col items-center gap-1.5 max-w-full">
 													<NameContent nameItem={nameItem} />
 												</div>
 											</div>
-											<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+											<ZoomButton
+												nameId={nameItem.id}
+												onClick={handleOpenLightbox}
+											/>
 										</div>
 										{isAdmin && (
 											<motion.div
