@@ -61,7 +61,7 @@ export default defineConfig(({ command }) => ({
                                                 if (id.includes("framer-motion")) {
                                                         return "vendor-motion";
                                                 }
-                                                if (id.includes("@heroui/react") || id.includes("@heroui")) {
+                                                if (id.includes("@heroui")) {
                                                         return "vendor-heroui";
                                                 }
                                                 if (id.includes("@hello-pangea/dnd") || id.includes("@hello-pangea")) {

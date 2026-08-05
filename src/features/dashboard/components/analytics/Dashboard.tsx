@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Activity, BarChart3, Target, TrendingUp, Trophy, User, Users } from "lucide-react";
-import { type ElementType, memo } from "react";
+import { type ElementType, memo, useMemo } from "react";
 import Button from "@/shared/components/layout/Button";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
@@ -332,7 +332,10 @@ export function Dashboard({
 		timeframe,
 		userStats,
 	} = useDashboardData({ userName });
-	const quickStats = getQuickStats({ siteStats, userName, userStats });
+	const quickStats = useMemo(
+		() => getQuickStats({ siteStats, userName, userStats }),
+		[siteStats, userName, userStats],
+	);
 	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
 	const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
 	const _shouldShowDashboardPrimer =
