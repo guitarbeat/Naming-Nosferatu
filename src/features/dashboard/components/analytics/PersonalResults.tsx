@@ -80,7 +80,7 @@ export const PersonalResults = ({
 
 				<RankingAdjustment
 					rankings={rankings}
-					onSave={async (updatedRankings: NameItem[]) => {
+					onSave={(updatedRankings: NameItem[]) => {
 						const ratingsMap = Object.fromEntries(
 							updatedRankings.map((name) => [
 								name.id || name.name,
@@ -91,7 +91,8 @@ export const PersonalResults = ({
 								},
 							]),
 						);
-						await onUpdateRatings(ratingsMap);
+						// Note: This updates local Zustand state only; does not persist to server
+						onUpdateRatings(ratingsMap);
 						showToast("Updated!", "success");
 					}}
 					onCancel={onStartNew}

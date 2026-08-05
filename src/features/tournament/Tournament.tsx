@@ -218,12 +218,18 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 			const { left: leftSide, right: rightSide } = record.match;
 
-			const leftIds = leftSide?.memberIds
-				? leftSide.memberIds.map(String)
-				: [String(leftSide?.id || "")];
-			const rightIds = rightSide?.memberIds
-				? rightSide.memberIds.map(String)
-				: [String(rightSide?.id || "")];
+			const leftIds =
+				typeof leftSide === "string"
+					? [leftSide]
+					: leftSide?.memberIds
+						? leftSide.memberIds.map(String)
+						: [String(leftSide?.id || "")];
+			const rightIds =
+				typeof rightSide === "string"
+					? [rightSide]
+					: rightSide?.memberIds
+						? rightSide.memberIds.map(String)
+						: [String(rightSide?.id || "")];
 
 			const winnerIds = leftIds.includes(String(record.winner)) ? leftIds : rightIds;
 			const loserIds = leftIds.includes(String(record.winner)) ? rightIds : leftIds;

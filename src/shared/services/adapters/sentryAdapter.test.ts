@@ -3,16 +3,13 @@ import { SentryTelemetryAdapter } from "./sentryAdapter";
 
 describe("SentryTelemetryAdapter", () => {
 	let adapter: SentryTelemetryAdapter;
-	let originalEnv: string | undefined;
 
 	beforeEach(() => {
 		adapter = new SentryTelemetryAdapter();
-		originalEnv = process.env.NODE_ENV;
 	});
 
 	afterEach(() => {
 		vi.unstubAllGlobals();
-		process.env.NODE_ENV = originalEnv;
 		vi.restoreAllMocks();
 	});
 
@@ -56,7 +53,7 @@ describe("SentryTelemetryAdapter", () => {
 
 	describe("logError", () => {
 		it("should log to console in development environment", () => {
-			process.env.NODE_ENV = "development";
+			// import.meta.env.DEV is true in test mode by default
 			const groupMock = vi.spyOn(console, "group").mockImplementation(() => {});
 			const errorMock = vi.spyOn(console, "error").mockImplementation(() => {});
 			const groupEndMock = vi.spyOn(console, "groupEnd").mockImplementation(() => {});
@@ -69,7 +66,11 @@ describe("SentryTelemetryAdapter", () => {
 		});
 
 		it("should not log to console in non-development environment", () => {
-			process.env.NODE_ENV = "production";
+			// Override import.meta.env.DEV to simulate production
+			vi.stubGlobal("import_meta_env_DEV", false);
+			const originalDEV = import.meta.env.DEV;
+			import.meta.env.DEV = false;
+
 			const groupMock = vi.spyOn(console, "group").mockImplementation(() => {});
 			const errorMock = vi.spyOn(console, "error").mockImplementation(() => {});
 			const groupEndMock = vi.spyOn(console, "groupEnd").mockImplementation(() => {});
@@ -79,6 +80,9 @@ describe("SentryTelemetryAdapter", () => {
 			expect(groupMock).not.toHaveBeenCalled();
 			expect(errorMock).not.toHaveBeenCalled();
 			expect(groupEndMock).not.toHaveBeenCalled();
+
+			// Restore
+			import.meta.env.DEV = originalDEV;
 		});
 	});
 });

@@ -47,6 +47,16 @@ export function extractMatchData(match: Match): MatchSideData {
 
 	const extractSide = (participant: Match["left"] | Match["right"]) => {
 		if (typeof participant === "object") {
+			if ("memberNames" in participant) {
+				// Team object
+				return {
+					id: String(participant.id),
+					name: (participant.memberNames ?? []).join(" + ") || String(participant.id),
+					members: participant.memberNames ?? [],
+					description: undefined,
+					pronunciation: undefined,
+				};
+			}
 			return {
 				id: String(participant.id),
 				name: participant.name,

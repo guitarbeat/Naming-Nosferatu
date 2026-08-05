@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useCallback, useEffect } from "react";
 
 interface LightboxProps {
 	images: string[];
@@ -12,13 +13,33 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 	const currentImage = images[currentIndex] || "";
 	const hasMultipleImages = images.length > 1;
 
-	const handlePrevious = () => {
+	const handlePrevious = useCallback(() => {
 		onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
-	};
+	}, [onNavigate, currentIndex, images.length]);
 
-	const handleNext = () => {
+	const handleNext = useCallback(() => {
 		onNavigate(currentIndex < images.length - 1 ? currentIndex + 1 : 0);
-	};
+	}, [onNavigate, currentIndex, images.length]);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			switch (event.key) {
+				case "Escape":
+					onClose();
+					break;
+				case "ArrowLeft":
+					handlePrevious();
+					break;
+				case "ArrowRight":
+					handleNext();
+					break;
+			}
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [onClose, handlePrevious, handleNext]);
 
 	return (
 		<AnimatePresence>
