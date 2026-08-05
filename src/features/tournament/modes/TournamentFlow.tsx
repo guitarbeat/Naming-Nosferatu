@@ -10,7 +10,6 @@ export default function TournamentFlow() {
 	const user = useAppStore((s) => s.user);
 	const tournament = useAppStore((s) => s.tournament);
 
-
 	const saveRatingsMutation = useMutation({
 		mutationFn: ({
 			userId,
