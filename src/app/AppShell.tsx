@@ -10,6 +10,18 @@ function RouteFallback({ text }: { text: string }) {
 	return <Loading variant="cat-gif" text={text} className="min-h-[82dvh]" />;
 }
 
+function Suspended({
+	children,
+	text,
+}: {
+	children: React.ReactNode;
+	text: string;
+}) {
+	return (
+		<Suspense fallback={<RouteFallback text={text} />}>{children}</Suspense>
+	);
+}
+
 export default function AppShell() {
 	const { pathname } = useLocation();
 
@@ -26,19 +38,22 @@ export default function AppShell() {
 				<Route
 					path="/"
 					element={
-						<Suspense fallback={<RouteFallback text="Loading home..." />}>
+						<Suspended text="Loading home...">
 							<HomeRoute />
-						</Suspense>
+						</Suspended>
 					}
 				/>
-				<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
+				<Route
+					path="/tournament"
+					element={<Navigate to="/" replace={true} />}
+				/>
 				<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
 				<Route
 					path="/admin"
 					element={
-						<Suspense fallback={<RouteFallback text="Loading admin..." />}>
+						<Suspended text="Loading admin...">
 							<AdminRoute />
-						</Suspense>
+						</Suspended>
 					}
 				/>
 			</Routes>
