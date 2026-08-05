@@ -40,6 +40,7 @@ export interface NameItem {
 	wins?: number;
 	losses?: number;
 	popularity_score?: number;
+	has_user_rating?: boolean;
 
 	// Selection (client-side UI state)
 	isSelected?: boolean;
