@@ -17,10 +17,6 @@ class SoundManager {
 	}
 	private preloaded = false;
 
-	constructor() {
-		// Defer preloading until first play() call to avoid unnecessary network requests
-	}
-
 	private createAudioElement(name: string): HTMLAudioElement | null {
 		if (typeof Audio === "undefined") {
 			return null;
