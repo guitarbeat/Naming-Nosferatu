@@ -38,7 +38,8 @@ const mockStore = {
 };
 
 vi.mock("@/store/appStore", () => ({
-	default: () => mockStore,
+	default: (selector?: (state: typeof mockStore) => unknown) =>
+		selector ? selector(mockStore) : mockStore,
 }));
 
 function createMatchMedia(matches = false) {

@@ -31,7 +31,9 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle: string }
 }
 
 export default function HomeRoute() {
-	const { user, tournament, tournamentActions } = useAppStore();
+	const user = useAppStore((s) => s.user);
+	const tournament = useAppStore((s) => s.tournament);
+	const tournamentActions = useAppStore((s) => s.tournamentActions);
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
 	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
 

@@ -78,11 +78,12 @@ const keyToId: Record<NavSection, string> = {
 };
 
 export function FloatingNavbar() {
-	const appStore = useAppStore();
+	const tournament = useAppStore((s) => s.tournament);
+	const tournamentActions = useAppStore((s) => s.tournamentActions);
+	const user = useAppStore((s) => s.user);
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { login, logout } = useAuth();
-	const { tournament, tournamentActions, user } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
 	const [activeSection, setActiveSection] = useState<NavSection>("pick");
