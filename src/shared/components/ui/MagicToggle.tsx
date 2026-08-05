@@ -55,9 +55,7 @@ export function MagicToggle<T extends string>({
 							onChange(option.value);
 						}}
 						className={`relative flex-1 ${size === "small" ? "px-3 py-1.5 text-xs" : "px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm"} font-bold tracking-wide transition-colors z-10 ${size === "small" ? "rounded-lg" : "rounded-xl"} ${
-							isSelected
-								? "text-primary"
-								: "text-muted-foreground hover:text-foreground"
+							isSelected ? "text-primary" : "text-muted-foreground hover:text-foreground"
 						}`}
 						whileHover={{ scale: 1.05, y: -1 }}
 						whileTap={{ scale: 0.95, y: 0 }}

@@ -28,7 +28,10 @@ const SectionHeading = memo(function SectionHeading({
 }) {
 	return (
 		<div className="mx-auto mb-[var(--space-phi-4)] flex w-full max-w-2xl flex-col items-center text-center sm:mb-[var(--space-phi-5)]">
-			<h2 id={id} className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground">
+			<h2
+				id={id}
+				className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground"
+			>
 				{title}
 			</h2>
 			<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -74,7 +77,13 @@ export default function HomeRoute() {
 				onStartPicking={() => scrollToSection("pick")}
 			/>
 
-			<Section id="pick" maxWidth="xl" separator={true} fullpage={true} ariaLabelledBy="section-heading-pick">
+			<Section
+				id="pick"
+				maxWidth="xl"
+				separator={true}
+				fullpage={true}
+				ariaLabelledBy="section-heading-pick"
+			>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
@@ -93,7 +102,12 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section id="tournament" separator={true} fullpage={true} ariaLabelledBy="section-heading-tournament">
+			<Section
+				id="tournament"
+				separator={true}
+				fullpage={true}
+				ariaLabelledBy="section-heading-tournament"
+			>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
@@ -130,11 +144,20 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section id="analysis" separator={true} fullpage={true} ariaLabelledBy="section-heading-analysis">
+			<Section
+				id="analysis"
+				separator={true}
+				fullpage={true}
+				ariaLabelledBy="section-heading-analysis"
+			>
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading id="section-heading-analysis" title="Results" subtitle="See how all the names ranked." />
+							<SectionHeading
+								id="section-heading-analysis"
+								title="Results"
+								subtitle="See how all the names ranked."
+							/>
 						</div>
 						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={600} />}>

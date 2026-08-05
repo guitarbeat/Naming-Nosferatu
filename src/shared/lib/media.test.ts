@@ -88,7 +88,7 @@ describe("getRandomCatImage", () => {
 		// If both are missing, it falls back to ""
 		const emptySparse = new Array(3);
 		// Note: the previous test call cached this id. So let's use id + 3 which also has index 2 mod 3.
-		let id2 = id + 3;
+		const id2 = id + 3;
 		const resultEmpty = getRandomCatImage(id2, emptySparse);
 		expect(resultEmpty).toBe("");
 	});
