@@ -49,6 +49,32 @@ export default defineConfig(({ command }) => ({
                         levels: ["log", "warn", "error", "info", "debug"],
                 }),
         ],
+        build: {
+                chunkSizeWarningLimit: 600,
+                rollupOptions: {
+                        output: {
+                                manualChunks(id) {
+                                        if (id.includes("node_modules")) {
+                                                if (id.includes("recharts")) {
+                                                        return "vendor-recharts";
+                                                }
+                                                if (id.includes("framer-motion")) {
+                                                        return "vendor-motion";
+                                                }
+                                                if (id.includes("@heroui/react") || id.includes("@heroui")) {
+                                                        return "vendor-heroui";
+                                                }
+                                                if (id.includes("@hello-pangea/dnd") || id.includes("@hello-pangea")) {
+                                                        return "vendor-dnd";
+                                                }
+                                                if (id.includes("simple-statistics")) {
+                                                        return "vendor-stats";
+                                                }
+                                        }
+                                },
+                        },
+                },
+        },
         resolve: {
                 alias: {
                         "@": path.resolve(__dirname, "..", "src"),
