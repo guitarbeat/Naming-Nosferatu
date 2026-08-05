@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ModalProps {
 	title: string;
@@ -96,6 +96,8 @@ export function Modal({
 }: ModalProps) {
 	const isOpenResolved = open ?? true;
 	const { isClosing, shouldRender } = useModalAnimation(isOpenResolved);
+	const dialogRef = useRef<HTMLDivElement>(null);
+	const previousFocusRef = useRef<HTMLElement | null>(null);
 
 	const requestClose = () => {
 		if (closeDisabled) {
@@ -103,6 +105,69 @@ export function Modal({
 		}
 		onClose();
 	};
+
+	// Auto-focus the dialog on mount and restore focus on unmount
+	useEffect(() => {
+		if (shouldRender && !isClosing) {
+			previousFocusRef.current = document.activeElement as HTMLElement | null;
+			// Use a small delay so the DOM is ready
+			const timer = window.setTimeout(() => {
+				dialogRef.current?.focus();
+			}, 0);
+			return () => window.clearTimeout(timer);
+		}
+
+		if (!shouldRender && previousFocusRef.current) {
+			previousFocusRef.current.focus();
+			previousFocusRef.current = null;
+		}
+	}, [shouldRender, isClosing]);
+
+	const FOCUSABLE_SELECTOR =
+		'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+	const handleKeyDown = useCallback(
+		(event: React.KeyboardEvent<HTMLDivElement>) => {
+			if (event.key === "Escape" && !closeDisabled) {
+				event.preventDefault();
+				requestClose();
+				return;
+			}
+
+			if (event.key !== "Tab") {
+				return;
+			}
+
+			const dialog = dialogRef.current;
+			if (!dialog) {
+				return;
+			}
+
+			const focusableElements = Array.from(
+				dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+			);
+			if (focusableElements.length === 0) {
+				event.preventDefault();
+				return;
+			}
+
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+
+			if (event.shiftKey) {
+				if (document.activeElement === firstElement || document.activeElement === dialog) {
+					event.preventDefault();
+					lastElement?.focus();
+				}
+			} else {
+				if (document.activeElement === lastElement) {
+					event.preventDefault();
+					firstElement?.focus();
+				}
+			}
+		},
+		[closeDisabled],
+	);
 
 	if (!shouldRender) {
 		return null;
@@ -130,11 +195,13 @@ export function Modal({
 			/>
 
 			<div
+				ref={dialogRef}
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby="modal-title"
 				aria-describedby={description ? "modal-description" : undefined}
 				tabIndex={-1}
+				onKeyDown={handleKeyDown}
 				className={`glass-surface relative z-50 w-full max-w-md overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
 			>
 				<ModalHeader

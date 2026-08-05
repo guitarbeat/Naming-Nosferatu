@@ -273,17 +273,17 @@ export function useTournamentRealtime(options: UseTournamentRealtimeOptions = {}
 
 	const subscribeToTournament = useCallback(
 		(tournamentId: string, callback: (update: TournamentUpdate) => void) => {
-			return serviceRef.current?.subscribeToTournament(tournamentId, callback);
+			return serviceRef.current?.subscribeToTournament(tournamentId, callback) ?? (() => {});
 		},
 		[],
 	);
 
 	const subscribeToMatches = useCallback((callback: (result: MatchResult) => void) => {
-		return serviceRef.current?.subscribeToMatches(callback);
+		return serviceRef.current?.subscribeToMatches(callback) ?? (() => {});
 	}, []);
 
 	const subscribeToUserActivity = useCallback((callback: (activity: UserActivity) => void) => {
-		return serviceRef.current?.subscribeToUserActivity(callback);
+		return serviceRef.current?.subscribeToUserActivity(callback) ?? (() => {});
 	}, []);
 
 	const cleanup = useCallback(() => {

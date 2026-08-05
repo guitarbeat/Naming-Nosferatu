@@ -1,5 +1,6 @@
 import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import {
+	decryptValue,
 	getStorageString,
 	parseJsonValue,
 	removeStorageItem,
@@ -154,7 +155,8 @@ export function useLocalStorage<T>(
 				return;
 			}
 
-			const parsed = parseJsonValue<T>(event.newValue, initialRef.current);
+			const decrypted = decryptValue(event.newValue);
+			const parsed = parseJsonValue<T>(decrypted, initialRef.current);
 			setStored(parsed);
 			valueRef.current = parsed;
 		};

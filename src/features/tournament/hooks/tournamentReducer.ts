@@ -108,6 +108,8 @@ export function tournamentReducer(
 					...state.persistentState,
 					matchHistory: newMatchHistory,
 					ratings: lastEntry.ratings,
+					currentMatch: lastEntry.matchNumber,
+					currentRound: lastEntry.round,
 				},
 				refreshKey: state.refreshKey + 1,
 			};
