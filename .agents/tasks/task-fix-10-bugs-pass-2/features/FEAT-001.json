@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "fix",
   "description": "Fix all 10 bugs identified in the second-pass audit. These are targeted fixes across tournament logic, shared components, and services.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "BUG 1 - TournamentHeader mute button active styling: In src/features/tournament/components/TournamentHeader.tsx around line 90, the button array object is missing an `active` property. Add `active: !audioManager.isMuted` to the mute button object so the map destructure picks it up and applies active styling. Remove the `as const` assertion since adding `active` makes the type incompatible with const-asserted inference that lacks the property.",
     "BUG 2 - handleQuit incomplete PersistentTournamentState: In src/features/tournament/hooks/useTournamentState.ts around line 442-460, the handleQuit dispatch's defaultState payload omits `userName` and `lastUpdated` fields required by PersistentTournamentState. Add `userName: userName || \"anonymous\"` and `lastUpdated: Date.now()` to the defaultState object in the QUIT payload.",
@@ -35,5 +35,5 @@
     "Run: export PATH=/opt/toolchains/.nvm/versions/node/v22.23.2/bin:$PATH && corepack enable pnpm && pnpm run lint"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Pre-existing test failures: 5 tests in tournamentPersistence.test.ts fail on main (createTournamentId generates hash-based IDs but tests expect name-based IDs). Pre-existing lint issues: 2 format errors in AdminNamesTab.tsx and RatingDistributionChart.tsx, 2 useBlockStatements warnings. BUG 3 was already fixed in PR #1227, no change needed. Updated sentryAdapter.test.ts to properly mock import.meta.env.DEV instead of process.env.NODE_ENV for BUG 8."
 }
