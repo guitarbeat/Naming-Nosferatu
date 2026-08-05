@@ -12,9 +12,7 @@ vi.mock("@/shared/services/errorManager", () => ({
 }));
 
 describe("errorSlice", () => {
-	let useStore: ReturnType<
-		typeof create<Pick<AppState, "errors" | "errorActions">>
-	>;
+	let useStore: ReturnType<typeof create<Pick<AppState, "errors" | "errorActions">>>;
 
 	beforeEach(() => {
 		useStore = create<Pick<AppState, "errors" | "errorActions">>((...args) => ({
@@ -95,11 +93,7 @@ describe("errorSlice", () => {
 			expect(state.errors.current).toBeNull();
 
 			// Should call ErrorManager
-			expect(ErrorManager.handleError).toHaveBeenCalledWith(
-				error,
-				context,
-				metadata,
-			);
+			expect(ErrorManager.handleError).toHaveBeenCalledWith(error, context, metadata);
 		});
 
 		it("should use empty object for metadata if not provided", () => {

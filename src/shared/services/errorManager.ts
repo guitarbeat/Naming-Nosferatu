@@ -1,16 +1,16 @@
 import {
-	ERROR_SEVERITY,
-	ERROR_TYPES,
 	determineErrorType,
 	determineSeverity,
+	ERROR_SEVERITY,
+	ERROR_TYPES,
 	type ErrorSeverity,
 	type ErrorType,
 } from "./error/errorClassification";
 import { getUserFriendlyMessage as getCatalogMessage } from "./error/errorMessages";
 import { getTelemetryAdapter } from "./telemetrySeam";
 
-export { ERROR_TYPES, ERROR_SEVERITY };
-export type { ErrorType, ErrorSeverity };
+export type { ErrorSeverity, ErrorType };
+export { ERROR_SEVERITY, ERROR_TYPES };
 
 const RETRY_CONFIG = {
 	maxAttempts: 3,
@@ -108,7 +108,6 @@ function getUserFriendlyMessage(errorInfo: ParsedError, context: string): string
 	const severity = determineSeverity(errorInfo.type, {});
 	return getCatalogMessage(errorInfo.type, severity, context);
 }
-
 
 function isRetryable(errorInfo: ParsedError, metadata: Record<string, unknown>): boolean {
 	if (metadata.isRetryable === false) {

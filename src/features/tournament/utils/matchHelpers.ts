@@ -10,7 +10,9 @@ export interface NormalizedParticipant {
 	pronunciation?: string;
 }
 
-export function normalizeParticipant(participant: Match["left"] | Match["right"]): NormalizedParticipant {
+export function normalizeParticipant(
+	participant: Match["left"] | Match["right"],
+): NormalizedParticipant {
 	if (typeof participant === "object") {
 		if ("memberNames" in participant) {
 			return {
@@ -82,4 +84,3 @@ export function extractMatchData(match: Match): MatchSideData {
 		rightPronunciation: right.pronunciation,
 	};
 }
-

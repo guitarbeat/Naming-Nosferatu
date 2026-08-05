@@ -17,7 +17,6 @@ import { getHeatLevel, type HeatLevel, STREAK_THRESHOLDS } from "./utils/heat";
 import { extractMatchData, getMatchSideId, normalizeParticipant } from "./utils/matchHelpers";
 import { useTimedState } from "./utils/useTimedState";
 
-
 interface StreakBurst {
 	key: number;
 	side: "left" | "right";
@@ -167,8 +166,18 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			}
 			const left = normalizeParticipant(currentMatch.left);
 			const right = normalizeParticipant(currentMatch.right);
-			const leftData = { name: left.name, id: left.id, description: left.description ?? "", outcome: winnerId === left.id ? "winner" : "loser" };
-			const rightData = { name: right.name, id: right.id, description: right.description ?? "", outcome: winnerId === right.id ? "winner" : "loser" };
+			const leftData = {
+				name: left.name,
+				id: left.id,
+				description: left.description ?? "",
+				outcome: winnerId === left.id ? "winner" : "loser",
+			};
+			const rightData = {
+				name: right.name,
+				id: right.id,
+				description: right.description ?? "",
+				outcome: winnerId === right.id ? "winner" : "loser",
+			};
 			try {
 				await Promise.resolve(
 					onVote({
@@ -214,8 +223,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			const left = normalizeParticipant(record.match.left);
 			const right = normalizeParticipant(record.match.right);
 
-			const winnerIds = left.memberIds.includes(String(record.winner)) ? left.memberIds : right.memberIds;
-			const loserIds = left.memberIds.includes(String(record.winner)) ? right.memberIds : left.memberIds;
+			const winnerIds = left.memberIds.includes(String(record.winner))
+				? left.memberIds
+				: right.memberIds;
+			const loserIds = left.memberIds.includes(String(record.winner))
+				? right.memberIds
+				: left.memberIds;
 
 			for (const id of winnerIds) {
 				if (id) {

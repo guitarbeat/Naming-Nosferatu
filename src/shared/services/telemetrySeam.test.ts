@@ -19,9 +19,7 @@ describe("telemetrySeam", () => {
 
 	describe("ConsoleTelemetryAdapter (default adapter)", () => {
 		it("should capture exception and log to console.error", () => {
-			const consoleErrorSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
+			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 			const adapter = getTelemetryAdapter();
 			const error = new Error("Test exception");
 			const tags = { tag1: "val1" };
@@ -41,9 +39,7 @@ describe("telemetrySeam", () => {
 		});
 
 		it("should log error and log to console.error", () => {
-			const consoleErrorSpy = vi
-				.spyOn(console, "error")
-				.mockImplementation(() => {});
+			const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 			const adapter = getTelemetryAdapter();
 			const formattedError = {
 				type: "TEST_TYPE",
@@ -73,10 +69,7 @@ describe("telemetrySeam", () => {
 			// Verify it's actually the one we set by calling a method
 			const error = new Error("Custom error");
 			activeAdapter.captureException(error, "CustomContext");
-			expect(customAdapter.captureException).toHaveBeenCalledWith(
-				error,
-				"CustomContext",
-			);
+			expect(customAdapter.captureException).toHaveBeenCalledWith(error, "CustomContext");
 		});
 	});
 });

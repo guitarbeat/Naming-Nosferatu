@@ -13,9 +13,7 @@ export function TournamentComplete({
 	onNewTournament,
 }: TournamentCompleteProps) {
 	return (
-		<div
-			className="relative flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden py-16 text-foreground"
-		>
+		<div className="relative flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden py-16 text-foreground">
 			<div
 				className="pointer-events-none absolute inset-0"
 				aria-hidden="true"
@@ -60,17 +58,13 @@ export function TournamentComplete({
 						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
 							Total matches
 						</p>
-						<p className="mt-3 text-4xl font-black leading-none text-white">
-							{totalMatches}
-						</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
 					</div>
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
 						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
 							Participants
 						</p>
-						<p className="mt-3 text-4xl font-black leading-none text-white">
-							{participantCount}
-						</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>
 					</div>
 				</div>
 

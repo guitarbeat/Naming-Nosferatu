@@ -9,7 +9,7 @@ import { NameSelector } from "../components/NameSelector";
 export default function TournamentFlow() {
 	const user = useAppStore((s) => s.user);
 	const tournament = useAppStore((s) => s.tournament);
-	const tournamentActions = useAppStore((s) => s.tournamentActions);
+
 
 	const saveRatingsMutation = useMutation({
 		mutationFn: ({
@@ -58,7 +58,7 @@ export default function TournamentFlow() {
 	return (
 		<div className="w-full flex flex-col gap-2">
 			<AnimatePresence mode="wait">
-			{!tournament.isComplete && (
+				{!tournament.isComplete && (
 					<motion.div
 						key="setup"
 						initial={{ opacity: 0 }}
