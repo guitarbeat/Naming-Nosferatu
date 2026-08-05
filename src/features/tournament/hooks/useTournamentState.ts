@@ -1,11 +1,4 @@
-import {
-	useCallback,
-	useEffect,
-	useMemo,
-	useReducer,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import type {
 	MatchResult,
@@ -71,9 +64,7 @@ interface UseTournamentStateResult {
 		callback: (update: TournamentUpdate) => void,
 	) => void;
 	subscribeToMatchResults?: (callback: (result: MatchResult) => void) => void;
-	subscribeToUserActivity?: (
-		callback: (activity: UserActivity) => void,
-	) => void;
+	subscribeToUserActivity?: (callback: (activity: UserActivity) => void) => void;
 }
 
 const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
@@ -117,25 +108,16 @@ function haveSameIds(a: string[], b: string[]): boolean {
 	return true;
 }
 
-export function useTournamentState(
-	names: NameItem[],
-	userName?: string,
-): UseTournamentStateResult {
+export function useTournamentState(names: NameItem[], userName?: string): UseTournamentStateResult {
 	const toast = useToast();
 	const audioManager = useAudioManager();
 	const [isVoting, setIsVoting] = useState(false);
 
-	const tournamentMode = useMemo(
-		() => resolveTournamentMode(names.length),
-		[names.length],
-	);
+	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
-	const tournamentId = useMemo(
-		() => createTournamentId(names, userName),
-		[names, userName],
-	);
+	const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
 
 	const realtime = useTournamentRealtime({ autoConnect: true });
 
@@ -144,19 +126,18 @@ export function useTournamentState(
 		[userName],
 	);
 
-	const [persistentStateRaw, setPersistentState] =
-		useLocalStorage<PersistentTournamentState>(
-			tournamentId,
-			defaultPersistentState,
-			{
-				debounceWait: 1000,
-				onError: () => {
-					toast.showWarning(
-						"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
-					);
-				},
+	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
+		tournamentId,
+		defaultPersistentState,
+		{
+			debounceWait: 1000,
+			onError: () => {
+				toast.showWarning(
+					"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
+				);
 			},
-		);
+		},
+	);
 
 	const persistentState = useMemo(
 		(): PersistentTournamentState =>
@@ -213,8 +194,7 @@ export function useTournamentState(
 
 		const initializeTournament = () => {
 			const hasValidPersistence =
-				persistentState.namesKey === namesKey &&
-				persistentState.mode === tournamentMode;
+				persistentState.namesKey === namesKey && persistentState.mode === tournamentMode;
 			const initialRatings = buildInitialRatings(names);
 
 			let teams = persistentState.teams;
@@ -232,9 +212,7 @@ export function useTournamentState(
 				!hasValidPersistence ||
 				persistentState.bracketEntrants.length === 0 ||
 				!haveSameIds(
-					persistentState.bracketEntrants.filter(
-						(id) => !id.startsWith("__BYE__"),
-					),
+					persistentState.bracketEntrants.filter((id) => !id.startsWith("__BYE__")),
 					participantIds,
 				);
 			const bracketEntrants = shouldResetBracket
@@ -262,9 +240,7 @@ export function useTournamentState(
 				shouldResetBracket ||
 				(tournamentMode === "2v2" && teams !== persistentState.teams)
 			) {
-				stateUpdates.ratings = shouldResetBracket
-					? initialRatings
-					: persistentState.ratings;
+				stateUpdates.ratings = shouldResetBracket ? initialRatings : persistentState.ratings;
 			}
 
 			const storedRatingsAreFresh =
@@ -314,10 +290,7 @@ export function useTournamentState(
 	);
 	const bracketDerived = useMemo(
 		() =>
-			deriveBracketState(
-				state.persistentState.bracketEntrants,
-				state.persistentState.matchHistory,
-			),
+			deriveBracketState(state.persistentState.bracketEntrants, state.persistentState.matchHistory),
 		[state.persistentState.bracketEntrants, state.persistentState.matchHistory],
 	);
 
@@ -329,13 +302,7 @@ export function useTournamentState(
 			teamsById,
 			idToNameMap,
 		});
-	}, [
-		state.refreshKey,
-		idToNameMap,
-		tournamentMode,
-		bracketDerived.pendingMatchIds,
-		teamsById,
-	]);
+	}, [state.refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
 
 	const openingEntrants = useMemo(
 		() =>
@@ -357,12 +324,7 @@ export function useTournamentState(
 						label: name?.name ?? entrantKey,
 					};
 				}),
-		[
-			state.persistentState.bracketEntrants,
-			tournamentMode,
-			teamsById,
-			idToNameMap,
-		],
+		[state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap],
 	);
 
 	const isComplete = bracketDerived.isComplete;
@@ -373,15 +335,8 @@ export function useTournamentState(
 			}),
 		[bracketDerived],
 	);
-	const {
-		totalMatches,
-		matchNumber,
-		round,
-		totalRounds,
-		stageLabel,
-		progress,
-		etaMinutes,
-	} = metrics;
+	const { totalMatches, matchNumber, round, totalRounds, stageLabel, progress, etaMinutes } =
+		metrics;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -395,11 +350,19 @@ export function useTournamentState(
 			const leftIds =
 				currentMatch.mode === "2v2"
 					? currentMatch.left.memberIds
-					: [String(currentMatch.left.id)];
+					: [
+							String(
+								typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id,
+							),
+						];
 			const rightIds =
 				currentMatch.mode === "2v2"
 					? currentMatch.right.memberIds
-					: [String(currentMatch.right.id)];
+					: [
+							String(
+								typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
+							),
+						];
 
 			const winnerSideIds = leftIds.includes(winnerId) ? leftIds : rightIds;
 			const loserSideIds = leftIds.includes(winnerId) ? rightIds : leftIds;
@@ -420,10 +383,7 @@ export function useTournamentState(
 					winnerSide,
 				})
 				.catch((err: unknown) => {
-					console.warn(
-						"[tournament] apply_tournament_match_elo failed (non-fatal):",
-						err,
-					);
+					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
 				});
 
 			dispatch({

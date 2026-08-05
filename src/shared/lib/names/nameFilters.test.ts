@@ -15,19 +15,13 @@ describe("nameFilters predicates", () => {
 	describe("isNameHidden", () => {
 		it("reads both camelCase and snake_case hidden flags", () => {
 			expect(isNameHidden({ id: "1", name: "Cat", isHidden: true })).toBe(true);
-			expect(isNameHidden({ id: "2", name: "Cat", is_hidden: true })).toBe(
-				true,
-			);
+			expect(isNameHidden({ id: "2", name: "Cat", is_hidden: true })).toBe(true);
 			expect(isNameHidden({ id: "3", name: "Cat" })).toBe(false);
 		});
 
 		it("returns false for explicitly false hidden flags", () => {
-			expect(isNameHidden({ id: "4", name: "Cat", isHidden: false })).toBe(
-				false,
-			);
-			expect(isNameHidden({ id: "5", name: "Cat", is_hidden: false })).toBe(
-				false,
-			);
+			expect(isNameHidden({ id: "4", name: "Cat", isHidden: false })).toBe(false);
+			expect(isNameHidden({ id: "5", name: "Cat", is_hidden: false })).toBe(false);
 		});
 
 		it("returns false for null or undefined input", () => {
@@ -39,9 +33,7 @@ describe("nameFilters predicates", () => {
 	describe("isNameLocked", () => {
 		it("reads both camelCase and snake_case locked flags", () => {
 			expect(isNameLocked({ id: "1", name: "Cat", lockedIn: true })).toBe(true);
-			expect(isNameLocked({ id: "2", name: "Cat", locked_in: true })).toBe(
-				true,
-			);
+			expect(isNameLocked({ id: "2", name: "Cat", locked_in: true })).toBe(true);
 			expect(isNameLocked({ id: "3", name: "Cat" })).toBe(false);
 		});
 	});
@@ -54,12 +46,8 @@ describe("nameFilters predicates", () => {
 
 		it("returns true only when name is neither hidden nor locked", () => {
 			expect(isNameActive({ id: "1", name: "Cat" })).toBe(true);
-			expect(isNameActive({ id: "2", name: "Cat", isHidden: true })).toBe(
-				false,
-			);
-			expect(isNameActive({ id: "3", name: "Cat", lockedIn: true })).toBe(
-				false,
-			);
+			expect(isNameActive({ id: "2", name: "Cat", isHidden: true })).toBe(false);
+			expect(isNameActive({ id: "3", name: "Cat", lockedIn: true })).toBe(false);
 			expect(
 				isNameActive({
 					id: "4",
@@ -80,9 +68,7 @@ describe("nameFilters helpers", () => {
 		});
 
 		it("returns an empty array when input is not an array", () => {
-			expect(getVisibleNames("not an array" as unknown as NameItem[])).toEqual(
-				[],
-			);
+			expect(getVisibleNames("not an array" as unknown as NameItem[])).toEqual([]);
 		});
 
 		it("returns all items when none are hidden", () => {
@@ -100,9 +86,7 @@ describe("nameFilters helpers", () => {
 				{ id: "1", name: "Mittens", isHidden: true },
 				{ id: "2", name: "Socks", isHidden: false },
 			];
-			expect(getVisibleNames(names)).toEqual([
-				{ id: "2", name: "Socks", isHidden: false },
-			]);
+			expect(getVisibleNames(names)).toEqual([{ id: "2", name: "Socks", isHidden: false }]);
 		});
 	});
 
