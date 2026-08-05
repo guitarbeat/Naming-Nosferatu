@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "fix",
   "description": "Fix z-index stacking context conflicts between the floating navbar (z-index from --z-sticky: 1000) and modal overlays (z-40 = 40 and z-50 = 50). The Modal uses z-40 for its overlay container and z-50 for the dialog panel, but the floating navbar CSS uses --z-sticky (1000). This means the navbar renders ON TOP of modals, blocking interaction. Also fix the TournamentComplete component which uses w-screen causing horizontal scrollbar overflow on mobile.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "1. In src/shared/components/layout/Modal.tsx, change the outer container from 'z-40' to 'z-[9998]' and the inner dialog panel from 'z-50' to 'z-[9999]'. This ensures the modal renders above the floating navbar (z-index: 1000 from --z-sticky). The values 9998/9999 are deliberately below the --z-max (10000) used for the boot screen only.",
     "2. In src/features/tournament/components/TournamentComplete.tsx, the outer div uses 'w-screen' combined with 'style={{ marginInline: \"calc((100% - 100vw) / 2)\" }}'. The w-screen utility (100vw) does NOT account for scrollbar width and causes horizontal overflow on desktop browsers with visible scrollbars. Replace 'w-screen' with 'w-full' and remove the marginInline style since the component already renders within a full-width flex container.",
@@ -20,5 +20,5 @@
     "export PATH=\"/opt/toolchains/.local/share/mise/installs/node/20.19.6/bin:$PATH\" && cd /projects/sandbox/Naming-Nosferatu && pnpm run test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All three fixes applied cleanly. Build passes. Only test failure is the pre-existing sound.test.ts issue (unrelated to these changes)."
 }
