@@ -46,6 +46,10 @@ export function useLocalStorage<T>(
 	const valueRef = useRef(stored);
 	valueRef.current = stored;
 
+	const currentKeyRef = useRef(key);
+	currentKeyRef.current = key;
+	const isUnmountingRef = useRef(false);
+
 	const debouncedSetItemRef = useRef<ReturnType<typeof debounce> | null>(null);
 
 	useEffect(() => {
@@ -66,17 +70,26 @@ export function useLocalStorage<T>(
 		debouncedSetItemRef.current = null;
 	}, [key, options.debounceWait]);
 
+	// Track true unmount (not key changes)
+	useEffect(() => {
+		isUnmountingRef.current = false; // Reset on (re)mount (handles strict mode)
+		return () => {
+			isUnmountingRef.current = true;
+		};
+	}, []);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: key is needed to re-register cleanup when key changes
 	useEffect(() => {
 		return () => {
-			if (!options.debounceWait || !IS_BROWSER) {
+			if (!isUnmountingRef.current || !options.debounceWait || !IS_BROWSER) {
 				return;
 			}
 
-			const success = writeStorageJson(key, valueRef.current);
+			const success = writeStorageJson(currentKeyRef.current, valueRef.current);
 			if (!success) {
 				if (IS_DEV) {
 					console.error(
-						`[useLocalStorage] Unmount flush failed for key "${key}". In-memory state may not have been persisted.`,
+						`[useLocalStorage] Unmount flush failed for key "${currentKeyRef.current}".`,
 					);
 				}
 			}

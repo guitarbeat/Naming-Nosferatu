@@ -201,53 +201,54 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const completionHandledRef = useRef(false);
 
 	useEffect(() => {
-		if (isComplete && onComplete && !completionHandledRef.current) {
-			completionHandledRef.current = true;
-			audioManager.playLevelUpSound();
-			setTimeout(() => audioManager.playWowSound(), 500);
-
-			const winsByName: Record<string, number> = {};
-			const lossesByName: Record<string, number> = {};
-
-			for (const record of matchHistory) {
-				if (!record?.match) {
-					continue;
-				}
-
-				const { left: leftSide, right: rightSide } = record.match;
-
-				const leftIds = leftSide?.memberIds
-					? leftSide.memberIds.map(String)
-					: [String(leftSide?.id || "")];
-				const rightIds = rightSide?.memberIds
-					? rightSide.memberIds.map(String)
-					: [String(rightSide?.id || "")];
-
-				const winnerIds = leftIds.includes(String(record.winner)) ? leftIds : rightIds;
-				const loserIds = leftIds.includes(String(record.winner)) ? rightIds : leftIds;
-
-				for (const id of winnerIds) {
-					if (id) {
-						winsByName[id] = (winsByName[id] ?? 0) + 1;
-					}
-				}
-				for (const id of loserIds) {
-					if (id) {
-						lossesByName[id] = (lossesByName[id] ?? 0) + 1;
-					}
-				}
-			}
-
-			const results: Record<string, { rating: number; wins: number; losses: number }> = {};
-			for (const [id, rating] of Object.entries(ratings)) {
-				results[id] = {
-					rating,
-					wins: winsByName[id] ?? 0,
-					losses: lossesByName[id] ?? 0,
-				};
-			}
-			onComplete(results);
+		if (!isComplete || !onComplete || completionHandledRef.current) {
+			return;
 		}
+		completionHandledRef.current = true;
+		audioManager.playLevelUpSound();
+		setTimeout(() => audioManager.playWowSound(), 500);
+
+		const winsByName: Record<string, number> = {};
+		const lossesByName: Record<string, number> = {};
+
+		for (const record of matchHistory) {
+			if (!record?.match) {
+				continue;
+			}
+
+			const { left: leftSide, right: rightSide } = record.match;
+
+			const leftIds = leftSide?.memberIds
+				? leftSide.memberIds.map(String)
+				: [String(leftSide?.id || "")];
+			const rightIds = rightSide?.memberIds
+				? rightSide.memberIds.map(String)
+				: [String(rightSide?.id || "")];
+
+			const winnerIds = leftIds.includes(String(record.winner)) ? leftIds : rightIds;
+			const loserIds = leftIds.includes(String(record.winner)) ? rightIds : leftIds;
+
+			for (const id of winnerIds) {
+				if (id) {
+					winsByName[id] = (winsByName[id] ?? 0) + 1;
+				}
+			}
+			for (const id of loserIds) {
+				if (id) {
+					lossesByName[id] = (lossesByName[id] ?? 0) + 1;
+				}
+			}
+		}
+
+		const results: Record<string, { rating: number; wins: number; losses: number }> = {};
+		for (const [id, rating] of Object.entries(ratings)) {
+			results[id] = {
+				rating,
+				wins: winsByName[id] ?? 0,
+				losses: lossesByName[id] ?? 0,
+			};
+		}
+		onComplete(results);
 	}, [isComplete, ratings, onComplete, matchHistory, audioManager]);
 
 	const matchData = useMemo(

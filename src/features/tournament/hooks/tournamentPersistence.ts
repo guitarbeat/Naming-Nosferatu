@@ -39,12 +39,17 @@ export function createNamesKey(names: NameItem[]): string {
 }
 
 export function createTournamentId(names: NameItem[], userName?: string): string {
-	const sortedNames = names
-		.map((n) => n.name || String(n.id))
+	const sortedIds = names
+		.map((n) => String(n.id))
 		.sort()
-		.join("-");
+		.join(",");
 	const prefix = userName || "anonymous";
-	return `tournament-${prefix}-${sortedNames}`;
+	// Simple hash to create a short deterministic key
+	let hash = 0;
+	for (let i = 0; i < sortedIds.length; i++) {
+		hash = ((hash << 5) - hash + sortedIds.charCodeAt(i)) | 0;
+	}
+	return `tournament-${prefix}-${Math.abs(hash).toString(36)}-${names.length}`;
 }
 
 export function createBracketEntrants(participantIds: string[]): string[] {

@@ -36,7 +36,25 @@ class TournamentRealtimeService {
 	private connectionState: ConnectionState = "disconnected";
 	private nameChangeCallbacks = new Set<(payload: unknown) => void>();
 	private ratingChangeCallbacks = new Set<(payload: unknown) => void>();
-	private messageHandlers = new Map<string, Set<MessageHandler>>();
+	private refCount = 0;
+
+	acquire(): void {
+		this.refCount++;
+		if (this.connectionState !== "connected" && this.connectionState !== "connecting") {
+			this.connect().catch((error) => {
+				if (IS_DEV) {
+					console.warn("[TournamentRealtimeService] Auto-connect on acquire failed:", error);
+				}
+			});
+		}
+	}
+
+	release(): void {
+		this.refCount = Math.max(0, this.refCount - 1);
+		if (this.refCount === 0) {
+			this.disconnect();
+		}
+	}
 
 	async connect(): Promise<void> {
 		if (this.connectionState === "connected" || this.connectionState === "connecting") {
@@ -107,25 +125,6 @@ class TournamentRealtimeService {
 		return () => {
 			this.ratingChangeCallbacks.delete(callback);
 		};
-	}
-
-	onMessage(type: string, handler: MessageHandler): void {
-		if (!this.messageHandlers.has(type)) {
-			this.messageHandlers.set(type, new Set());
-		}
-		this.messageHandlers.get(type)?.add(handler);
-	}
-
-	offMessage(type: string): void {
-		this.messageHandlers.delete(type);
-	}
-
-	sendMessage(message: unknown): void {
-		this.appChannel?.send({
-			type: "broadcast",
-			event: "message",
-			payload: message,
-		});
 	}
 
 	subscribeToTournament(
@@ -258,20 +257,16 @@ export function useTournamentRealtime(options: UseTournamentRealtimeOptions = {}
 	useEffect(() => {
 		if (!serviceRef.current) {
 			serviceRef.current = getTournamentRealtimeService();
+		}
 
-			if (options.autoConnect) {
-				serviceRef.current.connect().catch((error) => {
-					if (IS_DEV) {
-						console.error("[TournamentRealtimeService] Connect error:", error);
-					} else {
-						// Error handled silently in production
-					}
-				});
-			}
+		if (options.autoConnect) {
+			serviceRef.current.acquire();
 		}
 
 		return () => {
-			serviceRef.current?.disconnect();
+			if (options.autoConnect) {
+				serviceRef.current?.release();
+			}
 			serviceRef.current = null;
 		};
 	}, [options.autoConnect]);

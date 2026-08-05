@@ -169,7 +169,7 @@ function generateErrorId() {
 		return `error_${Date.now()}_${hexStr}`;
 	}
 
-	return `error_${Date.now()}_fallback`;
+	return `error_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
 function determineErrorType(error: unknown): string {
@@ -422,7 +422,7 @@ function logError(
 	metadata: Record<string, unknown>,
 ) {
 	getTelemetryAdapter().logError(formattedError, context);
-	if (process.env.NODE_ENV !== "development") {
+	if (!import.meta.env?.DEV) {
 		sendToErrorService({ error: formattedError, context, metadata });
 	}
 }
