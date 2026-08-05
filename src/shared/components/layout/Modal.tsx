@@ -196,7 +196,7 @@ export function Modal({
 
 	return (
 		<div
-			className={`fixed inset-0 z-40 flex items-center justify-center px-4 pb-24 sm:pb-4 ${overlayAnimation}`}
+			className={`fixed inset-0 z-[9998] flex items-center justify-center px-4 pb-24 sm:pb-4 ${overlayAnimation}`}
 		>
 			<div
 				className="absolute inset-0 bg-background/60 backdrop-blur-sm"
@@ -216,7 +216,7 @@ export function Modal({
 				aria-describedby={description ? "modal-description" : undefined}
 				tabIndex={-1}
 				onKeyDown={handleKeyDown}
-				className={`glass-surface relative z-50 w-full max-w-md overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
+				className={`glass-surface relative z-[9999] w-full max-w-md overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
 			>
 				<ModalHeader
 					title={title}
