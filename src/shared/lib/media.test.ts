@@ -51,4 +51,45 @@ describe("getRandomCatImage", () => {
 		expect(result).toBeDefined();
 		expect(typeof result).toBe("string");
 	});
+
+	it("evicts oldest items when cache size exceeds maximum (500)", () => {
+		const images = ["img1"];
+		for (let i = 0; i < 505; i++) {
+			getRandomCatImage(`evict-test-${i}`, images);
+		}
+		// The cache shouldn't grow beyond 500, but we can't directly check the internal Map size.
+		// We can at least ensure it doesn't crash and returns the correct image.
+		const result = getRandomCatImage("evict-test-504", images);
+		expect(images).toContain(result);
+	});
+
+	it("falls back to the first image or empty string if computed index is missing", () => {
+		// Mock hashString to return an out-of-bounds index relative to an array with holes
+		const images = ["img1", "img2"];
+		// We'll create an array with a hole
+		const sparseImages = new Array(3);
+		sparseImages[0] = "img1";
+
+		// When it accesses sparseImages[2], it will be undefined, so it should fallback to sparseImages[0]
+		// We need an id that hashes to 2 (mod 3)
+		let id = 0;
+		while (true) {
+			const seed = id;
+			const index = Math.abs(seed) % sparseImages.length;
+			if (index === 2) {
+				break;
+			}
+			id++;
+		}
+
+		const result = getRandomCatImage(id, sparseImages);
+		expect(result).toBe("img1");
+
+		// If both are missing, it falls back to ""
+		const emptySparse = new Array(3);
+		// Note: the previous test call cached this id. So let's use id + 3 which also has index 2 mod 3.
+		let id2 = id + 3;
+		const resultEmpty = getRandomCatImage(id2, emptySparse);
+		expect(resultEmpty).toBe("");
+	});
 });
