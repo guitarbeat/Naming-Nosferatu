@@ -43,7 +43,6 @@ function CatImage({
 	const [hasError, setHasError] = useState(false);
 	const fallbackUrl = CAT_IMAGES[0] ?? "/assets/images/bby-cat.GIF";
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset error state when src prop changes
 	useEffect(() => {
 		setHasError(false);
 	}, []);

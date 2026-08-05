@@ -150,6 +150,7 @@ function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType)
 
 export function NameSelector() {
 	const toast = useToast();
+	const prefersReducedMotion = useReducedMotion() ?? false;
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
