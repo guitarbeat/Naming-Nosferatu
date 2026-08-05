@@ -1,4 +1,10 @@
-import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import {
+	type SetStateAction,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import {
 	decryptValue,
 	getStorageString,
@@ -10,7 +16,10 @@ import {
 const IS_BROWSER = typeof window !== "undefined";
 const IS_DEV = import.meta.env?.DEV ?? false;
 
-function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number): T {
+function debounce<T extends (...args: unknown[]) => void>(
+	func: T,
+	wait: number,
+): T {
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
 	return function (this: unknown, ...args: Parameters<T>) {
@@ -40,7 +49,9 @@ export function useLocalStorage<T>(
 		}
 
 		const raw = getStorageString(key, null);
-		return raw === null ? initialRef.current : parseJsonValue(raw, initialRef.current);
+		return raw === null
+			? initialRef.current
+			: parseJsonValue(raw, initialRef.current);
 	}, [key]);
 
 	const [stored, setStored] = useState<T>(readValue);
@@ -62,7 +73,9 @@ export function useLocalStorage<T>(
 
 				const success = writeStorageJson(key, value);
 				if (!success) {
-					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
+					onErrorRef.current?.(
+						new Error(`localStorage write failed for key "${key}"`),
+					);
 				}
 			}, options.debounceWait);
 			return;
@@ -101,7 +114,9 @@ export function useLocalStorage<T>(
 		(next: SetStateAction<T>) => {
 			try {
 				const resolved =
-					typeof next === "function" ? (next as (previous: T) => T)(valueRef.current) : next;
+					typeof next === "function"
+						? (next as (previous: T) => T)(valueRef.current)
+						: next;
 
 				setStored(resolved);
 				valueRef.current = resolved;
@@ -117,11 +132,16 @@ export function useLocalStorage<T>(
 
 				const success = writeStorageJson(key, resolved);
 				if (!success) {
-					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
+					onErrorRef.current?.(
+						new Error(`localStorage write failed for key "${key}"`),
+					);
 				}
 			} catch (error) {
 				if (IS_DEV) {
-					console.error(`[useLocalStorage] Unexpected error for key "${key}":`, error);
+					console.error(
+						`[useLocalStorage] Unexpected error for key "${key}":`,
+						error,
+					);
 				}
 				onErrorRef.current?.(error);
 			}
