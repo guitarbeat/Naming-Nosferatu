@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Check, CheckCircle, Eye, ZoomIn } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/app/providers/Providers";

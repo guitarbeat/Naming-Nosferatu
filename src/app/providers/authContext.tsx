@@ -104,19 +104,22 @@ function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
 		};
 	}, []);
 
-	const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
-		try {
-			const success = await adapterRef.current.login(credentials);
-			if (success) {
-				const updatedUser = await adapterRef.current.getCurrentUser();
-				setUser(updatedUser);
+	const login = useCallback(
+		async (credentials: LoginCredentials): Promise<boolean> => {
+			try {
+				const success = await adapterRef.current.login(credentials);
+				if (success) {
+					const updatedUser = await adapterRef.current.getCurrentUser();
+					setUser(updatedUser);
+				}
+				return success;
+			} catch (error) {
+				console.error("[Providers] Login failed:", error);
+				throw error;
 			}
-			return success;
-		} catch (error) {
-			console.error("[Providers] Login failed:", error);
-			throw error;
-		}
-	}, []);
+		},
+		[],
+	);
 
 	const logout = useCallback(async () => {
 		try {
@@ -155,7 +158,10 @@ interface AuthProviderProps {
 	adapter?: AuthAdapter;
 }
 
-export function AuthProvider({ children, adapter = noopAdapter }: AuthProviderProps) {
+export function AuthProvider({
+	children,
+	adapter = noopAdapter,
+}: AuthProviderProps) {
 	const value = useAuthProvider(adapter);
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
