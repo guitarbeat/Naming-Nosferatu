@@ -1,5 +1,13 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { type KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	type KeyboardEvent,
+	memo,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { ErrorComponent } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { CAT_IMAGES } from "@/shared/lib/constants";
@@ -14,7 +22,11 @@ import { TournamentHeader } from "./components/TournamentHeader";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { getHeatLevel, type HeatLevel, STREAK_THRESHOLDS } from "./utils/heat";
-import { extractMatchData, getMatchSideId, normalizeParticipant } from "./utils/matchHelpers";
+import {
+	extractMatchData,
+	getMatchSideId,
+	normalizeParticipant,
+} from "./utils/matchHelpers";
 import { useTimedState } from "./utils/useTimedState";
 
 interface StreakBurst {
@@ -82,7 +94,11 @@ function getPressureCopy({
 	return "Momentum matters now. Protect a streak or torch the favorite.";
 }
 
-function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
+function TournamentContent({
+	onComplete,
+	names = [],
+	onVote,
+}: TournamentProps) {
 	const navigate = useNavigate();
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
@@ -112,7 +128,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		matchHistory,
 	} = tournament;
 
-	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(null);
+	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(
+		null,
+	);
 	const voteAnnouncement = useTimedState<string | null>(null);
 	const roundAnnouncement = useTimedState<number | null>(null);
 	const streakBurst = useTimedState<StreakBurst | null>(null);
@@ -149,15 +167,24 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	);
 
 	const leftStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "left")) : 0),
+		() =>
+			currentMatch
+				? calculateWinStreak(getMatchSideId(currentMatch, "left"))
+				: 0,
 		[currentMatch, calculateWinStreak],
 	);
 	const rightStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "right")) : 0),
+		() =>
+			currentMatch
+				? calculateWinStreak(getMatchSideId(currentMatch, "right"))
+				: 0,
 		[currentMatch, calculateWinStreak],
 	);
 	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
-	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
+	const rightHeatLevel = useMemo(
+		() => getHeatLevel(rightStreak),
+		[rightStreak],
+	);
 
 	const handleVoteAdapter = useCallback(
 		async (winnerId: string, _loserId: string) => {
@@ -242,7 +269,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			}
 		}
 
-		const results: Record<string, { rating: number; wins: number; losses: number }> = {};
+		const results: Record<
+			string,
+			{ rating: number; wins: number; losses: number }
+		> = {};
 		for (const [id, rating] of Object.entries(ratings)) {
 			results[id] = {
 				rating,
@@ -274,10 +304,19 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		}
 		if (roundNumber > previousRoundRef.current) {
 			audioManager.playSurpriseSound();
-			roundAnnouncement.setTimed(roundNumber, prefersReducedMotion ? 350 : 1200);
+			roundAnnouncement.setTimed(
+				roundNumber,
+				prefersReducedMotion ? 350 : 1200,
+			);
 		}
 		previousRoundRef.current = roundNumber;
-	}, [roundNumber, isComplete, audioManager, roundAnnouncement, prefersReducedMotion]);
+	}, [
+		roundNumber,
+		isComplete,
+		audioManager,
+		roundAnnouncement,
+		prefersReducedMotion,
+	]);
 
 	const openingRevealSignature =
 		currentMatch && currentMatchNumber === 1 && matchHistory.length === 0
@@ -293,7 +332,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		}
 
 		openingRevealSignatureRef.current = openingRevealSignature;
-		openingBracketReveal.setTimed(true, prefersReducedMotion ? 700 : OPENING_BRACKET_REVEAL_MS);
+		openingBracketReveal.setTimed(
+			true,
+			prefersReducedMotion ? 700 : OPENING_BRACKET_REVEAL_MS,
+		);
 	}, [openingRevealSignature, openingBracketReveal, prefersReducedMotion]);
 
 	const handleVoteForSide = useCallback(
@@ -304,13 +346,20 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 			const winnerId = side === "left" ? matchData.leftId : matchData.rightId;
 			const loserId = side === "left" ? matchData.rightId : matchData.leftId;
-			const winnerName = side === "left" ? matchData.leftName : matchData.rightName;
+			const winnerName =
+				side === "left" ? matchData.leftName : matchData.rightName;
 			const expectedStreak = (side === "left" ? leftStreak : rightStreak) + 1;
 			const heatLevel = getHeatLevel(expectedStreak);
 
 			if (heatLevel) {
 				streakBurst.setTimed(
-					{ key: Date.now(), side, winnerName, streak: expectedStreak, heatLevel },
+					{
+						key: Date.now(),
+						side,
+						winnerName,
+						streak: expectedStreak,
+						heatLevel,
+					},
 					prefersReducedMotion ? 280 : 950,
 				);
 				audioManager.playStreakSound(expectedStreak);
@@ -349,8 +398,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[handleVoteForSide],
 	);
 
-	const leftImg = matchData ? getRandomCatImage(matchData.leftId, CAT_IMAGES) : null;
-	const rightImg = matchData ? getRandomCatImage(matchData.rightId, CAT_IMAGES) : null;
+	const leftImg = matchData
+		? getRandomCatImage(matchData.leftId, CAT_IMAGES)
+		: null;
+	const rightImg = matchData
+		? getRandomCatImage(matchData.rightId, CAT_IMAGES)
+		: null;
 	const hasSelectionFeedback = selectedSide !== null;
 	const currentMatchKey = matchData
 		? `${roundNumber}-${currentMatchNumber}-${matchData.leftId}-${matchData.rightId}`
@@ -450,7 +503,10 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const leftIsFavored = leftRating > rightRating;
 	const rightIsFavored = rightRating > leftRating;
 	const matchesRemaining = Math.max(0, totalMatches - currentMatchNumber);
-	const roundMatchesLeft = Math.max(0, Math.ceil((totalMatches - currentMatchNumber) / 2));
+	const roundMatchesLeft = Math.max(
+		0,
+		Math.ceil((totalMatches - currentMatchNumber) / 2),
+	);
 	const stageHeadline = getStageHeadline(roundNumber, totalRounds);
 	const pressureCopy = getPressureCopy({
 		round: roundNumber,
@@ -513,13 +569,19 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					<motion.div
 						key={currentMatchKey}
 						initial={
-							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: "blur(6px)" }
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: 14, filter: "blur(6px)" }
 						}
 						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }
+							prefersReducedMotion
+								? { opacity: 1 }
+								: { opacity: 1, y: 0, filter: "blur(0px)" }
 						}
 						exit={
-							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -12, filter: "blur(6px)" }
 						}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.32 }}
 						className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-stretch gap-4 sm:grid sm:h-full sm:min-h-0 sm:grid-cols-[1fr_auto_1fr] sm:gap-4"
@@ -544,12 +606,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							onVote={() => handleVoteForSide("left")}
 						/>
 
-						<div className="flex w-full flex-row items-center justify-center gap-3 py-1 sm:w-24 sm:flex-col sm:gap-3" aria-hidden="true">
+						<div
+							className="flex w-full flex-row items-center justify-center gap-3 py-1 sm:w-24 sm:flex-col sm:gap-3"
+							aria-hidden="true"
+						>
 							<div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-bold italic tracking-tight shadow-lg sm:h-16 sm:w-16 sm:text-2xl">
 								VS
 							</div>
 							<div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/60 sm:text-[11px]">
-								{dominantStreak ? `Hot streak x${dominantStreak.streak}` : "Choose one"}
+								{dominantStreak
+									? `Hot streak x${dominantStreak.streak}`
+									: "Choose one"}
 							</div>
 							<p className="hidden max-w-[7rem] text-center text-[11px] leading-relaxed text-white/50 sm:block">
 								Tap a card or use the keyboard to send it forward.
