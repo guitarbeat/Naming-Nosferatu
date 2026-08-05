@@ -1,10 +1,13 @@
-import { describe, expect, it } from "vitest";
-import type { MatchRecord, Team } from "@/shared/types";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { MatchRecord, NameItem, Team } from "@/shared/types";
 import {
 	calculateTournamentMetrics,
 	computeUpdatedRatings,
+	createIdToNameMap,
+	createMatchRecord,
 	createTeamsById,
 	deriveBracketState,
+	resolveCurrentMatch,
 } from "./tournamentLogic";
 
 describe("computeUpdatedRatings", () => {
@@ -69,6 +72,45 @@ describe("computeUpdatedRatings", () => {
 			loserId: "p1",
 		});
 		expect(result).toEqual({ p1: 1488, p2: 1512, p3: 1188, p4: 1812 });
+	});
+
+	it("handles missing players in ratingsSnapshot using default ratings", () => {
+		const result = computeUpdatedRatings({
+			currentMatch: {
+				mode: "1v1",
+				left: { id: "newPlayer1", name: "New 1" },
+				right: { id: "newPlayer2", name: "New 2" },
+			},
+			ratingsSnapshot, // Missing newPlayer1 and newPlayer2
+			winnerId: "newPlayer1",
+			loserId: "newPlayer2",
+		});
+		// Assuming default rating is 1000 and K-factor updates them correctly
+		// The default Elo rating is 1500
+		// newPlayer1 wins: 1500 + 80 * (1 - 0.5) = 1540
+		// newPlayer2 loses: 1500 + 80 * (0 - 0.5) = 1460
+		expect(result).toEqual({
+			...ratingsSnapshot,
+			newPlayer1: 1540,
+			newPlayer2: 1460,
+		});
+	});
+
+	it("coerces numeric IDs to strings", () => {
+		const result = computeUpdatedRatings({
+			currentMatch: {
+				mode: "1v1",
+				left: { id: 1 as unknown as string, name: "Numeric 1" },
+				right: { id: 2 as unknown as string, name: "Numeric 2" },
+			},
+			ratingsSnapshot: {
+				"1": 1500,
+				"2": 1500,
+			},
+			winnerId: "1",
+			loserId: "2",
+		});
+		expect(result).toEqual({ "1": 1540, "2": 1460 });
 	});
 });
 
@@ -309,5 +351,123 @@ describe("calculateTournamentMetrics", () => {
 		expect(metrics.progress).toBe(100);
 		// completedMatches >= totalMatches results in 0 eta
 		expect(metrics.etaMinutes).toBe(0);
+	});
+});
+
+describe("createIdToNameMap", () => {
+	it("returns a map with NameItems keyed by their ID", () => {
+		const names: NameItem[] = [
+			{ id: "n1", name: "Name 1" },
+			{ id: 2 as unknown as string, name: "Name 2" },
+		];
+		const result = createIdToNameMap(names);
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(2);
+		expect(result.get("n1")).toEqual(names[0]);
+		expect(result.get("2")).toEqual(names[1]);
+	});
+
+	it("returns an empty map for an empty array", () => {
+		const result = createIdToNameMap([]);
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(0);
+	});
+});
+
+describe("resolveCurrentMatch", () => {
+	const idToNameMap = new Map<string, NameItem>([
+		["p1", { id: "p1", name: "Player 1" }],
+	]);
+
+	const teamsById = new Map<string, Team>([
+		["t1", { id: "t1", memberIds: ["p1"], memberNames: ["Player 1"] }],
+		["t2", { id: "t2", memberIds: ["p2"], memberNames: ["Player 2"] }],
+	]);
+
+	it("returns null if pendingMatchIds is null", () => {
+		expect(
+			resolveCurrentMatch({
+				tournamentMode: "1v1",
+				pendingMatchIds: null,
+				teamsById,
+				idToNameMap,
+			}),
+		).toBeNull();
+	});
+
+	it("returns null if mode is 2v2 and a team is missing", () => {
+		expect(
+			resolveCurrentMatch({
+				tournamentMode: "2v2",
+				pendingMatchIds: { leftId: "t1", rightId: "missing" },
+				teamsById,
+				idToNameMap,
+			}),
+		).toBeNull();
+	});
+
+	it("returns a Match object for 2v2 mode with existing teams", () => {
+		const match = resolveCurrentMatch({
+			tournamentMode: "2v2",
+			pendingMatchIds: { leftId: "t1", rightId: "t2" },
+			teamsById,
+			idToNameMap,
+		});
+		expect(match).toEqual({
+			mode: "2v2",
+			left: teamsById.get("t1"),
+			right: teamsById.get("t2"),
+		});
+	});
+
+	it("returns a Match object for 1v1 mode, falling back to id as name if missing", () => {
+		const match = resolveCurrentMatch({
+			tournamentMode: "1v1",
+			pendingMatchIds: { leftId: "p1", rightId: "missing" },
+			teamsById,
+			idToNameMap,
+		});
+		expect(match).toEqual({
+			mode: "1v1",
+			left: { id: "p1", name: "Player 1" },
+			right: { id: "missing", name: "missing" },
+		});
+	});
+});
+
+describe("createMatchRecord", () => {
+	beforeEach(() => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date("2024-01-01T12:00:00Z"));
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	it("constructs a MatchRecord correctly", () => {
+		const currentMatch = {
+			mode: "1v1" as const,
+			left: { id: "p1", name: "Player 1" },
+			right: { id: "p2", name: "Player 2" },
+		};
+
+		const record = createMatchRecord({
+			currentMatch,
+			winnerId: "p1",
+			loserId: "p2",
+			matchNumber: 5,
+			round: 2,
+		});
+
+		expect(record).toEqual({
+			match: currentMatch,
+			winner: "p1",
+			loser: "p2",
+			voteType: "normal",
+			matchNumber: 5,
+			roundNumber: 2,
+			timestamp: Date.now(),
+		});
 	});
 });
