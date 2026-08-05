@@ -62,8 +62,8 @@ describe("sound initialization", () => {
 		vi.mocked(isStorageAvailable).mockReturnValue(false);
 		globalThis.Audio = MockAudio as any;
 
-		// Dynamic import to get a fresh instance of the module
-		await import("./sound.ts");
+		const { soundManager } = await import("./sound.ts");
+		expect(soundManager.canPlaySounds()).toBe(false);
 
 		expect(isStorageAvailable).toHaveBeenCalled();
 		expect(mockAddEventListener).not.toHaveBeenCalled();
@@ -75,8 +75,8 @@ describe("sound initialization", () => {
 		// @ts-expect-error
 		globalThis.Audio = undefined;
 
-		// Should not throw
-		await import("./sound.ts");
+		const { soundManager } = await import("./sound.ts");
+		expect(soundManager.canPlaySounds()).toBe(true);
 
 		expect(isStorageAvailable).toHaveBeenCalled();
 	});
