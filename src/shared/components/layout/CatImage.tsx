@@ -46,7 +46,7 @@ function CatImage({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset error state when src prop changes
 	useEffect(() => {
 		setHasError(false);
-	}, [src]);
+	}, []);
 
 	if (!src && !hasError) {
 		return null;
