@@ -33,7 +33,7 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		error: errorEngagement,
 		refresh: refreshEngagementMetrics,
 	} = useAsyncData<EngagementMetrics | null>(
-		() => statsAPI.getEngagementMetrics(timeframe as "day" | "week" | "month" | "year"),
+		() => statsAPI.getEngagementMetrics(timeframe),
 		null,
 		{ deps: [timeframe] },
 	);
