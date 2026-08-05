@@ -12,11 +12,17 @@ interface LightboxProps {
 export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
 	const currentImage = images[currentIndex] || "";
 	const hasMultipleImages = images.length > 1;
+	const closeButtonRef = useRef<HTMLButtonElement>(null);
 
 	// Use a ref to hold onClose so the keyboard effect does not re-register
 	// when the caller passes an unstable inline arrow (e.g. () => setState(false)).
 	const onCloseRef = useRef(onClose);
 	onCloseRef.current = onClose;
+
+	// Focus the close button on mount for keyboard accessibility
+	useEffect(() => {
+		closeButtonRef.current?.focus();
+	}, []);
 
 	const handlePrevious = useCallback(() => {
 		onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
@@ -60,6 +66,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				aria-label={`Image ${currentIndex + 1} of ${images.length}`}
 			>
 				<button
+					ref={closeButtonRef}
 					type="button"
 					onClick={onClose}
 					className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"

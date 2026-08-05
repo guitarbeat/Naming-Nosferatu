@@ -8,6 +8,8 @@ interface SectionProps {
 	className?: string;
 	separator?: boolean;
 	fullpage?: boolean;
+	ariaLabelledBy?: string;
+	ariaLabel?: string;
 }
 
 const maxWidthClasses = {
@@ -23,10 +25,14 @@ export function Section({
 	className = "",
 	separator = false,
 	fullpage = false,
+	ariaLabelledBy,
+	ariaLabel,
 }: SectionProps) {
 	return (
 		<section
 			id={id}
+			aria-labelledby={ariaLabelledBy}
+			aria-label={ariaLabel}
 			className={cn(
 				"app-section",
 				maxWidthClasses[maxWidth],

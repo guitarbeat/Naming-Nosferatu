@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { AudioEffects } from "@/shared/lib/sound";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
@@ -9,6 +9,8 @@ import { NameSelector } from "../components/NameSelector";
 export default function TournamentFlow() {
 	const user = useAppStore((s) => s.user);
 	const tournament = useAppStore((s) => s.tournament);
+	const tournamentActions = useAppStore((s) => s.tournamentActions);
+	const prefersReducedMotion = useReducedMotion();
 
 	const saveRatingsMutation = useMutation({
 		mutationFn: ({

@@ -159,7 +159,7 @@ export const MatchSideCard = memo(function MatchSideCard({
 					<div
 						className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col gap-2 bg-gradient-to-t from-slate-950/96 via-slate-950/60 to-transparent p-5 sm:p-6 ${bodyAlignment} ${textAlign}`}
 					>
-						<p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45">
+						<p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/70">
 							{isTeam ? "Team" : "Name"}
 						</p>
 						<h3
@@ -168,7 +168,7 @@ export const MatchSideCard = memo(function MatchSideCard({
 							{name}
 						</h3>
 						{shortcutHint && (
-							<span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
+							<span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/75">
 								{shortcutHint}
 							</span>
 						)}

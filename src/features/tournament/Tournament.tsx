@@ -188,7 +188,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					}),
 				);
 			} catch (error) {
-				console.error("Vote callback error:", error);
+				console.warn("Tournament vote callback did not persist:", error);
 			}
 		},
 		[onVote, currentMatch, ratings],
@@ -544,7 +544,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							onVote={() => handleVoteForSide("left")}
 						/>
 
-						<div className="flex w-full flex-row items-center justify-center gap-3 py-1 sm:w-24 sm:flex-col sm:gap-3">
+						<div className="flex w-full flex-row items-center justify-center gap-3 py-1 sm:w-24 sm:flex-col sm:gap-3" aria-hidden="true">
 							<div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-sm font-bold italic tracking-tight shadow-lg sm:h-16 sm:w-16 sm:text-2xl">
 								VS
 							</div>

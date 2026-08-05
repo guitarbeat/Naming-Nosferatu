@@ -15,6 +15,7 @@ function StatusMessage({ error, success }: { error?: string; success?: string })
 		<AnimatePresence mode="wait">
 			{error && (
 				<motion.div
+					role="alert"
 					initial={{ opacity: 0, y: -6 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: -6 }}
@@ -26,6 +27,7 @@ function StatusMessage({ error, success }: { error?: string; success?: string })
 			)}
 			{success && (
 				<motion.div
+					role="status"
 					initial={{ opacity: 0, y: -6 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: -6 }}
