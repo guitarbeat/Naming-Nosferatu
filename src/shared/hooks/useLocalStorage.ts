@@ -55,7 +55,7 @@ export function useLocalStorage<T>(
 
 	useEffect(() => {
 		if (options.debounceWait && options.debounceWait > 0) {
-			debouncedSetItemRef.current = debounce((value: T) => {
+			debouncedSetItemRef.current = debounce(((value: T) => {
 				if (!IS_BROWSER) {
 					return;
 				}
@@ -64,7 +64,7 @@ export function useLocalStorage<T>(
 				if (!success) {
 					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
 				}
-			}, options.debounceWait);
+			}) as (...args: unknown[]) => void, options.debounceWait);
 			return;
 		}
 

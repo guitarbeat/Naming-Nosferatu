@@ -57,7 +57,7 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 				/>
 				<Tooltip
 					contentStyle={CHART_TOOLTIP_STYLE}
-					formatter={(
+					formatter={((
 						value: number,
 						_: string,
 						props: { payload: { fullName: string; percentile: number | null } },
@@ -65,7 +65,7 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 						const label = props.payload.fullName;
 						const pct = props.payload.percentile;
 						return [`${value}${pct === null ? "" : ` (top ${100 - pct}%)`}`, label];
-					}}
+					}) as any}
 					cursor={CHART_CURSOR}
 				/>
 				<Bar dataKey="rating" radius={[0, 8, 8, 0]} maxBarSize={28}>
