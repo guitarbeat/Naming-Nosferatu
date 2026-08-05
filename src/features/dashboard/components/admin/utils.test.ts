@@ -43,7 +43,7 @@ describe("admin utils - mapNameToDisplay", () => {
 		expect(mapNameToDisplay(name)).toEqual(expected);
 	});
 
-	it("handles missing popularity_score defaulting to 0", () => {
+		it("handles missing popularity_score defaulting to 0", () => {
 		const name: NameItem = {
 			id: "3",
 			name: "Liam",
@@ -54,6 +54,62 @@ describe("admin utils - mapNameToDisplay", () => {
 		const expected: NameWithStats = {
 			...name,
 			votes: 2,
+			lastVoted: undefined,
+			popularityScore: 0,
+		};
+
+		expect(mapNameToDisplay(name)).toEqual(expected);
+	});
+
+	it("handles null wins, losses, and popularity_score correctly", () => {
+		const name = {
+			id: "4",
+			name: "NullCase",
+			wins: null,
+			losses: null,
+			popularity_score: null,
+		} as unknown as NameItem;
+
+		const expected: NameWithStats = {
+			...name,
+			votes: 0,
+			lastVoted: undefined,
+			popularityScore: 0,
+		};
+
+		expect(mapNameToDisplay(name)).toEqual(expected);
+	});
+
+	it("handles NaN or invalid string wins/losses by casting correctly", () => {
+		const name = {
+			id: "5",
+			name: "NaNCase",
+			wins: "invalid",
+			losses: NaN,
+		} as unknown as NameItem;
+
+		const expected: NameWithStats = {
+			...name,
+			votes: NaN, // Number("invalid" + NaN) is Number("invalidNaN") which is NaN
+			lastVoted: undefined,
+			popularityScore: 0,
+		};
+
+		expect(mapNameToDisplay(name)).toEqual(expected);
+	});
+
+	it("handles undefined properties correctly", () => {
+		const name = {
+			id: "6",
+			name: "UndefinedCase",
+			wins: undefined,
+			losses: undefined,
+			popularity_score: undefined,
+		} as unknown as NameItem;
+
+		const expected: NameWithStats = {
+			...name,
+			votes: 0,
 			lastVoted: undefined,
 			popularityScore: 0,
 		};
