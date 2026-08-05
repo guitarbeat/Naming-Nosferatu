@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "fix",
   "description": "Accessibility improvements: heading hierarchy, reduced motion support for framer-motion, aria landmarks, focus management, and color contrast",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Fix heading hierarchy in HomeSections.tsx: The hero section uses h1 followed by h2 which is correct, but HomeRoute.tsx uses SectionHeading with h2 for all section headings which is correct since they are under the h1. Verify no heading gaps exist across the page flow.",
     "Add prefers-reduced-motion support to framer-motion animations in HomeSections.tsx: The hero section uses motion.div/motion.p/motion.h2 with transforms and opacity animations but does not check useReducedMotion(). Wrap initial/animate/transition props to be no-ops when reduced motion is preferred (similar to how TournamentAnnouncements.tsx already does this).",
@@ -35,5 +35,5 @@
     "eval \"$(mise activate bash)\" && pnpm run test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All changes implemented successfully. Build, type check, and tests pass. The only test failure is the pre-existing sound.test.ts failure which is documented as expected."
 }
