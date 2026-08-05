@@ -273,17 +273,32 @@ export function useTournamentRealtime(options: UseTournamentRealtimeOptions = {}
 
 	const subscribeToTournament = useCallback(
 		(tournamentId: string, callback: (update: TournamentUpdate) => void) => {
-			return serviceRef.current?.subscribeToTournament(tournamentId, callback) ?? (() => {});
+			return (
+				serviceRef.current?.subscribeToTournament(tournamentId, callback) ??
+				(() => {
+					/* no-op */
+				})
+			);
 		},
 		[],
 	);
 
 	const subscribeToMatches = useCallback((callback: (result: MatchResult) => void) => {
-		return serviceRef.current?.subscribeToMatches(callback) ?? (() => {});
+		return (
+			serviceRef.current?.subscribeToMatches(callback) ??
+			(() => {
+				/* no-op */
+			})
+		);
 	}, []);
 
 	const subscribeToUserActivity = useCallback((callback: (activity: UserActivity) => void) => {
-		return serviceRef.current?.subscribeToUserActivity(callback) ?? (() => {});
+		return (
+			serviceRef.current?.subscribeToUserActivity(callback) ??
+			(() => {
+				/* no-op */
+			})
+		);
 	}, []);
 
 	const cleanup = useCallback(() => {

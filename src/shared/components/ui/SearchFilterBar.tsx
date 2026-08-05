@@ -75,7 +75,9 @@ export function SearchFilterBar({
 				</div>
 				<Button
 					onClick={() => {
-						if ("vibrate" in navigator) navigator.vibrate(50);
+						if ("vibrate" in navigator) {
+							navigator.vibrate(50);
+						}
 						onRefresh();
 					}}
 					variant="primary"

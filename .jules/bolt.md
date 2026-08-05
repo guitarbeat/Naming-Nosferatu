@@ -8,3 +8,6 @@
 ## 2025-06-25 - Avoid chained .filter().map() in React render cycles
 **Learning:** Chaining `.filter().map()` inside React render cycles (even when memoized) creates unnecessary intermediate arrays and causes an extra iteration over the data. This contributes to garbage collection pressure and CPU overhead, which can be noticeable on slower devices or when the data set grows.
 **Action:** Replace `.filter().map()` chains with a single-pass `for` loop that concurrently filters and projects the data when processing lists or arrays in React components.
+## 2025-06-25 - Avoid chained .filter().slice().map() on large arrays
+**Learning:** Chaining `.filter().slice(0, limit).map()` requires iterating over the entire array to evaluate the filter condition before slicing and mapping. For large arrays (like a leaderboard) with a small limit, this is highly inefficient and creates unnecessary intermediate arrays.
+**Action:** Replace such chains with a single-pass `for` loop that evaluates the condition, maps the element, and short-circuits (`break`) as soon as the limit is reached.

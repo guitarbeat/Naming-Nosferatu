@@ -95,7 +95,9 @@ function haveSameIds(a: string[], b: string[]): boolean {
 	for (let i = 0; i < b.length; i++) {
 		const val = b[i] as string;
 		const count = counts.get(val);
-		if (!count) return false;
+		if (!count) {
+			return false;
+		}
 		counts.set(val, count - 1);
 	}
 	return true;
