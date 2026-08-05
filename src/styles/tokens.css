@@ -94,6 +94,11 @@
 	--color-navbar-border: hsl(0deg 0% 0%);
 	--color-navbar-ring: hsl(0deg 0% 0%);
 	--color-stardust: #4DC8F5;
+	--z-dropdown: 100;
+	--z-sticky: 200;
+	--z-navbar: 1000;
+	--z-modal-backdrop: 9998;
+	--z-modal-dialog: 9999;
 	--font-sans: var(--font-sans);
 	--font-ui: var(--font-ui);
 	--font-ui-mono: var(--font-ui-mono);
