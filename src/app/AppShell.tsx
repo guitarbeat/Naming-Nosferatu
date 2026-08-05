@@ -1,4 +1,4 @@
-import { lazy, Suspense, useLayoutEffect } from "react";
+import { type ComponentType, lazy, Suspense, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppLayout } from "@/shared/components/layout/AppLayout";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
@@ -8,6 +8,20 @@ const AdminRoute = lazy(() => import("@/app/routes/AdminRoute"));
 
 function RouteFallback({ text }: { text: string }) {
 	return <Loading variant="cat-gif" text={text} className="min-h-[82dvh]" />;
+}
+
+function SuspendedRoute({
+	component: Component,
+	fallbackText,
+}: {
+	component: ComponentType;
+	fallbackText: string;
+}) {
+	return (
+		<Suspense fallback={<RouteFallback text={fallbackText} />}>
+			<Component />
+		</Suspense>
+	);
 }
 
 export default function AppShell() {
@@ -26,19 +40,24 @@ export default function AppShell() {
 				<Route
 					path="/"
 					element={
-						<Suspense fallback={<RouteFallback text="Loading home..." />}>
-							<HomeRoute />
-						</Suspense>
+						<SuspendedRoute
+							component={HomeRoute}
+							fallbackText="Loading home..."
+						/>
 					}
 				/>
-				<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
+				<Route
+					path="/tournament"
+					element={<Navigate to="/" replace={true} />}
+				/>
 				<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
 				<Route
 					path="/admin"
 					element={
-						<Suspense fallback={<RouteFallback text="Loading admin..." />}>
-							<AdminRoute />
-						</Suspense>
+						<SuspendedRoute
+							component={AdminRoute}
+							fallbackText="Loading admin..."
+						/>
 					}
 				/>
 			</Routes>
