@@ -1,17 +1,51 @@
 import type { Match, NameItem } from "@/shared/types";
 
+export interface NormalizedParticipant {
+	id: string;
+	name: string;
+	memberIds: string[];
+	memberNames: string[];
+	isTeam: boolean;
+	description?: string;
+	pronunciation?: string;
+}
+
+export function normalizeParticipant(participant: Match["left"] | Match["right"]): NormalizedParticipant {
+	if (typeof participant === "object") {
+		if ("memberNames" in participant) {
+			return {
+				id: String(participant.id),
+				name: (participant.memberNames ?? []).join(" + ") || String(participant.id),
+				memberIds: participant.memberIds?.map(String) ?? [String(participant.id)],
+				memberNames: participant.memberNames ?? [],
+				isTeam: true,
+			};
+		}
+		return {
+			id: String(participant.id),
+			name: participant.name,
+			memberIds: [String(participant.id)],
+			memberNames: [participant.name],
+			isTeam: false,
+			description: participant.description,
+			pronunciation: (participant as NameItem).pronunciation,
+		};
+	}
+	return {
+		id: String(participant),
+		name: String(participant),
+		memberIds: [String(participant)],
+		memberNames: [String(participant)],
+		isTeam: false,
+	};
+}
+
 export function getMatchSideId(match: Match, side: "left" | "right"): string {
-	const participant = match[side];
-	return typeof participant === "object" ? String(participant.id) : String(participant);
+	return normalizeParticipant(match[side]).id;
 }
 
 export function getMatchSideName(match: Match, side: "left" | "right"): string {
-	if (match.mode === "2v2") {
-		const team = side === "left" ? match.left : match.right;
-		return team.memberNames.join(" + ");
-	}
-	const participant = match[side];
-	return typeof participant === "object" ? participant.name : String(participant);
+	return normalizeParticipant(match[side]).name;
 }
 
 export interface MatchSideData {
@@ -30,65 +64,22 @@ export interface MatchSideData {
 }
 
 export function extractMatchData(match: Match): MatchSideData {
-	if (match.mode === "2v2") {
-		const leftMembers = match.left.memberNames;
-		const rightMembers = match.right.memberNames;
-		return {
-			leftId: match.left.id,
-			rightId: match.right.id,
-			leftName: leftMembers.join(" + "),
-			rightName: rightMembers.join(" + "),
-			leftMembers,
-			rightMembers,
-			leftIsTeam: true,
-			rightIsTeam: true,
-		};
-	}
-
-	const extractSide = (participant: Match["left"] | Match["right"]) => {
-		if (typeof participant === "object") {
-			if ("memberNames" in participant) {
-				// Team object
-				return {
-					id: String(participant.id),
-					name: (participant.memberNames ?? []).join(" + ") || String(participant.id),
-					members: participant.memberNames ?? [],
-					description: undefined,
-					pronunciation: undefined,
-				};
-			}
-			return {
-				id: String(participant.id),
-				name: participant.name,
-				members: [participant.name],
-				description: participant.description,
-				pronunciation: (participant as NameItem).pronunciation,
-			};
-		}
-		return {
-			id: String(participant),
-			name: String(participant),
-			members: [String(participant)],
-			description: undefined,
-			pronunciation: undefined,
-		};
-	};
-
-	const left = extractSide(match.left);
-	const right = extractSide(match.right);
+	const left = normalizeParticipant(match.left);
+	const right = normalizeParticipant(match.right);
 
 	return {
 		leftId: left.id,
 		rightId: right.id,
 		leftName: left.name,
 		rightName: right.name,
-		leftMembers: left.members,
-		rightMembers: right.members,
-		leftIsTeam: false,
-		rightIsTeam: false,
+		leftMembers: left.memberNames,
+		rightMembers: right.memberNames,
+		leftIsTeam: left.isTeam,
+		rightIsTeam: right.isTeam,
 		leftDescription: left.description,
 		rightDescription: right.description,
 		leftPronunciation: left.pronunciation,
 		rightPronunciation: right.pronunciation,
 	};
 }
+

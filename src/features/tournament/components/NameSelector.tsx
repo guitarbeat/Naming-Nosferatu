@@ -148,18 +148,16 @@ function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType)
 
 export function NameSelector() {
 	const toast = useToast();
-	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
+	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [lightboxIndex, setLightboxIndex] = useState(0);
-	const deferredSync = useCallback((syncFn: () => void) => {
-		setTimeout(syncFn, 0);
-	}, []);
+
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
 		retry: 2,
@@ -186,12 +184,9 @@ export function NameSelector() {
 	const names = isSupabaseUnavailable ? sampleNames : (namesQuery.data?.names ?? []);
 	const isLoading = namesQuery.isPending && !isSupabaseUnavailable;
 
-	const syncSelectionToStore = useCallback(
-		(nextSelectedIds: Set<IdType>) => {
-			const selectedNameItems = names.filter((nameItem) => nextSelectedIds.has(nameItem.id));
-			tournamentActions.setSelection(selectedNameItems);
-		},
-		[names, tournamentActions],
+	const selectedIds = useMemo(
+		() => new Set(storeSelectedNames.map((item) => item.id)),
+		[storeSelectedNames],
 	);
 
 	const { catImages, catImageById } = useMemo(() => {
@@ -205,39 +200,20 @@ export function NameSelector() {
 		return { catImages, catImageById };
 	}, [names]);
 
-	const showWarningRef = useRef(toast.showWarning);
-	useEffect(() => {
-		showWarningRef.current = toast.showWarning;
-	});
-
 	useEffect(() => {
 		if (names.length === 0) {
 			return;
 		}
-		const lockedInIds = new Set(getLockedNames(names).map((nameItem) => nameItem.id));
-		if (lockedInIds.size === 0) {
+		const lockedInNames = getLockedNames(names);
+		if (lockedInNames.length === 0) {
 			return;
 		}
-		setSelectedNames((prev) => {
-			const next = addManyToSet(prev, lockedInIds);
-			if (next.size !== prev.size) {
-				deferredSync(() => syncSelectionToStore(next));
-				return next;
-			}
-			return prev;
-		});
-	}, [deferredSync, names, syncSelectionToStore]);
-
-	const toggleName = useCallback(
-		(nameId: IdType) => {
-			setSelectedNames((prev) => {
-				const next = toggleInSet(prev, nameId);
-				deferredSync(() => syncSelectionToStore(next));
-				return next;
-			});
-		},
-		[syncSelectionToStore, deferredSync],
-	);
+		const currentSelectedIds = new Set(storeSelectedNames.map((n) => n.id));
+		const missingLocked = lockedInNames.filter((n) => !currentSelectedIds.has(n.id));
+		if (missingLocked.length > 0) {
+			tournamentActions.setSelection([...storeSelectedNames, ...missingLocked]);
+		}
+	}, [names, storeSelectedNames, tournamentActions]);
 
 	const triggerHaptic = useCallback(() => {
 		if ("vibrate" in navigator) {
@@ -247,15 +223,19 @@ export function NameSelector() {
 
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
-			// Prevent toggling locked names
 			const nameItem = names.find((n) => n.id === nameId);
-			if (nameItem && isNameLocked(nameItem)) {
+			if (!nameItem || isNameLocked(nameItem)) {
 				return;
 			}
 			triggerHaptic();
-			toggleName(nameId);
+
+			const isCurrentlySelected = selectedIds.has(nameId);
+			const nextSelection = isCurrentlySelected
+				? storeSelectedNames.filter((n) => n.id !== nameId)
+				: [...storeSelectedNames, nameItem];
+			tournamentActions.setSelection(nextSelection);
 		},
-		[triggerHaptic, toggleName, names],
+		[names, triggerHaptic, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
 	const handleToggleHidden = useCallback(

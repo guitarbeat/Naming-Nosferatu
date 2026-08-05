@@ -1,6 +1,62 @@
 import { describe, expect, it } from "vitest";
+import type { NameItem } from "@/shared/types";
 import type { NameWithStats, SiteStatsLike } from "./types";
-import { buildAdminStats, filterNamesByStatusAndSearch } from "./utils";
+import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
+
+describe("admin utils - mapNameToDisplay", () => {
+	it("maps name correctly with wins and losses", () => {
+		const name: NameItem = {
+			id: "1",
+			name: "Oliver",
+			wins: 10,
+			losses: 5,
+			popularity_score: 8.5,
+		};
+
+		const expected: NameWithStats = {
+			...name,
+			votes: 15,
+			lastVoted: undefined,
+			popularityScore: 8.5,
+		};
+
+		expect(mapNameToDisplay(name)).toEqual(expected);
+	});
+
+	it("handles missing wins and losses defaulting to 0", () => {
+		const name: NameItem = {
+			id: "2",
+			name: "Emma",
+		};
+
+		const expected: NameWithStats = {
+			...name,
+			votes: 0,
+			lastVoted: undefined,
+			popularityScore: 0,
+		};
+
+		expect(mapNameToDisplay(name)).toEqual(expected);
+	});
+
+	it("handles missing popularity_score defaulting to 0", () => {
+		const name: NameItem = {
+			id: "3",
+			name: "Liam",
+			wins: 2,
+			losses: 0,
+		};
+
+		const expected: NameWithStats = {
+			...name,
+			votes: 2,
+			lastVoted: undefined,
+			popularityScore: 0,
+		};
+
+		expect(mapNameToDisplay(name)).toEqual(expected);
+	});
+});
 
 describe("admin utils - filterNamesByStatusAndSearch", () => {
 	const mockNames: NameWithStats[] = [
@@ -99,12 +155,10 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 
 	describe("Combined Filtering", () => {
 		it("should apply both status filter and search term correctly", () => {
-			// Search for "name" but only in active status
 			const result = filterNamesByStatusAndSearch(mockNames, "active", "name");
 			expect(result).toHaveLength(2);
 			expect(result.map((n) => n.id)).toEqual([1, 2]);
 
-			// Search for "name" but only in hidden status
 			const resultHidden = filterNamesByStatusAndSearch(mockNames, "hidden", "name");
 			expect(resultHidden).toHaveLength(2);
 			expect(resultHidden.map((n) => n.id)).toEqual([3, 5]);
@@ -138,7 +192,7 @@ describe("buildAdminStats", () => {
 	it("calculates active, hidden, and locked names correctly", () => {
 		const names = [
 			{ id: "1", name: "Active1", isHidden: false, lockedIn: false },
-			{ id: "2", name: "Active2", isHidden: false }, // implicitly not locked
+			{ id: "2", name: "Active2", isHidden: false },
 			{ id: "3", name: "Hidden1", isHidden: true, lockedIn: false },
 			{ id: "4", name: "Locked1", isHidden: false, lockedIn: true },
 			{ id: "5", name: "HiddenAndLocked", isHidden: true, lockedIn: true },
@@ -153,9 +207,9 @@ describe("buildAdminStats", () => {
 
 		expect(result).toEqual({
 			totalNames: 5,
-			activeNames: 2, // Active1, Active2
-			hiddenNames: 2, // Hidden1, HiddenAndLocked
-			lockedInNames: 2, // Locked1, HiddenAndLocked
+			activeNames: 2,
+			hiddenNames: 2,
+			lockedInNames: 2,
 			totalUsers: 42,
 			recentVotes: 100,
 		});

@@ -14,8 +14,9 @@ import { TournamentHeader } from "./components/TournamentHeader";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { getHeatLevel, type HeatLevel, STREAK_THRESHOLDS } from "./utils/heat";
-import { extractMatchData, getMatchSideId } from "./utils/matchHelpers";
+import { extractMatchData, getMatchSideId, normalizeParticipant } from "./utils/matchHelpers";
 import { useTimedState } from "./utils/useTimedState";
+
 
 interface StreakBurst {
 	key: number;
@@ -164,24 +165,15 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			if (!onVote || !currentMatch) {
 				return;
 			}
-			const sideData = (side: "left" | "right") => {
-				const participant = currentMatch[side];
-				const id = typeof participant === "object" ? String(participant.id) : String(participant);
-				const name =
-					currentMatch.mode === "2v2" &&
-					typeof participant === "object" &&
-					"memberNames" in participant
-						? (participant.memberNames ?? []).join(" + ") || String(participant.id)
-						: typeof participant === "object"
-							? participant.name
-							: String(participant);
-				return { name, id, description: "", outcome: winnerId === id ? "winner" : "loser" };
-			};
+			const left = normalizeParticipant(currentMatch.left);
+			const right = normalizeParticipant(currentMatch.right);
+			const leftData = { name: left.name, id: left.id, description: left.description ?? "", outcome: winnerId === left.id ? "winner" : "loser" };
+			const rightData = { name: right.name, id: right.id, description: right.description ?? "", outcome: winnerId === right.id ? "winner" : "loser" };
 			try {
 				await Promise.resolve(
 					onVote({
-						match: { left: sideData("left"), right: sideData("right") },
-						result: winnerId === sideData("left").id ? 1 : 0,
+						match: { left: leftData, right: rightData },
+						result: winnerId === left.id ? 1 : 0,
 						ratings,
 						timestamp: new Date().toISOString(),
 					}),
@@ -219,23 +211,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				continue;
 			}
 
-			const { left: leftSide, right: rightSide } = record.match;
+			const left = normalizeParticipant(record.match.left);
+			const right = normalizeParticipant(record.match.right);
 
-			const leftIds =
-				typeof leftSide === "string"
-					? [leftSide]
-					: leftSide?.memberIds
-						? leftSide.memberIds.map(String)
-						: [String(leftSide?.id || "")];
-			const rightIds =
-				typeof rightSide === "string"
-					? [rightSide]
-					: rightSide?.memberIds
-						? rightSide.memberIds.map(String)
-						: [String(rightSide?.id || "")];
-
-			const winnerIds = leftIds.includes(String(record.winner)) ? leftIds : rightIds;
-			const loserIds = leftIds.includes(String(record.winner)) ? rightIds : leftIds;
+			const winnerIds = left.memberIds.includes(String(record.winner)) ? left.memberIds : right.memberIds;
+			const loserIds = left.memberIds.includes(String(record.winner)) ? right.memberIds : left.memberIds;
 
 			for (const id of winnerIds) {
 				if (id) {

@@ -182,7 +182,9 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 	if (variant === "boundary") {
 		return <ErrorBoundary context={context || "Component Boundary"}>{children}</ErrorBoundary>;
 	}
-	return <ErrorInline error={error} onDismiss={onDismiss} className={className} />;
+	return (
+		<ErrorInline error={error} onDismiss={onDismiss} className={className} />
+	);
 };
 
 ErrorComponent.displayName = "ErrorComponent";
