@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "refactor",
   "description": "Zustand store selector optimization - Replace broad useAppStore() calls with granular selectors to prevent unnecessary re-renders",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "In src/app/routes/HomeRoute.tsx: Replace `const { user, tournament, tournamentActions } = useAppStore()` with individual selectors: `const user = useAppStore((s) => s.user)`, `const tournament = useAppStore((s) => s.tournament)`, `const tournamentActions = useAppStore((s) => s.tournamentActions)`. This prevents the component from re-rendering when unrelated state (errors, ui, siteSettings) changes.",
     "In src/shared/components/layout/FloatingNavbar.tsx: Replace `const appStore = useAppStore()` with individual selectors for only the state actually used: `const tournament = useAppStore((s) => s.tournament)`, `const tournamentActions = useAppStore((s) => s.tournamentActions)`, `const user = useAppStore((s) => s.user)`. Remove the `appStore` variable and destructure from the selectors.",
@@ -21,5 +21,5 @@
     "eval \"$(mise activate bash)\" && pnpm run test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All 6 components updated to use granular selectors. Test mocks in FloatingNavbar.test.tsx, HomeRoute.test.tsx, and TournamentFlow.test.tsx needed updating to support the selector pattern (mock now accepts optional selector function and applies it). The pre-existing sound.test.ts failure (Audio constructor spy) is unrelated. Dashboard chunk size is 810.50KB which appears to be pre-existing (not affected by this refactor). Biome linter auto-formatted the files on lint:fix."
 }
