@@ -4,7 +4,7 @@ import { type ElementType, memo, useMemo } from "react";
 import Button from "@/shared/components/layout/Button";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
-import type { SiteStats, UserStats } from "@/shared/services/supabase/statsService";
+import type { EngagementMetrics, SiteStats, UserStats } from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import { ContextBadge, Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
@@ -178,7 +178,7 @@ const CommunityChartsPanel = memo(function CommunityChartsPanel({
 	leaderboard,
 	siteStats,
 }: {
-	leaderboard: typeof leaderboard extends any[] ? typeof leaderboard : NameItem[];
+	leaderboard: NameItem[];
 	siteStats: SiteStats | null;
 }) {
 	return (
@@ -251,7 +251,7 @@ const EngagementPanel = memo(function EngagementPanel({
 	refreshEngagementMetrics,
 	isLoadingEngagement,
 }: {
-	engagementMetrics: typeof engagementMetrics;
+	engagementMetrics: EngagementMetrics | null;
 	timeframe: DashboardTimeframe;
 	setTimeframe: (tf: DashboardTimeframe) => void;
 	refreshEngagementMetrics: () => void;

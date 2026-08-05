@@ -16,6 +16,8 @@ export interface AuthUser {
 	name: string;
 	email?: string;
 	isAdmin: boolean;
+	isLoggedIn?: boolean;
+	avatarUrl?: string;
 	role?: UserRole;
 }
 

@@ -41,7 +41,7 @@ export function AdminDashboard() {
 		[namesQuery.data?.names],
 	);
 	const stats = useMemo(
-		() => buildAdminStats(names, siteStatsQuery.data),
+		() => buildAdminStats(names, siteStatsQuery.data ?? null),
 		[names, siteStatsQuery.data],
 	);
 	const isLoading = namesQuery.isPending || siteStatsQuery.isPending;
@@ -100,7 +100,7 @@ export function AdminDashboard() {
 			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
 				return;
 			}
-			await deleteName({ nameId });
+			await deleteName({ nameId: String(nameId) });
 		},
 		[deleteName],
 	);
