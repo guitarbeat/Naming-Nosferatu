@@ -158,6 +158,9 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
  * Decrypt a raw encrypted string from localStorage.
  * Useful for decrypting values received via StorageEvent from other tabs.
  */
-export function decryptValue(encryptedText: string): string {
+export function decryptValue(encryptedText: string | null | undefined): string {
+	if (encryptedText == null) {
+		return "";
+	}
 	return decrypt(encryptedText);
 }

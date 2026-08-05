@@ -2,6 +2,9 @@ import { X } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+const FOCUSABLE_SELECTOR =
+	'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 interface ModalProps {
 	title: string;
 	open?: boolean;
@@ -98,18 +101,29 @@ export function Modal({
 	const { isClosing, shouldRender } = useModalAnimation(isOpenResolved);
 	const dialogRef = useRef<HTMLDivElement>(null);
 	const previousFocusRef = useRef<HTMLElement | null>(null);
+	const hasCapturedFocusRef = useRef(false);
+	const onCloseRef = useRef(onClose);
 
-	const requestClose = () => {
+	// Keep onCloseRef always pointing to the latest onClose callback
+	useEffect(() => {
+		onCloseRef.current = onClose;
+	});
+
+	const requestClose = useCallback(() => {
 		if (closeDisabled) {
 			return;
 		}
-		onClose();
-	};
+		onCloseRef.current();
+	}, [closeDisabled]);
 
 	// Auto-focus the dialog on mount and restore focus on unmount
 	useEffect(() => {
 		if (shouldRender && !isClosing) {
-			previousFocusRef.current = document.activeElement as HTMLElement | null;
+			// Only capture the trigger element on the initial open, not on rapid re-opens
+			if (!hasCapturedFocusRef.current) {
+				previousFocusRef.current = document.activeElement as HTMLElement | null;
+				hasCapturedFocusRef.current = true;
+			}
 			// Use a small delay so the DOM is ready
 			const timer = window.setTimeout(() => {
 				dialogRef.current?.focus();
@@ -117,14 +131,14 @@ export function Modal({
 			return () => window.clearTimeout(timer);
 		}
 
-		if (!shouldRender && previousFocusRef.current) {
-			previousFocusRef.current.focus();
-			previousFocusRef.current = null;
+		if (!shouldRender) {
+			if (previousFocusRef.current) {
+				previousFocusRef.current.focus();
+				previousFocusRef.current = null;
+			}
+			hasCapturedFocusRef.current = false;
 		}
 	}, [shouldRender, isClosing]);
-
-	const FOCUSABLE_SELECTOR =
-		'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 	const handleKeyDown = useCallback(
 		(event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -166,7 +180,7 @@ export function Modal({
 				}
 			}
 		},
-		[closeDisabled],
+		[closeDisabled, requestClose],
 	);
 
 	if (!shouldRender) {
