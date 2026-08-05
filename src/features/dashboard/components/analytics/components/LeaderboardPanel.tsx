@@ -1,4 +1,5 @@
 import { Trophy } from "lucide-react";
+import { memo } from "react";
 import Button from "@/shared/components/layout/Button";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
@@ -19,7 +20,7 @@ interface LeaderboardPanelProps {
 	onStartNew?: () => void;
 }
 
-export function LeaderboardPanel({
+export const LeaderboardPanel = memo(function LeaderboardPanel({
 	leaderboard,
 	isLoadingLeaderboard,
 	onStartNew,
@@ -94,4 +95,4 @@ export function LeaderboardPanel({
 			)}
 		</Panel>
 	);
-}
+});

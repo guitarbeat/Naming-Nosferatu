@@ -136,7 +136,8 @@ export const RankingAdjustment = memo(
 					saveStatusTimerRef.current = null;
 				}
 				saveTimerRef.current = setTimeout(() => {
-					onSaveRef.current(items)
+					onSaveRef
+						.current(items)
 						.then(() => {
 							if (!isMountedRef.current) {
 								return;

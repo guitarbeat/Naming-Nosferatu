@@ -1,5 +1,14 @@
 import { BarChart3, CheckCircle, Lightbulb, Lock, Trophy, User } from "lucide-react";
-import { lazy, type ReactNode, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import {
+	lazy,
+	memo,
+	type ReactNode,
+	Suspense,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
@@ -30,7 +39,7 @@ type NavItem = {
 	onClick: () => void;
 };
 
-function FloatingNav({ items }: { items: NavItem[] }) {
+const FloatingNav = memo(function FloatingNav({ items }: { items: NavItem[] }) {
 	const visibleItems = items.slice(0, 5);
 	return (
 		<nav aria-label="Primary" className="floating-navbar-frame">
@@ -67,7 +76,7 @@ function FloatingNav({ items }: { items: NavItem[] }) {
 			</div>
 		</nav>
 	);
-}
+});
 
 type NavSection = "pick" | "tournament" | "analysis";
 
