@@ -1,4 +1,12 @@
-import { Clock, Gamepad2, Medal, Undo2, Volume2, VolumeX, X } from "lucide-react";
+import {
+	Clock,
+	Gamepad2,
+	Medal,
+	Undo2,
+	Volume2,
+	VolumeX,
+	X,
+} from "lucide-react";
 import { memo } from "react";
 import { getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
