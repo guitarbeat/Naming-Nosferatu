@@ -12,7 +12,12 @@ export interface ApplyTournamentMatchParams {
 const validateRatingsData = (
 	userId: string,
 	ratings: Record<string, { rating: number; wins: number; losses: number }>,
-): { isValid: boolean; error?: string } => {
+):
+	| {
+			isValid: true;
+			data: { nameId: string; rating: number; wins: number; losses: number }[];
+	  }
+	| { isValid: false; error: string } => {
 	if (!userId || typeof userId !== "string" || userId.trim().length === 0) {
 		return {
 			isValid: false,
@@ -24,18 +29,29 @@ const validateRatingsData = (
 		return { isValid: false, error: "Invalid ratings: must be an object" };
 	}
 
-	let ratingsCount = 0;
+	// Performance optimization: O(1) fail-fast size checks using Object.keys()
+	// instead of counting incrementally during a for..in loop.
+	const keys = Object.keys(ratings);
+	const length = keys.length;
 
-	for (const nameId in ratings) {
-		ratingsCount++;
-		if (ratingsCount > 200) {
-			return {
-				isValid: false,
-				error: "Invalid ratings: exceeds maximum limit of 200 entries",
-			};
-		}
+	if (length === 0) {
+		return { isValid: false, error: "Invalid ratings: cannot be empty" };
+	}
 
+	if (length > 200) {
+		return {
+			isValid: false,
+			error: "Invalid ratings: exceeds maximum limit of 200 entries",
+		};
+	}
+
+	// Transform in the same pass as validation to eliminate the second loop in saveRatings
+	const ratingsList = [];
+
+	for (let i = 0; i < length; i++) {
+		const nameId = keys[i];
 		const data = ratings[nameId];
+
 		if (!nameId || typeof nameId !== "string") {
 			return {
 				isValid: false,
@@ -72,13 +88,16 @@ const validateRatingsData = (
 				error: `Invalid losses for ${nameId}: must be a number between 0 and 1000`,
 			};
 		}
+
+		ratingsList.push({
+			nameId,
+			rating,
+			wins,
+			losses,
+		});
 	}
 
-	if (ratingsCount === 0) {
-		return { isValid: false, error: "Invalid ratings: cannot be empty" };
-	}
-
-	return { isValid: true };
+	return { isValid: true, data: ratingsList };
 };
 
 export const ratingsAPI = {
@@ -129,26 +148,10 @@ export const ratingsAPI = {
 			throw new Error(validation.error || "Invalid ratings data");
 		}
 
-		const ratingsList: {
-			nameId: string;
-			rating: number;
-			wins: number;
-			losses: number;
-		}[] = [];
-		for (const nameId in ratings) {
-			const data = ratings[nameId];
-			ratingsList.push({
-				nameId,
-				rating: data.rating,
-				wins: data.wins,
-				losses: data.losses,
-			});
-		}
-
 		return withSupabaseOrThrow(async (client) => {
 			const { data, error } = await client.rpc("save_user_ratings", {
 				p_user_name: userId,
-				p_ratings: ratingsList,
+				p_ratings: validation.data,
 			});
 
 			throwOnRpcError(error, "Failed to save ratings");
