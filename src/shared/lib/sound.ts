@@ -154,7 +154,7 @@ class SoundManager {
 	}
 }
 
-const soundManager = new SoundManager();
+export const soundManager = new SoundManager();
 
 /**
  * Core Audio Service Exports

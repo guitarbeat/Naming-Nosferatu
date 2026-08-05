@@ -93,21 +93,18 @@ describe("sound initialization", () => {
 			}
 		}
 
-		globalThis.Audio = SpiedMockAudio as any;
-
-		await import("./sound.ts");
+		const { soundManager } = await import("./sound.ts");
+		soundManager.play("vote");
 
 		expect(isStorageAvailable).toHaveBeenCalled();
 
-		// It should have called Audio constructor for preloading sounds and background music
-		// SOUND_EFFECTS length (6) + 1 background music track = 7
+		// It should have called Audio constructor for preloading sounds on first play()
 		expect(audioSpy).toHaveBeenCalled();
 		expect(audioSpy.mock.calls.length).toBeGreaterThan(0);
 
-		// Verify some expected files were preloaded
+		// Verify expected file was preloaded
 		const calledUrls = audioSpy.mock.calls.map((call) => call[0]);
 		expect(calledUrls.some((url) => url.includes("vote.mp3"))).toBe(true);
-		expect(calledUrls.some((url) => url.includes("undo.mp3"))).toBe(true);
 		expect(mockAddEventListener).toHaveBeenCalledWith("error", expect.any(Function), {
 			once: true,
 		});

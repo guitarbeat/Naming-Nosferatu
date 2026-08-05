@@ -11,7 +11,7 @@ interface TournamentHeaderProps {
 	currentMatchNumber: number;
 	totalMatches: number;
 	etaMinutes: number;
-	audioManager: any;
+	audioManager: unknown;
 	canUndo: boolean;
 	handleUndo: () => void;
 	quitTournament: () => void;

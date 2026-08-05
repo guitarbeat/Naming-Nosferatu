@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { MatchRecord, Team } from "@/shared/types";
 import {
+	calculateTournamentMetrics,
 	computeUpdatedRatings,
 	createTeamsById,
 	deriveBracketState,
@@ -113,7 +114,11 @@ describe("createTeamsById", () => {
 describe("deriveBracketState", () => {
 	function mockRecord(winner: string): MatchRecord {
 		return {
-			match: { mode: "1v1", left: "any", right: "any" } as any,
+			match: {
+				mode: "1v1",
+				left: "any",
+				right: "any",
+			} as unknown as MatchRecord["match"],
 			winner,
 			loser: "any",
 			voteType: "manual",
@@ -221,5 +226,88 @@ describe("deriveBracketState", () => {
 		const result4 = deriveBracketState(entrants, history);
 		expect(result3).toBe(result4);
 		expect(result3).not.toBe(result1);
+	});
+});
+
+describe("calculateTournamentMetrics", () => {
+	it("returns correct metrics for an ongoing tournament", () => {
+		const derived = {
+			isComplete: false,
+			totalMatches: 10,
+			completedMatches: 4,
+			round: 2,
+			totalRounds: 4,
+			stageLabel: "Quarterfinal",
+			roundSize: 8,
+			pendingMatchIds: { leftId: "a", rightId: "b" },
+		};
+
+		const metrics = calculateTournamentMetrics({ derived });
+		expect(metrics).toEqual({
+			totalMatches: 10,
+			completedMatches: 4,
+			matchNumber: 5, // completedMatches + 1
+			roundSize: 8,
+			round: 2,
+			totalRounds: 4,
+			stageLabel: "Quarterfinal",
+			progress: 40, // (4 / 10) * 100
+			etaMinutes: 1, // Math.ceil(((10 - 4) * 3) / 60) -> 18 / 60 -> ceil(0.3) -> 1
+		});
+	});
+
+	it("returns zero progress and eta for a tournament with no matches", () => {
+		const derived = {
+			isComplete: true,
+			totalMatches: 0,
+			completedMatches: 0,
+			round: 1,
+			totalRounds: 1,
+			stageLabel: "Final",
+			roundSize: 1,
+			pendingMatchIds: null,
+		};
+
+		const metrics = calculateTournamentMetrics({ derived });
+		expect(metrics.progress).toBe(0);
+		expect(metrics.etaMinutes).toBe(0);
+		expect(metrics.matchNumber).toBe(0); // isComplete is true
+	});
+
+	it("handles a completed tournament", () => {
+		const derived = {
+			isComplete: true,
+			totalMatches: 7,
+			completedMatches: 7,
+			round: 3,
+			totalRounds: 3,
+			stageLabel: "Final",
+			roundSize: 2,
+			pendingMatchIds: null,
+		};
+
+		const metrics = calculateTournamentMetrics({ derived });
+		expect(metrics.progress).toBe(100);
+		expect(metrics.etaMinutes).toBe(0); // completedMatches >= totalMatches
+		expect(metrics.matchNumber).toBe(7); // isComplete is true
+	});
+
+	it("handles completed matches exceeding total matches gracefully", () => {
+		const derived = {
+			isComplete: false,
+			totalMatches: 5,
+			completedMatches: 6,
+			round: 3,
+			totalRounds: 3,
+			stageLabel: "Final",
+			roundSize: 2,
+			pendingMatchIds: { leftId: "a", rightId: "b" },
+		};
+
+		const metrics = calculateTournamentMetrics({ derived });
+		// Math.min(completedMatches, totalMatches) limits progress to 100%
+		expect(metrics.progress).toBe(100);
+		// completedMatches >= totalMatches results in 0 eta
+		expect(metrics.etaMinutes).toBe(0);
 	});
 });
