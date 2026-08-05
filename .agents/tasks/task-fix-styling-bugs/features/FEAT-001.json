@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "fix",
   "description": "Fix broken Tailwind CSS 4 utility classes and missing design tokens. Multiple classes used in components do not generate CSS output because they are not registered in the @theme inline block in tokens.css, or because the animations/utilities they reference are not defined anywhere.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "1. Register the 'stardust' color in the @theme inline block in src/styles/tokens.css. Add: --color-stardust: #4DC8F5; (this value comes from the dead tailwind.config.js). This will enable bg-stardust/20, bg-stardust/15, bg-stardust/10 to generate CSS.",
     "2. Add the missing --duration-fast CSS variable to the :root block in src/styles/tokens.css (motion tokens section). Set it to 120ms to match the existing --duration-quick pattern. This fixes --analysis-duration-fast: var(--duration-fast) which currently resolves to nothing.",
@@ -28,5 +28,5 @@
     "export PATH=\"/opt/toolchains/.local/share/mise/installs/node/20.19.6/bin:$PATH\" && cd /projects/sandbox/Naming-Nosferatu && pnpm run test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All acceptance criteria verified. Build succeeds. CSS output contains stardust color utilities (bg-stardust, bg-stardust/10, bg-stardust/15, bg-stardust/20), blob keyframes, animate-blob class, and animation-delay utilities. Tests pass with only the pre-existing sound.test.ts failure. knip.json only references 'tailwindcss' as an ignoredDependency (the npm package), not the config file path, so no update was needed there."
 }
