@@ -93,12 +93,14 @@ describe("sound initialization", () => {
 			}
 		}
 
-		const { soundManager } = await import("./sound.ts");
-		soundManager.play("vote");
+		globalThis.Audio = SpiedMockAudio as any;
+
+		const { AudioEffects } = await import("./sound.ts");
+		AudioEffects.playVote();
 
 		expect(isStorageAvailable).toHaveBeenCalled();
 
-		// It should have called Audio constructor for preloading sounds on first play()
+		// It should have called Audio constructor for playing sound
 		expect(audioSpy).toHaveBeenCalled();
 		expect(audioSpy.mock.calls.length).toBeGreaterThan(0);
 

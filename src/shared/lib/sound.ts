@@ -12,7 +12,9 @@ class SoundManager {
 	private audioContext: AudioContext | null = null;
 	private failedAssets: Set<string> = new Set();
 	private defaultVolume = AUDIO.DEFAULT_EFFECTS_VOLUME;
-	private readonly isBrowser = isStorageAvailable();
+	private get isBrowser() {
+		return isStorageAvailable();
+	}
 	private preloaded = false;
 
 	constructor() {
