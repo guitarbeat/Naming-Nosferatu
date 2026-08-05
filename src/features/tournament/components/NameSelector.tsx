@@ -411,7 +411,7 @@ export function NameSelector() {
 					{availableNames.length > 0 && (
 						<div className="grid grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
 							{availableNames.map((nameItem) => {
-								const isSelected = selectedNames.has(nameItem.id);
+								const isSelected = selectedIds.has(nameItem.id);
 								const catImage = catImageById.get(nameItem.id) ?? "";
 								return (
 									<motion.div
