@@ -7,7 +7,9 @@ describe("cn", () => {
 	});
 
 	it("merges conditional classes", () => {
-		expect(cn("class1", true && "class2", false && "class3")).toBe("class1 class2");
+		expect(cn("class1", true && "class2", false && "class3")).toBe(
+			"class1 class2",
+		);
 	});
 
 	it("merges and overrides tailwind classes correctly", () => {
@@ -18,12 +20,16 @@ describe("cn", () => {
 
 	it("handles arrays and objects", () => {
 		expect(cn(["class1", "class2"])).toBe("class1 class2");
-		expect(cn({ class1: true, class2: false, class3: true })).toBe("class1 class3");
+		expect(cn({ class1: true, class2: false, class3: true })).toBe(
+			"class1 class3",
+		);
 		expect(cn(["class1"], { class2: true })).toBe("class1 class2");
 	});
 
 	it("ignores falsy values", () => {
-		expect(cn("class1", null, undefined, false, 0, "", "class2")).toBe("class1 class2");
+		expect(cn("class1", null, undefined, false, 0, "", "class2")).toBe(
+			"class1 class2",
+		);
 	});
 });
 

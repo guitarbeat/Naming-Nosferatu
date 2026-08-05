@@ -114,7 +114,9 @@ export const RankingAdjustment = memo(
 		const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 		const isMountedRef = useRef(true);
 		const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-		const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+		const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+			null,
+		);
 		const onSaveRef = useRef(onSave);
 		onSaveRef.current = onSave;
 

@@ -47,7 +47,8 @@
 }
 
 .app-section--fullpage {
-	padding: var(--app-section-padding-block-fullpage) var(--app-section-padding-inline);
+	padding: var(--app-section-padding-block-fullpage)
+		var(--app-section-padding-inline);
 	min-height: 100dvh;
 	justify-content: center;
 }

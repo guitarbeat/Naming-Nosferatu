@@ -8,7 +8,9 @@ const isDev = () => import.meta.env?.DEV ?? false;
 const STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
 
 // Ensure the key is exactly 256 bits (32 bytes)
-const keyHex = CryptoJS.enc.Utf8.parse(STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32));
+const keyHex = CryptoJS.enc.Utf8.parse(
+	STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32),
+);
 // Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
 const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
@@ -67,7 +69,10 @@ export function isStorageAvailable(): boolean {
 	}
 }
 
-export function getStorageString(key: string, fallback: string | null = null): string | null {
+export function getStorageString(
+	key: string,
+	fallback: string | null = null,
+): string | null {
 	if (!isStorageAvailable()) {
 		return fallback;
 	}
@@ -80,7 +85,10 @@ export function getStorageString(key: string, fallback: string | null = null): s
 		return decrypt(value);
 	} catch (error) {
 		if (isDev()) {
-			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
+			console.error(
+				`[storage] Failed to read key "${key}" from localStorage:`,
+				error,
+			);
 		}
 		return fallback;
 	}
@@ -97,7 +105,10 @@ export function setStorageString(key: string, value: string): boolean {
 		return true;
 	} catch (error) {
 		if (isDev()) {
-			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+			console.error(
+				`[storage] Failed to write key "${key}" to localStorage:`,
+				error,
+			);
 		}
 		return false;
 	}
@@ -112,7 +123,10 @@ export function removeStorageItem(key: string): void {
 		window.localStorage.removeItem(key);
 	} catch (error) {
 		if (isDev()) {
-			console.error(`[storage] Failed to remove key "${key}" from localStorage:`, error);
+			console.error(
+				`[storage] Failed to remove key "${key}" from localStorage:`,
+				error,
+			);
 		}
 	}
 }
@@ -148,7 +162,10 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 		return true;
 	} catch (error) {
 		if (isDev()) {
-			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+			console.error(
+				`[storage] Failed to write key "${key}" to localStorage:`,
+				error,
+			);
 		}
 		return false;
 	}

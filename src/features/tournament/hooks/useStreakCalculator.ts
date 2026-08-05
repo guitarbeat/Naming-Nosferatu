@@ -36,17 +36,26 @@ export function useStreakCalculator(
 	);
 
 	const leftStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "left")) : 0),
+		() =>
+			currentMatch
+				? calculateWinStreak(getMatchSideId(currentMatch, "left"))
+				: 0,
 		[currentMatch, calculateWinStreak],
 	);
 
 	const rightStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "right")) : 0),
+		() =>
+			currentMatch
+				? calculateWinStreak(getMatchSideId(currentMatch, "right"))
+				: 0,
 		[currentMatch, calculateWinStreak],
 	);
 
 	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
-	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
+	const rightHeatLevel = useMemo(
+		() => getHeatLevel(rightStreak),
+		[rightStreak],
+	);
 
 	return {
 		leftStreak,

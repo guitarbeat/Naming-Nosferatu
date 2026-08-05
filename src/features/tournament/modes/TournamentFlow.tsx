@@ -37,9 +37,12 @@ export default function TournamentFlow() {
 
 			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
 				(acc, [nameId, ratingData]) => {
-					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-					const wins = typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
-					const losses = typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
+					const rating =
+						typeof ratingData === "number" ? ratingData : ratingData.rating;
+					const wins =
+						typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
+					const losses =
+						typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
 					acc[nameId] = {
 						rating,
 						wins,
@@ -50,9 +53,13 @@ export default function TournamentFlow() {
 				{} as Record<string, { rating: number; wins: number; losses: number }>,
 			);
 
-			mutateAsyncRef.current({ userId, ratings: ratingsWithStats }).catch((_error) => {
-				console.warn("Tournament ratings save failed — ratings were not persisted");
-			});
+			mutateAsyncRef
+				.current({ userId, ratings: ratingsWithStats })
+				.catch((_error) => {
+					console.warn(
+						"Tournament ratings save failed — ratings were not persisted",
+					);
+				});
 		}
 	}, [tournament.isComplete, tournament.ratings, user.id, user.name]);
 

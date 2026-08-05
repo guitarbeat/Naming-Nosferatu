@@ -4,7 +4,10 @@ export function addToSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
 	return next;
 }
 
-export function addManyToSet<T>(source: ReadonlySet<T>, values: Iterable<T>): Set<T> {
+export function addManyToSet<T>(
+	source: ReadonlySet<T>,
+	values: Iterable<T>,
+): Set<T> {
 	const next = new Set(source);
 	for (const value of values) {
 		next.add(value);

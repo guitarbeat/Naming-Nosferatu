@@ -11,7 +11,10 @@ const authState = {
 };
 
 vi.mock("react-router-dom", async () => {
-	const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+	const actual =
+		await vi.importActual<typeof import("react-router-dom")>(
+			"react-router-dom",
+		);
 	return {
 		...actual,
 		useNavigate: () => navigateMock,
@@ -25,7 +28,9 @@ vi.mock("@/app/providers/Providers", () => ({
 vi.mock("@/app/appConfig", () => ({
 	errorContexts: { analysisDashboard: "Analysis Dashboard" },
 	routeComponents: {
-		DashboardLazy: () => <div data-testid="admin-dashboard">Admin dashboard</div>,
+		DashboardLazy: () => (
+			<div data-testid="admin-dashboard">Admin dashboard</div>
+		),
 	},
 }));
 
@@ -62,7 +67,9 @@ describe("AdminRoute", () => {
 		await renderAdminRoute();
 
 		expect(screen.getByText("Access Denied")).toBeInTheDocument();
-		expect(screen.getByRole("button", { name: "Back Home" })).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "Back Home" }),
+		).toBeInTheDocument();
 	});
 
 	it("navigates home from the access denied state", async () => {

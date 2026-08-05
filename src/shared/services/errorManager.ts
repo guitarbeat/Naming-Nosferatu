@@ -13,7 +13,11 @@ export type { ErrorSeverity, ErrorType };
 export { ERROR_SEVERITY, ERROR_TYPES };
 
 const GLOBAL_SCOPE =
-	typeof globalThis === "undefined" ? (typeof window === "undefined" ? {} : window) : globalThis;
+	typeof globalThis === "undefined"
+		? typeof window === "undefined"
+			? {}
+			: window
+		: globalThis;
 
 function getGlobalScope() {
 	return GLOBAL_SCOPE;
@@ -109,7 +113,10 @@ function parseError(error: unknown): ParsedError {
 	};
 }
 
-function getUserFriendlyMessage(errorInfo: ParsedError, context: string): string {
+function getUserFriendlyMessage(
+	errorInfo: ParsedError,
+	context: string,
+): string {
 	if (
 		errorInfo.type === ERROR_TYPES.NETWORK &&
 		typeof navigator !== "undefined" &&
@@ -121,14 +128,20 @@ function getUserFriendlyMessage(errorInfo: ParsedError, context: string): string
 	return getCatalogMessage(errorInfo.type, severity, context);
 }
 
-function isRetryable(errorInfo: ParsedError, metadata: Record<string, unknown>): boolean {
+function isRetryable(
+	errorInfo: ParsedError,
+	metadata: Record<string, unknown>,
+): boolean {
 	if (metadata.isRetryable === false) {
 		return false;
 	}
 	if (metadata.isRetryable === true) {
 		return true;
 	}
-	if (errorInfo.type === ERROR_TYPES.NETWORK || errorInfo.type === ERROR_TYPES.DATABASE) {
+	if (
+		errorInfo.type === ERROR_TYPES.NETWORK ||
+		errorInfo.type === ERROR_TYPES.DATABASE
+	) {
 		return true;
 	}
 	return false;
@@ -187,7 +200,12 @@ function buildDiagnostics(
 	metadata: Record<string, unknown>,
 ): Record<string, unknown> {
 	const environment = collectEnvironmentSnapshot();
-	const debugHints = deriveDebugHints(errorInfo, context, metadata, environment);
+	const debugHints = deriveDebugHints(
+		errorInfo,
+		context,
+		metadata,
+		environment,
+	);
 	return {
 		fingerprint: createHash({
 			type: errorInfo.type,
@@ -262,7 +280,10 @@ function formatError(
 		aiContext: "",
 		stack: errorInfo.stack,
 	};
-	formatted.aiContext = buildAIContext(formatted, diagnostics as { fingerprint: string });
+	formatted.aiContext = buildAIContext(
+		formatted,
+		diagnostics as { fingerprint: string },
+	);
 	return formatted;
 }
 
@@ -281,7 +302,10 @@ export class CircuitBreaker {
 		this.resetTimeout = timeout;
 	}
 	async execute<T>(fn: () => Promise<T>): Promise<T> {
-		if (this.state === "OPEN" && Date.now() - (this.lastFailureTime || 0) >= this.resetTimeout) {
+		if (
+			this.state === "OPEN" &&
+			Date.now() - (this.lastFailureTime || 0) >= this.resetTimeout
+		) {
 			this.state = "HALF_OPEN";
 		}
 		if (this.state === "OPEN") {
@@ -333,7 +357,9 @@ function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 	}) as T;
 }
 
-function createResilientFunction<T extends (...args: unknown[]) => Promise<unknown>>(
+function createResilientFunction<
+	T extends (...args: unknown[]) => Promise<unknown>,
+>(
 	fn: T,
 	options: {
 		threshold?: number;
@@ -344,7 +370,8 @@ function createResilientFunction<T extends (...args: unknown[]) => Promise<unkno
 ): T {
 	const cb = new CircuitBreaker(options.threshold, options.timeout);
 	const retried = withRetry(fn, options);
-	return (async (...args: unknown[]) => cb.execute(() => retried(...args))) as T;
+	return (async (...args: unknown[]) =>
+		cb.execute(() => retried(...args))) as T;
 }
 
 // ============================================================================

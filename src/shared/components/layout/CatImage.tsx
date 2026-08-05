@@ -19,7 +19,12 @@ function buildSources(src: string) {
 		return null;
 	}
 	const extension = src.split(".").pop()?.toLowerCase();
-	if (!extension || extension === "gif" || extension === "avif" || extension === "webp") {
+	if (
+		!extension ||
+		extension === "gif" ||
+		extension === "avif" ||
+		extension === "webp"
+	) {
 		return null;
 	}
 	const base = src.replace(/\.[^.]+$/, "");

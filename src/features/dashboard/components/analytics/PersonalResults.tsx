@@ -110,7 +110,11 @@ export const PersonalResults = ({
 					</Button>
 				</div>
 
-				<RankingAdjustment rankings={rankings} onSave={handleSave} onCancel={onStartNew} />
+				<RankingAdjustment
+					rankings={rankings}
+					onSave={handleSave}
+					onCancel={onStartNew}
+				/>
 			</div>
 		</div>
 	);

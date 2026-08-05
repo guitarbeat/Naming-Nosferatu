@@ -22,14 +22,19 @@ describe("useTournamentRealtime", () => {
 	});
 
 	it("connects when autoConnect is true", () => {
-		const { result } = renderHook(() => useTournamentRealtime({ autoConnect: true }));
+		const { result } = renderHook(() =>
+			useTournamentRealtime({ autoConnect: true }),
+		);
 		expect(result.current).toBeTruthy();
 	});
 
 	it("provides subscription methods that can be called", () => {
 		const { result } = renderHook(() => useTournamentRealtime());
 
-		const unsubTournament = result.current.subscribeToTournament("test-123", () => {});
+		const unsubTournament = result.current.subscribeToTournament(
+			"test-123",
+			() => {},
+		);
 		expect(typeof unsubTournament).toBe("function");
 
 		const unsubMatches = result.current.subscribeToMatches(() => {});

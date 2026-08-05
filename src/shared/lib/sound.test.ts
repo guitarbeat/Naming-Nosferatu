@@ -88,8 +88,12 @@ describe("sound initialization", () => {
 		const calledUrls = audioSpy.mock.calls.map((call) => call[0]);
 		expect(calledUrls.some((url) => url.includes("vote.mp3"))).toBe(true);
 		expect(calledUrls.some((url) => url.includes("undo.mp3"))).toBe(true);
-		expect(mockAddEventListener).toHaveBeenCalledWith("error", expect.any(Function), {
-			once: true,
-		});
+		expect(mockAddEventListener).toHaveBeenCalledWith(
+			"error",
+			expect.any(Function),
+			{
+				once: true,
+			},
+		);
 	});
 });

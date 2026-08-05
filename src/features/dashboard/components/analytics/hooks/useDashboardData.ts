@@ -25,27 +25,36 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		isLoading: isLoadingLeaderboard,
 		error: errorLeaderboard,
 		refresh: refreshLeaderboard,
-	} = useAsyncData<LeaderboardItem[]>(() => leaderboardAPI.getLeaderboard(10), []);
+	} = useAsyncData<LeaderboardItem[]>(
+		() => leaderboardAPI.getLeaderboard(10),
+		[],
+	);
 
 	const {
 		data: engagementMetrics,
 		isLoading: isLoadingEngagement,
 		error: errorEngagement,
 		refresh: refreshEngagementMetrics,
-	} = useAsyncData<EngagementMetrics | null>(() => statsAPI.getEngagementMetrics(timeframe), null, {
-		deps: [timeframe],
-	});
-
-	const { data: siteStats, error: errorSiteStats } = useAsyncData<SiteStats | null>(
-		() => statsAPI.getSiteStats(),
+	} = useAsyncData<EngagementMetrics | null>(
+		() => statsAPI.getEngagementMetrics(timeframe),
 		null,
+		{
+			deps: [timeframe],
+		},
 	);
 
-	const { data: userStats, error: errorUserStats } = useAsyncData<UserStats | null>(
-		() => (normalizedUserName ? statsAPI.getUserStats(normalizedUserName) : Promise.resolve(null)),
-		null,
-		{ deps: [normalizedUserName] },
-	);
+	const { data: siteStats, error: errorSiteStats } =
+		useAsyncData<SiteStats | null>(() => statsAPI.getSiteStats(), null);
+
+	const { data: userStats, error: errorUserStats } =
+		useAsyncData<UserStats | null>(
+			() =>
+				normalizedUserName
+					? statsAPI.getUserStats(normalizedUserName)
+					: Promise.resolve(null),
+			null,
+			{ deps: [normalizedUserName] },
+		);
 
 	return {
 		engagementMetrics,

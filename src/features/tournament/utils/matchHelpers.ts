@@ -17,8 +17,11 @@ export function normalizeParticipant(
 		if ("memberNames" in participant) {
 			return {
 				id: String(participant.id),
-				name: (participant.memberNames ?? []).join(" + ") || String(participant.id),
-				memberIds: participant.memberIds?.map(String) ?? [String(participant.id)],
+				name:
+					(participant.memberNames ?? []).join(" + ") || String(participant.id),
+				memberIds: participant.memberIds?.map(String) ?? [
+					String(participant.id),
+				],
 				memberNames: participant.memberNames ?? [],
 				isTeam: true,
 			};

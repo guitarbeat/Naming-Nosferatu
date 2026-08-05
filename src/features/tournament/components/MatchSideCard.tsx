@@ -120,7 +120,9 @@ export const MatchSideCard = memo(function MatchSideCard({
 
 					{heatLevel && (
 						<div className="pointer-events-none absolute inset-0 z-10">
-							<div className={`absolute inset-0 ${getHeatGradientClasses(heatLevel)}`} />
+							<div
+								className={`absolute inset-0 ${getHeatGradientClasses(heatLevel)}`}
+							/>
 						</div>
 					)}
 

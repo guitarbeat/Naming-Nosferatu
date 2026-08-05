@@ -94,7 +94,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 		const hasError = Boolean(error);
 
 		return (
-			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
+			<FormField
+				id={id}
+				label={label}
+				error={error}
+				required={required}
+				disabled={props.disabled}
+			>
 				<div className="relative">
 					<input
 						{...props}
@@ -128,7 +134,18 @@ interface TextareaProps
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-	({ label, error, required, value, showCount = false, className = "", ...props }, ref) => {
+	(
+		{
+			label,
+			error,
+			required,
+			value,
+			showCount = false,
+			className = "",
+			...props
+		},
+		ref,
+	) => {
 		const internalId = useId();
 		const id = props.id || internalId;
 		const hasError = Boolean(error);
@@ -145,13 +162,24 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			.join(" ");
 
 		return (
-			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
+			<FormField
+				id={id}
+				label={label}
+				error={error}
+				required={required}
+				disabled={props.disabled}
+			>
 				<textarea
 					{...props}
 					id={id}
 					ref={ref}
 					value={value}
-					className={cn(inputBaseStyles, "min-h-[80px] py-3", hasError && errorStyles, className)}
+					className={cn(
+						inputBaseStyles,
+						"min-h-[80px] py-3",
+						hasError && errorStyles,
+						className,
+					)}
 					aria-invalid={hasError || undefined}
 					aria-describedby={describedBy || undefined}
 				/>

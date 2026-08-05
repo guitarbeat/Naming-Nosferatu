@@ -41,12 +41,20 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	return (
 		<div className="mx-auto my-8 flex min-h-[40vh] w-full max-w-xl items-center justify-center px-4">
 			<div className="w-full rounded-lg border border-destructive/30 bg-background/80 p-6 text-center shadow-xl backdrop-blur">
-				<h2 className="text-2xl font-bold text-foreground">Something went wrong</h2>
-				<p className="mt-2 text-sm text-muted-foreground">{context} could not finish loading.</p>
+				<h2 className="text-2xl font-bold text-foreground">
+					Something went wrong
+				</h2>
+				<p className="mt-2 text-sm text-muted-foreground">
+					{context} could not finish loading.
+				</p>
 				<p className="mt-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
 					{error?.message || "An unexpected error occurred."}
 				</p>
-				{errorId && <p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>}
+				{errorId && (
+					<p className="mt-2 font-mono text-xs text-muted-foreground">
+						ID: {errorId}
+					</p>
+				)}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
 						onClick={resetError}
@@ -68,7 +76,10 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	);
 };
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+	ErrorBoundaryProps,
+	ErrorBoundaryState
+> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -141,11 +152,16 @@ interface ErrorInlineProps {
 	className?: string;
 }
 
-const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className = "" }) => {
+const ErrorInline: React.FC<ErrorInlineProps> = ({
+	error,
+	onDismiss,
+	className = "",
+}) => {
 	if (!error) {
 		return null;
 	}
-	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
+	const msg =
+		typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
 		<div
 			className={cn(
@@ -180,9 +196,15 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 	children,
 }) => {
 	if (variant === "boundary") {
-		return <ErrorBoundary context={context || "Component Boundary"}>{children}</ErrorBoundary>;
+		return (
+			<ErrorBoundary context={context || "Component Boundary"}>
+				{children}
+			</ErrorBoundary>
+		);
 	}
-	return <ErrorInline error={error} onDismiss={onDismiss} className={className} />;
+	return (
+		<ErrorInline error={error} onDismiss={onDismiss} className={className} />
+	);
 };
 
 ErrorComponent.displayName = "ErrorComponent";

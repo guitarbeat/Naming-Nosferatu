@@ -76,7 +76,10 @@ export function calculatePercentile(
 /**
  * Returns the percentile rank using quantileRankSorted for more precise statistics.
  */
-export function getPercentileRank(rating: number, allRatings: number[]): number {
+export function getPercentileRank(
+	rating: number,
+	allRatings: number[],
+): number {
 	if (allRatings.length === 0) {
 		return 50;
 	}
@@ -95,7 +98,10 @@ export function getPercentileRank(rating: number, allRatings: number[]): number 
 	return Math.round((belowCount / (len - 1)) * 100);
 }
 
-export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
+export function getConfidenceScore(
+	gamesPlayed: number,
+	threshold = 15,
+): number {
 	if (gamesPlayed <= 0) {
 		return 0;
 	}

@@ -395,11 +395,23 @@ export function useTournamentState(
 			const leftIds =
 				currentMatch.mode === "2v2"
 					? currentMatch.left.memberIds
-					: [String(typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id)];
+					: [
+							String(
+								typeof currentMatch.left === "string"
+									? currentMatch.left
+									: currentMatch.left.id,
+							),
+						];
 			const rightIds =
 				currentMatch.mode === "2v2"
 					? currentMatch.right.memberIds
-					: [String(typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id)];
+					: [
+							String(
+								typeof currentMatch.right === "string"
+									? currentMatch.right
+									: currentMatch.right.id,
+							),
+						];
 
 			const winnerSideIds = leftIds.includes(winnerId) ? leftIds : rightIds;
 			const loserSideIds = leftIds.includes(winnerId) ? rightIds : leftIds;

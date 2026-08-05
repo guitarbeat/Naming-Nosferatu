@@ -14,12 +14,20 @@ export const imagesAPI = {
 	upload: async (
 		file: File | Blob,
 		userName: string,
-	): Promise<{ path: string | null; error: string | null; success: boolean }> => {
+	): Promise<{
+		path: string | null;
+		error: string | null;
+		success: boolean;
+	}> => {
 		const maxSize = 5 * 1024 * 1024;
 		const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
 		if (file.size > maxSize) {
-			return { path: null, error: "File size exceeds 5MB limit", success: false };
+			return {
+				path: null,
+				error: "File size exceeds 5MB limit",
+				success: false,
+			};
 		}
 		if (!allowedTypes.includes(file.type)) {
 			return {
@@ -37,11 +45,13 @@ export const imagesAPI = {
 						: "jpg";
 				const fileName = `${userName}_${Date.now()}_${crypto.randomUUID()}.${fileExt}`;
 
-				const { error } = await client.storage.from("cat-images").upload(fileName, file, {
-					cacheControl: "3600",
-					upsert: false,
-					contentType: file.type || "image/jpeg",
-				});
+				const { error } = await client.storage
+					.from("cat-images")
+					.upload(fileName, file, {
+						cacheControl: "3600",
+						upsert: false,
+						contentType: file.type || "image/jpeg",
+					});
 
 				if (error) {
 					return { path: null, error: error.message, success: false };
@@ -56,10 +66,14 @@ export const imagesAPI = {
 		);
 	},
 
-	delete: async (fileName: string): Promise<{ success: boolean; error: string | null }> => {
+	delete: async (
+		fileName: string,
+	): Promise<{ success: boolean; error: string | null }> => {
 		return withSupabase(
 			async (client) => {
-				const { error } = await client.storage.from("cat-images").remove([fileName]);
+				const { error } = await client.storage
+					.from("cat-images")
+					.remove([fileName]);
 				if (error) {
 					return { success: false, error: error.message };
 				}

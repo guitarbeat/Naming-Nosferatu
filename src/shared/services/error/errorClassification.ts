@@ -16,7 +16,8 @@ export const ERROR_SEVERITY = {
 	CRITICAL: "critical",
 } as const;
 
-export type ErrorSeverity = (typeof ERROR_SEVERITY)[keyof typeof ERROR_SEVERITY];
+export type ErrorSeverity =
+	(typeof ERROR_SEVERITY)[keyof typeof ERROR_SEVERITY];
 
 export function determineErrorType(error: unknown): ErrorType {
 	if (typeof navigator !== "undefined" && !navigator.onLine) {
@@ -60,7 +61,10 @@ export function determineErrorType(error: unknown): ErrorType {
 	if (err.name === "TypeError" || err.name === "ReferenceError") {
 		return ERROR_TYPES.RUNTIME;
 	}
-	if (err.code === "VALIDATION_ERROR" || (err.message as string)?.includes("validation")) {
+	if (
+		err.code === "VALIDATION_ERROR" ||
+		(err.message as string)?.includes("validation")
+	) {
 		return ERROR_TYPES.VALIDATION;
 	}
 

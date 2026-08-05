@@ -48,7 +48,12 @@ interface ModalHeaderProps {
 	closeDisabled: boolean;
 }
 
-function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
+function ModalHeader({
+	title,
+	hideTitle,
+	requestClose,
+	closeDisabled,
+}: ModalHeaderProps) {
 	if (hideTitle) {
 		return (
 			<>
@@ -71,7 +76,10 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 
 	return (
 		<div className="flex items-center justify-between mb-5">
-			<h2 id="modal-title" className="text-base font-semibold text-foreground tracking-tight">
+			<h2
+				id="modal-title"
+				className="text-base font-semibold text-foreground tracking-tight"
+			>
 				{title}
 			</h2>
 			<button
@@ -169,7 +177,10 @@ export function Modal({
 			const lastElement = focusableElements[focusableElements.length - 1];
 
 			if (event.shiftKey) {
-				if (document.activeElement === firstElement || document.activeElement === dialog) {
+				if (
+					document.activeElement === firstElement ||
+					document.activeElement === dialog
+				) {
 					event.preventDefault();
 					lastElement?.focus();
 				}

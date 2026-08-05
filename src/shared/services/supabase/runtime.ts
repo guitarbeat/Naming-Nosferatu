@@ -28,7 +28,9 @@ declare global {
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
 
-export function shouldWarnMissingSupabaseCredentials(hostname: string): boolean {
+export function shouldWarnMissingSupabaseCredentials(
+	hostname: string,
+): boolean {
 	if (LOCAL_HOSTS.has(hostname)) {
 		return false;
 	}
@@ -50,7 +52,8 @@ function getCurrentHostname(): string {
 const getSupabaseCredentials = (): { url: string; key: string } | null => {
 	const url = import.meta.env.VITE_SUPABASE_URL;
 	const key =
-		import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+		import.meta.env.VITE_SUPABASE_ANON_KEY ||
+		import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 	if (!url || !key || url.includes("PLACEHOLDER")) {
 		if (shouldWarnMissingSupabaseCredentials(getCurrentHostname())) {
@@ -67,64 +70,68 @@ const getSupabaseCredentials = (): { url: string; key: string } | null => {
 let supabaseInstance: SupabaseClient<Database> | null = IS_BROWSER
 	? (window.__supabaseClient ?? null)
 	: null;
-let initializationPromise: Promise<SupabaseClient<Database> | null> | null = null;
+let initializationPromise: Promise<SupabaseClient<Database> | null> | null =
+	null;
 
-const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> => {
-	// Validate and get credentials (returns null if missing)
-	const credentials = getSupabaseCredentials();
-	if (!credentials) {
-		return null;
-	}
-	const { url: SupabaseUrl, key: SupabaseAnonKey } = credentials;
-
-	try {
-		const { createClient } = await import("@supabase/supabase-js");
-		const authOptions = {
-			persistSession: true,
-			autoRefreshToken: true,
-			storage: (() => {
-				if (!isStorageAvailable()) {
-					return undefined;
-				}
-				try {
-					return window.localStorage;
-				} catch {
-					return undefined;
-				}
-			})(),
-		} as const;
-
-		const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
-			auth: authOptions,
-			global: {
-				fetch: (url: URL | RequestInfo, options: RequestInit = {}) => {
-					const currentUserName = getStorageString(STORAGE_KEYS.USER);
-					const currentUserId = getStorageString(STORAGE_KEYS.USER_ID);
-					const headers = new Headers(options.headers);
-					headers.set("X-Client-Info", "cat-name-tournament");
-					if (currentUserName) {
-						headers.set("x-user-name", currentUserName);
-					}
-					if (currentUserId) {
-						headers.set("x-user-id", currentUserId);
-					}
-					return fetch(url, { ...options, headers });
-				},
-			},
-			db: { schema: "public" },
-		});
-
-		if (IS_BROWSER) {
-			window.__supabaseClient = client;
+const createSupabaseClient =
+	async (): Promise<SupabaseClient<Database> | null> => {
+		// Validate and get credentials (returns null if missing)
+		const credentials = getSupabaseCredentials();
+		if (!credentials) {
+			return null;
 		}
-		return client;
-	} catch (error) {
-		console.error("❌ Failed to create Supabase client:", error);
-		return null;
-	}
-};
+		const { url: SupabaseUrl, key: SupabaseAnonKey } = credentials;
 
-const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Database> | null> => {
+		try {
+			const { createClient } = await import("@supabase/supabase-js");
+			const authOptions = {
+				persistSession: true,
+				autoRefreshToken: true,
+				storage: (() => {
+					if (!isStorageAvailable()) {
+						return undefined;
+					}
+					try {
+						return window.localStorage;
+					} catch {
+						return undefined;
+					}
+				})(),
+			} as const;
+
+			const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
+				auth: authOptions,
+				global: {
+					fetch: (url: URL | RequestInfo, options: RequestInit = {}) => {
+						const currentUserName = getStorageString(STORAGE_KEYS.USER);
+						const currentUserId = getStorageString(STORAGE_KEYS.USER_ID);
+						const headers = new Headers(options.headers);
+						headers.set("X-Client-Info", "cat-name-tournament");
+						if (currentUserName) {
+							headers.set("x-user-name", currentUserName);
+						}
+						if (currentUserId) {
+							headers.set("x-user-id", currentUserId);
+						}
+						return fetch(url, { ...options, headers });
+					},
+				},
+				db: { schema: "public" },
+			});
+
+			if (IS_BROWSER) {
+				window.__supabaseClient = client;
+			}
+			return client;
+		} catch (error) {
+			console.error("❌ Failed to create Supabase client:", error);
+			return null;
+		}
+	};
+
+const getSupabaseClient = async (
+	retryCount = 0,
+): Promise<SupabaseClient<Database> | null> => {
 	if (supabaseInstance) {
 		return supabaseInstance;
 	}
@@ -146,7 +153,8 @@ const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Databas
 	return initializationPromise;
 };
 
-export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
+export const resolveSupabaseClient = async () =>
+	supabaseInstance ?? (await getSupabaseClient());
 
 /**
  * No-op retained for backward compatibility.

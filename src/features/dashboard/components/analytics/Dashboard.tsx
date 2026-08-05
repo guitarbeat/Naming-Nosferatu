@@ -1,12 +1,30 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Activity, BarChart3, Target, TrendingUp, Trophy, User, Users } from "lucide-react";
+import {
+	Activity,
+	BarChart3,
+	Target,
+	TrendingUp,
+	Trophy,
+	User,
+	Users,
+} from "lucide-react";
 import { type ElementType, memo, useMemo } from "react";
 import Button from "@/shared/components/layout/Button";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
-import type { EngagementMetrics, LeaderboardItem, SiteStats, UserStats } from "@/shared/services/supabase/statsService";
+import type {
+	EngagementMetrics,
+	LeaderboardItem,
+	SiteStats,
+	UserStats,
+} from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
-import { ContextBadge, Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
+import {
+	ContextBadge,
+	Panel,
+	SectionHeader,
+	StatTile,
+} from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
 import { RatingDistributionChart } from "./components/RatingDistributionChart";
 import { RatingRadarChart } from "./components/RatingRadarChart";
@@ -141,9 +159,13 @@ const DashboardHeader = memo(function DashboardHeader({
 						</div>
 						<div className="min-w-0">
 							<p className={themeText.eyebrowWide}>Profile</p>
-							<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
+							<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">
+								{userName}
+							</h2>
 							<p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground/75">
-								<span>{isAdmin ? "👤 Administrator" : "🎮 Tournament participant"}</span>
+								<span>
+									{isAdmin ? "👤 Administrator" : "🎮 Tournament participant"}
+								</span>
 							</p>
 						</div>
 					</div>
@@ -187,7 +209,11 @@ const CommunityChartsPanel = memo(function CommunityChartsPanel({
 				<>
 					<div className="grid gap-6 xl:grid-cols-2">
 						<Panel>
-							<SectionHeader icon={BarChart3} title="Top Names by Rating" subtitle="Top scores." />
+							<SectionHeader
+								icon={BarChart3}
+								title="Top Names by Rating"
+								subtitle="Top scores."
+							/>
 							<TopNamesChart leaderboard={leaderboard} />
 						</Panel>
 
@@ -203,13 +229,21 @@ const CommunityChartsPanel = memo(function CommunityChartsPanel({
 
 					<div className="grid gap-6 xl:grid-cols-2">
 						<Panel>
-							<SectionHeader icon={Activity} title="Rating Distribution" subtitle="Score spread." />
+							<SectionHeader
+								icon={Activity}
+								title="Rating Distribution"
+								subtitle="Score spread."
+							/>
 							<RatingDistributionChart leaderboard={leaderboard} />
 						</Panel>
 
 						{leaderboard.length >= 3 && (
 							<Panel>
-								<SectionHeader icon={Target} title="Comparison Radar" subtitle="Side by side." />
+								<SectionHeader
+									icon={Target}
+									title="Comparison Radar"
+									subtitle="Side by side."
+								/>
 								<RatingRadarChart leaderboard={leaderboard} />
 							</Panel>
 						)}
@@ -219,12 +253,28 @@ const CommunityChartsPanel = memo(function CommunityChartsPanel({
 
 			{siteStats && (
 				<Panel>
-					<SectionHeader icon={Users} title="Site Statistics" subtitle="Pool totals." />
+					<SectionHeader
+						icon={Users}
+						title="Site Statistics"
+						subtitle="Pool totals."
+					/>
 					<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-						<StatTile label="Total names" value={siteStats.totalNames} icon={Activity} />
-						<StatTile label="Active names" value={siteStats.activeNames} icon={Target} />
+						<StatTile
+							label="Total names"
+							value={siteStats.totalNames}
+							icon={Activity}
+						/>
+						<StatTile
+							label="Active names"
+							value={siteStats.activeNames}
+							icon={Target}
+						/>
 						<StatTile label="Users" value={siteStats.totalUsers} icon={Users} />
-						<StatTile label="Ratings" value={siteStats.totalRatings} icon={BarChart3} />
+						<StatTile
+							label="Ratings"
+							value={siteStats.totalRatings}
+							icon={BarChart3}
+						/>
 						<StatTile
 							label="Average rating"
 							value={Math.round(siteStats.avgRating)}
@@ -272,8 +322,12 @@ const EngagementPanel = memo(function EngagementPanel({
 				action={
 					<motion.div
 						className="flex items-center gap-3"
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+						initial={
+							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }
+						}
+						animate={
+							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+						}
 						transition={{ duration: 0.3, ease: "easeOut" }}
 					>
 						<MagicToggle
@@ -298,7 +352,10 @@ const EngagementPanel = memo(function EngagementPanel({
 				className="grid gap-3 sm:grid-cols-2"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
-				transition={{ duration: prefersReducedMotion ? 0 : 0.4, delay: prefersReducedMotion ? 0 : 0.1 }}
+				transition={{
+					duration: prefersReducedMotion ? 0 : 0.4,
+					delay: prefersReducedMotion ? 0 : 0.1,
+				}}
 			>
 				<StatTile
 					label="Active raters"
@@ -306,7 +363,11 @@ const EngagementPanel = memo(function EngagementPanel({
 					icon={Users}
 					accent={true}
 				/>
-				<StatTile label="Matches played" value={engagementMetrics.totalMatches} icon={Trophy} />
+				<StatTile
+					label="Matches played"
+					value={engagementMetrics.totalMatches}
+					icon={Trophy}
+				/>
 			</motion.div>
 		</Panel>
 	);
@@ -338,7 +399,9 @@ export function Dashboard({
 		() => getQuickStats({ siteStats, userName, userStats }),
 		[siteStats, userName, userStats],
 	);
-	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
+	const hasPersonalRatings = Boolean(
+		personalRatings && Object.keys(personalRatings).length > 0,
+	);
 	const hasCommunityData = leaderboard.length > 0 || Boolean(siteStats);
 	const _shouldShowDashboardPrimer =
 		!hasPersonalRatings && !isLoadingLeaderboard && !hasCommunityData;

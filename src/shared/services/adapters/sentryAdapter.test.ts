@@ -19,7 +19,12 @@ describe("SentryTelemetryAdapter", () => {
 			vi.stubGlobal("Sentry", { captureException: captureExceptionMock });
 
 			const error = new Error("Test error");
-			adapter.captureException(error, "TestContext", { tag1: "val1" }, { extra1: "val2" });
+			adapter.captureException(
+				error,
+				"TestContext",
+				{ tag1: "val1" },
+				{ extra1: "val2" },
+			);
 
 			expect(captureExceptionMock).toHaveBeenCalledWith(error, {
 				tags: {
@@ -56,12 +61,22 @@ describe("SentryTelemetryAdapter", () => {
 			// import.meta.env.DEV is true in test mode by default
 			const groupMock = vi.spyOn(console, "group").mockImplementation(() => {});
 			const errorMock = vi.spyOn(console, "error").mockImplementation(() => {});
-			const groupEndMock = vi.spyOn(console, "groupEnd").mockImplementation(() => {});
+			const groupEndMock = vi
+				.spyOn(console, "groupEnd")
+				.mockImplementation(() => {});
 
-			adapter.logError({ type: "TEST_ERROR", userMessage: "Test message" }, "TestContext");
+			adapter.logError(
+				{ type: "TEST_ERROR", userMessage: "Test message" },
+				"TestContext",
+			);
 
 			expect(groupMock).toHaveBeenCalledWith("🔴 Error [TEST_ERROR]");
-			expect(errorMock).toHaveBeenCalledWith("Context:", "TestContext", "Message:", "Test message");
+			expect(errorMock).toHaveBeenCalledWith(
+				"Context:",
+				"TestContext",
+				"Message:",
+				"Test message",
+			);
 			expect(groupEndMock).toHaveBeenCalled();
 		});
 
@@ -71,11 +86,20 @@ describe("SentryTelemetryAdapter", () => {
 			import.meta.env.DEV = false;
 
 			try {
-				const groupMock = vi.spyOn(console, "group").mockImplementation(() => {});
-				const errorMock = vi.spyOn(console, "error").mockImplementation(() => {});
-				const groupEndMock = vi.spyOn(console, "groupEnd").mockImplementation(() => {});
+				const groupMock = vi
+					.spyOn(console, "group")
+					.mockImplementation(() => {});
+				const errorMock = vi
+					.spyOn(console, "error")
+					.mockImplementation(() => {});
+				const groupEndMock = vi
+					.spyOn(console, "groupEnd")
+					.mockImplementation(() => {});
 
-				adapter.logError({ type: "TEST_ERROR", userMessage: "Test message" }, "TestContext");
+				adapter.logError(
+					{ type: "TEST_ERROR", userMessage: "Test message" },
+					"TestContext",
+				);
 
 				expect(groupMock).not.toHaveBeenCalled();
 				expect(errorMock).not.toHaveBeenCalled();

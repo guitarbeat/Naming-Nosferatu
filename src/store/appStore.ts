@@ -5,7 +5,11 @@ import { createErrorSlice } from "@/store/slices/errorSlice";
 import { createTournamentSlice } from "@/store/slices/tournamentSlice";
 import { createUserAndSettingsSlice } from "@/store/slices/userSettingsSlice";
 
-export type { NameItem, RatingData, TournamentActions } from "@/store/appStore.types";
+export type {
+	NameItem,
+	RatingData,
+	TournamentActions,
+} from "@/store/appStore.types";
 
 const useAppStore = create<AppState>()((...args) => ({
 	...createTournamentSlice(...args),
@@ -15,9 +19,15 @@ const useAppStore = create<AppState>()((...args) => ({
 
 export default useAppStore;
 
-export function useAppStoreInitialization(onUserContext?: (name: string) => void): void {
-	const initializeUser = useAppStore((state) => state.userActions.initializeFromStorage);
-	const initializeTheme = useAppStore((state) => state.uiActions.initializeTheme);
+export function useAppStoreInitialization(
+	onUserContext?: (name: string) => void,
+): void {
+	const initializeUser = useAppStore(
+		(state) => state.userActions.initializeFromStorage,
+	);
+	const initializeTheme = useAppStore(
+		(state) => state.uiActions.initializeTheme,
+	);
 
 	useEffect(() => {
 		initializeUser(onUserContext);

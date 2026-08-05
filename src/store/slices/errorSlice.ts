@@ -5,10 +5,9 @@ import type { AppState } from "@/store/appStore.types";
 
 const MAX_ERROR_HISTORY = 100;
 
-export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
-	set,
-	get,
-) => ({
+export const createErrorSlice: AppSliceCreator<
+	Pick<AppState, "errors" | "errorActions">
+> = (set, get) => ({
 	errors: {
 		current: null,
 		history: [],
