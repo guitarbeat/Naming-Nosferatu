@@ -43,7 +43,7 @@ export function TournamentComplete({
 					<Trophy className="size-9 text-yellow-300" />
 				</div>
 
-				<p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">
+				<p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/75">
 					Tournament finished
 				</p>
 
@@ -57,13 +57,13 @@ export function TournamentComplete({
 
 				<div className="mt-10 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
 							Total matches
 						</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
 					</div>
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
+						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
 							Participants
 						</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>

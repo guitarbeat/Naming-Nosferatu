@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/shared/components/layout/Button";
 import { TIMING } from "@/shared/lib/constants";
 import { themeText } from "@/shared/lib/themeClasses";
@@ -39,18 +39,20 @@ function HeroNameWords({ state, lockedNames }: { state: HomeHeroState; lockedNam
 }
 
 export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
+	const prefersReducedMotion = useReducedMotion();
+
 	return (
 		<div className="home-hero-wrapper w-full">
 			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center">
 				<motion.div
-					initial={{ opacity: 0, y: -20 }}
-					animate={{ opacity: 1, y: 0 }}
+					initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20 }}
+					animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, ease: "easeOut" }}
 					className="flex flex-col items-center justify-center text-center max-w-4xl gap-8 md:gap-12"
 				>
 					<motion.p
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 						transition={{
 							delay: 0.1,
 							duration: TIMING.MOTION_NORMAL,
@@ -62,8 +64,8 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					</motion.p>
 
 					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
-						animate={{ opacity: 1, scale: 1 }}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
 						transition={{
 							delay: 0.2,
 							duration: TIMING.MOTION_SLOW,
@@ -82,8 +84,8 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					</motion.div>
 
 					<motion.h2
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 						transition={{
 							delay: 0.35,
 							duration: TIMING.MOTION_SLOW,
@@ -96,8 +98,8 @@ export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHero
 					</motion.h2>
 
 					<motion.div
-						initial={{ opacity: 0, y: 20, scale: 0.95 }}
-						animate={{ opacity: 1, y: 0, scale: 1 }}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.95 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
 						transition={{
 							delay: 0.5,
 							duration: TIMING.MOTION_NORMAL,

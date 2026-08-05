@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-002",
+  "type": "fix",
+  "description": "Accessibility improvements: form validation announcements, focus order, ARIA live regions, and semantic structure cleanup",
+  "status": "pending",
+  "steps": [
+    "Add aria-live region for form validation in NameSuggestion.tsx: The StatusMessage component already animates errors/success in but does not have role='alert' or aria-live='assertive'. Add role='alert' to the error container and role='status' to the success container so screen readers announce validation results.",
+    "Add aria-live region for tournament state changes in TournamentFlow.tsx: When the tournament completes and shows the 'A victor emerges' message, screen readers should be notified. Add role='status' and aria-live='polite' to the completion container.",
+    "Improve focus order in Lightbox.tsx: The lightbox currently receives focus via the motion.div with tabIndex={-1}, but the close button and navigation buttons lack a logical focus order indicator. Add autoFocus to the close button on mount so keyboard users can immediately press Escape or Tab to navigate.",
+    "Add aria-label to NameSelector card grid: The grid of name cards uses role='button' on motion.div elements which is correct. Verify that aria-pressed is properly used and add a more descriptive aria-label like 'Select name: {nameItem.name}' instead of relying solely on the card content for context.",
+    "Add section aria-labelledby to Section.tsx: The Section component renders <section> tags with id but no aria-labelledby. When there's a SectionHeading inside, the section should reference it. Add an optional ariaLabel or ariaLabelledBy prop to Section.",
+    "Ensure ErrorComponent dismissal is announced: In AppLayout.tsx, the error display should have role='alert' so screen readers announce errors. Verify the ErrorBoundary's ErrorComponent has appropriate ARIA roles.",
+    "Add descriptive aria-label to the 'VS' divider in Tournament.tsx: The VS badge between match cards is purely visual but helps orient sighted users. Add aria-hidden='true' to it since the MatchSideCards already have descriptive aria-labels.",
+    "Fix the progress bar in TournamentHeader.tsx: The progress bar div has no ARIA attributes. Add role='progressbar', aria-valuenow, aria-valuemin='0', aria-valuemax='100', and aria-label='Tournament progress'."
+  ],
+  "acceptance_criteria": [
+    "Form validation errors in NameSuggestion have role='alert' for immediate screen reader announcement",
+    "Form success messages have role='status' for polite screen reader announcement",
+    "Tournament completion announcement is in an aria-live region",
+    "Lightbox focuses the close button on open for immediate keyboard access",
+    "Name selector cards have descriptive aria-labels including the name",
+    "The tournament progress bar has proper ARIA progressbar attributes",
+    "The VS divider is hidden from assistive technology",
+    "pnpm run build succeeds without errors",
+    "pnpm run lint:types succeeds without errors"
+  ],
+  "verification": [
+    "eval \"$(mise activate bash)\" && pnpm run build",
+    "eval \"$(mise activate bash)\" && pnpm run lint:types",
+    "eval \"$(mise activate bash)\" && pnpm run test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

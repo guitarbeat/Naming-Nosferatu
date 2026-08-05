@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { AudioEffects } from "@/shared/lib/sound";
@@ -9,6 +9,7 @@ import { NameSelector } from "../components/NameSelector";
 
 export default function TournamentFlow() {
 	const { user, tournament, tournamentActions } = useAppStore();
+	const prefersReducedMotion = useReducedMotion();
 
 	const saveRatingsMutation = useMutation({
 		mutationFn: ({
@@ -60,9 +61,9 @@ export default function TournamentFlow() {
 				{tournament.isComplete && tournament.names !== null ? (
 					<motion.div
 						key="complete"
-						initial={{ opacity: 0, scale: 0.95 }}
-						animate={{ opacity: 1, scale: 1 }}
-						exit={{ opacity: 0, scale: 0.95 }}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
 						className="w-full flex justify-center py-6 sm:py-10"
 					>
 						<div className="w-full max-w-2xl text-center px-4 sm:px-6">
@@ -87,14 +88,14 @@ export default function TournamentFlow() {
 											.getElementById("analysis")
 											?.scrollIntoView({ behavior: "smooth", block: "start" })
 									}
-									className="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
+									className="w-full sm:w-auto px-6 py-3 min-h-[44px] bg-primary hover:bg-primary/90 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
 								>
 									See Results
 								</button>
 								<button
 									type="button"
 									onClick={() => tournamentActions.resetTournament()}
-									className="w-full sm:w-auto px-6 py-3 bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
+									className="w-full sm:w-auto px-6 py-3 min-h-[44px] bg-secondary hover:bg-secondary/80 rounded-lg font-semibold transition-all duration-200 active:scale-[0.98]"
 								>
 									Pick Different Names
 								</button>

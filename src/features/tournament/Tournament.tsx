@@ -187,7 +187,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					}),
 				);
 			} catch (error) {
-				console.error("Vote callback error:", error);
+				console.warn("Tournament vote callback did not persist:", error);
 			}
 		},
 		[onVote, currentMatch, ratings],

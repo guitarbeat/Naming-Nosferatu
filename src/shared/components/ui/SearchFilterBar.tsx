@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Loader2, Search } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
@@ -20,11 +20,13 @@ export function SearchFilterBar({
 	onFilterChange,
 	onRefresh,
 }: SearchFilterBarProps) {
+	const prefersReducedMotion = useReducedMotion();
+
 	return (
 		<motion.div
 			className="flex flex-col sm:flex-row items-center gap-3 w-full bg-foreground/5 backdrop-blur-md rounded-2xl p-2 sm:p-3 border border-border/10 shadow-inner group transition-all duration-300 hover:border-border/30 hover:shadow-md mb-6"
-			initial={{ opacity: 0, y: -8 }}
-			animate={{ opacity: 1, y: 0 }}
+			initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+			animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 			transition={{
 				duration: 0.3,
 				type: "spring",
@@ -41,6 +43,7 @@ export function SearchFilterBar({
 					placeholder="Search names..."
 					value={searchTerm}
 					onChange={(event) => onSearchTermChange(event.target.value)}
+					aria-label="Search names"
 					className="w-full h-11 bg-background/40 hover:bg-background/60 focus:bg-background/80 transition-colors rounded-xl pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 focus:ring-2 focus:ring-primary/40"
 				/>
 			</div>

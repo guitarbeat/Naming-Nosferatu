@@ -1,0 +1,7 @@
+{
+  "task_id": "task-accessibility-ux-improvements",
+  "task_description": "Comprehensive accessibility and UX improvements including reduced motion support, color contrast fixes, ARIA landmarks, form validation announcements, focus management, touch targets, and code quality cleanup (removing any types and console statements).",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}

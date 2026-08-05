@@ -11,7 +11,7 @@ interface TournamentHeaderProps {
 	currentMatchNumber: number;
 	totalMatches: number;
 	etaMinutes: number;
-	audioManager: any;
+	audioManager: { isMuted: boolean; handleToggleMute: () => void };
 	canUndo: boolean;
 	handleUndo: () => void;
 	quitTournament: () => void;
@@ -55,7 +55,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 							<Gamepad2 className="size-4" />
 						</div>
 						<div className="space-y-1">
-							<div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
+							<div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">
 								<span>Round {roundNumber}</span>
 								<span className="text-white/25" aria-hidden="true">
 									&middot;
@@ -115,7 +115,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 							className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
 								canUndo
 									? "border-primary/30 bg-primary/12 text-primary hover:bg-primary/18"
-									: "cursor-not-allowed border-white/10 bg-white/[0.03] text-white/35"
+									: "cursor-not-allowed border-white/10 bg-white/[0.03] text-white/60"
 							}`}
 							aria-label="Undo last vote"
 							title={canUndo ? "Undo last vote" : "No actions to undo"}
@@ -171,27 +171,27 @@ export const TournamentHeader = memo(function TournamentHeader({
 
 					<div className="grid gap-3 md:grid-cols-[1.25fr_1fr_1fr]">
 						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/65">
 								Match pulse
 							</p>
 							<p className="mt-2 text-sm font-semibold text-white">{matchupTone}</p>
-							<p className="mt-1 text-xs leading-relaxed text-white/58">{pressureCopy}</p>
+							<p className="mt-1 text-xs leading-relaxed text-white/70">{pressureCopy}</p>
 						</div>
 						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/65">
 								Road to crown
 							</p>
 							<p className="mt-2 text-sm font-semibold text-white">
 								<span className="tabular-nums">{matchesRemaining}</span> match
 								{matchesRemaining === 1 ? "" : "es"} after this
 							</p>
-							<p className="mt-1 text-xs leading-relaxed text-white/58">
+							<p className="mt-1 text-xs leading-relaxed text-white/70">
 								Roughly <span className="tabular-nums">{roundMatchesLeft}</span> duel
 								{roundMatchesLeft === 1 ? "" : "s"} remain in the live bracket cycle.
 							</p>
 						</div>
 						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/65">
 								Quick controls
 							</p>
 							<div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.14em]">

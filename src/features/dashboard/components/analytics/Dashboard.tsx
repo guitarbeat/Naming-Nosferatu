@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Activity, BarChart3, Target, TrendingUp, Trophy, User, Users } from "lucide-react";
 import type { ElementType } from "react";
 import Button from "@/shared/components/layout/Button";
@@ -257,6 +257,8 @@ function EngagementPanel({
 	refreshEngagementMetrics: () => void;
 	isLoadingEngagement: boolean;
 }) {
+	const prefersReducedMotion = useReducedMotion();
+
 	if (!engagementMetrics) {
 		return null;
 	}
@@ -270,8 +272,8 @@ function EngagementPanel({
 				action={
 					<motion.div
 						className="flex items-center gap-3"
-						initial={{ opacity: 0, y: -4 }}
-						animate={{ opacity: 1, y: 0 }}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 						transition={{ duration: 0.3, ease: "easeOut" }}
 					>
 						<MagicToggle
@@ -296,7 +298,7 @@ function EngagementPanel({
 				className="grid gap-3 sm:grid-cols-2"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
-				transition={{ duration: 0.4, delay: 0.1 }}
+				transition={{ duration: prefersReducedMotion ? 0 : 0.4, delay: prefersReducedMotion ? 0 : 0.1 }}
 			>
 				<StatTile
 					label="Active raters"

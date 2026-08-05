@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, CheckCircle, Eye, ZoomIn } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
@@ -66,11 +66,13 @@ function AdminActionButton({
 	actionType,
 	isProcessing,
 	onClick,
+	prefersReducedMotion,
 }: {
 	nameItem: NameItem;
 	actionType: "toggle-hidden" | "toggle-locked";
 	isProcessing: boolean;
 	onClick: () => void;
+	prefersReducedMotion: boolean;
 }) {
 	const isHidden = actionType === "toggle-hidden";
 	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
@@ -89,8 +91,8 @@ function AdminActionButton({
 			type="button"
 			onClick={onClick}
 			disabled={isProcessing}
-			whileHover={{ scale: 1.05 }}
-			whileTap={{ scale: 0.95 }}
+			whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
+			whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
 			transition={{ type: "spring", stiffness: 400, damping: 25 }}
 			className={buttonClasses}
 		>
@@ -114,10 +116,10 @@ function AdminActionButton({
 	);
 }
 
-const SelectionBadge = () => (
+const SelectionBadge = ({ prefersReducedMotion }: { prefersReducedMotion: boolean }) => (
 	<motion.div
-		initial={{ scale: 0, opacity: 0 }}
-		animate={{ scale: 1, opacity: 1 }}
+		initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0, opacity: 0 }}
+		animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
 		className="absolute top-3 right-3 z-20"
 	>
 		<div className="relative">
@@ -148,6 +150,7 @@ function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType)
 
 export function NameSelector() {
 	const toast = useToast();
+	const prefersReducedMotion = useReducedMotion() ?? false;
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
@@ -446,8 +449,8 @@ export function NameSelector() {
 											}
 										}}
 										aria-pressed={isSelected}
-										whileHover={{ scale: 1.03, y: -2 }}
-										whileTap={{ scale: 0.97 }}
+										whileHover={prefersReducedMotion ? undefined : { scale: 1.03, y: -2 }}
+										whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
 										transition={{ type: "spring", stiffness: 400, damping: 25 }}
 										className={getCardStyles(isSelected, isNameLocked(nameItem))}
 									>
@@ -458,7 +461,7 @@ export function NameSelector() {
 												containerClassName="w-full h-full"
 												imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 											/>
-											{isSelected && <SelectionBadge />}
+											{isSelected && <SelectionBadge prefersReducedMotion={prefersReducedMotion} />}
 											<div className={nameOverlayClasses}>
 												<div className="flex flex-col items-center gap-1.5 max-w-full">
 													<NameContent nameItem={nameItem} />
@@ -477,6 +480,7 @@ export function NameSelector() {
 													nameItem={nameItem}
 													actionType="toggle-hidden"
 													isProcessing={togglingHidden.has(nameItem.id)}
+													prefersReducedMotion={prefersReducedMotion}
 													onClick={() =>
 														requestAdminAction({
 															type: "toggle-hidden",
@@ -489,6 +493,7 @@ export function NameSelector() {
 													nameItem={nameItem}
 													actionType="toggle-locked"
 													isProcessing={togglingLocked.has(nameItem.id)}
+													prefersReducedMotion={prefersReducedMotion}
 													onClick={() =>
 														requestAdminAction({
 															type: "toggle-locked",

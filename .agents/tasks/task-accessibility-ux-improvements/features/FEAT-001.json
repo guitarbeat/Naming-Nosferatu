@@ -1,0 +1,39 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Accessibility improvements: heading hierarchy, reduced motion support for framer-motion, aria landmarks, focus management, and color contrast",
+  "status": "in_progress",
+  "steps": [
+    "Fix heading hierarchy in HomeSections.tsx: The hero section uses h1 followed by h2 which is correct, but HomeRoute.tsx uses SectionHeading with h2 for all section headings which is correct since they are under the h1. Verify no heading gaps exist across the page flow.",
+    "Add prefers-reduced-motion support to framer-motion animations in HomeSections.tsx: The hero section uses motion.div/motion.p/motion.h2 with transforms and opacity animations but does not check useReducedMotion(). Wrap initial/animate/transition props to be no-ops when reduced motion is preferred (similar to how TournamentAnnouncements.tsx already does this).",
+    "Add prefers-reduced-motion support to NameSelector.tsx: The motion.div cards use whileHover/whileTap animations and the SelectionBadge uses scale animations. These should respect reduced motion. Also the AdminActionButton uses whileHover/whileTap.",
+    "Add prefers-reduced-motion support to TournamentFlow.tsx: The complete section's motion.div and the setup section's motion.div use animations without reduced motion checks.",
+    "Add prefers-reduced-motion support to SearchFilterBar.tsx: Uses motion.div with initial/animate/transition.",
+    "Add prefers-reduced-motion support to Dashboard.tsx EngagementPanel: Uses motion.div for grid and action area.",
+    "Fix color contrast on text over images in MatchSideCard.tsx: The name overlay at the bottom uses text-white over a gradient from-slate-950/96. This is adequate but the shortcutHint at text-white/50 and pronunciation at text-white/65 may have contrast issues. Increase to text-white/75 minimum.",
+    "Fix color contrast in TournamentComplete.tsx: The subtitle 'Tournament finished' uses text-white/60, paragraph uses text-white/70. Increase subtitles to text-white/75 minimum. Also the stat labels use text-white/50 - increase to text-white/70.",
+    "Fix color contrast in TournamentHeader.tsx: Several text elements use text-white/35, text-white/42, text-white/45, text-white/50, text-white/55, text-white/58 which are below WCAG AA contrast on dark backgrounds. Increase all to minimum text-white/70 for body text and text-white/60 for decorative/supplementary labels.",
+    "Fix color contrast in NameSelector.tsx name overlay: NameContent uses text-white/70 for pronunciation and text-white/72 for description which are borderline. The category label 'Name' or 'Team' in MatchSideCard uses text-white/45 - increase to text-white/70.",
+    "Fix touch target sizes on buttons in TournamentComplete.tsx: The 'View Analysis' and 'Start New Tournament' buttons have py-4 which is adequate (48px+), but verify they meet 44x44 minimum. The 'See Results' and 'Pick Different Names' buttons in TournamentFlow.tsx use py-3 which may be 36px - add min-h-[44px].",
+    "Add aria-label to the search input in SearchFilterBar.tsx: The input uses placeholder text but has no label or aria-label for screen readers.",
+    "Fix the audioManager: any type in TournamentHeader.tsx: Replace with the proper UseAudioManagerResult interface imported from hooks/useAudioManager.ts. Only use the isMuted and handleToggleMute properties that the header actually consumes.",
+    "Remove the console.error in Tournament.tsx handleVoteAdapter: Replace with proper error handling (the error is already swallowed, just remove the console.error or replace with a warning that uses the existing ErrorManager pattern)."
+  ],
+  "acceptance_criteria": [
+    "All framer-motion animations across HomeSections, NameSelector, TournamentFlow, SearchFilterBar, and Dashboard respect prefers-reduced-motion by using useReducedMotion() hook or conditional animation props",
+    "No text has opacity below 0.60 on dark backgrounds (text-white/60 minimum for supplementary text, text-white/70+ for body text)",
+    "The search input in SearchFilterBar has an accessible label",
+    "TournamentHeader.tsx no longer uses 'any' type for audioManager prop",
+    "No console.error statements remain in production code (console.warn for non-critical warnings is acceptable)",
+    "All interactive buttons meet 44px minimum touch target on mobile",
+    "pnpm run build succeeds without errors",
+    "pnpm run lint:types succeeds without errors"
+  ],
+  "verification": [
+    "eval \"$(mise activate bash)\" && pnpm run build",
+    "eval \"$(mise activate bash)\" && pnpm run lint:types",
+    "eval \"$(mise activate bash)\" && pnpm run test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
