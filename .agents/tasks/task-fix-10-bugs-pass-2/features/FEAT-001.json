@@ -1,0 +1,39 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Fix all 10 bugs identified in the second-pass audit. These are targeted fixes across tournament logic, shared components, and services.",
+  "status": "completed",
+  "steps": [
+    "BUG 1 - TournamentHeader mute button active styling: In src/features/tournament/components/TournamentHeader.tsx around line 90, the button array object is missing an `active` property. Add `active: !audioManager.isMuted` to the mute button object so the map destructure picks it up and applies active styling. Remove the `as const` assertion since adding `active` makes the type incompatible with const-asserted inference that lacks the property.",
+    "BUG 2 - handleQuit incomplete PersistentTournamentState: In src/features/tournament/hooks/useTournamentState.ts around line 442-460, the handleQuit dispatch's defaultState payload omits `userName` and `lastUpdated` fields required by PersistentTournamentState. Add `userName: userName || \"anonymous\"` and `lastUpdated: Date.now()` to the defaultState object in the QUIT payload.",
+    "BUG 3 - handleVoteAdapter .name access on Team in 2v2: In src/features/tournament/Tournament.tsx around line 166-178, the sideData helper in handleVoteAdapter already has type narrowing for 2v2 mode using `'memberNames' in participant`. Verify this code properly handles all cases: Team (has memberNames), NameItem (has .name), and string. The current code at line 172-176 checks for memberNames first, then falls through to `.name` which is correct for NameItem but not for Team. However, the match type system ensures that in 2v2 mode, both sides are always Team objects with memberNames. If a Team object somehow lacks memberNames array content, the fallback uses `String(participant.id)`. This code is actually correct after PR #1227 already fixed it. SKIP if already correct, otherwise ensure the Team path properly joins memberNames.",
+    "BUG 4 - Completion effect .memberIds on string participants: In src/features/tournament/Tournament.tsx around lines 220-226, the completion effect iterates over matchHistory and accesses `leftSide?.memberIds` and `leftSide?.id`. For HeadToHeadMatch where left/right can be plain strings, these accesses yield undefined. Fix: Add proper type narrowing. For the memberIds check, when left is a string, memberIds is undefined (falsy) so it goes to the else branch `[String(leftSide?.id || \"\")]`. But for strings, `.id` is also undefined, resulting in `[\"\"]`. Fix this by checking `typeof leftSide === 'string'` first and using the string value directly: `typeof leftSide === 'string' ? [leftSide] : leftSide?.memberIds ? leftSide.memberIds.map(String) : [String(leftSide?.id || \"\")]`. Same for rightSide.",
+    "BUG 5 - extractMatchData .name/.description on Team: In src/features/tournament/utils/matchHelpers.ts around lines 51-54, the extractSide function handles `typeof participant === 'object'` but doesn't distinguish between Team and NameItem. A Team object has `memberNames` and `memberIds` but no `.name` or `.description`. Add a check: if participant is an object and has 'memberNames' property, treat it as Team (join memberNames for name, no description). Otherwise treat as NameItem.",
+    "BUG 6 - Misleading static IV comment: In src/shared/lib/storage.ts line 12-13, the comment says 'Using a static IV for client-side obfuscation' but the static IV is now only used for legacy decryption fallback. Rename the variable from `ivHex` to `LEGACY_IV` and update the comment to say it's only used for decrypting legacy data that was encrypted before the random-IV change. Update all references to this variable (only in the decrypt function's default assignment).",
+    "BUG 7 - CatImage error state not reset on src change: In src/shared/components/layout/CatImage.tsx line 47, the useEffect that resets hasError has an empty dependency array `[]`. Change it to `[src]` so that when the src prop changes, the error state is cleared and the new image can attempt to load.",
+    "BUG 8 - sentryAdapter process.env.NODE_ENV: In src/shared/services/adapters/sentryAdapter.ts line 37, replace `process.env.NODE_ENV === \"development\"` with `import.meta.env.DEV` which is the Vite-compatible way to check for development mode.",
+    "BUG 9 - Lightbox keyboard event handling: In src/shared/components/layout/Lightbox.tsx, add a useEffect hook that registers a keydown event listener for: Escape (calls onClose), ArrowLeft (calls handlePrevious), ArrowRight (calls handleNext). Clean up the listener on unmount. Import useEffect from react.",
+    "BUG 10 - PersonalResults onSave misleading async: In src/features/dashboard/components/analytics/PersonalResults.tsx line 82-95, the onSave handler uses `await onUpdateRatings(ratingsMap)` but `onUpdateRatings` is a synchronous Zustand setter (`tournamentActions.setRatings`). Since the PersonalResults component doesn't have access to userName or ratingsAPI, add a clarifying comment that this only updates local state and does not persist to the server. Remove the unnecessary `async` and `await` to make the synchronous nature explicit, or keep async but add a comment. Prefer removing async/await since the function is synchronous."
+  ],
+  "acceptance_criteria": [
+    "pnpm run build succeeds without TypeScript errors",
+    "pnpm run test passes all existing tests",
+    "pnpm run lint passes",
+    "TournamentHeader mute button object includes an `active` property",
+    "handleQuit defaultState includes userName and lastUpdated fields",
+    "Completion effect in Tournament.tsx properly handles string participants without accessing .memberIds or .id on them",
+    "extractMatchData's extractSide function distinguishes between Team and NameItem objects",
+    "storage.ts static IV variable is renamed to indicate legacy usage with updated comment",
+    "CatImage useEffect has src in dependency array",
+    "sentryAdapter uses import.meta.env.DEV instead of process.env.NODE_ENV",
+    "Lightbox has keyboard event handlers for Escape, ArrowLeft, ArrowRight",
+    "PersonalResults onSave does not misleadingly await a synchronous call"
+  ],
+  "verification": [
+    "Run: export PATH=/opt/toolchains/.nvm/versions/node/v22.23.2/bin:$PATH && corepack enable pnpm && pnpm run build",
+    "Run: export PATH=/opt/toolchains/.nvm/versions/node/v22.23.2/bin:$PATH && corepack enable pnpm && pnpm run test",
+    "Run: export PATH=/opt/toolchains/.nvm/versions/node/v22.23.2/bin:$PATH && corepack enable pnpm && pnpm run lint"
+  ],
+  "blocked_reason": null,
+  "findings": "Pre-existing test failures: 5 tests in tournamentPersistence.test.ts fail on main (createTournamentId generates hash-based IDs but tests expect name-based IDs). Pre-existing lint issues: 2 format errors in AdminNamesTab.tsx and RatingDistributionChart.tsx, 2 useBlockStatements warnings. BUG 3 was already fixed in PR #1227, no change needed. Updated sentryAdapter.test.ts to properly mock import.meta.env.DEV instead of process.env.NODE_ENV for BUG 8."
+}

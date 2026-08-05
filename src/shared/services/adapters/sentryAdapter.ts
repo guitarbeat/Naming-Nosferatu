@@ -30,7 +30,7 @@ export class SentryTelemetryAdapter implements TelemetryAdapter {
 
 	logError(formattedError: { type: string; userMessage: string }, context: string): void {
 		// Log structured error context in dev or non-production environment
-		if (process.env.NODE_ENV === "development") {
+		if (import.meta.env.DEV) {
 			console.group(`🔴 Error [${formattedError.type}]`);
 			console.error("Context:", context, "Message:", formattedError.userMessage);
 			console.groupEnd();

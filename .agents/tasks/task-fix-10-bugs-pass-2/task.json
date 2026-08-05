@@ -1,0 +1,14 @@
+{
+  "task_id": "task-fix-10-bugs-pass-2",
+  "task_description": "Fix 10 bugs identified in second-pass audit of Naming-Nosferatu after PR #1227 was merged. Bugs range from missing active styling, incomplete state payloads, type narrowing issues, to missing keyboard handlers.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "Build succeeds. All tests pass (5 pre-existing failures in tournamentPersistence.test.ts unrelated to our changes - they fail identically on baseline main). Lint shows only pre-existing issues in unrelated files. No new warnings or errors introduced."
+  }
+}

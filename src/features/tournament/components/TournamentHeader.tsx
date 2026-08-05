@@ -85,15 +85,14 @@ export const TournamentHeader = memo(function TournamentHeader({
 					</div>
 
 					<div className="flex flex-wrap items-center gap-2">
-						{(
-							[
-								{
-									action: audioManager.handleToggleMute,
-									icon: audioManager.isMuted ? VolumeX : Volume2,
-									label: audioManager.isMuted ? "Unmute" : "Mute",
-								},
-							] as const
-						).map(({ action, icon: Icon, label, active }) => (
+						{[
+							{
+								action: audioManager.handleToggleMute,
+								icon: audioManager.isMuted ? VolumeX : Volume2,
+								label: audioManager.isMuted ? "Unmute" : "Mute",
+								active: !audioManager.isMuted,
+							},
+						].map(({ action, icon: Icon, label, active }) => (
 							<button
 								key={label}
 								type="button"

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface LightboxProps {
 	images: string[];
@@ -12,13 +13,38 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 	const currentImage = images[currentIndex] || "";
 	const hasMultipleImages = images.length > 1;
 
-	const handlePrevious = () => {
-		onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
-	};
+	// Use a ref to hold onClose so the keyboard effect does not re-register
+	// when the caller passes an unstable inline arrow (e.g. () => setState(false)).
+	const onCloseRef = useRef(onClose);
+	onCloseRef.current = onClose;
 
-	const handleNext = () => {
+	const handlePrevious = useCallback(() => {
+		onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
+	}, [onNavigate, currentIndex, images.length]);
+
+	const handleNext = useCallback(() => {
 		onNavigate(currentIndex < images.length - 1 ? currentIndex + 1 : 0);
-	};
+	}, [onNavigate, currentIndex, images.length]);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			switch (event.key) {
+				case "Escape":
+					onCloseRef.current();
+					break;
+				case "ArrowLeft":
+					handlePrevious();
+					break;
+				case "ArrowRight":
+					handleNext();
+					break;
+			}
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [handlePrevious, handleNext]);
 
 	return (
 		<AnimatePresence>

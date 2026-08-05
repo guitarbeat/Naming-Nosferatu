@@ -9,8 +9,8 @@ const STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
 
 // Ensure the key is exactly 256 bits (32 bytes)
 const keyHex = CryptoJS.enc.Utf8.parse(STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32));
-// Using a static IV for client-side obfuscation since we just want to avoid plain-text storage
-const ivHex = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
+// Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
+const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
 function encrypt(text: string): string {
 	const iv = CryptoJS.lib.WordArray.random(16);
@@ -25,7 +25,7 @@ function encrypt(text: string): string {
 
 function decrypt(text: string): string {
 	try {
-		let iv: CryptoJS.lib.WordArray = ivHex; // Default static IV for legacy data
+		let iv: CryptoJS.lib.WordArray = LEGACY_IV; // Default static IV for legacy data
 		let ciphertext = text;
 
 		// Check for new format with prepended IV (16 bytes = 32 hex chars)

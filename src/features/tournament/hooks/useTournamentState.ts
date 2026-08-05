@@ -448,6 +448,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 					currentRound: 1,
 					currentMatch: 1,
 					totalMatches: 0,
+					userName: userName || "anonymous",
+					lastUpdated: Date.now(),
 					namesKey: "",
 					ratings: {},
 					mode: "1v1",
@@ -459,7 +461,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			},
 		});
 		tournamentActions.clearVoteHistory();
-	}, [tournamentActions]);
+	}, [tournamentActions, userName]);
 
 	return {
 		currentMatch,
