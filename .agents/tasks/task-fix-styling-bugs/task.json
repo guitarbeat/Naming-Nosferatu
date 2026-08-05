@@ -1,0 +1,7 @@
+{
+  "task_id": "task-fix-styling-bugs",
+  "task_description": "Fix styling bugs in the Naming Nosferatu app: broken Tailwind CSS 4 utility classes (unregistered stardust color, missing blob animation, missing duration-fast token), z-index stacking conflicts (modal vs navbar), and overflow issues (TournamentComplete w-screen).",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}
