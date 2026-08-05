@@ -55,14 +55,34 @@ export function MagicToggle<T extends string>({
 							onChange(option.value);
 						}}
 						className={`relative flex-1 ${size === "small" ? "px-3 py-1.5 text-xs" : "px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm"} font-bold tracking-wide transition-colors z-10 ${size === "small" ? "rounded-lg" : "rounded-xl"} ${
-							isSelected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+							isSelected
+								? "text-primary"
+								: "text-muted-foreground hover:text-foreground"
 						}`}
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
+						whileHover={{ scale: 1.05, y: -1 }}
+						whileTap={{ scale: 0.95, y: 0 }}
+						animate={{
+							scale: isSelected ? 1.02 : 1,
+							y: isSelected ? -1 : 0,
+						}}
+						transition={{ type: "spring", stiffness: 500, damping: 20 }}
 					>
 						<div className="flex items-center justify-center gap-2">
 							{option.icon && (
-								<span className="flex items-center justify-center">{option.icon}</span>
+								<motion.span
+									className="flex items-center justify-center"
+									animate={{
+										rotate: isSelected ? [0, -10, 10, -5, 5, 0] : 0,
+										scale: isSelected ? [1, 1.2, 1] : 1,
+									}}
+									transition={{
+										duration: 0.5,
+										ease: "easeInOut",
+										delay: 0.1,
+									}}
+								>
+									{option.icon}
+								</motion.span>
 							)}
 							<span>{option.label}</span>
 						</div>

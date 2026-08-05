@@ -54,31 +54,6 @@ h3 {
 	font-weight: var(--font-weight-medium);
 }
 
-.random-generator-button {
-	font-size: 0.95rem;
-	font-weight: var(--font-weight-extrabold);
-	letter-spacing: 0.01em;
-}
-
-.name-lock-tooltip {
-	font-size: 0.78rem;
-	line-height: 1.45;
-	letter-spacing: 0.01em;
-}
-
-.name-lock-tooltip__label {
-	font-size: 0.6rem;
-	font-weight: var(--font-weight-extrabold);
-	text-transform: uppercase;
-	letter-spacing: var(--tracking-caps);
-}
-
-.name-lock-tooltip__pronunciation {
-	font-size: 0.75rem;
-	font-style: italic;
-	font-weight: var(--font-weight-bold);
-}
-
 /* ==========================================================================
    GRADIENT HEADING
    Used for primary call-out headings: name hero, empty-state h2s, section titles.
