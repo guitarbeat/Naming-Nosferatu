@@ -135,7 +135,7 @@ function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: Profi
 }
 
 export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
-	const { user } = useAppStore();
+	const user = useAppStore((s) => s.user);
 	const defaultAvatar = CAT_IMAGES[0] ?? "";
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const [editedName, setEditedName] = useState(user.name || "");

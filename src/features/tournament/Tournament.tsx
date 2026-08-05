@@ -202,6 +202,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 	useEffect(() => {
 		if (!isComplete || !onComplete || completionHandledRef.current) {
+			if (!isComplete) {
+				completionHandledRef.current = false;
+			}
 			return;
 		}
 		completionHandledRef.current = true;

@@ -13,12 +13,10 @@ class SoundManager {
 	private failedAssets: Set<string> = new Set();
 	private defaultVolume = AUDIO.DEFAULT_EFFECTS_VOLUME;
 	private readonly isBrowser = isStorageAvailable();
+	private preloaded = false;
 
 	constructor() {
-		if (!this.isBrowser) {
-			return;
-		}
-		this.preloadSounds();
+		// Defer preloading until first play() call to avoid unnecessary network requests
 	}
 
 	private createAudioElement(name: string): HTMLAudioElement | null {
@@ -92,6 +90,11 @@ class SoundManager {
 	play(soundName: string, config: SoundConfig = {}) {
 		if (!this.canPlaySounds()) {
 			return;
+		}
+
+		if (!this.preloaded) {
+			this.preloaded = true;
+			this.preloadSounds();
 		}
 
 		try {

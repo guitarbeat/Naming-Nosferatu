@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense, useCallback, useEffect } from "react";
+import { lazy, memo, Suspense, useCallback, useEffect } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -17,7 +17,13 @@ const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
 
-function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
+const SectionHeading = memo(function SectionHeading({
+	title,
+	subtitle,
+}: {
+	title: string;
+	subtitle: string;
+}) {
 	return (
 		<div className="mx-auto mb-[var(--space-phi-4)] flex w-full max-w-2xl flex-col items-center text-center sm:mb-[var(--space-phi-5)]">
 			<h2 className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground">
@@ -28,10 +34,12 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle: string }
 			</p>
 		</div>
 	);
-}
+});
 
 export default function HomeRoute() {
-	const { user, tournament, tournamentActions } = useAppStore();
+	const user = useAppStore((s) => s.user);
+	const tournament = useAppStore((s) => s.tournament);
+	const tournamentActions = useAppStore((s) => s.tournamentActions);
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
 	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
 

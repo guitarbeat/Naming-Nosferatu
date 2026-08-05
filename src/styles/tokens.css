@@ -93,6 +93,7 @@
 	--color-navbar-accent-foreground: hsl(0deg 0% 0%);
 	--color-navbar-border: hsl(0deg 0% 0%);
 	--color-navbar-ring: hsl(0deg 0% 0%);
+	--color-stardust: #4DC8F5;
 	--font-sans: var(--font-sans);
 	--font-ui: var(--font-ui);
 	--font-ui-mono: var(--font-ui-mono);
@@ -672,6 +673,7 @@
 
 	/* Durations */
 	--duration-micro: 80ms;
+	--duration-fast: 100ms;
 	--duration-quick: 120ms;
 	--duration-base: 180ms;
 	--duration-moderate: 250ms;

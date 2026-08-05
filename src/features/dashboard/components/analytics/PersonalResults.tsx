@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useToast } from "@/app/providers/Providers";
 import Button from "@/shared/components/layout/Button";
 import { ELO_RATING } from "@/shared/lib/constants";
@@ -55,6 +55,25 @@ export const PersonalResults = ({
 
 	const { showToast } = useToast();
 
+	const handleSave = useCallback(
+		async (updatedRankings: NameItem[]) => {
+			const ratingsMap = Object.fromEntries(
+				updatedRankings.map((name) => [
+					name.id || name.name,
+					{
+						rating: name.rating as number,
+						wins: name.wins ?? 0,
+						losses: name.losses ?? 0,
+					},
+				]),
+			);
+			// Note: This updates local Zustand state only; does not persist to server
+			onUpdateRatings(ratingsMap);
+			showToast("Updated!", "success");
+		},
+		[onUpdateRatings, showToast],
+	);
+
 	return (
 		<div className="space-y-6">
 			<div className="surface-panel-inset rounded-[1.5rem] p-4 sm:p-5">
@@ -78,25 +97,7 @@ export const PersonalResults = ({
 					</Button>
 				</div>
 
-				<RankingAdjustment
-					rankings={rankings}
-					onSave={async (updatedRankings: NameItem[]) => {
-						const ratingsMap = Object.fromEntries(
-							updatedRankings.map((name) => [
-								name.id || name.name,
-								{
-									rating: name.rating as number,
-									wins: name.wins ?? 0,
-									losses: name.losses ?? 0,
-								},
-							]),
-						);
-						// Note: This updates local Zustand state only; does not persist to server
-						onUpdateRatings(ratingsMap);
-						showToast("Updated!", "success");
-					}}
-					onCancel={onStartNew}
-				/>
+				<RankingAdjustment rankings={rankings} onSave={handleSave} onCancel={onStartNew} />
 			</div>
 		</div>
 	);

@@ -16,7 +16,9 @@ const Analytics = lazy(() =>
 );
 
 export function AppLayout({ children }: AppLayoutProps) {
-	const { tournament, errors, errorActions } = useAppStore();
+	const tournament = useAppStore((s) => s.tournament);
+	const errors = useAppStore((s) => s.errors);
+	const errorActions = useAppStore((s) => s.errorActions);
 
 	const analyticsEnabled = shouldEnableAnalytics({
 		hostname: window.location.hostname,
