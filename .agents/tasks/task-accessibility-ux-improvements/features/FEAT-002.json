@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "fix",
   "description": "Accessibility improvements: form validation announcements, focus order, ARIA live regions, and semantic structure cleanup",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Add aria-live region for form validation in NameSuggestion.tsx: The StatusMessage component already animates errors/success in but does not have role='alert' or aria-live='assertive'. Add role='alert' to the error container and role='status' to the success container so screen readers announce validation results.",
     "Add aria-live region for tournament state changes in TournamentFlow.tsx: When the tournament completes and shows the 'A victor emerges' message, screen readers should be notified. Add role='status' and aria-live='polite' to the completion container.",
@@ -30,5 +30,5 @@
     "eval \"$(mise activate bash)\" && pnpm run test"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All changes implemented successfully. ErrorBoundary already had role='alert' on its ErrorInline component. Build, type-check, and tests all pass (only pre-existing sound.test.ts failure present)."
 }
