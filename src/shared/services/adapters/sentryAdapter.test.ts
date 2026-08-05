@@ -67,22 +67,23 @@ describe("SentryTelemetryAdapter", () => {
 
 		it("should not log to console in non-development environment", () => {
 			// Override import.meta.env.DEV to simulate production
-			vi.stubGlobal("import_meta_env_DEV", false);
 			const originalDEV = import.meta.env.DEV;
 			import.meta.env.DEV = false;
 
-			const groupMock = vi.spyOn(console, "group").mockImplementation(() => {});
-			const errorMock = vi.spyOn(console, "error").mockImplementation(() => {});
-			const groupEndMock = vi.spyOn(console, "groupEnd").mockImplementation(() => {});
+			try {
+				const groupMock = vi.spyOn(console, "group").mockImplementation(() => {});
+				const errorMock = vi.spyOn(console, "error").mockImplementation(() => {});
+				const groupEndMock = vi.spyOn(console, "groupEnd").mockImplementation(() => {});
 
-			adapter.logError({ type: "TEST_ERROR", userMessage: "Test message" }, "TestContext");
+				adapter.logError({ type: "TEST_ERROR", userMessage: "Test message" }, "TestContext");
 
-			expect(groupMock).not.toHaveBeenCalled();
-			expect(errorMock).not.toHaveBeenCalled();
-			expect(groupEndMock).not.toHaveBeenCalled();
-
-			// Restore
-			import.meta.env.DEV = originalDEV;
+				expect(groupMock).not.toHaveBeenCalled();
+				expect(errorMock).not.toHaveBeenCalled();
+				expect(groupEndMock).not.toHaveBeenCalled();
+			} finally {
+				// Always restore even if assertions throw
+				import.meta.env.DEV = originalDEV;
+			}
 		});
 	});
 });

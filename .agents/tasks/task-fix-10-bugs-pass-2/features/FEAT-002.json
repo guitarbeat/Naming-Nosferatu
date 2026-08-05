@@ -1,0 +1,24 @@
+{
+  "id": "FEAT-002",
+  "type": "fix",
+  "description": "Address review findings: fix Lightbox onClose instability via useRef pattern, wrap sentryAdapter test env mutation in try/finally for crash-safety.",
+  "status": "in_progress",
+  "steps": [
+    "Issue 1 - Lightbox onClose instability: Use a useRef to hold onClose so the keyboard useEffect does not depend on it directly. This prevents listener re-registration when the call site passes an unstable inline arrow.",
+    "Issue 2 - sentryAdapter test fragile env override: Wrap the import.meta.env.DEV mutation and assertions in a try/finally block so the original value is always restored, even if an assertion throws.",
+    "Issue 3 - handleQuit userName closure capture: No fix needed. The useCallback dependency on userName ensures the closure updates when userName changes, which is correct behavior."
+  ],
+  "acceptance_criteria": [
+    "Lightbox useEffect for keyboard events does not include onClose in its dependency array",
+    "Lightbox uses a ref (onCloseRef) to always call the latest onClose without causing effect re-registration",
+    "sentryAdapter test restores import.meta.env.DEV in a finally block",
+    "pnpm run build succeeds",
+    "pnpm run test passes"
+  ],
+  "verification": [
+    "Run: export PATH=/opt/toolchains/.nvm/versions/node/v22.23.2/bin:$PATH && corepack enable pnpm && pnpm run build",
+    "Run: export PATH=/opt/toolchains/.nvm/versions/node/v22.23.2/bin:$PATH && corepack enable pnpm && pnpm run test"
+  ],
+  "blocked_reason": null,
+  "findings": null
+}
