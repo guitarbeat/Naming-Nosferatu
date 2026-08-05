@@ -72,6 +72,16 @@ self.addEventListener("fetch", (event) => {
 	const url = new URL(request.url);
 	const isSameOrigin = url.origin === self.location.origin;
 
+	// Skip caching for API requests (Supabase, etc.) to prevent stale mutable data
+	if (
+		url.hostname.includes("supabase") ||
+		url.pathname.startsWith("/rest/") ||
+		url.pathname.startsWith("/auth/") ||
+		request.headers.get("Authorization")
+	) {
+		return;
+	}
+
 	if (request.mode === "navigate") {
 		event.respondWith(networkFirst(request, HTML_CACHE));
 		return;
@@ -128,7 +138,12 @@ async function staleWhileRevalidate(request, cacheName) {
 			}
 			return response;
 		})
-		.catch(() => cached || fetch(request));
+		.catch(() => {
+			if (cached) {
+				return cached;
+			}
+			return new Response("Network error", { status: 503, statusText: "Service Unavailable" });
+		});
 
 	return cached || fetchPromise;
 }

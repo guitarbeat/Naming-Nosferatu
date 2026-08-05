@@ -92,6 +92,8 @@ export const RankingAdjustment = memo(
 		const isMountedRef = useRef(true);
 		const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 		const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+		const onSaveRef = useRef(onSave);
+		onSaveRef.current = onSave;
 
 		useEffect(() => {
 			isMountedRef.current = true;
@@ -134,7 +136,7 @@ export const RankingAdjustment = memo(
 					saveStatusTimerRef.current = null;
 				}
 				saveTimerRef.current = setTimeout(() => {
-					onSave(items)
+					onSaveRef.current(items)
 						.then(() => {
 							if (!isMountedRef.current) {
 								return;
@@ -167,7 +169,7 @@ export const RankingAdjustment = memo(
 					saveStatusTimerRef.current = null;
 				}
 			};
-		}, [items, rankings, onSave, hasUnsavedChanges]);
+		}, [items, rankings, hasUnsavedChanges]);
 
 		const handleDragEnd = (result: DropResult) => {
 			setIsDragging(false);

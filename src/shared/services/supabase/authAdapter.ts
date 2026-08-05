@@ -204,7 +204,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				.eq("role", "admin")
 				.maybeSingle();
 
-			if (data) {
+			if (!error && data) {
 				return true;
 			}
 
