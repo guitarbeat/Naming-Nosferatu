@@ -66,7 +66,7 @@ export default function TournamentFlow() {
 						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
 						className="w-full flex justify-center py-6 sm:py-10"
 					>
-						<div className="w-full max-w-2xl text-center px-4 sm:px-6">
+						<div className="w-full max-w-2xl text-center px-4 sm:px-6" role="status" aria-live="polite">
 							<h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent uppercase tracking-tighter">
 								A victor emerges from the eternal tournament
 							</h2>

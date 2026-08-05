@@ -137,7 +137,14 @@ export const TournamentHeader = memo(function TournamentHeader({
 				</div>
 
 				<div className="space-y-3">
-					<div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+					<div
+						className="h-2 overflow-hidden rounded-full bg-white/[0.06]"
+						role="progressbar"
+						aria-valuenow={Math.round(progressWidth)}
+						aria-valuemin={0}
+						aria-valuemax={100}
+						aria-label="Tournament progress"
+					>
 						<div
 							className="h-full rounded-full bg-primary transition-all duration-500 shadow-[0_0_18px_rgba(39,135,153,0.45)]"
 							style={{ width: `${progressWidth}%` }}

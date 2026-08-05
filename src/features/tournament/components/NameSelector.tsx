@@ -449,6 +449,7 @@ export function NameSelector() {
 											}
 										}}
 										aria-pressed={isSelected}
+										aria-label={`${isSelected ? "Deselect" : "Select"} name: ${nameItem.name}`}
 										whileHover={prefersReducedMotion ? undefined : { scale: 1.03, y: -2 }}
 										whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
 										transition={{ type: "spring", stiffness: 400, damping: 25 }}

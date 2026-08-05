@@ -17,10 +17,10 @@ const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
 
-function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
+function SectionHeading({ id, title, subtitle }: { id?: string; title: string; subtitle: string }) {
 	return (
 		<div className="mx-auto mb-[var(--space-phi-4)] flex w-full max-w-2xl flex-col items-center text-center sm:mb-[var(--space-phi-5)]">
-			<h2 className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground">
+			<h2 id={id} className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground">
 				{title}
 			</h2>
 			<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -64,11 +64,12 @@ export default function HomeRoute() {
 				onStartPicking={() => scrollToSection("pick")}
 			/>
 
-			<Section id="pick" maxWidth="xl" separator={true} fullpage={true}>
+			<Section id="pick" maxWidth="xl" separator={true} fullpage={true} ariaLabelledBy="section-heading-pick">
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
 							<SectionHeading
+								id="section-heading-pick"
 								title="My Cat Needs a Name"
 								subtitle="Pick your favorites. Let's see what wins."
 							/>
@@ -82,11 +83,12 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section id="tournament" separator={true} fullpage={true}>
+			<Section id="tournament" separator={true} fullpage={true} ariaLabelledBy="section-heading-tournament">
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
 							<SectionHeading
+								id="section-heading-tournament"
 								title="But See How I Got There"
 								subtitle="Head-to-head matchups to rank them all."
 							/>
@@ -118,11 +120,11 @@ export default function HomeRoute() {
 				</div>
 			</Section>
 
-			<Section id="analysis" separator={true} fullpage={true}>
+			<Section id="analysis" separator={true} fullpage={true} ariaLabelledBy="section-heading-analysis">
 				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
 					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
 						<div>
-							<SectionHeading title="Results" subtitle="See how all the names ranked." />
+							<SectionHeading id="section-heading-analysis" title="Results" subtitle="See how all the names ranked." />
 						</div>
 						<div className="w-full">
 							<Suspense fallback={<Loading variant="skeleton" height={600} />}>
