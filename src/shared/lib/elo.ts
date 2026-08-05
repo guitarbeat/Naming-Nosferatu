@@ -237,8 +237,8 @@ export function applyEloMatchUpdate({
 		};
 		participants[participantId] = {
 			rating: updatedRating,
-			wins: nextStats[participantId].wins,
-			losses: nextStats[participantId].losses,
+			wins: nextStats[participantId]?.wins ?? 0,
+			losses: nextStats[participantId]?.losses ?? 0,
 			delta: updatedRating - currentRating,
 		};
 	}
@@ -255,8 +255,8 @@ export function applyEloMatchUpdate({
 		};
 		participants[participantId] = {
 			rating: updatedRating,
-			wins: nextStats[participantId].wins,
-			losses: nextStats[participantId].losses,
+			wins: nextStats[participantId]?.wins ?? 0,
+			losses: nextStats[participantId]?.losses ?? 0,
 			delta: updatedRating - currentRating,
 		};
 	}
