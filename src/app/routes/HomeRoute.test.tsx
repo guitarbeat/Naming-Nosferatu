@@ -102,7 +102,8 @@ vi.mock("@/app/providers/Providers", () => ({
 
 vi.mock("@/store/appStore", () => ({
 	__esModule: true,
-	default: () => storeState,
+	default: (selector?: (state: typeof storeState) => unknown) =>
+		selector ? selector(storeState) : storeState,
 }));
 
 vi.mock("@/app/appConfig", () => ({

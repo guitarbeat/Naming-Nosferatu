@@ -15,7 +15,7 @@ import type { BulkAction, DashboardTab, NameFilter } from "./types";
 import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
 
 export function AdminDashboard() {
-	const { user } = useAppStore();
+	const user = useAppStore((s) => s.user);
 	const actorName = user.name.trim();
 	const {
 		batchUpdateLocked: applyBatchLocked,

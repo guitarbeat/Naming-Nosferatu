@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Check, CheckCircle, Eye, ZoomIn } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/shared/api/names/api";
 import { useNameAdminActions } from "@/shared/api/names/hooks/useNameAdminActions";
@@ -41,7 +41,7 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
 const nameOverlayClasses =
 	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
 
-function NameContent({ nameItem }: { nameItem: NameItem }) {
+const NameContent = memo(function NameContent({ nameItem }: { nameItem: NameItem }) {
 	return (
 		<>
 			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
@@ -59,9 +59,9 @@ function NameContent({ nameItem }: { nameItem: NameItem }) {
 			) : null}
 		</>
 	);
-}
+});
 
-function AdminActionButton({
+const AdminActionButton = memo(function AdminActionButton({
 	nameItem,
 	actionType,
 	isProcessing,
@@ -112,7 +112,7 @@ function AdminActionButton({
 			)}
 		</motion.button>
 	);
-}
+});
 
 const SelectionBadge = () => (
 	<motion.div

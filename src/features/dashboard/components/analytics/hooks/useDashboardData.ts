@@ -32,11 +32,9 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		isLoading: isLoadingEngagement,
 		error: errorEngagement,
 		refresh: refreshEngagementMetrics,
-	} = useAsyncData<EngagementMetrics | null>(
-		() => statsAPI.getEngagementMetrics(timeframe),
-		null,
-		{ deps: [timeframe] },
-	);
+	} = useAsyncData<EngagementMetrics | null>(() => statsAPI.getEngagementMetrics(timeframe), null, {
+		deps: [timeframe],
+	});
 
 	const { data: siteStats, error: errorSiteStats } = useAsyncData<SiteStats | null>(
 		() => statsAPI.getSiteStats(),

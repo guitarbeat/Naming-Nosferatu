@@ -8,7 +8,9 @@ import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
 
 export default function TournamentFlow() {
-	const { user, tournament, tournamentActions } = useAppStore();
+	const user = useAppStore((s) => s.user);
+	const tournament = useAppStore((s) => s.tournament);
+	const tournamentActions = useAppStore((s) => s.tournamentActions);
 
 	const saveRatingsMutation = useMutation({
 		mutationFn: ({

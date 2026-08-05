@@ -13,8 +13,7 @@ export function TournamentComplete({
 }: TournamentCompleteProps) {
 	return (
 		<div
-			className="relative flex min-h-[80vh] w-screen flex-col items-center justify-center overflow-hidden py-16 text-foreground"
-			style={{ marginInline: "calc((100% - 100vw) / 2)" }}
+			className="relative flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden py-16 text-foreground"
 		>
 			<div
 				className="pointer-events-none absolute inset-0"
