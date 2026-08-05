@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import type { Match } from "@/shared/types";
-import { getHeatLevel, STREAK_THRESHOLDS } from "../utils/heat";
+import { getHeatLevel } from "../utils/heat";
 import { getMatchSideId } from "../utils/matchHelpers";
 
 export function useStreakCalculator(

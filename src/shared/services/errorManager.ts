@@ -12,13 +12,25 @@ import { getTelemetryAdapter } from "./telemetrySeam";
 export type { ErrorSeverity, ErrorType };
 export { ERROR_SEVERITY, ERROR_TYPES };
 
-const RETRY_CONFIG = {
-	maxAttempts: 3,
-	baseDelay: 1000,
-	maxDelay: 10000,
-	backoffMultiplier: 2,
-	jitter: 0.1,
-};
+const GLOBAL_SCOPE =
+	typeof globalThis === "undefined" ? (typeof window === "undefined" ? {} : window) : globalThis;
+
+function getGlobalScope() {
+	return GLOBAL_SCOPE;
+}
+
+function createHash(value: unknown): string {
+	const stringValue = typeof value === "string" ? value : JSON.stringify(value);
+	let hash = 0;
+	if (!stringValue) {
+		return "hash_0";
+	}
+	for (let index = 0; index < stringValue.length; index += 1) {
+		hash = (hash << 5) - hash + stringValue.charCodeAt(index);
+		hash |= 0;
+	}
+	return `hash_${Math.abs(hash)}`;
+}
 
 interface ParsedError {
 	message: string;
