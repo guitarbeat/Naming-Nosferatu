@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { AudioEffects } from "@/shared/lib/sound";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
+import { getTelemetryAdapter } from "@/shared/services/telemetrySeam";
 import useAppStore from "@/store/appStore";
 import { NameSelector } from "../components/NameSelector";
 
@@ -37,9 +38,12 @@ export default function TournamentFlow() {
 
 			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
 				(acc, [nameId, ratingData]) => {
-					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
-					const wins = typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
-					const losses = typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
+					const rating =
+						typeof ratingData === "number" ? ratingData : ratingData.rating;
+					const wins =
+						typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
+					const losses =
+						typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
 					acc[nameId] = {
 						rating,
 						wins,
@@ -50,9 +54,14 @@ export default function TournamentFlow() {
 				{} as Record<string, { rating: number; wins: number; losses: number }>,
 			);
 
-			mutateAsyncRef.current({ userId, ratings: ratingsWithStats }).catch((_error) => {
-				console.warn("Tournament ratings save failed — ratings were not persisted");
-			});
+			mutateAsyncRef
+				.current({ userId, ratings: ratingsWithStats })
+				.catch((_error) => {
+					getTelemetryAdapter().captureException(
+						_error instanceof Error ? _error : new Error(String(_error)),
+						"Tournament ratings save failed — ratings were not persisted",
+					);
+				});
 		}
 	}, [tournament.isComplete, tournament.ratings, user.id, user.name]);
 
