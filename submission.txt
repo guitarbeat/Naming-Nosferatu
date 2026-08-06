@@ -1,5 +1,0 @@
-🧪 [testing improvement] Add missing tests for useNameSuggestion hook
-
-🎯 **What:** Added comprehensive test coverage for the `useNameSuggestion` hook to verify edge cases and error handling that were previously untested.
-📊 **Coverage:** Now testing input sanitization, `isValid` calculation, `isSubmitting` flag lifecycle (success and error paths), and clearing of error states upon field changes.
-✨ **Result:** Test coverage for `useNameSuggestion.ts` increased to 100%, ensuring robustness and preventing future regressions in the name suggestion form state.
