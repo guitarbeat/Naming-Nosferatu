@@ -52,9 +52,7 @@ describe("useStreakCalculator", () => {
 			},
 		];
 
-		const { result } = renderHook(() =>
-			useStreakCalculator(mockMatch, matchHistory),
-		);
+		const { result } = renderHook(() => useStreakCalculator(mockMatch, matchHistory));
 		expect(result.current.leftStreak).toBe(3); // Alice has won 3 in a row
 		expect(result.current.rightStreak).toBe(0); // Bob has no history
 	});
@@ -87,9 +85,7 @@ describe("useStreakCalculator", () => {
 			},
 		];
 
-		const { result } = renderHook(() =>
-			useStreakCalculator(mockMatch, matchHistory),
-		);
+		const { result } = renderHook(() => useStreakCalculator(mockMatch, matchHistory));
 		expect(result.current.leftStreak).toBe(1); // Only the most recent win counts
 	});
 
@@ -121,9 +117,7 @@ describe("useStreakCalculator", () => {
 			},
 		];
 
-		const { result } = renderHook(() =>
-			useStreakCalculator(mockMatch, matchHistory),
-		);
+		const { result } = renderHook(() => useStreakCalculator(mockMatch, matchHistory));
 		expect(result.current.leftStreak).toBe(2);
 	});
 
@@ -137,9 +131,7 @@ describe("useStreakCalculator", () => {
 			winner: "1",
 		}));
 
-		const { result } = renderHook(() =>
-			useStreakCalculator(mockMatch, matchHistory),
-		);
+		const { result } = renderHook(() => useStreakCalculator(mockMatch, matchHistory));
 		expect(result.current.leftStreak).toBe(5);
 		expect(result.current.leftHeatLevel).toBe("hot");
 	});
@@ -164,9 +156,7 @@ describe("useStreakCalculator", () => {
 			},
 		];
 
-		const { result } = renderHook(() =>
-			useStreakCalculator(null, matchHistory),
-		);
+		const { result } = renderHook(() => useStreakCalculator(null, matchHistory));
 		expect(result.current.calculateWinStreak("3")).toBe(2);
 		expect(result.current.calculateWinStreak("4")).toBe(0);
 	});
@@ -183,9 +173,7 @@ describe("useStreakCalculator", () => {
 			},
 		];
 
-		const { result } = renderHook(() =>
-			useStreakCalculator(null, matchHistory),
-		);
+		const { result } = renderHook(() => useStreakCalculator(null, matchHistory));
 		expect(result.current.calculateWinStreak(null)).toBe(0);
 		expect(result.current.calculateWinStreak(undefined)).toBe(0);
 	});
