@@ -5,7 +5,98 @@ import {
 	computeUpdatedRatings,
 	createTeamsById,
 	deriveBracketState,
+	resolveCurrentMatch,
 } from "./tournamentLogic";
+
+describe("resolveCurrentMatch", () => {
+	it("returns null if pendingMatchIds is null", () => {
+		const result = resolveCurrentMatch({
+			tournamentMode: "1v1",
+			pendingMatchIds: null,
+			teamsById: new Map(),
+			idToNameMap: new Map(),
+		});
+		expect(result).toBeNull();
+	});
+
+	it("returns 1v1 match with names from idToNameMap", () => {
+		const idToNameMap = new Map([
+			["p1", { id: "p1", name: "Player One" }],
+			["p2", { id: "p2", name: "Player Two" }],
+		]);
+		const result = resolveCurrentMatch({
+			tournamentMode: "1v1",
+			pendingMatchIds: { leftId: "p1", rightId: "p2" },
+			teamsById: new Map(),
+			idToNameMap,
+		});
+		expect(result).toEqual({
+			mode: "1v1",
+			left: { id: "p1", name: "Player One" },
+			right: { id: "p2", name: "Player Two" },
+		});
+	});
+
+	it("returns 1v1 match falling back to IDs when names are missing", () => {
+		const result = resolveCurrentMatch({
+			tournamentMode: "1v1",
+			pendingMatchIds: { leftId: "p1", rightId: "p2" },
+			teamsById: new Map(),
+			idToNameMap: new Map(),
+		});
+		expect(result).toEqual({
+			mode: "1v1",
+			left: { id: "p1", name: "p1" },
+			right: { id: "p2", name: "p2" },
+		});
+	});
+
+	it("returns 2v2 match with resolved teams", () => {
+		const team1 = {
+			id: "t1",
+			memberIds: ["p1", "p2"],
+			memberNames: ["Player 1", "Player 2"],
+		};
+		const team2 = {
+			id: "t2",
+			memberIds: ["p3", "p4"],
+			memberNames: ["Player 3", "Player 4"],
+		};
+		const teamsById = new Map([
+			["t1", team1],
+			["t2", team2],
+		]);
+
+		const result = resolveCurrentMatch({
+			tournamentMode: "2v2",
+			pendingMatchIds: { leftId: "t1", rightId: "t2" },
+			teamsById,
+			idToNameMap: new Map(),
+		});
+		expect(result).toEqual({
+			mode: "2v2",
+			left: team1,
+			right: team2,
+		});
+	});
+
+	it("returns null for 2v2 match if a team is missing", () => {
+		const team1 = {
+			id: "t1",
+			memberIds: ["p1", "p2"],
+			memberNames: ["Player 1", "Player 2"],
+		};
+		const teamsById = new Map([["t1", team1]]);
+
+		const result = resolveCurrentMatch({
+			tournamentMode: "2v2",
+			pendingMatchIds: { leftId: "t1", rightId: "t2" },
+			teamsById,
+			idToNameMap: new Map(),
+		});
+		expect(result).toBeNull();
+	});
+});
 
 describe("computeUpdatedRatings", () => {
 	const ratingsSnapshot = {
@@ -309,5 +400,22 @@ describe("calculateTournamentMetrics", () => {
 		expect(metrics.progress).toBe(100);
 		// completedMatches >= totalMatches results in 0 eta
 		expect(metrics.etaMinutes).toBe(0);
+	});
+
+	it("handles null/zero totalMatches returning 0 eta", () => {
+		const derived = {
+			isComplete: false,
+			totalMatches: 0,
+			completedMatches: 0,
+			round: 1,
+			totalRounds: 1,
+			stageLabel: "Final",
+			roundSize: 1,
+			pendingMatchIds: null,
+		};
+
+		const metrics = calculateTournamentMetrics({ derived });
+		expect(metrics.etaMinutes).toBe(0);
+		expect(metrics.progress).toBe(0);
 	});
 });

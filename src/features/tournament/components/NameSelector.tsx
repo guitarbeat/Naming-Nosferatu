@@ -159,6 +159,7 @@ export function NameSelector() {
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [lightboxIndex, setLightboxIndex] = useState(0);
+	const prefersReducedMotion = useReducedMotion();
 
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
