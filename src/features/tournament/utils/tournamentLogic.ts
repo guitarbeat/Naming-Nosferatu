@@ -381,9 +381,17 @@ export function computeUpdatedRatings({
 	void loserId;
 
 	const leftParticipantIds =
-		currentMatch.mode === "2v2" ? currentMatch.left.memberIds : [String(currentMatch.left.id)];
+		currentMatch.mode === "2v2"
+			? currentMatch.left.memberIds
+			: [String(typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id)];
 	const rightParticipantIds =
-		currentMatch.mode === "2v2" ? currentMatch.right.memberIds : [String(currentMatch.right.id)];
+		currentMatch.mode === "2v2"
+			? currentMatch.right.memberIds
+			: [
+					String(
+						typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
+					),
+				];
 	const winnerSide = leftParticipantIds.includes(winnerId) ? "left" : "right";
 
 	return applyEloMatchUpdate({
