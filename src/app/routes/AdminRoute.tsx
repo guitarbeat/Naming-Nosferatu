@@ -9,33 +9,41 @@ import { Section } from "@/shared/components/layout/Section";
 
 const DashboardLazy = routeComponents.DashboardLazy;
 
+function AdminLoading() {
+	return (
+		<div className="fixed inset-0 flex items-center justify-center bg-background">
+			<Loading variant="spinner" text="Checking access..." />
+		</div>
+	);
+}
+
+function AccessDenied() {
+	const navigate = useNavigate();
+	return (
+		<Section id="admin" maxWidth="md">
+			<div className="flex flex-col items-center gap-4 py-10 text-center">
+				<h2 className="text-3xl font-bold text-destructive">Access Denied</h2>
+				<p className="max-w-md text-muted-foreground">
+					Admin access is required to view this page. Head back home to log in
+					or return to the main tournament flow.
+				</p>
+				<Button variant="outline" onClick={() => navigate("/")}>
+					Back Home
+				</Button>
+			</div>
+		</Section>
+	);
+}
+
 export default function AdminRoute() {
 	const { user: authUser, isLoading: authLoading } = useAuth();
-	const navigate = useNavigate();
 
 	if (authLoading) {
-		return (
-			<div className="fixed inset-0 flex items-center justify-center bg-background">
-				<Loading variant="spinner" text="Checking access..." />
-			</div>
-		);
+		return <AdminLoading />;
 	}
 
 	if (!authUser?.isAdmin) {
-		return (
-			<Section id="admin" maxWidth="md">
-				<div className="flex flex-col items-center gap-4 py-10 text-center">
-					<h2 className="text-3xl font-bold text-destructive">Access Denied</h2>
-					<p className="max-w-md text-muted-foreground">
-						Admin access is required to view this page. Head back home to log in or return to the
-						main tournament flow.
-					</p>
-					<Button variant="outline" onClick={() => navigate("/")}>
-						Back Home
-					</Button>
-				</div>
-			</Section>
-		);
+		return <AccessDenied />;
 	}
 
 	return (
