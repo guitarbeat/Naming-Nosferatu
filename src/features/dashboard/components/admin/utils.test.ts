@@ -318,6 +318,32 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 			expect(result).toHaveLength(0);
 		});
 	});
+
+	describe("Edge Cases", () => {
+		it("should return empty array if input array is empty", () => {
+			const result = filterNamesByStatusAndSearch([], "all", "");
+			expect(result).toHaveLength(0);
+		});
+
+		it("should fallback gracefully if an unknown filterStatus is cast to NameFilter", () => {
+			// @ts-expect-error Testing runtime resilience
+			const result = filterNamesByStatusAndSearch(mockNames, "unknown_status", "");
+			expect(result).toHaveLength(5);
+			expect(result).toEqual(mockNames);
+		});
+
+		it("should safely handle names without a description when searching", () => {
+			const namesWithoutDescription = [
+				{
+					...mockNames[0],
+					description: undefined,
+				},
+			];
+			const result = filterNamesByStatusAndSearch(namesWithoutDescription, "all", "activename");
+			expect(result).toHaveLength(1);
+			expect(result[0].id).toBe(1);
+		});
+	});
 });
 
 describe("buildAdminStats", () => {

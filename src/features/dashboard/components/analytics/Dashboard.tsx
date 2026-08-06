@@ -4,7 +4,12 @@ import { type ElementType, memo, useMemo } from "react";
 import Button from "@/shared/components/layout/Button";
 import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";
-import type { EngagementMetrics, LeaderboardItem, SiteStats, UserStats } from "@/shared/services/supabase/statsService";
+import type {
+	EngagementMetrics,
+	LeaderboardItem,
+	SiteStats,
+	UserStats,
+} from "@/shared/services/supabase/statsService";
 import type { NameItem, RatingData } from "@/shared/types";
 import { ContextBadge, Panel, SectionHeader, StatTile } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
@@ -298,7 +303,10 @@ const EngagementPanel = memo(function EngagementPanel({
 				className="grid gap-3 sm:grid-cols-2"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
-				transition={{ duration: prefersReducedMotion ? 0 : 0.4, delay: prefersReducedMotion ? 0 : 0.1 }}
+				transition={{
+					duration: prefersReducedMotion ? 0 : 0.4,
+					delay: prefersReducedMotion ? 0 : 0.1,
+				}}
 			>
 				<StatTile
 					label="Active raters"
