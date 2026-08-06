@@ -28,7 +28,11 @@ export interface ToastItem {
 
 export interface ToastContextValue {
 	toasts: ToastItem[];
-	showToast: (message: string, type?: ToastType, options?: ToastOptions) => string;
+	showToast: (
+		message: string,
+		type?: ToastType,
+		options?: ToastOptions,
+	) => string;
 	hideToast: (id: string) => void;
 	clearToasts: () => void;
 	showSuccess: (message: string, options?: ToastOptions) => string;
@@ -77,6 +81,36 @@ export function useToast(): ToastContextValue {
 	return context;
 }
 
+function ToastMessage({
+	toast,
+	onDismiss,
+}: {
+	toast: ToastItem;
+	onDismiss: (id: string) => void;
+}) {
+	const style = TYPE_STYLES[toast.type];
+	return (
+		<div
+			className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-2 ${style.bg}`}
+			role="alert"
+		>
+			<span className="text-base leading-none" aria-hidden={true}>
+				{style.icon}
+			</span>
+			<span className="flex-1">{toast.message}</span>
+			<button
+				onClick={() => onDismiss(toast.id)}
+				className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
+				aria-label="Dismiss"
+				title="Dismiss"
+				type="button"
+			>
+				<X className="size-4" />
+			</button>
+		</div>
+	);
+}
+
 function ToastContainer({
 	toasts,
 	onDismiss,
@@ -96,30 +130,9 @@ function ToastContainer({
 			aria-live="polite"
 			aria-label="Notifications"
 		>
-			{toasts.map((toast) => {
-				const style = TYPE_STYLES[toast.type];
-				return (
-					<div
-						key={toast.id}
-						className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-2 ${style.bg}`}
-						role="alert"
-					>
-						<span className="text-base leading-none" aria-hidden={true}>
-							{style.icon}
-						</span>
-						<span className="flex-1">{toast.message}</span>
-						<button
-							onClick={() => onDismiss(toast.id)}
-							className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
-							aria-label="Dismiss"
-							title="Dismiss"
-							type="button"
-						>
-							<X className="size-4" />
-						</button>
-					</div>
-				);
-			})}
+			{toasts.map((toast) => (
+				<ToastMessage key={toast.id} toast={toast} onDismiss={onDismiss} />
+			))}
 		</section>
 	);
 }
@@ -154,7 +167,11 @@ function useToastProvider(
 	}, []);
 
 	const showToast = useCallback(
-		(message: string, type: ToastType = "info", options: ToastOptions = {}): string => {
+		(
+			message: string,
+			type: ToastType = "info",
+			options: ToastOptions = {},
+		): string => {
 			const id = `toast-${++toastCounter.current}`;
 			const duration = options.duration ?? defaultDuration;
 			const autoDismiss = options.autoDismiss ?? true;
@@ -197,19 +214,23 @@ function useToastProvider(
 	}, []);
 
 	const showSuccess = useCallback(
-		(message: string, options?: ToastOptions) => showToast(message, "success", options),
+		(message: string, options?: ToastOptions) =>
+			showToast(message, "success", options),
 		[showToast],
 	);
 	const showError = useCallback(
-		(message: string, options?: ToastOptions) => showToast(message, "error", options),
+		(message: string, options?: ToastOptions) =>
+			showToast(message, "error", options),
 		[showToast],
 	);
 	const showInfo = useCallback(
-		(message: string, options?: ToastOptions) => showToast(message, "info", options),
+		(message: string, options?: ToastOptions) =>
+			showToast(message, "info", options),
 		[showToast],
 	);
 	const showWarning = useCallback(
-		(message: string, options?: ToastOptions) => showToast(message, "warning", options),
+		(message: string, options?: ToastOptions) =>
+			showToast(message, "warning", options),
 		[showToast],
 	);
 
@@ -226,7 +247,16 @@ function useToastProvider(
 			toastList: toasts,
 			dismiss: hideToast,
 		}),
-		[toasts, showToast, hideToast, clearToasts, showSuccess, showError, showInfo, showWarning],
+		[
+			toasts,
+			showToast,
+			hideToast,
+			clearToasts,
+			showSuccess,
+			showError,
+			showInfo,
+			showWarning,
+		],
 	);
 }
 
@@ -243,12 +273,19 @@ export function ToastProvider({
 	maxToasts,
 	position,
 }: ToastProviderProps) {
-	const { toastList, dismiss, ...value } = useToastProvider(maxToasts, defaultDuration);
+	const { toastList, dismiss, ...value } = useToastProvider(
+		maxToasts,
+		defaultDuration,
+	);
 
 	return (
 		<ToastContext.Provider value={value}>
 			{children}
-			<ToastContainer toasts={toastList} onDismiss={dismiss} position={position} />
+			<ToastContainer
+				toasts={toastList}
+				onDismiss={dismiss}
+				position={position}
+			/>
 		</ToastContext.Provider>
 	);
 }
