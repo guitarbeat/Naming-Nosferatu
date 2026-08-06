@@ -14,74 +14,92 @@ import { memo, useEffect, useRef, useState } from "react";
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 
-function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
-	if (newItems.length !== oldRankings.length) {
+function haveRankingsChanged(
+	newItems: NameItem[],
+	oldRankings: NameItem[],
+): boolean {
+	if (newItems === oldRankings) return false;
+	const len = newItems.length;
+	if (len !== oldRankings.length) {
 		return true;
 	}
 	// ⚡ Bolt Optimization: Replace `.some()` with standard `for` loop + reference equality check.
 	// Avoids callback execution overhead and short-circuits instantly if objects are the same reference.
-	for (let i = 0; i < newItems.length; i++) {
+	for (let i = 0; i < len; i++) {
 		const newItem = newItems[i] as NameItem;
 		const oldItem = oldRankings[i] as NameItem;
 		if (newItem === oldItem) {
 			continue;
 		}
-		if (!oldItem || newItem.name !== oldItem.name || newItem.rating !== oldItem.rating) {
+		if (
+			!oldItem ||
+			newItem.name !== oldItem.name ||
+			newItem.rating !== oldItem.rating
+		) {
 			return true;
 		}
 	}
 	return false;
 }
 
-const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => {
-	const medalColors = {
-		0: "from-yellow-500 to-amber-600",
-		1: "from-slate-300 to-slate-500",
-		2: "from-amber-700 to-orange-800",
-	};
-	const medalBg =
-		index < 3 ? medalColors[index as keyof typeof medalColors] : "from-primary/20 to-accent/20";
-	const medalBorder = index < 3 ? "border-yellow-600/50" : "border-primary/30";
-	const medalText = index < 3 ? "text-white" : "text-foreground";
+const RankingItemContent = memo(
+	({ item, index }: { item: NameItem; index: number }) => {
+		const medalColors = {
+			0: "from-yellow-500 to-amber-600",
+			1: "from-slate-300 to-slate-500",
+			2: "from-amber-700 to-orange-800",
+		};
+		const medalBg =
+			index < 3
+				? medalColors[index as keyof typeof medalColors]
+				: "from-primary/20 to-accent/20";
+		const medalBorder =
+			index < 3 ? "border-yellow-600/50" : "border-primary/30";
+		const medalText = index < 3 ? "text-white" : "text-foreground";
 
-	return (
-		<div className="flex items-center gap-4 w-full">
-			{/* Drag Handle */}
-			<div className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors cursor-grab active:cursor-grabbing">
-				<GripVertical size={20} />
-			</div>
+		return (
+			<div className="flex items-center gap-4 w-full">
+				{/* Drag Handle */}
+				<div className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors cursor-grab active:cursor-grabbing">
+					<GripVertical size={20} />
+				</div>
 
-			{/* Rank Badge */}
-			<Chip
-				className={`flex-shrink-0 bg-gradient-to-br ${medalBg} border ${medalBorder} ${medalText} font-bold min-w-[3rem] shadow-sm`}
-				size="lg"
-				variant="flat"
-			>
-				{index < 3 ? ["🥇", "🥈", "🥉"][index] : `#${index + 1}`}
-			</Chip>
+				{/* Rank Badge */}
+				<Chip
+					className={`flex-shrink-0 bg-gradient-to-br ${medalBg} border ${medalBorder} ${medalText} font-bold min-w-[3rem] shadow-sm`}
+					size="lg"
+					variant="flat"
+				>
+					{index < 3 ? ["🥇", "🥈", "🥉"][index] : `#${index + 1}`}
+				</Chip>
 
-			{/* Name and Stats */}
-			<div className="flex-1 min-w-0">
-				<h3 className="text-lg font-semibold text-foreground truncate mb-1">{item.name}</h3>
-				<div className="flex items-center gap-4 text-sm">
-					<div className="flex items-center gap-1.5">
-						<span className="text-muted-foreground">Rating:</span>
-						<span className="inline-flex items-center justify-center min-w-[2.5rem] rounded-md bg-primary/10 px-2 py-0.5 font-semibold text-primary">
-							{Math.round(item.rating as number)}
-						</span>
-					</div>
-					{item.wins ? (
+				{/* Name and Stats */}
+				<div className="flex-1 min-w-0">
+					<h3 className="text-lg font-semibold text-foreground truncate mb-1">
+						{item.name}
+					</h3>
+					<div className="flex items-center gap-4 text-sm">
 						<div className="flex items-center gap-1.5">
-							<span className="text-muted-foreground">W/L:</span>
-							<span className="text-accent font-medium">{item.wins}W</span>
-							<span className="text-destructive/70 font-medium">{item.losses}L</span>
+							<span className="text-muted-foreground">Rating:</span>
+							<span className="inline-flex items-center justify-center min-w-[2.5rem] rounded-md bg-primary/10 px-2 py-0.5 font-semibold text-primary">
+								{Math.round(item.rating as number)}
+							</span>
 						</div>
-					) : null}
+						{item.wins ? (
+							<div className="flex items-center gap-1.5">
+								<span className="text-muted-foreground">W/L:</span>
+								<span className="text-accent font-medium">{item.wins}W</span>
+								<span className="text-destructive/70 font-medium">
+									{item.losses}L
+								</span>
+							</div>
+						) : null}
+					</div>
 				</div>
 			</div>
-		</div>
-	);
-});
+		);
+	},
+);
 RankingItemContent.displayName = "RankingItemContent";
 
 export const RankingAdjustment = memo(
@@ -100,7 +118,9 @@ export const RankingAdjustment = memo(
 		const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 		const isMountedRef = useRef(true);
 		const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-		const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+		const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+			null,
+		);
 		const onSaveRef = useRef(onSave);
 		onSaveRef.current = onSave;
 
@@ -124,7 +144,9 @@ export const RankingAdjustment = memo(
 			if (hasUnsavedChanges) {
 				return;
 			}
-			const sorted = [...rankings].sort((a, b) => (b.rating as number) - (a.rating as number));
+			const sorted = [...rankings].sort(
+				(a, b) => (b.rating as number) - (a.rating as number),
+			);
 			if (haveRankingsChanged(sorted, items)) {
 				setItems(sorted);
 			}
@@ -193,14 +215,21 @@ export const RankingAdjustment = memo(
 			}
 			const adjusted = newItems.map((item: NameItem, index: number) => ({
 				...item,
-				rating: Math.round(1000 + (1000 * (newItems.length - index)) / newItems.length),
+				rating: Math.round(
+					1000 + (1000 * (newItems.length - index)) / newItems.length,
+				),
 			}));
 			setHasUnsavedChanges(true);
 			setItems(adjusted);
 		};
 
 		return (
-			<div className={cn("w-full max-w-4xl mx-auto", isDragging && "ring-2 ring-primary/50")}>
+			<div
+				className={cn(
+					"w-full max-w-4xl mx-auto",
+					isDragging && "ring-2 ring-primary/50",
+				)}
+			>
 				<CardHeader className="flex flex-col gap-3 pb-4">
 					<div className="flex items-center justify-between w-full">
 						<h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -212,7 +241,8 @@ export const RankingAdjustment = memo(
 									"transition-all duration-300",
 									saveStatus === "saving" &&
 										"bg-chart-5/20 border-chart-5/30 text-chart-5 animate-pulse",
-									saveStatus === "success" && "bg-chart-2/20 border-chart-2/30 text-chart-2",
+									saveStatus === "success" &&
+										"bg-chart-2/20 border-chart-2/30 text-chart-2",
 									saveStatus === "error" &&
 										"bg-destructive/20 border-destructive/30 text-destructive",
 								)}
@@ -241,7 +271,10 @@ export const RankingAdjustment = memo(
 				<Divider className="bg-border/10" />
 
 				<CardBody className="gap-3 p-6">
-					<DragDropContext onDragStart={() => setIsDragging(true)} onDragEnd={handleDragEnd}>
+					<DragDropContext
+						onDragStart={() => setIsDragging(true)}
+						onDragEnd={handleDragEnd}
+					>
 						<Droppable droppableId="rankings">
 							{(provided: DroppableProvided) => (
 								<div
@@ -255,7 +288,10 @@ export const RankingAdjustment = memo(
 											draggableId={String(item.id || item.name)}
 											index={index}
 										>
-											{(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+											{(
+												provided: DraggableProvided,
+												snapshot: DraggableStateSnapshot,
+											) => (
 												<div
 													ref={provided.innerRef}
 													{...provided.draggableProps}
@@ -267,7 +303,8 @@ export const RankingAdjustment = memo(
 														exit={{ opacity: 0, scale: 0.95 }}
 														className={cn(
 															"py-3 transition-all duration-200 border-b border-border/10",
-															snapshot.isDragging && "bg-foreground/5 scale-105 rotate-2",
+															snapshot.isDragging &&
+																"bg-foreground/5 scale-105 rotate-2",
 														)}
 													>
 														<RankingItemContent item={item} index={index} />
