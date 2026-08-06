@@ -163,6 +163,7 @@ function ZoomButton({
 }
 
 export function NameSelector() {
+	const prefersReducedMotion = useReducedMotion();
 	const toast = useToast();
 	const prefersReducedMotion = useReducedMotion() ?? false;
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
