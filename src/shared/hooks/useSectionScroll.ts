@@ -1,18 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-
-function usePrefersReducedMotion() {
-	const [matches, setMatches] = useState(false);
-
-	useEffect(() => {
-		const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-		setMatches(media.matches);
-		const handleChange = () => setMatches(media.matches);
-		media.addEventListener("change", handleChange);
-		return () => media.removeEventListener("change", handleChange);
-	}, []);
-
-	return matches;
-}
+import { useCallback, useRef } from "react";
+import { usePrefersReducedMotion } from "@/shared/hooks/usePrefersReducedMotion";
 
 export function useSectionScroll() {
 	const prefersReducedMotion = usePrefersReducedMotion();
