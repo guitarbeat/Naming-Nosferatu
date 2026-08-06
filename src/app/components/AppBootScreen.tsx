@@ -22,13 +22,18 @@ export function AppBootScreen({
 	);
 	const shouldRender = visible ?? isBootLoading;
 
+	if (!shouldRender) {
+		return null;
+	}
+
+	return <AppBootScreenContent message={message} />;
+}
+
+function AppBootScreenContent({ message }: { message: string }) {
 	const [nameIdx, setNameIdx] = useState(0);
 	const [nameVisible, setNameVisible] = useState(true);
 
 	useEffect(() => {
-		if (!shouldRender) {
-			return;
-		}
 		const id = setInterval(() => {
 			setNameVisible(false);
 			setTimeout(() => {
@@ -37,11 +42,7 @@ export function AppBootScreen({
 			}, TIMING.MOTION_FAST * 1000);
 		}, TIMING.MOTION_CYCLE);
 		return () => clearInterval(id);
-	}, [shouldRender]);
-
-	if (!shouldRender) {
-		return null;
-	}
+	}, []);
 
 	return (
 		<div
