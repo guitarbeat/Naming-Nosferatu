@@ -6,7 +6,15 @@ import useAppStore from "@/store/appStore";
 
 const LOADING_PREVIEW = "/assets/images/loading-preview.png";
 
-const CAT_NAMES = ["NOSFERATU", "SMEEMO", "ORBIT", "NOVA", "NEDJEM", "WOODS", "LUNA"];
+const CAT_NAMES = [
+	"NOSFERATU",
+	"SMEEMO",
+	"ORBIT",
+	"NOVA",
+	"NEDJEM",
+	"WOODS",
+	"LUNA",
+];
 
 interface AppBootScreenProps {
 	message?: string;
@@ -22,13 +30,18 @@ export function AppBootScreen({
 	);
 	const shouldRender = visible ?? isBootLoading;
 
+	if (!shouldRender) {
+		return null;
+	}
+
+	return <AppBootScreenContent message={message} />;
+}
+
+function AppBootScreenContent({ message }: { message: string }) {
 	const [nameIdx, setNameIdx] = useState(0);
 	const [nameVisible, setNameVisible] = useState(true);
 
 	useEffect(() => {
-		if (!shouldRender) {
-			return;
-		}
 		const id = setInterval(() => {
 			setNameVisible(false);
 			setTimeout(() => {
@@ -37,11 +50,7 @@ export function AppBootScreen({
 			}, TIMING.MOTION_FAST * 1000);
 		}, TIMING.MOTION_CYCLE);
 		return () => clearInterval(id);
-	}, [shouldRender]);
-
-	if (!shouldRender) {
-		return null;
-	}
+	}, []);
 
 	return (
 		<div
@@ -67,7 +76,9 @@ export function AppBootScreen({
 					className="mb-8 w-full max-w-[22rem] select-none object-contain"
 				/>
 
-				<p className={`${themeText.eyebrowWide} tracking-[0.32em]`}>My cat's name is</p>
+				<p className={`${themeText.eyebrowWide} tracking-[0.32em]`}>
+					My cat's name is
+				</p>
 
 				<div className="my-4 h-px w-12 bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
 
