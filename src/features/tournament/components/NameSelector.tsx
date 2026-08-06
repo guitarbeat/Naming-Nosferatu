@@ -26,6 +26,7 @@ import useAppStore from "@/store/appStore";
 type PendingAdminAction = {
 	type: "toggle-hidden" | "toggle-locked";
 	nameId: IdType;
+	name: string;
 	isCurrentlyEnabled: boolean;
 };
 
@@ -153,6 +154,7 @@ export function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const prefersReducedMotion = useReducedMotion();
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
@@ -309,9 +311,8 @@ export function NameSelector() {
 		if (!pendingAdminAction) {
 			return "";
 		}
-		const target = names.find((n) => n.id === pendingAdminAction.nameId);
-		return target?.name ?? "this name";
-	}, [names, pendingAdminAction]);
+		return pendingAdminAction.name ?? "this name";
+	}, [pendingAdminAction]);
 
 	const isPendingActionBusy = useMemo(() => {
 		if (!pendingAdminAction) {
@@ -465,6 +466,7 @@ export function NameSelector() {
 														requestAdminAction({
 															type: "toggle-hidden",
 															nameId: nameItem.id,
+															name: nameItem.name,
 															isCurrentlyEnabled: isNameHidden(nameItem),
 														})
 													}
@@ -478,6 +480,7 @@ export function NameSelector() {
 														requestAdminAction({
 															type: "toggle-locked",
 															nameId: nameItem.id,
+															name: nameItem.name,
 															isCurrentlyEnabled: isNameLocked(nameItem),
 														})
 													}
