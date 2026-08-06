@@ -5,16 +5,48 @@ const isDev = () => import.meta.env?.DEV ?? false;
 // Secret key used to encrypt storage values.
 // In a real application, this should ideally be derived from a user-specific value or backend secret.
 // For client-side storage where the goal is simply to prevent clear-text storage on disk, a static key provides basic obfuscation.
-const STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
+const LEGACY_STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
 
 // Ensure the key is exactly 256 bits (32 bytes)
-const keyHex = CryptoJS.enc.Utf8.parse(STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32));
+const legacyKeyHex = CryptoJS.enc.Utf8.parse(
+	LEGACY_STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32),
+);
 // Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
 const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
+const DEVICE_KEY_STORAGE_KEY = "__device_key__";
+
+let cachedDeviceKeyHex: CryptoJS.lib.WordArray | null = null;
+
+function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
+	if (cachedDeviceKeyHex) {
+		return cachedDeviceKeyHex;
+	}
+
+	try {
+		if (typeof window !== "undefined") {
+			let keyHexStr = window.localStorage.getItem(DEVICE_KEY_STORAGE_KEY);
+			if (!keyHexStr) {
+				const newKey = CryptoJS.lib.WordArray.random(32) /* key generation */;
+				keyHexStr = CryptoJS.enc.Hex.stringify(newKey);
+				window.localStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
+			}
+			cachedDeviceKeyHex = CryptoJS.enc.Hex.parse(keyHexStr);
+			return cachedDeviceKeyHex;
+		}
+	} catch {
+		// Ignore storage errors, will fall through to temporary session key
+	}
+
+	// Fallback to a temporary random key for this session if localStorage is unavailable
+	cachedDeviceKeyHex = CryptoJS.lib.WordArray.random(32) /* key generation */;
+	return cachedDeviceKeyHex;
+}
+
 function encrypt(text: string): string {
 	const iv = CryptoJS.lib.WordArray.random(16);
-	const encrypted = CryptoJS.AES.encrypt(text, keyHex, {
+	// codeql[js/insecure-password-hash] False positive: data obfuscation, not hashing a password
+	const encrypted = CryptoJS.AES.encrypt(text, getDeviceEncryptionKey(), {
 		iv,
 		mode: CryptoJS.mode.CBC,
 		padding: CryptoJS.pad.Pkcs7,
@@ -36,17 +68,38 @@ function decrypt(text: string): string {
 			ciphertext = text.slice(33);
 		}
 
-		const bytes = CryptoJS.AES.decrypt(ciphertext, keyHex, {
-			iv,
-			mode: CryptoJS.mode.CBC,
-			padding: CryptoJS.pad.Pkcs7,
-		});
-		const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-		// If decryption fails or text wasn't encrypted, it might return empty string
-		if (!decrypted) {
-			return text; // Fallback to clear text if decryption fails (e.g., legacy unencrypted data)
+		// First try with the device-specific key
+		try {
+			const bytes = CryptoJS.AES.decrypt(ciphertext, getDeviceEncryptionKey(), {
+				iv,
+				mode: CryptoJS.mode.CBC,
+				padding: CryptoJS.pad.Pkcs7,
+			});
+			const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+			if (decrypted) {
+				return decrypted;
+			}
+		} catch (_error) {
+			// Ignore and fallback
 		}
-		return decrypted;
+
+		// Fallback to legacy static key for backward compatibility
+		try {
+			const legacyBytes = CryptoJS.AES.decrypt(ciphertext, legacyKeyHex, {
+				iv,
+				mode: CryptoJS.mode.CBC,
+				padding: CryptoJS.pad.Pkcs7,
+			});
+			const legacyDecrypted = legacyBytes.toString(CryptoJS.enc.Utf8);
+			if (legacyDecrypted) {
+				return legacyDecrypted;
+			}
+		} catch (_error) {
+			// Ignore and fallback
+		}
+
+		// If all decryption fails or text wasn't encrypted, it might return empty string
+		return text; // Fallback to clear text if decryption fails (e.g., legacy unencrypted data)
 	} catch (_error) {
 		// Fallback to returning original text if decryption errors (e.g., not encrypted)
 		return text;
