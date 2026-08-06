@@ -14,10 +14,9 @@ export default function AppShell() {
 	const { pathname } = useLocation();
 
 	useLayoutEffect(() => {
-		if (pathname) {
-			document.documentElement.scrollTop = 0;
-			document.body.scrollTop = 0;
-		}
+		if (!pathname) return;
+		document.documentElement.scrollTop = 0;
+		document.body.scrollTop = 0;
 	}, [pathname]);
 
 	return (
@@ -31,7 +30,10 @@ export default function AppShell() {
 						</Suspense>
 					}
 				/>
-				<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
+				<Route
+					path="/tournament"
+					element={<Navigate to="/" replace={true} />}
+				/>
 				<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
 				<Route
 					path="/admin"
