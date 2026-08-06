@@ -1,24 +1,21 @@
 import { describe, expect, it } from "vitest";
+import {
+	ERROR_SEVERITY,
+	ERROR_TYPES,
+	type ErrorSeverity,
+	type ErrorType,
+} from "./errorClassification";
 import { getUserFriendlyMessage, USER_FRIENDLY_MESSAGES } from "./errorMessages";
-import { ERROR_SEVERITY, ERROR_TYPES, type ErrorSeverity, type ErrorType } from "./errorClassification";
 
 describe("getUserFriendlyMessage", () => {
 	it("returns specific message for known error type and severity", () => {
 		// Test one from each type just to be sure it looks up correctly
 		expect(
-			getUserFriendlyMessage(
-				ERROR_TYPES.NETWORK,
-				ERROR_SEVERITY.CRITICAL,
-				"Any Context",
-			),
+			getUserFriendlyMessage(ERROR_TYPES.NETWORK, ERROR_SEVERITY.CRITICAL, "Any Context"),
 		).toBe(USER_FRIENDLY_MESSAGES[ERROR_TYPES.NETWORK][ERROR_SEVERITY.CRITICAL]);
 
 		expect(
-			getUserFriendlyMessage(
-				ERROR_TYPES.VALIDATION,
-				ERROR_SEVERITY.MEDIUM,
-				"Any Context",
-			),
+			getUserFriendlyMessage(ERROR_TYPES.VALIDATION, ERROR_SEVERITY.MEDIUM, "Any Context"),
 		).toBe(USER_FRIENDLY_MESSAGES[ERROR_TYPES.VALIDATION][ERROR_SEVERITY.MEDIUM]);
 	});
 
@@ -53,13 +50,9 @@ describe("getUserFriendlyMessage", () => {
 	});
 
 	it("handles undefined or empty string contexts gracefully", () => {
-		expect(
-			getUserFriendlyMessage(
-				"UNKNOWN_TEST_TYPE" as ErrorType,
-				ERROR_SEVERITY.LOW,
-				"",
-			),
-		).toBe("An error occurred");
+		expect(getUserFriendlyMessage("UNKNOWN_TEST_TYPE" as ErrorType, ERROR_SEVERITY.LOW, "")).toBe(
+			"An error occurred",
+		);
 
 		expect(
 			getUserFriendlyMessage(
