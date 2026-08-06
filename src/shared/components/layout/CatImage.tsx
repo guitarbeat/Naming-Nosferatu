@@ -19,7 +19,7 @@ function buildSources(src: string) {
 		return null;
 	}
 	const extension = src.split(".").pop()?.toLowerCase();
-	if (!extension || extension === "gif" || extension === "avif" || extension === "webp") {
+	if (!extension || ["gif", "avif", "webp"].includes(extension)) {
 		return null;
 	}
 	const base = src.replace(/\.[^.]+$/, "");
@@ -54,6 +54,14 @@ function CatImage({
 	const currentSrc = hasError ? fallbackUrl : (src ?? fallbackUrl);
 	const sources = buildSources(currentSrc);
 	const isLocalAsset = currentSrc.startsWith("/");
+
+	const handleError = (
+		event: React.SyntheticEvent<HTMLImageElement, Event>,
+	) => {
+		setHasError(true);
+		onError?.(event);
+	};
+
 	const image = (
 		<img
 			src={currentSrc}
@@ -62,33 +70,29 @@ function CatImage({
 			loading={loading}
 			decoding={decoding}
 			onLoad={onLoad}
-			onError={(event) => {
-				setHasError(true);
-				onError?.(event);
-			}}
+			onError={handleError}
 			{...(isLocalAsset ? {} : { crossOrigin: "anonymous" as const })}
 		/>
 	);
 
+	const innerContent = sources ? (
+		<picture className="block h-full w-full">
+			<source type="image/avif" srcSet={sources.avif} />
+			<source type="image/webp" srcSet={sources.webp} />
+			{image}
+		</picture>
+	) : (
+		image
+	);
+
+	const combinedStyle = {
+		...containerStyle,
+		"--bg-image": `url(${currentSrc})`,
+	} as React.CSSProperties;
+
 	return (
-		<div
-			className={containerClassName}
-			style={
-				{
-					...containerStyle,
-					"--bg-image": `url(${currentSrc})`,
-				} as React.CSSProperties
-			}
-		>
-			{sources ? (
-				<picture className="block h-full w-full">
-					<source type="image/avif" srcSet={sources.avif} />
-					<source type="image/webp" srcSet={sources.webp} />
-					{image}
-				</picture>
-			) : (
-				image
-			)}
+		<div className={containerClassName} style={combinedStyle}>
+			{innerContent}
 		</div>
 	);
 }
