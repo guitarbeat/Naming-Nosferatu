@@ -96,10 +96,7 @@ export function isStorageAvailable(): boolean {
 	}
 }
 
-export function getStorageString(
-	key: string,
-	fallback: string | null = null,
-): string | null {
+export function getStorageString(key: string, fallback: string | null = null): string | null {
 	if (!isStorageAvailable()) {
 		return fallback;
 	}
@@ -112,10 +109,7 @@ export function getStorageString(
 		return decrypt(value);
 	} catch (error) {
 		if (isDev()) {
-			console.error(
-				`[storage] Failed to read key "${key}" from localStorage:`,
-				error,
-			);
+			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		}
 		return fallback;
 	}
@@ -132,10 +126,7 @@ export function setStorageString(key: string, value: string): boolean {
 		return true;
 	} catch (error) {
 		if (isDev()) {
-			console.error(
-				`[storage] Failed to write key "${key}" to localStorage:`,
-				error,
-			);
+			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
 		}
 		return false;
 	}
@@ -150,10 +141,7 @@ export function removeStorageItem(key: string): void {
 		window.localStorage.removeItem(key);
 	} catch (error) {
 		if (isDev()) {
-			console.error(
-				`[storage] Failed to remove key "${key}" from localStorage:`,
-				error,
-			);
+			console.error(`[storage] Failed to remove key "${key}" from localStorage:`, error);
 		}
 	}
 }
@@ -189,10 +177,7 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 		return true;
 	} catch (error) {
 		if (isDev()) {
-			console.error(
-				`[storage] Failed to write key "${key}" to localStorage:`,
-				error,
-			);
+			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
 		}
 		return false;
 	}

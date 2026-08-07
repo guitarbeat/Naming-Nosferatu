@@ -86,9 +86,7 @@ describe("storage", () => {
 
 		it("returns fallback on decryption error", () => {
 			window.localStorage.setItem("test-key", "unencrypted-value");
-			expect(getStorageString("test-key", "fallback")).toBe(
-				"unencrypted-value",
-			);
+			expect(getStorageString("test-key", "fallback")).toBe("unencrypted-value");
 		});
 
 		it("sets and gets a value", () => {
