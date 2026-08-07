@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Modal } from "@/shared/components/layout/Modal";
+import { usePrefersReducedMotion } from "@/shared/hooks/usePrefersReducedMotion";
 import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptics";
 import { cn } from "@/shared/lib/utils";
 import useAppStore from "@/store/appStore";
@@ -47,7 +48,9 @@ const FloatingNav = memo(function FloatingNav({ items }: { items: NavItem[] }) {
 				<div className="floating-navbar">
 					<div
 						className="floating-navbar__primary"
-						style={{ gridTemplateColumns: `repeat(${visibleItems.length}, minmax(0, 1fr))` }}
+						style={{
+							gridTemplateColumns: `repeat(${visibleItems.length}, minmax(0, 1fr))`,
+						}}
 					>
 						{visibleItems.map((item) => {
 							const isActive = Boolean(item.isActive);
@@ -96,7 +99,7 @@ export function FloatingNavbar() {
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
 	const [activeSection, setActiveSection] = useState<NavSection>("pick");
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+	const prefersReducedMotion = usePrefersReducedMotion();
 	const [pendingScroll, setPendingScroll] = useState<NavSection | null>(null);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const [isSuggestOpen, setIsSuggestOpen] = useState(false);
@@ -222,14 +225,6 @@ export function FloatingNavbar() {
 			}
 		};
 	}, [isHomeRoute]);
-
-	useEffect(() => {
-		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-		const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-		updatePreference();
-		mediaQuery.addEventListener("change", updatePreference);
-		return () => mediaQuery.removeEventListener("change", updatePreference);
-	}, []);
 
 	const navItems = useMemo((): NavItem[] => {
 		const items: NavItem[] = [];
