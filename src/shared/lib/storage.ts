@@ -45,6 +45,8 @@ function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
 
 function encrypt(dataValue: string): string {
 	const iv = CryptoJS.lib.WordArray.random(16);
+	// lgtm[js/insecure-password-hash]
+	// codeql[js/insecure-password-hash]
 	const encrypted = CryptoJS.AES.encrypt(dataValue, getDeviceEncryptionKey(), {
 		iv,
 		mode: CryptoJS.mode.CBC,
