@@ -20,6 +20,19 @@ export function AppLayout({ children }: AppLayoutProps) {
 	const errors = useAppStore((s) => s.errors);
 	const errorActions = useAppStore((s) => s.errorActions);
 
+	const handleSkipToMain = () => {
+		const main = document.getElementById("main-content");
+		if (!main) {
+			return;
+		}
+		main.focus();
+		main.scrollIntoView({ behavior: "smooth" });
+	};
+
+	const handleDismissError = () => {
+		errorActions.clearError();
+	};
+
 	const analyticsEnabled = shouldEnableAnalytics({
 		hostname: window.location.hostname,
 		isProd: import.meta.env.PROD,
@@ -40,13 +53,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 				<button
 					type="button"
 					className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-background focus:text-foreground focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background"
-					onClick={() => {
-						const main = document.getElementById("main-content");
-						if (main) {
-							main.focus();
-							main.scrollIntoView({ behavior: "smooth" });
-						}
-					}}
+					onClick={handleSkipToMain}
 				>
 					Skip to main content
 				</button>
@@ -60,10 +67,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 				>
 					{Boolean(errors.current) && (
 						<div className="mx-auto mb-4 w-full max-w-4xl px-3 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
-							<ErrorComponent
-								error={String(errors.current)}
-								onDismiss={() => errorActions.clearError()}
-							/>
+							<ErrorComponent error={String(errors.current)} onDismiss={handleDismissError} />
 						</div>
 					)}
 

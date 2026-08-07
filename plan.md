@@ -1,5 +1,10 @@
-1. **Analyze:** The `AppLayout` component contains a deeply nested inline `onClick` handler for the "Skip to main content" button. Extracting this inline arrow function into a well-named callback function will improve readability. Applying an early return pattern in the extracted function will also flatten the code inside it.
-2. **Implement Refactoring:** Extract `handleSkipToMain` as a named function inside `AppLayout`, using an early return `if (!main) return;`. Apply the function as the `onClick` handler. Also extract `handleDismissError` for the `onDismiss` handler of the `ErrorComponent`.
-3. **Verify:** Use `run_in_bash_session` to run `pnpm run fix` to run the format and lint checks, and `pnpm run test` to verify the code works and tests pass.
-4. **Pre-commit:** Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
-5. **Submit:** Submit a PR with the correct format for the Code Health agent using the `submit` tool.
+1. **Enhance TournamentHeader button accessibility and UX**
+   - Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/TournamentHeader.tsx` to add `title` attributes (tooltips) to the icon-only control buttons (Mute/Music/Cats, Previous, Next).
+   - Add a dynamic `title` to the Undo button to explain its disabled state (`"No actions to undo"` vs `"Undo last vote"`).
+   - Add `aria-pressed` to the toggle buttons in the mapped array for better screen reader support.
+2. **Run tests & verify changes**
+   - Run `pnpm run lint` and `pnpm test run` to ensure no regressions are introduced.
+3. **Complete pre-commit steps**
+   - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
+4. **Submit the PR**
+   - Use the `submit` tool to create the PR with branch name, commit message, and description.
