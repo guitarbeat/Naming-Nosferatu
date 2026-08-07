@@ -7,19 +7,6 @@ import {
 } from "@/shared/lib/userStorage";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
-/**
- * Sanitize a user name to create a valid email local-part
- * Removes special characters, spaces, and converts to lowercase
- */
-function sanitizeNameForEmail(name: string): string {
-	const sanitized = name
-		.toLowerCase()
-		.replace(/[^a-z0-9._-]/g, "") // Keep only alphanumeric, dots, underscores, hyphens
-		.replace(/^[.-]+|[.-]+$/g, "") // Remove leading/trailing dots or hyphens
-		.slice(0, 64); // Email local-part max length is 64 chars
-	return sanitized || `user_${Date.now()}`;
-}
-
 function buildAuthUserFromStoredSnapshot(): AuthUser | null {
 	const storedUser = readStoredUserSnapshot();
 	if (!storedUser) {
@@ -77,71 +64,56 @@ export const supabaseAuthAdapter: AuthAdapter = {
 	 * Login with Supabase Auth
 	 */
 	async login(credentials: LoginCredentials): Promise<boolean> {
-		const { name } = credentials;
-		if (!name?.trim()) {
+		const { name, email, password } = credentials;
+
+		if (!name?.trim() && (!email || !password)) {
 			return false;
 		}
 
 		try {
-			const trimmedName = name.trim();
+			const trimmedName = name?.trim() || "";
 			const client = await resolveSupabaseClient();
 			if (!client) {
 				writeStoredUserSnapshot({
-					name: trimmedName,
+					name: trimmedName || "Unknown",
 					isAdmin: false,
 				});
 				return true;
 			}
 
-			// Sign in with Supabase
-			const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
-			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
-
-			if (!demoPassword) {
-				console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
-				return false;
-			}
-
 			let authUser: import("@supabase/supabase-js").User | null = null;
 
-			const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
-				email: sanitizedEmail,
-				password: demoPassword,
-			});
+			if (email && password) {
+				const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+					email,
+					password,
+				});
 
-			if (signInError) {
-				const isInvalidCredentials =
-					signInError.message?.toLowerCase().includes("invalid login") ||
-					signInError.message?.toLowerCase().includes("invalid credentials") ||
-					signInError.status === 400;
-
-				if (!isInvalidCredentials) {
+				if (signInError) {
 					console.error("Supabase login failed:", signInError);
 					return false;
 				}
 
-				const { data: signUpData, error: signUpError } = await client.auth.signUp({
-					email: sanitizedEmail,
-					password: demoPassword,
+				authUser = signInData.user;
+			} else {
+				const { data: anonData, error: anonError } = await client.auth.signInAnonymously({
 					options: {
 						data: { user_name: trimmedName },
 					},
 				});
 
-				if (signUpError) {
-					console.error("Supabase sign-up failed:", signUpError);
+				if (anonError) {
+					console.error("Supabase anonymous login failed:", anonError);
 					return false;
 				}
 
-				authUser = signUpData.user;
-			} else {
-				authUser = signInData.user;
+				authUser = anonData.user;
 			}
 
 			if (authUser) {
 				writeStoredUserSnapshot({
 					id: authUser.id,
-					name: authUser.user_metadata?.user_name || trimmedName,
+					name: authUser.user_metadata?.user_name || trimmedName || "Unknown",
 					email: authUser.email,
 					isAdmin: false,
 				});
