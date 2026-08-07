@@ -59,7 +59,7 @@ describe("storage", () => {
 		it("returns false when window is undefined", () => {
 			const originalWindow = global.window;
 			// @ts-expect-error - overriding for test
-			delete global.window;
+			global.window = undefined;
 			expect(isStorageAvailable()).toBe(false);
 			global.window = originalWindow;
 		});
@@ -115,7 +115,7 @@ describe("storage", () => {
 		it("does nothing when storage is unavailable", () => {
 			const originalWindow = global.window;
 			// @ts-expect-error - overriding for test
-			delete global.window;
+			global.window = undefined;
 			expect(() => removeStorageItem("test-key")).not.toThrow();
 			global.window = originalWindow;
 		});
