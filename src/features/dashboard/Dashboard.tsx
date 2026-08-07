@@ -8,9 +8,17 @@ import { Dashboard as AnalyticsDashboard } from "./components/analytics/Dashboar
 type DashboardView = "analytics" | "moderation";
 
 const DASHBOARD_VIEW_OPTIONS = [
-	{ value: "analytics", label: "Analytics", icon: <LayoutDashboard size={18} /> },
+	{
+		value: "analytics",
+		label: "Analytics",
+		icon: <LayoutDashboard size={18} />,
+	},
 	{ value: "moderation", label: "Moderation", icon: <Shield size={18} /> },
-] as const satisfies readonly { value: DashboardView; label: string; icon: ReactNode }[];
+] as const satisfies readonly {
+	value: DashboardView;
+	label: string;
+	icon: ReactNode;
+}[];
 
 interface UnifiedDashboardProps {
 	personalRatings?: Record<string, RatingData>;
@@ -32,20 +40,26 @@ interface UnifiedDashboardProps {
 export function Dashboard(props: UnifiedDashboardProps) {
 	const [activeView, setActiveView] = useState<DashboardView>("analytics");
 
+	if (!props.isAdmin) {
+		return (
+			<div className="w-full space-y-6">
+				<AnalyticsDashboard {...props} />
+			</div>
+		);
+	}
+
 	return (
 		<div className="w-full space-y-6">
-			{props.isAdmin && (
-				<div className="flex items-center gap-4 border-b border-border pb-4">
-					<MagicToggle
-						options={DASHBOARD_VIEW_OPTIONS}
-						value={activeView}
-						onChange={setActiveView}
-						ariaLabel="Dashboard view"
-					/>
-				</div>
-			)}
+			<div className="flex items-center gap-4 border-b border-border pb-4">
+				<MagicToggle
+					options={DASHBOARD_VIEW_OPTIONS}
+					value={activeView}
+					onChange={setActiveView}
+					ariaLabel="Dashboard view"
+				/>
+			</div>
 
-			{activeView === "analytics" || !props.isAdmin ? (
+			{activeView === "analytics" ? (
 				<AnalyticsDashboard {...props} />
 			) : (
 				<AdminDashboard />
