@@ -9,7 +9,12 @@ interface LightboxProps {
 	onNavigate: (index: number) => void;
 }
 
-export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
+export function Lightbox({
+	images,
+	currentIndex,
+	onClose,
+	onNavigate,
+}: LightboxProps) {
 	const currentImage = images[currentIndex] || "";
 	const hasMultipleImages = images.length > 1;
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -34,16 +39,14 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
-			switch (event.key) {
-				case "Escape":
-					onCloseRef.current();
-					break;
-				case "ArrowLeft":
-					handlePrevious();
-					break;
-				case "ArrowRight":
-					handleNext();
-					break;
+			if (event.key === "Escape") {
+				return onCloseRef.current();
+			}
+			if (event.key === "ArrowLeft") {
+				return handlePrevious();
+			}
+			if (event.key === "ArrowRight") {
+				return handleNext();
 			}
 		};
 		document.addEventListener("keydown", handleKeyDown);
@@ -93,7 +96,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 				<motion.img
 					src={currentImage}
-					alt={`Cat image ${currentIndex + 1} of ${images.length}`}
+					alt={`Cat ${currentIndex + 1} of ${images.length}`}
 					className="max-h-[90vh] max-w-[90vw] select-none object-contain"
 					initial={{ scale: 0.96, opacity: 0 }}
 					animate={{ scale: 1, opacity: 1 }}
