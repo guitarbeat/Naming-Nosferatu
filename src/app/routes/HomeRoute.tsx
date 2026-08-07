@@ -10,8 +10,8 @@ import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
-import useAppStore from "@/store/appStore";
 import type { NameItem } from "@/shared/types";
+import useAppStore from "@/store/appStore";
 
 const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 
