@@ -223,12 +223,9 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			const left = normalizeParticipant(record.match.left);
 			const right = normalizeParticipant(record.match.right);
 
-			const winnerIds = left.memberIds.includes(String(record.winner))
-				? left.memberIds
-				: right.memberIds;
-			const loserIds = left.memberIds.includes(String(record.winner))
-				? right.memberIds
-				: left.memberIds;
+			const isLeftWinner = left.memberIds.includes(String(record.winner));
+			const winnerIds = isLeftWinner ? left.memberIds : right.memberIds;
+			const loserIds = isLeftWinner ? right.memberIds : left.memberIds;
 
 			for (const id of winnerIds) {
 				if (id) {
