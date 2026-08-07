@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useTournamentKeyboard } from "./useTournamentKeyboard";
 import type React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useTournamentKeyboard } from "./useTournamentKeyboard";
 
 describe("useTournamentKeyboard", () => {
 	const mockOnVoteForSide = vi.fn();
@@ -24,7 +24,10 @@ describe("useTournamentKeyboard", () => {
 	describe("handleKeyDown (element level)", () => {
 		it("calls onVoteForSide and prevents default on Enter", () => {
 			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = { key: "Enter", preventDefault: vi.fn() } as unknown as React.KeyboardEvent<HTMLElement>;
+			const event = {
+				key: "Enter",
+				preventDefault: vi.fn(),
+			} as unknown as React.KeyboardEvent<HTMLElement>;
 
 			result.current.handleKeyDown(event, "left");
 
@@ -34,7 +37,10 @@ describe("useTournamentKeyboard", () => {
 
 		it("calls onVoteForSide and prevents default on Space", () => {
 			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = { key: " ", preventDefault: vi.fn() } as unknown as React.KeyboardEvent<HTMLElement>;
+			const event = {
+				key: " ",
+				preventDefault: vi.fn(),
+			} as unknown as React.KeyboardEvent<HTMLElement>;
 
 			result.current.handleKeyDown(event, "right");
 
@@ -44,7 +50,10 @@ describe("useTournamentKeyboard", () => {
 
 		it("ignores other keys", () => {
 			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = { key: "a", preventDefault: vi.fn() } as unknown as React.KeyboardEvent<HTMLElement>;
+			const event = {
+				key: "a",
+				preventDefault: vi.fn(),
+			} as unknown as React.KeyboardEvent<HTMLElement>;
 
 			result.current.handleKeyDown(event, "left");
 
