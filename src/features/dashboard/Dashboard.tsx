@@ -8,17 +8,9 @@ import { Dashboard as AnalyticsDashboard } from "./components/analytics/Dashboar
 type DashboardView = "analytics" | "moderation";
 
 const DASHBOARD_VIEW_OPTIONS = [
-	{
-		value: "analytics",
-		label: "Analytics",
-		icon: <LayoutDashboard size={18} />,
-	},
+	{ value: "analytics", label: "Analytics", icon: <LayoutDashboard size={18} /> },
 	{ value: "moderation", label: "Moderation", icon: <Shield size={18} /> },
-] as const satisfies readonly {
-	value: DashboardView;
-	label: string;
-	icon: ReactNode;
-}[];
+] as const satisfies readonly { value: DashboardView; label: string; icon: ReactNode }[];
 
 interface UnifiedDashboardProps {
 	personalRatings?: Record<string, RatingData>;
