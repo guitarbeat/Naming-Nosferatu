@@ -42,7 +42,6 @@ const SectionHeading = memo(function SectionHeading({
 	);
 });
 
-
 const SectionLayout = memo(function SectionLayout({
 	id,
 	title,
@@ -106,7 +105,8 @@ export default function HomeRoute() {
 	const tournament = useAppStore((s) => s.tournament);
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
 	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
-	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } =
+		useSectionScroll();
 
 	const hasNamesData = typeof namesQuery.data !== "undefined";
 	const heroState =
