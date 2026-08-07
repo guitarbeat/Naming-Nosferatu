@@ -48,42 +48,46 @@ interface ModalHeaderProps {
 	closeDisabled: boolean;
 }
 
-function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
-	if (hideTitle) {
-		return (
-			<>
-				<h2 id="modal-title" className="sr-only">
-					{title}
-				</h2>
-				<button
-					type="button"
-					onClick={requestClose}
-					disabled={closeDisabled}
-					className="absolute top-3 right-3 z-10 rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-					aria-label={`Close ${title.toLowerCase()}`}
-					title={`Close ${title.toLowerCase()}`}
-				>
-					<X className="size-4" />
-				</button>
-			</>
-		);
-	}
-
-	return (
-		<div className="flex items-center justify-between mb-5">
-			<h2 id="modal-title" className="text-base font-semibold text-foreground tracking-tight">
+function ModalHeader({
+	title,
+	hideTitle,
+	requestClose,
+	closeDisabled,
+}: ModalHeaderProps) {
+	const headerContent = (
+		<>
+			<h2
+				id="modal-title"
+				className={
+					hideTitle
+						? "sr-only"
+						: "text-base font-semibold text-foreground tracking-tight"
+				}
+			>
 				{title}
 			</h2>
 			<button
 				type="button"
 				onClick={requestClose}
 				disabled={closeDisabled}
-				className="rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+				className={`rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+					hideTitle ? "absolute top-3 right-3 z-10" : ""
+				}`}
 				aria-label={`Close ${title.toLowerCase()}`}
 				title={`Close ${title.toLowerCase()}`}
 			>
 				<X className="size-4" />
 			</button>
+		</>
+	);
+
+	if (hideTitle) {
+		return headerContent;
+	}
+
+	return (
+		<div className="flex items-center justify-between mb-5">
+			{headerContent}
 		</div>
 	);
 }
@@ -169,7 +173,10 @@ export function Modal({
 			const lastElement = focusableElements[focusableElements.length - 1];
 
 			if (event.shiftKey) {
-				if (document.activeElement === firstElement || document.activeElement === dialog) {
+				if (
+					document.activeElement === firstElement ||
+					document.activeElement === dialog
+				) {
 					event.preventDefault();
 					lastElement?.focus();
 				}
