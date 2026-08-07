@@ -12,7 +12,11 @@ import useAppStore from "@/store/appStore";
 import { AdminNamesTab } from "./components/AdminNamesTab";
 import { ADMIN_TABS, FILTER_OPTIONS } from "./constants";
 import type { BulkAction, DashboardTab, NameFilter } from "./types";
-import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
+import {
+	buildAdminStats,
+	filterNamesByStatusAndSearch,
+	mapNameToDisplay,
+} from "./utils";
 
 export function AdminDashboard() {
 	const user = useAppStore((s) => s.user);
@@ -97,7 +101,9 @@ export function AdminDashboard() {
 
 	const handleSoftDelete = useCallback(
 		async (nameId: string | number) => {
-			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
+			if (
+				!window.confirm("Permanently delete this name? This cannot be undone.")
+			) {
 				return;
 			}
 			await deleteName({ nameId: String(nameId) });
@@ -117,20 +123,28 @@ export function AdminDashboard() {
 		[uploadImage],
 	);
 
-	const handleSelectionChange = useCallback((nameId: string, checked: boolean) => {
-		setSelectedNames((prevSelectedNames) => {
-			return checked
-				? addToSet(prevSelectedNames, nameId)
-				: removeFromSet(prevSelectedNames, nameId);
-		});
-	}, []);
+	const handleSelectionChange = useCallback(
+		(nameId: string, checked: boolean) => {
+			setSelectedNames((prevSelectedNames) => {
+				return checked
+					? addToSet(prevSelectedNames, nameId)
+					: removeFromSet(prevSelectedNames, nameId);
+			});
+		},
+		[],
+	);
 
-	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
-		if (option) {
-			setFilterStatus(option.value);
-		}
-	}, []);
+	const handleFilterChange = useCallback(
+		(event: ChangeEvent<HTMLSelectElement>) => {
+			const option = FILTER_OPTIONS.find(
+				(item) => item.value === event.target.value,
+			);
+			if (option) {
+				setFilterStatus(option.value);
+			}
+		},
+		[],
+	);
 
 	const handleRefresh = useCallback(() => {
 		void Promise.all([namesQuery.refetch(), siteStatsQuery.refetch()]);
@@ -139,6 +153,80 @@ export function AdminDashboard() {
 	const handleClearSelection = useCallback(() => {
 		setSelectedNames(new Set());
 	}, []);
+
+	const renderTabContent = () => {
+		switch (activeTab) {
+			case "names":
+				return (
+					<AdminNamesTab
+						searchTerm={searchTerm}
+						onSearchTermChange={setSearchTerm}
+						filterStatus={filterStatus}
+						filterOptions={FILTER_OPTIONS}
+						onFilterChange={handleFilterChange}
+						onRefresh={handleRefresh}
+						selectedNames={selectedNames}
+						onBulkAction={(action) => void handleBulkAction(action)}
+						onClearSelection={handleClearSelection}
+						filteredNames={filteredNames}
+						onSelectionChange={handleSelectionChange}
+						onToggleHidden={(nameId, hidden) =>
+							void handleToggleHidden(nameId, hidden)
+						}
+						onToggleLocked={(nameId, locked) =>
+							void handleToggleLocked(nameId, locked)
+						}
+						onDelete={(nameId) => void handleSoftDelete(nameId)}
+					/>
+				);
+			case "overview":
+				return (
+					<div className="p-6">
+						<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
+								<input
+									type="file"
+									accept="image/*"
+									onChange={handleImageUpload}
+									className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+								/>
+								<p className="text-xs text-muted-foreground mt-2">
+									Upload errors will appear in the console.
+								</p>
+							</div>
+							<div>
+								<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
+								<p className="text-muted-foreground">
+									Activity tracking coming soon...
+								</p>
+							</div>
+						</div>
+					</div>
+				);
+			case "users":
+				return (
+					<div className="p-6">
+						<h2 className="text-2xl font-bold mb-4">User Analytics</h2>
+						<p className="text-muted-foreground">
+							User tracking and analytics coming soon...
+						</p>
+					</div>
+				);
+			case "analytics":
+				return (
+					<div className="p-6">
+						<h2 className="text-2xl font-bold mb-4">Site Analytics</h2>
+						<p className="text-muted-foreground">
+							Advanced analytics coming soon...
+						</p>
+					</div>
+				);
+			default:
+				return null;
+		}
+	};
 
 	if (isLoading) {
 		return (
@@ -154,7 +242,9 @@ export function AdminDashboard() {
 				<h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
+				<p className="text-sm text-muted-foreground">
+					Manage names and monitor activity
+				</p>
 			</div>
 
 			{stats && (
@@ -166,8 +256,18 @@ export function AdminDashboard() {
 							label: "Total",
 							value: stats.totalNames,
 						},
-						{ icon: Eye, colorClass: "text-chart-2", label: "Active", value: stats.activeNames },
-						{ icon: Lock, colorClass: "text-chart-4", label: "Locked", value: stats.lockedInNames },
+						{
+							icon: Eye,
+							colorClass: "text-chart-2",
+							label: "Active",
+							value: stats.activeNames,
+						},
+						{
+							icon: Lock,
+							colorClass: "text-chart-4",
+							label: "Locked",
+							value: stats.lockedInNames,
+						},
 						{
 							icon: EyeOff,
 							colorClass: "text-destructive",
@@ -178,9 +278,15 @@ export function AdminDashboard() {
 						<div key={label} className="p-3 sm:p-6">
 							<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
 								<Icon className={colorClass} size={18} />
-								<h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>{label}</h3>
+								<h3
+									className={`text-sm sm:text-lg font-semibold ${colorClass}`}
+								>
+									{label}
+								</h3>
 							</div>
-							<p className="text-2xl sm:text-3xl font-bold text-foreground">{value}</p>
+							<p className="text-2xl sm:text-3xl font-bold text-foreground">
+								{value}
+							</p>
 						</div>
 					))}
 				</div>
@@ -203,56 +309,7 @@ export function AdminDashboard() {
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: -20 }}
 				>
-					{activeTab === "names" ? (
-						<AdminNamesTab
-							searchTerm={searchTerm}
-							onSearchTermChange={setSearchTerm}
-							filterStatus={filterStatus}
-							filterOptions={FILTER_OPTIONS}
-							onFilterChange={handleFilterChange}
-							onRefresh={handleRefresh}
-							selectedNames={selectedNames}
-							onBulkAction={(action) => void handleBulkAction(action)}
-							onClearSelection={handleClearSelection}
-							filteredNames={filteredNames}
-							onSelectionChange={handleSelectionChange}
-							onToggleHidden={(nameId, hidden) => void handleToggleHidden(nameId, hidden)}
-							onToggleLocked={(nameId, locked) => void handleToggleLocked(nameId, locked)}
-							onDelete={(nameId) => void handleSoftDelete(nameId)}
-						/>
-					) : activeTab === "overview" ? (
-						<div className="p-6">
-							<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
-									<input
-										type="file"
-										accept="image/*"
-										onChange={handleImageUpload}
-										className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
-									/>
-									<p className="text-xs text-muted-foreground mt-2">
-										Upload errors will appear in the console.
-									</p>
-								</div>
-								<div>
-									<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
-									<p className="text-muted-foreground">Activity tracking coming soon...</p>
-								</div>
-							</div>
-						</div>
-					) : activeTab === "users" ? (
-						<div className="p-6">
-							<h2 className="text-2xl font-bold mb-4">User Analytics</h2>
-							<p className="text-muted-foreground">User tracking and analytics coming soon...</p>
-						</div>
-					) : (
-						<div className="p-6">
-							<h2 className="text-2xl font-bold mb-4">Site Analytics</h2>
-							<p className="text-muted-foreground">Advanced analytics coming soon...</p>
-						</div>
-					)}
+					{renderTabContent()}
 				</motion.div>
 			</AnimatePresence>
 		</div>

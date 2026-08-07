@@ -7,7 +7,11 @@ import {
 	type RegisterData,
 	useAuth,
 } from "@/app/providers/authContext";
-import { type ToastPosition, ToastProvider, useToast } from "@/app/providers/toastContext";
+import {
+	type ToastPosition,
+	ToastProvider,
+	useToast,
+} from "@/app/providers/toastContext";
 
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;
