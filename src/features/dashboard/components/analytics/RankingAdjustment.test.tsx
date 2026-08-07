@@ -18,7 +18,15 @@ describe("RankingAdjustment", () => {
 		render(
 			<Card>
 				<RankingAdjustment
-					rankings={mockRankings as any}
+					rankings={
+						mockRankings as unknown as {
+							id: string;
+							name: string;
+							rating: number;
+							wins: number;
+							losses: number;
+						}[]
+					}
 					onSave={onSave}
 					onCancel={onCancel}
 				/>
@@ -39,7 +47,15 @@ describe("RankingAdjustment", () => {
 		render(
 			<Card>
 				<RankingAdjustment
-					rankings={mockRankings as any}
+					rankings={
+						mockRankings as unknown as {
+							id: string;
+							name: string;
+							rating: number;
+							wins: number;
+							losses: number;
+						}[]
+					}
 					onSave={onSave}
 					onCancel={onCancel}
 				/>
