@@ -132,6 +132,7 @@ export function AdminNamesTab({
 										onClick={() => onToggleHidden(name.id, hidden)}
 										variant="ghost"
 										size="small"
+										iconOnly={true}
 										aria-label={hidden ? "Unhide name" : "Hide name"}
 										title={hidden ? "Unhide name" : "Hide name"}
 									>
@@ -141,6 +142,7 @@ export function AdminNamesTab({
 										onClick={() => onToggleLocked(name.id, locked)}
 										variant="ghost"
 										size="small"
+										iconOnly={true}
 										aria-label={locked ? "Unlock name" : "Lock name"}
 										title={locked ? "Unlock name" : "Lock name"}
 									>
@@ -150,6 +152,7 @@ export function AdminNamesTab({
 										onClick={() => onDelete(name.id)}
 										variant="ghost"
 										size="small"
+										iconOnly={true}
 										aria-label="Delete name"
 										title="Delete name"
 										className="text-destructive hover:text-destructive"
