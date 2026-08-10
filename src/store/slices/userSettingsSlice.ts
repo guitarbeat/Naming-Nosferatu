@@ -180,23 +180,24 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 			systemThemeCleanup?.();
 			systemThemeCleanup = null;
 
-			let resolved: ThemeValue;
-
-			if (preference === "system" && IS_BROWSER) {
-				const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-				resolved = mediaQuery.matches ? "dark" : "light";
-
-				const handleChange = (event: MediaQueryListEvent) => {
-					if (get().ui.themePreference === "system") {
-						patch(set, "ui", { theme: event.matches ? "dark" : "light" });
-					}
-				};
-
-				mediaQuery.addEventListener("change", handleChange);
-				systemThemeCleanup = () => mediaQuery.removeEventListener("change", handleChange);
-			} else {
-				resolved = preference === "light" ? "light" : "dark";
+			if (preference !== "system" || !IS_BROWSER) {
+				const resolved = preference === "light" ? "light" : "dark";
+				patch(set, "ui", { theme: resolved, themePreference: preference });
+				setStorageString(STORAGE_KEYS.THEME, preference);
+				return;
 			}
+
+			const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+			const resolved = mediaQuery.matches ? "dark" : "light";
+
+			const handleChange = (event: MediaQueryListEvent) => {
+				if (get().ui.themePreference === "system") {
+					patch(set, "ui", { theme: event.matches ? "dark" : "light" });
+				}
+			};
+
+			mediaQuery.addEventListener("change", handleChange);
+			systemThemeCleanup = () => mediaQuery.removeEventListener("change", handleChange);
 
 			patch(set, "ui", { theme: resolved, themePreference: preference });
 			setStorageString(STORAGE_KEYS.THEME, preference);
