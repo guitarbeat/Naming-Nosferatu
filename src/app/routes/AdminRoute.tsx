@@ -12,7 +12,7 @@ const DashboardLazy = routeComponents.DashboardLazy;
 function AdminLoading() {
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-background">
-			<Loading variant="spinner" text="Checking access..." />
+			<Loading variant="skeleton" height={600} />
 		</div>
 	);
 }
