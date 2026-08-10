@@ -64,9 +64,9 @@ export const supabaseAuthAdapter: AuthAdapter = {
 	 * Login with Supabase Auth
 	 */
 	async login(credentials: LoginCredentials): Promise<boolean> {
-		const { name, email, password } = credentials;
+		const { name, email, password: authSecret } = credentials;
 
-		if (!name?.trim() && (!email || !password)) {
+		if (!name?.trim() && (!email || !authSecret)) {
 			return false;
 		}
 
@@ -83,10 +83,10 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 			let authUser: import("@supabase/supabase-js").User | null = null;
 
-			if (email && password) {
+			if (email && authSecret) {
 				const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
 					email,
-					password,
+					password: authSecret,
 				});
 
 				if (signInError) {
