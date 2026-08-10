@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
@@ -16,7 +17,19 @@ describe("RankingAdjustment", () => {
 
 		render(
 			<Card>
-				<RankingAdjustment rankings={mockRankings as any} onSave={onSave} onCancel={onCancel} />
+				<RankingAdjustment
+					rankings={
+						mockRankings as unknown as {
+							id: string;
+							name: string;
+							rating: number;
+							wins: number;
+							losses: number;
+						}[]
+					}
+					onSave={onSave}
+					onCancel={onCancel}
+				/>
 			</Card>,
 		);
 
@@ -33,11 +46,25 @@ describe("RankingAdjustment", () => {
 
 		render(
 			<Card>
-				<RankingAdjustment rankings={mockRankings as any} onSave={onSave} onCancel={onCancel} />
+				<RankingAdjustment
+					rankings={
+						mockRankings as unknown as {
+							id: string;
+							name: string;
+							rating: number;
+							wins: number;
+							losses: number;
+						}[]
+					}
+					onSave={onSave}
+					onCancel={onCancel}
+				/>
 			</Card>,
 		);
 
-		const cancelButton = screen.getByRole("button", { name: /Back to Tournament/i });
+		const cancelButton = screen.getByRole("button", {
+			name: /Back to Tournament/i,
+		});
 		fireEvent.click(cancelButton);
 
 		expect(onCancel).toHaveBeenCalledTimes(1);
