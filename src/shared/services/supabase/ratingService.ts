@@ -117,25 +117,19 @@ export const ratingsAPI = {
 
 			throwOnRpcError(error, "Failed to apply tournament Elo update");
 
-			return (data ?? []).reduce(
-				(
-					acc: Record<string, { rating: number; wins: number; losses: number }>,
-					row: {
-						name_id: string;
-						rating: number | null;
-						wins: number | null;
-						losses: number | null;
-					},
-				) => {
-					acc[String(row.name_id)] = {
-						rating: Number(row.rating ?? 1500),
-						wins: Number(row.wins ?? 0),
-						losses: Number(row.losses ?? 0),
-					};
-					return acc;
-				},
-				{},
-			);
+			const result: Record<string, { rating: number; wins: number; losses: number }> = {};
+			const rows = data ?? [];
+			// ⚡ Bolt Optimization: Replace `.reduce()` with a simple loop to reduce callback overhead
+			for (let i = 0; i < rows.length; i++) {
+				const row = rows[i];
+				result[String(row.name_id)] = {
+					rating: Number(row.rating ?? 1500),
+					wins: Number(row.wins ?? 0),
+					losses: Number(row.losses ?? 0),
+				};
+			}
+
+			return result;
 		});
 	},
 

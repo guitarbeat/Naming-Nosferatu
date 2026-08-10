@@ -136,12 +136,15 @@ export const statsAPI = {
 					.gte("updated_at", startDate.toISOString()),
 			]);
 
-			const totalMatches = (
-				(namesResult.data ?? []) as Array<{
-					global_wins: number | null;
-					global_losses: number | null;
-				}>
-			).reduce((sum, row) => sum + toNumber(row.global_wins), 0);
+			const namesData = (namesResult.data ?? []) as Array<{
+				global_wins: number | null;
+				global_losses: number | null;
+			}>;
+			let totalMatches = 0;
+			// ⚡ Bolt Optimization: Replace `.reduce()` with a simple loop to reduce callback overhead
+			for (let i = 0; i < namesData.length; i++) {
+				totalMatches += toNumber(namesData[i].global_wins);
+			}
 
 			const peakActiveUsers = usersResult.count ?? 0;
 
