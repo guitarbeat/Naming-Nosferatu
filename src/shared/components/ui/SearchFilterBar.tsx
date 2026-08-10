@@ -22,6 +22,17 @@ export function SearchFilterBar({
 }: SearchFilterBarProps) {
 	const prefersReducedMotion = useReducedMotion();
 
+	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+		onSearchTermChange(event.target.value);
+	};
+
+	const handleRefresh = () => {
+		if ("vibrate" in navigator) {
+			navigator.vibrate(50);
+		}
+		onRefresh();
+	};
+
 	return (
 		<motion.div
 			className="flex flex-col sm:flex-row items-center gap-3 w-full bg-foreground/5 backdrop-blur-md rounded-2xl p-2 sm:p-3 border border-border/10 shadow-inner group transition-all duration-300 hover:border-border/30 hover:shadow-md mb-6"
@@ -42,7 +53,7 @@ export function SearchFilterBar({
 					type="text"
 					placeholder="Search names..."
 					value={searchTerm}
-					onChange={(event) => onSearchTermChange(event.target.value)}
+					onChange={handleSearchChange}
 					aria-label="Search names"
 					className="w-full h-11 bg-background/40 hover:bg-background/60 focus:bg-background/80 transition-colors rounded-xl pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 focus:ring-2 focus:ring-primary/40"
 				/>
@@ -77,12 +88,7 @@ export function SearchFilterBar({
 					</div>
 				</div>
 				<Button
-					onClick={() => {
-						if ("vibrate" in navigator) {
-							navigator.vibrate(50);
-						}
-						onRefresh();
-					}}
+					onClick={handleRefresh}
 					variant="primary"
 					className="h-11 w-11 sm:w-11 p-0 shrink-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
 					aria-label="Refresh list"
