@@ -28,11 +28,7 @@ export interface ToastItem {
 
 export interface ToastContextValue {
 	toasts: ToastItem[];
-	showToast: (
-		message: string,
-		type?: ToastType,
-		options?: ToastOptions,
-	) => string;
+	showToast: (message: string, type?: ToastType, options?: ToastOptions) => string;
 	hideToast: (id: string) => void;
 	clearToasts: () => void;
 	showSuccess: (message: string, options?: ToastOptions) => string;
@@ -81,13 +77,7 @@ export function useToast(): ToastContextValue {
 	return context;
 }
 
-function ToastMessage({
-	toast,
-	onDismiss,
-}: {
-	toast: ToastItem;
-	onDismiss: (id: string) => void;
-}) {
+function ToastMessage({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: string) => void }) {
 	const style = TYPE_STYLES[toast.type];
 	return (
 		<div
@@ -167,11 +157,7 @@ function useToastProvider(
 	}, []);
 
 	const showToast = useCallback(
-		(
-			message: string,
-			type: ToastType = "info",
-			options: ToastOptions = {},
-		): string => {
+		(message: string, type: ToastType = "info", options: ToastOptions = {}): string => {
 			const id = `toast-${++toastCounter.current}`;
 			const duration = options.duration ?? defaultDuration;
 			const autoDismiss = options.autoDismiss ?? true;
@@ -214,23 +200,19 @@ function useToastProvider(
 	}, []);
 
 	const showSuccess = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "success", options),
+		(message: string, options?: ToastOptions) => showToast(message, "success", options),
 		[showToast],
 	);
 	const showError = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "error", options),
+		(message: string, options?: ToastOptions) => showToast(message, "error", options),
 		[showToast],
 	);
 	const showInfo = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "info", options),
+		(message: string, options?: ToastOptions) => showToast(message, "info", options),
 		[showToast],
 	);
 	const showWarning = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "warning", options),
+		(message: string, options?: ToastOptions) => showToast(message, "warning", options),
 		[showToast],
 	);
 
@@ -247,16 +229,7 @@ function useToastProvider(
 			toastList: toasts,
 			dismiss: hideToast,
 		}),
-		[
-			toasts,
-			showToast,
-			hideToast,
-			clearToasts,
-			showSuccess,
-			showError,
-			showInfo,
-			showWarning,
-		],
+		[toasts, showToast, hideToast, clearToasts, showSuccess, showError, showInfo, showWarning],
 	);
 }
 
@@ -273,19 +246,12 @@ export function ToastProvider({
 	maxToasts,
 	position,
 }: ToastProviderProps) {
-	const { toastList, dismiss, ...value } = useToastProvider(
-		maxToasts,
-		defaultDuration,
-	);
+	const { toastList, dismiss, ...value } = useToastProvider(maxToasts, defaultDuration);
 
 	return (
 		<ToastContext.Provider value={value}>
 			{children}
-			<ToastContainer
-				toasts={toastList}
-				onDismiss={dismiss}
-				position={position}
-			/>
+			<ToastContainer toasts={toastList} onDismiss={dismiss} position={position} />
 		</ToastContext.Provider>
 	);
 }

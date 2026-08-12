@@ -34,36 +34,26 @@ describe("errorClassification", () => {
 
 		it("returns VALIDATION for PGRST116 and PGRST117", () => {
 			global.navigator = { onLine: true } as unknown as Navigator;
-			expect(determineErrorType({ code: "PGRST116" })).toBe(
-				ERROR_TYPES.VALIDATION,
-			);
-			expect(determineErrorType({ code: "PGRST117" })).toBe(
-				ERROR_TYPES.VALIDATION,
-			);
+			expect(determineErrorType({ code: "PGRST116" })).toBe(ERROR_TYPES.VALIDATION);
+			expect(determineErrorType({ code: "PGRST117" })).toBe(ERROR_TYPES.VALIDATION);
 		});
 
 		it("returns NETWORK for NETWORK_ERROR code or NetworkError name", () => {
 			global.navigator = { onLine: true } as unknown as Navigator;
-			expect(determineErrorType({ code: "NETWORK_ERROR" })).toBe(
-				ERROR_TYPES.NETWORK,
-			);
-			expect(determineErrorType({ name: "NetworkError" })).toBe(
-				ERROR_TYPES.NETWORK,
-			);
+			expect(determineErrorType({ code: "NETWORK_ERROR" })).toBe(ERROR_TYPES.NETWORK);
+			expect(determineErrorType({ name: "NetworkError" })).toBe(ERROR_TYPES.NETWORK);
 		});
 
 		it("returns NETWORK for TypeError with fetch in message", () => {
 			global.navigator = { onLine: true } as unknown as Navigator;
-			expect(
-				determineErrorType({ name: "TypeError", message: "failed to fetch" }),
-			).toBe(ERROR_TYPES.NETWORK);
+			expect(determineErrorType({ name: "TypeError", message: "failed to fetch" })).toBe(
+				ERROR_TYPES.NETWORK,
+			);
 		});
 
 		it("returns NETWORK for TimeoutError or AbortError with timeout in message", () => {
 			global.navigator = { onLine: true } as unknown as Navigator;
-			expect(determineErrorType({ name: "TimeoutError" })).toBe(
-				ERROR_TYPES.NETWORK,
-			);
+			expect(determineErrorType({ name: "TimeoutError" })).toBe(ERROR_TYPES.NETWORK);
 			expect(
 				determineErrorType({
 					name: "AbortError",
@@ -80,12 +70,10 @@ describe("errorClassification", () => {
 
 		it("returns DATABASE for errors with database or supabase in message", () => {
 			global.navigator = { onLine: true } as unknown as Navigator;
-			expect(
-				determineErrorType({ message: "database connection failed" }),
-			).toBe(ERROR_TYPES.DATABASE);
-			expect(determineErrorType({ message: "supabase error" })).toBe(
+			expect(determineErrorType({ message: "database connection failed" })).toBe(
 				ERROR_TYPES.DATABASE,
 			);
+			expect(determineErrorType({ message: "supabase error" })).toBe(ERROR_TYPES.DATABASE);
 		});
 
 		it("returns RUNTIME for TypeError or ReferenceError without fetch", () => {
@@ -96,19 +84,13 @@ describe("errorClassification", () => {
 					message: "Cannot read property",
 				}),
 			).toBe(ERROR_TYPES.RUNTIME);
-			expect(determineErrorType({ name: "ReferenceError" })).toBe(
-				ERROR_TYPES.RUNTIME,
-			);
+			expect(determineErrorType({ name: "ReferenceError" })).toBe(ERROR_TYPES.RUNTIME);
 		});
 
 		it("returns VALIDATION for VALIDATION_ERROR code or message", () => {
 			global.navigator = { onLine: true } as unknown as Navigator;
-			expect(determineErrorType({ code: "VALIDATION_ERROR" })).toBe(
-				ERROR_TYPES.VALIDATION,
-			);
-			expect(determineErrorType({ message: "validation failed" })).toBe(
-				ERROR_TYPES.VALIDATION,
-			);
+			expect(determineErrorType({ code: "VALIDATION_ERROR" })).toBe(ERROR_TYPES.VALIDATION);
+			expect(determineErrorType({ message: "validation failed" })).toBe(ERROR_TYPES.VALIDATION);
 		});
 
 		it("returns UNKNOWN for unhandled objects", () => {
@@ -125,28 +107,18 @@ describe("errorClassification", () => {
 		});
 
 		it("returns HIGH if metadata.affectsUserData is true", () => {
-			expect(
-				determineSeverity(ERROR_TYPES.UNKNOWN, { affectsUserData: true }),
-			).toBe(ERROR_SEVERITY.HIGH);
+			expect(determineSeverity(ERROR_TYPES.UNKNOWN, { affectsUserData: true })).toBe(
+				ERROR_SEVERITY.HIGH,
+			);
 		});
 
 		it("returns correct severity based on ERROR_TYPES without metadata", () => {
 			expect(determineSeverity(ERROR_TYPES.AUTH)).toBe(ERROR_SEVERITY.HIGH);
-			expect(determineSeverity(ERROR_TYPES.DATABASE)).toBe(
-				ERROR_SEVERITY.MEDIUM,
-			);
-			expect(determineSeverity(ERROR_TYPES.NETWORK)).toBe(
-				ERROR_SEVERITY.MEDIUM,
-			);
-			expect(determineSeverity(ERROR_TYPES.RUNTIME)).toBe(
-				ERROR_SEVERITY.MEDIUM,
-			);
-			expect(determineSeverity(ERROR_TYPES.VALIDATION)).toBe(
-				ERROR_SEVERITY.LOW,
-			);
-			expect(determineSeverity(ERROR_TYPES.UNKNOWN)).toBe(
-				ERROR_SEVERITY.MEDIUM,
-			);
+			expect(determineSeverity(ERROR_TYPES.DATABASE)).toBe(ERROR_SEVERITY.MEDIUM);
+			expect(determineSeverity(ERROR_TYPES.NETWORK)).toBe(ERROR_SEVERITY.MEDIUM);
+			expect(determineSeverity(ERROR_TYPES.RUNTIME)).toBe(ERROR_SEVERITY.MEDIUM);
+			expect(determineSeverity(ERROR_TYPES.VALIDATION)).toBe(ERROR_SEVERITY.LOW);
+			expect(determineSeverity(ERROR_TYPES.UNKNOWN)).toBe(ERROR_SEVERITY.MEDIUM);
 		});
 	});
 });
