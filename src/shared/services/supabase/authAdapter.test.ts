@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { getStorageString } from "@/shared/lib/storage";
-import { readStoredUserSnapshot, writeStoredUserSnapshot } from "@/shared/lib/userStorage";
+import {
+	readStoredUserSnapshot,
+	writeStoredUserSnapshot,
+} from "@/shared/lib/userStorage";
 
 vi.mock("@/shared/services/supabase/runtime", () => ({
 	resolveSupabaseClient: vi.fn(),
@@ -44,13 +47,35 @@ describe("supabaseAuthAdapter", () => {
 		});
 	});
 
+	it("returns null when an error occurs while fetching the user", async () => {
+		const mockError = new Error("Network error");
+		const client = {
+			auth: {
+				getUser: vi.fn().mockRejectedValue(mockError),
+			},
+		};
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(client as never);
+
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+		await expect(supabaseAuthAdapter.getCurrentUser()).resolves.toBeNull();
+		expect(consoleSpy).toHaveBeenCalledWith(
+			"Error getting current user:",
+			mockError,
+		);
+
+		consoleSpy.mockRestore();
+	});
+
 	it("uses the secure is_admin RPC before falling back to role queries", async () => {
 		const client = {
 			rpc: vi.fn().mockResolvedValue({ data: true, error: null }),
 		};
 		vi.mocked(resolveSupabaseClient).mockResolvedValue(client as never);
 
-		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(true);
+		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(
+			true,
+		);
 		expect(client.rpc).toHaveBeenCalledWith("is_admin");
 	});
 
@@ -77,7 +102,9 @@ describe("supabaseAuthAdapter", () => {
 		};
 		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(client as never);
 
-		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(true);
+		await expect(supabaseAuthAdapter.checkAdminStatus("user-1")).resolves.toBe(
+			true,
+		);
 		expect(client.from).toHaveBeenNthCalledWith(1, "cat_user_roles");
 		expect(userIdQuery.fieldEq).toHaveBeenCalledWith("user_id", "user-1");
 		expect(userNameQuery.fieldEq).toHaveBeenCalledWith("user_name", "Ada");
