@@ -295,7 +295,11 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 
 		it("should fallback gracefully if an unknown filterStatus is cast to NameFilter", () => {
 			// @ts-expect-error Testing runtime resilience
-			const result = filterNamesByStatusAndSearch(mockNames, "unknown_status", "");
+			const result = filterNamesByStatusAndSearch(
+				mockNames,
+				"unknown_status",
+				"",
+			);
 			expect(result).toHaveLength(5);
 			expect(result).toEqual(mockNames);
 		});
@@ -307,7 +311,11 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 					description: undefined,
 				},
 			];
-			const result = filterNamesByStatusAndSearch(namesWithoutDescription, "all", "activename");
+			const result = filterNamesByStatusAndSearch(
+				namesWithoutDescription,
+				"all",
+				"activename",
+			);
 			expect(result).toHaveLength(1);
 			expect(result[0].id).toBe(1);
 		});
