@@ -30,9 +30,7 @@ describe("useAudioManager", () => {
 
 		// Default mocks for storage
 		vi.mocked(storage.isStorageAvailable).mockReturnValue(true);
-		vi.mocked(storage.getStorageString).mockImplementation(
-			(_key: string) => null,
-		);
+		vi.mocked(storage.getStorageString).mockImplementation((_key: string) => null);
 	});
 
 	describe("Initialization", () => {
@@ -43,7 +41,9 @@ describe("useAudioManager", () => {
 
 		it("initializes as muted if STORAGE_KEYS.SOUND_ENABLED is 'false'", () => {
 			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.SOUND_ENABLED) return "false";
+				if (key === STORAGE_KEYS.SOUND_ENABLED) {
+					return "false";
+				}
 				return null;
 			});
 			const { result } = renderHook(() => useAudioManager());
@@ -52,7 +52,9 @@ describe("useAudioManager", () => {
 
 		it("initializes as unmuted if STORAGE_KEYS.SOUND_ENABLED is 'true'", () => {
 			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.SOUND_ENABLED) return "true";
+				if (key === STORAGE_KEYS.SOUND_ENABLED) {
+					return "true";
+				}
 				return null;
 			});
 			const { result } = renderHook(() => useAudioManager());
@@ -77,20 +79,14 @@ describe("useAudioManager", () => {
 			});
 
 			expect(result.current.isMuted).toBe(true);
-			expect(storage.setStorageString).toHaveBeenCalledWith(
-				STORAGE_KEYS.SOUND_ENABLED,
-				"false",
-			);
+			expect(storage.setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.SOUND_ENABLED, "false");
 
 			act(() => {
 				result.current.handleToggleMute();
 			});
 
 			expect(result.current.isMuted).toBe(false);
-			expect(storage.setStorageString).toHaveBeenCalledWith(
-				STORAGE_KEYS.SOUND_ENABLED,
-				"true",
-			);
+			expect(storage.setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.SOUND_ENABLED, "true");
 		});
 	});
 
@@ -159,7 +155,9 @@ describe("useAudioManager", () => {
 
 		it("reads volume from storage correctly", () => {
 			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.EFFECTS_VOLUME) return "0.5";
+				if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
+					return "0.5";
+				}
 				return null;
 			});
 			const { result } = renderHook(() => useAudioManager());
@@ -169,7 +167,9 @@ describe("useAudioManager", () => {
 
 		it("clamps volume between 0 and 1", () => {
 			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.EFFECTS_VOLUME) return "1.5"; // > 1
+				if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
+					return "1.5"; // > 1
+				}
 				return null;
 			});
 			const { result } = renderHook(() => useAudioManager());
@@ -179,7 +179,9 @@ describe("useAudioManager", () => {
 
 		it("handles invalid volume in storage", () => {
 			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.EFFECTS_VOLUME) return "invalid";
+				if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
+					return "invalid";
+				}
 				return null;
 			});
 			const { result } = renderHook(() => useAudioManager());
@@ -194,7 +196,9 @@ describe("useAudioManager", () => {
 		beforeEach(() => {
 			// Initialize as muted
 			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.SOUND_ENABLED) return "false";
+				if (key === STORAGE_KEYS.SOUND_ENABLED) {
+					return "false";
+				}
 				return null;
 			});
 		});

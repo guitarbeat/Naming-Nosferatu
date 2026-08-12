@@ -55,9 +55,7 @@ function CatImage({
 	const sources = buildSources(currentSrc);
 	const isLocalAsset = currentSrc.startsWith("/");
 
-	const handleError = (
-		event: React.SyntheticEvent<HTMLImageElement, Event>,
-	) => {
+	const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
 		setHasError(true);
 		onError?.(event);
 	};
