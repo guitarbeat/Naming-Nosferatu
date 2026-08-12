@@ -88,9 +88,7 @@ describe("storage", () => {
 		});
 
 		it("returns fallback when key does not exist", () => {
-			expect(getStorageString("non_existent", "fallback_val")).toBe(
-				"fallback_val",
-			);
+			expect(getStorageString("non_existent", "fallback_val")).toBe("fallback_val");
 		});
 
 		it("handles getStorageString error path (localStorage throws)", () => {
@@ -101,14 +99,12 @@ describe("storage", () => {
 		});
 
 		it("handles setStorageString error path (localStorage throws)", () => {
-			vi.spyOn(window.localStorage, "setItem").mockImplementation(
-				(key, value) => {
-					if (key !== "__storage_test__") {
-						throw new Error("Storage write error");
-					}
-					_originalLocalStorage.setItem(key, value);
-				},
-			);
+			vi.spyOn(window.localStorage, "setItem").mockImplementation((key, value) => {
+				if (key !== "__storage_test__") {
+					throw new Error("Storage write error");
+				}
+				_originalLocalStorage.setItem(key, value);
+			});
 			expect(setStorageString("test_key", "value")).toBe(false);
 		});
 
@@ -159,14 +155,12 @@ describe("storage", () => {
 		});
 
 		it("handles writeStorageJson error path (localStorage throws)", () => {
-			vi.spyOn(window.localStorage, "setItem").mockImplementation(
-				(key, value) => {
-					if (key !== "__storage_test__") {
-						throw new Error("Storage write error");
-					}
-					_originalLocalStorage.setItem(key, value);
-				},
-			);
+			vi.spyOn(window.localStorage, "setItem").mockImplementation((key, value) => {
+				if (key !== "__storage_test__") {
+					throw new Error("Storage write error");
+				}
+				_originalLocalStorage.setItem(key, value);
+			});
 			expect(writeStorageJson("json_key", { a: 1 })).toBe(false);
 		});
 	});
@@ -185,9 +179,7 @@ describe("storage", () => {
 		it("triggers the outer catch block by providing invalid JSON strings to the parse function", () => {
 			// Simulate a runtime type error where a non-string is passed to trigger the outer catch block
 			// e.g. text.indexOf(":") will throw a TypeError for an object, dropping into the outer catch block
-			const invalidInput = JSON.parse(
-				'{"invalid":"json"}',
-			) as unknown as string;
+			const invalidInput = JSON.parse('{"invalid":"json"}') as unknown as string;
 			expect(decryptValue(invalidInput)).toEqual(invalidInput);
 		});
 	});
