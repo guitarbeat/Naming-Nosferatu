@@ -7,35 +7,45 @@ describe("haptics utilities", () => {
 		vi.restoreAllMocks();
 	});
 
-	it("should call navigator.vibrate with 10 on hapticNavTap", () => {
-		const mockVibrate = vi.fn();
-		vi.stubGlobal("navigator", { vibrate: mockVibrate });
+	describe("hapticNavTap", () => {
+		it("should call navigator.vibrate with 10 when navigator is available", () => {
+			const mockVibrate = vi.fn();
+			vi.stubGlobal("navigator", { vibrate: mockVibrate });
 
-		hapticNavTap();
+			hapticNavTap();
 
-		expect(mockVibrate).toHaveBeenCalledWith(10);
+			expect(mockVibrate).toHaveBeenCalledWith(10);
+		});
+
+		it("should not throw if navigator is undefined", () => {
+			vi.stubGlobal("navigator", undefined);
+			expect(() => hapticNavTap()).not.toThrow();
+		});
+
+		it("should not throw if navigator.vibrate is undefined", () => {
+			vi.stubGlobal("navigator", {});
+			expect(() => hapticNavTap()).not.toThrow();
+		});
 	});
 
-	it("should call navigator.vibrate with [50, 50, 50] on hapticTournamentStart", () => {
-		const mockVibrate = vi.fn();
-		vi.stubGlobal("navigator", { vibrate: mockVibrate });
+	describe("hapticTournamentStart", () => {
+		it("should call navigator.vibrate with [50, 50, 50] when navigator is available", () => {
+			const mockVibrate = vi.fn();
+			vi.stubGlobal("navigator", { vibrate: mockVibrate });
 
-		hapticTournamentStart();
+			hapticTournamentStart();
 
-		expect(mockVibrate).toHaveBeenCalledWith([50, 50, 50]);
-	});
+			expect(mockVibrate).toHaveBeenCalledWith([50, 50, 50]);
+		});
 
-	it("should not throw if navigator is undefined", () => {
-		vi.stubGlobal("navigator", undefined);
+		it("should not throw if navigator is undefined", () => {
+			vi.stubGlobal("navigator", undefined);
+			expect(() => hapticTournamentStart()).not.toThrow();
+		});
 
-		expect(() => hapticNavTap()).not.toThrow();
-		expect(() => hapticTournamentStart()).not.toThrow();
-	});
-
-	it("should not throw if navigator.vibrate is undefined", () => {
-		vi.stubGlobal("navigator", {});
-
-		expect(() => hapticNavTap()).not.toThrow();
-		expect(() => hapticTournamentStart()).not.toThrow();
+		it("should not throw if navigator.vibrate is undefined", () => {
+			vi.stubGlobal("navigator", {});
+			expect(() => hapticTournamentStart()).not.toThrow();
+		});
 	});
 });
