@@ -15,11 +15,7 @@ import { AdminStatsGrid } from "./components/AdminStatsGrid";
 import { AdminUsersTab } from "./components/AdminUsersTab";
 import { ADMIN_TABS, FILTER_OPTIONS } from "./constants";
 import type { BulkAction, DashboardTab, NameFilter } from "./types";
-import {
-	buildAdminStats,
-	filterNamesByStatusAndSearch,
-	mapNameToDisplay,
-} from "./utils";
+import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
 
 export function AdminDashboard() {
 	const user = useAppStore((s) => s.user);
@@ -104,9 +100,7 @@ export function AdminDashboard() {
 
 	const handleSoftDelete = useCallback(
 		async (nameId: string | number) => {
-			if (
-				!window.confirm("Permanently delete this name? This cannot be undone.")
-			) {
+			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
 				return;
 			}
 			await deleteName({ nameId: String(nameId) });
@@ -126,28 +120,20 @@ export function AdminDashboard() {
 		[uploadImage],
 	);
 
-	const handleSelectionChange = useCallback(
-		(nameId: string, checked: boolean) => {
-			setSelectedNames((prevSelectedNames) => {
-				return checked
-					? addToSet(prevSelectedNames, nameId)
-					: removeFromSet(prevSelectedNames, nameId);
-			});
-		},
-		[],
-	);
+	const handleSelectionChange = useCallback((nameId: string, checked: boolean) => {
+		setSelectedNames((prevSelectedNames) => {
+			return checked
+				? addToSet(prevSelectedNames, nameId)
+				: removeFromSet(prevSelectedNames, nameId);
+		});
+	}, []);
 
-	const handleFilterChange = useCallback(
-		(event: ChangeEvent<HTMLSelectElement>) => {
-			const option = FILTER_OPTIONS.find(
-				(item) => item.value === event.target.value,
-			);
-			if (option) {
-				setFilterStatus(option.value);
-			}
-		},
-		[],
-	);
+	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
+		if (option) {
+			setFilterStatus(option.value);
+		}
+	}, []);
 
 	const handleRefresh = useCallback(() => {
 		void Promise.all([namesQuery.refetch(), siteStatsQuery.refetch()]);
@@ -171,9 +157,7 @@ export function AdminDashboard() {
 				<h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-sm text-muted-foreground">
-					Manage names and monitor activity
-				</p>
+				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
 			</div>
 
 			{stats && <AdminStatsGrid stats={stats} />}
@@ -208,12 +192,8 @@ export function AdminDashboard() {
 							onClearSelection={handleClearSelection}
 							filteredNames={filteredNames}
 							onSelectionChange={handleSelectionChange}
-							onToggleHidden={(nameId, hidden) =>
-								void handleToggleHidden(nameId, hidden)
-							}
-							onToggleLocked={(nameId, locked) =>
-								void handleToggleLocked(nameId, locked)
-							}
+							onToggleHidden={(nameId, hidden) => void handleToggleHidden(nameId, hidden)}
+							onToggleLocked={(nameId, locked) => void handleToggleLocked(nameId, locked)}
 							onDelete={(nameId) => void handleSoftDelete(nameId)}
 						/>
 					) : activeTab === "overview" ? (

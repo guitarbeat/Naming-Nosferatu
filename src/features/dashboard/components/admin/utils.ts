@@ -5,12 +5,7 @@ import {
 	matchesNameSearchTerm,
 } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
-import type {
-	AdminStats,
-	NameFilter,
-	NameWithStats,
-	SiteStatsLike,
-} from "./types";
+import type { AdminStats, NameFilter, NameWithStats, SiteStatsLike } from "./types";
 
 function toNumber(value: unknown): number {
 	const parsed = Number(value);
@@ -60,7 +55,5 @@ export function filterNamesByStatusAndSearch(
 		return filtered;
 	}
 
-	return filtered.filter((name) =>
-		matchesNameSearchTerm(name, normalizedSearch),
-	);
+	return filtered.filter((name) => matchesNameSearchTerm(name, normalizedSearch));
 }

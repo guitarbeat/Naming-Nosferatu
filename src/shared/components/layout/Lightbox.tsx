@@ -9,12 +9,7 @@ interface LightboxProps {
 	onNavigate: (index: number) => void;
 }
 
-export function Lightbox({
-	images,
-	currentIndex,
-	onClose,
-	onNavigate,
-}: LightboxProps) {
+export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
 	const currentImage = images[currentIndex] || "";
 	const hasMultipleImages = images.length > 1;
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
