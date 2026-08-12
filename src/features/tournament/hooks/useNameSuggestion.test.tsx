@@ -123,4 +123,151 @@ describe("useNameSuggestion", () => {
 		expect(result.current.globalError).toBe("");
 		expect(result.current.successMessage).toBe("");
 	});
+
+	it("sanitizes and trims input before submission", async () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		mockAddName.mockResolvedValue({});
+
+		act(() => {
+			result.current.handleChange("name", "  <script>alert(1)</script>Bad Cat  ");
+			result.current.handleChange("description", "  <p>Some text</p>  ");
+		});
+
+		await act(async () => {
+			await result.current.handleSubmit();
+		});
+
+		expect(mockAddName).toHaveBeenCalledWith({
+			name: "Bad Cat",
+			description: "Some text",
+		});
+	});
+
+	it("updates isValid flag correctly", async () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		// Initially not valid because name is empty
+		expect(result.current.isValid).toBe(false);
+
+		act(() => {
+			result.current.handleChange("name", "Valid Name");
+		});
+		// Valid now because name is not empty and no errors
+		expect(result.current.isValid).toBe(true);
+
+		// Trigger an error
+		await act(async () => {
+			await result.current.handleSubmit();
+		});
+
+		expect(result.current.errors.description).toBe("Description is required");
+		expect(result.current.isValid).toBe(false);
+
+		act(() => {
+			result.current.handleChange("description", "Valid Description");
+		});
+
+		// Valid again because handleChange clears the specific error for description
+		expect(result.current.isValid).toBe(true);
+	});
+
+	it("updates isSubmitting flag correctly during submission", async () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		let resolveSubmit: (val: unknown) => void = () => {};
+		mockAddName.mockReturnValue(
+			new Promise((resolve) => {
+				resolveSubmit = resolve;
+			}),
+		);
+
+		act(() => {
+			result.current.handleChange("name", "Test Cat");
+			result.current.handleChange("description", "Test desc");
+		});
+
+		expect(result.current.isSubmitting).toBe(false);
+
+		let submitPromise: Promise<void>;
+		act(() => {
+			submitPromise = result.current.handleSubmit();
+		});
+
+		expect(result.current.isSubmitting).toBe(true);
+
+		await act(async () => {
+			resolveSubmit({});
+			await submitPromise;
+		});
+
+		expect(result.current.isSubmitting).toBe(false);
+	});
+
+	it("updates isSubmitting flag correctly during submission error", async () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		let rejectSubmit: (err: Error) => void = () => {};
+		mockAddName.mockReturnValue(
+			new Promise((_, reject) => {
+				rejectSubmit = reject;
+			}),
+		);
+
+		act(() => {
+			result.current.handleChange("name", "Test Cat");
+			result.current.handleChange("description", "Test desc");
+		});
+
+		expect(result.current.isSubmitting).toBe(false);
+
+		let submitPromise: Promise<void>;
+		act(() => {
+			submitPromise = result.current.handleSubmit();
+		});
+
+		expect(result.current.isSubmitting).toBe(true);
+
+		await act(async () => {
+			rejectSubmit(new Error("Test error"));
+			try {
+				await submitPromise;
+			} catch {}
+		});
+
+		expect(result.current.isSubmitting).toBe(false);
+		expect(result.current.globalError).toBe("Test error");
+	});
+
+	it("clears specific error and global error on handleChange", async () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		act(() => {
+			result.current.setGlobalError("Some global error");
+		});
+
+		await act(async () => {
+			await result.current.handleSubmit();
+		});
+
+		expect(result.current.errors.name).toBe("Name is required");
+		expect(result.current.globalError).toBe("Some global error");
+
+		act(() => {
+			result.current.handleChange("name", "New Name");
+		});
+
+		expect(result.current.errors.name).toBeUndefined();
+		expect(result.current.globalError).toBe("");
+	});
+
+	it("allows manually setting global error", () => {
+		const { result } = renderHook(() => useNameSuggestion());
+
+		act(() => {
+			result.current.setGlobalError("Manual error");
+		});
+
+		expect(result.current.globalError).toBe("Manual error");
+	});
 });
