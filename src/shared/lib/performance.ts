@@ -5,20 +5,20 @@ const isDev = import.meta.env?.DEV ?? false;
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export interface PerformanceConfig {
-  /** If true, metrics are logged to console.debug */
-  debug?: boolean;
-  /** Callback fired when a metric is recorded */
-  onReport?: (metricName: string, value: number) => void;
+	/** If true, metrics are logged to console.debug */
+	debug?: boolean;
+	/** Callback fired when a metric is recorded */
+	onReport?: (metricName: string, value: number) => void;
 }
 
 interface PerformanceMetrics {
-  fcp?: number;
-  lcp?: number;
-  fid?: number;
-  cls?: number;
-  domContentLoaded?: number;
-  loadComplete?: number;
-  serverResponseTime?: number;
+	fcp?: number;
+	lcp?: number;
+	fid?: number;
+	cls?: number;
+	domContentLoaded?: number;
+	loadComplete?: number;
+	serverResponseTime?: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -34,37 +34,37 @@ let currentConfig: PerformanceConfig = {};
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function reportMetric(name: string, value: number, unit = ""): void {
-  if (currentConfig.debug) {
-    console.debug(`[Perf] ${name}: ${value}${unit}`);
-  }
-  currentConfig.onReport?.(name, value);
+	if (currentConfig.debug) {
+		console.debug(`[Perf] ${name}: ${value}${unit}`);
+	}
+	currentConfig.onReport?.(name, value);
 }
 
 /**
  * Report navigation timing using the Navigation Timing Level 2 API.
  */
 function reportNavigationMetrics(): void {
-  const entries = performance.getEntriesByType(
-    "navigation",
-  ) as PerformanceNavigationTiming[];
-  const nav = entries[0];
-  if (!nav) {
-    return;
-  }
+	const entries = performance.getEntriesByType(
+		"navigation",
+	) as PerformanceNavigationTiming[];
+	const nav = entries[0];
+	if (!nav) {
+		return;
+	}
 
-  metrics.domContentLoaded = Math.round(nav.domContentLoadedEventEnd);
-  metrics.loadComplete = Math.round(nav.loadEventEnd);
-  metrics.serverResponseTime = Math.round(nav.responseEnd - nav.requestStart);
+	metrics.domContentLoaded = Math.round(nav.domContentLoadedEventEnd);
+	metrics.loadComplete = Math.round(nav.loadEventEnd);
+	metrics.serverResponseTime = Math.round(nav.responseEnd - nav.requestStart);
 
-  if (metrics.domContentLoaded !== undefined) {
-    reportMetric("DOM Content Loaded", metrics.domContentLoaded, "ms");
-  }
-  if (metrics.loadComplete !== undefined) {
-    reportMetric("Page Load Complete", metrics.loadComplete, "ms");
-  }
-  if (metrics.serverResponseTime !== undefined) {
-    reportMetric("Server Response", metrics.serverResponseTime, "ms");
-  }
+	if (metrics.domContentLoaded !== undefined) {
+		reportMetric("DOM Content Loaded", metrics.domContentLoaded, "ms");
+	}
+	if (metrics.loadComplete !== undefined) {
+		reportMetric("Page Load Complete", metrics.loadComplete, "ms");
+	}
+	if (metrics.serverResponseTime !== undefined) {
+		reportMetric("Server Response", metrics.serverResponseTime, "ms");
+	}
 }
 
 /**
@@ -72,20 +72,20 @@ function reportNavigationMetrics(): void {
  * Returns silently if the entry type isn't supported in the current browser.
  */
 function observeWebVital(
-  type: string,
-  callback: (entries: PerformanceEntryList) => void,
+	type: string,
+	callback: (entries: PerformanceEntryList) => void,
 ): void {
-  try {
-    const observer = new PerformanceObserver((list) =>
-      callback(list.getEntries()),
-    );
-    observer.observe({ type, buffered: true });
-    observers.push(observer);
-  } catch {
-    if (currentConfig.debug) {
-      console.debug(`[Perf] "${type}" observer not supported`);
-    }
-  }
+	try {
+		const observer = new PerformanceObserver((list) =>
+			callback(list.getEntries()),
+		);
+		observer.observe({ type, buffered: true });
+		observers.push(observer);
+	} catch {
+		if (currentConfig.debug) {
+			console.debug(`[Perf] "${type}" observer not supported`);
+		}
+	}
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -94,104 +94,104 @@ function observeWebVital(
 
 /** Start collecting Web Vitals and navigation metrics (dev only). */
 export function initializePerformanceMonitoring(
-  config: PerformanceConfig = {},
+	config: PerformanceConfig = {},
 ): void {
-  currentConfig = config;
+	currentConfig = config;
 
-  if (!isDev || typeof window === "undefined") {
-    return;
-  }
+	if (!isDev || typeof window === "undefined") {
+		return;
+	}
 
-  // Navigation timing (after full page load)
-  window.addEventListener(
-    "load",
-    () => setTimeout(reportNavigationMetrics, 0),
-    { once: true },
-  );
+	// Navigation timing (after full page load)
+	window.addEventListener(
+		"load",
+		() => setTimeout(reportNavigationMetrics, 0),
+		{ once: true },
+	);
 
-  if (!("PerformanceObserver" in window)) {
-    return;
-  }
+	if (!("PerformanceObserver" in window)) {
+		return;
+	}
 
-  // First Contentful Paint
-  observeWebVital("paint", (entries) => {
-    const len = entries.length;
-    for (let i = 0; i < len; i++) {
-      const fcp = entries[i];
-      if (fcp.name === "first-contentful-paint") {
-        metrics.fcp = Math.round(fcp.startTime);
-        if (metrics.fcp !== undefined) {
-          reportMetric("FCP", metrics.fcp, "ms");
-        }
-        break;
-      }
-    }
-  });
+	// First Contentful Paint
+	observeWebVital("paint", (entries) => {
+		const len = entries.length;
+		for (let i = 0; i < len; i++) {
+			const fcp = entries[i];
+			if (fcp.name === "first-contentful-paint") {
+				metrics.fcp = Math.round(fcp.startTime);
+				if (metrics.fcp !== undefined) {
+					reportMetric("FCP", metrics.fcp, "ms");
+				}
+				break;
+			}
+		}
+	});
 
-  // Largest Contentful Paint
-  observeWebVital("largest-contentful-paint", (entries) => {
-    const len = entries.length;
-    const last = entries[len - 1] as
-      | (PerformanceEntry & { renderTime?: number; loadTime?: number })
-      | undefined;
-    if (last) {
-      metrics.lcp = Math.round(
-        last.renderTime || last.loadTime || last.startTime,
-      );
-      if (metrics.lcp !== undefined) {
-        reportMetric("LCP", metrics.lcp, "ms");
-      }
-    }
-  });
+	// Largest Contentful Paint
+	observeWebVital("largest-contentful-paint", (entries) => {
+		const len = entries.length;
+		const last = entries[len - 1] as
+			| (PerformanceEntry & { renderTime?: number; loadTime?: number })
+			| undefined;
+		if (last) {
+			metrics.lcp = Math.round(
+				last.renderTime || last.loadTime || last.startTime,
+			);
+			if (metrics.lcp !== undefined) {
+				reportMetric("LCP", metrics.lcp, "ms");
+			}
+		}
+	});
 
-  // Cumulative Layout Shift
-  let clsTotal = 0;
-  observeWebVital("layout-shift", (entries) => {
-    let updated = false;
-    const len = entries.length;
-    for (let i = 0; i < len; i++) {
-      const entry = entries[i] as PerformanceEntry & {
-        hadRecentInput: boolean;
-        value: number;
-      };
-      if (!entry.hadRecentInput) {
-        clsTotal += entry.value;
-        updated = true;
-      }
-    }
-    if (updated) {
-      metrics.cls = parseFloat(clsTotal.toFixed(4));
-      if (metrics.cls !== undefined) {
-        reportMetric("CLS", metrics.cls);
-      }
-    }
-  });
+	// Cumulative Layout Shift
+	let clsTotal = 0;
+	observeWebVital("layout-shift", (entries) => {
+		let updated = false;
+		const len = entries.length;
+		for (let i = 0; i < len; i++) {
+			const entry = entries[i] as PerformanceEntry & {
+				hadRecentInput: boolean;
+				value: number;
+			};
+			if (!entry.hadRecentInput) {
+				clsTotal += entry.value;
+				updated = true;
+			}
+		}
+		if (updated) {
+			metrics.cls = parseFloat(clsTotal.toFixed(4));
+			if (metrics.cls !== undefined) {
+				reportMetric("CLS", metrics.cls);
+			}
+		}
+	});
 
-  // First Input Delay
-  observeWebVital("first-input", (entries) => {
-    const entry = entries[0] as
-      | (PerformanceEntry & { processingStart: number })
-      | undefined;
-    if (entry) {
-      metrics.fid = Math.round(entry.processingStart - entry.startTime);
-      if (metrics.fid !== undefined) {
-        reportMetric("FID", metrics.fid, "ms");
-      }
-    }
-  });
+	// First Input Delay
+	observeWebVital("first-input", (entries) => {
+		const entry = entries[0] as
+			| (PerformanceEntry & { processingStart: number })
+			| undefined;
+		if (entry) {
+			metrics.fid = Math.round(entry.processingStart - entry.startTime);
+			if (metrics.fid !== undefined) {
+				reportMetric("FID", metrics.fid, "ms");
+			}
+		}
+	});
 }
 
 /** Disconnect all registered observers. Safe to call multiple times. */
 export function cleanupPerformanceMonitoring(): void {
-  for (const observer of observers) {
-    try {
-      observer.disconnect();
-    } catch {
-      /* already disconnected */
-    }
-  }
-  observers.length = 0;
-  currentConfig = {};
+	for (const observer of observers) {
+		try {
+			observer.disconnect();
+		} catch {
+			/* already disconnected */
+		}
+	}
+	observers.length = 0;
+	currentConfig = {};
 }
 
 /** Retrieve a snapshot of all collected metrics. */
