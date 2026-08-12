@@ -177,4 +177,22 @@ describe("useStreakCalculator", () => {
 		expect(result.current.calculateWinStreak(null)).toBe(0);
 		expect(result.current.calculateWinStreak(undefined)).toBe(0);
 	});
+
+	it("ignores matches where match property is missing or invalid", () => {
+		const matchHistory = [
+			{
+				match: {
+					mode: "1v1",
+					left: { id: "1", name: "Alice" },
+					right: { id: "3", name: "Charlie" },
+				} as Match,
+				winner: "1",
+			},
+			{ match: undefined as unknown as Match, winner: "2" },
+		];
+
+		const { result } = renderHook(() => useStreakCalculator(mockMatch, matchHistory));
+		expect(result.current.leftStreak).toBe(1);
+		expect(result.current.rightStreak).toBe(0);
+	});
 });
