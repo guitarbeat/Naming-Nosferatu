@@ -88,9 +88,7 @@ describe("storage", () => {
 		});
 
 		it("returns fallback when key does not exist", () => {
-			expect(getStorageString("non_existent", "fallback_val")).toBe(
-				"fallback_val",
-			);
+			expect(getStorageString("non_existent", "fallback_val")).toBe("fallback_val");
 		});
 
 		it("handles getStorageString error path (localStorage throws)", () => {

@@ -16,7 +16,7 @@ export function useStreakCalculator(
 			let streak = 0;
 			for (let i = matchHistory.length - 1; i >= 0; i--) {
 				const record = matchHistory[i];
-				if (!record || !record.match) {
+				if (!record?.match) {
 					continue;
 				}
 				const leftId = getMatchSideId(record.match, "left");
