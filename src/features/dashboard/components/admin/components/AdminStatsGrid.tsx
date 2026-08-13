@@ -37,13 +37,9 @@ export function AdminStatsGrid({ stats }: AdminStatsGridProps) {
 				<div key={label} className="p-3 sm:p-6">
 					<div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
 						<Icon className={colorClass} size={18} />
-						<h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>
-							{label}
-						</h3>
+						<h3 className={`text-sm sm:text-lg font-semibold ${colorClass}`}>{label}</h3>
 					</div>
-					<p className="text-2xl sm:text-3xl font-bold text-foreground">
-						{value}
-					</p>
+					<p className="text-2xl sm:text-3xl font-bold text-foreground">{value}</p>
 				</div>
 			))}
 		</div>

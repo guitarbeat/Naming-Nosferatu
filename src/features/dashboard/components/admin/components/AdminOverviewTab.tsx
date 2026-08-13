@@ -23,9 +23,7 @@ export function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 				</div>
 				<div>
 					<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
-					<p className="text-muted-foreground">
-						Activity tracking coming soon...
-					</p>
+					<p className="text-muted-foreground">Activity tracking coming soon...</p>
 				</div>
 			</div>
 		</div>
