@@ -192,15 +192,26 @@ export function NameSelector() {
 		[storeSelectedNames],
 	);
 
-	const { catImages, catImageById } = useMemo(() => {
-		const catImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
+	// ⚡ Bolt Optimization: Replace O(N) array mapping and separate loop with a single pass
+	// Constructs Maps to enable O(1) lookups during interactions instead of O(N) find/findIndex
+	const { catImages, catImageById, namesById, nameIndexById } = useMemo(() => {
+		const catImages: string[] = [];
 		const catImageById = new Map<IdType, string>();
+		const namesById = new Map<IdType, NameItem>();
+		const nameIndexById = new Map<IdType, number>();
+
 		for (let i = 0; i < names.length; i++) {
-			if (catImages[i]) {
-				catImageById.set(names[i].id, catImages[i]);
+			const nameItem = names[i];
+			const img = getRandomCatImage(nameItem.id, CAT_IMAGES);
+			catImages.push(img);
+
+			if (img) {
+				catImageById.set(nameItem.id, img);
 			}
+			namesById.set(nameItem.id, nameItem);
+			nameIndexById.set(nameItem.id, i);
 		}
-		return { catImages, catImageById };
+		return { catImages, catImageById, namesById, nameIndexById };
 	}, [names]);
 
 	useEffect(() => {
@@ -226,7 +237,7 @@ export function NameSelector() {
 
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
-			const nameItem = names.find((n) => n.id === nameId);
+			const nameItem = namesById.get(nameId);
 			if (!nameItem || isNameLocked(nameItem)) {
 				return;
 			}
@@ -238,7 +249,7 @@ export function NameSelector() {
 				: [...storeSelectedNames, nameItem];
 			tournamentActions.setSelection(nextSelection);
 		},
-		[names, triggerHaptic, selectedIds, storeSelectedNames, tournamentActions],
+		[namesById, triggerHaptic, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
 	const handleToggleHidden = useCallback(
@@ -310,9 +321,9 @@ export function NameSelector() {
 		if (!pendingAdminAction) {
 			return "";
 		}
-		const target = names.find((n) => n.id === pendingAdminAction.nameId);
+		const target = namesById.get(pendingAdminAction.nameId);
 		return target?.name ?? "this name";
-	}, [names, pendingAdminAction]);
+	}, [namesById, pendingAdminAction]);
 
 	const isPendingActionBusy = useMemo(() => {
 		if (!pendingAdminAction) {
@@ -363,13 +374,13 @@ export function NameSelector() {
 
 	const handleOpenLightbox = useCallback(
 		(nameId: IdType) => {
-			const index = names.findIndex((n) => n.id === nameId);
-			if (index !== -1) {
+			const index = nameIndexById.get(nameId);
+			if (index !== undefined && index !== -1) {
 				setLightboxIndex(index);
 				setLightboxOpen(true);
 			}
 		},
-		[names],
+		[nameIndexById],
 	);
 
 	if (isLoading) {
