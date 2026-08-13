@@ -1,0 +1,3 @@
+1. We need to group like features on the front page and make inputs fun/magic.
+2. The user profile widget was mentioned in the memory ("Strike next: user profile widget").
+3. We've seen `MagicToggle` being used in `Dashboard.tsx` and we have a Profile component in `ProfileInner.tsx`.
