@@ -1,4 +1,4 @@
-import { User, BarChart3, Target, Trophy, TrendingUp, Activity, Users } from "lucide-react";
+import { Activity, BarChart3, Target, TrendingUp, Trophy, User, Users } from "lucide-react";
 import type { ElementType } from "react";
 import { memo } from "react";
 import { themeSurfaces, themeText } from "@/shared/lib/themeClasses";

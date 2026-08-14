@@ -1,14 +1,13 @@
-import { motion, useReducedMotion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { useMemo } from "react";
 import type { NameItem, RatingData } from "@/shared/types";
+import { CommunityChartsPanel } from "./CommunityChartsPanel";
 import { ContextBadge, Panel, SectionHeader } from "./components/DashboardPrimitives";
 import { LeaderboardPanel } from "./components/LeaderboardPanel";
-import { useDashboardData } from "./hooks/useDashboardData";
-import { PersonalResults } from "./PersonalResults";
 import { DashboardHeader, getQuickStats } from "./DashboardHeader";
 import { EngagementPanel } from "./EngagementPanel";
-import { CommunityChartsPanel } from "./CommunityChartsPanel";
+import { useDashboardData } from "./hooks/useDashboardData";
+import { PersonalResults } from "./PersonalResults";
 
 interface DashboardProps {
 	personalRatings?: Record<string, RatingData>;
@@ -25,13 +24,6 @@ interface DashboardProps {
 	avatarUrl?: string;
 	canHideNames?: boolean;
 	onNameHidden?: (nameId: string) => void;
-}
-
-interface QuickStat {
-	accent?: boolean;
-	icon: ElementType;
-	label: string;
-	value: string | number;
 }
 
 export function Dashboard({

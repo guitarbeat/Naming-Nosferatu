@@ -43,19 +43,19 @@ export function MagicProfileWidget({
 }: MagicProfileWidgetProps) {
 	return (
 		<motion.div
-			layout
+			layout={true}
 			initial={{ opacity: 0, scale: 0.95 }}
 			animate={{ opacity: 1, scale: 1 }}
 			className="flex flex-col items-center gap-5 w-full p-2"
 		>
-			<motion.div layout className="relative mb-1 group">
+			<motion.div layout={true} className="relative mb-1 group">
 				<motion.div
-					layout
+					layout={true}
 					className="absolute -inset-3 rounded-full bg-gradient-to-br from-primary/40 to-accent/30 blur-2xl opacity-50 group-hover:opacity-75 transition-opacity"
 					aria-hidden="true"
 				/>
 				<motion.div
-					layout
+					layout={true}
 					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
 					className="relative size-24 rounded-full overflow-hidden ring-4 ring-primary/30 ring-offset-4 ring-offset-background bg-muted shadow-lg"
@@ -87,7 +87,9 @@ export function MagicProfileWidget({
 								value={editedName}
 								onChange={(e) => {
 									setEditedName(e.target.value);
-									if (saveError) setSaveError(null);
+									if (saveError) {
+										setSaveError(null);
+									}
 								}}
 								placeholder="Who are you?"
 								onKeyDown={(e) => e.key === "Enter" && onSave()}
