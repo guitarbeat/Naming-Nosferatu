@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "zustand";
+import type { NameItem } from "@/shared/types";
 import type { AppState } from "@/store/appStore.types";
 import { createTournamentSlice } from "./tournamentSlice";
-import type { NameItem } from "@/shared/types";
 
 describe("tournamentSlice", () => {
 	let useStore: ReturnType<typeof create<Pick<AppState, "tournament" | "tournamentActions">>>;
