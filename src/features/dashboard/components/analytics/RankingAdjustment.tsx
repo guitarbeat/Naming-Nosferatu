@@ -14,7 +14,10 @@ import { memo, useEffect, useRef, useState } from "react";
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 
-function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
+function haveRankingsChanged(
+	newItems: NameItem[],
+	oldRankings: NameItem[],
+): boolean {
 	if (newItems === oldRankings) {
 		return false;
 	}
@@ -30,63 +33,214 @@ function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boo
 		if (newItem === oldItem) {
 			continue;
 		}
-		if (!oldItem || newItem.name !== oldItem.name || newItem.rating !== oldItem.rating) {
+		if (
+			!oldItem ||
+			newItem.name !== oldItem.name ||
+			newItem.rating !== oldItem.rating
+		) {
 			return true;
 		}
 	}
 	return false;
 }
 
-const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => {
-	const medalColors = {
-		0: "from-yellow-500 to-amber-600",
-		1: "from-slate-300 to-slate-500",
-		2: "from-amber-700 to-orange-800",
-	};
-	const medalBg =
-		index < 3 ? medalColors[index as keyof typeof medalColors] : "from-primary/20 to-accent/20";
-	const medalBorder = index < 3 ? "border-yellow-600/50" : "border-primary/30";
-	const medalText = index < 3 ? "text-white" : "text-foreground";
+const RankingItemContent = memo(
+	({ item, index }: { item: NameItem; index: number }) => {
+		const medalColors = {
+			0: "from-yellow-500 to-amber-600",
+			1: "from-slate-300 to-slate-500",
+			2: "from-amber-700 to-orange-800",
+		};
+		const medalBg =
+			index < 3
+				? medalColors[index as keyof typeof medalColors]
+				: "from-primary/20 to-accent/20";
+		const medalBorder =
+			index < 3 ? "border-yellow-600/50" : "border-primary/30";
+		const medalText = index < 3 ? "text-white" : "text-foreground";
 
-	return (
-		<div className="flex items-center gap-4 w-full">
-			{/* Drag Handle */}
-			<div className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors cursor-grab active:cursor-grabbing">
-				<GripVertical size={20} />
-			</div>
+		return (
+			<div className="flex items-center gap-4 w-full">
+				{/* Drag Handle */}
+				<div className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors cursor-grab active:cursor-grabbing">
+					<GripVertical size={20} />
+				</div>
 
-			{/* Rank Badge */}
-			<Chip
-				className={`flex-shrink-0 bg-gradient-to-br ${medalBg} border ${medalBorder} ${medalText} font-bold min-w-[3rem] shadow-sm`}
-				size="lg"
-				variant="flat"
-			>
-				{index < 3 ? ["🥇", "🥈", "🥉"][index] : `#${index + 1}`}
-			</Chip>
+				{/* Rank Badge */}
+				<Chip
+					className={`flex-shrink-0 bg-gradient-to-br ${medalBg} border ${medalBorder} ${medalText} font-bold min-w-[3rem] shadow-sm`}
+					size="lg"
+					variant="flat"
+				>
+					{index < 3 ? ["🥇", "🥈", "🥉"][index] : `#${index + 1}`}
+				</Chip>
 
-			{/* Name and Stats */}
-			<div className="flex-1 min-w-0">
-				<h3 className="text-lg font-semibold text-foreground truncate mb-1">{item.name}</h3>
-				<div className="flex items-center gap-4 text-sm">
-					<div className="flex items-center gap-1.5">
-						<span className="text-muted-foreground">Rating:</span>
-						<span className="inline-flex items-center justify-center min-w-[2.5rem] rounded-md bg-primary/10 px-2 py-0.5 font-semibold text-primary">
-							{Math.round(item.rating as number)}
-						</span>
-					</div>
-					{item.wins ? (
+				{/* Name and Stats */}
+				<div className="flex-1 min-w-0">
+					<h3 className="text-lg font-semibold text-foreground truncate mb-1">
+						{item.name}
+					</h3>
+					<div className="flex items-center gap-4 text-sm">
 						<div className="flex items-center gap-1.5">
-							<span className="text-muted-foreground">W/L:</span>
-							<span className="text-accent font-medium">{item.wins}W</span>
-							<span className="text-destructive/70 font-medium">{item.losses}L</span>
+							<span className="text-muted-foreground">Rating:</span>
+							<span className="inline-flex items-center justify-center min-w-[2.5rem] rounded-md bg-primary/10 px-2 py-0.5 font-semibold text-primary">
+								{Math.round(item.rating as number)}
+							</span>
 						</div>
-					) : null}
+						{item.wins ? (
+							<div className="flex items-center gap-1.5">
+								<span className="text-muted-foreground">W/L:</span>
+								<span className="text-accent font-medium">{item.wins}W</span>
+								<span className="text-destructive/70 font-medium">
+									{item.losses}L
+								</span>
+							</div>
+						) : null}
+					</div>
 				</div>
 			</div>
-		</div>
+		);
+	},
+);
+RankingItemContent.displayName = "RankingItemContent";
+
+function useRankingManager(
+	rankings: NameItem[],
+	onSave: (items: NameItem[]) => Promise<void>,
+) {
+	const [items, setItems] = useState(rankings || []);
+	const [saveStatus, setSaveStatus] = useState("");
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+	const isMountedRef = useRef(true);
+	const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const onSaveRef = useRef(onSave);
+	onSaveRef.current = onSave;
+
+	useEffect(() => {
+		isMountedRef.current = true;
+
+		return () => {
+			isMountedRef.current = false;
+			if (saveTimerRef.current) {
+				clearTimeout(saveTimerRef.current);
+				saveTimerRef.current = null;
+			}
+			if (saveStatusTimerRef.current) {
+				clearTimeout(saveStatusTimerRef.current);
+				saveStatusTimerRef.current = null;
+			}
+		};
+	}, []);
+
+	useEffect(() => {
+		if (hasUnsavedChanges) {
+			return;
+		}
+		const sorted = [...rankings].sort(
+			(a, b) => (b.rating as number) - (a.rating as number),
+		);
+		if (haveRankingsChanged(sorted, items)) {
+			setItems(sorted);
+		}
+	}, [rankings, hasUnsavedChanges, items]);
+
+	useEffect(() => {
+		if (!hasUnsavedChanges) {
+			return;
+		}
+		if (items && rankings && haveRankingsChanged(items, rankings)) {
+			setSaveStatus("saving");
+			if (saveTimerRef.current) {
+				clearTimeout(saveTimerRef.current);
+				saveTimerRef.current = null;
+			}
+			if (saveStatusTimerRef.current) {
+				clearTimeout(saveStatusTimerRef.current);
+				saveStatusTimerRef.current = null;
+			}
+			saveTimerRef.current = setTimeout(() => {
+				onSaveRef
+					.current(items)
+					.then(() => {
+						if (!isMountedRef.current) {
+							return;
+						}
+						setHasUnsavedChanges(false);
+						setSaveStatus("success");
+						saveStatusTimerRef.current = setTimeout(() => {
+							if (isMountedRef.current) {
+								setSaveStatus("");
+							}
+							saveStatusTimerRef.current = null;
+						}, 2000);
+					})
+					.catch((e: unknown) => {
+						if (!isMountedRef.current) {
+							return;
+						}
+						setSaveStatus("error");
+						ErrorManager.handleError(e, "Save Rankings");
+					});
+			}, 1000);
+		}
+		return () => {
+			if (saveTimerRef.current) {
+				clearTimeout(saveTimerRef.current);
+				saveTimerRef.current = null;
+			}
+			if (saveStatusTimerRef.current) {
+				clearTimeout(saveStatusTimerRef.current);
+				saveStatusTimerRef.current = null;
+			}
+		};
+	}, [items, rankings, hasUnsavedChanges]);
+
+	return { items, setItems, saveStatus, setHasUnsavedChanges };
+}
+
+const RankingHeader = memo(({ saveStatus }: { saveStatus: string }) => {
+	return (
+		<CardHeader className="flex flex-col gap-3 pb-4">
+			<div className="flex items-center justify-between w-full">
+				<h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+					Your Cat Name Rankings
+				</h2>
+				{saveStatus && (
+					<Chip
+						className={cn(
+							"transition-all duration-300",
+							saveStatus === "saving" &&
+								"bg-chart-5/20 border-chart-5/30 text-chart-5 animate-pulse",
+							saveStatus === "success" &&
+								"bg-chart-2/20 border-chart-2/30 text-chart-2",
+							saveStatus === "error" &&
+								"bg-destructive/20 border-destructive/30 text-destructive",
+						)}
+						variant="flat"
+						startContent={
+							saveStatus === "saving" ? (
+								<Loader2 size={14} className="animate-spin" />
+							) : saveStatus === "success" ? (
+								<Save size={14} />
+							) : null
+						}
+					>
+						{saveStatus === "saving"
+							? "Saving..."
+							: saveStatus === "success"
+								? "Saved!"
+								: "Error saving"}
+					</Chip>
+				)}
+			</div>
+			<p className="text-muted-foreground text-sm">
+				Drag and drop to reorder your favorite cat names
+			</p>
+		</CardHeader>
 	);
 });
-RankingItemContent.displayName = "RankingItemContent";
+RankingHeader.displayName = "RankingHeader";
 
 export const RankingAdjustment = memo(
 	({
@@ -98,92 +252,9 @@ export const RankingAdjustment = memo(
 		onSave: (items: NameItem[]) => Promise<void>;
 		onCancel: () => void;
 	}) => {
-		const [items, setItems] = useState(rankings || []);
-		const [saveStatus, setSaveStatus] = useState("");
 		const [isDragging, setIsDragging] = useState(false);
-		const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-		const isMountedRef = useRef(true);
-		const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-		const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-		const onSaveRef = useRef(onSave);
-		onSaveRef.current = onSave;
-
-		useEffect(() => {
-			isMountedRef.current = true;
-
-			return () => {
-				isMountedRef.current = false;
-				if (saveTimerRef.current) {
-					clearTimeout(saveTimerRef.current);
-					saveTimerRef.current = null;
-				}
-				if (saveStatusTimerRef.current) {
-					clearTimeout(saveStatusTimerRef.current);
-					saveStatusTimerRef.current = null;
-				}
-			};
-		}, []);
-
-		useEffect(() => {
-			if (hasUnsavedChanges) {
-				return;
-			}
-			const sorted = [...rankings].sort((a, b) => (b.rating as number) - (a.rating as number));
-			if (haveRankingsChanged(sorted, items)) {
-				setItems(sorted);
-			}
-		}, [rankings, hasUnsavedChanges, items]);
-
-		useEffect(() => {
-			if (!hasUnsavedChanges) {
-				return;
-			}
-			if (items && rankings && haveRankingsChanged(items, rankings)) {
-				setSaveStatus("saving");
-				if (saveTimerRef.current) {
-					clearTimeout(saveTimerRef.current);
-					saveTimerRef.current = null;
-				}
-				if (saveStatusTimerRef.current) {
-					clearTimeout(saveStatusTimerRef.current);
-					saveStatusTimerRef.current = null;
-				}
-				saveTimerRef.current = setTimeout(() => {
-					onSaveRef
-						.current(items)
-						.then(() => {
-							if (!isMountedRef.current) {
-								return;
-							}
-							setHasUnsavedChanges(false);
-							setSaveStatus("success");
-							saveStatusTimerRef.current = setTimeout(() => {
-								if (isMountedRef.current) {
-									setSaveStatus("");
-								}
-								saveStatusTimerRef.current = null;
-							}, 2000);
-						})
-						.catch((e: unknown) => {
-							if (!isMountedRef.current) {
-								return;
-							}
-							setSaveStatus("error");
-							ErrorManager.handleError(e, "Save Rankings");
-						});
-				}, 1000);
-			}
-			return () => {
-				if (saveTimerRef.current) {
-					clearTimeout(saveTimerRef.current);
-					saveTimerRef.current = null;
-				}
-				if (saveStatusTimerRef.current) {
-					clearTimeout(saveStatusTimerRef.current);
-					saveStatusTimerRef.current = null;
-				}
-			};
-		}, [items, rankings, hasUnsavedChanges]);
+		const { items, setItems, saveStatus, setHasUnsavedChanges } =
+			useRankingManager(rankings, onSave);
 
 		const handleDragEnd = (result: DropResult) => {
 			setIsDragging(false);
@@ -197,55 +268,30 @@ export const RankingAdjustment = memo(
 			}
 			const adjusted = newItems.map((item: NameItem, index: number) => ({
 				...item,
-				rating: Math.round(1000 + (1000 * (newItems.length - index)) / newItems.length),
+				rating: Math.round(
+					1000 + (1000 * (newItems.length - index)) / newItems.length,
+				),
 			}));
 			setHasUnsavedChanges(true);
 			setItems(adjusted);
 		};
 
 		return (
-			<div className={cn("w-full max-w-4xl mx-auto", isDragging && "ring-2 ring-primary/50")}>
-				<CardHeader className="flex flex-col gap-3 pb-4">
-					<div className="flex items-center justify-between w-full">
-						<h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-							Your Cat Name Rankings
-						</h2>
-						{saveStatus && (
-							<Chip
-								className={cn(
-									"transition-all duration-300",
-									saveStatus === "saving" &&
-										"bg-chart-5/20 border-chart-5/30 text-chart-5 animate-pulse",
-									saveStatus === "success" && "bg-chart-2/20 border-chart-2/30 text-chart-2",
-									saveStatus === "error" &&
-										"bg-destructive/20 border-destructive/30 text-destructive",
-								)}
-								variant="flat"
-								startContent={
-									saveStatus === "saving" ? (
-										<Loader2 size={14} className="animate-spin" />
-									) : saveStatus === "success" ? (
-										<Save size={14} />
-									) : null
-								}
-							>
-								{saveStatus === "saving"
-									? "Saving..."
-									: saveStatus === "success"
-										? "Saved!"
-										: "Error saving"}
-							</Chip>
-						)}
-					</div>
-					<p className="text-muted-foreground text-sm">
-						Drag and drop to reorder your favorite cat names
-					</p>
-				</CardHeader>
+			<div
+				className={cn(
+					"w-full max-w-4xl mx-auto",
+					isDragging && "ring-2 ring-primary/50",
+				)}
+			>
+				<RankingHeader saveStatus={saveStatus} />
 
 				<Divider className="bg-border/10" />
 
 				<CardBody className="gap-3 p-6">
-					<DragDropContext onDragStart={() => setIsDragging(true)} onDragEnd={handleDragEnd}>
+					<DragDropContext
+						onDragStart={() => setIsDragging(true)}
+						onDragEnd={handleDragEnd}
+					>
 						<Droppable droppableId="rankings">
 							{(provided: DroppableProvided) => (
 								<div
@@ -259,7 +305,10 @@ export const RankingAdjustment = memo(
 											draggableId={String(item.id || item.name)}
 											index={index}
 										>
-											{(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+											{(
+												provided: DraggableProvided,
+												snapshot: DraggableStateSnapshot,
+											) => (
 												<div
 													ref={provided.innerRef}
 													{...provided.draggableProps}
@@ -271,7 +320,8 @@ export const RankingAdjustment = memo(
 														exit={{ opacity: 0, scale: 0.95 }}
 														className={cn(
 															"py-3 transition-all duration-200 border-b border-border/10",
-															snapshot.isDragging && "bg-foreground/5 scale-105 rotate-2",
+															snapshot.isDragging &&
+																"bg-foreground/5 scale-105 rotate-2",
 														)}
 													>
 														<RankingItemContent item={item} index={index} />
