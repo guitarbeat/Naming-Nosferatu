@@ -17,11 +17,7 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
 const nameOverlayClasses =
 	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
 
-const NameContent = memo(function NameContent({
-	nameItem,
-}: {
-	nameItem: NameItem;
-}) {
+const NameContent = memo(function NameContent({ nameItem }: { nameItem: NameItem }) {
 	return (
 		<>
 			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
@@ -96,11 +92,7 @@ const AdminActionButton = memo(function AdminActionButton({
 	);
 });
 
-const SelectionBadge = ({
-	prefersReducedMotion,
-}: {
-	prefersReducedMotion: boolean;
-}) => (
+const SelectionBadge = ({ prefersReducedMotion }: { prefersReducedMotion: boolean }) => (
 	<motion.div
 		initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0, opacity: 0 }}
 		animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
@@ -115,13 +107,7 @@ const SelectionBadge = ({
 	</motion.div>
 );
 
-function ZoomButton({
-	nameId,
-	onClick,
-}: {
-	nameId: IdType;
-	onClick: (id: IdType) => void;
-}) {
+function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) {
 	return (
 		<button
 			type="button"
@@ -194,9 +180,7 @@ export const NameCard = memo(function NameCard({
 					containerClassName="w-full h-full"
 					imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 				/>
-				{isSelected && (
-					<SelectionBadge prefersReducedMotion={prefersReducedMotion} />
-				)}
+				{isSelected && <SelectionBadge prefersReducedMotion={prefersReducedMotion} />}
 				<div className={nameOverlayClasses}>
 					<div className="flex flex-col items-center gap-1.5 max-w-full">
 						<NameContent nameItem={nameItem} />

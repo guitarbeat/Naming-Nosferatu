@@ -10,11 +10,7 @@ import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { Modal } from "@/shared/components/layout/Modal";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getRandomCatImage } from "@/shared/lib/media";
-import {
-	getLockedNames,
-	getVisibleNames,
-	isNameLocked,
-} from "@/shared/lib/names/nameFilters";
+import { getLockedNames, getVisibleNames, isNameLocked } from "@/shared/lib/names/nameFilters";
 import { addToSet, removeFromSet } from "@/shared/lib/setUtils";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import type { IdType, NameItem } from "@/shared/types";
@@ -26,9 +22,7 @@ export function NameSelector() {
 	const prefersReducedMotion = useReducedMotion() ?? false;
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
-	const storeSelectedNames = useAppStore(
-		(state) => state.tournament.selectedNames,
-	);
+	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 	const { toggleHidden, toggleLocked } = useNameAdminActions(userName ?? "");
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
@@ -59,9 +53,7 @@ export function NameSelector() {
 				? "Failed to load names"
 				: null;
 	const isSupabaseUnavailable = error === SUPABASE_UNAVAILABLE_MSG;
-	const names = isSupabaseUnavailable
-		? sampleNames
-		: (namesQuery.data?.names ?? []);
+	const names = isSupabaseUnavailable ? sampleNames : (namesQuery.data?.names ?? []);
 	const isLoading = namesQuery.isPending && !isSupabaseUnavailable;
 
 	const selectedIds = useMemo(
@@ -100,9 +92,7 @@ export function NameSelector() {
 			return;
 		}
 		const currentSelectedIds = new Set(storeSelectedNames.map((n) => n.id));
-		const missingLocked = lockedInNames.filter(
-			(n) => !currentSelectedIds.has(n.id),
-		);
+		const missingLocked = lockedInNames.filter((n) => !currentSelectedIds.has(n.id));
 		if (missingLocked.length > 0) {
 			tournamentActions.setSelection([...storeSelectedNames, ...missingLocked]);
 		}
@@ -128,13 +118,7 @@ export function NameSelector() {
 				: [...storeSelectedNames, nameItem];
 			tournamentActions.setSelection(nextSelection);
 		},
-		[
-			namesById,
-			triggerHaptic,
-			selectedIds,
-			storeSelectedNames,
-			tournamentActions,
-		],
+		[namesById, triggerHaptic, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
 	const handleToggleHidden = useCallback(
@@ -147,9 +131,7 @@ export function NameSelector() {
 
 			try {
 				await toggleHidden({ nameId, isCurrentlyHidden });
-				toast.showSuccess(
-					isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
-				);
+				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
@@ -170,9 +152,7 @@ export function NameSelector() {
 
 			try {
 				await toggleLocked({ nameId, isCurrentlyLocked });
-				toast.showSuccess(
-					isCurrentlyLocked ? "Name unlocked." : "Name locked in.",
-				);
+				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
@@ -183,8 +163,7 @@ export function NameSelector() {
 		[isAdmin, toast, toggleLocked, userName],
 	);
 
-	const [pendingAdminAction, setPendingAdminAction] =
-		useState<PendingAdminAction | null>(null);
+	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
 
 	const requestAdminAction = useCallback(
 		(action: PendingAdminAction) => {
@@ -194,9 +173,7 @@ export function NameSelector() {
 			}
 
 			if (!userName?.trim()) {
-				toast.showError(
-					"Admin actions require a valid user session. Please log in again.",
-				);
+				toast.showError("Admin actions require a valid user session. Please log in again.");
 				return;
 			}
 
@@ -234,15 +211,9 @@ export function NameSelector() {
 
 		try {
 			if (pendingAdminAction.type === "toggle-hidden") {
-				await handleToggleHidden(
-					pendingAdminAction.nameId,
-					pendingAdminAction.isCurrentlyEnabled,
-				);
+				await handleToggleHidden(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
 			} else {
-				await handleToggleLocked(
-					pendingAdminAction.nameId,
-					pendingAdminAction.isCurrentlyEnabled,
-				);
+				await handleToggleLocked(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
 			}
 		} finally {
 			setPendingAdminAction(null);
@@ -306,11 +277,7 @@ export function NameSelector() {
 							<p className="text-sm leading-relaxed text-white/68">{error}</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button
-								onClick={() => void namesQuery.refetch()}
-								variant="glass"
-								size="small"
-							>
+							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
 								Try Again
 							</Button>
 						</div>
