@@ -1,14 +1,10 @@
 import { lazy, Suspense, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppLayout } from "@/shared/components/layout/AppLayout";
-import { Loading } from "@/shared/components/layout/Feedback/Loading";
+import { RouteFallback } from "@/shared/components/ui/RouteFallback";
 
 const HomeRoute = lazy(() => import("@/app/routes/HomeRoute"));
 const AdminRoute = lazy(() => import("@/app/routes/AdminRoute"));
-
-function RouteFallback({ text }: { text: string }) {
-	return <Loading variant="cat-gif" text={text} className="min-h-[82dvh]" />;
-}
 
 export default function AppShell() {
 	const { pathname } = useLocation();

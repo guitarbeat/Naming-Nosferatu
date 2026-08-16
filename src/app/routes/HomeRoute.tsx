@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, memo, Suspense, useCallback, useEffect } from "react";
+import { lazy, Suspense, useCallback, useEffect } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -8,6 +8,7 @@ import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
+import { SectionHeading } from "@/shared/components/ui/SectionHeading";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
@@ -16,30 +17,6 @@ const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
-
-const SectionHeading = memo(function SectionHeading({
-	id,
-	title,
-	subtitle,
-}: {
-	id?: string;
-	title: string;
-	subtitle: string;
-}) {
-	return (
-		<div className="mx-auto mb-[var(--space-phi-4)] flex w-full max-w-2xl flex-col items-center text-center sm:mb-[var(--space-phi-5)]">
-			<h2
-				id={id}
-				className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground"
-			>
-				{title}
-			</h2>
-			<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-				{subtitle}
-			</p>
-		</div>
-	);
-});
 
 export default function HomeRoute() {
 	const user = useAppStore((s) => s.user);
