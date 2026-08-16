@@ -2,15 +2,6 @@ import CryptoJS from "crypto-js";
 
 const isDev = () => import.meta.env?.DEV ?? false;
 
-// Secret key used to encrypt storage values.
-// In a real application, this should ideally be derived from a user-specific value or backend secret.
-// For client-side storage where the goal is simply to prevent clear-text storage on disk, a static key provides basic obfuscation.
-const LEGACY_STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
-
-// Ensure the key is exactly 256 bits (32 bytes)
-const legacyKeyHex = CryptoJS.enc.Utf8.parse(
-	LEGACY_STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32),
-);
 // Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
 const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
@@ -78,21 +69,6 @@ function decrypt(text: string): string {
 			const decrypted = bytes.toString(CryptoJS.enc.Utf8);
 			if (decrypted) {
 				return decrypted;
-			}
-		} catch (_error) {
-			// Ignore and fallback
-		}
-
-		// Fallback to legacy static key for backward compatibility
-		try {
-			const legacyBytes = CryptoJS.AES.decrypt(ciphertext, legacyKeyHex, {
-				iv,
-				mode: CryptoJS.mode.CBC,
-				padding: CryptoJS.pad.Pkcs7,
-			});
-			const legacyDecrypted = legacyBytes.toString(CryptoJS.enc.Utf8);
-			if (legacyDecrypted) {
-				return legacyDecrypted;
 			}
 		} catch (_error) {
 			// Ignore and fallback
