@@ -1,0 +1,45 @@
+--- src/shared/hooks/useLocalStorage.test.ts
++++ src/shared/hooks/useLocalStorage.test.ts
+@@ -69,22 +69,22 @@
+			'localStorage write failed for key "test-key"',
+		);
+	});
+-});
+
+-it("should handle error when writeStorageJson returns false on unmount with debounce", () => {
+-	const consoleErrorSpy = vi
+-		.spyOn(console, "error")
+-		.mockImplementation(() => {});
+-	const writeStorageJsonMock = vi.mocked(storage.writeStorageJson);
++	it("should handle error when writeStorageJson returns false on unmount with debounce", () => {
++		const consoleErrorSpy = vi
++			.spyOn(console, "error")
++			.mockImplementation(() => {});
++		const writeStorageJsonMock = vi.mocked(storage.writeStorageJson);
+
+-	// make the unmount call return false
+-	writeStorageJsonMock.mockReturnValue(false);
++		// make the unmount call return false
++		writeStorageJsonMock.mockReturnValue(false);
+
+-	const { unmount } = renderHook(() =>
+-		useLocalStorage("test-key", "initial", { debounceWait: 100 }),
+-	);
++		const { unmount } = renderHook(() =>
++			useLocalStorage("test-key", "initial", { debounceWait: 100 }),
++		);
+
+-	unmount();
++		unmount();
+
+-	// we expect console.error to be called on unmount when it returns false
+-	expect(consoleErrorSpy).toHaveBeenCalledWith(
+-		'[useLocalStorage] Unmount flush failed for key "test-key".',
+-	);
+-});
++		// we expect console.error to be called on unmount when it returns false
++		expect(consoleErrorSpy).toHaveBeenCalledWith(
++			'[useLocalStorage] Unmount flush failed for key "test-key".',
++		);
++	});
++});
