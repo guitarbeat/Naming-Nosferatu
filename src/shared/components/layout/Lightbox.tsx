@@ -75,12 +75,7 @@ function NavigationButton({ direction, onClick }: NavigationButtonProps) {
 	);
 }
 
-export function Lightbox({
-	images,
-	currentIndex,
-	onClose,
-	onNavigate,
-}: LightboxProps) {
+export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
 	const currentImage = images[currentIndex] || "";
 	const hasMultipleImages = images.length > 1;
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -121,9 +116,7 @@ export function Lightbox({
 					<X size={24} />
 				</button>
 
-				{hasMultipleImages && (
-					<NavigationButton direction="previous" onClick={handlePrevious} />
-				)}
+				{hasMultipleImages && <NavigationButton direction="previous" onClick={handlePrevious} />}
 
 				<motion.img
 					src={currentImage}
@@ -138,9 +131,7 @@ export function Lightbox({
 					decoding="async"
 				/>
 
-				{hasMultipleImages && (
-					<NavigationButton direction="next" onClick={handleNext} />
-				)}
+				{hasMultipleImages && <NavigationButton direction="next" onClick={handleNext} />}
 
 				<div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm font-medium text-white">
 					Image {currentIndex + 1} of {images.length}
