@@ -61,9 +61,7 @@ describe("useLocalStorage", () => {
 		// make writeStorageJson return false
 		writeStorageJsonMock.mockReturnValue(false);
 
-		const { result } = renderHook(() =>
-			useLocalStorage("test-key", "initial", { onError }),
-		);
+		const { result } = renderHook(() => useLocalStorage("test-key", "initial", { onError }));
 
 		act(() => {
 			result.current[1]("new value");
@@ -76,9 +74,7 @@ describe("useLocalStorage", () => {
 	});
 
 	it("should handle error when writeStorageJson returns false on unmount with debounce", () => {
-		const consoleErrorSpy = vi
-			.spyOn(console, "error")
-			.mockImplementation(() => {});
+		const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 		const writeStorageJsonMock = vi.mocked(storage.writeStorageJson);
 
 		// make the unmount call return false
