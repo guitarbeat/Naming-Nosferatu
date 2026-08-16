@@ -79,10 +79,8 @@ export function useRatingDistributionData(
 		if (!stats || stats.stdDev <= 0) {
 			return null;
 		}
-		const lo =
-			Math.floor((stats.mean - stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
-		const hi =
-			Math.floor((stats.mean + stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
+		const lo = Math.floor((stats.mean - stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
+		const hi = Math.floor((stats.mean + stats.stdDev) / BUCKET_SIZE) * BUCKET_SIZE;
 		return { lo: bucketLabel(lo), hi: bucketLabel(hi) };
 	}, [stats]);
 

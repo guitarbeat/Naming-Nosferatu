@@ -1,23 +1,7 @@
-import {
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Cell,
-	ReferenceLine,
-	Tooltip,
-	XAxis,
-	YAxis,
-} from "recharts";
-import {
-	bucketLabel,
-	useRatingDistributionData,
-} from "../hooks/useRatingDistributionData";
+import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
+import { bucketLabel, useRatingDistributionData } from "../hooks/useRatingDistributionData";
 import { CHART_GRID, CHART_PALETTE, CHART_TEXT_MUTED } from "./chartTheme";
-import {
-	CHART_CURSOR,
-	CHART_TOOLTIP_STYLE,
-	ChartFrame,
-} from "./DashboardPrimitives";
+import { CHART_CURSOR, CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
 import { RatingStatsPanel } from "./RatingStatsPanel";
 
 interface RatingDistributionChartProps {
@@ -29,9 +13,7 @@ interface RatingDistributionChartProps {
 	}>;
 }
 
-export function RatingDistributionChart({
-	leaderboard,
-}: RatingDistributionChartProps) {
+export function RatingDistributionChart({ leaderboard }: RatingDistributionChartProps) {
 	const { stats, data, meanBucket, stdDevBuckets, maxCount } =
 		useRatingDistributionData(leaderboard);
 
@@ -48,10 +30,7 @@ export function RatingDistributionChart({
 	return (
 		<div className="space-y-3">
 			<ChartFrame>
-				<BarChart
-					data={data}
-					margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
-				>
+				<BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
 					<CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} />
 					<XAxis
 						dataKey="range"
