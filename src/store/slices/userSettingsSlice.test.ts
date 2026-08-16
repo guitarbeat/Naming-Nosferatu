@@ -56,12 +56,7 @@ describe("userSettingsSlice", () => {
 			typeof create<
 				Pick<
 					AppState,
-					| "user"
-					| "userActions"
-					| "ui"
-					| "uiActions"
-					| "siteSettings"
-					| "siteSettingsActions"
+					"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 				>
 			>
 		>;
@@ -78,12 +73,7 @@ describe("userSettingsSlice", () => {
 			useStore = create<
 				Pick<
 					AppState,
-					| "user"
-					| "userActions"
-					| "ui"
-					| "uiActions"
-					| "siteSettings"
-					| "siteSettingsActions"
+					"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 				>
 			>((...args) => ({
 				...createUserAndSettingsSlice(...args),
@@ -113,12 +103,7 @@ describe("userSettingsSlice", () => {
 				const store = create<
 					Pick<
 						AppState,
-						| "user"
-						| "userActions"
-						| "ui"
-						| "uiActions"
-						| "siteSettings"
-						| "siteSettingsActions"
+						"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 					>
 				>((...args) => ({
 					...createUserAndSettingsSlice(...args),
@@ -144,12 +129,7 @@ describe("userSettingsSlice", () => {
 				const store = create<
 					Pick<
 						AppState,
-						| "user"
-						| "userActions"
-						| "ui"
-						| "uiActions"
-						| "siteSettings"
-						| "siteSettingsActions"
+						"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 					>
 				>((...args) => ({
 					...createUserAndSettingsSlice(...args),
@@ -172,12 +152,7 @@ describe("userSettingsSlice", () => {
 				const store = create<
 					Pick<
 						AppState,
-						| "user"
-						| "userActions"
-						| "ui"
-						| "uiActions"
-						| "siteSettings"
-						| "siteSettingsActions"
+						"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 					>
 				>((...args) => ({
 					...createUserAndSettingsSlice(...args),
@@ -195,12 +170,7 @@ describe("userSettingsSlice", () => {
 				const store = create<
 					Pick<
 						AppState,
-						| "user"
-						| "userActions"
-						| "ui"
-						| "uiActions"
-						| "siteSettings"
-						| "siteSettingsActions"
+						"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 					>
 				>((...args) => ({
 					...createUserAndSettingsSlice(...args),
@@ -229,12 +199,7 @@ describe("userSettingsSlice", () => {
 				const store = create<
 					Pick<
 						AppState,
-						| "user"
-						| "userActions"
-						| "ui"
-						| "uiActions"
-						| "siteSettings"
-						| "siteSettingsActions"
+						"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 					>
 				>((...args) => ({
 					...createUserAndSettingsSlice(...args),
@@ -263,12 +228,7 @@ describe("userSettingsSlice", () => {
 				const store = create<
 					Pick<
 						AppState,
-						| "user"
-						| "userActions"
-						| "ui"
-						| "uiActions"
-						| "siteSettings"
-						| "siteSettingsActions"
+						"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 					>
 				>((...args) => ({
 					...createUserAndSettingsSlice(...args),
@@ -284,9 +244,7 @@ describe("userSettingsSlice", () => {
 
 		describe("userActions", () => {
 			it("should set user and persist state", () => {
-				useStore
-					.getState()
-					.userActions.setUser({ name: "NewName", id: "user_123" });
+				useStore.getState().userActions.setUser({ name: "NewName", id: "user_123" });
 				const state = useStore.getState();
 				expect(state.user.name).toBe("NewName");
 				expect(state.user.id).toBe("user_123");
@@ -373,10 +331,7 @@ describe("userSettingsSlice", () => {
 				useStore.getState().userActions.setAvatar("avatar.png");
 				const state = useStore.getState();
 				expect(state.user.avatarUrl).toBe("avatar.png");
-				expect(storage.setStorageString).toHaveBeenCalledWith(
-					"catNamesUserAvatar",
-					"avatar.png",
-				);
+				expect(storage.setStorageString).toHaveBeenCalledWith("catNamesUserAvatar", "avatar.png");
 				expect(userStorage.writeStoredUserSnapshot).toHaveBeenCalledWith({
 					id: null,
 					name: "AvatarUser",
@@ -390,9 +345,7 @@ describe("userSettingsSlice", () => {
 				useStore.getState().userActions.setAvatar(undefined);
 				const state = useStore.getState();
 				expect(state.user.avatarUrl).toBeUndefined();
-				expect(storage.removeStorageItem).toHaveBeenCalledWith(
-					"catNamesUserAvatar",
-				);
+				expect(storage.removeStorageItem).toHaveBeenCalledWith("catNamesUserAvatar");
 				expect(userStorage.writeStoredUserSnapshot).toHaveBeenCalledWith({
 					id: null,
 					name: "AvatarUser",
@@ -511,14 +464,8 @@ describe("userSettingsSlice", () => {
 
 				expect(state.ui.theme).toBe("dark");
 				expect(state.ui.themePreference).toBe("system");
-				expect(storage.setStorageString).toHaveBeenCalledWith(
-					"theme",
-					"system",
-				);
-				expect(addEventListener).toHaveBeenCalledWith(
-					"change",
-					expect.any(Function),
-				);
+				expect(storage.setStorageString).toHaveBeenCalledWith("theme", "system");
+				expect(addEventListener).toHaveBeenCalledWith("change", expect.any(Function));
 
 				// Test change listener
 				const changeHandler = addEventListener.mock.calls[0][1];
@@ -529,10 +476,7 @@ describe("userSettingsSlice", () => {
 
 				// Call it again with dark to test cleanup works correctly next time
 				useStore.getState().uiActions.setTheme("light");
-				expect(removeEventListener).toHaveBeenCalledWith(
-					"change",
-					changeHandler,
-				);
+				expect(removeEventListener).toHaveBeenCalledWith("change", changeHandler);
 			});
 
 			it("should only update system theme if preference is still system", () => {
@@ -610,12 +554,7 @@ describe("userSettingsSlice", () => {
 			typeof create<
 				Pick<
 					AppState,
-					| "user"
-					| "userActions"
-					| "ui"
-					| "uiActions"
-					| "siteSettings"
-					| "siteSettingsActions"
+					"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 				>
 			>
 		>;
@@ -632,12 +571,7 @@ describe("userSettingsSlice", () => {
 			useStore = create<
 				Pick<
 					AppState,
-					| "user"
-					| "userActions"
-					| "ui"
-					| "uiActions"
-					| "siteSettings"
-					| "siteSettingsActions"
+					"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 				>
 			>((...args) => ({
 				...createUserAndSettingsSlice(...args),
@@ -686,12 +620,7 @@ describe("userSettingsSlice", () => {
 			typeof create<
 				Pick<
 					AppState,
-					| "user"
-					| "userActions"
-					| "ui"
-					| "uiActions"
-					| "siteSettings"
-					| "siteSettingsActions"
+					"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 				>
 			>
 		>;
@@ -708,12 +637,7 @@ describe("userSettingsSlice", () => {
 			useStore = create<
 				Pick<
 					AppState,
-					| "user"
-					| "userActions"
-					| "ui"
-					| "uiActions"
-					| "siteSettings"
-					| "siteSettingsActions"
+					"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
 				>
 			>((...args) => ({
 				...createUserAndSettingsSlice(...args),
