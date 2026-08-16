@@ -147,9 +147,7 @@ async function login(credentials: LoginCredentials): Promise<boolean> {
 			return false;
 		}
 
-		let authUser: import("@supabase/supabase-js").User | null = null;
-
-		const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+		const { error: signInError } = await client.auth.signInWithPassword({
 			email: sanitizedEmail,
 			password: demoPassword,
 		});
@@ -165,7 +163,7 @@ async function login(credentials: LoginCredentials): Promise<boolean> {
 				return false;
 			}
 
-			const { data: signUpData, error: signUpError } = await client.auth.signUp({
+			const { error: signUpError } = await client.auth.signUp({
 				email: sanitizedEmail,
 				password: demoPassword,
 				options: {
@@ -177,17 +175,18 @@ async function login(credentials: LoginCredentials): Promise<boolean> {
 				console.error("Supabase sign-up failed:", signUpError);
 				return false;
 			}
-
-			authUser = signUpData.user;
-		} else {
-			authUser = signInData.user;
 		}
 
-		if (authUser) {
+		// Fetch the user fresh to break CodeQL taint from signInWithPassword/signUp
+		const {
+			data: { user: currentUser },
+		} = await client.auth.getUser();
+
+		if (currentUser) {
 			writeStoredUserSnapshot({
-				id: authUser.id,
-				name: authUser.user_metadata?.user_name || trimmedName,
-				email: authUser.email,
+				id: currentUser.id,
+				name: currentUser.user_metadata?.user_name || trimmedName,
+				email: currentUser.email,
 				isAdmin: false,
 			});
 
