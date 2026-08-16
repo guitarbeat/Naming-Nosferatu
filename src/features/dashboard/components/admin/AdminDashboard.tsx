@@ -45,9 +45,7 @@ export function AdminDashboard() {
 				<h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard
 				</h1>
-				<p className="text-sm text-muted-foreground">
-					Manage names and monitor activity
-				</p>
+				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
 			</div>
 
 			{stats && <AdminStatsGrid stats={stats} />}
@@ -82,12 +80,8 @@ export function AdminDashboard() {
 							onClearSelection={handleClearSelection}
 							filteredNames={filteredNames}
 							onSelectionChange={handleSelectionChange}
-							onToggleHidden={(nameId, hidden) =>
-								void handleToggleHidden(nameId, hidden)
-							}
-							onToggleLocked={(nameId, locked) =>
-								void handleToggleLocked(nameId, locked)
-							}
+							onToggleHidden={(nameId, hidden) => void handleToggleHidden(nameId, hidden)}
+							onToggleLocked={(nameId, locked) => void handleToggleLocked(nameId, locked)}
 							onDelete={(nameId) => void handleSoftDelete(nameId)}
 						/>
 					) : activeTab === "overview" ? (

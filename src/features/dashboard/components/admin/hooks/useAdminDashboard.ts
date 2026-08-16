@@ -7,11 +7,7 @@ import { statsAPI } from "@/shared/services/supabase/statsService";
 import useAppStore from "@/store/appStore";
 import { FILTER_OPTIONS } from "../constants";
 import type { BulkAction, DashboardTab, NameFilter } from "../types";
-import {
-	buildAdminStats,
-	filterNamesByStatusAndSearch,
-	mapNameToDisplay,
-} from "../utils";
+import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "../utils";
 
 export function useAdminDashboard() {
 	const user = useAppStore((s) => s.user);
@@ -96,9 +92,7 @@ export function useAdminDashboard() {
 
 	const handleSoftDelete = useCallback(
 		async (nameId: string | number) => {
-			if (
-				!window.confirm("Permanently delete this name? This cannot be undone.")
-			) {
+			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
 				return;
 			}
 			await deleteName({ nameId: String(nameId) });
@@ -118,28 +112,20 @@ export function useAdminDashboard() {
 		[uploadImage],
 	);
 
-	const handleSelectionChange = useCallback(
-		(nameId: string, checked: boolean) => {
-			setSelectedNames((prevSelectedNames) => {
-				return checked
-					? addToSet(prevSelectedNames, nameId)
-					: removeFromSet(prevSelectedNames, nameId);
-			});
-		},
-		[],
-	);
+	const handleSelectionChange = useCallback((nameId: string, checked: boolean) => {
+		setSelectedNames((prevSelectedNames) => {
+			return checked
+				? addToSet(prevSelectedNames, nameId)
+				: removeFromSet(prevSelectedNames, nameId);
+		});
+	}, []);
 
-	const handleFilterChange = useCallback(
-		(event: ChangeEvent<HTMLSelectElement>) => {
-			const option = FILTER_OPTIONS.find(
-				(item) => item.value === event.target.value,
-			);
-			if (option) {
-				setFilterStatus(option.value);
-			}
-		},
-		[],
-	);
+	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
+		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
+		if (option) {
+			setFilterStatus(option.value);
+		}
+	}, []);
 
 	const handleRefresh = useCallback(() => {
 		void Promise.all([namesQuery.refetch(), siteStatsQuery.refetch()]);
