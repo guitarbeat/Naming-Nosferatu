@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
+	CHART_AXIS,
+	CHART_FOREGROUND,
+	CHART_GRID,
 	CHART_PALETTE,
 	CHART_SERIES,
 	CHART_TEXT_MUTED,
-	CHART_GRID,
-	CHART_AXIS,
-	CHART_FOREGROUND,
 } from "./chartTheme";
 
 describe("chartTheme", () => {
