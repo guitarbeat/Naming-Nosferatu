@@ -190,15 +190,26 @@ export const RankingAdjustment = memo(
 			if (!result.destination) {
 				return;
 			}
-			const newItems = Array.from(items);
-			const [reordered] = newItems.splice(result.source.index, 1);
-			if (reordered) {
-				newItems.splice(result.destination.index, 0, reordered);
+			const length = items.length;
+			const src = result.source.index;
+			const dst = result.destination.index;
+			const adjusted = new Array(length);
+			for (let index = 0; index < length; index++) {
+				let item: NameItem;
+				if (index === dst) {
+					item = items[src] as NameItem;
+				} else if (src < dst && index >= src && index < dst) {
+					item = items[index + 1] as NameItem;
+				} else if (src > dst && index > dst && index <= src) {
+					item = items[index - 1] as NameItem;
+				} else {
+					item = items[index] as NameItem;
+				}
+				adjusted[index] = {
+					...item,
+					rating: Math.round(1000 + (1000 * (length - index)) / length),
+				};
 			}
-			const adjusted = newItems.map((item: NameItem, index: number) => ({
-				...item,
-				rating: Math.round(1000 + (1000 * (newItems.length - index)) / newItems.length),
-			}));
 			setHasUnsavedChanges(true);
 			setItems(adjusted);
 		};
