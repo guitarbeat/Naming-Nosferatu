@@ -175,6 +175,17 @@ export function FloatingNavbar() {
 		setIsSuggestOpen(true);
 	}, []);
 
+	const handleLogin = useCallback(
+		async (name: string) => {
+			const ok = await login({ name });
+			if (ok !== false) {
+				setIsProfileOpen(false);
+			}
+			return ok;
+		},
+		[login],
+	);
+
 	useEffect(() => {
 		if (!isHomeRoute || !pendingScroll) {
 			return;
@@ -346,16 +357,7 @@ export function FloatingNavbar() {
 					description="Sign in to save your rankings."
 				>
 					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyProfileInner
-							onLogin={async (name) => {
-								const ok = await login({ name });
-								if (ok !== false) {
-									setIsProfileOpen(false);
-								}
-								return ok;
-							}}
-							onLogout={logout}
-						/>
+						<LazyProfileInner onLogin={handleLogin} onLogout={logout} />
 					</Suspense>
 				</Modal>
 			)}
