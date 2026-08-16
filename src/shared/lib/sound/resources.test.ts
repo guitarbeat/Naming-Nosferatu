@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SOUND_EFFECTS, getFallbackEffectPattern } from "./resources";
+import { getFallbackEffectPattern, SOUND_EFFECTS } from "./resources";
 
 describe("sound resources", () => {
 	describe("SOUND_EFFECTS", () => {
@@ -27,10 +27,10 @@ describe("sound resources", () => {
 				const pattern = getFallbackEffectPattern(effect);
 				expect(pattern).not.toBeNull();
 				expect(Array.isArray(pattern)).toBe(true);
-				expect(pattern!.length).toBeGreaterThan(0);
+				expect(pattern?.length).toBeGreaterThan(0);
 
 				// Verify note structure
-				for (const note of pattern!) {
+				for (const note of pattern ?? []) {
 					expect(typeof note.frequency).toBe("number");
 					expect(typeof note.duration).toBe("number");
 					expect(note.frequency).toBeGreaterThan(0);
@@ -54,15 +54,15 @@ describe("sound resources", () => {
 
 		it("should support notes with specific wave types", () => {
 			const wowPattern = getFallbackEffectPattern("wow");
-			expect(wowPattern![0].wave).toBe("sawtooth");
-			expect(wowPattern![1].wave).toBe("triangle");
+			expect(wowPattern?.[0].wave).toBe("sawtooth");
+			expect(wowPattern?.[1].wave).toBe("triangle");
 		});
 
 		it("should support notes with specific gain values", () => {
 			const meowPattern = getFallbackEffectPattern("meow");
-			expect(meowPattern![2].wave).toBe("sine");
-			expect(meowPattern![2].gain).toBe(0.8);
-			expect(meowPattern![3].gain).toBe(0.6);
+			expect(meowPattern?.[2].wave).toBe("sine");
+			expect(meowPattern?.[2].gain).toBe(0.8);
+			expect(meowPattern?.[3].gain).toBe(0.6);
 		});
 	});
 });
