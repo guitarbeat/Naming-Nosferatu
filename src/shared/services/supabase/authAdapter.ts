@@ -7,19 +7,6 @@ import {
 } from "@/shared/lib/userStorage";
 import { resolveSupabaseClient } from "@/shared/services/supabase/runtime";
 
-/**
- * Sanitize a user name to create a valid email local-part
- * Removes special characters, spaces, and converts to lowercase
- */
-function sanitizeNameForEmail(name: string): string {
-	const sanitized = name
-		.toLowerCase()
-		.replace(/[^a-z0-9._-]/g, "") // Keep only alphanumeric, dots, underscores, hyphens
-		.replace(/^[.-]+|[.-]+$/g, "") // Remove leading/trailing dots or hyphens
-		.slice(0, 64); // Email local-part max length is 64 chars
-	return sanitized || `user_${Date.now()}`;
-}
-
 function buildAuthUserFromStoredSnapshot(): AuthUser | null {
 	const storedUser = readStoredUserSnapshot();
 	if (!storedUser) {
@@ -93,48 +80,33 @@ export const supabaseAuthAdapter: AuthAdapter = {
 				return true;
 			}
 
-			// Sign in with Supabase
-			const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
-			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
-
-			if (!demoPassword) {
-				console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
-				return false;
-			}
-
 			let authUser: import("@supabase/supabase-js").User | null = null;
 
-			const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
-				email: sanitizedEmail,
-				password: demoPassword,
-			});
+			const { data: sessionData } = await client.auth.getSession();
 
-			if (signInError) {
-				const isInvalidCredentials =
-					signInError.message?.toLowerCase().includes("invalid login") ||
-					signInError.message?.toLowerCase().includes("invalid credentials") ||
-					signInError.status === 400;
+			if (sessionData?.session?.user) {
+				const { data: updateData, error: updateError } = await client.auth.updateUser({
+					data: { user_name: trimmedName },
+				});
 
-				if (!isInvalidCredentials) {
-					console.error("Supabase login failed:", signInError);
+				if (updateError) {
+					console.error("Supabase update user failed:", updateError);
 					return false;
 				}
 
-				const { data: signUpData, error: signUpError } = await client.auth.signUp({
-					email: sanitizedEmail,
-					password: demoPassword,
+				authUser = updateData.user;
+			} else {
+				const { data: signInData, error: signInError } = await client.auth.signInAnonymously({
 					options: {
 						data: { user_name: trimmedName },
 					},
 				});
 
-				if (signUpError) {
-					console.error("Supabase sign-up failed:", signUpError);
+				if (signInError) {
+					console.error("Supabase anonymous sign-in failed:", signInError);
 					return false;
 				}
 
-				authUser = signUpData.user;
-			} else {
 				authUser = signInData.user;
 			}
 
