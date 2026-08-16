@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi, Mock } from "vitest";
-import { useSectionScroll } from "./useSectionScroll";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { usePrefersReducedMotion } from "@/shared/hooks/usePrefersReducedMotion";
+import { useSectionScroll } from "./useSectionScroll";
 
 // @vitest-environment jsdom
 
@@ -10,21 +10,23 @@ vi.mock("@/shared/hooks/usePrefersReducedMotion", () => ({
 }));
 
 describe("useSectionScroll", () => {
-	let mockScrollIntoView;
-	let mockGetElementById;
+	let mockScrollIntoView: ReturnType<typeof vi.fn>;
+	let mockGetElementById: ReturnType<typeof vi.fn>;
 
 	beforeEach(() => {
 		vi.useFakeTimers();
 
 		mockScrollIntoView = vi.fn();
 		mockGetElementById = vi.fn().mockImplementation((id) => {
-			if (id === "missing-element") return null;
+			if (id === "missing-element") {
+				return null;
+			}
 			return {
 				scrollIntoView: mockScrollIntoView,
-			};
+			} as unknown as HTMLElement;
 		});
 
-		vi.spyOn(document, 'getElementById').mockImplementation(mockGetElementById);
+		vi.spyOn(document, "getElementById").mockImplementation(mockGetElementById);
 	});
 
 	afterEach(() => {
@@ -80,7 +82,7 @@ describe("useSectionScroll", () => {
 
 		it("should clear any pending scroll when scrollToSection is called", () => {
 			vi.mocked(usePrefersReducedMotion).mockReturnValue(false);
-			const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+			const clearTimeoutSpy = vi.spyOn(window, "clearTimeout");
 
 			const { result } = renderHook(() => useSectionScroll());
 
@@ -153,7 +155,7 @@ describe("useSectionScroll", () => {
 
 		it("should clear previous pending scroll when called multiple times", () => {
 			vi.mocked(usePrefersReducedMotion).mockReturnValue(false);
-			const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+			const clearTimeoutSpy = vi.spyOn(window, "clearTimeout");
 
 			const { result } = renderHook(() => useSectionScroll());
 
@@ -179,7 +181,7 @@ describe("useSectionScroll", () => {
 	describe("clearPendingScroll", () => {
 		it("should clear the active timeout", () => {
 			vi.mocked(usePrefersReducedMotion).mockReturnValue(false);
-			const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+			const clearTimeoutSpy = vi.spyOn(window, "clearTimeout");
 
 			const { result } = renderHook(() => useSectionScroll());
 
@@ -202,7 +204,7 @@ describe("useSectionScroll", () => {
 
 		it("should do nothing if there is no pending scroll", () => {
 			vi.mocked(usePrefersReducedMotion).mockReturnValue(false);
-			const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+			const clearTimeoutSpy = vi.spyOn(window, "clearTimeout");
 
 			const { result } = renderHook(() => useSectionScroll());
 
