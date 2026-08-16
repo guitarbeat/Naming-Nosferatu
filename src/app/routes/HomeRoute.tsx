@@ -11,7 +11,7 @@ import { Section } from "@/shared/components/layout/Section";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
-import type { AppState } from "@/store/types";
+import type { AppState } from "@/store/appStore.types";
 
 const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 
