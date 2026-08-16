@@ -1,14 +1,7 @@
 import { type Dispatch, type MutableRefObject, useEffect } from "react";
 import { generateRandomTeams } from "@/features/tournament/services/tournament";
-import type {
-	NameItem,
-	PersistentTournamentState,
-	TournamentMode,
-} from "@/shared/types";
-import {
-	buildInitialRatings,
-	createBracketEntrants,
-} from "./tournamentPersistence";
+import type { NameItem, PersistentTournamentState, TournamentMode } from "@/shared/types";
+import { buildInitialRatings, createBracketEntrants } from "./tournamentPersistence";
 import type { TournamentAction } from "./tournamentReducer";
 
 function haveSameIds(a: string[], b: string[]): boolean {
@@ -80,8 +73,7 @@ export function useTournamentInitialization({
 
 		const initializeTournament = () => {
 			const hasValidPersistence =
-				persistentState.namesKey === namesKey &&
-				persistentState.mode === tournamentMode;
+				persistentState.namesKey === namesKey && persistentState.mode === tournamentMode;
 			const initialRatings = buildInitialRatings(names);
 
 			let teams = persistentState.teams;
@@ -99,9 +91,7 @@ export function useTournamentInitialization({
 				!hasValidPersistence ||
 				persistentState.bracketEntrants.length === 0 ||
 				!haveSameIds(
-					persistentState.bracketEntrants.filter(
-						(id) => !id.startsWith("__BYE__"),
-					),
+					persistentState.bracketEntrants.filter((id) => !id.startsWith("__BYE__")),
 					participantIds,
 				);
 			const bracketEntrants = shouldResetBracket
@@ -129,9 +119,7 @@ export function useTournamentInitialization({
 				shouldResetBracket ||
 				(tournamentMode === "2v2" && teams !== persistentState.teams)
 			) {
-				stateUpdates.ratings = shouldResetBracket
-					? initialRatings
-					: persistentState.ratings;
+				stateUpdates.ratings = shouldResetBracket ? initialRatings : persistentState.ratings;
 			}
 
 			const storedRatingsAreFresh =
