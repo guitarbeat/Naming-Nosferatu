@@ -19,6 +19,11 @@ BEGIN
     
   -- If a role is specified and user_roles table exists, add role there
   IF p_user_role IS NOT NULL THEN
+    -- SECURITY FIX: Prevent privilege escalation by checking if caller is admin
+    IF p_user_role != 'user' AND NOT is_admin() THEN
+      RAISE EXCEPTION 'Only admins can create privileged accounts';
+    END IF;
+
     INSERT INTO public.user_roles (user_name, role)
     VALUES (p_user_name, p_user_role::app_role)
     ON CONFLICT DO NOTHING;
