@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   title-lint:
-    if: "github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:') && !startsWith(github.event.pull_request.title, '🧪') && !startsWith(github.event.pull_request.title, 'test: 🧪') && !startsWith(github.event.pull_request.title, '⚡ Bolt:') && !startsWith(github.event.pull_request.title, '🧹') && !startsWith(github.event.pull_request.title, 'caveman-smash-ui') && !startsWith(github.event.pull_request.title, 'caveman-smash-ui:')"
+    if: "github.actor != 'dependabot[bot]' && !startsWith(github.event.pull_request.title, '🎨 Palette:') && !startsWith(github.event.pull_request.title, '🧪') && !startsWith(github.event.pull_request.title, 'test: 🧪') && !startsWith(github.event.pull_request.title, '⚡ Bolt:') && !startsWith(github.event.pull_request.title, '🧹') && !startsWith(github.event.pull_request.title, 'caveman-smash-ui') && !startsWith(github.event.pull_request.title, 'caveman-smash-ui:') && !startsWith(github.event.pull_request.title, 'fix: 🔒')"
     runs-on: ubuntu-latest
     steps:
       - name: Validate PR title (Conventional Commits)
