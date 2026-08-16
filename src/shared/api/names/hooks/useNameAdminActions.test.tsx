@@ -61,64 +61,88 @@ describe("useNameAdminActions", () => {
 		});
 	});
 
-	it("invalidates the names query after toggling hidden status", async () => {
-		const { result } = renderHook(() => useNameAdminActions(" admin "), { wrapper });
+	describe("Individual Actions", () => {
+		it("invalidates the names query after toggling hidden status", async () => {
+			const { result } = renderHook(() => useNameAdminActions(" admin "), { wrapper });
 
-		await act(async () => {
-			await result.current.toggleHidden({ nameId: "abc", isCurrentlyHidden: false });
+			await act(async () => {
+				await result.current.toggleHidden({ nameId: "abc", isCurrentlyHidden: false });
+			});
+
+			expect(toggleNameHidden).toHaveBeenCalledWith({
+				nameId: "abc",
+				isCurrentlyHidden: false,
+				userName: "admin",
+			});
+			expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: namesQueryKeys.all });
 		});
 
-		expect(toggleNameHidden).toHaveBeenCalledWith({
-			nameId: "abc",
-			isCurrentlyHidden: false,
-			userName: "admin",
-		});
-		expect(invalidateQueriesSpy).toHaveBeenCalledWith({ queryKey: namesQueryKeys.all });
-	});
+		it("passes trimmed user names to lock toggles", async () => {
+			const { result } = renderHook(() => useNameAdminActions("  mod-user  "), { wrapper });
 
-	it("routes delete and bulk update actions through the shared mutations", async () => {
-		const { result } = renderHook(() => useNameAdminActions("admin"), { wrapper });
+			await act(async () => {
+				await result.current.toggleLocked({ nameId: 42, isCurrentlyLocked: true });
+			});
 
-		await act(async () => {
-			await result.current.deleteName({ nameId: "deadbeef" });
-			await result.current.batchUpdateVisibility({ nameIds: ["1", "2"], isHidden: true });
-			await result.current.batchUpdateLocked({ nameIds: ["1", "2"], isLocked: false });
+			expect(toggleNameLocked).toHaveBeenCalledWith({
+				nameId: 42,
+				isCurrentlyLocked: true,
+				userName: "mod-user",
+			});
 		});
 
-		expect(softDeleteName).toHaveBeenCalledWith({ nameId: "deadbeef" });
-		expect(batchUpdateVisibility).toHaveBeenCalledWith({
-			nameIds: ["1", "2"],
-			isHidden: true,
-		});
-		expect(batchUpdateLocked).toHaveBeenCalledWith({
-			nameIds: ["1", "2"],
-			isLocked: false,
-		});
-		expect(invalidateQueriesSpy).toHaveBeenCalledTimes(3);
-	});
+		it("routes delete action through the shared mutation", async () => {
+			const { result } = renderHook(() => useNameAdminActions("admin"), { wrapper });
 
-	it("passes trimmed user names to lock toggles", async () => {
-		const { result } = renderHook(() => useNameAdminActions("  mod-user  "), { wrapper });
+			await act(async () => {
+				await result.current.deleteName({ nameId: "deadbeef" });
+			});
 
-		await act(async () => {
-			await result.current.toggleLocked({ nameId: 42, isCurrentlyLocked: true });
-		});
-
-		expect(toggleNameLocked).toHaveBeenCalledWith({
-			nameId: 42,
-			isCurrentlyLocked: true,
-			userName: "mod-user",
+			expect(softDeleteName).toHaveBeenCalledWith({ nameId: "deadbeef" });
+			expect(invalidateQueriesSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 
-	it("reuses the shared image upload helper", async () => {
-		const { result } = renderHook(() => useNameAdminActions(" uploader "), { wrapper });
-		const file = new File(["cat"], "cat.png", { type: "image/png" });
+	describe("Bulk Actions", () => {
+		it("routes bulk update visibility through the shared mutation", async () => {
+			const { result } = renderHook(() => useNameAdminActions("admin"), { wrapper });
 
-		await act(async () => {
-			await result.current.uploadImage(file);
+			await act(async () => {
+				await result.current.batchUpdateVisibility({ nameIds: ["1", "2"], isHidden: true });
+			});
+
+			expect(batchUpdateVisibility).toHaveBeenCalledWith({
+				nameIds: ["1", "2"],
+				isHidden: true,
+			});
+			expect(invalidateQueriesSpy).toHaveBeenCalledTimes(1);
 		});
 
-		expect(imagesAPI.upload).toHaveBeenCalledWith(file, "uploader");
+		it("routes bulk update locked through the shared mutation", async () => {
+			const { result } = renderHook(() => useNameAdminActions("admin"), { wrapper });
+
+			await act(async () => {
+				await result.current.batchUpdateLocked({ nameIds: ["1", "2"], isLocked: false });
+			});
+
+			expect(batchUpdateLocked).toHaveBeenCalledWith({
+				nameIds: ["1", "2"],
+				isLocked: false,
+			});
+			expect(invalidateQueriesSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe("Image Upload", () => {
+		it("reuses the shared image upload helper", async () => {
+			const { result } = renderHook(() => useNameAdminActions(" uploader "), { wrapper });
+			const file = new File(["cat"], "cat.png", { type: "image/png" });
+
+			await act(async () => {
+				await result.current.uploadImage(file);
+			});
+
+			expect(imagesAPI.upload).toHaveBeenCalledWith(file, "uploader");
+		});
 	});
 });
