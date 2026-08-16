@@ -59,30 +59,19 @@ interface UseTournamentStateResult {
 		callback: (update: TournamentUpdate) => void,
 	) => void;
 	subscribeToMatchResults?: (callback: (result: MatchResult) => void) => void;
-	subscribeToUserActivity?: (
-		callback: (activity: UserActivity) => void,
-	) => void;
+	subscribeToUserActivity?: (callback: (activity: UserActivity) => void) => void;
 }
 
-export function useTournamentState(
-	names: NameItem[],
-	userName?: string,
-): UseTournamentStateResult {
+export function useTournamentState(names: NameItem[], userName?: string): UseTournamentStateResult {
 	const toast = useToast();
 	const audioManager = useAudioManager();
 	const [isVoting, setIsVoting] = useState(false);
 
-	const tournamentMode = useMemo(
-		() => resolveTournamentMode(names.length),
-		[names.length],
-	);
+	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
-	const tournamentId = useMemo(
-		() => createTournamentId(names, userName),
-		[names, userName],
-	);
+	const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
 
 	const realtime = useTournamentRealtime({ autoConnect: true });
 
@@ -91,19 +80,18 @@ export function useTournamentState(
 		[userName],
 	);
 
-	const [persistentStateRaw, setPersistentState] =
-		useLocalStorage<PersistentTournamentState>(
-			tournamentId,
-			defaultPersistentState,
-			{
-				debounceWait: 1000,
-				onError: () => {
-					toast.showWarning(
-						"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
-					);
-				},
+	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
+		tournamentId,
+		defaultPersistentState,
+		{
+			debounceWait: 1000,
+			onError: () => {
+				toast.showWarning(
+					"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
+				);
 			},
-		);
+		},
+	);
 
 	const persistentState = useMemo(
 		(): PersistentTournamentState =>
@@ -167,10 +155,7 @@ export function useTournamentState(
 	);
 	const bracketDerived = useMemo(
 		() =>
-			deriveBracketState(
-				state.persistentState.bracketEntrants,
-				state.persistentState.matchHistory,
-			),
+			deriveBracketState(state.persistentState.bracketEntrants, state.persistentState.matchHistory),
 		[state.persistentState.bracketEntrants, state.persistentState.matchHistory],
 	);
 
@@ -182,13 +167,7 @@ export function useTournamentState(
 			teamsById,
 			idToNameMap,
 		});
-	}, [
-		state.refreshKey,
-		idToNameMap,
-		tournamentMode,
-		bracketDerived.pendingMatchIds,
-		teamsById,
-	]);
+	}, [state.refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
 
 	const openingEntrants = useMemo(
 		() =>
@@ -210,12 +189,7 @@ export function useTournamentState(
 						label: name?.name ?? entrantKey,
 					};
 				}),
-		[
-			state.persistentState.bracketEntrants,
-			tournamentMode,
-			teamsById,
-			idToNameMap,
-		],
+		[state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap],
 	);
 
 	const isComplete = bracketDerived.isComplete;
@@ -226,31 +200,23 @@ export function useTournamentState(
 			}),
 		[bracketDerived],
 	);
-	const {
-		totalMatches,
+	const { totalMatches, matchNumber, round, totalRounds, stageLabel, progress, etaMinutes } =
+		metrics;
+
+	const { handleVote, handleVoteWithAnimation, handleUndo, handleQuit } = useTournamentActions({
+		currentMatch,
 		matchNumber,
 		round,
-		totalRounds,
-		stageLabel,
-		progress,
-		etaMinutes,
-	} = metrics;
-
-	const { handleVote, handleVoteWithAnimation, handleUndo, handleQuit } =
-		useTournamentActions({
-			currentMatch,
-			matchNumber,
-			round,
-			userName: userName || "anonymous",
-			tournamentActions,
-			dispatch,
-			isVoting,
-			setIsVoting,
-			audioManager,
-			toast,
-			lastRatingsUpdateRef,
-			stateHistory: state.history,
-		});
+		userName: userName || "anonymous",
+		tournamentActions,
+		dispatch,
+		isVoting,
+		setIsVoting,
+		audioManager,
+		toast,
+		lastRatingsUpdateRef,
+		stateHistory: state.history,
+	});
 
 	return {
 		currentMatch,

@@ -50,9 +50,7 @@ export function useTournamentActions({
 					? currentMatch.left.memberIds
 					: [
 							String(
-								typeof currentMatch.left === "string"
-									? currentMatch.left
-									: currentMatch.left.id,
+								typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id,
 							),
 						];
 			const rightIds =
@@ -60,9 +58,7 @@ export function useTournamentActions({
 					? currentMatch.right.memberIds
 					: [
 							String(
-								typeof currentMatch.right === "string"
-									? currentMatch.right
-									: currentMatch.right.id,
+								typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
 							),
 						];
 
@@ -85,10 +81,7 @@ export function useTournamentActions({
 					winnerSide,
 				})
 				.catch((err: unknown) => {
-					console.warn(
-						"[tournament] apply_tournament_match_elo failed (non-fatal):",
-						err,
-					);
+					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
 				});
 
 			dispatch({
@@ -104,15 +97,7 @@ export function useTournamentActions({
 				},
 			});
 		},
-		[
-			currentMatch,
-			matchNumber,
-			round,
-			userName,
-			tournamentActions,
-			dispatch,
-			lastRatingsUpdateRef,
-		],
+		[currentMatch, matchNumber, round, userName, tournamentActions, dispatch, lastRatingsUpdateRef],
 	);
 
 	const voteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
