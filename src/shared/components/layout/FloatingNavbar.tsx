@@ -1,4 +1,11 @@
-import { BarChart3, CheckCircle, Lightbulb, Lock, Trophy, User } from "lucide-react";
+import {
+	BarChart3,
+	CheckCircle,
+	Lightbulb,
+	Lock,
+	Trophy,
+	User,
+} from "lucide-react";
 import {
 	lazy,
 	memo,
@@ -13,8 +20,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Modal } from "@/shared/components/layout/Modal";
+import {
+	type NavSection,
+	useActiveSection,
+} from "@/shared/hooks/useActiveSection";
 import { usePrefersReducedMotion } from "@/shared/hooks/usePrefersReducedMotion";
-import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptics";
+import {
+	hapticNavTap,
+	hapticTournamentStart,
+} from "@/shared/lib/browser/haptics";
 import { cn } from "@/shared/lib/utils";
 import useAppStore from "@/store/appStore";
 
@@ -68,7 +82,9 @@ const FloatingNav = memo(function FloatingNav({ items }: { items: NavItem[] }) {
 								>
 									<span className="floating-navbar__icon">
 										{item.icon}
-										{item.hasBadge && <span className="floating-navbar__badge" />}
+										{item.hasBadge && (
+											<span className="floating-navbar__badge" />
+										)}
 									</span>
 									<span className="floating-navbar__label">{item.label}</span>
 								</button>
@@ -80,8 +96,6 @@ const FloatingNav = memo(function FloatingNav({ items }: { items: NavItem[] }) {
 		</nav>
 	);
 });
-
-type NavSection = "pick" | "tournament" | "analysis";
 
 const keyToId: Record<NavSection, string> = {
 	pick: "pick",
@@ -98,19 +112,22 @@ export function FloatingNavbar() {
 	const { login, logout } = useAuth();
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
-	const [activeSection, setActiveSection] = useState<NavSection>("pick");
+
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const [pendingScroll, setPendingScroll] = useState<NavSection | null>(null);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
 	const isHomeRoute = location.pathname === "/";
+	const activeSection = useActiveSection(isHomeRoute);
 	const isAdminRoute = location.pathname === "/admin";
 	const isTournamentRoute = location.pathname === "/tournament";
 
 	const selectedCount = selectedNames?.length || 0;
 	const isTournamentActive = Boolean(tournament.names);
-	const profileLabel = isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Profile";
+	const profileLabel = isLoggedIn
+		? userName?.split(" ")[0] || "Profile"
+		: "Profile";
 
 	const scrollToSection = useCallback(
 		(key: NavSection) => {
@@ -143,7 +160,13 @@ export function FloatingNavbar() {
 				navigate("/");
 			}
 		}
-	}, [isHomeRoute, navigate, scrollToSection, selectedNames, tournamentActions]);
+	}, [
+		isHomeRoute,
+		navigate,
+		scrollToSection,
+		selectedNames,
+		tournamentActions,
+	]);
 
 	const handleNavClick = useCallback(
 		(key: NavSection) => {
@@ -183,49 +206,6 @@ export function FloatingNavbar() {
 		setPendingScroll(null);
 	}, [isHomeRoute, pendingScroll, scrollToSection]);
 
-	useEffect(() => {
-		if (!isHomeRoute) {
-			return;
-		}
-
-		let rafId: number | null = null;
-		const sections: NavSection[] = ["pick", "tournament", "analysis"];
-
-		const handleScroll = () => {
-			if (rafId) {
-				return;
-			}
-			rafId = requestAnimationFrame(() => {
-				rafId = null;
-				let current: NavSection = "pick";
-				let minDistance = Number.POSITIVE_INFINITY;
-
-				for (const section of sections) {
-					const element = document.getElementById(section);
-					if (!element) {
-						continue;
-					}
-					const rect = element.getBoundingClientRect();
-					const distance = Math.abs(rect.top);
-					if (distance < minDistance && rect.top < window.innerHeight * 0.7) {
-						minDistance = distance;
-						current = section;
-					}
-				}
-				setActiveSection(current);
-			});
-		};
-
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		handleScroll();
-		return () => {
-			window.removeEventListener("scroll", handleScroll);
-			if (rafId) {
-				cancelAnimationFrame(rafId);
-			}
-		};
-	}, [isHomeRoute]);
-
 	const navItems = useMemo((): NavItem[] => {
 		const items: NavItem[] = [];
 
@@ -262,7 +242,9 @@ export function FloatingNavbar() {
 				label: "Results",
 				icon: <BarChart3 className="h-4 w-4" />,
 				isActive: activeSection === "analysis",
-				hasBadge: Object.keys(tournament.ratings).length > 0 && activeSection !== "analysis",
+				hasBadge:
+					Object.keys(tournament.ratings).length > 0 &&
+					activeSection !== "analysis",
 				onClick: () => handleNavClick("analysis"),
 			});
 		}
@@ -368,7 +350,10 @@ export function FloatingNavbar() {
 					description="Suggest a cat name."
 				>
 					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyNameSuggestion variant="modal" onClose={() => setIsSuggestOpen(false)} />
+						<LazyNameSuggestion
+							variant="modal"
+							onClose={() => setIsSuggestOpen(false)}
+						/>
 					</Suspense>
 				</Modal>
 			)}
