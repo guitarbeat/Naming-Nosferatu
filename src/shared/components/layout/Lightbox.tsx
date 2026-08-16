@@ -9,28 +9,22 @@ interface LightboxProps {
 	onNavigate: (index: number) => void;
 }
 
-export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
-	const currentImage = images[currentIndex] || "";
-	const hasMultipleImages = images.length > 1;
-	const closeButtonRef = useRef<HTMLButtonElement>(null);
-
-	// Use a ref to hold onClose so the keyboard effect does not re-register
-	// when the caller passes an unstable inline arrow (e.g. () => setState(false)).
+function useLightboxNavigation(
+	currentIndex: number,
+	imagesLength: number,
+	onClose: () => void,
+	onNavigate: (index: number) => void,
+) {
 	const onCloseRef = useRef(onClose);
 	onCloseRef.current = onClose;
 
-	// Focus the close button on mount for keyboard accessibility
-	useEffect(() => {
-		closeButtonRef.current?.focus();
-	}, []);
-
 	const handlePrevious = useCallback(() => {
-		onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
-	}, [onNavigate, currentIndex, images.length]);
+		onNavigate(currentIndex > 0 ? currentIndex - 1 : imagesLength - 1);
+	}, [onNavigate, currentIndex, imagesLength]);
 
 	const handleNext = useCallback(() => {
-		onNavigate(currentIndex < images.length - 1 ? currentIndex + 1 : 0);
-	}, [onNavigate, currentIndex, images.length]);
+		onNavigate(currentIndex < imagesLength - 1 ? currentIndex + 1 : 0);
+	}, [onNavigate, currentIndex, imagesLength]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,6 +43,59 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 			document.removeEventListener("keydown", handleKeyDown);
 		};
 	}, [handlePrevious, handleNext]);
+
+	return { handlePrevious, handleNext };
+}
+
+interface NavigationButtonProps {
+	direction: "previous" | "next";
+	onClick: () => void;
+}
+
+function NavigationButton({ direction, onClick }: NavigationButtonProps) {
+	const isPrevious = direction === "previous";
+	const Icon = isPrevious ? ChevronLeft : ChevronRight;
+	const ariaLabel = `View ${direction} image`;
+	const title = `${isPrevious ? "Previous" : "Next"} image`;
+	const positionClass = isPrevious ? "left-4" : "right-4";
+
+	return (
+		<button
+			type="button"
+			onClick={(event) => {
+				event.stopPropagation();
+				onClick();
+			}}
+			className={`absolute ${positionClass} rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20`}
+			aria-label={ariaLabel}
+			title={title}
+		>
+			<Icon size={24} />
+		</button>
+	);
+}
+
+export function Lightbox({
+	images,
+	currentIndex,
+	onClose,
+	onNavigate,
+}: LightboxProps) {
+	const currentImage = images[currentIndex] || "";
+	const hasMultipleImages = images.length > 1;
+	const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+	const { handlePrevious, handleNext } = useLightboxNavigation(
+		currentIndex,
+		images.length,
+		onClose,
+		onNavigate,
+	);
+
+	// Focus the close button on mount for keyboard accessibility
+	useEffect(() => {
+		closeButtonRef.current?.focus();
+	}, []);
 
 	return (
 		<AnimatePresence>
@@ -75,18 +122,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				</button>
 
 				{hasMultipleImages && (
-					<button
-						type="button"
-						onClick={(event) => {
-							event.stopPropagation();
-							handlePrevious();
-						}}
-						className="absolute left-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
-						aria-label="View previous image"
-						title="Previous image"
-					>
-						<ChevronLeft size={24} />
-					</button>
+					<NavigationButton direction="previous" onClick={handlePrevious} />
 				)}
 
 				<motion.img
@@ -103,18 +139,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				/>
 
 				{hasMultipleImages && (
-					<button
-						type="button"
-						onClick={(event) => {
-							event.stopPropagation();
-							handleNext();
-						}}
-						className="absolute right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
-						aria-label="View next image"
-						title="Next image"
-					>
-						<ChevronRight size={24} />
-					</button>
+					<NavigationButton direction="next" onClick={handleNext} />
 				)}
 
 				<div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm font-medium text-white">
