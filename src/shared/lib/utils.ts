@@ -13,8 +13,20 @@ export function cn(...inputs: ClassValue[]): string {
  */
 export function shuffleArray<T>(array: T[]): T[] {
 	const next = [...array];
+
+	// getRandomValues has a limit of 65536 bytes (16384 Uint32s).
+	// To support arrays larger than this, we iterate and chunk if necessary.
+	const MAX_UINT32_PER_CALL = 16384;
+	const randomBuffer = new Uint32Array(next.length);
+	for (let i = 0; i < next.length; i += MAX_UINT32_PER_CALL) {
+		const chunk = randomBuffer.subarray(i, i + MAX_UINT32_PER_CALL);
+		crypto.getRandomValues(chunk);
+	}
+
 	for (let i = next.length - 1; i > 0; i -= 1) {
-		const j = Math.floor(Math.random() * (i + 1));
+		const randomValue = randomBuffer[i] ?? 0;
+		const randomFloat = randomValue / (0xffffffff + 1);
+		const j = Math.floor(randomFloat * (i + 1));
 		const temp = next[i] as T;
 		next[i] = next[j] as T;
 		next[j] = temp;
