@@ -61,6 +61,11 @@ function generateErrorId() {
 	if (typeof crypto !== "undefined" && crypto.randomUUID) {
 		return `error_${crypto.randomUUID()}`;
 	}
+	if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+		const array = new Uint32Array(1);
+		crypto.getRandomValues(array);
+		return `error_${Date.now()}_${array[0].toString(36)}`;
+	}
 	return `error_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 

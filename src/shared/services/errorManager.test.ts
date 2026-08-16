@@ -1,5 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CircuitBreaker } from "./errorManager";
+import { CircuitBreaker, ErrorManager } from "./errorManager";
+
+describe("ErrorManager", () => {
+	it("should generate a valid error ID", () => {
+		const error = new Error("Test error");
+		const formatted = ErrorManager.handleError(error, "TestContext");
+		expect(formatted.id).toMatch(/^error_/);
+		expect(typeof formatted.id).toBe("string");
+	});
+});
 
 describe("CircuitBreaker", () => {
 	beforeEach(() => {
