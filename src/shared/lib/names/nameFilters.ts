@@ -31,7 +31,14 @@ export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter((name) => !isNameHidden(name));
+	// ⚡ Bolt Optimization: Replace `.filter()` with a simple loop to reduce callback overhead
+	const result = [];
+	for (let i = 0; i < names.length; i++) {
+		if (!isNameHidden(names[i])) {
+			result.push(names[i]);
+		}
+	}
+	return result;
 }
 
 /**
@@ -41,7 +48,14 @@ export function getActiveNames(names: NameItem[] | null | undefined): NameItem[]
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter(isNameActive);
+	// ⚡ Bolt Optimization: Replace `.filter()` with a simple loop to reduce callback overhead
+	const result = [];
+	for (let i = 0; i < names.length; i++) {
+		if (isNameActive(names[i])) {
+			result.push(names[i]);
+		}
+	}
+	return result;
 }
 
 /**
@@ -51,7 +65,14 @@ export function getHiddenNames(names: NameItem[] | null | undefined): NameItem[]
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter(isNameHidden);
+	// ⚡ Bolt Optimization: Replace `.filter()` with a simple loop to reduce callback overhead
+	const result = [];
+	for (let i = 0; i < names.length; i++) {
+		if (isNameHidden(names[i])) {
+			result.push(names[i]);
+		}
+	}
+	return result;
 }
 
 /**
@@ -61,7 +82,14 @@ export function getLockedNames(names: NameItem[] | null | undefined): NameItem[]
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter(isNameLocked);
+	// ⚡ Bolt Optimization: Replace `.filter()` with a simple loop to reduce callback overhead
+	const result = [];
+	for (let i = 0; i < names.length; i++) {
+		if (isNameLocked(names[i])) {
+			result.push(names[i]);
+		}
+	}
+	return result;
 }
 
 /**
