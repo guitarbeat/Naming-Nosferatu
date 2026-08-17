@@ -222,12 +222,11 @@ export function NameSelector() {
 		if (lockedInNames.length === 0) {
 			return;
 		}
-		const currentSelectedIds = new Set(storeSelectedNames.map((n) => n.id));
-		const missingLocked = lockedInNames.filter((n) => !currentSelectedIds.has(n.id));
+		const missingLocked = lockedInNames.filter((n) => !selectedIds.has(n.id));
 		if (missingLocked.length > 0) {
 			tournamentActions.setSelection([...storeSelectedNames, ...missingLocked]);
 		}
-	}, [names, storeSelectedNames, tournamentActions]);
+	}, [names, storeSelectedNames, tournamentActions, selectedIds]);
 
 	const triggerHaptic = useCallback(() => {
 		if ("vibrate" in navigator) {
