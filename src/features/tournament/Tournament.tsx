@@ -217,7 +217,7 @@ function TournamentContent({
 		],
 	);
 
-	const handleKeyDown = useTournamentKeyboard({
+	const { handleKeyDown } = useTournamentKeyboard({
 		isComplete,
 		matchData,
 		isVoting,
