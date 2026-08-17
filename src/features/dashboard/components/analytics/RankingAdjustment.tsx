@@ -128,6 +128,9 @@ export const RankingAdjustment = memo(
 			if (hasUnsavedChanges) {
 				return;
 			}
+			if (!haveRankingsChanged(rankings, items)) {
+				return;
+			}
 			const sorted = [...rankings].sort((a, b) => (b.rating as number) - (a.rating as number));
 			if (haveRankingsChanged(sorted, items)) {
 				setItems(sorted);
