@@ -129,27 +129,14 @@ function NameSuggestionInner() {
 }
 
 // ============================================================================
-// MODAL CONTENT
+// MODAL LOGIC
 // ============================================================================
 
-function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
+function useModalNameSuggestion(onClose: () => void) {
 	const isMountedRef = useRef(true);
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 
-	const {
-		values,
-		errors,
-		touched,
-		isSubmitting,
-		isValid,
-		handleChange,
-		handleBlur,
-		handleSubmit,
-		reset,
-		globalError,
-		successMessage: success,
-		setGlobalError,
-	} = useNameSuggestion({
+	const suggestionData = useNameSuggestion({
 		onSuccess: () => {
 			setTimeout(() => {
 				if (isMountedRef.current) {
@@ -158,6 +145,16 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 			}, 3000);
 		},
 	});
+
+	const { isSubmitting, reset, setGlobalError } = suggestionData;
+	// stable references
+	const resetRef = useRef(reset);
+	const setGlobalErrorRef = useRef(setGlobalError);
+
+	useEffect(() => {
+		resetRef.current = reset;
+		setGlobalErrorRef.current = setGlobalError;
+	}, [reset, setGlobalError]);
 
 	useEffect(() => {
 		isMountedRef.current = true;
@@ -174,10 +171,34 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 		if (isSubmitting) {
 			return;
 		}
-		reset();
-		setGlobalError("");
+		resetRef.current();
+		setGlobalErrorRef.current("");
 		onClose();
-	}, [isSubmitting, onClose, reset, setGlobalError]);
+	}, [isSubmitting, onClose]);
+
+	return { ...suggestionData, nameInputRef, handleClose };
+}
+
+// ============================================================================
+// MODAL CONTENT
+// ============================================================================
+
+function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
+	const {
+		values,
+		errors,
+		touched,
+		isSubmitting,
+		isValid,
+		handleChange,
+		handleBlur,
+		handleSubmit,
+		globalError,
+		successMessage: success,
+		nameInputRef,
+		handleClose,
+		setGlobalError,
+	} = useModalNameSuggestion(onClose);
 
 	return (
 		<form
