@@ -91,43 +91,45 @@ describe("useAudioManager", () => {
 	});
 
 	describe("Playing sounds (unmuted)", () => {
-		it("calls AudioEffects.playVote with correct volume when unmuted", () => {
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playVoteSound();
-			expect(AudioEffects.playVote).toHaveBeenCalledWith({
-				volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+		describe("Simple sound effects", () => {
+			it("calls AudioEffects.playVote with correct volume when unmuted", () => {
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playVoteSound();
+				expect(AudioEffects.playVote).toHaveBeenCalledWith({
+					volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+				});
 			});
-		});
 
-		it("calls AudioEffects.playUndo with correct volume when unmuted", () => {
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playUndoSound();
-			expect(AudioEffects.playUndo).toHaveBeenCalledWith({
-				volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+			it("calls AudioEffects.playUndo with correct volume when unmuted", () => {
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playUndoSound();
+				expect(AudioEffects.playUndo).toHaveBeenCalledWith({
+					volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+				});
 			});
-		});
 
-		it("calls AudioEffects.playLevelUp with correct volume when unmuted", () => {
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playLevelUpSound();
-			expect(AudioEffects.playLevelUp).toHaveBeenCalledWith({
-				volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+			it("calls AudioEffects.playLevelUp with correct volume when unmuted", () => {
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playLevelUpSound();
+				expect(AudioEffects.playLevelUp).toHaveBeenCalledWith({
+					volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+				});
 			});
-		});
 
-		it("calls AudioEffects.playWow with correct volume when unmuted", () => {
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playWowSound();
-			expect(AudioEffects.playWow).toHaveBeenCalledWith({
-				volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+			it("calls AudioEffects.playWow with correct volume when unmuted", () => {
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playWowSound();
+				expect(AudioEffects.playWow).toHaveBeenCalledWith({
+					volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+				});
 			});
-		});
 
-		it("calls AudioEffects.playSurprise with correct volume when unmuted", () => {
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playSurpriseSound();
-			expect(AudioEffects.playSurprise).toHaveBeenCalledWith({
-				volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+			it("calls AudioEffects.playSurprise with correct volume when unmuted", () => {
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playSurpriseSound();
+				expect(AudioEffects.playSurprise).toHaveBeenCalledWith({
+					volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+				});
 			});
 		});
 
@@ -151,43 +153,67 @@ describe("useAudioManager", () => {
 					volume: expect.closeTo(0.58),
 				});
 			});
+
+			it("calculates correct volume boost for streak < 1", () => {
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playStreakSound(0);
+
+				// base volume (0.3) + boost (Math.max(0, 0-1) * 0.04) = 0.3 + 0 = 0.3
+				expect(AudioEffects.playStreak).toHaveBeenCalledWith({
+					volume: expect.closeTo(0.3),
+				});
+			});
 		});
 
-		it("reads volume from storage correctly", () => {
-			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
-					return "0.5";
-				}
-				return null;
+		describe("Volume configuration", () => {
+			it("reads volume from storage correctly", () => {
+				vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
+					if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
+						return "0.5";
+					}
+					return null;
+				});
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playVoteSound();
+				expect(AudioEffects.playVote).toHaveBeenCalledWith({ volume: 0.5 });
 			});
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playVoteSound();
-			expect(AudioEffects.playVote).toHaveBeenCalledWith({ volume: 0.5 });
-		});
 
-		it("clamps volume between 0 and 1", () => {
-			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
-					return "1.5"; // > 1
-				}
-				return null;
+			it("clamps volume between 0 and 1", () => {
+				vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
+					if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
+						return "1.5"; // > 1
+					}
+					return null;
+				});
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playVoteSound();
+				expect(AudioEffects.playVote).toHaveBeenCalledWith({ volume: 1 });
 			});
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playVoteSound();
-			expect(AudioEffects.playVote).toHaveBeenCalledWith({ volume: 1 });
-		});
 
-		it("handles invalid volume in storage", () => {
-			vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
-				if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
-					return "invalid";
-				}
-				return null;
+			it("clamps volume to minimum of 0", () => {
+				vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
+					if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
+						return "-0.5"; // < 0
+					}
+					return null;
+				});
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playVoteSound();
+				expect(AudioEffects.playVote).toHaveBeenCalledWith({ volume: 0 });
 			});
-			const { result } = renderHook(() => useAudioManager());
-			result.current.playVoteSound();
-			expect(AudioEffects.playVote).toHaveBeenCalledWith({
-				volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+
+			it("handles invalid volume in storage", () => {
+				vi.mocked(storage.getStorageString).mockImplementation((key: string) => {
+					if (key === STORAGE_KEYS.EFFECTS_VOLUME) {
+						return "invalid";
+					}
+					return null;
+				});
+				const { result } = renderHook(() => useAudioManager());
+				result.current.playVoteSound();
+				expect(AudioEffects.playVote).toHaveBeenCalledWith({
+					volume: AUDIO.DEFAULT_EFFECTS_VOLUME,
+				});
 			});
 		});
 	});
