@@ -1,4 +1,16 @@
-import { type KeyboardEvent, useCallback } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useCallback, useEffect } from "react";
+import type { MatchSideData } from "../utils/matchHelpers";
+
+interface UseTournamentKeyboardProps {
+	isComplete: boolean;
+	matchData: MatchSideData | null;
+	isVoting: boolean;
+	openingBracketReveal: boolean;
+	canUndo: boolean;
+	handleUndo: () => void;
+	handleVoteForSide: (side: "left" | "right") => void;
+}
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
 	if (!(target instanceof HTMLElement)) {
@@ -13,59 +25,70 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 	);
 }
 
-interface UseTournamentKeyboardOptions {
-	onVoteForSide: (side: "left" | "right") => void;
-	onUndo: () => void;
-	onQuit: () => void;
-	canUndo: boolean;
-	isVoting: boolean;
-	isOpeningReveal: boolean;
-}
-
 export function useTournamentKeyboard({
-	onVoteForSide,
-	onUndo,
-	onQuit,
-	canUndo,
+	isComplete,
+	matchData,
 	isVoting,
-	isOpeningReveal,
-}: UseTournamentKeyboardOptions) {
-	const handleKeyDown = useCallback(
-		(event: KeyboardEvent<HTMLElement>, side: "left" | "right") => {
-			if (event.key === "Enter" || event.key === " ") {
-				event.preventDefault();
-				onVoteForSide(side);
-			}
-		},
-		[onVoteForSide],
-	);
+	openingBracketReveal,
+	canUndo,
+	handleUndo,
+	handleVoteForSide,
+}: UseTournamentKeyboardProps) {
+	useEffect(() => {
+		if (isComplete || !matchData) {
+			return;
+		}
 
-	const handleGlobalKeyDown = useCallback(
-		(event: globalThis.KeyboardEvent) => {
-			if (isInteractiveTarget(event.target)) {
-				return;
-			}
-			if (isVoting || isOpeningReveal) {
+		const handleWindowKeydown = (event: globalThis.KeyboardEvent) => {
+			if (
+				isVoting ||
+				openingBracketReveal ||
+				isInteractiveTarget(event.target) ||
+				event.metaKey ||
+				event.ctrlKey ||
+				event.altKey
+			) {
 				return;
 			}
 
 			const key = event.key.toLowerCase();
-			if (key === "1" || key === "arrowleft") {
+			if (key === "arrowleft" || key === "a") {
 				event.preventDefault();
-				onVoteForSide("left");
-			} else if (key === "2" || key === "arrowright") {
+				handleVoteForSide("left");
+				return;
+			}
+			if (key === "arrowright" || key === "d") {
 				event.preventDefault();
-				onVoteForSide("right");
-			} else if (key === "u" && canUndo) {
+				handleVoteForSide("right");
+				return;
+			}
+			if ((key === "u" || key === "backspace") && canUndo) {
 				event.preventDefault();
-				onUndo();
-			} else if (key === "q") {
+				handleUndo();
+			}
+		};
+
+		window.addEventListener("keydown", handleWindowKeydown);
+		return () => window.removeEventListener("keydown", handleWindowKeydown);
+	}, [
+		canUndo,
+		handleUndo,
+		handleVoteForSide,
+		isComplete,
+		isVoting,
+		matchData,
+		openingBracketReveal,
+	]);
+
+	const handleKeyDown = useCallback(
+		(event: ReactKeyboardEvent<HTMLElement>, side: "left" | "right") => {
+			if (event.key === "Enter" || event.key === " ") {
 				event.preventDefault();
-				onQuit();
+				handleVoteForSide(side);
 			}
 		},
-		[isVoting, isOpeningReveal, onVoteForSide, canUndo, onUndo, onQuit],
+		[handleVoteForSide],
 	);
 
-	return { handleKeyDown, handleGlobalKeyDown };
+	return handleKeyDown;
 }
