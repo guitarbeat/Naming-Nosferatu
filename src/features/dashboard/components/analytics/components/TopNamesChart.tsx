@@ -21,18 +21,33 @@ interface TopNamesChartProps {
 }
 
 export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
-	const data = leaderboard.slice(0, limit).map((e) => ({
-		name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
-		rating: Math.round(e.avg_rating),
-		fullName: e.name,
-		percentile: e.percentile_rank ?? null,
-	}));
+	const { data, allRatings } = leaderboard.reduce(
+		(acc, e, i) => {
+			if (i < limit) {
+				acc.data.push({
+					name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
+					rating: Math.round(e.avg_rating),
+					fullName: e.name,
+					percentile: e.percentile_rank ?? null,
+				});
+			}
+			acc.allRatings.push(e.avg_rating);
+			return acc;
+		},
+		{ data: [], allRatings: [] } as {
+			data: Array<{
+				name: string;
+				rating: number;
+				fullName: string;
+				percentile: number | null;
+			}>;
+			allRatings: number[];
+		},
+	);
 
 	if (data.length === 0) {
 		return null;
 	}
-
-	const allRatings = leaderboard.map((e) => e.avg_rating);
 	const stats = computeRatingStats(allRatings);
 	const meanRating = stats ? Math.round(stats.mean) : null;
 
@@ -61,7 +76,9 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 						((
 							value: number,
 							_: string,
-							props: { payload: { fullName: string; percentile: number | null } },
+							props: {
+								payload: { fullName: string; percentile: number | null };
+							},
 						) => {
 							const label = props.payload.fullName;
 							const pct = props.payload.percentile;
