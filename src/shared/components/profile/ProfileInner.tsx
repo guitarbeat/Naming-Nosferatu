@@ -79,15 +79,21 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 		}
 	};
 
+	const handleNameChange = (val: string) => {
+		setEditedName(val);
+		if (saveError) {
+			setSaveError(null);
+		}
+	};
+
 	return (
 		<MagicProfileWidget
 			avatarSrc={avatarSrc}
 			onAvatarError={() => setAvatarSrc(defaultAvatar)}
 			isEditing={isEditing}
 			editedName={editedName}
-			setEditedName={setEditedName}
+			onNameChange={handleNameChange}
 			saveError={saveError}
-			setSaveError={setSaveError}
 			isSaving={isSaving}
 			isLoggedIn={user.isLoggedIn}
 			userName={user.name}

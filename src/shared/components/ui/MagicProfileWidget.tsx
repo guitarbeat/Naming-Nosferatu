@@ -9,9 +9,8 @@ export interface MagicProfileWidgetProps {
 	onAvatarError: () => void;
 	isEditing: boolean;
 	editedName: string;
-	setEditedName: (val: string) => void;
+	onNameChange: (val: string) => void;
 	saveError: string | null;
-	setSaveError: (val: string | null) => void;
 	isSaving: boolean;
 	isLoggedIn: boolean;
 	userName?: string;
@@ -28,9 +27,8 @@ export function MagicProfileWidget({
 	onAvatarError,
 	isEditing,
 	editedName,
-	setEditedName,
+	onNameChange,
 	saveError,
-	setSaveError,
 	isSaving,
 	isLoggedIn,
 	userName,
@@ -85,12 +83,7 @@ export function MagicProfileWidget({
 								ref={nameInputRef}
 								type="text"
 								value={editedName}
-								onChange={(e) => {
-									setEditedName(e.target.value);
-									if (saveError) {
-										setSaveError(null);
-									}
-								}}
+								onChange={(e) => onNameChange(e.target.value)}
 								placeholder="Who are you?"
 								onKeyDown={(e) => e.key === "Enter" && onSave()}
 								className="w-full h-12 pl-10 pr-4 text-sm rounded-2xl bg-background/50 border-primary/20 focus:border-primary focus:ring-primary/30 shadow-inner transition-all duration-300"
