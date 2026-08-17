@@ -198,10 +198,14 @@ export const RankingAdjustment = memo(
 			if (reordered) {
 				newItems.splice(result.destination.index, 0, reordered);
 			}
-			const adjusted = newItems.map((item: NameItem, index: number) => ({
-				...item,
-				rating: Math.round(1000 + (1000 * (newItems.length - index)) / newItems.length),
-			}));
+			const len = newItems.length;
+			const adjusted = new Array(len);
+			for (let i = 0; i < len; i++) {
+				adjusted[i] = {
+					...(newItems[i] as NameItem),
+					rating: Math.round(1000 + (1000 * (len - i)) / len),
+				};
+			}
 			setHasUnsavedChanges(true);
 			setItems(adjusted);
 		};
