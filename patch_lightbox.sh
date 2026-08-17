@@ -1,3 +1,6 @@
+#!/bin/bash
+
+cat << 'INNER_EOF' > src/shared/components/layout/Lightbox.tsx
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useEffect, useRef } from "react";
@@ -140,3 +143,4 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		</AnimatePresence>
 	);
 }
+INNER_EOF
