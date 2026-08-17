@@ -37,8 +37,7 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{openingBracketReveal && "The bracket is set. First match begins now."}
 				{roundAnnouncement !== null && `Round ${roundAnnouncement} begins.`}
 				{voteAnnouncement && `${voteAnnouncement} advances.`}
-				{streakBurst &&
-					`${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
+				{streakBurst && `${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
 			</div>
 
 			<OpeningBracketReveal

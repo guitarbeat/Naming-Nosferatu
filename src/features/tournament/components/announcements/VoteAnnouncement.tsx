@@ -17,21 +17,9 @@ export function VoteAnnouncement({
 			{voteAnnouncement && (
 				<motion.div
 					key={`${voteAnnouncement}-${currentMatchKey}`}
-					initial={
-						prefersReducedMotion
-							? { opacity: 0 }
-							: { opacity: 0, y: -16, scale: 0.95 }
-					}
-					animate={
-						prefersReducedMotion
-							? { opacity: 1 }
-							: { opacity: 1, y: 0, scale: 1 }
-					}
-					exit={
-						prefersReducedMotion
-							? { opacity: 0 }
-							: { opacity: 0, y: -20, scale: 0.98 }
-					}
+					initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.95 }}
+					animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
 					transition={{ duration: prefersReducedMotion ? 0.01 : 0.28 }}
 					className="pointer-events-none absolute left-1/2 top-2 z-30 w-[calc(100%-1.5rem)] max-w-full -translate-x-1/2 sm:w-auto"
 				>

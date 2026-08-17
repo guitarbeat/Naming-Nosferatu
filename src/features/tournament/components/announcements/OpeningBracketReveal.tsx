@@ -21,31 +21,19 @@ export function OpeningBracketReveal({
 		<AnimatePresence>
 			{openingBracketReveal && openingEntrants.length > 1 && (
 				<motion.div
-					initial={
-						prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }
-					}
-					animate={
-						prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
-					}
+					initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
+					animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
 					exit={
-						prefersReducedMotion
-							? { opacity: 0 }
-							: { opacity: 0, scale: 1.03, filter: "blur(6px)" }
+						prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.03, filter: "blur(6px)" }
 					}
 					transition={{ duration: prefersReducedMotion ? 0.08 : 0.42 }}
 					className="absolute inset-0 z-40 flex items-center justify-center px-3 sm:px-6"
 				>
 					<div className="absolute inset-0 bg-slate-950/82 backdrop-blur-md" />
 					<motion.div
-						initial={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-						}
-						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-						}
-						exit={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }
-						}
+						initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+						exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }}
 						transition={{ duration: prefersReducedMotion ? 0.08 : 0.38 }}
 						className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 overflow-hidden rounded-[2rem] border border-primary/20 bg-[radial-gradient(circle_at_top,rgba(57,189,216,0.18),rgba(2,6,23,0.96)_46%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-8"
 					>
@@ -80,16 +68,8 @@ export function OpeningBracketReveal({
 								{openingEntrants.slice(0, 8).map((entrant, index) => (
 									<motion.div
 										key={`opening-entrant-${entrant.id}`}
-										initial={
-											prefersReducedMotion
-												? { opacity: 1 }
-												: { opacity: 0, y: 18 }
-										}
-										animate={
-											prefersReducedMotion
-												? { opacity: 1 }
-												: { opacity: 1, y: 0 }
-										}
+										initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
+										animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 										transition={{
 											duration: prefersReducedMotion ? 0.08 : 0.3,
 											delay: prefersReducedMotion ? 0 : 0.12 + index * 0.06,

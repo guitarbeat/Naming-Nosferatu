@@ -14,28 +14,16 @@ export function RoundAnnouncement({
 			{roundAnnouncement !== null && (
 				<motion.div
 					key={`round-announcement-${roundAnnouncement}`}
-					initial={
-						prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }
-					}
-					animate={
-						prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
-					}
-					exit={
-						prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }
-					}
+					initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+					animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
 					transition={{ duration: prefersReducedMotion ? 0.01 : 0.35 }}
 					className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
 				>
 					<motion.div
-						initial={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }
-						}
-						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-						}
-						exit={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }
-						}
+						initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+						exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
 						transition={{ duration: prefersReducedMotion ? 0.01 : 0.3 }}
 						className="relative overflow-hidden rounded-2xl border border-primary/35 bg-slate-900/80 px-5 py-5 text-center shadow-[0_0_80px_rgba(39,135,153,0.25)] backdrop-blur-xl sm:px-8 sm:py-6"
 					>
