@@ -7,3 +7,6 @@
 ## 2026-06-28 - Unified Iconography in Error Boundaries
 **Learning:** Dismiss buttons in global components like `ErrorBoundary` often use plain text `x` characters for simplicity, but this breaks the visual consistency of the design system that relies on `lucide-react` for iconography.
 **Action:** Always ensure that structural or global feedback components utilize the same standard icon library (`lucide-react` `<X />`) as the rest of the UI to maintain a cohesive look and feel.
+## 2024-08-17 - Added Clear Search Button to SearchFilterBar
+**Learning:** Adding a clear search ('X') button inside a customized search input requires careful padding adjustments (e.g., updating `pr-4` to `pr-10`) to prevent the input text from overflowing behind the absolute-positioned button.
+**Action:** Always verify right-side padding (`pr-*`) and focus state continuity when injecting absolute-positioned interactive elements inside text inputs.

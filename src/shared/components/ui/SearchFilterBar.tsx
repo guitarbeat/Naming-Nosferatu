@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 
@@ -55,8 +55,19 @@ export function SearchFilterBar({
 					value={searchTerm}
 					onChange={handleSearchChange}
 					aria-label="Search names"
-					className="w-full h-11 bg-background/40 hover:bg-background/60 focus:bg-background/80 transition-colors rounded-xl pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 focus:ring-2 focus:ring-primary/40"
+					className="w-full h-11 bg-background/40 hover:bg-background/60 focus:bg-background/80 transition-colors rounded-xl pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 focus:ring-2 focus:ring-primary/40"
 				/>
+				{searchTerm.length > 0 && (
+					<button
+						type="button"
+						onClick={() => onSearchTermChange("")}
+						className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors p-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95"
+						aria-label="Clear search"
+						title="Clear search"
+					>
+						<X size={14} />
+					</button>
+				)}
 			</div>
 			<div className="flex items-center gap-2 w-full sm:w-auto">
 				<div className="relative w-full sm:w-40 h-11 bg-background/40 hover:bg-background/60 focus-within:bg-background/80 transition-colors rounded-xl flex items-center px-3 border border-transparent focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/20">
