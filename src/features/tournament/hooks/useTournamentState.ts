@@ -69,7 +69,7 @@ interface UseTournamentStateResult {
 
 const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
 
-function haveSameIds(a: string[], b: string[]): boolean {
+export function haveSameIds(a: string[], b: string[]): boolean {
 	if (a.length !== b.length) {
 		return false;
 	}
