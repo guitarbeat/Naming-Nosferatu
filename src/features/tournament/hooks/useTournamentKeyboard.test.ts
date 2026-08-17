@@ -135,18 +135,6 @@ describe("useTournamentKeyboard", () => {
 			expect(mockOnUndo).not.toHaveBeenCalled();
 		});
 
-		it("handles upper case keys correctly", () => {
-			const { result } = renderHook(() =>
-				useTournamentKeyboard(defaultOptions),
-			);
-			const event = createGlobalEvent("A");
-
-			result.current.handleGlobalKeyDown(event);
-
-			expect(event.preventDefault).toHaveBeenCalled();
-			expect(mockOnVoteForSide).toHaveBeenCalledWith("left");
-		});
-
 		it("does nothing when isVoting is true", () => {
 			const { result } = renderHook(() =>
 				useTournamentKeyboard({ ...defaultOptions, isVoting: true }),

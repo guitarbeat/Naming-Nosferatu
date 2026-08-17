@@ -34,12 +34,8 @@ export function useTournamentKeyboard({
 	handleUndo,
 	handleVoteForSide,
 }: UseTournamentKeyboardProps) {
-	useEffect(() => {
-		if (isComplete || !matchData) {
-			return;
-		}
-
-		const handleWindowKeydown = (event: globalThis.KeyboardEvent) => {
+	const handleGlobalKeyDown = useCallback(
+		(event: globalThis.KeyboardEvent) => {
 			if (
 				isVoting ||
 				openingBracketReveal ||
@@ -66,19 +62,18 @@ export function useTournamentKeyboard({
 				event.preventDefault();
 				handleUndo();
 			}
-		};
+		},
+		[isVoting, openingBracketReveal, handleVoteForSide, canUndo, handleUndo],
+	);
 
-		window.addEventListener("keydown", handleWindowKeydown);
-		return () => window.removeEventListener("keydown", handleWindowKeydown);
-	}, [
-		canUndo,
-		handleUndo,
-		handleVoteForSide,
-		isComplete,
-		isVoting,
-		matchData,
-		openingBracketReveal,
-	]);
+	useEffect(() => {
+		if (isComplete || !matchData) {
+			return;
+		}
+
+		window.addEventListener("keydown", handleGlobalKeyDown);
+		return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+	}, [isComplete, matchData, handleGlobalKeyDown]);
 
 	const handleKeyDown = useCallback(
 		(event: ReactKeyboardEvent<HTMLElement>, side: "left" | "right") => {
@@ -90,5 +85,5 @@ export function useTournamentKeyboard({
 		[handleVoteForSide],
 	);
 
-	return handleKeyDown;
+	return { handleKeyDown, handleGlobalKeyDown };
 }
