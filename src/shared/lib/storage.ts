@@ -45,7 +45,7 @@ function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
 
 function encrypt(text: string): string {
 	const iv = CryptoJS.lib.WordArray.random(16);
-	// codeql[js/insecure-password-hash] False positive: data obfuscation, not hashing a password
+	// lgtm[js/insecure-password-hash] False positive: data obfuscation, not hashing a password
 	const encrypted = CryptoJS.AES.encrypt(text, getDeviceEncryptionKey(), {
 		iv,
 		mode: CryptoJS.mode.CBC,
