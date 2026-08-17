@@ -1,5 +1,7 @@
+# Fix backslashes in TournamentAnnouncements.tsx string literals using single quotes around INNER_EOF correctly this time
+cat << 'INNER_EOF' > src/features/tournament/components/TournamentAnnouncements.tsx
 import { memo } from "react";
-import type { StreakBurst } from "../types/announcements";
+import { type StreakBurst } from "../types/announcements";
 import { OpeningBracketReveal } from "./announcements/OpeningBracketReveal";
 import { RoundAnnouncement } from "./announcements/RoundAnnouncement";
 import { StreakBurstAnnouncement } from "./announcements/StreakBurstAnnouncement";
@@ -37,8 +39,7 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{openingBracketReveal && "The bracket is set. First match begins now."}
 				{roundAnnouncement !== null && `Round ${roundAnnouncement} begins.`}
 				{voteAnnouncement && `${voteAnnouncement} advances.`}
-				{streakBurst &&
-					`${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
+				{streakBurst && `${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
 			</div>
 
 			<OpeningBracketReveal
@@ -67,3 +68,4 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 		</>
 	);
 });
+INNER_EOF
