@@ -1,0 +1,2 @@
+- [Replit static publishing](replit-static-publishing.md) — client-only Vite apps must publish `dist` statically instead of running a generated server entrypoint.
+- [Package firewall compatibility](package-firewall-compatibility.md) — avoid bundling optional CLIs whose transitive archives are blocked during Replit installs.
