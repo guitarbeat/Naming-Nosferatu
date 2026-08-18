@@ -1,3 +1,3 @@
-## 2024-05-24 - Reference Equality Short-circuit
-**Learning:** Checking for object reference equality (`newItems === oldRankings`) before iterating through arrays in React state comparisons can provide massive performance benefits (over 99% faster) when the component re-renders with the same array reference.
-**Action:** Always add a fast-path reference equality check at the top of array comparison functions, especially those used in React effects or `memo` comparisons.
+## 2024-05-18 - Replacing chained array methods with single-pass loops
+**Learning:** Chained array methods like `.filter().map()` or `.reduce()` returning a new array often create unnecessary intermediate object/array allocations and increase garbage collection overhead. In hot paths or data mapping logic (like in `TopNamesChart`), standard `for` loops that evaluate conditions and push to the final array in a single pass perform significantly better by skipping these intermediate structures.
+**Action:** Always prefer a single `for` loop over `.reduce()` or chained `.filter().map()` operations when mapping large arrays in performance-sensitive components to minimize memory allocations.
