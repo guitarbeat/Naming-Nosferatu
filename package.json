@@ -25,10 +25,10 @@
     "email": "aaron@example.com"
   },
   "license": "MIT",
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.26.1",
   "engines": {
     "node": "20.19.6",
-    "pnpm": "10.27.0"
+    "pnpm": "10.26.1"
   },
   "scripts": {
     "dev": "vite --config config/vite.config.ts",
