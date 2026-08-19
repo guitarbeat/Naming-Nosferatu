@@ -118,15 +118,19 @@ vi.mock("@/app/appConfig", () => ({
 	},
 }));
 
-vi.mock("@/app/routes/components/HomeSections", () => ({
-	HomeHeroSection: ({ onStartPicking }: { onStartPicking: () => void }) => (
-		<div>
-			<button type="button" onClick={onStartPicking}>
-				Start Picking
-			</button>
-		</div>
-	),
-}));
+vi.mock("@/app/routes/components/HomeSections", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@/app/routes/components/HomeSections")>();
+	return {
+		...actual,
+		HomeHeroSection: ({ onStartPicking }: { onStartPicking: () => void }) => (
+			<div>
+				<button type="button" onClick={onStartPicking}>
+					Start Picking
+				</button>
+			</div>
+		),
+	};
+});
 
 vi.mock("@/features/tournament/components/NameSuggestion", () => ({
 	NameSuggestionInner: () => <div data-testid="name-suggestion" />,
