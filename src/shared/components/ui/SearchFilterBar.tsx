@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 
@@ -15,12 +15,14 @@ interface SearchFilterBarProps {
 function SearchInput({
 	searchTerm,
 	onChange,
+	onClear,
 }: {
 	searchTerm: string;
 	onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+	onClear: () => void;
 }) {
 	return (
-		<div className="flex-1 w-full relative">
+		<div className="flex-1 w-full relative group">
 			<div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 transition-colors group-focus-within:text-primary">
 				<Search size={16} />
 			</div>
@@ -30,8 +32,18 @@ function SearchInput({
 				value={searchTerm}
 				onChange={onChange}
 				aria-label="Search names"
-				className="w-full h-11 bg-background/40 hover:bg-background/60 focus:bg-background/80 transition-colors rounded-xl pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 focus:ring-2 focus:ring-primary/40"
+				className="w-full h-11 bg-background/40 hover:bg-background/60 focus:bg-background/80 transition-colors rounded-xl pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 focus:ring-2 focus:ring-primary/40"
 			/>
+			{searchTerm && (
+				<button
+					type="button"
+					onClick={onClear}
+					aria-label="Clear search"
+					className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-muted-foreground/60 hover:text-foreground hover:bg-foreground/5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+				>
+					<X size={14} />
+				</button>
+			)}
 		</div>
 	);
 }
@@ -96,7 +108,7 @@ export function SearchFilterBar({
 
 	return (
 		<motion.div
-			className="flex flex-col sm:flex-row items-center gap-3 w-full bg-foreground/5 backdrop-blur-md rounded-2xl p-2 sm:p-3 border border-border/10 shadow-inner group transition-all duration-300 hover:border-border/30 hover:shadow-md mb-6"
+			className="flex flex-col sm:flex-row items-center gap-3 w-full bg-foreground/5 backdrop-blur-md rounded-2xl p-2 sm:p-3 border border-border/10 shadow-inner transition-all duration-300 hover:border-border/30 hover:shadow-md mb-6"
 			initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
 			animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 			transition={{
@@ -106,7 +118,11 @@ export function SearchFilterBar({
 				damping: 25,
 			}}
 		>
-			<SearchInput searchTerm={searchTerm} onChange={handleSearchChange} />
+			<SearchInput
+				searchTerm={searchTerm}
+				onChange={handleSearchChange}
+				onClear={() => onSearchTermChange("")}
+			/>
 			<div className="flex items-center gap-2 w-full sm:w-auto">
 				<FilterSelect
 					filterStatus={filterStatus}

@@ -7,3 +7,6 @@
 ## 2026-06-28 - Unified Iconography in Error Boundaries
 **Learning:** Dismiss buttons in global components like `ErrorBoundary` often use plain text `x` characters for simplicity, but this breaks the visual consistency of the design system that relies on `lucide-react` for iconography.
 **Action:** Always ensure that structural or global feedback components utilize the same standard icon library (`lucide-react` `<X />`) as the rest of the UI to maintain a cohesive look and feel.
+## 2026-06-29 - Input Clear Button Interactions and Scoped Focus States
+**Learning:** Adding a clear button to an input enhances usability, but requires proper focus management (like `focus-visible`) and `aria-label` to be accessible. Additionally, using broad scope state selectors like `group-focus-within` on a parent containing multiple interactive elements causes unintended visual feedback (e.g., search icon highlighting when the select is focused).
+**Action:** Always scope `group` modifier classes as tightly as possible to the specific interactive component they relate to, and explicitly label dynamically rendered icon buttons for screen readers.
