@@ -47,6 +47,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 							main.scrollIntoView({ behavior: "smooth" });
 						}
 					}}
+					aria-label="Skip to main content"
 				>
 					Skip to main content
 				</button>
