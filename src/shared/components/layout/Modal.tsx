@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface ModalProps {
 	title: string;
@@ -44,7 +45,12 @@ interface ModalHeaderProps {
 	closeDisabled: boolean;
 }
 
-function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
+function ModalHeader({
+	title,
+	hideTitle,
+	requestClose,
+	closeDisabled,
+}: ModalHeaderProps) {
 	if (hideTitle) {
 		return (
 			<>
@@ -57,6 +63,11 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 					disabled={closeDisabled}
 					className="absolute top-3 right-3 z-10 rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 					aria-label={`Close ${title.toLowerCase()}`}
+					title={
+						closeDisabled
+							? "Cannot close currently"
+							: `Close ${title.toLowerCase()}`
+					}
 				>
 					<X className="size-4" />
 				</button>
@@ -66,7 +77,10 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 
 	return (
 		<div className="flex items-center justify-between mb-5">
-			<h2 id="modal-title" className="text-base font-semibold text-foreground tracking-tight">
+			<h2
+				id="modal-title"
+				className="text-base font-semibold text-foreground tracking-tight"
+			>
 				{title}
 			</h2>
 			<button
@@ -75,6 +89,11 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 				disabled={closeDisabled}
 				className="rounded-full p-1.5 text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				aria-label={`Close ${title.toLowerCase()}`}
+				title={
+					closeDisabled
+						? "Cannot close currently"
+						: `Close ${title.toLowerCase()}`
+				}
 			>
 				<X className="size-4" />
 			</button>
