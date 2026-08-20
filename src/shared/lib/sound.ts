@@ -36,7 +36,10 @@ class SoundManager {
 
 	private isAutoplayError(error: unknown): boolean {
 		const maybeError = error as { name?: string } | null;
-		return maybeError?.name === "NotAllowedError" || maybeError?.name === "AbortError";
+		return (
+			maybeError?.name === "NotAllowedError" ||
+			maybeError?.name === "AbortError"
+		);
 	}
 
 	private getAudioContext(): AudioContext | null {
@@ -48,7 +51,8 @@ class SoundManager {
 			AudioContext?: typeof AudioContext;
 			webkitAudioContext?: typeof AudioContext;
 		};
-		const AudioContextConstructor = browserGlobal.AudioContext || browserGlobal.webkitAudioContext;
+		const AudioContextConstructor =
+			browserGlobal.AudioContext || browserGlobal.webkitAudioContext;
 		if (!AudioContextConstructor) {
 			return null;
 		}
@@ -76,13 +80,14 @@ class SoundManager {
 	}
 
 	private preloadSounds() {
-		SOUND_EFFECTS.forEach((soundName) => {
+		// ⚡ Bolt Optimization: Use for...of instead of forEach for faster iteration
+		for (const soundName of SOUND_EFFECTS) {
 			const audio = this.createAudioElement(soundName);
 			if (audio) {
 				audio.volume = this.defaultVolume;
 				this.audioCache.set(soundName, audio);
 			}
-		});
+		}
 	}
 
 	play(soundName: string, config: SoundConfig = {}) {
@@ -147,7 +152,8 @@ class SoundManager {
 			return false;
 		}
 		const soundEnabled =
-			getStorageString(STORAGE_KEYS.SOUND_ENABLED) ?? getStorageString("sound-enabled");
+			getStorageString(STORAGE_KEYS.SOUND_ENABLED) ??
+			getStorageString("sound-enabled");
 		return soundEnabled !== "false";
 	}
 }
