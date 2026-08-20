@@ -186,28 +186,49 @@ export function applyEloMatchUpdate({
 	config?: EloConfig;
 }): EloMatchResult {
 	const resolved = resolveConfig(config);
-	const leftRatings = leftParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
-	const rightRatings = rightParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
-	const leftAverageRating = average(leftRatings);
-	const rightAverageRating = average(rightRatings);
-	const leftAggregateStats = leftParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
-	const rightAggregateStats = rightParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
+	let leftRatingSum = 0;
+	let leftWinsSum = 0;
+	let leftLossesSum = 0;
+	for (let i = 0, len = leftParticipantIds.length; i < len; i++) {
+		const id = leftParticipantIds[i];
+		const r = ratings[id];
+		leftRatingSum += typeof r === "number" && Number.isFinite(r) ? r : resolved.defaultRating;
+
+		const pStats = stats?.[id];
+		if (pStats) {
+			const w = pStats.wins;
+			const l = pStats.losses;
+			leftWinsSum += typeof w === "number" && Number.isFinite(w) ? w : 0;
+			leftLossesSum += typeof l === "number" && Number.isFinite(l) ? l : 0;
+		}
+	}
+	if (leftParticipantIds.length === 0) {
+		throw new Error("Cannot calculate Elo for an empty side");
+	}
+	const leftAverageRating = leftRatingSum / leftParticipantIds.length;
+	const leftAggregateStats = { wins: leftWinsSum, losses: leftLossesSum };
+
+	let rightRatingSum = 0;
+	let rightWinsSum = 0;
+	let rightLossesSum = 0;
+	for (let i = 0, len = rightParticipantIds.length; i < len; i++) {
+		const id = rightParticipantIds[i];
+		const r = ratings[id];
+		rightRatingSum += typeof r === "number" && Number.isFinite(r) ? r : resolved.defaultRating;
+
+		const pStats = stats?.[id];
+		if (pStats) {
+			const w = pStats.wins;
+			const l = pStats.losses;
+			rightWinsSum += typeof w === "number" && Number.isFinite(w) ? w : 0;
+			rightLossesSum += typeof l === "number" && Number.isFinite(l) ? l : 0;
+		}
+	}
+	if (rightParticipantIds.length === 0) {
+		throw new Error("Cannot calculate Elo for an empty side");
+	}
+	const rightAverageRating = rightRatingSum / rightParticipantIds.length;
+	const rightAggregateStats = { wins: rightWinsSum, losses: rightLossesSum };
 	const pairUpdate = calculatePairEloUpdate({
 		leftRating: leftAverageRating,
 		rightRating: rightAverageRating,
