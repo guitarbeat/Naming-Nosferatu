@@ -11,6 +11,7 @@ import {
 } from "@/features/tournament/services/tournament";
 import { useLocalStorage } from "@/shared/hooks/useLocalStorage";
 import { TIMING } from "@/shared/lib/constants";
+import { ErrorManager } from "@/shared/services/errorManager";
 import { ratingsAPI } from "@/shared/services/supabase/ratingService";
 import type {
 	Match,
@@ -390,7 +391,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 					winnerSide,
 				})
 				.catch((err: unknown) => {
-					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
+					ErrorManager.handleError(err, "useTournamentState.handleVote");
 				});
 
 			dispatch({
