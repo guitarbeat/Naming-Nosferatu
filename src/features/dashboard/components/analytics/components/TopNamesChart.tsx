@@ -21,29 +21,27 @@ interface TopNamesChartProps {
 }
 
 export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
-	const { data, allRatings } = leaderboard.reduce(
-		(acc, e, i) => {
-			if (i < limit) {
-				acc.data.push({
-					name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
-					rating: Math.round(e.avg_rating),
-					fullName: e.name,
-					percentile: e.percentile_rank ?? null,
-				});
-			}
-			acc.allRatings.push(e.avg_rating);
-			return acc;
-		},
-		{ data: [], allRatings: [] } as {
-			data: Array<{
-				name: string;
-				rating: number;
-				fullName: string;
-				percentile: number | null;
-			}>;
-			allRatings: number[];
-		},
-	);
+	// ⚡ Bolt Optimization: Replace `.reduce()` and array pushes with a single-pass loop and pre-allocated array.
+	// This reduces garbage collection overhead and avoids array reallocation for the potentially large `allRatings` array.
+	const data: Array<{
+		name: string;
+		rating: number;
+		fullName: string;
+		percentile: number | null;
+	}> = [];
+	const allRatings = new Array(leaderboard.length);
+	for (let i = 0; i < leaderboard.length; i++) {
+		const e = leaderboard[i];
+		if (i < limit) {
+			data.push({
+				name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
+				rating: Math.round(e.avg_rating),
+				fullName: e.name,
+				percentile: e.percentile_rank ?? null,
+			});
+		}
+		allRatings[i] = e.avg_rating;
+	}
 
 	if (data.length === 0) {
 		return null;
