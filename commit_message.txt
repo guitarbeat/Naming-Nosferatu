@@ -1,0 +1,6 @@
+⚡ No Op
+
+💡 What: No implementation done.
+🎯 Why: The target array iteration is on a cold path (tournament initialization) and benching showed the imperative loop does not offer significant performance improvement over .filter. Aborting due to Bolt constraint of only optimizing hot paths with O(N^2) complexity or worse.
+📊 Impact: None.
+🔬 Measurement: Tested 128 items and loop vs filter is imperceptible.
