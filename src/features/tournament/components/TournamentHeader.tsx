@@ -1,15 +1,9 @@
-import {
-	Clock,
-	Gamepad2,
-	Medal,
-	Undo2,
-	Volume2,
-	VolumeX,
-	X,
-} from "lucide-react";
+import { Clock, Gamepad2, Medal } from "lucide-react";
 import { memo } from "react";
 import { getHeatTextClasses, type HeatLevel } from "../utils/heat";
 import { BracketTree } from "./BracketTree";
+import { MatchInfoPanel } from "./ui/MatchInfoPanel";
+import { TournamentControls } from "./ui/TournamentControls";
 
 interface TournamentHeaderProps {
 	roundNumber: number;
@@ -19,6 +13,7 @@ interface TournamentHeaderProps {
 	currentMatchNumber: number;
 	totalMatches: number;
 	etaMinutes: number;
+	// biome-ignore lint/suspicious/noExplicitAny: complex hook API
 	audioManager: any;
 	canUndo: boolean;
 	handleUndo: () => void;
@@ -72,77 +67,37 @@ export const TournamentHeader = memo(function TournamentHeader({
 								<span className="text-white/25" aria-hidden="true">
 									&middot;
 								</span>
-								<span>{tournamentMode === "2v2" ? "Team mode" : "Head to head"}</span>
+								<span>
+									{tournamentMode === "2v2" ? "Team mode" : "Head to head"}
+								</span>
 							</div>
 							<h2 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
-								Match <span className="tabular-nums">{currentMatchNumber}</span> of{" "}
-								<span className="tabular-nums">{totalMatches}</span>
+								Match <span className="tabular-nums">{currentMatchNumber}</span>{" "}
+								of <span className="tabular-nums">{totalMatches}</span>
 							</h2>
 							<div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
 								<span>
-									<span className="tabular-nums">{totalRounds}</span> rounds total
+									<span className="tabular-nums">{totalRounds}</span> rounds
+									total
 								</span>
 								{etaMinutes > 0 && (
 									<span className="inline-flex items-center gap-1">
 										<Clock className="size-3" />
-										About <span className="tabular-nums ml-1">{etaMinutes}</span> minutes left
+										About{" "}
+										<span className="tabular-nums ml-1">{etaMinutes}</span>{" "}
+										minutes left
 									</span>
 								)}
 							</div>
 						</div>
 					</div>
 
-					<div className="flex flex-wrap items-center gap-2">
-						{(
-							[
-								{
-									action: audioManager.handleToggleMute,
-									icon: audioManager.isMuted ? VolumeX : Volume2,
-									label: audioManager.isMuted ? "Unmute" : "Mute",
-								},
-							] as const
-						).map(({ action, icon: Icon, label, active }) => (
-							<button
-								key={label}
-								type="button"
-								onClick={action}
-								className={`inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm transition-[background-color,color,opacity] active:scale-[0.96] ${
-									active
-										? "border-primary/30 bg-primary/15 text-primary"
-										: "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white"
-								}`}
-								aria-label={label}
-								aria-pressed={active !== undefined ? active : undefined}
-								title={label}
-							>
-								<Icon className="size-4" />
-							</button>
-						))}
-						<button
-							type="button"
-							onClick={() => handleUndo()}
-							className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
-								canUndo
-									? "border-primary/30 bg-primary/12 text-primary hover:bg-primary/18"
-									: "cursor-not-allowed border-white/10 bg-white/[0.03] text-white/35"
-							}`}
-							aria-label="Undo last vote"
-							title={canUndo ? "Undo last vote" : "No actions to undo"}
-							disabled={!canUndo}
-						>
-							<Undo2 className="size-4" />
-							<span className="hidden sm:inline">Undo</span>
-						</button>
-						<button
-							type="button"
-							onClick={quitTournament}
-							className="inline-flex h-10 items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/12 px-3 text-sm text-destructive transition-colors hover:bg-destructive/18"
-							aria-label="Quit tournament"
-						>
-							<X className="size-4" />
-							<span className="hidden sm:inline">Exit</span>
-						</button>
-					</div>
+					<TournamentControls
+						audioManager={audioManager}
+						canUndo={canUndo}
+						handleUndo={handleUndo}
+						quitTournament={quitTournament}
+					/>
 				</div>
 
 				<div className="space-y-3">
@@ -166,7 +121,9 @@ export const TournamentHeader = memo(function TournamentHeader({
 							<span
 								className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${getHeatTextClasses(dominantStreak.heatLevel)}`}
 							>
-								<span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px]">HOT</span>
+								<span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px]">
+									HOT
+								</span>
 								<span>
 									{dominantStreak.name} x{dominantStreak.streak}
 								</span>
@@ -178,44 +135,12 @@ export const TournamentHeader = memo(function TournamentHeader({
 						<BracketTree round={roundNumber} totalRounds={totalRounds} />
 					</div>
 
-					<div className="grid gap-3 md:grid-cols-[1.25fr_1fr_1fr]">
-						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-								Match pulse
-							</p>
-							<p className="mt-2 text-sm font-semibold text-white">{matchupTone}</p>
-							<p className="mt-1 text-xs leading-relaxed text-white/58">{pressureCopy}</p>
-						</div>
-						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-								Road to crown
-							</p>
-							<p className="mt-2 text-sm font-semibold text-white">
-								<span className="tabular-nums">{matchesRemaining}</span> match
-								{matchesRemaining === 1 ? "" : "es"} after this
-							</p>
-							<p className="mt-1 text-xs leading-relaxed text-white/58">
-								Roughly <span className="tabular-nums">{roundMatchesLeft}</span> duel
-								{roundMatchesLeft === 1 ? "" : "s"} remain in the live bracket cycle.
-							</p>
-						</div>
-						<div className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 text-white/78">
-							<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-								Quick controls
-							</p>
-							<div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-[0.14em]">
-								<span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/72">
-									A / ← Left
-								</span>
-								<span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/72">
-									D / → Right
-								</span>
-								<span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/72">
-									U Undo
-								</span>
-							</div>
-						</div>
-					</div>
+					<MatchInfoPanel
+						matchupTone={matchupTone}
+						pressureCopy={pressureCopy}
+						matchesRemaining={matchesRemaining}
+						roundMatchesLeft={roundMatchesLeft}
+					/>
 				</div>
 			</div>
 		</header>

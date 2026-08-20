@@ -85,7 +85,9 @@ export function AdminNamesTab({
 
 			{selectedNames.size > 0 && (
 				<div className="mb-4 py-3 sm:py-4 border-y border-border/10">
-					<p className="text-sm text-primary mb-2">{selectedNames.size} selected</p>
+					<p className="text-sm text-primary mb-2">
+						{selectedNames.size} selected
+					</p>
 					<div className="flex flex-wrap gap-2">
 						<Button onClick={() => onBulkAction("hide")} size="small">
 							<EyeOff size={14} /> Hide
@@ -119,7 +121,9 @@ export function AdminNamesTab({
 									<input
 										type="checkbox"
 										checked={selectedNames.has(nameId)}
-										onChange={(event) => onSelectionChange(nameId, event.target.checked)}
+										onChange={(event) =>
+											onSelectionChange(nameId, event.target.checked)
+										}
 										className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
 										aria-label={`Select ${name.name}`}
 									/>
@@ -148,7 +152,9 @@ export function AdminNamesTab({
 											<span>Votes: {name.votes}</span>
 											<span>
 												Score:{" "}
-												{name.popularityScore == null ? "?" : name.popularityScore.toFixed(1)}
+												{name.popularityScore == null
+													? "?"
+													: name.popularityScore.toFixed(1)}
 											</span>
 										</div>
 									</div>
