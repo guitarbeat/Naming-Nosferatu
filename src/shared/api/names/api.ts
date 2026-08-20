@@ -50,8 +50,10 @@ async function runBooleanAdminRpc(
 	errorMessage: string,
 ): Promise<void> {
 	await runAdminMutation(async (client) => {
-		// @ts-expect-error - custom RPCs are not in generated types
-		const { data, error } = await client.rpc(rpcName, args);
+		const internalClient = client as unknown as {
+			rpc: (name: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+		};
+		const { data, error } = await internalClient.rpc(rpcName, args);
 		if (error) {
 			throw error;
 		}

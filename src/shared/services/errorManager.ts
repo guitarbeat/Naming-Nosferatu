@@ -245,7 +245,7 @@ function formatError(
 	context: string,
 	metadata: Record<string, unknown>,
 ): FormattedError {
-	const severity = determineSeverity(errorInfo, metadata);
+	const severity = determineSeverity(errorInfo.type, metadata);
 	const userMessage = getUserFriendlyMessage(errorInfo, context);
 	const diagnostics = buildDiagnostics(errorInfo, context, metadata);
 	const formatted: FormattedError = {

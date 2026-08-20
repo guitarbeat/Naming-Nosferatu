@@ -24,6 +24,8 @@ export interface NameItem {
 	// Visibility
 	isHidden?: boolean;
 	is_hidden?: boolean;
+	isActive?: boolean;
+	is_active?: boolean;
 
 	// Admin controls
 	lockedIn?: boolean;
@@ -38,12 +40,15 @@ export interface NameItem {
 	wins?: number;
 	losses?: number;
 	popularity_score?: number;
+	has_user_rating?: boolean;
 
 	// Selection (client-side UI state)
 	isSelected?: boolean;
 
 	// Provenance & lifecycle
 	owner?: string;
+	createdAt?: string | null;
+	created_at?: string | null;
 	status?: "candidate" | "intake" | "tournament" | "eliminated" | "archived";
 	provenance?: ProvenanceEntry[];
 }
