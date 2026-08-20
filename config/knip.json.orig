@@ -13,8 +13,5 @@
 		"playwright",
 		"tailwindcss"
 	],
-	"ignoreBinaries": [
-		"vercel"
-	],
 	"typescript": true
 }
