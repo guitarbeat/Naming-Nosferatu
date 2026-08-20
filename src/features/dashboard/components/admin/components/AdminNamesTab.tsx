@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2, Lock, Trash2 } from "lucide-react";
-import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
+import { MagicToggle } from "@/shared/components/ui/MagicToggle";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names/nameFilters";
 import type { NameItem } from "@/shared/types";
 
@@ -18,7 +18,7 @@ interface AdminNamesTabProps {
 	onSearchTermChange: (value: string) => void;
 	filterStatus: string;
 	filterOptions: readonly { value: string; label: string }[];
-	onFilterChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+	onFilterChange: (value: any) => void;
 	onRefresh: () => void;
 	selectedNames: ReadonlySet<string>;
 	onBulkAction: (action: BulkAction) => void;
@@ -64,18 +64,13 @@ export function AdminNamesTab({
 					/>
 				</div>
 				<div className="flex gap-2">
-					<select
-						value={filterStatus}
+					<MagicToggle
+						options={filterOptions as any}
+						value={filterStatus as any}
 						onChange={onFilterChange}
-						aria-label="Filter names by status"
-						className="w-full max-w-xs rounded-lg border border-border/20 bg-background px-3 py-2 text-sm text-foreground transition-colors hover:border-border/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
-					>
-						{filterOptions.map((option) => (
-							<option key={option.value} value={option.value}>
-								{option.label}
-							</option>
-						))}
-					</select>
+						ariaLabel="Filter names by status"
+						size="small"
+					/>
 
 					<Button onClick={onRefresh} variant="ghost" size="small">
 						<Loader2 size={16} />
@@ -85,7 +80,9 @@ export function AdminNamesTab({
 
 			{selectedNames.size > 0 && (
 				<div className="mb-4 py-3 sm:py-4 border-y border-border/10">
-					<p className="text-sm text-primary mb-2">{selectedNames.size} selected</p>
+					<p className="text-sm text-primary mb-2">
+						{selectedNames.size} selected
+					</p>
 					<div className="flex flex-wrap gap-2">
 						<Button onClick={() => onBulkAction("hide")} size="small">
 							<EyeOff size={14} /> Hide
@@ -119,7 +116,9 @@ export function AdminNamesTab({
 									<input
 										type="checkbox"
 										checked={selectedNames.has(nameId)}
-										onChange={(event) => onSelectionChange(nameId, event.target.checked)}
+										onChange={(event) =>
+											onSelectionChange(nameId, event.target.checked)
+										}
 										className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
 										aria-label={`Select ${name.name}`}
 									/>
@@ -148,7 +147,9 @@ export function AdminNamesTab({
 											<span>Votes: {name.votes}</span>
 											<span>
 												Score:{" "}
-												{name.popularityScore == null ? "?" : name.popularityScore.toFixed(1)}
+												{name.popularityScore == null
+													? "?"
+													: name.popularityScore.toFixed(1)}
 											</span>
 										</div>
 									</div>
