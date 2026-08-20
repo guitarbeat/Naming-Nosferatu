@@ -1,7 +1,7 @@
-🎯 **What:** Removed the 'as any' cast from the Recharts Tooltip formatter in TopNamesChart.tsx.
+🎯 **What:** Synced pnpm versions to 10.26.1 across GitHub Actions workflows and package.json configuration to resolve CI failures.
 
-💡 **Why:** Relying on `any` bypasses TypeScript's type checking. By removing `as any` and letting TypeScript infer the parameters (`value`, `_`, `props`), we improve type safety. The payload was explicitly typed to ensure correct property access without resorting to `any`. While doing this, a Biome lint error regarding array index usage for the `Cell` key was also fixed.
+💡 **Why:** GitHub Actions workflows were configured to use pnpm version 10.27.0, whereas `package.json` had `"packageManager": "pnpm@10.26.1"`. This inconsistency caused a version mismatch error during the CI build process (`ERR_PNPM_BAD_PM_VERSION`). Syncing both sides to 10.26.1 ensures successful action setup. Also removed the 'as any' cast from the Recharts Tooltip formatter in `TopNamesChart.tsx` improving type safety.
 
-✅ **Verification:** Verified by running `pnpm tsc --noEmit` and the Biome checks. All tests run perfectly and `pnpm run check` finishes without errors.
+✅ **Verification:** Verified by running `pnpm run check` and fixing versions in CI workflows and `package.json`.
 
-✨ **Result:** Improved type safety, maintainability, and readability.
+✨ **Result:** CI action setup succeeds and types are fully checked.
