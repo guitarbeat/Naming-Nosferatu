@@ -55,5 +55,15 @@ export function filterNamesByStatusAndSearch(
 		return filtered;
 	}
 
-	return filtered.filter((name) => matchesNameSearchTerm(name, normalizedSearch));
+	// ⚡ Bolt Optimization: Use a native for-loop instead of Array.prototype.filter to avoid callback overhead in hot path.
+	const result: NameWithStats[] = [];
+	const len = filtered.length;
+	for (let i = 0; i < len; i++) {
+		const name = filtered[i];
+		if (matchesNameSearchTerm(name, normalizedSearch)) {
+			result.push(name);
+		}
+	}
+
+	return result;
 }
