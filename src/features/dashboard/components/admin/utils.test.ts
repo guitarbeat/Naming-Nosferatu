@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { NameItem } from "@/shared/types";
 import type { NameWithStats, SiteStatsLike } from "./types";
-import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
+import {
+	buildAdminStats,
+	filterNamesByStatusAndSearch,
+	mapNameToDisplay,
+} from "./utils";
 
 describe("admin utils - mapNameToDisplay", () => {
 	it("maps name correctly with wins and losses", () => {
@@ -130,25 +134,41 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 
 	describe("Search Term Filtering", () => {
 		it("should filter by search term in name (case-insensitive)", () => {
-			const result = filterNamesByStatusAndSearch(mockNames, "all", "activename");
+			const result = filterNamesByStatusAndSearch(
+				mockNames,
+				"all",
+				"activename",
+			);
 			expect(result).toHaveLength(2);
 			expect(result.map((n) => n.id)).toEqual([1, 2]);
 		});
 
 		it("should filter by search term in description (case-insensitive)", () => {
-			const result = filterNamesByStatusAndSearch(mockNames, "all", "hidden item");
+			const result = filterNamesByStatusAndSearch(
+				mockNames,
+				"all",
+				"hidden item",
+			);
 			expect(result).toHaveLength(1);
 			expect(result[0].id).toBe(3);
 		});
 
 		it("should ignore surrounding whitespace in search term", () => {
-			const result = filterNamesByStatusAndSearch(mockNames, "all", "  locked  ");
+			const result = filterNamesByStatusAndSearch(
+				mockNames,
+				"all",
+				"  locked  ",
+			);
 			expect(result).toHaveLength(2);
 			expect(result.map((n) => n.id)).toEqual([4, 5]);
 		});
 
 		it("should return empty array if no matches found", () => {
-			const result = filterNamesByStatusAndSearch(mockNames, "all", "nonexistent");
+			const result = filterNamesByStatusAndSearch(
+				mockNames,
+				"all",
+				"nonexistent",
+			);
 			expect(result).toHaveLength(0);
 		});
 	});
@@ -159,18 +179,30 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 			expect(result).toHaveLength(2);
 			expect(result.map((n) => n.id)).toEqual([1, 2]);
 
-			const resultHidden = filterNamesByStatusAndSearch(mockNames, "hidden", "name");
+			const resultHidden = filterNamesByStatusAndSearch(
+				mockNames,
+				"hidden",
+				"name",
+			);
 			expect(resultHidden).toHaveLength(2);
 			expect(resultHidden.map((n) => n.id)).toEqual([3, 5]);
 		});
 
 		it("should return empty array if status matches but search doesn't", () => {
-			const result = filterNamesByStatusAndSearch(mockNames, "active", "locked");
+			const result = filterNamesByStatusAndSearch(
+				mockNames,
+				"active",
+				"locked",
+			);
 			expect(result).toHaveLength(0);
 		});
 
 		it("should return empty array if search matches but status doesn't", () => {
-			const result = filterNamesByStatusAndSearch(mockNames, "locked", "first active");
+			const result = filterNamesByStatusAndSearch(
+				mockNames,
+				"locked",
+				"first active",
+			);
 			expect(result).toHaveLength(0);
 		});
 	});
@@ -186,6 +218,7 @@ describe("buildAdminStats", () => {
 			lockedInNames: 0,
 			totalUsers: 0,
 			recentVotes: 0,
+			activeTournaments: 0,
 		});
 	});
 
@@ -201,6 +234,7 @@ describe("buildAdminStats", () => {
 		const siteStats: SiteStatsLike = {
 			totalUsers: 42,
 			totalRatings: 100,
+			activeTournaments: 5,
 		};
 
 		const result = buildAdminStats(names, siteStats);
@@ -212,6 +246,7 @@ describe("buildAdminStats", () => {
 			lockedInNames: 2,
 			totalUsers: 42,
 			recentVotes: 100,
+			activeTournaments: 5,
 		});
 	});
 
@@ -219,26 +254,31 @@ describe("buildAdminStats", () => {
 		const result = buildAdminStats([], {
 			totalUsers: undefined,
 			totalRatings: null,
+			activeTournaments: undefined,
 		} as unknown as SiteStatsLike);
 
 		expect(result.totalUsers).toBe(0);
 		expect(result.recentVotes).toBe(0);
+		expect(result.activeTournaments).toBe(0);
 	});
 
 	it("handles string values in siteStats gracefully via toNumber", () => {
 		const result = buildAdminStats([], {
 			totalUsers: "55",
 			totalRatings: "230",
+			activeTournaments: "12",
 		} as unknown as SiteStatsLike);
 
 		expect(result.totalUsers).toBe(55);
 		expect(result.recentVotes).toBe(230);
+		expect(result.activeTournaments).toBe(12);
 	});
 
 	it("handles invalid number values in siteStats by returning 0", () => {
 		const result = buildAdminStats([], {
 			totalUsers: "invalid",
 			totalRatings: {},
+			activeTournaments: "not_a_number",
 		} as unknown as SiteStatsLike);
 
 		expect(result.totalUsers).toBe(0);

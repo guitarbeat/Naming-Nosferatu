@@ -11,6 +11,7 @@ export interface AdminStats {
 	lockedInNames: number;
 	totalUsers: number;
 	recentVotes: number;
+	activeTournaments: number;
 }
 
 export interface NameWithStats extends NameItem {
@@ -22,4 +23,5 @@ export interface NameWithStats extends NameItem {
 export interface SiteStatsLike {
 	totalUsers?: unknown;
 	totalRatings?: unknown;
+	activeTournaments?: unknown;
 }

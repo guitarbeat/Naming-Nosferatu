@@ -1,5 +1,8 @@
 import { subDays, subMonths, subWeeks, subYears } from "date-fns";
-import { computeRatingStats, getPercentileRank } from "@/shared/lib/ratingStats";
+import {
+	computeRatingStats,
+	getPercentileRank,
+} from "@/shared/lib/ratingStats";
 import { throwOnRpcError } from "./errorUtils";
 import { withSupabase } from "./runtime";
 
@@ -25,6 +28,7 @@ export interface SiteStats {
 	totalRatings: number;
 	totalSelections: number;
 	avgRating: number;
+	activeTournaments: number;
 	[key: string]: unknown;
 }
 
@@ -74,13 +78,17 @@ function mapLeaderboardRow(row: Record<string, unknown>): LeaderboardItem {
 }
 
 export const leaderboardAPI = {
-	getLeaderboard: async (limit: number | null = 50): Promise<LeaderboardItem[]> => {
+	getLeaderboard: async (
+		limit: number | null = 50,
+	): Promise<LeaderboardItem[]> => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client.rpc("get_leaderboard_stats", {
 				limit_count: limit ?? 50,
 			});
 			throwOnRpcError(error, "Failed to fetch leaderboard stats");
-			const rows = ((data as Array<Record<string, unknown>>) ?? []).map(mapLeaderboardRow);
+			const rows = ((data as Array<Record<string, unknown>>) ?? []).map(
+				mapLeaderboardRow,
+			);
 
 			const allRatings = rows.map((r) => r.avg_rating);
 			const stats = computeRatingStats(allRatings);
@@ -108,6 +116,7 @@ export const statsAPI = {
 				totalRatings: toNumber(stats.totalRatings),
 				totalSelections: toNumber(stats.totalSelections),
 				avgRating: toNumber(stats.avgRating),
+				activeTournaments: toNumber(stats.activeTournaments),
 			};
 		}, null);
 	},
