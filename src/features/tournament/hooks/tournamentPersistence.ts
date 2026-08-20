@@ -96,10 +96,25 @@ export function sanitizePersistentState(
 	};
 
 	const mode: TournamentMode = merged.mode === "2v2" ? "2v2" : "1v1";
-	const teams = Array.isArray(merged.teams) ? merged.teams.filter(isValidTeam) : [];
-	const teamMatches = Array.isArray(merged.teamMatches)
-		? merged.teamMatches.filter(isValidTeamMatch)
-		: [];
+
+	// ⚡ Bolt Optimization: Replace callback-based filter with native loop to reduce function call overhead and improve iteration speed.
+	const teams: Team[] = [];
+	if (Array.isArray(merged.teams)) {
+		for (let i = 0; i < merged.teams.length; i++) {
+			if (isValidTeam(merged.teams[i])) {
+				teams.push(merged.teams[i]);
+			}
+		}
+	}
+
+	const teamMatches: TeamMatch[] = [];
+	if (Array.isArray(merged.teamMatches)) {
+		for (let i = 0; i < merged.teamMatches.length; i++) {
+			if (isValidTeamMatch(merged.teamMatches[i])) {
+				teamMatches.push(merged.teamMatches[i]);
+			}
+		}
+	}
 
 	return {
 		...merged,
