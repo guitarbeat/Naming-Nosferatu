@@ -1,4 +1,4 @@
-import { max, mean, median, min, standardDeviation } from "simple-statistics";
+import { max, mean, medianSorted, min, standardDeviation } from "simple-statistics";
 
 export interface RatingStats {
 	mean: number;
@@ -23,7 +23,9 @@ export function computeRatingStats(ratings: number[]): RatingStats | null {
 	const sorted = [...ratings].sort((a, b) => a - b);
 	return {
 		mean: mean(ratings),
-		median: median(sorted),
+		// ⚡ Bolt Optimization: Use medianSorted instead of median on an already sorted array
+		// Prevents simple-statistics from performing an unnecessary O(N log N) internal sort
+		median: medianSorted(sorted),
 		stdDev: standardDeviation(ratings),
 		min: min(sorted),
 		max: max(sorted),
