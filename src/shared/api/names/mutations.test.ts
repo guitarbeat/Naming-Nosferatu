@@ -3,6 +3,7 @@ import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils"
 import {
 	batchUpdateLocked,
 	batchUpdateVisibility,
+	runAdminMutation,
 	softDeleteName,
 	toggleNameHidden,
 	toggleNameLocked,
@@ -44,6 +45,13 @@ beforeEach(() => {
 
 afterEach(() => {
 	vi.clearAllMocks();
+});
+
+describe("runAdminMutation", () => {
+	it("throws when Supabase client is unavailable", async () => {
+		vi.mocked(resolveSupabaseClient).mockResolvedValueOnce(null);
+		await expect(runAdminMutation(vi.fn())).rejects.toThrow(SUPABASE_UNAVAILABLE_MSG);
+	});
 });
 
 describe("softDeleteName", () => {
