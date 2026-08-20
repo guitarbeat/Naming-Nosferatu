@@ -1,0 +1,17 @@
+--- src/features/tournament/hooks/useTournamentState.ts
++++ src/features/tournament/hooks/useTournamentState.ts
+@@ -391,7 +391,13 @@
+					winnerSide,
+				})
+				.catch((err: unknown) => {
+-					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
++					ErrorManager.handleError(err, "[tournament] apply_tournament_match_elo", {
++						userName: userName ?? "anonymous",
++						leftIds,
++						rightIds,
++						winnerSide,
++						isFatal: false,
++					});
+				});
+
+			dispatch({
