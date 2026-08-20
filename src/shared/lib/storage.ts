@@ -1,6 +1,5 @@
 import CryptoJS from "crypto-js";
-
-const isDev = () => import.meta.env?.DEV ?? false;
+import { logger } from "./logger";
 
 // Secret key used to encrypt storage values.
 // In a real application, this should ideally be derived from a user-specific value or backend secret.
@@ -120,7 +119,10 @@ export function isStorageAvailable(): boolean {
 	}
 }
 
-export function getStorageString(key: string, fallback: string | null = null): string | null {
+export function getStorageString(
+	key: string,
+	fallback: string | null = null,
+): string | null {
 	if (!isStorageAvailable()) {
 		return fallback;
 	}
@@ -132,9 +134,10 @@ export function getStorageString(key: string, fallback: string | null = null): s
 		}
 		return decrypt(value);
 	} catch (error) {
-		if (isDev()) {
-			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
-		}
+		logger.error(
+			`[storage] Failed to read key "${key}" from localStorage:`,
+			error,
+		);
 		return fallback;
 	}
 }
@@ -149,9 +152,10 @@ export function setStorageString(key: string, value: string): boolean {
 		window.localStorage.setItem(key, encryptedValue);
 		return true;
 	} catch (error) {
-		if (isDev()) {
-			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
-		}
+		logger.error(
+			`[storage] Failed to write key "${key}" to localStorage:`,
+			error,
+		);
 		return false;
 	}
 }
@@ -164,9 +168,10 @@ export function removeStorageItem(key: string): void {
 	try {
 		window.localStorage.removeItem(key);
 	} catch (error) {
-		if (isDev()) {
-			console.error(`[storage] Failed to remove key "${key}" from localStorage:`, error);
-		}
+		logger.error(
+			`[storage] Failed to remove key "${key}" from localStorage:`,
+			error,
+		);
 	}
 }
 
@@ -178,9 +183,7 @@ export function parseJsonValue<T>(value: string | null, fallback: T): T {
 	try {
 		return JSON.parse(value) as T;
 	} catch (error) {
-		if (isDev()) {
-			console.error("[storage] Failed to parse JSON from localStorage:", error);
-		}
+		logger.error("[storage] Failed to parse JSON from localStorage:", error);
 		return fallback;
 	}
 }
@@ -200,9 +203,10 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 		window.localStorage.setItem(key, encryptedValue);
 		return true;
 	} catch (error) {
-		if (isDev()) {
-			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
-		}
+		logger.error(
+			`[storage] Failed to write key "${key}" to localStorage:`,
+			error,
+		);
 		return false;
 	}
 }
