@@ -6,15 +6,25 @@ import { useTournamentKeyboard } from "./useTournamentKeyboard";
 describe("useTournamentKeyboard", () => {
 	const mockOnVoteForSide = vi.fn();
 	const mockOnUndo = vi.fn();
-	const mockOnQuit = vi.fn();
+	const _mockOnQuit = vi.fn();
 
 	const defaultOptions = {
-		onVoteForSide: mockOnVoteForSide,
-		onUndo: mockOnUndo,
-		onQuit: mockOnQuit,
+		handleVoteForSide: mockOnVoteForSide,
+		handleUndo: mockOnUndo,
 		canUndo: true,
 		isVoting: false,
-		isOpeningReveal: false,
+		openingBracketReveal: false,
+		isComplete: false,
+		matchData: {
+			leftId: "1",
+			rightId: "2",
+			leftName: "A",
+			rightName: "B",
+			leftMembers: [],
+			rightMembers: [],
+			leftIsTeam: false,
+			rightIsTeam: false,
+		},
 	};
 
 	beforeEach(() => {
@@ -23,7 +33,9 @@ describe("useTournamentKeyboard", () => {
 
 	describe("handleKeyDown (element level)", () => {
 		it("calls onVoteForSide and prevents default on Enter", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = {
 				key: "Enter",
 				preventDefault: vi.fn(),
@@ -36,7 +48,9 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("calls onVoteForSide and prevents default on Space", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = {
 				key: " ",
 				preventDefault: vi.fn(),
@@ -49,7 +63,9 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("ignores other keys", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = {
 				key: "a",
 				preventDefault: vi.fn(),
@@ -71,18 +87,10 @@ describe("useTournamentKeyboard", () => {
 			} as unknown as globalThis.KeyboardEvent;
 		};
 
-		it("calls onVoteForSide('left') on '1'", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = createGlobalEvent("1");
-
-			result.current.handleGlobalKeyDown(event);
-
-			expect(event.preventDefault).toHaveBeenCalled();
-			expect(mockOnVoteForSide).toHaveBeenCalledWith("left");
-		});
-
 		it("calls onVoteForSide('left') on 'ArrowLeft'", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = createGlobalEvent("ArrowLeft");
 
 			result.current.handleGlobalKeyDown(event);
@@ -91,18 +99,10 @@ describe("useTournamentKeyboard", () => {
 			expect(mockOnVoteForSide).toHaveBeenCalledWith("left");
 		});
 
-		it("calls onVoteForSide('right') on '2'", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = createGlobalEvent("2");
-
-			result.current.handleGlobalKeyDown(event);
-
-			expect(event.preventDefault).toHaveBeenCalled();
-			expect(mockOnVoteForSide).toHaveBeenCalledWith("right");
-		});
-
 		it("calls onVoteForSide('right') on 'ArrowRight'", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = createGlobalEvent("ArrowRight");
 
 			result.current.handleGlobalKeyDown(event);
@@ -112,7 +112,9 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("calls onUndo on 'u' when canUndo is true", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = createGlobalEvent("u");
 
 			result.current.handleGlobalKeyDown(event);
@@ -133,31 +135,11 @@ describe("useTournamentKeyboard", () => {
 			expect(mockOnUndo).not.toHaveBeenCalled();
 		});
 
-		it("calls onQuit on 'q'", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = createGlobalEvent("q");
-
-			result.current.handleGlobalKeyDown(event);
-
-			expect(event.preventDefault).toHaveBeenCalled();
-			expect(mockOnQuit).toHaveBeenCalled();
-		});
-
-		it("handles upper case keys correctly", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = createGlobalEvent("Q");
-
-			result.current.handleGlobalKeyDown(event);
-
-			expect(event.preventDefault).toHaveBeenCalled();
-			expect(mockOnQuit).toHaveBeenCalled();
-		});
-
 		it("does nothing when isVoting is true", () => {
 			const { result } = renderHook(() =>
 				useTournamentKeyboard({ ...defaultOptions, isVoting: true }),
 			);
-			const event = createGlobalEvent("1");
+			const event = createGlobalEvent("a");
 
 			result.current.handleGlobalKeyDown(event);
 
@@ -167,9 +149,12 @@ describe("useTournamentKeyboard", () => {
 
 		it("does nothing when isOpeningReveal is true", () => {
 			const { result } = renderHook(() =>
-				useTournamentKeyboard({ ...defaultOptions, isOpeningReveal: true }),
+				useTournamentKeyboard({
+					...defaultOptions,
+					openingBracketReveal: true,
+				}),
 			);
-			const event = createGlobalEvent("1");
+			const event = createGlobalEvent("a");
 
 			result.current.handleGlobalKeyDown(event);
 
@@ -178,9 +163,11 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("does nothing when target is an INPUT", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const input = document.createElement("input");
-			const event = createGlobalEvent("1", input);
+			const event = createGlobalEvent("a", input);
 
 			result.current.handleGlobalKeyDown(event);
 
@@ -189,9 +176,11 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("does nothing when target is a TEXTAREA", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const textarea = document.createElement("textarea");
-			const event = createGlobalEvent("1", textarea);
+			const event = createGlobalEvent("a", textarea);
 
 			result.current.handleGlobalKeyDown(event);
 
@@ -200,9 +189,11 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("does nothing when target is a SELECT", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const select = document.createElement("select");
-			const event = createGlobalEvent("1", select);
+			const event = createGlobalEvent("a", select);
 
 			result.current.handleGlobalKeyDown(event);
 
@@ -211,10 +202,12 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("does nothing when target is contentEditable", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const div = document.createElement("div");
 			div.isContentEditable = true;
-			const event = createGlobalEvent("1", div);
+			const event = createGlobalEvent("a", div);
 
 			result.current.handleGlobalKeyDown(event);
 
@@ -223,21 +216,24 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("ignores unmapped keys", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
-			const event = createGlobalEvent("a");
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
+			const event = createGlobalEvent("x");
 
 			result.current.handleGlobalKeyDown(event);
 
 			expect(event.preventDefault).not.toHaveBeenCalled();
 			expect(mockOnVoteForSide).not.toHaveBeenCalled();
 			expect(mockOnUndo).not.toHaveBeenCalled();
-			expect(mockOnQuit).not.toHaveBeenCalled();
 		});
 
 		it("does not early exit if target is not an HTMLElement", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = {
-				key: "1",
+				key: "a",
 				preventDefault: vi.fn(),
 				target: new EventTarget(), // Not an HTMLElement
 			} as unknown as globalThis.KeyboardEvent;
@@ -249,9 +245,11 @@ describe("useTournamentKeyboard", () => {
 		});
 
 		it("does not early exit if target is null", () => {
-			const { result } = renderHook(() => useTournamentKeyboard(defaultOptions));
+			const { result } = renderHook(() =>
+				useTournamentKeyboard(defaultOptions),
+			);
 			const event = {
-				key: "1",
+				key: "a",
 				preventDefault: vi.fn(),
 				target: null,
 			} as unknown as globalThis.KeyboardEvent;
