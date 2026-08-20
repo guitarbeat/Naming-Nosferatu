@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { computeRatingStats, getPercentileRank } from "@/shared/lib/ratingStats";
+import {
+	computeRatingStats,
+	getPercentileRank,
+} from "@/shared/lib/ratingStats";
 import { withSupabase } from "./runtime";
 import { leaderboardAPI } from "./statsService";
 
@@ -18,8 +21,8 @@ describe("leaderboardAPI", () => {
 	const mockedComputeRatingStats = vi.mocked(computeRatingStats);
 	const mockedGetPercentileRank = vi.mocked(getPercentileRank);
 
-	let mockRpc: any;
-	let mockClient: any;
+	let mockRpc: import("vitest").Mock;
+	let mockClient: Record<string, import("vitest").Mock>;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -31,7 +34,7 @@ describe("leaderboardAPI", () => {
 		// By default, execute the callback with our mock client
 		mockedWithSupabase.mockImplementation(async (callback, fallback) => {
 			try {
-				return await callback(mockClient);
+				return await callback(mockClient as never);
 			} catch (_e) {
 				return fallback;
 			}
@@ -137,7 +140,10 @@ describe("leaderboardAPI", () => {
 	});
 
 	it("returns empty array when RPC returns an error", async () => {
-		mockRpc.mockResolvedValueOnce({ data: null, error: { message: "Database error" } });
+		mockRpc.mockResolvedValueOnce({
+			data: null,
+			error: { message: "Database error" },
+		});
 
 		const result = await leaderboardAPI.getLeaderboard(50);
 

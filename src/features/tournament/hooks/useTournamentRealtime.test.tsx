@@ -8,8 +8,8 @@ vi.mock("@/shared/services/supabase/runtime", () => ({
 }));
 
 describe("useTournamentRealtime", () => {
-	let mockChannel: any;
-	let mockClient: any;
+	let mockChannel: Record<string, import("vitest").Mock>;
+	let mockClient: Record<string, import("vitest").Mock>;
 
 	beforeEach(() => {
 		vi.resetAllMocks();
@@ -41,14 +41,19 @@ describe("useTournamentRealtime", () => {
 	});
 
 	it("connects when autoConnect is true", () => {
-		const { result } = renderHook(() => useTournamentRealtime({ autoConnect: true }));
+		const { result } = renderHook(() =>
+			useTournamentRealtime({ autoConnect: true }),
+		);
 		expect(result.current).toBeTruthy();
 	});
 
 	it("provides subscription methods that can be called", () => {
 		const { result } = renderHook(() => useTournamentRealtime());
 
-		const unsubTournament = result.current.subscribeToTournament("test-123", () => {});
+		const unsubTournament = result.current.subscribeToTournament(
+			"test-123",
+			() => {},
+		);
 		expect(typeof unsubTournament).toBe("function");
 
 		const unsubMatches = result.current.subscribeToMatches(() => {});
@@ -82,14 +87,19 @@ describe("useTournamentRealtime", () => {
 		});
 
 		const onCall = mockChannel.on.mock.calls.find(
-			(call: any) => call[0] === "broadcast" && call[1].event === "tournament_update",
+			(call: unknown[]) =>
+				call[0] === "broadcast" &&
+				(call[1] as { event: string }).event === "tournament_update",
 		);
 		expect(onCall).toBeDefined();
 
 		const handler = onCall[2];
 
 		handler({ payload: { tournamentId: "test-123", status: "in_progress" } });
-		expect(callback).toHaveBeenCalledWith({ tournamentId: "test-123", status: "in_progress" });
+		expect(callback).toHaveBeenCalledWith({
+			tournamentId: "test-123",
+			status: "in_progress",
+		});
 
 		callback.mockClear();
 		handler({ payload: {} });
@@ -102,7 +112,9 @@ describe("useTournamentRealtime", () => {
 	});
 
 	it("subscribes to matches (rating changes) and handles events", async () => {
-		const { result } = renderHook(() => useTournamentRealtime({ autoConnect: true }));
+		const { result } = renderHook(() =>
+			useTournamentRealtime({ autoConnect: true }),
+		);
 		const callback = vi.fn();
 
 		let unsub: () => void;
@@ -114,7 +126,9 @@ describe("useTournamentRealtime", () => {
 			expect(mockClient.channel).toHaveBeenCalledWith("db-changes");
 		});
 
-		const onCall = mockChannel.on.mock.calls.find((call: any) => call[0] === "postgres_changes");
+		const onCall = mockChannel.on.mock.calls.find(
+			(call: unknown[]) => call[0] === "postgres_changes",
+		);
 		expect(onCall).toBeDefined();
 
 		const handler = onCall[2];
@@ -151,10 +165,14 @@ describe("useTournamentRealtime", () => {
 		});
 
 		const joinCall = mockChannel.on.mock.calls.find(
-			(call: any) => call[0] === "presence" && call[1].event === "join",
+			(call: unknown[]) =>
+				call[0] === "presence" &&
+				(call[1] as { event: string }).event === "join",
 		);
 		const leaveCall = mockChannel.on.mock.calls.find(
-			(call: any) => call[0] === "presence" && call[1].event === "leave",
+			(call: unknown[]) =>
+				call[0] === "presence" &&
+				(call[1] as { event: string }).event === "leave",
 		);
 
 		expect(joinCall).toBeDefined();
@@ -180,7 +198,9 @@ describe("useTournamentRealtime", () => {
 	});
 
 	it("calls cleanup on the service when cleanup is called", () => {
-		const { result } = renderHook(() => useTournamentRealtime({ autoConnect: true }));
+		const { result } = renderHook(() =>
+			useTournamentRealtime({ autoConnect: true }),
+		);
 
 		act(() => {
 			result.current.cleanup();
@@ -190,16 +210,22 @@ describe("useTournamentRealtime", () => {
 	});
 
 	it("handles connect failure gracefully", async () => {
-		vi.mocked(resolveSupabaseClient).mockRejectedValueOnce(new Error("Network Error"));
+		vi.mocked(resolveSupabaseClient).mockRejectedValueOnce(
+			new Error("Network Error"),
+		);
 
-		const { result } = renderHook(() => useTournamentRealtime({ autoConnect: true }));
+		const { result } = renderHook(() =>
+			useTournamentRealtime({ autoConnect: true }),
+		);
 
 		await new Promise((r) => setTimeout(r, 20));
 		expect(result.current).toBeTruthy();
 	});
 
 	it("covers various connection states and disconnect logic", async () => {
-		const { result } = renderHook(() => useTournamentRealtime({ autoConnect: true }));
+		const { result } = renderHook(() =>
+			useTournamentRealtime({ autoConnect: true }),
+		);
 
 		await vi.waitFor(() => {
 			expect(mockClient.channel).toHaveBeenCalledWith("db-changes");
@@ -227,7 +253,9 @@ describe("useTournamentRealtime", () => {
 			unsub();
 		});
 
-		const { unmount } = renderHook(() => useTournamentRealtime({ autoConnect: true }));
+		const { unmount } = renderHook(() =>
+			useTournamentRealtime({ autoConnect: true }),
+		);
 
 		act(() => {
 			unmount();
@@ -264,7 +292,10 @@ describe("useTournamentRealtime", () => {
 
 		let unsubTournament: () => void;
 		act(() => {
-			unsubTournament = result.current.subscribeToTournament("test-124", () => {});
+			unsubTournament = result.current.subscribeToTournament(
+				"test-124",
+				() => {},
+			);
 		});
 		act(() => {
 			unsubTournament();

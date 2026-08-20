@@ -50,7 +50,9 @@ describe("ratingStats", () => {
 
 		describe("edge cases", () => {
 			it("returns 50 when all valid values are null or NaN", () => {
-				expect(calculatePercentile(10, [NaN, null as any])).toBe(50);
+				expect(calculatePercentile(10, [NaN, null as unknown as number])).toBe(
+					50,
+				);
 			});
 
 			it("returns 0 if the value is NaN", () => {
