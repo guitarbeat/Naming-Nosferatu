@@ -160,6 +160,7 @@ export function AdminNamesTab({
 										variant="ghost"
 										size="small"
 										aria-label={hidden ? "Unhide name" : "Hide name"}
+										title={hidden ? "Unhide name" : "Hide name"}
 									>
 										{hidden ? <Eye size={14} /> : <EyeOff size={14} />}
 									</Button>
@@ -168,6 +169,7 @@ export function AdminNamesTab({
 										variant="ghost"
 										size="small"
 										aria-label={locked ? "Unlock name" : "Lock name"}
+										title={locked ? "Unlock name" : "Lock name"}
 									>
 										<Lock size={14} />
 									</Button>
@@ -176,6 +178,7 @@ export function AdminNamesTab({
 										variant="ghost"
 										size="small"
 										aria-label="Delete name"
+										title="Delete name"
 										className="text-destructive hover:text-destructive"
 									>
 										<Trash2 size={14} />

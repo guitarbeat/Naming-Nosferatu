@@ -138,6 +138,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 							onClick={quitTournament}
 							className="inline-flex h-10 items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/12 px-3 text-sm text-destructive transition-colors hover:bg-destructive/18"
 							aria-label="Quit tournament"
+							title="Quit tournament"
 						>
 							<X className="size-4" />
 							<span className="hidden sm:inline">Exit</span>
