@@ -79,43 +79,33 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 	return <div className="flex items-center justify-between mb-5">{headerContent}</div>;
 }
 
-export function Modal({
-	title,
-	open,
-	onClose,
-	children,
-	closeDisabled = false,
-	description,
-	hideTitle = false,
-}: ModalProps) {
-	const isOpenResolved = open ?? true;
-	const { isClosing, shouldRender } = useModalAnimation(isOpenResolved);
-	const dialogRef = useRef<HTMLDivElement>(null);
-	const previousFocusRef = useRef<HTMLElement | null>(null);
-	const hasCapturedFocusRef = useRef(false);
+function useModalClose(onClose: () => void, closeDisabled: boolean) {
 	const onCloseRef = useRef(onClose);
-
-	// Keep onCloseRef always pointing to the latest onClose callback
 	useEffect(() => {
 		onCloseRef.current = onClose;
 	});
-
-	const requestClose = useCallback(() => {
+	return useCallback(() => {
 		if (closeDisabled) {
 			return;
 		}
 		onCloseRef.current();
 	}, [closeDisabled]);
+}
 
-	// Auto-focus the dialog on mount and restore focus on unmount
+function useModalFocus(
+	dialogRef: React.RefObject<HTMLDivElement | null>,
+	shouldRender: boolean,
+	isClosing: boolean,
+) {
+	const previousFocusRef = useRef<HTMLElement | null>(null);
+	const hasCapturedFocusRef = useRef(false);
+
 	useEffect(() => {
 		if (shouldRender && !isClosing) {
-			// Only capture the trigger element on the initial open, not on rapid re-opens
 			if (!hasCapturedFocusRef.current) {
 				previousFocusRef.current = document.activeElement as HTMLElement | null;
 				hasCapturedFocusRef.current = true;
 			}
-			// Use a small delay so the DOM is ready
 			const timer = window.setTimeout(() => {
 				dialogRef.current?.focus();
 			}, 0);
@@ -129,9 +119,15 @@ export function Modal({
 			}
 			hasCapturedFocusRef.current = false;
 		}
-	}, [shouldRender, isClosing]);
+	}, [shouldRender, isClosing, dialogRef]);
+}
 
-	const handleKeyDown = useCallback(
+function useModalKeyDown(
+	dialogRef: React.RefObject<HTMLDivElement | null>,
+	requestClose: () => void,
+	closeDisabled: boolean,
+) {
+	return useCallback(
 		(event: React.KeyboardEvent<HTMLDivElement>) => {
 			if (event.key === "Escape" && !closeDisabled) {
 				event.preventDefault();
@@ -171,8 +167,25 @@ export function Modal({
 				}
 			}
 		},
-		[closeDisabled, requestClose],
+		[closeDisabled, requestClose, dialogRef],
 	);
+}
+
+export function Modal({
+	title,
+	open,
+	onClose,
+	children,
+	closeDisabled = false,
+	description,
+	hideTitle = false,
+}: ModalProps) {
+	const isOpenResolved = open ?? true;
+	const { isClosing, shouldRender } = useModalAnimation(isOpenResolved);
+	const dialogRef = useRef<HTMLDivElement>(null);
+	const requestClose = useModalClose(onClose, closeDisabled);
+	useModalFocus(dialogRef, shouldRender, isClosing);
+	const handleKeyDown = useModalKeyDown(dialogRef, requestClose, closeDisabled);
 
 	if (!shouldRender) {
 		return null;
