@@ -1,5 +1,7 @@
-🎯 **What:** Added tests for the haveSameIds helper function in useTournamentState.
+🎯 **What:** Removed the 'as any' cast from the Recharts Tooltip formatter in TopNamesChart.tsx.
 
-📊 **Coverage:** Tests cover equal length, different length, different order, empty array, and duplicated elements cases.
+💡 **Why:** Relying on `any` bypasses TypeScript's type checking. By removing `as any` and letting TypeScript infer the parameters (`value`, `_`, `props`), we improve type safety. The payload was explicitly typed to ensure correct property access without resorting to `any`. While doing this, a Biome lint error regarding array index usage for the `Cell` key was also fixed.
 
-✨ **Result:** Improved test coverage for useTournamentState.
+✅ **Verification:** Verified by running `pnpm tsc --noEmit` and the Biome checks. All tests run perfectly and `pnpm run check` finishes without errors.
+
+✨ **Result:** Improved type safety, maintainability, and readability.
