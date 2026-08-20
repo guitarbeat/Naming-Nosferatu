@@ -44,7 +44,7 @@ $$;
 GRANT EXECUTE ON FUNCTION public.get_site_stats() TO authenticated, anon;
 
 -- ============================================================================
--- FIX get_leaderboard_stats (now uses cat_names and user_cat_name_ratings)
+-- FIXED get_leaderboard_stats (now uses cat_names and user_cat_name_ratings)
 -- ============================================================================
 CREATE OR REPLACE FUNCTION public.get_leaderboard_stats(limit_count int DEFAULT 50)
 RETURNS TABLE (
