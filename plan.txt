@@ -1,4 +1,0 @@
-1. Use `replace_with_git_merge_diff` to modify `supabase/migrations/20260401400000_save_user_ratings_no_global_counters.sql` to add a check in the `ELSE` branch (when `auth.uid() IS NULL`) that raises an exception if `TRIM(p_user_name)` exists in `public.cat_user_roles` with a non-null `user_id`. This prevents anonymous users from spoofing authenticated users.
-2. Use `run_in_bash_session` to execute the full test suite (`pnpm test`) to ensure no regressions.
-3. Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
-4. Use the `submit` tool to create the PR with the title "🔒 [security fix description]" and the required structure in the description.

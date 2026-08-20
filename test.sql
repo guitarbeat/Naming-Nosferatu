@@ -1,4 +1,0 @@
-CREATE OR REPLACE FUNCTION dummy() RETURNS void AS $$
-BEGIN
-END;
-$$ LANGUAGE plpgsql;

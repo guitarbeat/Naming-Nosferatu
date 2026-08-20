@@ -37,6 +37,15 @@ BEGIN
     );
   ELSE
     v_user_name := TRIM(p_user_name);
+
+    -- Prevent anonymous users from spoofing authenticated users
+    IF EXISTS (
+      SELECT 1 FROM public.cat_user_roles
+      WHERE user_name = v_user_name
+        AND user_id IS NOT NULL
+    ) THEN
+      RAISE EXCEPTION 'Cannot use registered user name as anonymous caller';
+    END IF;
   END IF;
 
   IF COALESCE(v_user_name, '') = '' THEN
