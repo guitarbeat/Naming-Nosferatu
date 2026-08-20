@@ -1,10 +1,8 @@
-1. **Enhance TournamentHeader button accessibility and UX**
-   - Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/TournamentHeader.tsx` to add `title` attributes (tooltips) to the icon-only control buttons (Mute/Music/Cats, Previous, Next).
-   - Add a dynamic `title` to the Undo button to explain its disabled state (`"No actions to undo"` vs `"Undo last vote"`).
-   - Add `aria-pressed` to the toggle buttons in the mapped array for better screen reader support.
-2. **Run tests & verify changes**
-   - Run `pnpm run lint` and `pnpm test run` to ensure no regressions are introduced.
-3. **Complete pre-commit steps**
-   - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
-4. **Submit the PR**
-   - Use the `submit` tool to create the PR with branch name, commit message, and description.
+1. **Optimize `names.find` in `NameSelector.tsx`**:
+   - In `NameSelector.tsx`, `names.find` is used multiple times (e.g., `handleToggleName`, `confirmActionName`, `handleOpenLightbox`).
+   - `names.find` runs in O(N) time.
+   - We can create an `idToNameItem` map using `useMemo` alongside `catImageById` map, or replace `find` with O(1) map lookups since we already have `names` and we frequently look up by `nameId`.
+   - Wait, `idToNameMap` might already exist somewhere else, let's create a map `nameById` in `NameSelector.tsx`.
+   - Actually, a map of `id -> NameItem` in `NameSelector.tsx` is an excellent O(1) optimization.
+
+Let's see if we can consolidate map creation inside `useMemo` for `catImageById` in `NameSelector.tsx`.
