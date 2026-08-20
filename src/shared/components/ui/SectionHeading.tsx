@@ -1,5 +1,5 @@
-import { motion, useReducedMotion } from "framer-motion";
 import { memo } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { TIMING } from "@/shared/lib/constants";
 
 export const SectionHeading = memo(function SectionHeading({
@@ -19,22 +19,12 @@ export const SectionHeading = memo(function SectionHeading({
 			initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 15 }}
 			whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 			viewport={{ once: true, margin: "-100px" }}
-			transition={{
-				duration: TIMING.MOTION_NORMAL,
-				ease: TIMING.MOTION_EASING,
-			}}
+			transition={{ duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
 		>
 			<motion.h2
 				id={id}
 				className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground bg-gradient-to-br from-foreground to-foreground/80 bg-clip-text"
-				whileHover={
-					prefersReducedMotion
-						? undefined
-						: {
-								scale: 1.02,
-								textShadow: "0px 4px 15px rgba(var(--primary), 0.2)",
-							}
-				}
+				whileHover={prefersReducedMotion ? undefined : { scale: 1.02, textShadow: "0px 4px 15px rgba(var(--primary), 0.2)" }}
 				transition={{ type: "spring", stiffness: 300, damping: 20 }}
 			>
 				{title}
