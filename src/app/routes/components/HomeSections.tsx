@@ -25,20 +25,14 @@ function HeroNameWords({ state, lockedNames }: HeroNameWordsProps) {
 		return <span>Nosferatu</span>;
 	}
 
-	const words = [
-		...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)),
-		"WOODS",
-	];
+	const words = [...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)), "WOODS"];
 
 	return (
 		<span>
 			{words.map((word, i) => {
 				const isLast = i === words.length - 1;
 				return (
-					<span
-						key={`hero-word-${word}-${i}`}
-						className="block sm:inline-block"
-					>
+					<span key={`hero-word-${word}-${i}`} className="block sm:inline-block">
 						{isLast ? word : `${word}\u00a0`}
 					</span>
 				);
@@ -47,31 +41,21 @@ function HeroNameWords({ state, lockedNames }: HeroNameWordsProps) {
 	);
 }
 
-export function HomeHeroSection({
-	state,
-	lockedNames,
-	onStartPicking,
-}: HomeHeroSectionProps) {
+export function HomeHeroSection({ state, lockedNames, onStartPicking }: HomeHeroSectionProps) {
 	const prefersReducedMotion = useReducedMotion();
 
 	return (
 		<div className="home-hero-wrapper w-full">
 			<section className="relative isolate flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center">
 				<motion.div
-					initial={
-						prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20 }
-					}
+					initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20 }}
 					animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, ease: "easeOut" }}
 					className="flex flex-col items-center justify-center text-center max-w-4xl gap-8 md:gap-12"
 				>
 					<motion.p
-						initial={
-							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }
-						}
-						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 						transition={{
 							delay: 0.1,
 							duration: TIMING.MOTION_NORMAL,
@@ -83,12 +67,8 @@ export function HomeHeroSection({
 					</motion.p>
 
 					<motion.div
-						initial={
-							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }
-						}
-						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
 						transition={{
 							delay: 0.2,
 							duration: TIMING.MOTION_SLOW,
@@ -107,12 +87,8 @@ export function HomeHeroSection({
 					</motion.div>
 
 					<motion.h2
-						initial={
-							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }
-						}
-						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 						transition={{
 							delay: 0.35,
 							duration: TIMING.MOTION_SLOW,
@@ -121,21 +97,12 @@ export function HomeHeroSection({
 						className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground/85 text-center max-w-2xl px-4"
 						style={{ lineHeight: 1.4 }}
 					>
-						Pick your favorites and see which names score highest with your
-						friends.
+						Pick your favorites and see which names score highest with your friends.
 					</motion.h2>
 
 					<motion.div
-						initial={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, y: 20, scale: 0.95 }
-						}
-						animate={
-							prefersReducedMotion
-								? { opacity: 1 }
-								: { opacity: 1, y: 0, scale: 1 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.95 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
 						transition={{
 							delay: 0.5,
 							duration: TIMING.MOTION_NORMAL,

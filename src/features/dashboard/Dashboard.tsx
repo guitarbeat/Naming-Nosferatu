@@ -59,11 +59,7 @@ export function Dashboard(props: UnifiedDashboardProps) {
 				/>
 			</div>
 
-			{activeView === "analytics" ? (
-				<AnalyticsDashboard {...props} />
-			) : (
-				<AdminDashboard />
-			)}
+			{activeView === "analytics" ? <AnalyticsDashboard {...props} /> : <AdminDashboard />}
 		</div>
 	);
 }
