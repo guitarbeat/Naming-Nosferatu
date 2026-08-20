@@ -19,7 +19,7 @@ interface BaseFieldProps {
 // ============================================================================
 
 const inputBaseStyles =
-	"flex h-12 w-full rounded-xl border border-border/10 bg-background/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-foreground backdrop-blur-sm";
+	"flex h-12 w-full rounded-xl border border-border/10 bg-background/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/30 focus-visible:border-primary focus-visible:scale-[1.02] focus-visible:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300 ease-out text-foreground backdrop-blur-sm hover:border-primary/40 hover:bg-background/30 shadow-sm focus-visible:shadow-lg focus-visible:shadow-primary/20";
 
 const errorStyles = "border-destructive/50 focus-visible:ring-destructive/50 animate-pulse";
 
