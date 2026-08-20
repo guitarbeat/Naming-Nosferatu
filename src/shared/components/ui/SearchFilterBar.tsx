@@ -39,6 +39,7 @@ export function SearchFilterBar({
 				<input
 					type="text"
 					placeholder="Search names..."
+					aria-label="Search names"
 					value={searchTerm}
 					onChange={(event) => onSearchTermChange(event.target.value)}
 					className="w-full h-11 bg-background/40 hover:bg-background/60 focus:bg-background/80 transition-colors rounded-xl pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 focus:ring-2 focus:ring-primary/40"
