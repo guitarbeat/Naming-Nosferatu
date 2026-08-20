@@ -1,6 +1,6 @@
-branch_name: bolt/single-pass-leaderboard-parsing
+branch_name: bolt/single-pass-leaderboard-parsing-4020187817885867163
 commit_message: refactor(performance): replace reduce with single-pass loop in TopNamesChart
-title: ⚡ Refactor TopNamesChart to use single-pass loop
+title: refactor(performance): replace reduce with single-pass loop in TopNamesChart
 description:
 💡 What: Replaced the Array.prototype.reduce call used for leaderboard parsing with a standard single-pass for loop.
 🎯 Why: To avoid the creation of intermediate objects (the accumulator) and reduce closure allocations, avoiding functional overhead on hot paths. This is especially important for charting components that render frequently or with large datasets.
