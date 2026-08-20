@@ -9,6 +9,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import Button from "@/shared/components/layout/Button";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
@@ -88,15 +89,16 @@ function ToastMessage({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: 
 				{style.icon}
 			</span>
 			<span className="flex-1">{toast.message}</span>
-			<button
+			<Button
+				variant="ghost"
+				size="icon"
 				onClick={() => onDismiss(toast.id)}
-				className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
+				className="ml-2 -mr-2 h-7 w-7 rounded-md opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
 				aria-label="Dismiss"
 				title="Dismiss"
-				type="button"
 			>
 				<X className="size-4" />
-			</button>
+			</Button>
 		</div>
 	);
 }

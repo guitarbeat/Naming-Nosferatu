@@ -2,6 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { Activity } from "lucide-react";
+import Button from "@/shared/components/layout/Button";
 import { ChartFrame, ContextBadge, Panel, SectionHeader, StatTile } from "./DashboardPrimitives";
 
 const MockChild = ({ width, height }: { width?: number; height?: number }) => (
@@ -236,7 +237,7 @@ describe("SectionHeader", () => {
 				title="Settings"
 				icon={Activity}
 				subtitle="Manage your preferences"
-				action={<button type="button">Save</button>}
+				action={<Button type="button">Save</Button>}
 			/>,
 		);
 		expect(screen.getByText("Manage your preferences")).toBeInTheDocument();
