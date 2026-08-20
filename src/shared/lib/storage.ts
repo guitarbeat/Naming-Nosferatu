@@ -5,9 +5,7 @@ const isDev = () => import.meta.env?.DEV ?? false;
 // Secret key used to encrypt storage values.
 // In a real application, this should ideally be derived from a user-specific value or backend secret.
 // For client-side storage where the goal is simply to prevent clear-text storage on disk, a static key provides basic obfuscation.
-const LEGACY_STORAGE_SECRET_KEY =
-	import.meta.env?.VITE_LEGACY_KEY ??
-	["nosferatu", "secure", "storage", "key", "1337"].join("-");
+const LEGACY_STORAGE_SECRET_KEY = import.meta.env?.VITE_LEGACY_KEY ?? "";
 
 // Ensure the key is exactly 256 bits (32 bytes)
 const legacyKeyHex = CryptoJS.enc.Utf8.parse(
