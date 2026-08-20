@@ -55,7 +55,10 @@ describe("ProfileInner", () => {
 		const onLogin = vi
 			.fn()
 			.mockImplementation(
-				() => new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 0)),
+				() =>
+					new Promise<boolean>((resolve) =>
+						setTimeout(() => resolve(false), 0),
+					),
 			);
 
 		render(<ProfileInner onLogin={onLogin} onLogout={vi.fn()} />);
@@ -63,14 +66,19 @@ describe("ProfileInner", () => {
 		fireEvent.change(screen.getByPlaceholderText("Who are you?"), {
 			target: { value: "Ada" },
 		});
+		fireEvent.change(screen.getByPlaceholderText("Password"), {
+			target: { value: "password123" },
+		});
 		fireEvent.click(screen.getByRole("button", { name: "Begin Journey" }));
 
 		await waitFor(() => {
-			expect(onLogin).toHaveBeenCalledWith("Ada");
+			expect(onLogin).toHaveBeenCalledWith("Ada", "password123");
 			expect(
 				screen.getByText("We couldn't log you in with that name. Try again."),
 			).toBeInTheDocument();
 		});
-		expect(screen.getByRole("button", { name: "Begin Journey" })).toBeInTheDocument();
+		expect(
+			screen.getByRole("button", { name: "Begin Journey" }),
+		).toBeInTheDocument();
 	});
 });

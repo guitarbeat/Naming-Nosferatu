@@ -77,8 +77,8 @@ export const supabaseAuthAdapter: AuthAdapter = {
 	 * Login with Supabase Auth
 	 */
 	async login(credentials: LoginCredentials): Promise<boolean> {
-		const { name } = credentials;
-		if (!name?.trim()) {
+		const { name, password } = credentials;
+		if (!name?.trim() || !password) {
 			return false;
 		}
 
@@ -95,18 +95,12 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 			// Sign in with Supabase
 			const sanitizedEmail = `${sanitizeNameForEmail(name)}@demo.local`;
-			const demoPassword = import.meta.env.VITE_SUPABASE_DEMO_PASSWORD;
-
-			if (!demoPassword) {
-				console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
-				return false;
-			}
 
 			let authUser: import("@supabase/supabase-js").User | null = null;
 
 			const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
 				email: sanitizedEmail,
-				password: demoPassword,
+				password,
 			});
 
 			if (signInError) {
@@ -122,7 +116,7 @@ export const supabaseAuthAdapter: AuthAdapter = {
 
 				const { data: signUpData, error: signUpError } = await client.auth.signUp({
 					email: sanitizedEmail,
-					password: demoPassword,
+					password,
 					options: {
 						data: { user_name: trimmedName },
 					},

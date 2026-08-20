@@ -1,4 +1,4 @@
-import { LogOut, Pencil, User } from "lucide-react";
+import { Lock, LogOut, Pencil, User } from "lucide-react";
 import { type RefObject, useEffect, useRef, useState } from "react";
 import Button from "@/shared/components/layout/Button";
 import { Input } from "@/shared/components/layout/FormPrimitives";
@@ -7,11 +7,17 @@ import { ErrorManager } from "@/shared/services/errorManager";
 import useAppStore from "@/store/appStore";
 
 interface ProfileInnerProps {
-	onLogin: (name: string) => Promise<boolean | undefined>;
+	onLogin: (name: string, password?: string) => Promise<boolean | undefined>;
 	onLogout: () => Promise<void>;
 }
 
-function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () => void }) {
+function ProfileAvatar({
+	avatarSrc,
+	onError,
+}: {
+	avatarSrc: string;
+	onError: () => void;
+}) {
 	return (
 		<div className="relative mb-1">
 			<div
@@ -19,7 +25,12 @@ function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () 
 				aria-hidden="true"
 			/>
 			<div className="relative size-24 rounded-full overflow-hidden ring-2 ring-primary/30 ring-offset-2 ring-offset-card bg-muted shadow-lg">
-				<img src={avatarSrc} alt="Profile" className="size-full object-cover" onError={onError} />
+				<img
+					src={avatarSrc}
+					alt="Profile"
+					className="size-full object-cover"
+					onError={onError}
+				/>
 			</div>
 		</div>
 	);
@@ -28,6 +39,8 @@ function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onError: () 
 interface ProfileEditFormProps {
 	editedName: string;
 	setEditedName: (val: string) => void;
+	editedPassword: string;
+	setEditedPassword: (val: string) => void;
 	saveError: string | null;
 	setSaveError: (val: string | null) => void;
 	isSaving: boolean;
@@ -40,6 +53,8 @@ interface ProfileEditFormProps {
 function ProfileEditForm({
 	editedName,
 	setEditedName,
+	editedPassword,
+	setEditedPassword,
 	saveError,
 	setSaveError,
 	isSaving,
@@ -68,6 +83,23 @@ function ProfileEditForm({
 				/>
 			</div>
 
+			<div className="relative">
+				<Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none" />
+				<Input
+					type="password"
+					value={editedPassword}
+					onChange={(e) => {
+						setEditedPassword(e.target.value);
+						if (saveError) {
+							setSaveError(null);
+						}
+					}}
+					placeholder="Password"
+					onKeyDown={(e) => e.key === "Enter" && handleSave()}
+					className="w-full h-11 pl-10 pr-4 text-sm"
+				/>
+			</div>
+
 			{saveError && (
 				<p role="alert" className="text-sm text-destructive">
 					{saveError}
@@ -76,7 +108,12 @@ function ProfileEditForm({
 
 			<div className="flex gap-2">
 				{isLoggedIn && (
-					<Button type="button" variant="ghost" onClick={handleCancel} className="flex-1">
+					<Button
+						type="button"
+						variant="ghost"
+						onClick={handleCancel}
+						className="flex-1"
+					>
 						Cancel
 					</Button>
 				)}
@@ -85,7 +122,7 @@ function ProfileEditForm({
 					variant="glass"
 					size="large"
 					onClick={handleSave}
-					disabled={!editedName.trim() || isSaving}
+					disabled={!editedName.trim() || !editedPassword || isSaving}
 					loading={isSaving}
 					className={isLoggedIn ? "flex-[2]" : "w-full"}
 				>
@@ -103,7 +140,12 @@ interface ProfileViewProps {
 	handleLogout: () => void;
 }
 
-function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: ProfileViewProps) {
+function ProfileView({
+	userName,
+	isLoggingOut,
+	handleEdit,
+	handleLogout,
+}: ProfileViewProps) {
 	return (
 		<div className="w-full flex flex-col items-center gap-3 animate-in fade-in duration-200">
 			<div className="flex items-center gap-2">
@@ -119,7 +161,9 @@ function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: Profi
 				</button>
 			</div>
 
-			<p className="text-xs text-muted-foreground/80">Your preferences are saved for ranking.</p>
+			<p className="text-xs text-muted-foreground/80">
+				Your preferences are saved for ranking.
+			</p>
 
 			<button
 				type="button"
@@ -139,6 +183,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 	const defaultAvatar = CAT_IMAGES[0] ?? "";
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const [editedName, setEditedName] = useState(user.name || "");
+	const [editedPassword, setEditedPassword] = useState("");
 	const [saveError, setSaveError] = useState<string | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -172,13 +217,13 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 	}, [isEditing, user.isLoggedIn]);
 
 	const handleSave = async () => {
-		if (!editedName.trim()) {
+		if (!editedName.trim() || !editedPassword) {
 			return;
 		}
 		setIsSaving(true);
 		setSaveError(null);
 		try {
-			const didLogin = await onLogin(editedName.trim());
+			const didLogin = await onLogin(editedName.trim(), editedPassword);
 			if (didLogin === false) {
 				setSaveError("We couldn't log you in with that name. Try again.");
 				return;
@@ -206,12 +251,17 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 
 	return (
 		<div className="flex flex-col items-center gap-5 w-full">
-			<ProfileAvatar avatarSrc={avatarSrc} onError={() => setAvatarSrc(defaultAvatar)} />
+			<ProfileAvatar
+				avatarSrc={avatarSrc}
+				onError={() => setAvatarSrc(defaultAvatar)}
+			/>
 
 			{isEditing ? (
 				<ProfileEditForm
 					editedName={editedName}
 					setEditedName={setEditedName}
+					editedPassword={editedPassword}
+					setEditedPassword={setEditedPassword}
 					saveError={saveError}
 					setSaveError={setSaveError}
 					isSaving={isSaving}
