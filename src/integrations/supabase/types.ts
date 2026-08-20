@@ -611,7 +611,7 @@ export type Database = {
 				Args: { p_hide: boolean; p_name_id: string; p_user_name?: string };
 				Returns: boolean;
 			};
-			toggle_name_locked_in_debug:
+			toggle_name_locked_in:
 				| {
 						Args: { p_locked_in: boolean; p_name_id: string };
 						Returns: boolean;

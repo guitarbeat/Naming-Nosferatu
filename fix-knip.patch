@@ -1,0 +1,11 @@
+--- config/knip.json
++++ config/knip.json
+@@ -10,6 +10,9 @@
+		"playwright",
+		"tailwindcss"
+	],
++	"ignoreBinaries": [
++		"vercel"
++	],
+	"typescript": true
+ }
