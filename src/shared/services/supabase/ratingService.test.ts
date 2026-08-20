@@ -25,7 +25,11 @@ describe("ratingsAPI", () => {
 			};
 
 			vi.mocked(withSupabaseOrThrow).mockImplementation(async (callback) => {
-				return callback(mockClient as any);
+				return callback(
+					mockClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const params = {
@@ -42,12 +46,15 @@ describe("ratingsAPI", () => {
 				id2: { rating: 1400, wins: 0, losses: 1 },
 				id3: { rating: 1500, wins: 0, losses: 0 },
 			});
-			expect(mockClient.rpc).toHaveBeenCalledWith("apply_tournament_match_elo", {
-				p_user_name: "TestUser",
-				p_left_name_ids: ["id1"],
-				p_right_name_ids: ["id2"],
-				p_winner_side: "left",
-			});
+			expect(mockClient.rpc).toHaveBeenCalledWith(
+				"apply_tournament_match_elo",
+				{
+					p_user_name: "TestUser",
+					p_left_name_ids: ["id1"],
+					p_right_name_ids: ["id2"],
+					p_winner_side: "left",
+				},
+			);
 		});
 
 		it("should throw when the RPC call returns an error", async () => {
@@ -59,7 +66,11 @@ describe("ratingsAPI", () => {
 			};
 
 			vi.mocked(withSupabaseOrThrow).mockImplementation(async (callback) => {
-				return callback(mockClient as any);
+				return callback(
+					mockClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const params = {
@@ -72,12 +83,15 @@ describe("ratingsAPI", () => {
 			await expect(ratingsAPI.applyTournamentMatch(params)).rejects.toThrow(
 				"Failed to apply tournament Elo update",
 			);
-			expect(mockClient.rpc).toHaveBeenCalledWith("apply_tournament_match_elo", {
-				p_user_name: "TestUser",
-				p_left_name_ids: ["id1"],
-				p_right_name_ids: ["id2"],
-				p_winner_side: "left",
-			});
+			expect(mockClient.rpc).toHaveBeenCalledWith(
+				"apply_tournament_match_elo",
+				{
+					p_user_name: "TestUser",
+					p_left_name_ids: ["id1"],
+					p_right_name_ids: ["id2"],
+					p_winner_side: "left",
+				},
+			);
 		});
 	});
 });

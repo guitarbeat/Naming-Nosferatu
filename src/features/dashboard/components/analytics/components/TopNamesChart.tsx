@@ -1,4 +1,13 @@
-import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
+import {
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Cell,
+	ReferenceLine,
+	Tooltip,
+	XAxis,
+	YAxis,
+} from "recharts";
 import { computeRatingStats } from "@/shared/lib/ratingStats";
 import {
 	CHART_AXIS,
@@ -7,7 +16,11 @@ import {
 	CHART_SERIES,
 	CHART_TEXT_MUTED,
 } from "./chartTheme";
-import { CHART_CURSOR, CHART_TOOLTIP_STYLE, ChartFrame } from "./DashboardPrimitives";
+import {
+	CHART_CURSOR,
+	CHART_TOOLTIP_STYLE,
+	ChartFrame,
+} from "./DashboardPrimitives";
 
 interface TopNamesChartProps {
 	leaderboard: Array<{
@@ -53,8 +66,16 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 
 	return (
 		<ChartFrame>
-			<BarChart data={data} layout="vertical" margin={{ top: 8, right: 16, left: 4, bottom: 8 }}>
-				<CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} horizontal={false} />
+			<BarChart
+				data={data}
+				layout="vertical"
+				margin={{ top: 8, right: 16, left: 4, bottom: 8 }}
+			>
+				<CartesianGrid
+					strokeDasharray="3 3"
+					stroke={CHART_GRID}
+					horizontal={false}
+				/>
 				<XAxis
 					type="number"
 					tick={{ fontSize: 10, fill: CHART_TEXT_MUTED }}
@@ -82,14 +103,23 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 						) => {
 							const label = props.payload.fullName;
 							const pct = props.payload.percentile;
-							return [`${value}${pct === null ? "" : ` (top ${100 - pct}%)`}`, label];
-						}) as any
+							return [
+								`${value}${pct === null ? "" : ` (top ${100 - pct}%)`}`,
+								label,
+							];
+						}) as unknown as import("recharts/types/component/DefaultTooltipContent").ValueFormatter<
+							number,
+							string
+						>
 					}
 					cursor={CHART_CURSOR}
 				/>
 				<Bar dataKey="rating" radius={[0, 8, 8, 0]} maxBarSize={28}>
 					{data.map((_, i) => (
-						<Cell key={i} fill={CHART_SERIES[i % CHART_SERIES.length]} />
+						<Cell
+							key={data[i].name}
+							fill={CHART_SERIES[i % CHART_SERIES.length]}
+						/>
 					))}
 				</Bar>
 				{meanRating !== null && (

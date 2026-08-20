@@ -27,7 +27,11 @@ describe("imagesAPI", () => {
 			};
 
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
-				return callback(mockStorageClient as any);
+				return callback(
+					mockStorageClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const result = await imagesAPI.list();
@@ -49,7 +53,11 @@ describe("imagesAPI", () => {
 			};
 
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
-				return callback(mockStorageClient as any);
+				return callback(
+					mockStorageClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const result = await imagesAPI.list();
@@ -70,7 +78,9 @@ describe("imagesAPI", () => {
 
 	describe("upload", () => {
 		it("uploads file and returns public URL", async () => {
-			const mockFile = new File(["dummy content"], "my-cat.png", { type: "image/png" });
+			const mockFile = new File(["dummy content"], "my-cat.png", {
+				type: "image/png",
+			});
 			Object.defineProperty(mockFile, "size", { value: 1024 });
 
 			const mockStorageClient = {
@@ -88,7 +98,11 @@ describe("imagesAPI", () => {
 			};
 
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
-				return callback(mockStorageClient as any);
+				return callback(
+					mockStorageClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const result = await imagesAPI.upload(mockFile, "testuser");
@@ -130,7 +144,9 @@ describe("imagesAPI", () => {
 		});
 
 		it("returns error if upload fails", async () => {
-			const mockFile = new File(["dummy content"], "my-cat.png", { type: "image/png" });
+			const mockFile = new File(["dummy content"], "my-cat.png", {
+				type: "image/png",
+			});
 			Object.defineProperty(mockFile, "size", { value: 1024 });
 
 			const mockStorageClient = {
@@ -144,7 +160,11 @@ describe("imagesAPI", () => {
 				},
 			};
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
-				return callback(mockStorageClient as any);
+				return callback(
+					mockStorageClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const result = await imagesAPI.upload(mockFile, "testuser");
@@ -171,7 +191,11 @@ describe("imagesAPI", () => {
 			};
 
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
-				return callback(mockStorageClient as any);
+				return callback(
+					mockStorageClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const result = await imagesAPI.delete("cat1.jpg");
@@ -192,7 +216,11 @@ describe("imagesAPI", () => {
 				},
 			};
 			mockedWithSupabase.mockImplementation(async (callback, _fallback) => {
-				return callback(mockStorageClient as any);
+				return callback(
+					mockStorageClient as unknown as import("@supabase/supabase-js").SupabaseClient<
+						import("@/integrations/supabase/types").Database
+					>,
+				);
 			});
 
 			const result = await imagesAPI.delete("cat1.jpg");

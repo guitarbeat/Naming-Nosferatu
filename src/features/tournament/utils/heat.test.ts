@@ -81,7 +81,9 @@ describe("heat utils", () => {
 		});
 
 		it('returns correct classes for "hot"', () => {
-			expect(getHeatTextClasses("hot")).toBe("text-amber-200 border-amber-300/45 bg-amber-500/15");
+			expect(getHeatTextClasses("hot")).toBe(
+				"text-amber-200 border-amber-300/45 bg-amber-500/15",
+			);
 		});
 
 		it('returns correct classes for "warm"', () => {
@@ -90,7 +92,7 @@ describe("heat utils", () => {
 			);
 		});
 		it("returns default classes for invalid/unknown inputs", () => {
-			expect(getHeatTextClasses("unknown" as any)).toBe(
+			expect(getHeatTextClasses("unknown" as never)).toBe(
 				"text-orange-100 border-orange-300/35 bg-orange-500/10",
 			);
 		});
@@ -115,7 +117,7 @@ describe("heat utils", () => {
 			);
 		});
 		it("returns default classes for invalid/unknown inputs", () => {
-			expect(getHeatGradientClasses("unknown" as any)).toBe(
+			expect(getHeatGradientClasses("unknown" as never)).toBe(
 				"bg-gradient-to-t from-orange-500/20 via-amber-200/10 to-transparent",
 			);
 		});
