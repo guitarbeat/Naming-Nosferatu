@@ -1,6 +1,12 @@
 import { getBracketStageLabel } from "@/features/tournament/services/tournament";
 import { applyEloMatchUpdate } from "@/shared/lib/elo";
-import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/shared/types";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	Team,
+	TournamentMode,
+} from "@/shared/types";
 
 export interface HistoryEntry {
 	match: Match;
@@ -48,7 +54,10 @@ function evictIfNeeded<V>(cache: Map<string, V>, limit: number): void {
 	}
 }
 
-function setBracketCache(key: string, result: BracketDerivation): BracketDerivation {
+function setBracketCache(
+	key: string,
+	result: BracketDerivation,
+): BracketDerivation {
 	bracketStateCache.set(key, result);
 	evictIfNeeded(bracketStateCache, MAX_CACHE_SIZE);
 	return result;
@@ -80,7 +89,10 @@ function makePendingResult(
 	return result;
 }
 
-function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
+function getCacheKey(
+	bracketEntrants: string[],
+	matchHistory: MatchRecord[],
+): string {
 	// ⚡ Bolt Optimization: Replacing array method chains with single-pass loops for hot-path cache keys
 	const validEntrants: string[] = [];
 	for (let i = 0; i < bracketEntrants.length; i++) {
@@ -149,9 +161,10 @@ function padForRound(entrants: string[], round: number): string[] {
 
 export function createIdToNameMap(names: NameItem[]): Map<string, NameItem> {
 	const map = new Map<string, NameItem>();
-	names.forEach((n) => {
+	// ⚡ Bolt Optimization: Replacing callback-based loop with native for-of loop for performance
+	for (const n of names) {
 		map.set(String(n.id), n);
-	});
+	}
 	return map;
 }
 
@@ -209,7 +222,9 @@ export function deriveBracketState(
 
 	while (currentRoundEntrants.length > 1) {
 		const winners: string[] = [];
-		const activeRoundSize = currentRoundEntrants.filter((id) => !isBye(id)).length;
+		const activeRoundSize = currentRoundEntrants.filter(
+			(id) => !isBye(id),
+		).length;
 
 		for (let i = 0; i < currentRoundEntrants.length; i += 2) {
 			const left = currentRoundEntrants[i];
@@ -343,11 +358,20 @@ export function calculateTournamentMetrics({
 }: {
 	derived: BracketDerivation;
 }): TournamentMetrics {
-	const { totalMatches, completedMatches, round, totalRounds, stageLabel, roundSize, isComplete } =
-		derived;
+	const {
+		totalMatches,
+		completedMatches,
+		round,
+		totalRounds,
+		stageLabel,
+		roundSize,
+		isComplete,
+	} = derived;
 	const matchNumber = isComplete ? completedMatches : completedMatches + 1;
 	const progress = totalMatches
-		? Math.round((Math.min(completedMatches, totalMatches) / totalMatches) * 100)
+		? Math.round(
+				(Math.min(completedMatches, totalMatches) / totalMatches) * 100,
+			)
 		: 0;
 	const etaMinutes =
 		!totalMatches || completedMatches >= totalMatches
@@ -383,13 +407,21 @@ export function computeUpdatedRatings({
 	const leftParticipantIds =
 		currentMatch.mode === "2v2"
 			? currentMatch.left.memberIds
-			: [String(typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id)];
+			: [
+					String(
+						typeof currentMatch.left === "string"
+							? currentMatch.left
+							: currentMatch.left.id,
+					),
+				];
 	const rightParticipantIds =
 		currentMatch.mode === "2v2"
 			? currentMatch.right.memberIds
 			: [
 					String(
-						typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
+						typeof currentMatch.right === "string"
+							? currentMatch.right
+							: currentMatch.right.id,
 					),
 				];
 	const winnerSide = leftParticipantIds.includes(winnerId) ? "left" : "right";
