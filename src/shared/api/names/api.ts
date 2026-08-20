@@ -27,7 +27,7 @@ export const namesQueryKeys = {
 
 const SUPABASE_UNAVAILABLE = Symbol("SUPABASE_UNAVAILABLE");
 
-async function runAdminMutation<T>(
+export async function runAdminMutation<T>(
 	operation: (client: SupabaseClient<Database>) => Promise<T>,
 ): Promise<T> {
 	assertAdmin();
