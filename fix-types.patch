@@ -1,0 +1,21 @@
+--- src/integrations/supabase/types.ts
++++ src/integrations/supabase/types.ts
+@@ -611,17 +611,17 @@
+				Args: { p_hide: boolean; p_name_id: string; p_user_name?: string };
+				Returns: boolean;
+			};
+-			toggle_name_locked_in_debug:
++			toggle_name_locked_in:
+				| {
+						Args: { p_locked_in: boolean; p_name_id: string };
+						Returns: boolean;
+				  }
+				| {
+						Args: {
+							p_locked_in: boolean;
+							p_name_id: string;
+							p_user_name?: string;
+						};
+						Returns: boolean;
+				  };
+			unblock_client: {
