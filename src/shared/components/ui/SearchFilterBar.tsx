@@ -84,9 +84,9 @@ export function SearchFilterBar({
 						onRefresh();
 					}}
 					variant="primary"
-					className="h-11 w-11 sm:w-11 p-0 shrink-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
+					iconOnly
+					className="h-11 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
 					aria-label="Refresh list"
-					title="Refresh list"
 				>
 					<Loader2 size={18} />
 				</Button>

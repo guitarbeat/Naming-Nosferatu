@@ -163,9 +163,9 @@ function ZoomButton({
 }
 
 export function NameSelector() {
-	const prefersReducedMotion = useReducedMotion();
+	const prefersReducedMotionRaw = useReducedMotion();
+	const prefersReducedMotion = prefersReducedMotionRaw ?? false;
 	const toast = useToast();
-	const prefersReducedMotion = useReducedMotion() ?? false;
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 	const storeSelectedNames = useAppStore(
