@@ -30,7 +30,7 @@ export function MagicToggle<T extends string>({
 			aria-label={ariaLabel}
 		>
 			<motion.div
-				className={`absolute ${size === "small" ? "inset-y-1 rounded-lg" : "inset-y-1.5 rounded-xl"} bg-primary/15 border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)] pointer-events-none`}
+				className={`absolute ${size === "small" ? "inset-y-1 rounded-lg" : "inset-y-1.5 rounded-xl"} bg-primary/20 border border-primary/30 shadow-[0_0_20px_rgba(var(--primary),0.2)] pointer-events-none`}
 				initial={false}
 				animate={{
 					x: `calc(${options.findIndex((o) => o.value === value) * 100}% + ${options.findIndex((o) => o.value === value) * (size === "small" ? 2 : 4)}px)`,
@@ -38,9 +38,9 @@ export function MagicToggle<T extends string>({
 				}}
 				transition={{
 					type: "spring",
-					stiffness: 400,
-					damping: 25,
-					mass: 0.8,
+					stiffness: 500,
+					damping: 30,
+					mass: 0.5,
 				}}
 			/>
 			{options.map((option) => {
@@ -55,14 +55,26 @@ export function MagicToggle<T extends string>({
 							onChange(option.value);
 						}}
 						className={`relative flex-1 ${size === "small" ? "px-3 py-1.5 text-xs" : "px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm"} font-bold tracking-wide transition-colors z-10 ${size === "small" ? "rounded-lg" : "rounded-xl"} ${
-							isSelected ? "text-primary" : "text-muted-foreground hover:text-foreground"
+							isSelected
+								? "text-primary"
+								: "text-muted-foreground hover:text-foreground"
 						}`}
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
+						whileHover={{ scale: 1.05, y: -1 }}
+						whileTap={{ scale: 0.9 }}
+						transition={{ type: "spring", stiffness: 400, damping: 20 }}
 					>
 						<div className="flex items-center justify-center gap-2">
 							{option.icon && (
-								<span className="flex items-center justify-center">{option.icon}</span>
+								<motion.span
+									className="flex items-center justify-center"
+									animate={{
+										scale: isSelected ? 1.1 : 1,
+										rotate: isSelected ? [0, -10, 10, 0] : 0,
+									}}
+									transition={{ duration: 0.3 }}
+								>
+									{option.icon}
+								</motion.span>
 							)}
 							<span>{option.label}</span>
 						</div>
