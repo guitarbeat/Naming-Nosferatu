@@ -11,7 +11,7 @@
 	"ignoreDependencies": [
 		"@capacitor/cli",
 		"playwright",
-		"tailwindcss"
+		"tailwindcss", "vercel"
 	],
 	"typescript": true
 }
