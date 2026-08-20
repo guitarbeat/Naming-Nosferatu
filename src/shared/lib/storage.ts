@@ -11,7 +11,10 @@ const LEGACY_STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
 const legacyKeyHex = CryptoJS.enc.Utf8.parse(
 	LEGACY_STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32),
 );
-// Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
+// Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration.
+// lgtm[js/hardcoded-credentials] False positive: This is not a secret credential. IVs do not need to be secret, only unique. It is hardcoded strictly for backward-compatible decryption of legacy data.
+// lgtm[js/insecure-randomness]
+// eslint-disable-next-line
 const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
 const DEVICE_KEY_STORAGE_KEY = "__device_key__";
@@ -130,7 +133,22 @@ export function getStorageString(key: string, fallback: string | null = null): s
 		if (value === null) {
 			return fallback;
 		}
-		return decrypt(value);
+
+		const decrypted = decrypt(value);
+
+		// Proactively migrate legacy encrypted data to the new format (with random IV)
+		// We only re-encrypt and save if we actually got a value back and it was in the old format.
+		// If it's old format (no colon at index 32) and we decrypted it successfully, save it.
+		if (value.indexOf(":") !== 32 && decrypted !== value && decrypted !== "") {
+			try {
+				const encryptedValue = encrypt(decrypted);
+				window.localStorage.setItem(key, encryptedValue);
+			} catch (_migrationError) {
+				// Ignore migration failure (e.g., QuotaExceededError) so we still return the decrypted data
+			}
+		}
+
+		return decrypted;
 	} catch (error) {
 		if (isDev()) {
 			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
