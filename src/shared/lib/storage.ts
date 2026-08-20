@@ -119,10 +119,7 @@ export function isStorageAvailable(): boolean {
 	}
 }
 
-export function getStorageString(
-	key: string,
-	fallback: string | null = null,
-): string | null {
+export function getStorageString(key: string, fallback: string | null = null): string | null {
 	if (!isStorageAvailable()) {
 		return fallback;
 	}
