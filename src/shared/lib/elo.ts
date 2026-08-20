@@ -190,24 +190,21 @@ export function applyEloMatchUpdate({
 	const rightRatings = rightParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
 	const leftAverageRating = average(leftRatings);
 	const rightAverageRating = average(rightRatings);
-	const leftAggregateStats = leftParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
-	const rightAggregateStats = rightParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
+	// ⚡ Bolt Optimization: Replace callback-based reduce with a single-pass for-of loop to avoid closure and callback overhead
+	const leftAggregateStats = { wins: 0, losses: 0 };
+	for (const participantId of leftParticipantIds) {
+		const participantStats = normalizeStats(stats?.[participantId]);
+		leftAggregateStats.wins += participantStats.wins;
+		leftAggregateStats.losses += participantStats.losses;
+	}
+
+	// ⚡ Bolt Optimization: Replace callback-based reduce with a single-pass for-of loop to avoid closure and callback overhead
+	const rightAggregateStats = { wins: 0, losses: 0 };
+	for (const participantId of rightParticipantIds) {
+		const participantStats = normalizeStats(stats?.[participantId]);
+		rightAggregateStats.wins += participantStats.wins;
+		rightAggregateStats.losses += participantStats.losses;
+	}
 	const pairUpdate = calculatePairEloUpdate({
 		leftRating: leftAverageRating,
 		rightRating: rightAverageRating,
