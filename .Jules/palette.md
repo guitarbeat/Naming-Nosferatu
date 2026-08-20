@@ -7,3 +7,6 @@
 ## 2026-06-28 - Unified Iconography in Error Boundaries
 **Learning:** Dismiss buttons in global components like `ErrorBoundary` often use plain text `x` characters for simplicity, but this breaks the visual consistency of the design system that relies on `lucide-react` for iconography.
 **Action:** Always ensure that structural or global feedback components utilize the same standard icon library (`lucide-react` `<X />`) as the rest of the UI to maintain a cohesive look and feel.
+## 2024-05-18 - Prune and Extract Home Components
+**Learning:** Extracting routing logic from pure UI components ensures cleaner architectural separation and significantly lighter main route files, fulfilling the mandate to keep main files light.
+**Action:** Continually scan large route files and extract discrete UI sections into dedicated component files to simplify the layout architecture.

@@ -126,6 +126,35 @@ vi.mock("@/app/routes/components/HomeSections", () => ({
 			</button>
 		</div>
 	),
+	HomePickSection: () => <div id="pick">Pick Section</div>,
+	HomeTournamentSection: ({
+		tournamentActions,
+		scheduleAnalysisScroll,
+	}: {
+		tournamentActions: any;
+		scheduleAnalysisScroll: () => void;
+	}) => (
+		<div id="tournament">
+			<button
+				type="button"
+				onClick={() => {
+					tournamentActions.completeTournament({
+						Miso: { rating: 1200, wins: 1, losses: 0 },
+					});
+					scheduleAnalysisScroll();
+				}}
+			>
+				Complete Tournament
+			</button>
+		</div>
+	),
+	HomeAnalysisSection: ({ handleStartNewTournament }: { handleStartNewTournament: () => void }) => (
+		<div id="analysis">
+			<button type="button" onClick={handleStartNewTournament}>
+				Start New Tournament
+			</button>
+		</div>
+	),
 }));
 
 vi.mock("@/features/tournament/components/NameSuggestion", () => ({
