@@ -77,7 +77,7 @@ export function AdminNamesTab({
 						))}
 					</select>
 
-					<Button onClick={onRefresh} variant="ghost" size="small">
+					<Button onClick={onRefresh} variant="ghost" size="small" aria-label="Refresh names list" title="Refresh">
 						<Loader2 size={16} />
 					</Button>
 				</div>
