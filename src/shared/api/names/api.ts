@@ -178,10 +178,10 @@ export async function toggleNameLocked(params: {
 			p_name_id: String(nameId),
 			p_locked_in: !isCurrentlyLocked,
 		};
-		let rpcResult = await client.rpc("toggle_name_locked_in" as any, canonicalArgs);
+		let rpcResult = await client.rpc("toggle_name_locked_in", canonicalArgs);
 
 		if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
-			rpcResult = await client.rpc("toggle_name_locked_in" as any, {
+			rpcResult = await client.rpc("toggle_name_locked_in", {
 				...canonicalArgs,
 				p_user_name: trimmedUserName,
 			});
