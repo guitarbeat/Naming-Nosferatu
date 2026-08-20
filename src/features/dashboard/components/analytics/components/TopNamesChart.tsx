@@ -72,24 +72,20 @@ export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
 				/>
 				<Tooltip
 					contentStyle={CHART_TOOLTIP_STYLE}
-					formatter={
-						((
-							value: number,
-							_: string,
-							props: {
-								payload: { fullName: string; percentile: number | null };
-							},
-						) => {
-							const label = props.payload.fullName;
-							const pct = props.payload.percentile;
-							return [`${value}${pct === null ? "" : ` (top ${100 - pct}%)`}`, label];
-						}) as any
-					}
+					formatter={(value, _, props) => {
+						const payload = props.payload as {
+							fullName: string;
+							percentile: number | null;
+						};
+						const label = payload.fullName;
+						const pct = payload.percentile;
+						return [`${value}${pct === null ? "" : ` (top ${100 - pct}%)`}`, label];
+					}}
 					cursor={CHART_CURSOR}
 				/>
 				<Bar dataKey="rating" radius={[0, 8, 8, 0]} maxBarSize={28}>
-					{data.map((_, i) => (
-						<Cell key={i} fill={CHART_SERIES[i % CHART_SERIES.length]} />
+					{data.map((entry, i) => (
+						<Cell key={entry.name} fill={CHART_SERIES[i % CHART_SERIES.length]} />
 					))}
 				</Bar>
 				{meanRating !== null && (

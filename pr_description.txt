@@ -1,5 +1,7 @@
-🎯 **What:** Added tests for the haveSameIds helper function in useTournamentState.
+🎯 **What:** Synced pnpm versions to 10.26.1 across GitHub Actions workflows and package.json configuration to resolve CI failures.
 
-📊 **Coverage:** Tests cover equal length, different length, different order, empty array, and duplicated elements cases.
+💡 **Why:** GitHub Actions workflows were configured to use pnpm version 10.27.0, whereas `package.json` had `"packageManager": "pnpm@10.26.1"`. This inconsistency caused a version mismatch error during the CI build process (`ERR_PNPM_BAD_PM_VERSION`). Syncing both sides to 10.26.1 ensures successful action setup. Also removed the 'as any' cast from the Recharts Tooltip formatter in `TopNamesChart.tsx` improving type safety.
 
-✨ **Result:** Improved test coverage for useTournamentState.
+✅ **Verification:** Verified by running `pnpm run check` and fixing versions in CI workflows and `package.json`.
+
+✨ **Result:** CI action setup succeeds and types are fully checked.
