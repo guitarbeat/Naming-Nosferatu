@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { MatchRecord, Team } from "@/shared/types";
 import {
 	calculateTournamentMetrics,
 	computeUpdatedRatings,
+	createMatchRecord,
 	createTeamsById,
 	deriveBracketState,
 } from "./tournamentLogic";
@@ -309,5 +310,38 @@ describe("calculateTournamentMetrics", () => {
 		expect(metrics.progress).toBe(100);
 		// completedMatches >= totalMatches results in 0 eta
 		expect(metrics.etaMinutes).toBe(0);
+	});
+});
+
+describe("createMatchRecord", () => {
+	it("creates a match record correctly and sets timestamp using system time", () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date("2024-01-01T12:00:00Z"));
+
+		const currentMatch = {
+			mode: "1v1",
+			left: { id: "p1", name: "Player 1" },
+			right: { id: "p2", name: "Player 2" },
+		} as const;
+
+		const result = createMatchRecord({
+			currentMatch,
+			winnerId: "p1",
+			loserId: "p2",
+			matchNumber: 1,
+			round: 1,
+		});
+
+		expect(result).toEqual({
+			match: currentMatch,
+			winner: "p1",
+			loser: "p2",
+			voteType: "normal",
+			matchNumber: 1,
+			roundNumber: 1,
+			timestamp: new Date("2024-01-01T12:00:00Z").getTime(),
+		});
+
+		vi.useRealTimers();
 	});
 });
