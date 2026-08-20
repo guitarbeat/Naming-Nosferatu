@@ -192,15 +192,21 @@ export function NameSelector() {
 		[storeSelectedNames],
 	);
 
-	const { catImages, catImageById } = useMemo(() => {
+	const { catImages, catImageById, namesById, nameIndicesById } = useMemo(() => {
 		const catImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
 		const catImageById = new Map<IdType, string>();
+		// ⚡ Bolt Optimization: Replace O(N) array scans with O(1) Map lookups consolidated into this pass
+		const namesById = new Map<IdType, NameItem>();
+		const nameIndicesById = new Map<IdType, number>();
 		for (let i = 0; i < names.length; i++) {
+			const nameItem = names[i];
+			namesById.set(nameItem.id, nameItem);
+			nameIndicesById.set(nameItem.id, i);
 			if (catImages[i]) {
-				catImageById.set(names[i].id, catImages[i]);
+				catImageById.set(nameItem.id, catImages[i]);
 			}
 		}
-		return { catImages, catImageById };
+		return { catImages, catImageById, namesById, nameIndicesById };
 	}, [names]);
 
 	useEffect(() => {
@@ -226,7 +232,7 @@ export function NameSelector() {
 
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
-			const nameItem = names.find((n) => n.id === nameId);
+			const nameItem = namesById.get(nameId);
 			if (!nameItem || isNameLocked(nameItem)) {
 				return;
 			}
@@ -238,7 +244,7 @@ export function NameSelector() {
 				: [...storeSelectedNames, nameItem];
 			tournamentActions.setSelection(nextSelection);
 		},
-		[names, triggerHaptic, selectedIds, storeSelectedNames, tournamentActions],
+		[namesById, triggerHaptic, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
 	const handleToggleHidden = useCallback(
@@ -310,9 +316,9 @@ export function NameSelector() {
 		if (!pendingAdminAction) {
 			return "";
 		}
-		const target = names.find((n) => n.id === pendingAdminAction.nameId);
+		const target = namesById.get(pendingAdminAction.nameId);
 		return target?.name ?? "this name";
-	}, [names, pendingAdminAction]);
+	}, [namesById, pendingAdminAction]);
 
 	const isPendingActionBusy = useMemo(() => {
 		if (!pendingAdminAction) {
@@ -363,13 +369,13 @@ export function NameSelector() {
 
 	const handleOpenLightbox = useCallback(
 		(nameId: IdType) => {
-			const index = names.findIndex((n) => n.id === nameId);
-			if (index !== -1) {
+			const index = nameIndicesById.get(nameId);
+			if (index !== undefined) {
 				setLightboxIndex(index);
 				setLightboxOpen(true);
 			}
 		},
-		[names],
+		[nameIndicesById],
 	);
 
 	if (isLoading) {

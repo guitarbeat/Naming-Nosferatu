@@ -30,9 +30,7 @@ describe("useAudioManager", () => {
 
 		// Default mocks for storage
 		vi.mocked(storage.isStorageAvailable).mockReturnValue(true);
-		vi.mocked(storage.getStorageString).mockImplementation(
-			(_key: string) => null,
-		);
+		vi.mocked(storage.getStorageString).mockImplementation((_key: string) => null);
 	});
 
 	describe("Initialization", () => {
@@ -77,20 +75,14 @@ describe("useAudioManager", () => {
 			});
 
 			expect(result.current.isMuted).toBe(true);
-			expect(storage.setStorageString).toHaveBeenCalledWith(
-				STORAGE_KEYS.SOUND_ENABLED,
-				"false",
-			);
+			expect(storage.setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.SOUND_ENABLED, "false");
 
 			act(() => {
 				result.current.handleToggleMute();
 			});
 
 			expect(result.current.isMuted).toBe(false);
-			expect(storage.setStorageString).toHaveBeenCalledWith(
-				STORAGE_KEYS.SOUND_ENABLED,
-				"true",
-			);
+			expect(storage.setStorageString).toHaveBeenCalledWith(STORAGE_KEYS.SOUND_ENABLED, "true");
 		});
 	});
 
