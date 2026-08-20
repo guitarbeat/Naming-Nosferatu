@@ -46,13 +46,11 @@ describe("useAdminDashboard", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 
-		(useAppStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
-			(selector) => selector({ user: mockUser }),
+		(useAppStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector) =>
+			selector({ user: mockUser }),
 		);
 
-		(useNameAdminActions as ReturnType<typeof vi.fn>).mockReturnValue(
-			mockAdminActions,
-		);
+		(useNameAdminActions as ReturnType<typeof vi.fn>).mockReturnValue(mockAdminActions);
 
 		(useQuery as ReturnType<typeof vi.fn>).mockReturnValue({
 			data: null,
