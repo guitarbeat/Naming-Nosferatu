@@ -7,3 +7,6 @@
 ## 2026-06-28 - Unified Iconography in Error Boundaries
 **Learning:** Dismiss buttons in global components like `ErrorBoundary` often use plain text `x` characters for simplicity, but this breaks the visual consistency of the design system that relies on `lucide-react` for iconography.
 **Action:** Always ensure that structural or global feedback components utilize the same standard icon library (`lucide-react` `<X />`) as the rest of the UI to maintain a cohesive look and feel.
+## 2026-07-18 - Missing keyboard focus on custom generic buttons
+**Learning:** When styling custom `<button>` elements across generic full-page flows (like tournament completion or results screens), it's easy to omit standard keyboard focus indicators (like `focus-visible:ring`), making them inaccessible for keyboard users despite functioning perfectly for pointer devices.
+**Action:** Always verify tab navigation and explicitly add focus states (`focus-visible:outline-none focus-visible:ring-2 ...`) to any custom-styled interactive element, especially on custom landing/completion screens.
