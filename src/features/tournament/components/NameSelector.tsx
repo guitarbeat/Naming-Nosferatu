@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Check, CheckCircle, Eye, ZoomIn } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useToast } from "@/app/providers/Providers";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -10,6 +9,12 @@ import CatImage from "@/shared/components/layout/CatImage";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Lightbox } from "@/shared/components/layout/Lightbox";
 import { Modal } from "@/shared/components/layout/Modal";
+import {
+	AdminActionButton,
+	NameContent,
+	SelectionBadge,
+	ZoomButton,
+} from "@/shared/components/ui/NameCardPrimitives";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getRandomCatImage } from "@/shared/lib/media";
 import {
@@ -18,7 +23,12 @@ import {
 	isNameHidden,
 	isNameLocked,
 } from "@/shared/lib/names/nameFilters";
-import { addManyToSet, addToSet, removeFromSet, toggleInSet } from "@/shared/lib/setUtils";
+import {
+	addManyToSet,
+	addToSet,
+	removeFromSet,
+	toggleInSet,
+} from "@/shared/lib/setUtils";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store/appStore";
@@ -40,111 +50,6 @@ const getCardStyles = (isSelected: boolean, isLocked: boolean) =>
 
 const nameOverlayClasses =
 	"absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 sm:p-5 text-center";
-
-function NameContent({ nameItem }: { nameItem: NameItem }) {
-	return (
-		<>
-			<span className="w-full break-words font-whimsical text-2xl leading-[0.92] tracking-tight text-white sm:text-[2rem] drop-shadow-lg">
-				{nameItem.name}
-			</span>
-			{nameItem.pronunciation ? (
-				<span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">
-					[{nameItem.pronunciation}]
-				</span>
-			) : null}
-			{nameItem.description ? (
-				<p className="mt-2 line-clamp-2 text-xs leading-relaxed text-white/72 sm:text-sm">
-					{nameItem.description}
-				</p>
-			) : null}
-		</>
-	);
-}
-
-function AdminActionButton({
-	nameItem,
-	actionType,
-	isProcessing,
-	onClick,
-}: {
-	nameItem: NameItem;
-	actionType: "toggle-hidden" | "toggle-locked";
-	isProcessing: boolean;
-	onClick: () => void;
-}) {
-	const isHidden = actionType === "toggle-hidden";
-	const isEnabled = isHidden ? isNameHidden(nameItem) : isNameLocked(nameItem);
-	const buttonClasses = `flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-		isHidden
-			? isEnabled
-				? "bg-success hover:bg-success/80 text-success-foreground shadow-success/25"
-				: "bg-destructive hover:bg-destructive/80 text-destructive-foreground shadow-destructive/25"
-			: isEnabled
-				? "bg-muted hover:bg-muted/80 text-muted-foreground shadow-muted/25"
-				: "bg-warning hover:bg-warning/80 text-warning-foreground shadow-warning/25"
-	} ${isProcessing ? "opacity-50 cursor-not-allowed" : ""} shadow-lg`;
-
-	return (
-		<motion.button
-			type="button"
-			onClick={onClick}
-			disabled={isProcessing}
-			whileHover={{ scale: 1.05 }}
-			whileTap={{ scale: 0.95 }}
-			transition={{ type: "spring", stiffness: 400, damping: 25 }}
-			className={buttonClasses}
-		>
-			{isProcessing ? (
-				<div className="flex items-center justify-center gap-1">
-					<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-					<span>Processing...</span>
-				</div>
-			) : isHidden ? (
-				<>
-					<Eye size={12} className="mr-1" />
-					{isEnabled ? "Unhide" : "Hide"}
-				</>
-			) : (
-				<>
-					<CheckCircle size={12} className="mr-1" />
-					{isEnabled ? "Unlock" : "Lock"}
-				</>
-			)}
-		</motion.button>
-	);
-}
-
-const SelectionBadge = () => (
-	<motion.div
-		initial={{ scale: 0, opacity: 0 }}
-		animate={{ scale: 1, opacity: 1 }}
-		className="absolute top-3 right-3 z-20"
-	>
-		<div className="relative">
-			<div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-			<div className="relative size-6 sm:size-7 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-2 border-primary/50">
-				<Check size={14} className="text-primary-foreground" strokeWidth={3} />
-			</div>
-		</div>
-	</motion.div>
-);
-
-function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) {
-	return (
-		<button
-			type="button"
-			onClick={(e) => {
-				e.stopPropagation();
-				onClick(nameId);
-			}}
-			className="absolute top-3 right-3 p-2 sm:p-2.5 rounded-full bg-foreground/70 backdrop-blur-md text-background opacity-0 group-hover:opacity-100 focus:opacity-100 focus-visible:ring-2 focus-visible:ring-foreground/50 focus-visible:outline-none transition-all duration-300 hover:bg-foreground/90 hover:scale-110 z-10"
-			aria-label="View full size"
-			title="View full size"
-		>
-			<ZoomIn size={14} />
-		</button>
-	);
-}
 
 export function NameSelector() {
 	const toast = useToast();
@@ -183,19 +88,25 @@ export function NameSelector() {
 				? "Failed to load names"
 				: null;
 	const isSupabaseUnavailable = error === SUPABASE_UNAVAILABLE_MSG;
-	const names = isSupabaseUnavailable ? sampleNames : (namesQuery.data?.names ?? []);
+	const names = isSupabaseUnavailable
+		? sampleNames
+		: (namesQuery.data?.names ?? []);
 	const isLoading = namesQuery.isPending && !isSupabaseUnavailable;
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
-			const selectedNameItems = names.filter((nameItem) => nextSelectedIds.has(nameItem.id));
+			const selectedNameItems = names.filter((nameItem) =>
+				nextSelectedIds.has(nameItem.id),
+			);
 			tournamentActions.setSelection(selectedNameItems);
 		},
 		[names, tournamentActions],
 	);
 
 	const { catImages, catImageById } = useMemo(() => {
-		const catImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
+		const catImages = names.map((nameItem) =>
+			getRandomCatImage(nameItem.id, CAT_IMAGES),
+		);
 		const catImageById = new Map<IdType, string>();
 		for (let i = 0; i < names.length; i++) {
 			if (catImages[i]) {
@@ -214,7 +125,9 @@ export function NameSelector() {
 		if (names.length === 0) {
 			return;
 		}
-		const lockedInIds = new Set(getLockedNames(names).map((nameItem) => nameItem.id));
+		const lockedInIds = new Set(
+			getLockedNames(names).map((nameItem) => nameItem.id),
+		);
 		if (lockedInIds.size === 0) {
 			return;
 		}
@@ -268,7 +181,9 @@ export function NameSelector() {
 
 			try {
 				await toggleHidden({ nameId, isCurrentlyHidden });
-				toast.showSuccess(isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.");
+				toast.showSuccess(
+					isCurrentlyHidden ? "Name is visible again." : "Name is now hidden.",
+				);
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update hidden status: ${detail}`);
@@ -289,7 +204,9 @@ export function NameSelector() {
 
 			try {
 				await toggleLocked({ nameId, isCurrentlyLocked });
-				toast.showSuccess(isCurrentlyLocked ? "Name unlocked." : "Name locked in.");
+				toast.showSuccess(
+					isCurrentlyLocked ? "Name unlocked." : "Name locked in.",
+				);
 			} catch (error) {
 				const detail = error instanceof Error ? error.message : "Unknown error";
 				toast.showError(`Could not update lock state: ${detail}`);
@@ -300,7 +217,8 @@ export function NameSelector() {
 		[isAdmin, toast, toggleLocked, userName],
 	);
 
-	const [pendingAdminAction, setPendingAdminAction] = useState<PendingAdminAction | null>(null);
+	const [pendingAdminAction, setPendingAdminAction] =
+		useState<PendingAdminAction | null>(null);
 
 	const requestAdminAction = useCallback(
 		(action: PendingAdminAction) => {
@@ -310,7 +228,9 @@ export function NameSelector() {
 			}
 
 			if (!userName?.trim()) {
-				toast.showError("Admin actions require a valid user session. Please log in again.");
+				toast.showError(
+					"Admin actions require a valid user session. Please log in again.",
+				);
 				return;
 			}
 
@@ -348,9 +268,15 @@ export function NameSelector() {
 
 		try {
 			if (pendingAdminAction.type === "toggle-hidden") {
-				await handleToggleHidden(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+				await handleToggleHidden(
+					pendingAdminAction.nameId,
+					pendingAdminAction.isCurrentlyEnabled,
+				);
 			} else {
-				await handleToggleLocked(pendingAdminAction.nameId, pendingAdminAction.isCurrentlyEnabled);
+				await handleToggleLocked(
+					pendingAdminAction.nameId,
+					pendingAdminAction.isCurrentlyEnabled,
+				);
 			}
 		} finally {
 			setPendingAdminAction(null);
@@ -414,7 +340,11 @@ export function NameSelector() {
 							<p className="text-sm leading-relaxed text-white/68">{error}</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+							<Button
+								onClick={() => void namesQuery.refetch()}
+								variant="glass"
+								size="small"
+							>
 								Try Again
 							</Button>
 						</div>
@@ -449,7 +379,10 @@ export function NameSelector() {
 										whileHover={{ scale: 1.03, y: -2 }}
 										whileTap={{ scale: 0.97 }}
 										transition={{ type: "spring", stiffness: 400, damping: 25 }}
-										className={getCardStyles(isSelected, isNameLocked(nameItem))}
+										className={getCardStyles(
+											isSelected,
+											isNameLocked(nameItem),
+										)}
 									>
 										<div className="w-full relative aspect-[5/4] sm:aspect-[4/3] group/img overflow-hidden">
 											<CatImage
@@ -464,7 +397,10 @@ export function NameSelector() {
 													<NameContent nameItem={nameItem} />
 												</div>
 											</div>
-											<ZoomButton nameId={nameItem.id} onClick={handleOpenLightbox} />
+											<ZoomButton
+												nameId={nameItem.id}
+												onClick={handleOpenLightbox}
+											/>
 										</div>
 										{isAdmin && (
 											<motion.div

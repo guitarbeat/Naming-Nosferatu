@@ -101,27 +101,6 @@ select:focus {
 	transform: scale(var(--scale-subtle));
 }
 
-/* Range inputs */
-input[type="range"] {
-	cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-	transition:
-		transform var(--duration-base) var(--ease-spring),
-		box-shadow var(--duration-base) var(--ease-out-expo);
-}
-
-input[type="range"]:hover::-webkit-slider-thumb {
-	transform: scale(1.15);
-	box-shadow: var(--glow-medium);
-}
-
-input[type="range"]:active::-webkit-slider-thumb {
-	transform: scale(1.05);
-	box-shadow: var(--glow-strong);
-}
-
 /* ==========================================================================
    FOCUS VISIBLE (GLOBAL)
    ========================================================================== */
