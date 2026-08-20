@@ -1,10 +1,16 @@
 import { Trophy } from "lucide-react";
-import Button from "@/shared/components/layout/Button";
+import { NewTournamentButton } from "@/features/tournament/components/NewTournamentButton";
 import { EmptyState } from "@/shared/components/layout/EmptyState";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { themeSurfaces } from "@/shared/lib/themeClasses";
 import { cn } from "@/shared/lib/utils";
-import { ContextBadge, ListPanel, ListPanelRow, Panel, SectionHeader } from "./DashboardPrimitives";
+import {
+	ContextBadge,
+	ListPanel,
+	ListPanelRow,
+	Panel,
+	SectionHeader,
+} from "./DashboardPrimitives";
 
 interface LeaderboardEntry {
 	name: string;
@@ -33,11 +39,7 @@ export function LeaderboardPanel({
 				action={
 					<div className="flex items-center gap-2">
 						<ContextBadge label="Community" />
-						{onStartNew && (
-							<Button variant="outline" size="small" onClick={onStartNew}>
-								New Tournament
-							</Button>
-						)}
+						{onStartNew && <NewTournamentButton onClick={onStartNew} />}
 					</div>
 				}
 			/>
@@ -66,10 +68,13 @@ export function LeaderboardPanel({
 									{medal || index + 1}
 								</div>
 								<div className="min-w-0 flex-1">
-									<p className="truncate text-sm font-semibold text-foreground">{entry.name}</p>
+									<p className="truncate text-sm font-semibold text-foreground">
+										{entry.name}
+									</p>
 									<div className="mt-0.5 flex items-center gap-3 text-xs text-muted-foreground/70">
 										<span>
-											📊 {entry.total_ratings} rating{entry.total_ratings === 1 ? "" : "s"}
+											📊 {entry.total_ratings} rating
+											{entry.total_ratings === 1 ? "" : "s"}
 										</span>
 										<span>
 											🏆 {entry.wins} win{entry.wins === 1 ? "" : "s"}
@@ -80,7 +85,9 @@ export function LeaderboardPanel({
 									<div className="inline-flex items-center justify-center rounded-lg bg-primary/10 px-2.5 py-1 font-bold text-primary">
 										{Math.round(entry.avg_rating)}
 									</div>
-									<p className="text-xs text-muted-foreground/60 font-medium">Rating</p>
+									<p className="text-xs text-muted-foreground/60 font-medium">
+										Rating
+									</p>
 								</div>
 							</ListPanelRow>
 						);

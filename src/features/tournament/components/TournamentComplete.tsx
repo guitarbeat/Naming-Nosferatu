@@ -1,4 +1,5 @@
 import { LogOut, Trophy } from "lucide-react";
+import { NewTournamentButton } from "./NewTournamentButton";
 
 interface TournamentCompleteProps {
 	totalMatches: number;
@@ -60,13 +61,17 @@ export function TournamentComplete({
 						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
 							Total matches
 						</p>
-						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">
+							{totalMatches}
+						</p>
 					</div>
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
 						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/50">
 							Participants
 						</p>
-						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>
+						<p className="mt-3 text-4xl font-black leading-none text-white">
+							{participantCount}
+						</p>
 					</div>
 				</div>
 
@@ -84,14 +89,14 @@ export function TournamentComplete({
 						View Analysis
 					</button>
 
-					<button
-						type="button"
+					<NewTournamentButton
 						onClick={onNewTournament}
-						className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-white/15 bg-white/[0.05] px-6 py-4 text-sm font-medium text-white/70 backdrop-blur-sm transition-all hover:border-white/25 hover:bg-white/10 hover:text-white active:scale-[0.98]"
-					>
-						<LogOut size={15} />
-						Start New Tournament
-					</button>
+						variant="glass"
+						label="Start New Tournament"
+						icon={LogOut}
+						fullWidth
+						className="rounded-2xl border-white/15 bg-white/[0.05] py-4 text-sm font-medium text-white/70 hover:border-white/25 hover:bg-white/10 hover:text-white"
+					/>
 				</div>
 			</div>
 		</div>
