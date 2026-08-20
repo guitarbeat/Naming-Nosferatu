@@ -86,15 +86,18 @@ function AdminNameItem({
 			<div className="flex items-start sm:items-center justify-between gap-2">
 				<div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
 					<input
+						id={`name-checkbox-${nameId}`}
 						type="checkbox"
 						checked={isSelected}
 						onChange={(event) => onSelectionChange(nameId, event.target.checked)}
-						className="w-4 h-4 mt-1 sm:mt-0 shrink-0"
+						className="w-4 h-4 mt-1 sm:mt-0 shrink-0 cursor-pointer"
 						aria-label={`Select ${name.name}`}
 					/>
 					<div className="min-w-0">
 						<div className="flex items-center gap-2 flex-wrap">
-							<h3 className="font-semibold text-foreground text-sm sm:text-base">{name.name}</h3>
+							<label htmlFor={`name-checkbox-${nameId}`} className="font-semibold text-foreground text-sm sm:text-base cursor-pointer">
+								{name.name}
+							</label>
 							{locked && (
 								<span className="text-[10px] text-chart-4 font-semibold inline-flex items-center gap-0.5">
 									<Lock size={10} /> Locked
