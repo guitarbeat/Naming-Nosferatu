@@ -121,9 +121,13 @@ export function useAdminDashboard() {
 	}, []);
 
 	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
-		if (option) {
-			setFilterStatus(option.value);
+		const targetValue = event.target.value;
+		// ⚡ Bolt Optimization: micro-optimization replacing Array.prototype.find with for-of loop
+		for (const item of FILTER_OPTIONS) {
+			if (item.value === targetValue) {
+				setFilterStatus(item.value);
+				break;
+			}
 		}
 	}, []);
 
