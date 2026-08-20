@@ -76,13 +76,14 @@ class SoundManager {
 	}
 
 	private preloadSounds() {
-		SOUND_EFFECTS.forEach((soundName) => {
+		// ⚡ Bolt Optimization: Use for...of instead of forEach for faster iteration
+		for (const soundName of SOUND_EFFECTS) {
 			const audio = this.createAudioElement(soundName);
 			if (audio) {
 				audio.volume = this.defaultVolume;
 				this.audioCache.set(soundName, audio);
 			}
-		});
+		}
 	}
 
 	play(soundName: string, config: SoundConfig = {}) {
