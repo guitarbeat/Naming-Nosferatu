@@ -21,29 +21,27 @@ interface TopNamesChartProps {
 }
 
 export function TopNamesChart({ leaderboard, limit = 8 }: TopNamesChartProps) {
-	const { data, allRatings } = leaderboard.reduce(
-		(acc, e, i) => {
-			if (i < limit) {
-				acc.data.push({
-					name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
-					rating: Math.round(e.avg_rating),
-					fullName: e.name,
-					percentile: e.percentile_rank ?? null,
-				});
-			}
-			acc.allRatings.push(e.avg_rating);
-			return acc;
-		},
-		{ data: [], allRatings: [] } as {
-			data: Array<{
-				name: string;
-				rating: number;
-				fullName: string;
-				percentile: number | null;
-			}>;
-			allRatings: number[];
-		},
-	);
+	const data: Array<{
+		name: string;
+		rating: number;
+		fullName: string;
+		percentile: number | null;
+	}> = [];
+	const allRatings: number[] = [];
+
+	// ⚡ Bolt Optimization: Use a single-pass loop instead of reduce for leaderboard parsing to avoid creating intermediate objects and closure allocations on every iteration.
+	for (let i = 0; i < leaderboard.length; i++) {
+		const e = leaderboard[i];
+		if (i < limit) {
+			data.push({
+				name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
+				rating: Math.round(e.avg_rating),
+				fullName: e.name,
+				percentile: e.percentile_rank ?? null,
+			});
+		}
+		allRatings.push(e.avg_rating);
+	}
 
 	if (data.length === 0) {
 		return null;
