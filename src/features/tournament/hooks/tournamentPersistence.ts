@@ -8,9 +8,7 @@ import type {
 	TournamentMode,
 } from "@/shared/types";
 
-export function createDefaultPersistentState(
-	userName: string,
-): PersistentTournamentState {
+export function createDefaultPersistentState(userName: string): PersistentTournamentState {
 	return {
 		matchHistory: [],
 		currentRound: 1,
@@ -40,10 +38,7 @@ export function createNamesKey(names: NameItem[]): string {
 	return createSortedKey(names.map((n) => n?.id || ""));
 }
 
-export function createTournamentId(
-	names: NameItem[],
-	userName?: string,
-): string {
+export function createTournamentId(names: NameItem[], userName?: string): string {
 	const sortedIds = names
 		.map((n) => String(n.id))
 		.sort()
@@ -80,10 +75,7 @@ function isValidTeamMatch(value: unknown): value is TeamMatch {
 		return false;
 	}
 	const candidate = value as TeamMatch;
-	return (
-		typeof candidate.leftTeamId === "string" &&
-		typeof candidate.rightTeamId === "string"
-	);
+	return typeof candidate.leftTeamId === "string" && typeof candidate.rightTeamId === "string";
 }
 
 export function sanitizePersistentState(
@@ -128,10 +120,7 @@ export function sanitizePersistentState(
 		...merged,
 		mode,
 		matchHistory: Array.isArray(merged.matchHistory) ? merged.matchHistory : [],
-		ratings:
-			merged.ratings && typeof merged.ratings === "object"
-				? merged.ratings
-				: {},
+		ratings: merged.ratings && typeof merged.ratings === "object" ? merged.ratings : {},
 		namesKey: typeof merged.namesKey === "string" ? merged.namesKey : "",
 		teams,
 		teamMatches,
