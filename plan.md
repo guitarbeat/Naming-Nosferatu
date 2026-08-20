@@ -1,10 +1,26 @@
-1. **Enhance TournamentHeader button accessibility and UX**
-   - Use `replace_with_git_merge_diff` to modify `src/features/tournament/components/TournamentHeader.tsx` to add `title` attributes (tooltips) to the icon-only control buttons (Mute/Music/Cats, Previous, Next).
-   - Add a dynamic `title` to the Undo button to explain its disabled state (`"No actions to undo"` vs `"Undo last vote"`).
-   - Add `aria-pressed` to the toggle buttons in the mapped array for better screen reader support.
-2. **Run tests & verify changes**
-   - Run `pnpm run lint` and `pnpm test run` to ensure no regressions are introduced.
-3. **Complete pre-commit steps**
+1. **Fix minor UI floating button layout**
+   - The user requested "continuous UI prune" specifically mentioning "Group like features. Make logical sense. Find lone button, scattered menu, split view. Drag together." and "Make inputs fun. Make toggle/slider playful, magic to touch."
+   - I have already extracted `MagicToggle.tsx`.
+   - Now I should merge `SearchFilterBar.tsx` inputs to use `MagicToggle` for the `filterOptions`.
+   - Currently, `SearchFilterBar.tsx` uses a standard native `<select>` drop-down for filtering names. I will upgrade it to use the `MagicToggle` component to make it "fun" and "magic to touch".
+
+2. **Replace `select` with `MagicToggle` in `SearchFilterBar.tsx`**
+   - Import `MagicToggle`.
+   - The current `filterOptions` in `SearchFilterBar` matches `MagicToggle`'s option interface.
+   - Update `SearchFilterBarProps` to pass `filterStatus` and `onFilterChange` to match `MagicToggle` (i.e. `(value: string) => void`).
+   - I'll need to adapt `AdminDashboard.tsx` and `AdminNamesTab.tsx` since they currently pass an `onChange` event handler for a `select`.
+
+3. **Update `AdminDashboard.tsx` and `AdminNamesTab.tsx`**
+   - In `AdminNamesTab.tsx`, update `onFilterChange` signature from `(event: ChangeEvent<HTMLSelectElement>) => void` to `(value: string) => void`.
+   - In `AdminDashboard.tsx`, change `handleFilterChange` to accept a `string` (the value itself) instead of an event.
+
+4. **Formatting and Linting**
+   - Run `pnpm dlx @biomejs/biome check --write` to ensure proper formatting.
+
+5. **Testing**
+   - Run `pnpm run check:maintenance && pnpm run lint:full && pnpm run lint:types`
+   - Run the test suite `pnpm test run`.
+
+6. **Pre-commit and submit**
    - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
-4. **Submit the PR**
-   - Use the `submit` tool to create the PR with branch name, commit message, and description.
+   - Submit the PR.

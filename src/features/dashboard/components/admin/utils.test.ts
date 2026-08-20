@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { NameItem } from "@/shared/types";
 import type { NameWithStats, SiteStatsLike } from "./types";
-import {
-	buildAdminStats,
-	filterNamesByStatusAndSearch,
-	mapNameToDisplay,
-} from "./utils";
+import { buildAdminStats, filterNamesByStatusAndSearch, mapNameToDisplay } from "./utils";
 
 describe("admin utils - mapNameToDisplay", () => {
 	it("maps name correctly with wins and losses", () => {
@@ -43,7 +39,7 @@ describe("admin utils - mapNameToDisplay", () => {
 		expect(mapNameToDisplay(name)).toEqual(expected);
 	});
 
-		it("handles missing popularity_score defaulting to 0", () => {
+	it("handles missing popularity_score defaulting to 0", () => {
 		const name: NameItem = {
 			id: "3",
 			name: "Liam",
@@ -246,41 +242,25 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 
 	describe("Search Term Filtering", () => {
 		it("should filter by search term in name (case-insensitive)", () => {
-			const result = filterNamesByStatusAndSearch(
-				mockNames,
-				"all",
-				"activename",
-			);
+			const result = filterNamesByStatusAndSearch(mockNames, "all", "activename");
 			expect(result).toHaveLength(2);
 			expect(result.map((n) => n.id)).toEqual([1, 2]);
 		});
 
 		it("should filter by search term in description (case-insensitive)", () => {
-			const result = filterNamesByStatusAndSearch(
-				mockNames,
-				"all",
-				"hidden item",
-			);
+			const result = filterNamesByStatusAndSearch(mockNames, "all", "hidden item");
 			expect(result).toHaveLength(1);
 			expect(result[0].id).toBe(3);
 		});
 
 		it("should ignore surrounding whitespace in search term", () => {
-			const result = filterNamesByStatusAndSearch(
-				mockNames,
-				"all",
-				"  locked  ",
-			);
+			const result = filterNamesByStatusAndSearch(mockNames, "all", "  locked  ");
 			expect(result).toHaveLength(2);
 			expect(result.map((n) => n.id)).toEqual([4, 5]);
 		});
 
 		it("should return empty array if no matches found", () => {
-			const result = filterNamesByStatusAndSearch(
-				mockNames,
-				"all",
-				"nonexistent",
-			);
+			const result = filterNamesByStatusAndSearch(mockNames, "all", "nonexistent");
 			expect(result).toHaveLength(0);
 		});
 	});
@@ -291,30 +271,18 @@ describe("admin utils - filterNamesByStatusAndSearch", () => {
 			expect(result).toHaveLength(2);
 			expect(result.map((n) => n.id)).toEqual([1, 2]);
 
-			const resultHidden = filterNamesByStatusAndSearch(
-				mockNames,
-				"hidden",
-				"name",
-			);
+			const resultHidden = filterNamesByStatusAndSearch(mockNames, "hidden", "name");
 			expect(resultHidden).toHaveLength(2);
 			expect(resultHidden.map((n) => n.id)).toEqual([3, 5]);
 		});
 
 		it("should return empty array if status matches but search doesn't", () => {
-			const result = filterNamesByStatusAndSearch(
-				mockNames,
-				"active",
-				"locked",
-			);
+			const result = filterNamesByStatusAndSearch(mockNames, "active", "locked");
 			expect(result).toHaveLength(0);
 		});
 
 		it("should return empty array if search matches but status doesn't", () => {
-			const result = filterNamesByStatusAndSearch(
-				mockNames,
-				"locked",
-				"first active",
-			);
+			const result = filterNamesByStatusAndSearch(mockNames, "locked", "first active");
 			expect(result).toHaveLength(0);
 		});
 	});
