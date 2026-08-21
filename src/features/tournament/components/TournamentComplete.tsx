@@ -1,4 +1,5 @@
 import { LogOut, Trophy } from "lucide-react";
+import { memo } from "react";
 import Button from "@/shared/components/layout/Button";
 
 interface TournamentCompleteProps {
@@ -7,7 +8,8 @@ interface TournamentCompleteProps {
 	onNewTournament: () => void;
 }
 
-export function TournamentComplete({
+// ⚡ Bolt Performance Optimization: Wrapped TournamentComplete in React.memo()
+export const TournamentComplete = memo(function TournamentComplete({
 	totalMatches,
 	participantCount,
 	onNewTournament,
@@ -96,4 +98,4 @@ export function TournamentComplete({
 			</div>
 		</div>
 	);
-}
+});
