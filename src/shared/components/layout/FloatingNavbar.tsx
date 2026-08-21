@@ -1,18 +1,10 @@
 import { BarChart3, CheckCircle, Lightbulb, Lock, Trophy, User } from "lucide-react";
-import {
-	lazy,
-	memo,
-	type ReactNode,
-	Suspense,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/Providers";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Modal } from "@/shared/components/layout/Modal";
+import { FloatingNav, type NavItem } from "@/shared/components/ui/FloatingNav";
 import { usePrefersReducedMotion } from "@/shared/hooks/usePrefersReducedMotion";
 import { hapticNavTap, hapticTournamentStart } from "@/shared/lib/browser/haptics";
 import { cn } from "@/shared/lib/utils";
@@ -29,57 +21,6 @@ const LazyNameSuggestion = lazy(() =>
 		default: module.NameSuggestion,
 	})),
 );
-
-type NavItem = {
-	id: string;
-	label: string;
-	icon: ReactNode;
-	isActive?: boolean;
-	isAccent?: boolean;
-	hasBadge?: boolean;
-	onClick: () => void;
-};
-
-const FloatingNav = memo(function FloatingNav({ items }: { items: NavItem[] }) {
-	const visibleItems = items.slice(0, 5);
-	return (
-		<nav aria-label="Primary" className="floating-navbar-frame">
-			<div className="floating-navbar-shell">
-				<div className="floating-navbar">
-					<div
-						className="floating-navbar__primary"
-						style={{
-							gridTemplateColumns: `repeat(${visibleItems.length}, minmax(0, 1fr))`,
-						}}
-					>
-						{visibleItems.map((item) => {
-							const isActive = Boolean(item.isActive);
-							return (
-								<button
-									key={item.id}
-									type="button"
-									onClick={item.onClick}
-									className={cn(
-										"floating-navbar__item floating-navbar__item--primary",
-										item.isAccent && "floating-navbar__item--accent",
-									)}
-									aria-label={item.label}
-									aria-current={isActive ? "location" : undefined}
-								>
-									<span className="floating-navbar__icon">
-										{item.icon}
-										{item.hasBadge && <span className="floating-navbar__badge" />}
-									</span>
-									<span className="floating-navbar__label">{item.label}</span>
-								</button>
-							);
-						})}
-					</div>
-				</div>
-			</div>
-		</nav>
-	);
-});
 
 type NavSection = "pick" | "tournament" | "analysis";
 
@@ -174,6 +115,17 @@ export function FloatingNavbar() {
 		hapticNavTap();
 		setIsSuggestOpen(true);
 	}, []);
+
+	const handleLogin = useCallback(
+		async (name: string) => {
+			const ok = await login({ name });
+			if (ok !== false) {
+				setIsProfileOpen(false);
+			}
+			return ok;
+		},
+		[login],
+	);
 
 	useEffect(() => {
 		if (!isHomeRoute || !pendingScroll) {
@@ -346,16 +298,7 @@ export function FloatingNavbar() {
 					description="Sign in to save your rankings."
 				>
 					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyProfileInner
-							onLogin={async (name) => {
-								const ok = await login({ name });
-								if (ok !== false) {
-									setIsProfileOpen(false);
-								}
-								return ok;
-							}}
-							onLogout={logout}
-						/>
+						<LazyProfileInner onLogin={handleLogin} onLogout={logout} />
 					</Suspense>
 				</Modal>
 			)}

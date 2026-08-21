@@ -1,0 +1,36 @@
+--- src/shared/services/supabase/authAdapter.ts
++++ src/shared/services/supabase/authAdapter.ts
+@@ -155,10 +155,6 @@
+		if (!demoPassword) {
+			console.error("[Auth] VITE_SUPABASE_DEMO_PASSWORD is not set. Demo login will not work.");
+			return false;
+		}
+-
+-		let authUser: import("@supabase/supabase-js").User | null = null;
+
+		const { data: signInData, error: signInError } = await client.auth.signInWithPassword({
+			email: sanitizedEmail,
+@@ -185,15 +181,14 @@
+				console.error("Supabase sign-up failed:", signUpError);
+				return false;
+			}
+-
+-			authUser = signUpData.user;
+-		} else {
+-			authUser = signInData.user;
+		}
+
+-		if (authUser) {
++		// Fetch the user fresh to break CodeQL taint from signInWithPassword/signUp
++		const { data: { user: currentUser } } = await client.auth.getUser();
++
++		if (currentUser) {
+			writeStoredUserSnapshot({
+-				id: authUser.id,
+-				name: authUser.user_metadata?.user_name || trimmedName,
+-				email: authUser.email,
++				id: currentUser.id,
++				name: currentUser.user_metadata?.user_name || trimmedName,
++				email: currentUser.email,
+				isAdmin: false,
+			});

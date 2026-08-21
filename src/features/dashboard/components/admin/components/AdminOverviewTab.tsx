@@ -10,12 +10,16 @@ export function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 			<h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div>
-					<h3 className="text-lg font-semibold mb-2">Image Upload</h3>
+					<label htmlFor="image-upload" className="block text-lg font-semibold mb-2">
+						Image Upload
+					</label>
 					<input
+						id="image-upload"
 						type="file"
 						accept="image/*"
 						onChange={onImageUpload}
 						className="w-full p-2 bg-foreground/10 border border-border/20 rounded"
+						aria-label="Upload image file"
 					/>
 					<p className="text-xs text-muted-foreground mt-2">
 						Upload errors will appear in the console.
@@ -23,9 +27,7 @@ export function AdminOverviewTab({ onImageUpload }: AdminOverviewTabProps) {
 				</div>
 				<div>
 					<h3 className="text-lg font-semibold mb-2">Recent Activity</h3>
-					<p className="text-muted-foreground">
-						Activity tracking coming soon...
-					</p>
+					<p className="text-muted-foreground">Activity tracking coming soon...</p>
 				</div>
 			</div>
 		</div>

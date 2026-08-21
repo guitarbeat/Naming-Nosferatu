@@ -36,20 +36,20 @@ export default function TournamentFlow() {
 		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
 			const userId = user.id || user.name || "anonymous";
 
-			const ratingsWithStats = Object.entries(tournament.ratings).reduce(
-				(acc, [nameId, ratingData]) => {
+			const ratingsWithStats: Record<string, { rating: number; wins: number; losses: number }> = {};
+			for (const nameId in tournament.ratings) {
+				if (Object.hasOwn(tournament.ratings, nameId)) {
+					const ratingData = tournament.ratings[nameId];
 					const rating = typeof ratingData === "number" ? ratingData : ratingData.rating;
 					const wins = typeof ratingData === "number" ? 0 : (ratingData.wins ?? 0);
 					const losses = typeof ratingData === "number" ? 0 : (ratingData.losses ?? 0);
-					acc[nameId] = {
+					ratingsWithStats[nameId] = {
 						rating,
 						wins,
 						losses,
 					};
-					return acc;
-				},
-				{} as Record<string, { rating: number; wins: number; losses: number }>,
-			);
+				}
+			}
 
 			mutateAsyncRef.current({ userId, ratings: ratingsWithStats }).catch((_error) => {
 				getTelemetryAdapter().captureException(

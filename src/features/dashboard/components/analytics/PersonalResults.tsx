@@ -63,16 +63,18 @@ export const PersonalResults = ({
 
 	const handleSave = useCallback(
 		async (updatedRankings: NameItem[]) => {
-			const ratingsMap = Object.fromEntries(
-				updatedRankings.map((name) => [
-					name.id || name.name,
-					{
-						rating: name.rating as number,
-						wins: name.wins ?? 0,
-						losses: name.losses ?? 0,
-					},
-				]),
-			);
+			// ⚡ Bolt Optimization: Replace `Object.fromEntries(map())` with a single-pass loop.
+			// This avoids creating O(N) temporary tuple arrays for each entry, significantly
+			// reducing garbage collection overhead during save operations.
+			const ratingsMap: Record<string, { rating: number; wins: number; losses: number }> = {};
+			for (let i = 0; i < updatedRankings.length; i++) {
+				const name = updatedRankings[i];
+				ratingsMap[name.id || name.name] = {
+					rating: name.rating as number,
+					wins: name.wins ?? 0,
+					losses: name.losses ?? 0,
+				};
+			}
 			// Note: This updates local Zustand state only; does not persist to server
 			onUpdateRatings(ratingsMap);
 			showToast("Updated!", "success");

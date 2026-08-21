@@ -128,6 +128,9 @@ export const RankingAdjustment = memo(
 			if (hasUnsavedChanges) {
 				return;
 			}
+			if (!haveRankingsChanged(rankings, items)) {
+				return;
+			}
 			const sorted = [...rankings].sort((a, b) => (b.rating as number) - (a.rating as number));
 			if (haveRankingsChanged(sorted, items)) {
 				setItems(sorted);
@@ -195,10 +198,14 @@ export const RankingAdjustment = memo(
 			if (reordered) {
 				newItems.splice(result.destination.index, 0, reordered);
 			}
-			const adjusted = newItems.map((item: NameItem, index: number) => ({
-				...item,
-				rating: Math.round(1000 + (1000 * (newItems.length - index)) / newItems.length),
-			}));
+			const len = newItems.length;
+			const adjusted = new Array(len);
+			for (let i = 0; i < len; i++) {
+				adjusted[i] = {
+					...(newItems[i] as NameItem),
+					rating: Math.round(1000 + (1000 * (len - i)) / len),
+				};
+			}
 			setHasUnsavedChanges(true);
 			setItems(adjusted);
 		};

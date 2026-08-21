@@ -16,6 +16,10 @@ interface RatingRadarChartProps {
 export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartProps) {
 	// ⚡ Bolt Optimization: Replacing O(N) array filter+slice with single-pass short-circuiting loop
 	const top = [];
+	let maxRating = -Infinity;
+	let maxWins = -Infinity;
+	let maxTotal = -Infinity;
+
 	if (limit > 0) {
 		for (let i = 0; i < leaderboard.length; i++) {
 			if (top.length >= limit) {
@@ -24,6 +28,15 @@ export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartPro
 			const e = leaderboard[i];
 			if ((e.total_ratings ?? 0) > 0) {
 				top.push(e);
+				if (e.avg_rating > maxRating) {
+					maxRating = e.avg_rating;
+				}
+				if (e.wins > maxWins) {
+					maxWins = e.wins;
+				}
+				if (e.total_ratings > maxTotal) {
+					maxTotal = e.total_ratings;
+				}
 			}
 		}
 	}
@@ -31,26 +44,20 @@ export function RatingRadarChart({ leaderboard, limit = 6 }: RatingRadarChartPro
 		return null;
 	}
 
-	const maxValues = top.reduce(
-		(acc, e) => {
-			acc.rating = Math.max(acc.rating, e.avg_rating);
-			acc.wins = Math.max(acc.wins, e.wins);
-			acc.total = Math.max(acc.total, e.total_ratings);
-			return acc;
-		},
-		{ rating: -Infinity, wins: -Infinity, total: -Infinity },
-	);
+	maxRating = maxRating === -Infinity ? 1 : maxRating || 1;
+	maxWins = maxWins === -Infinity ? 1 : maxWins || 1;
+	maxTotal = maxTotal === -Infinity ? 1 : maxTotal || 1;
 
-	const maxRating = maxValues.rating === -Infinity ? 1 : maxValues.rating || 1;
-	const maxWins = maxValues.wins === -Infinity ? 1 : maxValues.wins || 1;
-	const maxTotal = maxValues.total === -Infinity ? 1 : maxValues.total || 1;
-
-	const data = top.map((e) => ({
-		name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
-		rating: Math.round((e.avg_rating / maxRating) * 100),
-		wins: Math.round((e.wins / maxWins) * 100),
-		activity: Math.round((e.total_ratings / maxTotal) * 100),
-	}));
+	const data = new Array(top.length);
+	for (let i = 0; i < top.length; i++) {
+		const e = top[i];
+		data[i] = {
+			name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
+			rating: Math.round((e.avg_rating / maxRating) * 100),
+			wins: Math.round((e.wins / maxWins) * 100),
+			activity: Math.round((e.total_ratings / maxTotal) * 100),
+		};
+	}
 
 	return (
 		<ChartFrame variant="tall">

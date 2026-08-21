@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, memo, Suspense, useCallback, useEffect } from "react";
+import { lazy, Suspense, useCallback, useEffect } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { HomeHeroSection } from "@/app/routes/components/HomeSections";
 import { namesQueryOptions } from "@/shared/api/names/api";
@@ -8,38 +8,16 @@ import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
+import { SectionHeading } from "@/shared/components/ui/SectionHeading";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
 import useAppStore from "@/store/appStore";
+import type { AppState } from "@/store/appStore.types";
 
 const LazyTournament = lazy(() => import("@/features/tournament/Tournament"));
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
-
-const SectionHeading = memo(function SectionHeading({
-	id,
-	title,
-	subtitle,
-}: {
-	id?: string;
-	title: string;
-	subtitle: string;
-}) {
-	return (
-		<div className="mx-auto mb-[var(--space-phi-4)] flex w-full max-w-2xl flex-col items-center text-center sm:mb-[var(--space-phi-5)]">
-			<h2
-				id={id}
-				className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground"
-			>
-				{title}
-			</h2>
-			<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-				{subtitle}
-			</p>
-		</div>
-	);
-});
 
 export default function HomeRoute() {
 	const user = useAppStore((s) => s.user);
@@ -77,107 +55,155 @@ export default function HomeRoute() {
 				onStartPicking={() => scrollToSection("pick")}
 			/>
 
-			<Section
-				id="pick"
-				maxWidth="xl"
-				separator={true}
-				fullpage={true}
-				ariaLabelledBy="section-heading-pick"
-			>
-				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
-					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-						<div>
-							<SectionHeading
-								id="section-heading-pick"
-								title="My Cat Needs a Name"
-								subtitle="Pick your favorites. Let's see what wins."
-							/>
-						</div>
-						<div className="w-full">
-							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-								<TournamentFlow />
-							</Suspense>
-						</div>
-					</div>
-				</div>
-			</Section>
+			<HomePickSection />
 
-			<Section
-				id="tournament"
-				separator={true}
-				fullpage={true}
-				ariaLabelledBy="section-heading-tournament"
-			>
-				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
-					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-						<div>
-							<SectionHeading
-								id="section-heading-tournament"
-								title="But See How I Got There"
-								subtitle="Head-to-head matchups to rank them all."
-							/>
-						</div>
+			<HomeTournamentSection
+				tournament={tournament}
+				tournamentActions={tournamentActions}
+				scheduleAnalysisScroll={scheduleAnalysisScroll}
+				scrollToSection={scrollToSection}
+			/>
+
+			<HomeAnalysisSection
+				tournament={tournament}
+				tournamentActions={tournamentActions}
+				user={user}
+				handleStartNewTournament={handleStartNewTournament}
+			/>
+		</>
+	);
+}
+
+function HomePickSection() {
+	return (
+		<Section
+			id="pick"
+			maxWidth="xl"
+			separator={true}
+			fullpage={true}
+			ariaLabelledBy="section-heading-pick"
+		>
+			<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
+				<div className="w-full flex flex-col items-center gap-8 md:gap-12">
+					<div>
+						<SectionHeading
+							id="section-heading-pick"
+							title="My Cat Needs a Name"
+							subtitle="Pick your favorites. Let's see what wins."
+						/>
+					</div>
+					<div className="w-full">
 						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-							{tournament.names && tournament.names.length > 0 ? (
-								<div className="w-full">
-									<LazyTournament
-										names={tournament.names}
-										existingRatings={tournament.ratings}
-										onComplete={(ratings) => {
-											tournamentActions.completeTournament(ratings);
-											scheduleAnalysisScroll();
-										}}
-									/>
-								</div>
-							) : (
-								<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
-									<p className="text-pretty text-sm text-muted-foreground/70">
-										Pick at least 2 names to start comparing them.
-									</p>
-									<Button variant="glass" onClick={() => scrollToSection("pick")}>
-										← Back
-									</Button>
-								</div>
-							)}
+							<TournamentFlow />
 						</Suspense>
 					</div>
 				</div>
-			</Section>
+			</div>
+		</Section>
+	);
+}
 
-			<Section
-				id="analysis"
-				separator={true}
-				fullpage={true}
-				ariaLabelledBy="section-heading-analysis"
-			>
-				<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
-					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-						<div>
-							<SectionHeading
-								id="section-heading-analysis"
-								title="Results"
-								subtitle="See how all the names ranked."
-							/>
-						</div>
-						<div className="w-full">
-							<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-								<ErrorBoundary context={errorContexts.analysisDashboard}>
-									<DashboardLazy
-										personalRatings={tournament.ratings}
-										currentTournamentNames={tournament.names ?? undefined}
-										onStartNew={handleStartNewTournament}
-										onUpdateRatings={tournamentActions.setRatings}
-										userName={user.name ?? ""}
-										isAdmin={user.isAdmin}
-										isLoggedIn={user.isLoggedIn}
-										avatarUrl={user.avatarUrl}
-									/>
-								</ErrorBoundary>
-							</Suspense>
-						</div>
+function HomeTournamentSection({
+	tournament,
+	tournamentActions,
+	scheduleAnalysisScroll,
+	scrollToSection,
+}: {
+	tournament: AppState["tournament"];
+	tournamentActions: AppState["tournamentActions"];
+	scheduleAnalysisScroll: () => void;
+	scrollToSection: (id: string) => void;
+}) {
+	return (
+		<Section
+			id="tournament"
+			separator={true}
+			fullpage={true}
+			ariaLabelledBy="section-heading-tournament"
+		>
+			<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
+				<div className="w-full flex flex-col items-center gap-8 md:gap-12">
+					<div>
+						<SectionHeading
+							id="section-heading-tournament"
+							title="But See How I Got There"
+							subtitle="Head-to-head matchups to rank them all."
+						/>
+					</div>
+					<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+						{tournament.names && tournament.names.length > 0 ? (
+							<div className="w-full">
+								<LazyTournament
+									names={tournament.names}
+									existingRatings={tournament.ratings}
+									onComplete={(ratings) => {
+										tournamentActions.completeTournament(ratings);
+										scheduleAnalysisScroll();
+									}}
+								/>
+							</div>
+						) : (
+							<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
+								<p className="text-pretty text-sm text-muted-foreground/70">
+									Pick at least 2 names to start comparing them.
+								</p>
+								<Button variant="glass" onClick={() => scrollToSection("pick")}>
+									← Back
+								</Button>
+							</div>
+						)}
+					</Suspense>
+				</div>
+			</div>
+		</Section>
+	);
+}
+
+function HomeAnalysisSection({
+	tournament,
+	tournamentActions,
+	user,
+	handleStartNewTournament,
+}: {
+	tournament: AppState["tournament"];
+	tournamentActions: AppState["tournamentActions"];
+	user: AppState["user"];
+	handleStartNewTournament: () => void;
+}) {
+	return (
+		<Section
+			id="analysis"
+			separator={true}
+			fullpage={true}
+			ariaLabelledBy="section-heading-analysis"
+		>
+			<div className="flex flex-col items-center justify-center min-h-[100dvh] py-12 md:py-16">
+				<div className="w-full flex flex-col items-center gap-8 md:gap-12">
+					<div>
+						<SectionHeading
+							id="section-heading-analysis"
+							title="Results"
+							subtitle="See how all the names ranked."
+						/>
+					</div>
+					<div className="w-full">
+						<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+							<ErrorBoundary context={errorContexts.analysisDashboard}>
+								<DashboardLazy
+									personalRatings={tournament.ratings}
+									currentTournamentNames={tournament.names ?? undefined}
+									onStartNew={handleStartNewTournament}
+									onUpdateRatings={tournamentActions.setRatings}
+									userName={user.name ?? ""}
+									isAdmin={user.isAdmin}
+									isLoggedIn={user.isLoggedIn}
+									avatarUrl={user.avatarUrl}
+								/>
+							</ErrorBoundary>
+						</Suspense>
 					</div>
 				</div>
-			</Section>
-		</>
+			</div>
+		</Section>
 	);
 }

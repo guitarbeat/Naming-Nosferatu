@@ -69,7 +69,7 @@ interface UseTournamentStateResult {
 
 const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
 
-function haveSameIds(a: string[], b: string[]): boolean {
+export function haveSameIds(a: string[], b: string[]): boolean {
 	if (a.length !== b.length) {
 		return false;
 	}
@@ -308,24 +308,29 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 	const openingEntrants = useMemo(
 		() =>
-			state.persistentState.bracketEntrants
-				.filter((entrantId) => !String(entrantId).startsWith("__BYE__"))
-				.map((entrantId) => {
+			// ⚡ Bolt Optimization: Replaced chained .filter().map() with a single .reduce() pass to avoid intermediate array allocations.
+			state.persistentState.bracketEntrants.reduce<{ id: string; label: string }[]>(
+				(acc, entrantId) => {
 					const entrantKey = String(entrantId);
-					if (tournamentMode === "2v2") {
-						const team = teamsById.get(entrantKey);
-						return {
-							id: entrantKey,
-							label: team ? team.memberNames.join(" + ") : entrantKey,
-						};
+					if (!entrantKey.startsWith("__BYE__")) {
+						if (tournamentMode === "2v2") {
+							const team = teamsById.get(entrantKey);
+							acc.push({
+								id: entrantKey,
+								label: team ? team.memberNames.join(" + ") : entrantKey,
+							});
+						} else {
+							const name = idToNameMap.get(entrantKey);
+							acc.push({
+								id: entrantKey,
+								label: name?.name ?? entrantKey,
+							});
+						}
 					}
-
-					const name = idToNameMap.get(entrantKey);
-					return {
-						id: entrantKey,
-						label: name?.name ?? entrantKey,
-					};
-				}),
+					return acc;
+				},
+				[],
+			),
 		[state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap],
 	);
 

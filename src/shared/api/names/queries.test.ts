@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SUPABASE_UNAVAILABLE_MSG } from "@/shared/services/supabase/errorUtils";
 import { fetchNames, namesQueryKeys, namesQueryOptions } from "./api";
 
@@ -28,6 +28,10 @@ const mockClient = {
 };
 
 describe("fetchNames", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
 	it("throws when user is not an admin and includeHidden is true", async () => {
 		vi.mocked(useAppStore.getState).mockReturnValueOnce({
 			user: { isAdmin: false },
@@ -48,6 +52,9 @@ describe("fetchNames", () => {
 		mockOrder.mockResolvedValueOnce({ data: [], error: null });
 
 		await expect(fetchNames(false)).resolves.toBeDefined();
+		expect(mockEq).toHaveBeenCalledWith("is_active", true);
+		expect(mockEq).toHaveBeenCalledWith("is_deleted", false);
+		expect(mockEq).toHaveBeenCalledWith("is_hidden", false);
 	});
 
 	it("allows admin to fetch hidden names", async () => {
@@ -61,6 +68,9 @@ describe("fetchNames", () => {
 		mockOrder.mockResolvedValueOnce({ data: [], error: null });
 
 		await expect(fetchNames(true)).resolves.toBeDefined();
+		expect(mockEq).toHaveBeenCalledWith("is_active", true);
+		expect(mockEq).toHaveBeenCalledWith("is_deleted", false);
+		expect(mockEq).not.toHaveBeenCalledWith("is_hidden", false);
 	});
 
 	it("throws when Supabase client is unavailable", async () => {

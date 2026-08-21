@@ -38,8 +38,8 @@ export function MagicToggle<T extends string>({
 				}}
 				transition={{
 					type: "spring",
-					stiffness: 400,
-					damping: 25,
+					stiffness: 500,
+					damping: 20,
 					mass: 0.8,
 				}}
 			/>
@@ -57,13 +57,14 @@ export function MagicToggle<T extends string>({
 						className={`relative flex-1 ${size === "small" ? "px-3 py-1.5 text-xs" : "px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm"} font-bold tracking-wide transition-colors z-10 ${size === "small" ? "rounded-lg" : "rounded-xl"} ${
 							isSelected ? "text-primary" : "text-muted-foreground hover:text-foreground"
 						}`}
-						whileHover={{ scale: 1.05, y: -1 }}
-						whileTap={{ scale: 0.95, y: 0 }}
+						whileHover={{ scale: 1.05, y: -2, boxShadow: "0 4px 12px rgba(var(--primary), 0.15)" }}
+						whileTap={{ scale: 0.9, y: 0 }}
 						animate={{
-							scale: isSelected ? 1.02 : 1,
+							scale: isSelected ? 1.03 : 1,
 							y: isSelected ? -1 : 0,
+							textShadow: isSelected ? "0 0 8px rgba(var(--primary), 0.3)" : "none",
 						}}
-						transition={{ type: "spring", stiffness: 500, damping: 20 }}
+						transition={{ type: "spring", stiffness: 600, damping: 15 }}
 					>
 						<div className="flex items-center justify-center gap-2">
 							{option.icon && (

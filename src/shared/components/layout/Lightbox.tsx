@@ -9,33 +9,24 @@ interface LightboxProps {
 	onNavigate: (index: number) => void;
 }
 
-export function Lightbox({
-	images,
-	currentIndex,
-	onClose,
-	onNavigate,
-}: LightboxProps) {
-	const currentImage = images[currentIndex] || "";
-	const hasMultipleImages = images.length > 1;
-	const closeButtonRef = useRef<HTMLButtonElement>(null);
-
+function useLightboxNavigation(
+	imagesLength: number,
+	currentIndex: number,
+	onClose: () => void,
+	onNavigate: (index: number) => void,
+) {
 	// Use a ref to hold onClose so the keyboard effect does not re-register
 	// when the caller passes an unstable inline arrow (e.g. () => setState(false)).
 	const onCloseRef = useRef(onClose);
 	onCloseRef.current = onClose;
 
-	// Focus the close button on mount for keyboard accessibility
-	useEffect(() => {
-		closeButtonRef.current?.focus();
-	}, []);
-
 	const handlePrevious = useCallback(() => {
-		onNavigate(currentIndex > 0 ? currentIndex - 1 : images.length - 1);
-	}, [onNavigate, currentIndex, images.length]);
+		onNavigate(currentIndex > 0 ? currentIndex - 1 : imagesLength - 1);
+	}, [onNavigate, currentIndex, imagesLength]);
 
 	const handleNext = useCallback(() => {
-		onNavigate(currentIndex < images.length - 1 ? currentIndex + 1 : 0);
-	}, [onNavigate, currentIndex, images.length]);
+		onNavigate(currentIndex < imagesLength - 1 ? currentIndex + 1 : 0);
+	}, [onNavigate, currentIndex, imagesLength]);
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -54,6 +45,26 @@ export function Lightbox({
 			document.removeEventListener("keydown", handleKeyDown);
 		};
 	}, [handlePrevious, handleNext]);
+
+	return { handlePrevious, handleNext };
+}
+
+export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
+	const currentImage = images[currentIndex] || "";
+	const hasMultipleImages = images.length > 1;
+	const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+	const { handlePrevious, handleNext } = useLightboxNavigation(
+		images.length,
+		currentIndex,
+		onClose,
+		onNavigate,
+	);
+
+	// Focus the close button on mount for keyboard accessibility
+	useEffect(() => {
+		closeButtonRef.current?.focus();
+	}, []);
 
 	return (
 		<AnimatePresence>
