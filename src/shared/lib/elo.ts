@@ -85,14 +85,6 @@ function getActualScores(outcome: EloOutcome): { left: number; right: number } {
 	return { left: 0.5, right: 0.5 };
 }
 
-function average(values: number[]): number {
-	if (values.length === 0) {
-		throw new Error("Cannot calculate Elo for an empty side");
-	}
-
-	return values.reduce((sum, value) => sum + value, 0) / values.length;
-}
-
 export function getExpectedEloScore(
 	currentRating: number,
 	opponentRating: number,
@@ -186,28 +178,38 @@ export function applyEloMatchUpdate({
 	config?: EloConfig;
 }): EloMatchResult {
 	const resolved = resolveConfig(config);
-	const leftRatings = leftParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
-	const rightRatings = rightParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
-	const leftAverageRating = average(leftRatings);
-	const rightAverageRating = average(rightRatings);
-	const leftAggregateStats = leftParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
-	const rightAggregateStats = rightParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
+
+	if (leftParticipantIds.length === 0 || rightParticipantIds.length === 0) {
+		throw new Error("Cannot calculate Elo for an empty side");
+	}
+
+	let leftRatingSum = 0;
+	let leftWins = 0;
+	let leftLosses = 0;
+	for (let i = 0; i < leftParticipantIds.length; i++) {
+		const participantId = leftParticipantIds[i];
+		// ⚡ Bolt Optimization: Calculate rating sum and stats in a single pass to avoid intermediate allocations
+		leftRatingSum += normalizeRating(ratings[participantId], resolved);
+		const participantStats = normalizeStats(stats?.[participantId]);
+		leftWins += participantStats.wins;
+		leftLosses += participantStats.losses;
+	}
+	const leftAverageRating = leftRatingSum / leftParticipantIds.length;
+	const leftAggregateStats = { wins: leftWins, losses: leftLosses };
+
+	let rightRatingSum = 0;
+	let rightWins = 0;
+	let rightLosses = 0;
+	for (let i = 0; i < rightParticipantIds.length; i++) {
+		const participantId = rightParticipantIds[i];
+		// ⚡ Bolt Optimization: Calculate rating sum and stats in a single pass to avoid intermediate allocations
+		rightRatingSum += normalizeRating(ratings[participantId], resolved);
+		const participantStats = normalizeStats(stats?.[participantId]);
+		rightWins += participantStats.wins;
+		rightLosses += participantStats.losses;
+	}
+	const rightAverageRating = rightRatingSum / rightParticipantIds.length;
+	const rightAggregateStats = { wins: rightWins, losses: rightLosses };
 	const pairUpdate = calculatePairEloUpdate({
 		leftRating: leftAverageRating,
 		rightRating: rightAverageRating,
