@@ -90,7 +90,12 @@ function average(values: number[]): number {
 		throw new Error("Cannot calculate Elo for an empty side");
 	}
 
-	return values.reduce((sum, value) => sum + value, 0) / values.length;
+	// ⚡ Bolt Optimization: Replace `.reduce()` with a simple loop to reduce callback overhead
+	let sum = 0;
+	for (let i = 0; i < values.length; i++) {
+		sum += values[i];
+	}
+	return sum / values.length;
 }
 
 export function getExpectedEloScore(
@@ -190,24 +195,22 @@ export function applyEloMatchUpdate({
 	const rightRatings = rightParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
 	const leftAverageRating = average(leftRatings);
 	const rightAverageRating = average(rightRatings);
-	const leftAggregateStats = leftParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
-	const rightAggregateStats = rightParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
+
+	// ⚡ Bolt Optimization: Replace `.reduce()` with simple loops to reduce callback overhead
+	const leftAggregateStats = { wins: 0, losses: 0 };
+	for (let i = 0; i < leftParticipantIds.length; i++) {
+		const participantStats = normalizeStats(stats?.[leftParticipantIds[i]]);
+		leftAggregateStats.wins += participantStats.wins;
+		leftAggregateStats.losses += participantStats.losses;
+	}
+
+	const rightAggregateStats = { wins: 0, losses: 0 };
+	for (let i = 0; i < rightParticipantIds.length; i++) {
+		const participantStats = normalizeStats(stats?.[rightParticipantIds[i]]);
+		rightAggregateStats.wins += participantStats.wins;
+		rightAggregateStats.losses += participantStats.losses;
+	}
+
 	const pairUpdate = calculatePairEloUpdate({
 		leftRating: leftAverageRating,
 		rightRating: rightAverageRating,
