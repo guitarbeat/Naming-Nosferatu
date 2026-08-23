@@ -92,7 +92,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 
 		if (variant === "cat-gif") {
 			return (
-				<div className={containerClasses} role="status" aria-label="Loading">
+				<div className={containerClasses} role="status" aria-label="Loading" aria-busy="true">
 					<img
 						src={LOADING_ASSET}
 						alt=""
@@ -109,7 +109,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 		}
 
 		return (
-			<div className={containerClasses} role="status" aria-label="Loading">
+			<div className={containerClasses} role="status" aria-label="Loading" aria-busy="true">
 				<SpinnerCircle />
 				{text ? (
 					<p className="mt-2 text-sm font-medium text-white/70">{text}</p>
