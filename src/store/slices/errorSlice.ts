@@ -1,7 +1,6 @@
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { ErrorLog } from "@/shared/types";
-import { type AppSliceCreator, patch } from "@/store/appStore.shared";
-import type { AppState } from "@/store/appStore.types";
+import { type AppSliceCreator, type AppState, patch } from "@/store/appStore.types";
 
 const MAX_ERROR_HISTORY = 100;
 

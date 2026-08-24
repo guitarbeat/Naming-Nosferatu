@@ -93,6 +93,37 @@ function average(values: number[]): number {
 	return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
+function applyParticipantUpdates(
+	participantIds: string[],
+	delta: number,
+	outcomeScore: number,
+	ratings: Record<string, number>,
+	stats: Record<string, EloStats> | undefined,
+	resolvedConfig: Required<EloConfig>,
+	nextRatings: Record<string, number>,
+	nextStats: Record<string, EloStats>,
+	participants: Record<string, EloParticipantResult>,
+) {
+	for (const participantId of participantIds) {
+		const currentRating = normalizeRating(ratings[participantId], resolvedConfig);
+		const currentStats = normalizeStats(stats?.[participantId]);
+
+		const updatedRating = clampRating(Math.round(currentRating + delta), resolvedConfig);
+		nextRatings[participantId] = updatedRating;
+
+		nextStats[participantId] = {
+			wins: currentStats.wins + (outcomeScore === 1 ? 1 : 0),
+			losses: currentStats.losses + (outcomeScore === 0 ? 1 : 0),
+		};
+
+		participants[participantId] = {
+			rating: updatedRating,
+			wins: nextStats[participantId]?.wins ?? 0,
+			losses: nextStats[participantId]?.losses ?? 0,
+			delta: updatedRating - currentRating,
+		};
+	}
+}
 export function getExpectedEloScore(
 	currentRating: number,
 	opponentRating: number,
@@ -225,41 +256,28 @@ export function applyEloMatchUpdate({
 	const leftOutcome = actualScores.left;
 	const rightOutcome = actualScores.right;
 
-	for (const participantId of leftParticipantIds) {
-		const currentRating = normalizeRating(ratings[participantId], resolved);
-		const currentStats = normalizeStats(stats?.[participantId]);
-		const updatedRating = clampRating(Math.round(currentRating + leftDelta), resolved);
-
-		nextRatings[participantId] = updatedRating;
-		nextStats[participantId] = {
-			wins: currentStats.wins + (leftOutcome === 1 ? 1 : 0),
-			losses: currentStats.losses + (leftOutcome === 0 ? 1 : 0),
-		};
-		participants[participantId] = {
-			rating: updatedRating,
-			wins: nextStats[participantId]?.wins ?? 0,
-			losses: nextStats[participantId]?.losses ?? 0,
-			delta: updatedRating - currentRating,
-		};
-	}
-
-	for (const participantId of rightParticipantIds) {
-		const currentRating = normalizeRating(ratings[participantId], resolved);
-		const currentStats = normalizeStats(stats?.[participantId]);
-		const updatedRating = clampRating(Math.round(currentRating + rightDelta), resolved);
-
-		nextRatings[participantId] = updatedRating;
-		nextStats[participantId] = {
-			wins: currentStats.wins + (rightOutcome === 1 ? 1 : 0),
-			losses: currentStats.losses + (rightOutcome === 0 ? 1 : 0),
-		};
-		participants[participantId] = {
-			rating: updatedRating,
-			wins: nextStats[participantId]?.wins ?? 0,
-			losses: nextStats[participantId]?.losses ?? 0,
-			delta: updatedRating - currentRating,
-		};
-	}
+	applyParticipantUpdates(
+		leftParticipantIds,
+		leftDelta,
+		leftOutcome,
+		ratings,
+		stats,
+		resolved,
+		nextRatings,
+		nextStats,
+		participants,
+	);
+	applyParticipantUpdates(
+		rightParticipantIds,
+		rightDelta,
+		rightOutcome,
+		ratings,
+		stats,
+		resolved,
+		nextRatings,
+		nextStats,
+		participants,
+	);
 
 	return {
 		ratings: nextRatings,

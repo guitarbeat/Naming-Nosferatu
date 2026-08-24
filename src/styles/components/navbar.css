@@ -1,0 +1,88 @@
+/**
+ * @file navbar.css
+ * @description Modular stylesheet for the Floating Navigation components.
+ * Houses the layout, liquid-glass visual styles, transitions, theme bindings,
+ * and responsive states for the floating navbar.
+ */
+
+/* ==========================================================================
+   1. LAYOUT & FRAME
+   ========================================================================== */
+
+.floating-navbar-frame {
+	position: fixed;
+	bottom: var(--app-nav-bottom-offset, 1.5rem);
+	left: 0;
+	right: 0;
+	z-index: var(--z-navbar, 1000);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	pointer-events: none;
+	padding-inline: max(0.75rem, env(safe-area-inset-left));
+	padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 640px) {
+	.floating-navbar-frame {
+		bottom: max(0.75rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+	}
+}
+
+/* ==========================================================================
+   2. GLASS SHELL CONTAINER
+   ========================================================================== */
+
+.floating-navbar-shell {
+	pointer-events: auto;
+	width: auto;
+	max-width: var(--app-nav-frame-width, min(96vw, 56rem));
+	background: var(--nav-shell-bg);
+	border: 1px solid var(--nav-shell-border);
+	box-shadow: var(--nav-shell-shadow);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	transition:
+		transform var(--duration-base, 180ms) var(--ease-out-expo),
+		box-shadow var(--duration-base, 180ms) var(--ease-out-expo);
+}
+
+@media (max-width: 640px) {
+	.floating-navbar-shell {
+		max-width: min(calc(100vw - 1rem), 32rem);
+	}
+}
+
+/* ==========================================================================
+   3. MENU BUTTONS & ITEMS
+   ========================================================================== */
+
+.floating-nav-button {
+	color: var(--nav-text-muted);
+	transition: color var(--duration-moderate, 250ms) var(--ease-in-out-smooth);
+}
+
+.floating-nav-button:hover {
+	color: var(--nav-text);
+}
+
+.floating-nav-button--active {
+	color: var(--nav-text);
+}
+
+.floating-nav-button--accent {
+	color: var(--nav-accent-text);
+}
+
+/* Active background capsule animation container */
+.floating-nav-active-bubble {
+	background: var(--nav-pill-bg);
+	border: 1px solid var(--nav-pill-border);
+	box-shadow: var(--nav-pill-shadow);
+}
+
+/* Text & icon overrides when active */
+.floating-nav-button--active .floating-nav-icon,
+.floating-nav-button--active .floating-nav-label {
+	color: var(--primary-foreground);
+}

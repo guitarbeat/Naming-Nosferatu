@@ -1,5 +1,5 @@
-import { type AppSliceCreator, patch } from "@/store/appStore.shared";
-import type { AppState } from "@/store/appStore.types";
+import type { TournamentState } from "@/shared/types";
+import { type AppSliceCreator, type AppState, patch } from "@/store/appStore.types";
 
 export const createTournamentSlice: AppSliceCreator<
 	Pick<AppState, "tournament" | "tournamentActions">
@@ -18,12 +18,20 @@ export const createTournamentSlice: AppSliceCreator<
 			const currentRatings = get().tournament.ratings;
 			patch(set, "tournament", {
 				names:
-					names?.map((name) => ({
-						id: name.id,
-						name: name.name,
-						description: name.description,
-						rating: currentRatings[name.name]?.rating ?? 1500,
-					})) ?? null,
+					names?.map((name) => {
+						const entry = currentRatings[name.id] ?? currentRatings[name.name];
+						const ratingVal =
+							typeof entry === "number"
+								? entry
+								: typeof entry === "object" && entry !== null
+									? entry.rating
+									: undefined;
+
+						return {
+							...name,
+							rating: ratingVal ?? name.rating ?? name.avgRating ?? name.avg_rating ?? 1500,
+						};
+					}) ?? null,
 			});
 		},
 
@@ -69,5 +77,9 @@ export const createTournamentSlice: AppSliceCreator<
 		},
 
 		clearVoteHistory: () => patch(set, "tournament", { voteHistory: [] }),
+
+		replaceTournamentState: (snapshot: TournamentState) => {
+			set({ tournament: { ...snapshot } });
+		},
 	},
 });

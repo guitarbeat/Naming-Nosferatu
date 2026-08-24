@@ -3,20 +3,20 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const CAT_IMAGES = [
-	"/assets/images/IMG_4844.avif",
-	"/assets/images/IMG_4845.avif",
-	"/assets/images/IMG_4846.avif",
-	"/assets/images/IMG_4847.avif",
-	"/assets/images/IMG_5044.avif",
-	"/assets/images/IMG_5071.avif",
-	"/assets/images/IMG_0778.avif",
-	"/assets/images/IMG_0779.avif",
-	"/assets/images/IMG_0865.avif",
-	"/assets/images/IMG_0884.avif",
-	"/assets/images/IMG_0923.avif",
-	"/assets/images/IMG_1116.avif",
-	"/assets/images/IMG_7205.avif",
-	"/assets/images/75209580524__60DCC26F-55A1-4EF8-A0B2-14E80A026A8D.avif",
+	"/assets/images/cat_01.avif",
+	"/assets/images/cat_02.avif",
+	"/assets/images/cat_03.avif",
+	"/assets/images/cat_04.avif",
+	"/assets/images/cat_05.avif",
+	"/assets/images/cat_06.avif",
+	"/assets/images/cat_07.avif",
+	"/assets/images/cat_08.avif",
+	"/assets/images/cat_09.avif",
+	"/assets/images/cat_10.avif",
+	"/assets/images/cat_11.avif",
+	"/assets/images/cat_12.avif",
+	"/assets/images/cat_13.avif",
+	"/assets/images/cat_14.avif",
 ] as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -61,8 +61,6 @@ export const STORAGE_KEYS = {
 	ANALYSIS_DASHBOARD_COLLAPSED: "analysis-dashboard-collapsed",
 	ADMIN_ANALYTICS_COLLAPSED: "admin-analytics-collapsed",
 	NAVBAR_COLLAPSED: "navbar-collapsed",
-	SOUND_ENABLED: "soundEnabled",
-	EFFECTS_VOLUME: "effectsVolume",
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -80,13 +78,4 @@ export const TIMING = {
 	MOTION_SLOW: 0.6, // Large elements (hero heading, CTA)
 	MOTION_CYCLE: 1500, // Name carousel, loop timing
 	MOTION_EASING: "easeOut", // Standard easing for entrances
-} as const;
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Audio & Sound
-// ═══════════════════════════════════════════════════════════════════════════════
-
-export const AUDIO = {
-	DEFAULT_EFFECTS_VOLUME: 0.3,
-	MAX_RETRIES: 3,
 } as const;

@@ -1,20 +1,9 @@
-import { lazy } from "react";
+import { Dashboard } from "@/features/dashboard/DashboardViews";
+import { TournamentSetup } from "@/features/tournament/TournamentSetup";
 
 export { errorContexts } from "@/store/appStore";
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Lazy-Loaded Route Components
-// ═══════════════════════════════════════════════════════════════════════════════
-
-const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
-
-const DashboardLazy = lazy(() =>
-	import("@/features/dashboard/Dashboard").then((m) => ({
-		default: m.Dashboard,
-	})),
-);
-
 export const routeComponents = {
-	TournamentFlow,
-	DashboardLazy,
+	TournamentSetup,
+	DashboardLazy: Dashboard,
 } as const;

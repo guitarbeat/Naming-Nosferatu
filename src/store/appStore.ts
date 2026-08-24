@@ -5,8 +5,6 @@ import { createErrorSlice } from "@/store/slices/errorSlice";
 import { createTournamentSlice } from "@/store/slices/tournamentSlice";
 import { createUserAndSettingsSlice } from "@/store/slices/userSettingsSlice";
 
-export type { NameItem, RatingData, TournamentActions } from "@/store/appStore.types";
-
 const useAppStore = create<AppState>()((...args) => ({
 	...createTournamentSlice(...args),
 	...createUserAndSettingsSlice(...args),

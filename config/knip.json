@@ -8,7 +8,6 @@
 		"src/features/tournament/hooks/useTournamentSelectionSaver.ts",
 		"src/features/tournament/hooks/useTournamentSelectionSaver.bench.ts"
 	],
-	"ignoreBinaries": ["vercel"],
 	"ignoreDependencies": [
 		"@capacitor/cli",
 		"playwright",

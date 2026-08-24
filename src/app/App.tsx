@@ -1,26 +1,21 @@
-import { lazy, Suspense, useCallback, useEffect } from "react";
-import { AppBootScreen } from "@/app/components/AppBootScreen";
+import { Suspense, useCallback, useEffect } from "react";
+
 import { useAuth } from "@/app/providers/Providers";
-import {
-	cleanupPerformanceMonitoring,
-	initializePerformanceMonitoring,
-} from "@/shared/lib/performance";
 import { ErrorManager } from "@/shared/services/errorManager";
-import { updateSupabaseUserContext } from "@/shared/services/supabase/runtime";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 
-const AppShell = lazy(() => import("@/app/AppShell"));
+import AppShell from "./AppShell";
+import { AppBootScreen } from "./components/AppComponents";
+
+const BOOT_TIMEOUT_FALLBACK_MS = 2500;
 
 function App() {
 	const { user: authUser, isLoading } = useAuth();
 	const isStoreLoggedIn = useAppStore((state) => state.user.isLoggedIn);
-	const userActions = useAppStore((state) => state.userActions);
 	const isBootLoading = useAppStore((state) => state.ui.isBootLoading);
-	const setBootLoading = useAppStore((state) => state.uiActions.setBootLoading);
 
-	useEffect(() => {
-		setBootLoading(isLoading);
-	}, [isLoading, setBootLoading]);
+	const userActions = useAppStore((state) => state.userActions);
+	const setBootLoading = useAppStore((state) => state.uiActions.setBootLoading);
 
 	useEffect(() => {
 		if (isLoading) {
@@ -37,30 +32,45 @@ function App() {
 		} else if (isStoreLoggedIn) {
 			userActions.logout();
 		}
-		updateSupabaseUserContext(authUser?.name ?? null, authUser?.id ?? null);
-	}, [authUser, isLoading, isStoreLoggedIn, userActions]);
+
+		setBootLoading(false);
+	}, [authUser, isLoading, isStoreLoggedIn, setBootLoading, userActions]);
+
+	// Fallback safety timeout: ensure the boot screen never hangs indefinitely even if an init step stalls
+	useEffect(() => {
+		const fallbackTimer = setTimeout(() => {
+			setBootLoading(false);
+		}, BOOT_TIMEOUT_FALLBACK_MS);
+
+		return () => {
+			clearTimeout(fallbackTimer);
+		};
+	}, [setBootLoading]);
 
 	useEffect(() => {
-		initializePerformanceMonitoring();
 		const cleanup = ErrorManager.setupGlobalErrorHandling();
 		return () => {
-			cleanupPerformanceMonitoring();
 			cleanup();
 		};
 	}, []);
 
 	const handleUserContext = useCallback((name: string) => {
-		updateSupabaseUserContext(name, null);
+		// No-op for now since supabase is removed
 	}, []);
-
 	useAppStoreInitialization(handleUserContext);
 
 	if (isBootLoading) {
-		return <AppBootScreen />;
+		return <AppBootScreen visible={true} />;
 	}
 
 	return (
-		<Suspense fallback={<AppBootScreen visible={true} message="Opening the app..." />}>
+		<Suspense
+			fallback={
+				<div className="flex min-h-screen items-center justify-center bg-background text-foreground">
+					Loading...
+				</div>
+			}
+		>
 			<AppShell />
 		</Suspense>
 	);

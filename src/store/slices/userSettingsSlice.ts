@@ -1,13 +1,14 @@
 import { STORAGE_KEYS } from "@/shared/lib/constants";
-import { getStorageString, removeStorageItem, setStorageString } from "@/shared/lib/storage";
 import {
 	clearStoredUserSnapshot,
+	getStorageString,
 	readStoredUserSnapshot,
+	removeStorageItem,
+	setStorageString,
 	writeStoredUserSnapshot,
-} from "@/shared/lib/userStorage";
+} from "@/shared/lib/storage";
 import type { ThemePreference, ThemeValue, UIState, UserState } from "@/shared/types";
-import { type AppSliceCreator, IS_BROWSER, patch } from "@/store/appStore.shared";
-import type { AppState } from "@/store/appStore.types";
+import { type AppSliceCreator, type AppState, IS_BROWSER, patch } from "@/store/appStore.types";
 
 let systemThemeCleanup: (() => void) | null = null;
 
@@ -103,12 +104,15 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 		},
 
 		login: (userName, onContext) => {
+			const id = `user_${Math.random().toString(36).substring(2, 9)}`;
+			const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${userName}`;
 			const nextUser = {
 				...get().user,
-				id: null,
+				id,
 				name: userName,
 				isLoggedIn: true,
 				isAdmin: false,
+				avatarUrl,
 			};
 			patch(set, "user", nextUser);
 			persistUserState(nextUser);

@@ -1,3 +1,4 @@
+import type { StateCreator } from "zustand";
 import type {
 	CatChosenName,
 	ErrorState,
@@ -10,7 +11,22 @@ import type {
 	UserState,
 } from "@/shared/types";
 
-export type { NameItem, RatingData };
+export type AppSet = Parameters<StateCreator<AppState>>[0];
+export type AppSliceCreator<TSlice> = StateCreator<AppState, [], [], TSlice>;
+
+export const IS_BROWSER = typeof window !== "undefined";
+export const IS_DEV = import.meta.env?.DEV ?? false;
+
+export function patch<K extends keyof AppState>(
+	set: AppSet,
+	key: K,
+	updates: Partial<AppState[K]>,
+): void {
+	set((state) => ({
+		...state,
+		[key]: { ...state[key], ...updates },
+	}));
+}
 
 export interface TournamentActions {
 	setNames: (names: NameItem[] | null) => void;
@@ -30,6 +46,7 @@ export interface TournamentActions {
 		loserMemberIds?: string[],
 	) => void;
 	clearVoteHistory: () => void;
+	replaceTournamentState: (snapshot: TournamentState) => void;
 }
 
 export interface UserActions {

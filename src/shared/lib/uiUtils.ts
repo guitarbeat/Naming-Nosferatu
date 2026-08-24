@@ -1,0 +1,276 @@
+import type { TargetAndTransition, Transition, Variants } from "framer-motion";
+import { CAT_IMAGES } from "./constants";
+
+// ============================================================================
+// MEDIA & IMAGE HELPERS (Consolidated from media.ts)
+// ============================================================================
+
+/**
+ * Generates a simple hash for a string or number.
+ */
+function hashString(str: string): number {
+	let hash = 2166136261;
+	for (let i = 0; i < str.length; i += 1) {
+		hash ^= str.charCodeAt(i);
+		hash *= 16777619;
+	}
+	return hash;
+}
+
+const imageCache = new Map<string, string>();
+const MAX_IMAGE_CACHE_SIZE = 500;
+
+const NAME_IMAGE_MAPPING: Record<string, string> = {
+	Luna: CAT_IMAGES[0],
+	Miso: CAT_IMAGES[1],
+	Pixel: CAT_IMAGES[2],
+	Saffron: CAT_IMAGES[3],
+	Noodle: CAT_IMAGES[4],
+	Ziggy: CAT_IMAGES[5],
+	Whiskers: CAT_IMAGES[6],
+	Pepper: CAT_IMAGES[7],
+};
+
+/**
+ * Consistently returns a "random" cat image for a given ID.
+ * The same ID will always return the same image for the same images pool.
+ */
+export function getRandomCatImage(
+	id: string | number | null | undefined,
+	images: readonly string[] = CAT_IMAGES,
+	name?: string,
+): string {
+	if (name && NAME_IMAGE_MAPPING[name]) {
+		return NAME_IMAGE_MAPPING[name];
+	}
+
+	if (!id || images.length === 0) {
+		return images[0] ?? "";
+	}
+
+	const cacheKey = `${id}-${images.length}`;
+	const cached = imageCache.get(cacheKey);
+	if (cached) {
+		return cached;
+	}
+
+	const seed = typeof id === "string" ? hashString(id) : Number(id);
+	const index = Math.abs(seed) % images.length;
+	const selected = images[index] ?? images[0] ?? "";
+	imageCache.set(cacheKey, selected);
+	while (imageCache.size > MAX_IMAGE_CACHE_SIZE) {
+		const firstKey = imageCache.keys().next().value;
+		if (firstKey) {
+			imageCache.delete(firstKey);
+		} else {
+			break;
+		}
+	}
+	return selected;
+}
+
+// ============================================================================
+// DESIGN TOKENS & SURFACE CLASSES (Consolidated from themeClasses.ts)
+// ============================================================================
+
+/**
+ * Shared Tailwind class groups aligned with design tokens in src/styles/tokens.css.
+ * Prefer these over ad-hoc border-white/10 and bg-black/15 patterns.
+ */
+export const themeSurfaces = {
+	panel:
+		"rounded-2xl border border-border/45 bg-card/50 backdrop-blur-xl shadow-sm ring-1 ring-inset ring-[color-mix(in_srgb,var(--foreground)_6%,transparent)]",
+	panelInset:
+		"overflow-hidden rounded-2xl border border-border/40 bg-card/40 ring-1 ring-inset ring-[color-mix(in_srgb,var(--foreground)_4%,transparent)]",
+	panelDense: "rounded-xl border border-border/40 bg-card/40",
+	rowDivider: "border-b border-border/40 last:border-b-0",
+	avatar: "border border-border/50 bg-foreground/[0.04]",
+	statTile:
+		"flex flex-col items-center justify-center gap-2 rounded-xl border border-border/35 bg-card/30 px-4 py-5 text-center",
+	statIcon: "rounded-lg border border-border/35 bg-foreground/[0.03] text-muted-foreground/70",
+	statIconAccent: "rounded-lg border border-primary/20 bg-primary/10 text-primary",
+	badge:
+		"inline-flex items-center rounded-full border border-border/35 bg-card/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/60",
+	badgeAccent:
+		"inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/85",
+} as const;
+
+export const themeText = {
+	eyebrow: "text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/60",
+	eyebrowWide: "text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground/55",
+	sectionLabel: "text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/65",
+	subtitle: "text-sm leading-relaxed text-muted-foreground/55",
+	statValue: "text-2xl font-semibold leading-none text-foreground/90",
+	heroDisplay: "font-black uppercase leading-[0.88] tracking-tighter text-foreground",
+	heroPlaceholder: "text-muted-foreground/25",
+} as const;
+
+// ============================================================================
+// MOTION TIMING & EASING CONSTANTS (Consolidated from motion.ts)
+// ============================================================================
+
+export const MOTION_DURATIONS = {
+	micro: 0.08,
+	fast: 0.15,
+	quick: 0.2,
+	base: 0.28,
+	moderate: 0.35,
+	slow: 0.5,
+	gentle: 0.6,
+	reducedMotionDuration: 0.01,
+} as const;
+
+export const MOTION_EASING = {
+	easeOutExpo: [0.16, 1, 0.3, 1] as const,
+	easeOutBack: [0.34, 1.56, 0.64, 1] as const,
+	easeInOutSmooth: [0.4, 0, 0.2, 1] as const,
+	easeSpring: [0.175, 0.885, 0.32, 1.275] as const,
+	easeStandard: "easeOut" as const,
+} as const;
+
+export const MOTION_SPRINGS = {
+	snappy: {
+		type: "spring" as const,
+		stiffness: 400,
+		damping: 25,
+		mass: 0.8,
+	},
+	gentle: {
+		type: "spring" as const,
+		stiffness: 260,
+		damping: 20,
+	},
+	bouncy: {
+		type: "spring" as const,
+		stiffness: 500,
+		damping: 20,
+		mass: 0.8,
+	},
+	tab: {
+		type: "spring" as const,
+		stiffness: 500,
+		damping: 20,
+		mass: 0.8,
+	},
+} as const;
+
+// ============================================================================
+// ACCESSIBLE TRANSITION HELPERS
+// ============================================================================
+
+/**
+ * Returns a reduced-motion safe transition config.
+ */
+export function getAccessibleTransition(
+	prefersReducedMotion: boolean | null | undefined,
+	standardTransition: Transition,
+): Transition {
+	if (prefersReducedMotion) {
+		return {
+			duration: MOTION_DURATIONS.reducedMotionDuration,
+			ease: "linear",
+		};
+	}
+	return standardTransition;
+}
+
+/**
+ * Creates accessible variants where transforms/delays collapse when reduced motion is preferred.
+ */
+export function getAccessibleVariants(
+	prefersReducedMotion: boolean | null | undefined,
+	fullVariants: {
+		initial: TargetAndTransition;
+		animate: TargetAndTransition;
+		exit?: TargetAndTransition;
+	},
+): Variants {
+	if (prefersReducedMotion) {
+		return {
+			initial: { opacity: 0 },
+			animate: {
+				opacity: 1,
+				transition: { duration: MOTION_DURATIONS.reducedMotionDuration },
+			},
+			exit: {
+				opacity: 0,
+				transition: { duration: MOTION_DURATIONS.reducedMotionDuration },
+			},
+		};
+	}
+	return fullVariants as Variants;
+}
+
+// ============================================================================
+// CONSOLIDATED FRAMER MOTION VARIANTS & PRESETS
+// ============================================================================
+
+export const fadeMotionPreset = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+	transition: {
+		duration: MOTION_DURATIONS.base,
+		ease: MOTION_EASING.easeInOutSmooth,
+	},
+};
+
+export const scaleFadeMotionPreset = {
+	initial: { opacity: 0, scale: 0.95 },
+	animate: { opacity: 1, scale: 1 },
+	exit: { opacity: 0, scale: 0.95 },
+	transition: {
+		duration: MOTION_DURATIONS.base,
+		ease: MOTION_EASING.easeOutExpo,
+	},
+};
+
+export const slideUpMotionPreset = {
+	initial: { opacity: 0, y: 16 },
+	animate: { opacity: 1, y: 0 },
+	exit: { opacity: 0, y: -16 },
+	transition: {
+		duration: MOTION_DURATIONS.moderate,
+		ease: MOTION_EASING.easeOutExpo,
+	},
+};
+
+export const slideDownMotionPreset = {
+	initial: { opacity: 0, y: -16, scale: 0.95 },
+	animate: { opacity: 1, y: 0, scale: 1 },
+	exit: { opacity: 0, y: -20, scale: 0.98 },
+	transition: {
+		duration: MOTION_DURATIONS.base,
+		ease: MOTION_EASING.easeOutExpo,
+	},
+};
+
+export const statusMessageMotionPreset = {
+	initial: { opacity: 0, y: -4 },
+	animate: { opacity: 1, y: 0 },
+	exit: { opacity: 0, y: -4 },
+	transition: {
+		duration: MOTION_DURATIONS.fast,
+		ease: MOTION_EASING.easeStandard,
+	},
+};
+
+export const modalBackdropMotionPreset = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+	transition: {
+		duration: MOTION_DURATIONS.quick,
+		ease: MOTION_EASING.easeInOutSmooth,
+	},
+};
+
+export const modalDialogMotionPreset = {
+	initial: { opacity: 0, scale: 0.95, y: 8 },
+	animate: { opacity: 1, scale: 1, y: 0 },
+	exit: { opacity: 0, scale: 0.96, y: 4 },
+	transition: {
+		duration: MOTION_DURATIONS.base,
+		ease: MOTION_EASING.easeOutExpo,
+	},
+};

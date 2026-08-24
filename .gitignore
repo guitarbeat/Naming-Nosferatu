@@ -156,3 +156,4 @@ jscpd-report.html
 supabase/.temp/
 supabase/.branches/
 .dyad/
+.env*

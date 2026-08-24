@@ -33,48 +33,6 @@ export function computeRatingStats(ratings: number[]): RatingStats | null {
 }
 
 /**
- * Calculates the percentile rank of a value within a distribution.
- * Higher is better by default (percentile is percentage of values below).
- */
-export function calculatePercentile(
-	value: number,
-	allValues: number[],
-	higherIsBetter = true,
-): number {
-	if (Number.isNaN(value) || !allValues || allValues.length === 0) {
-		return Number.isNaN(value) ? 0 : 50;
-	}
-
-	let validCount = 0;
-	let matchCount = 0;
-
-	// ⚡ Bolt Optimization: Replacing O(N log N) `[...arr].sort().filter()` chain
-	// with a single-pass O(N) loop to calculate the percentile rank. This avoids
-	// expensive array allocations and drastically improves performance (~40% faster).
-	for (let i = 0; i < allValues.length; i++) {
-		const v = allValues[i];
-		if (v != null && !Number.isNaN(v)) {
-			validCount++;
-			if (higherIsBetter) {
-				if (v < value) {
-					matchCount++;
-				}
-			} else {
-				if (v > value) {
-					matchCount++;
-				}
-			}
-		}
-	}
-
-	if (validCount === 0) {
-		return 50;
-	}
-
-	return Math.round((matchCount / validCount) * 100);
-}
-
-/**
  * Returns the percentile rank using quantileRankSorted for more precise statistics.
  */
 export function getPercentileRank(rating: number, allRatings: number[]): number {

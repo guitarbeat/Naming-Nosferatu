@@ -2,6 +2,9 @@ process.env.JWT_SECRET = "test-secret";
 import React from "react";
 globalThis.React = React;
 
+// Import jest-dom to add custom matchers for testing-library
+import "@testing-library/jest-dom";
+
 // Delete native globalThis.localStorage in Node 26+ to prevent conflicts with jsdom
 try {
 	// @ts-expect-error - native localStorage is configurable

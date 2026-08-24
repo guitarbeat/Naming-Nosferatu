@@ -1,10 +1,10 @@
-import { lazy, Suspense, useLayoutEffect } from "react";
+import { MotionConfig } from "framer-motion";
+import { Suspense, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { AppLayout } from "@/shared/components/layout/AppLayout";
-import { RouteFallback } from "@/shared/components/ui/RouteFallback";
-
-const HomeRoute = lazy(() => import("@/app/routes/HomeRoute"));
-const AdminRoute = lazy(() => import("@/app/routes/AdminRoute"));
+import { AppLayout } from "@/app/components/AppComponents";
+import AdminRoute from "@/app/routes/AdminRoute";
+import HomeRoute from "@/app/routes/HomeRoute";
+import { RouteFallback } from "@/shared/components/UIBlocks";
 
 export default function AppShell() {
 	const { pathname } = useLocation();
@@ -18,27 +18,29 @@ export default function AppShell() {
 	}, [pathname]);
 
 	return (
-		<AppLayout>
-			<Routes>
-				<Route
-					path="/"
-					element={
-						<Suspense fallback={<RouteFallback text="Loading home..." />}>
-							<HomeRoute />
-						</Suspense>
-					}
-				/>
-				<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
-				<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
-				<Route
-					path="/admin"
-					element={
-						<Suspense fallback={<RouteFallback text="Loading admin..." />}>
-							<AdminRoute />
-						</Suspense>
-					}
-				/>
-			</Routes>
-		</AppLayout>
+		<MotionConfig reducedMotion="user">
+			<AppLayout>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<Suspense fallback={<RouteFallback text="Loading home..." />}>
+								<HomeRoute />
+							</Suspense>
+						}
+					/>
+					<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
+					<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
+					<Route
+						path="/admin"
+						element={
+							<Suspense fallback={<RouteFallback text="Loading admin..." />}>
+								<AdminRoute />
+							</Suspense>
+						}
+					/>
+				</Routes>
+			</AppLayout>
+		</MotionConfig>
 	);
 }

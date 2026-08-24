@@ -1,18 +1,9 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { queryOptions } from "@tanstack/react-query";
-import type { Database } from "@/integrations/supabase/types";
-import { isRpcSignatureError } from "@/shared/lib/errors";
-import { mapNameRow } from "@/shared/lib/names/mapNameRow";
-import { assertAdmin } from "@/shared/services/authUtils";
-import {
-	throwOnFailureResponse,
-	throwOnRpcError,
-	throwSupabaseUnavailable,
-} from "@/shared/services/supabase/errorUtils";
-import { resolveSupabaseClient, withSupabase } from "@/shared/services/supabase/runtime";
-import type { IdType, NameItem } from "@/shared/types";
+import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import type { IdType } from "@/shared/api/types";
+import type { NameItem } from "./types";
 
-export type NamesDataSource = "supabase";
+export type NamesDataSource = "local";
 
 export interface NamesQueryResult {
 	names: NameItem[];
@@ -25,75 +16,8 @@ export const namesQueryKeys = {
 	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
-const SUPABASE_UNAVAILABLE = Symbol("SUPABASE_UNAVAILABLE");
-
-async function runAdminMutation<T>(
-	operation: (client: SupabaseClient<Database>) => Promise<T>,
-): Promise<T> {
-	assertAdmin();
-
-	const result = await withSupabase<T | typeof SUPABASE_UNAVAILABLE>(
-		operation,
-		SUPABASE_UNAVAILABLE,
-	);
-
-	if (result === SUPABASE_UNAVAILABLE) {
-		throwSupabaseUnavailable();
-	}
-
-	return result;
-}
-
-async function runBooleanAdminRpc(
-	rpcName: string,
-	args: Record<string, unknown>,
-	errorMessage: string,
-): Promise<void> {
-	await runAdminMutation(async (client) => {
-		// @ts-expect-error - custom RPCs are not in generated types
-		const { data, error } = await client.rpc(rpcName, args);
-		if (error) {
-			throw error;
-		}
-		throwOnFailureResponse(data, errorMessage);
-	});
-}
-
-async function fetchNamesFromSupabase(includeHidden: boolean): Promise<NameItem[] | null> {
-	if (includeHidden) {
-		assertAdmin("Admin privileges required to view hidden names");
-	}
-	const client = await resolveSupabaseClient();
-	if (!client) {
-		return null;
-	}
-
-	let query = client
-		.from("cat_names")
-		.select(
-			"id, name, description, pronunciation, avg_rating, global_wins, global_losses, created_at, is_hidden, is_active, locked_in, status, provenance, is_deleted",
-		)
-		.eq("is_active", true)
-		.eq("is_deleted", false);
-
-	if (!includeHidden) {
-		query = query.eq("is_hidden", false);
-	}
-
-	const { data, error } = await query.order("avg_rating", { ascending: false });
-	if (error) {
-		throw error;
-	}
-
-	return (data ?? []).map((row) => mapNameRow(row));
-}
-
 export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
-	const names = await fetchNamesFromSupabase(includeHidden);
-	if (names === null) {
-		throwSupabaseUnavailable();
-	}
-	return { names, source: "supabase" };
+	return { names: [], source: "local" };
 }
 
 export const namesQueryOptions = (includeHidden: boolean) =>
@@ -103,138 +27,116 @@ export const namesQueryOptions = (includeHidden: boolean) =>
 		staleTime: 30_000,
 	});
 
-// ============================================================================
-// Mutations
-// ============================================================================
-
-export async function softDeleteName(params: { nameId: IdType }): Promise<void> {
-	const { nameId } = params;
-	await runBooleanAdminRpc(
-		"soft_delete_cat_name",
-		{ p_name_id: String(nameId) },
-		"Failed to delete name",
-	);
-}
-
-export async function batchUpdateVisibility(params: {
-	nameIds: IdType[];
-	isHidden: boolean;
-}): Promise<void> {
-	const { nameIds, isHidden } = params;
-	await runBooleanAdminRpc(
-		"batch_update_name_visibility",
-		{
-			p_name_ids: nameIds.map(String),
-			p_is_hidden: isHidden,
-		},
-		"Failed to batch update name visibility",
-	);
-}
-
-export async function batchUpdateLocked(params: {
-	nameIds: IdType[];
-	isLocked: boolean;
-}): Promise<void> {
-	const { nameIds, isLocked } = params;
-	await runBooleanAdminRpc(
-		"batch_update_name_locked",
-		{
-			p_name_ids: nameIds.map(String),
-			p_is_locked: isLocked,
-		},
-		"Failed to batch update name locked status",
-	);
-}
-
+export async function softDeleteName(params: { nameId: IdType }): Promise<void> {}
 export async function toggleNameHidden(params: {
 	nameId: IdType;
 	isCurrentlyHidden: boolean;
 	userName: string;
-}): Promise<void> {
-	const { isCurrentlyHidden, nameId, userName } = params;
-	const trimmedUserName = userName.trim();
-	await runAdminMutation(async (client) => {
-		const { data, error } = await client.rpc("toggle_name_visibility", {
-			p_name_id: String(nameId),
-			p_hide: !isCurrentlyHidden,
-			p_user_name: trimmedUserName || undefined,
-		});
-		if (error) {
-			throw error;
-		}
-		throwOnFailureResponse(data, "Failed to update name visibility");
-	});
-}
-
+}): Promise<void> {}
 export async function toggleNameLocked(params: {
 	nameId: IdType;
 	isCurrentlyLocked: boolean;
 	userName: string;
-}): Promise<void> {
-	const { isCurrentlyLocked, nameId, userName } = params;
-	const trimmedUserName = userName.trim();
-	await runAdminMutation(async (client) => {
-		const canonicalArgs = {
-			p_name_id: String(nameId),
-			p_locked_in: !isCurrentlyLocked,
-		};
-		let rpcResult = await client.rpc("toggle_name_locked_in" as any, canonicalArgs);
-
-		if (rpcResult.error && isRpcSignatureError(rpcResult.error.message || "")) {
-			rpcResult = await client.rpc("toggle_name_locked_in" as any, {
-				...canonicalArgs,
-				p_user_name: trimmedUserName,
-			});
-		}
-
-		if (rpcResult.error) {
-			throw new Error(rpcResult.error.message || "Failed to toggle locked status");
-		}
-		throwOnFailureResponse(rpcResult.data, "Failed to toggle locked status");
-	});
-}
-
-export async function unhideAllNames(): Promise<void> {
-	await runAdminMutation(async (client) => {
-		const { data: hiddenData, error: fetchError } = await client
-			.from("cat_names")
-			.select("id")
-			.eq("is_hidden", true);
-
-		if (fetchError) {
-			throw fetchError;
-		}
-		const hiddenIds = (hiddenData ?? []).map((row) => row.id);
-
-		if (hiddenIds.length === 0) {
-			return;
-		}
-		const { data, error } = await client.rpc("batch_update_name_visibility", {
-			p_name_ids: hiddenIds.map(String),
-			p_is_hidden: false,
-		});
-		if (error) {
-			throw error;
-		}
-		throwOnFailureResponse(data, "Failed to unhide all names");
-	});
-}
-
+}): Promise<void> {}
+export async function unhideAllNames(): Promise<void> {}
+export async function batchUpdateVisibility(params: {
+	nameIds: IdType[];
+	isHidden: boolean;
+}): Promise<void> {}
+export async function batchUpdateLocked(params: {
+	nameIds: IdType[];
+	isLocked: boolean;
+}): Promise<void> {}
 export async function addName(params: { name: string; description?: string }): Promise<NameItem> {
-	const result = await withSupabase(async (client) => {
-		const { data, error } = await client.rpc("add_cat_name", {
-			p_name: params.name,
-			p_description: params.description || "",
-		});
-		throwOnRpcError(error, "Failed to add name");
-		const row = Array.isArray(data) ? data[0] : data;
-		if (!row) {
-			throw new Error("No data returned from add_cat_name");
-		}
-		return mapNameRow(row);
-	}, null);
-	if (result === null) {
-		throwSupabaseUnavailable();
-	}
-	return result as NameItem;
+	throw new Error("Not implemented");
+}
+
+export interface ToggleHiddenInput {
+	nameId: IdType;
+	isCurrentlyHidden: boolean;
+}
+export interface ToggleLockedInput {
+	nameId: IdType;
+	isCurrentlyLocked: boolean;
+}
+export interface DeleteNameInput {
+	nameId: IdType;
+}
+export interface BatchUpdateVisibilityInput {
+	nameIds: IdType[];
+	isHidden: boolean;
+}
+export interface BatchUpdateLockedInput {
+	nameIds: IdType[];
+	isLocked: boolean;
+}
+
+function createInvalidatingMutationOptions<TVariables>(
+	mutationFn: (variables: TVariables) => Promise<void>,
+	invalidateNames: () => Promise<unknown>,
+) {
+	return {
+		mutationFn,
+		onSuccess: async () => {
+			await invalidateNames();
+		},
+	};
+}
+
+export function useNameAdminActions(userName: string) {
+	const queryClient = useQueryClient();
+	const trimmedUserName = userName.trim();
+
+	const invalidateNames = useCallback(() => {
+		return queryClient.invalidateQueries({ queryKey: namesQueryKeys.all });
+	}, [queryClient]);
+
+	const toggleHiddenMutation = useMutation(
+		createInvalidatingMutationOptions<ToggleHiddenInput>(
+			({ nameId, isCurrentlyHidden }) =>
+				toggleNameHidden({ nameId, isCurrentlyHidden, userName: trimmedUserName }),
+			invalidateNames,
+		),
+	);
+
+	const toggleLockedMutation = useMutation(
+		createInvalidatingMutationOptions<ToggleLockedInput>(
+			({ nameId, isCurrentlyLocked }) =>
+				toggleNameLocked({ nameId, isCurrentlyLocked, userName: trimmedUserName }),
+			invalidateNames,
+		),
+	);
+
+	const deleteNameMutation = useMutation(
+		createInvalidatingMutationOptions<DeleteNameInput>(
+			({ nameId }) => softDeleteName({ nameId }),
+			invalidateNames,
+		),
+	);
+
+	const batchUpdateVisibilityMutation = useMutation(
+		createInvalidatingMutationOptions<BatchUpdateVisibilityInput>(
+			({ nameIds, isHidden }) => batchUpdateVisibility({ nameIds, isHidden }),
+			invalidateNames,
+		),
+	);
+
+	const batchUpdateLockedMutation = useMutation(
+		createInvalidatingMutationOptions<BatchUpdateLockedInput>(
+			({ nameIds, isLocked }) => batchUpdateLocked({ nameIds, isLocked }),
+			invalidateNames,
+		),
+	);
+
+	const uploadImage = useCallback((file: File | Blob) => Promise.resolve(), []);
+
+	return {
+		invalidateNames,
+		toggleHidden: toggleHiddenMutation.mutateAsync,
+		toggleLocked: toggleLockedMutation.mutateAsync,
+		deleteName: deleteNameMutation.mutateAsync,
+		batchUpdateVisibility: batchUpdateVisibilityMutation.mutateAsync,
+		batchUpdateLocked: batchUpdateLockedMutation.mutateAsync,
+		uploadImage,
+	};
 }
