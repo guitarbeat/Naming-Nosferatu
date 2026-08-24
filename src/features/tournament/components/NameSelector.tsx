@@ -95,6 +95,15 @@ const AdminActionButton = memo(function AdminActionButton({
 			whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
 			transition={{ type: "spring", stiffness: 400, damping: 25 }}
 			className={buttonClasses}
+			aria-label={
+				isHidden
+					? isEnabled
+						? `Unhide ${nameItem.name}`
+						: `Hide ${nameItem.name}`
+					: isEnabled
+						? `Unlock ${nameItem.name}`
+						: `Lock ${nameItem.name}`
+			}
 		>
 			{isProcessing ? (
 				<div className="flex items-center justify-center gap-1">
@@ -407,7 +416,12 @@ export function NameSelector() {
 							<p className="text-sm leading-relaxed text-white/68">{error}</p>
 						</div>
 						<div className="flex flex-wrap items-center justify-center gap-3">
-							<Button onClick={() => void namesQuery.refetch()} variant="glass" size="small">
+							<Button
+								onClick={() => void namesQuery.refetch()}
+								variant="glass"
+								size="small"
+								aria-label="Try loading names again"
+							>
 								Try Again
 							</Button>
 						</div>
@@ -528,6 +542,7 @@ export function NameSelector() {
 							variant="ghost"
 							onClick={cancelAdminAction}
 							disabled={isPendingActionBusy}
+							aria-label="Cancel"
 						>
 							Cancel
 						</Button>
@@ -537,6 +552,7 @@ export function NameSelector() {
 							onClick={() => void confirmAdminAction()}
 							loading={isPendingActionBusy}
 							className="bg-red-600 hover:bg-red-500"
+							aria-label={confirmLabel}
 						>
 							{confirmLabel}
 						</Button>

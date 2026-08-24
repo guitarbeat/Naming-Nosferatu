@@ -51,6 +51,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 					<button
 						onClick={resetError}
 						className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+						aria-label="Try again after error"
 						type="button"
 					>
 						Try again
@@ -58,6 +59,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 					<button
 						onClick={() => handleGoHome(resetError)}
 						className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+						aria-label="Go to home page"
 						type="button"
 					>
 						Go home
