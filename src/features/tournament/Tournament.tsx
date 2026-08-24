@@ -13,17 +13,10 @@ import { TournamentComplete } from "./components/TournamentComplete";
 import { TournamentHeader } from "./components/TournamentHeader";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
+import type { StreakBurst } from "./types/announcements";
 import { getHeatLevel, type HeatLevel, STREAK_THRESHOLDS } from "./utils/heat";
 import { extractMatchData, getMatchSideId, normalizeParticipant } from "./utils/matchHelpers";
 import { useTimedState } from "./utils/useTimedState";
-
-interface StreakBurst {
-	key: number;
-	side: "left" | "right";
-	winnerName: string;
-	streak: number;
-	heatLevel: HeatLevel;
-}
 
 const OPENING_BRACKET_REVEAL_MS = 2200;
 
@@ -307,7 +300,13 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 			if (heatLevel) {
 				streakBurst.setTimed(
-					{ key: Date.now(), side, winnerName, streak: expectedStreak, heatLevel },
+					{
+						key: Date.now(),
+						side,
+						winnerName,
+						streak: expectedStreak,
+						heatLevel,
+					},
 					prefersReducedMotion ? 280 : 950,
 				);
 				audioManager.playStreakSound(expectedStreak);
