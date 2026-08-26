@@ -56,9 +56,8 @@ export const EngagementPanel = memo(function EngagementPanel({
 							size="small"
 							onClick={() => refreshEngagementMetrics()}
 							disabled={isLoadingEngagement}
-							loading={isLoadingEngagement}
 						>
-							{!isLoadingEngagement && <Activity size={14} />}
+							<Activity size={14} />
 							Refresh
 						</Button>
 					</motion.div>
