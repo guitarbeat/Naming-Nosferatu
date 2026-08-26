@@ -2071,11 +2071,27 @@ export function buildAdminStats(
 	names: NameWithStats[],
 	siteStats: SiteStatsLike | null,
 ): AdminStats {
+	let activeNames = 0;
+	let hiddenNames = 0;
+	let lockedInNames = 0;
+
+	// ⚡ Bolt: Single O(N) pass to avoid three separate O(N) array filters.
+	// Reduces overhead and allocations on large datasets.
+	for (let i = 0; i < names.length; i++) {
+		const name = names[i];
+		const hidden = isNameHidden(name);
+		const locked = isNameLocked(name);
+
+		if (hidden) hiddenNames++;
+		if (locked) lockedInNames++;
+		if (!hidden && !locked) activeNames++;
+	}
+
 	return {
 		totalNames: names.length,
-		activeNames: getActiveNames(names).length,
-		hiddenNames: getHiddenNames(names).length,
-		lockedInNames: getLockedNames(names).length,
+		activeNames,
+		hiddenNames,
+		lockedInNames,
 		totalUsers: toNumber(siteStats?.totalUsers),
 		recentVotes: toNumber(siteStats?.totalRatings),
 	};
