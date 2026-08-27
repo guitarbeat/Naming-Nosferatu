@@ -23,7 +23,7 @@ export async function fetchNames(_includeHidden: boolean): Promise<NamesQueryRes
 export const namesQueryOptions = (includeHidden: boolean) =>
 	queryOptions({
 		queryKey: namesQueryKeys.list(includeHidden),
-		queryFn: () => fetchNames(_includeHidden),
+		queryFn: () => fetchNames(includeHidden),
 		staleTime: 30_000,
 	});
 

@@ -90,7 +90,7 @@ const ButtonComponent = ({
 			title={iconOnly && !title && ariaLabel ? ariaLabel : title}
 			{...rest}
 		>
-			{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+			{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
 			{!iconOnly && children}
 			{iconOnly && !loading && children}
 		</button>
@@ -255,7 +255,7 @@ export function EmptyState({ title, description, className }: EmptyStateProps) {
 			)}
 		>
 			<p>{title}</p>
-			{description && <p className="mt-1">{description}</p>}
+			{description ? <p className="mt-1">{description}</p> : null}
 		</div>
 	);
 }
@@ -303,7 +303,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 				<p className="mt-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
 					{error?.message || "An unexpected error occurred."}
 				</p>
-				{errorId && <p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>}
+				{errorId ? <p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p> : null}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
 						onClick={resetError}
@@ -503,7 +503,7 @@ const FormField: React.FC<FormFieldProps> = ({
 					)}
 				>
 					{label}
-					{required && <span className="text-destructive ml-1">*</span>}
+					{required ? <span className="text-destructive ml-1">*</span> : null}
 				</label>
 			)}
 			{children}
@@ -870,7 +870,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{text && <div className="pt-2 text-center text-xs text-white/50">{text}</div>}
+					{text ? <div className="pt-2 text-center text-xs text-white/50">{text}</div> : null}
 				</div>
 			);
 		}

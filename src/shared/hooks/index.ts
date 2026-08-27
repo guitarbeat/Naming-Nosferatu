@@ -28,6 +28,9 @@ function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number)
 // ============================================================================
 // 1. usePrefersReducedMotion
 // ============================================================================
+const EMPTY_OPTIONS: Record<string, never> = {};
+const EMPTY_ARRAY: never[] = [];
+
 export function usePrefersReducedMotion() {
 	const [matches, setMatches] = useState(false);
 
@@ -48,7 +51,7 @@ export function usePrefersReducedMotion() {
 export function useLocalStorage<T>(
 	key: string,
 	initialValue: T,
-	options: { debounceWait?: number; onError?: (error: unknown) => void } = {},
+	options: { debounceWait?: number; onError?: (error: unknown) => void } = EMPTY_OPTIONS,
 ): [T, (value: SetStateAction<T>) => void, () => void] {
 	const initialRef = useRef(initialValue);
 	const onErrorRef = useRef(options.onError);
@@ -258,9 +261,9 @@ interface UseAsyncDataResult<T> {
 export function useAsyncData<T>(
 	fetcher: (signal?: AbortSignal) => Promise<T>,
 	initialValue: T,
-	options: UseAsyncDataOptions = {},
+	options: UseAsyncDataOptions = EMPTY_OPTIONS,
 ): UseAsyncDataResult<T> {
-	const { deps = [] } = options;
+	const { deps = EMPTY_ARRAY } = options;
 	const [data, setData] = useState<T>(initialValue);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);

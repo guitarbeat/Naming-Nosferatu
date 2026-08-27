@@ -272,7 +272,7 @@ export function SectionHeader({
 					<Icon size={13} className="text-primary/70 shrink-0" />
 					<span className={themeText.sectionLabel}>{title}</span>
 				</div>
-				{subtitle && <p className={cn("max-w-2xl", themeText.subtitle)}>{subtitle}</p>}
+				{subtitle ? <p className={cn("max-w-2xl", themeText.subtitle)}>{subtitle}</p> : null}
 			</div>
 			{action}
 		</div>
@@ -1700,8 +1700,8 @@ const PersonalResults = ({
 		}
 
 		return currentTournamentNames
-			.filter((name) => personalRatings[name.name] !== undefined)
-			.map((name) => {
+			.flatMap((name) => {
+				if (personalRatings[name.name] === undefined) return [];
 				const pr = personalRatings[name.name];
 				if (!pr) {
 					return name;
@@ -2466,7 +2466,7 @@ export function AdminDashboard() {
 				<p className="text-sm text-muted-foreground">Manage names and monitor activity</p>
 			</div>
 
-			{stats && <AdminStatsGrid stats={stats} />}
+			{stats ? <AdminStatsGrid stats={stats} /> : null}
 
 			<AdminNamesTab
 				searchTerm={searchTerm}

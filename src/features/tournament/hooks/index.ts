@@ -47,6 +47,8 @@ import {
 // 1. useTimedState Hook (Consolidated from useTimedState.ts)
 // ============================================================================
 
+const EMPTY_OPTIONS: Record<string, never> = {};
+
 export function useTimedState<T>(defaultValue: T) {
 	const [value, setValue] = useState<T>(defaultValue);
 	const timeoutRef = useRef<number | null>(null);
@@ -235,7 +237,7 @@ interface UseNameSuggestionResult {
 	setGlobalError: (error: string) => void;
 }
 
-export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
+export function useNameSuggestion(props: UseNameSuggestionProps = EMPTY_OPTIONS): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
 	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
 	const [touched, setTouched] = useState<{
@@ -389,7 +391,7 @@ interface UseTournamentRealtimeOptions {
 	autoConnect?: boolean;
 }
 
-export function useTournamentRealtime(options: UseTournamentRealtimeOptions = {}) {
+export function useTournamentRealtime(options: UseTournamentRealtimeOptions = EMPTY_OPTIONS) {
 	const serviceRef = useRef<TournamentRealtimeService | null>(null);
 
 	useEffect(() => {

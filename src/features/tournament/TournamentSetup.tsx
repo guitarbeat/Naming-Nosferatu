@@ -515,7 +515,7 @@ export function NameSelector() {
 									/>
 									<div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
 
-									{isSelected && <SelectionBadge prefersReducedMotion={prefersReducedMotion} />}
+									{isSelected ? <SelectionBadge prefersReducedMotion={prefersReducedMotion} /> : null}
 
 									<div className="absolute inset-0 flex flex-col items-center justify-end pointer-events-none p-3 text-center">
 										<NameContent nameItem={nameItem} />

@@ -1001,7 +1001,9 @@ function getPressureCopy({
 	return "Momentum matters now. Protect a streak or torch the favorite.";
 }
 
-function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
+const EMPTY_NAMES: string[] = [];
+
+function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: TournamentProps) {
 	const navigate = useNavigate();
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
