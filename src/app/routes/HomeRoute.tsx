@@ -11,7 +11,7 @@ import { useSectionScroll } from "@/shared/hooks";
 import { TIMING } from "@/shared/lib/constants";
 import { getLockedNames } from "@/shared/lib/names";
 import { MOTION_DURATIONS, MOTION_EASING, themeText } from "@/shared/lib/uiUtils";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/store";
 
 const TournamentSetup = routeComponents.TournamentSetup;
 const DashboardLazy = routeComponents.DashboardLazy;

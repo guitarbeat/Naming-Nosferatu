@@ -2,7 +2,7 @@ import { Suspense, useCallback, useEffect } from "react";
 
 import { useAuth } from "@/app/providers/Providers";
 import { ErrorManager } from "@/shared/services/errorManager";
-import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
+import useAppStore, { useAppStoreInitialization } from "@/store";
 
 import AppShell from "./AppShell";
 import { AppBootScreen } from "./components/AppComponents";

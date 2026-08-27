@@ -303,7 +303,9 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 				<p className="mt-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
 					{error?.message || "An unexpected error occurred."}
 				</p>
-				{errorId ? <p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p> : null}
+				{errorId ? (
+					<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
+				) : null}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
 						onClick={resetError}

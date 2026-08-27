@@ -83,7 +83,7 @@ import { MOTION_DURATIONS, MOTION_EASING, themeSurfaces, themeText } from "@/sha
 import { cn } from "@/shared/lib/utils";
 import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem, RatingData } from "@/shared/types";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/store";
 import { type DashboardTimeframe, useDashboardData } from "./hooks/useDashboardData";
 
 export const CHART_PALETTE = {

@@ -26,8 +26,7 @@ import type {
 	TeamMatch,
 	TournamentMode,
 } from "@/shared/types";
-import useAppStore from "@/store/appStore";
-import { IS_DEV } from "@/store/appStore.types";
+import useAppStore, { IS_DEV } from "@/store";
 import {
 	calculateTournamentMetrics,
 	computeUpdatedRatings,
@@ -237,7 +236,9 @@ interface UseNameSuggestionResult {
 	setGlobalError: (error: string) => void;
 }
 
-export function useNameSuggestion(props: UseNameSuggestionProps = EMPTY_OPTIONS): UseNameSuggestionResult {
+export function useNameSuggestion(
+	props: UseNameSuggestionProps = EMPTY_OPTIONS,
+): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
 	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
 	const [touched, setTouched] = useState<{

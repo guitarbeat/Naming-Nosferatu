@@ -42,7 +42,7 @@ import {
 } from "@/shared/lib/uiUtils";
 import { addToSet, hapticNavTap, removeFromSet } from "@/shared/lib/utils";
 import type { IdType, NameItem } from "@/shared/types";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/store";
 
 export function TournamentSetup() {
 	const user = useAppStore((s) => s.user);
@@ -515,7 +515,9 @@ export function NameSelector() {
 									/>
 									<div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
 
-									{isSelected ? <SelectionBadge prefersReducedMotion={prefersReducedMotion} /> : null}
+									{isSelected ? (
+										<SelectionBadge prefersReducedMotion={prefersReducedMotion} />
+									) : null}
 
 									<div className="absolute inset-0 flex flex-col items-center justify-end pointer-events-none p-3 text-center">
 										<NameContent nameItem={nameItem} />

@@ -18,17 +18,17 @@ import { Button, Input, Loading } from "@/shared/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { cn, hapticNavTap } from "@/shared/lib/utils";
 import { ErrorManager } from "@/shared/services/errorManager";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/store";
 
-export * from "./ui/FloatingNav";
-export * from "./ui/MagicToggle";
-export * from "./ui/ProfileWidget";
+export * from "./FloatingNav";
+export * from "./MagicToggle";
+export * from "./ProfileWidget";
 
 export function RouteFallback({ text }: { text: string }) {
 	return <Loading variant="cat-gif" text={text} className="min-h-[82dvh]" />;
 }
 
-export * from "./ui/SearchFilterBar";
+export * from "./SearchFilterBar";
 
 export const SectionHeading = memo(function SectionHeading({
 	id,

@@ -7,7 +7,7 @@ import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getVisibleNames } from "@/shared/lib/names";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/shared/lib/uiUtils";
 import type { TournamentProps } from "@/shared/types";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/store";
 import { useTimedState, useTournamentState } from "./hooks";
 import {
 	extractMatchData,

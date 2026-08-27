@@ -17,7 +17,7 @@ import { FloatingNav, type NavItem } from "@/shared/components/UIBlocks";
 import { usePrefersReducedMotion } from "@/shared/hooks";
 import { scaleFadeMotionPreset } from "@/shared/lib/uiUtils";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/shared/lib/utils";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/store";
 
 const INSTALL_DESCRIPTION =
 	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";
