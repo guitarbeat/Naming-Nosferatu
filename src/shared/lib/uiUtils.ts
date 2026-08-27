@@ -87,22 +87,22 @@ export const themeSurfaces = {
 	avatar: "border border-border/50 bg-foreground/[0.04]",
 	statTile:
 		"flex flex-col items-center justify-center gap-2 rounded-xl border border-border/35 bg-card/30 px-4 py-5 text-center",
-	statIcon: "rounded-lg border border-border/35 bg-foreground/[0.03] text-muted-foreground/70",
+	statIcon: "rounded-lg border border-border/35 bg-foreground/[0.03] text-muted-foreground",
 	statIconAccent: "rounded-lg border border-primary/20 bg-primary/10 text-primary",
 	badge:
-		"inline-flex items-center rounded-full border border-border/35 bg-card/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/60",
+		"inline-flex items-center rounded-full border border-border/35 bg-card/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground",
 	badgeAccent:
 		"inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/85",
 } as const;
 
 export const themeText = {
-	eyebrow: "text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/60",
-	eyebrowWide: "text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground/55",
-	sectionLabel: "text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/65",
-	subtitle: "text-sm leading-relaxed text-muted-foreground/55",
+	eyebrow: "text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground",
+	eyebrowWide: "text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground",
+	sectionLabel: "text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground",
+	subtitle: "text-sm leading-relaxed text-muted-foreground",
 	statValue: "text-2xl font-semibold leading-none text-foreground/90",
 	heroDisplay: "font-black uppercase leading-[0.88] tracking-tighter text-foreground",
-	heroPlaceholder: "text-muted-foreground/25",
+	heroPlaceholder: "text-muted-foreground",
 } as const;
 
 // ============================================================================

@@ -75,7 +75,7 @@ export function ProfileEditForm({
 				whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
 				transition={{ type: "spring", stiffness: 400, damping: 25 }}
 			>
-				<User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60 pointer-events-none group-focus-within:text-primary transition-colors" />
+				<User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none group-focus-within:text-primary transition-colors" />
 				<Input
 					ref={nameInputRef}
 					type="text"
@@ -196,7 +196,7 @@ export function ProfileView({
 				</motion.button>
 			</div>
 
-			<p className="text-xs text-muted-foreground/80 text-center">
+			<p className="text-xs text-muted-foreground text-center">
 				Your preferences are saved for ranking.
 			</p>
 

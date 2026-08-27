@@ -204,7 +204,7 @@ export default function HomeRoute() {
 											/>
 										) : (
 											<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
-												<p className="text-pretty text-sm text-muted-foreground/70">
+												<p className="text-pretty text-sm text-muted-foreground">
 													Pick at least 2 names to start comparing them.
 												</p>
 												<Button variant="glass" onClick={() => setActiveTab("pick")}>

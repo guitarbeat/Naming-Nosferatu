@@ -430,7 +430,7 @@ export const WinLossChart = memo(function WinLossChart({
 			<div
 				className={cn(
 					themeSurfaces.panelInset,
-					"flex h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center text-sm text-muted-foreground/70",
+					"flex h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center text-sm text-muted-foreground",
 				)}
 			>
 				No head-to-head matches recorded yet. Run a tournament to populate this chart.
@@ -561,7 +561,7 @@ export const RatingDistributionChart = memo(function RatingDistributionChart({
 			<div
 				className={cn(
 					themeSurfaces.panelInset,
-					"flex h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center text-sm text-muted-foreground/70",
+					"flex h-40 items-center justify-center rounded-2xl border border-dashed px-4 text-center text-sm text-muted-foreground",
 				)}
 			>
 				Not enough rated names yet to draw a distribution.
@@ -859,7 +859,7 @@ export const LeaderboardPanel = memo(function LeaderboardPanel({
 									</p>
 									<div className="mt-0.5 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
 										<span className="inline-flex items-center gap-1">
-											<Star className="size-3 text-muted-foreground/60" />
+											<Star className="size-3 text-muted-foreground" />
 											<span className="font-mono tabular-nums">{entry.total_ratings}</span> rating
 											{entry.total_ratings === 1 ? "" : "s"}
 										</span>
@@ -875,7 +875,7 @@ export const LeaderboardPanel = memo(function LeaderboardPanel({
 									<div className="inline-flex items-center justify-center rounded-lg border border-primary/20 bg-primary/10 px-2.5 py-0.5 font-mono text-sm font-bold text-primary tabular-nums shadow-2xs">
 										{Math.round(entry.avg_rating)}
 									</div>
-									<span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+									<span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
 										Rating
 									</span>
 								</div>
@@ -945,7 +945,7 @@ const RankingItemContent = memo(
 			<div className="flex items-center gap-3 sm:gap-4 w-full">
 				{/* Drag Handle */}
 				<div
-					className="flex-shrink-0 text-muted-foreground/40 hover:text-muted-foreground/80 transition-colors cursor-grab active:cursor-grabbing p-1 rounded-md"
+					className="flex-shrink-0 text-muted-foreground hover:text-muted-foreground transition-colors cursor-grab active:cursor-grabbing p-1 rounded-md"
 					title="Drag to reorder"
 				>
 					<GripVertical size={18} />
@@ -976,7 +976,7 @@ const RankingItemContent = memo(
 								<span>-</span>
 								<span className="text-destructive/80 font-semibold">{item.losses}L</span>
 								{winRate !== null && (
-									<span className="hidden sm:inline-block text-[11px] text-muted-foreground/80 tabular-nums">
+									<span className="hidden sm:inline-block text-[11px] text-muted-foreground tabular-nums">
 										({winRate}%)
 									</span>
 								)}
@@ -992,7 +992,7 @@ const RankingItemContent = memo(
 							type="button"
 							onClick={onMoveUp}
 							disabled={index === 0}
-							className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 disabled:opacity-20 disabled:pointer-events-none transition-colors"
+							className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 disabled:opacity-20 disabled:pointer-events-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
 							aria-label={`Move ${item.name} up`}
 							title="Move up"
 						>
@@ -1002,7 +1002,7 @@ const RankingItemContent = memo(
 							type="button"
 							onClick={onMoveDown}
 							disabled={index === totalItems - 1}
-							className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 disabled:opacity-20 disabled:pointer-events-none transition-colors"
+							className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-foreground/5 disabled:opacity-20 disabled:pointer-events-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
 							aria-label={`Move ${item.name} down`}
 							title="Move down"
 						>
@@ -1254,7 +1254,7 @@ export const RankingAdjustment = memo(
 					<Button
 						onClick={onCancel}
 						variant="flat"
-						className="bg-foreground/5 hover:bg-foreground/10 text-foreground border border-border/10"
+						className="bg-foreground/5 hover:bg-foreground/10 text-foreground border border-border/10 transition-all duration-300"
 					>
 						Back to Tournament
 					</Button>
@@ -1378,7 +1378,7 @@ const DashboardHeader = memo(function DashboardHeader({
 						<div className="min-w-0">
 							<p className={themeText.eyebrowWide}>Profile</p>
 							<h2 className="mt-2 truncate text-2xl font-semibold text-foreground">{userName}</h2>
-							<p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground/75">
+							<p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
 								<span>{isAdmin ? "👤 Administrator" : "🎮 Tournament participant"}</span>
 							</p>
 						</div>
@@ -2233,7 +2233,7 @@ function AdminNameItem({
 					{name.description && (
 						<p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">{name.description}</p>
 					)}
-					<div className="mt-1 flex flex-wrap items-center gap-3 font-mono text-[11px] text-muted-foreground/70">
+					<div className="mt-1 flex flex-wrap items-center gap-3 font-mono text-[11px] text-muted-foreground">
 						<span>
 							Votes: <strong className="text-foreground/80">{name.votes ?? 0}</strong>
 						</span>
@@ -2276,7 +2276,7 @@ function AdminNameItem({
 					iconOnly={true}
 					aria-label="Delete name"
 					title="Delete name"
-					className="text-destructive hover:text-destructive hover:bg-destructive/10"
+					className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-all duration-300"
 				>
 					<Trash2 size={15} />
 				</Button>

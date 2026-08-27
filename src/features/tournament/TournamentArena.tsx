@@ -170,7 +170,7 @@ function ContenderFooter({
 			</h3>
 
 			{pronunciation && (
-				<span className="font-sans text-[11px] font-medium tracking-wide text-muted-foreground/80">
+				<span className="font-sans text-[11px] font-medium tracking-wide text-muted-foreground">
 					/{pronunciation}/
 				</span>
 			)}
@@ -257,7 +257,7 @@ export const MatchSideCard = memo(function MatchSideCard({
 						/>
 					) : (
 						<div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-card/80 via-card/40 to-muted/30">
-							<span className="select-none font-display text-7xl font-extrabold text-muted-foreground/20 sm:text-8xl">
+							<span className="select-none font-display text-7xl font-extrabold text-muted-foreground sm:text-8xl">
 								{name[0]?.toUpperCase() || "?"}
 							</span>
 						</div>
@@ -348,7 +348,7 @@ export function BracketTree({ round, totalRounds }: BracketTreeProps) {
 						? "border-primary/70 bg-primary/20 text-primary shadow-[0_0_18px_rgba(166,94,237,0.45)]"
 						: isDone
 							? "border-chart-2/45 bg-chart-2/10 text-chart-2"
-							: "border-border/20 bg-foreground/5 text-foreground/65";
+							: "border-border/20 bg-foreground/5 text-muted-foreground";
 
 					return (
 						<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
@@ -421,11 +421,11 @@ function HeaderTitle({
 			<div className="space-y-0.5">
 				<div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
 					<span>Round {roundNumber}</span>
-					<span className="text-muted-foreground/40" aria-hidden="true">
+					<span className="text-muted-foreground" aria-hidden="true">
 						&middot;
 					</span>
 					<span>{bracketStage}</span>
-					<span className="text-muted-foreground/40" aria-hidden="true">
+					<span className="text-muted-foreground" aria-hidden="true">
 						&middot;
 					</span>
 					<span>{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}</span>
@@ -464,7 +464,7 @@ function HeaderControls({
 				className={`inline-flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-all active:scale-[0.95] ${
 					canUndo
 						? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
-						: "cursor-not-allowed border-border/30 bg-secondary/10 text-muted-foreground/40 opacity-60"
+						: "cursor-not-allowed border-border/30 bg-secondary/10 text-muted-foreground opacity-60"
 				}`}
 				aria-label="Undo last vote"
 				title={canUndo ? "Undo last vote (Press U)" : "No votes to undo"}
@@ -476,7 +476,7 @@ function HeaderControls({
 			<button
 				type="button"
 				onClick={quitTournament}
-				className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-destructive/20 bg-destructive/10 px-3 text-xs font-medium text-destructive transition-all hover:bg-destructive/20 active:scale-[0.95]"
+				className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-destructive/20 bg-destructive/10 px-3 text-xs font-medium text-destructive transition-all hover:bg-destructive/20 active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
 				aria-label="Exit tournament"
 				title="Exit tournament"
 			>
@@ -526,8 +526,8 @@ function ContextRibbon({
 					<Sparkles className="size-3 text-accent" />
 					{matchupTone}
 				</span>
-				<span className="hidden md:inline text-muted-foreground/75">&middot;</span>
-				<span className="hidden md:inline text-muted-foreground/80">{pressureCopy}</span>
+				<span className="hidden md:inline text-muted-foreground">&middot;</span>
+				<span className="hidden md:inline text-muted-foreground">{pressureCopy}</span>
 			</div>
 
 			{dominantStreak && (
@@ -923,7 +923,7 @@ export function TournamentComplete({
 								.getElementById("analysis")
 								?.scrollIntoView({ behavior: "smooth", block: "start" })
 						}
-						className="w-full flex justify-center gap-2.5 rounded-2xl border-white/30 bg-white/15 shadow-[0_0_30px_rgba(180,120,255,0.35)] hover:bg-white/22 hover:shadow-[0_0_40px_rgba(180,120,255,0.55)] text-white"
+						className="w-full flex justify-center gap-2.5 rounded-2xl border-white/30 bg-white/15 shadow-[0_0_30px_rgba(180,120,255,0.35)] hover:bg-white/22 hover:shadow-[0_0_40px_rgba(180,120,255,0.55)] text-white transition-all duration-300"
 					>
 						<Trophy size={15} />
 						View Analysis
@@ -933,7 +933,7 @@ export function TournamentComplete({
 						variant="glass"
 						size="large"
 						onClick={onNewTournament}
-						className="w-full flex justify-center gap-2.5 rounded-2xl border-white/15 bg-white/[0.05] text-white/70 hover:border-white/25 hover:bg-white/10 hover:text-white"
+						className="w-full flex justify-center gap-2.5 rounded-2xl border-white/15 bg-white/[0.05] text-white/70 hover:border-white/25 hover:bg-white/10 hover:text-white transition-all duration-300"
 					>
 						<LogOut size={15} />
 						Start New Tournament
@@ -1464,7 +1464,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 							<div className="flex size-11 sm:size-14 items-center justify-center rounded-full border border-border/50 bg-card/80 text-foreground font-display font-black tracking-wider text-xs sm:text-base shadow-md backdrop-blur-md">
 								VS
 							</div>
-							<span className="hidden sm:block text-center font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">
+							<span className="hidden sm:block text-center font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
 								{dominantStreak ? `Streak ×${dominantStreak.streak}` : "Vote"}
 							</span>
 						</div>

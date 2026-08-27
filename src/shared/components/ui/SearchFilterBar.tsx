@@ -45,7 +45,7 @@ export function SearchFilterBar({
 			}}
 		>
 			<div className="flex-1 w-full relative flex items-center min-w-0">
-				<div className="pl-4 pr-3 text-muted-foreground/60 transition-colors group-focus-within:text-primary">
+				<div className="pl-4 pr-3 text-muted-foreground transition-colors group-focus-within:text-primary">
 					<Search size={18} />
 				</div>
 				<input
@@ -54,7 +54,7 @@ export function SearchFilterBar({
 					value={searchTerm}
 					onChange={handleSearchChange}
 					aria-label="Search names"
-					className="w-full h-12 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground/70 border-none outline-none ring-0 min-w-0"
+					className="w-full h-12 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground border-none outline-none ring-0 min-w-0"
 				/>
 			</div>
 
@@ -78,7 +78,7 @@ export function SearchFilterBar({
 							</option>
 						))}
 					</select>
-					<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground/70">
+					<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground">
 						<svg
 							className="h-4 w-4 fill-current"
 							xmlns="http://www.w3.org/2000/svg"

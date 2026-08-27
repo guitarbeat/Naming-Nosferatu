@@ -779,7 +779,7 @@ function ContenderCardPreview({ name, description, archetypeIcon = "🐾" }: Car
 					{hasContent ? (
 						displayName
 					) : (
-						<span className="text-muted-foreground/50 italic">Name your feline warrior...</span>
+						<span className="text-muted-foreground italic">Name your feline warrior...</span>
 					)}
 				</div>
 				<p className="text-xs sm:text-sm leading-relaxed text-muted-foreground line-clamp-2 italic">
@@ -791,7 +791,7 @@ function ContenderCardPreview({ name, description, archetypeIcon = "🐾" }: Car
 				<span className="flex items-center gap-1 font-medium">
 					<Sparkles size={12} className="text-primary" /> Ready for Bracket
 				</span>
-				<span className="text-foreground/70 font-semibold uppercase tracking-wider text-[10px]">
+				<span className="text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
 					Matchup Eligible
 				</span>
 			</div>
@@ -917,7 +917,7 @@ function ArchetypeBar({ onSelectIdea, onRandomize, disabled }: ArchetypeBarProps
 					type="button"
 					onClick={onRandomize}
 					disabled={disabled}
-					className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline hover:text-primary/80 transition-colors disabled:opacity-50"
+					className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline hover:text-primary/80 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
 				>
 					<Dices size={13} />
 					Surprise Me
@@ -1288,7 +1288,7 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 						size="medium"
 						onClick={handleClose}
 						disabled={isSubmitting}
-						className="px-4 text-muted-foreground hover:text-foreground"
+						className="px-4 text-muted-foreground hover:text-foreground transition-all duration-300"
 					>
 						Cancel
 					</Button>

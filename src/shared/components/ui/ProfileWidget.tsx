@@ -170,7 +170,7 @@ export function MagicProfileWidget({
 							</motion.button>
 						</div>
 
-						<p className="text-sm text-muted-foreground/80 font-medium text-center">
+						<p className="text-sm text-muted-foreground font-medium text-center">
 							Your preferences are saved for ranking.
 						</p>
 
@@ -478,7 +478,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 						type="button"
 						onClick={handleLogout}
 						disabled={isLoggingOut}
-						className="mt-1 flex items-center justify-center gap-2 w-full max-w-sm py-2.5 rounded-xl text-sm font-semibold text-destructive hover:text-destructive-foreground hover:bg-destructive shadow-sm transition-all duration-200"
+						className="mt-1 flex items-center justify-center gap-2 w-full max-w-sm py-2.5 rounded-xl text-sm font-semibold text-destructive hover:text-destructive-foreground hover:bg-destructive shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
 					>
 						<LogOut size={15} />
 						{isLoggingOut ? "Logging out..." : "Log Out of Profile"}
