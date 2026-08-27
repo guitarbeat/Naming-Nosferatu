@@ -25,7 +25,12 @@ export function ProfileAvatar({ avatarSrc, onError }: { avatarSrc: string; onErr
 				whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
 				transition={{ type: "spring", stiffness: 400, damping: 25 }}
 			>
-				<img src={avatarSrc} alt="Profile" className="size-full object-cover transition-transform duration-500 group-hover:scale-110" onError={onError} />
+				<img
+					src={avatarSrc}
+					alt="Profile"
+					className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
+					onError={onError}
+				/>
 			</motion.div>
 		</motion.div>
 	);
@@ -105,16 +110,29 @@ export function ProfileEditForm({
 
 			<div className="flex gap-2">
 				{isLoggedIn && (
-					<motion.div className="flex-1" whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }} whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}>
-						<Button type="button" variant="ghost" onClick={() => {
-							hapticNavTap();
-							handleCancel();
-						}} className="w-full h-full">
+					<motion.div
+						className="flex-1"
+						whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
+						whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
+					>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={() => {
+								hapticNavTap();
+								handleCancel();
+							}}
+							className="w-full h-full"
+						>
 							Cancel
 						</Button>
 					</motion.div>
 				)}
-				<motion.div className={isLoggedIn ? "flex-[2]" : "w-full"} whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }} whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}>
+				<motion.div
+					className={isLoggedIn ? "flex-[2]" : "w-full"}
+					whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
+					whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
+				>
 					<Button
 						type="submit"
 						variant="glass"
@@ -142,7 +160,12 @@ export interface ProfileViewProps {
 	handleLogout: () => void;
 }
 
-export function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }: ProfileViewProps) {
+export function ProfileView({
+	userName,
+	isLoggingOut,
+	handleEdit,
+	handleLogout,
+}: ProfileViewProps) {
 	const prefersReducedMotion = useReducedMotion();
 
 	return (
@@ -154,7 +177,9 @@ export function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }
 			transition={{ duration: TIMING.MOTION_NORMAL, ease: TIMING.MOTION_EASING }}
 		>
 			<div className="flex items-center gap-2">
-				<h3 className="text-xl font-bold text-foreground bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">{userName}</h3>
+				<h3 className="text-xl font-bold text-foreground bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
+					{userName}
+				</h3>
 				<motion.button
 					type="button"
 					onClick={() => {
@@ -171,7 +196,9 @@ export function ProfileView({ userName, isLoggingOut, handleEdit, handleLogout }
 				</motion.button>
 			</div>
 
-			<p className="text-xs text-muted-foreground/80 text-center">Your preferences are saved for ranking.</p>
+			<p className="text-xs text-muted-foreground/80 text-center">
+				Your preferences are saved for ranking.
+			</p>
 
 			<motion.button
 				type="button"

@@ -4,8 +4,8 @@
 
 ### Runtime requirements
 
-- **Node.js 20.19.6** — pinned via `.nvmrc` and `engines` in `package.json`. The nvm-installed binary at `/home/ubuntu/.nvm/versions/node/v20.19.6/bin` must be first in PATH (the default `/exec-daemon/node` is v22 which is too new for pnpm 10.27.x).
-- **pnpm 10.27.0** — installed via `npm install -g pnpm@10.27.0` under the Node 20 prefix. Latest pnpm (v11+) requires Node 22+ and will not work.
+- **Node.js 24.x** — selected via `.nvmrc` and `engines` in `package.json`. Run `nvm install` and `nvm use` so local and CI builds match Vercel's active-LTS runtime.
+- **pnpm 10.27.0** — pinned via `packageManager` in `package.json`. Install it with Corepack or `npm install -g pnpm@10.27.0` under Node 24.
 
 ### Key commands
 
