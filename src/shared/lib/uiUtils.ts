@@ -90,15 +90,15 @@ export const themeSurfaces = {
 	statIcon: "rounded-lg border border-border/35 bg-foreground/[0.03] text-muted-foreground",
 	statIconAccent: "rounded-lg border border-primary/20 bg-primary/10 text-primary",
 	badge:
-		"inline-flex items-center rounded-full border border-border/35 bg-card/25 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground",
+		"inline-flex items-center rounded-full border border-border/35 bg-card/25 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-muted-foreground",
 	badgeAccent:
-		"inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/85",
+		"inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-primary/85",
 } as const;
 
 export const themeText = {
-	eyebrow: "text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground",
-	eyebrowWide: "text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground",
-	sectionLabel: "text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground",
+	eyebrow: "text-[10px] font-semibold tracking-wide text-muted-foreground",
+	eyebrowWide: "text-[11px] font-semibold tracking-wide text-muted-foreground",
+	sectionLabel: "text-xs font-semibold tracking-wide text-muted-foreground",
 	subtitle: "text-sm leading-relaxed text-muted-foreground",
 	statValue: "text-2xl font-semibold leading-none text-foreground/90",
 	heroDisplay: "font-black uppercase leading-[0.88] tracking-tighter text-foreground",

@@ -220,7 +220,7 @@ export function StatTile({
 			<div className="absolute -top-6 -right-6 size-12 rounded-full bg-primary/5 blur-xl transition-transform group-hover:scale-110" />
 			<div className="relative space-y-2">
 				<div className="flex items-center justify-between">
-					<p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+					<p className="text-xs font-semibold tracking-wide text-muted-foreground">
 						{label}
 					</p>
 					{Icon && (
@@ -872,10 +872,10 @@ export const LeaderboardPanel = memo(function LeaderboardPanel({
 								</div>
 
 								<div className="text-right flex flex-col items-end">
-									<div className="inline-flex items-center justify-center rounded-lg border border-primary/20 bg-primary/10 px-2.5 py-0.5 font-mono text-sm font-bold text-primary tabular-nums shadow-2xs">
+									<div className="inline-flex items-center justify-center rounded-lg border border-primary/20 bg-primary/10 px-2.5 py-0.5 font-mono text-sm font-bold text-primary tabular-nums shadow-sm">
 										{Math.round(entry.avg_rating)}
 									</div>
-									<span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+									<span className="mt-0.5 text-[10px] font-semibold tracking-wide text-muted-foreground">
 										Rating
 									</span>
 								</div>
@@ -1636,14 +1636,14 @@ const CommunityChartsPanel = memo(function CommunityChartsPanel({
 			<div className="grid gap-4 flex-1">
 				<div className="grid gap-4 sm:grid-cols-2">
 					<div className="space-y-2">
-						<h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
+						<h4 className="text-xs font-semibold tracking-wide text-muted-foreground ml-1">
 							Top Contenders
 						</h4>
 						<TopNamesChart leaderboard={leaderboard} limit={8} />
 					</div>
 
 					<div className="space-y-2">
-						<h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
+						<h4 className="text-xs font-semibold tracking-wide text-muted-foreground ml-1">
 							Win/Loss Head-to-Head
 						</h4>
 						<WinLossChart leaderboard={leaderboard} limit={8} />
@@ -1652,13 +1652,13 @@ const CommunityChartsPanel = memo(function CommunityChartsPanel({
 
 				<div className="grid gap-4 sm:grid-cols-[1fr_minmax(0,18rem)]">
 					<div className="space-y-2">
-						<h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
+						<h4 className="text-xs font-semibold tracking-wide text-muted-foreground ml-1">
 							Rating Distribution Curve
 						</h4>
 						<RatingDistributionChart leaderboard={leaderboard} />
 					</div>
 					<div className="space-y-2">
-						<h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
+						<h4 className="text-xs font-semibold tracking-wide text-muted-foreground ml-1">
 							Metrics Radar
 						</h4>
 						<RatingRadarChart leaderboard={leaderboard} limit={5} />
@@ -1814,7 +1814,7 @@ const PersonalResults = ({
 				<div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-b from-primary/10 via-card/70 to-card/90 p-5 sm:p-6 backdrop-blur-xl shadow-lg">
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
 						<div>
-							<div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-chart-4/15 text-chart-4 text-xs font-bold uppercase tracking-wider mb-1.5">
+							<div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-chart-4/15 text-chart-4 text-xs font-bold tracking-wide mb-1.5">
 								<Crown size={14} />
 								<span>Tournament Champion</span>
 							</div>
@@ -1874,7 +1874,7 @@ const PersonalResults = ({
 									)}
 								>
 									<div className="flex items-center justify-between gap-2 mb-2">
-										<span className="text-xs font-bold uppercase tracking-wider text-foreground">
+										<span className="text-xs font-bold tracking-wide text-foreground">
 											{medal}
 										</span>
 										<span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary/20 text-primary text-xs font-extrabold tabular-nums">
@@ -2179,7 +2179,7 @@ export function AdminStatsGrid({ stats }: AdminStatsGridProps) {
 					className={`group relative overflow-hidden rounded-2xl border ${borderColor} bg-card/70 p-4 sm:p-5 shadow-sm backdrop-blur-sm transition-all hover:border-border hover:shadow-md`}
 				>
 					<div className="flex items-center justify-between gap-2 mb-2">
-						<span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+						<span className="text-xs font-semibold tracking-wide text-muted-foreground">
 							{label}
 						</span>
 						<div
@@ -2451,14 +2451,14 @@ export function AdminDashboard() {
 
 	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen">
+			<div className="flex items-center justify-center min-h-[100dvh]">
 				<Loading variant="spinner" text="Loading admin dashboard..." />
 			</div>
 		);
 	}
 
 	return (
-		<div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+		<div className="min-h-[100dvh] bg-background text-foreground p-3 sm:p-6">
 			<div className="mb-4 sm:mb-8">
 				<h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
 					Admin Dashboard

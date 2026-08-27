@@ -468,10 +468,10 @@ interface BaseFieldProps {
 }
 
 const inputBaseStyles =
-	"flex h-12 w-full rounded-2xl border border-border/20 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 text-foreground backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out relative z-10";
+	"flex h-12 w-full rounded-2xl border border-border/30 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 text-foreground backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out relative z-10";
 
 const errorStyles =
-	"border-destructive/50 focus-visible:border-transparent motion-safe:animate-pulse";
+	"border-destructive focus-visible:ring-destructive";
 
 interface FormFieldProps extends BaseFieldProps {
 	children: React.ReactNode;
@@ -500,7 +500,7 @@ const FormField: React.FC<FormFieldProps> = ({
 				<label
 					htmlFor={fieldId}
 					className={cn(
-						"text-sm font-medium leading-none text-foreground/80 ml-1 transition-opacity",
+						"text-sm font-medium leading-none text-foreground ml-1 transition-opacity",
 						disabled && "cursor-not-allowed opacity-50",
 					)}
 				>
@@ -887,7 +887,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 						className="h-44 w-auto select-none object-contain opacity-95"
 					/>
 					{text && (
-						<p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
+						<p className="text-[10px] font-semibold tracking-wide text-white/35">
 							{text}
 						</p>
 					)}
@@ -899,7 +899,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 			<div className={containerClasses} role="status" aria-label="Loading">
 				<SpinnerCircle />
 				{text ? (
-					<p className="mt-2 text-sm font-medium text-white/70">{text}</p>
+					<p className="mt-2 text-sm font-medium text-white/80">{text}</p>
 				) : (
 					<span className="sr-only">Loading...</span>
 				)}

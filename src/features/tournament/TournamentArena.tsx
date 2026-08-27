@@ -100,14 +100,14 @@ function ContenderBadges({
 					className={`absolute top-4 z-20 ${streakSideClass} inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform`}
 				>
 					<StreakEmbers count={streakBadgeCount} side={side} name={name} streak={streak} />
-					<span className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/90">
+					<span className="text-[10px] font-bold tracking-wide text-foreground/90">
 						{streak} in a row
 					</span>
 				</div>
 			)}
 
 			<div
-				className={`absolute top-4 z-20 inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/80 shadow-sm backdrop-blur-md ${ratingSideClass}`}
+				className={`absolute top-4 z-20 inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-3 py-1.5 text-[10px] font-semibold tracking-wide text-foreground/80 shadow-sm backdrop-blur-md ${ratingSideClass}`}
 			>
 				<span className="h-1.5 w-1.5 rounded-full bg-foreground/40" />
 				<span className="font-mono tabular-nums">{Math.round(rating)}</span>
@@ -153,11 +153,11 @@ function ContenderFooter({
 			className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col gap-1.5 bg-gradient-to-t from-background/98 via-background/75 to-transparent p-5 sm:p-6 ${bodyAlignment} ${textAlign}`}
 		>
 			<div className="flex items-center gap-2">
-				<span className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+				<span className="text-[10px] font-bold tracking-wide text-muted-foreground">
 					{isTeam ? "Team Contender" : "Cat Contender"}
 				</span>
 				{shortcutHint && (
-					<span className="inline-flex items-center rounded-md border border-border/60 bg-muted/60 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-muted-foreground shadow-2xs">
+					<span className="inline-flex items-center rounded-md border border-border/60 bg-muted/60 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wide text-muted-foreground shadow-sm">
 						{shortcutHint}
 					</span>
 				)}
@@ -184,7 +184,7 @@ function ContenderFooter({
 					{members.map((member) => (
 						<span
 							key={`${side}-member-${member}`}
-							className="rounded-full border border-border/50 bg-secondary/60 px-2.5 py-0.5 text-[11px] font-medium text-secondary-foreground shadow-2xs"
+							className="rounded-full border border-border/50 bg-secondary/60 px-2.5 py-0.5 text-[11px] font-medium text-secondary-foreground shadow-sm"
 						>
 							{member}
 						</span>
@@ -336,7 +336,7 @@ export function BracketTree({ round, totalRounds }: BracketTreeProps) {
 
 	return (
 		<div className="rounded-xl border border-border/15 bg-foreground/[0.03] px-3 py-2">
-			<div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+			<div className="mb-2 flex items-center justify-between text-[10px] tracking-wide text-muted-foreground">
 				<span>Bracket Path</span>
 				<span>{stageFlavor}</span>
 			</div>
@@ -419,7 +419,7 @@ function HeaderTitle({
 				<Gamepad2 className="size-4" />
 			</div>
 			<div className="space-y-0.5">
-				<div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+				<div className="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground">
 					<span>Round {roundNumber}</span>
 					<span className="text-muted-foreground" aria-hidden="true">
 						&middot;
@@ -676,19 +676,19 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 							<div className="absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.05),transparent)]" />
 							<div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 								<div>
-									<p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-primary/70">
+									<p className="text-[10px] font-semibold tracking-wide text-primary/70">
 										Bracket Reveal
 									</p>
 									<h3 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
 										The field is set
 									</h3>
-									<p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/68 sm:text-base">
+									<p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/80 sm:text-base">
 										{tournamentMode === "2v2"
 											? "Teams enter the night bracket. Watch the path lock in before Match 1 ignites."
 											: "Every contender is seeded. The opening duel begins as soon as the bracket settles."}
 									</p>
 								</div>
-								<div className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72">
+								<div className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] font-semibold tracking-wide text-white/85">
 									<Trophy className="size-3.5 text-primary" />
 									<span>{openingEntrants.length} contenders</span>
 									<span className="h-1 w-1 rounded-full bg-white/25" />
@@ -715,7 +715,7 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 											className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4"
 										>
 											<div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-primary via-accent to-chart-4" />
-											<p className="pl-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/42">
+											<p className="pl-2 text-[10px] font-semibold tracking-wide text-white/65">
 												Seed {index + 1}
 											</p>
 											<p className="pl-2 pt-2 font-display text-xl leading-tight text-white sm:text-2xl">
@@ -725,7 +725,7 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 									))}
 								</div>
 								{openingEntrants.length > 8 && (
-									<p className="mt-4 text-center text-xs uppercase tracking-[0.18em] text-white/48">
+									<p className="mt-4 text-center text-xs tracking-wide text-white/65">
 										+ {openingEntrants.length - 8} more contenders in the shadows
 									</p>
 								)}
@@ -780,7 +780,7 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 						<div
 							className={`rounded-2xl border px-4 py-3 shadow-[0_0_40px_rgba(249,115,22,0.35)] backdrop-blur-lg ${getHeatTextClasses(streakBurst.heatLevel)}`}
 						>
-							<p className="text-[10px] uppercase tracking-[0.22em] opacity-80 sm:text-xs">
+							<p className="text-[10px] tracking-wide opacity-80 sm:text-xs">
 								Hot streak
 							</p>
 							<p className="text-base font-black tracking-tight sm:text-lg">
@@ -829,13 +829,13 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 						>
 							<div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/10 to-chart-4/20" />
 							<div className="relative">
-								<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-primary/70 sm:text-xs sm:tracking-[0.3em]">
+								<p className="mb-2 text-[11px] tracking-wide text-primary/70 sm:text-xs sm:tracking-[0.3em]">
 									Next stage
 								</p>
 								<p className="text-2xl font-black tracking-tight text-white sm:text-3xl md:text-4xl">
 									Round {roundAnnouncement}
 								</p>
-								<p className="mt-1 text-xs text-white/72 sm:text-sm">
+								<p className="mt-1 text-xs text-white/85 sm:text-sm">
 									New head-to-head matchups ready
 								</p>
 							</div>
@@ -887,7 +887,7 @@ export function TournamentComplete({
 					<Trophy className="size-9 text-yellow-300" />
 				</div>
 
-				<p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/75">
+				<p className="text-[11px] font-semibold tracking-wide text-white/85">
 					Tournament finished
 				</p>
 
@@ -895,19 +895,19 @@ export function TournamentComplete({
 					Tournament Complete
 				</h1>
 
-				<p className="mt-5 max-w-xl text-balance text-sm leading-relaxed text-white/70 sm:text-base">
+				<p className="mt-5 max-w-xl text-balance text-sm leading-relaxed text-white/80 sm:text-base">
 					Your results are ready to review below. See how all the names ranked!
 				</p>
 
 				<div className="mt-10 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
+						<p className="text-[10px] font-semibold tracking-wide text-white/80">
 							Total matches
 						</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
 					</div>
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
+						<p className="text-[10px] font-semibold tracking-wide text-white/80">
 							Participants
 						</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>
@@ -933,7 +933,7 @@ export function TournamentComplete({
 						variant="glass"
 						size="large"
 						onClick={onNewTournament}
-						className="w-full flex justify-center gap-2.5 rounded-2xl border-white/15 bg-white/[0.05] text-white/70 hover:border-white/25 hover:bg-white/10 hover:text-white transition-all duration-300"
+						className="w-full flex justify-center gap-2.5 rounded-2xl border-white/15 bg-white/[0.05] text-white/80 hover:border-white/25 hover:bg-white/10 hover:text-white transition-all duration-300"
 					>
 						<LogOut size={15} />
 						Start New Tournament
@@ -1466,7 +1466,7 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 							<div className="flex size-11 sm:size-14 items-center justify-center rounded-full border border-border/50 bg-card/80 text-foreground font-display font-black tracking-wider text-xs sm:text-base shadow-md backdrop-blur-md">
 								VS
 							</div>
-							<span className="hidden sm:block text-center font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+							<span className="hidden sm:block text-center font-mono text-[9px] font-bold tracking-wide text-muted-foreground">
 								{dominantStreak ? `Streak ×${dominantStreak.streak}` : "Vote"}
 							</span>
 						</div>

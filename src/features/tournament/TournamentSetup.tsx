@@ -118,7 +118,7 @@ const NameContent = memo(function NameContent({ nameItem }: { nameItem: NameItem
 				{nameItem.name}
 			</span>
 			{nameItem.pronunciation ? (
-				<span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-white/80">
+				<span className="text-[10px] font-mono font-semibold tracking-wide text-white/80">
 					/{nameItem.pronunciation}/
 				</span>
 			) : null}
@@ -457,7 +457,7 @@ export function NameSelector() {
 		return (
 			<div className="mx-auto w-full py-16 flex flex-col items-center justify-center">
 				<div className="flex max-w-md flex-col items-center gap-4 rounded-2xl border border-border/50 bg-card/60 p-6 text-center shadow-lg backdrop-blur-md">
-					<p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+					<p className="text-[11px] font-bold tracking-wide text-primary">
 						Failed to load
 					</p>
 					<div className="space-y-1.5">
@@ -761,7 +761,7 @@ function ContenderCardPreview({ name, description, archetypeIcon = "🐾" }: Car
 						/>
 					</div>
 					<div className="min-w-0">
-						<div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+						<div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wide text-primary">
 							<span>{archetypeIcon}</span>
 							<span>Live Contender Preview</span>
 						</div>
@@ -793,7 +793,7 @@ function ContenderCardPreview({ name, description, archetypeIcon = "🐾" }: Car
 				<span className="flex items-center gap-1 font-medium">
 					<Sparkles size={12} className="text-primary" /> Ready for Bracket
 				</span>
-				<span className="text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
+				<span className="text-muted-foreground font-semibold tracking-wide text-[10px]">
 					Matchup Eligible
 				</span>
 			</div>
@@ -911,7 +911,7 @@ function ArchetypeBar({ onSelectIdea, onRandomize, disabled }: ArchetypeBarProps
 	return (
 		<div className="space-y-2">
 			<div className="flex items-center justify-between">
-				<span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+				<span className="text-[11px] font-semibold tracking-wide text-muted-foreground flex items-center gap-1.5">
 					<Sparkles size={12} className="text-primary" />
 					Quick Inspiration
 				</span>
@@ -1022,7 +1022,7 @@ export function NameSuggestionInner() {
 			className="w-full max-w-xl mx-auto rounded-2xl border border-border/50 bg-card/60 p-6 sm:p-8 backdrop-blur-xl shadow-lg space-y-6"
 		>
 			<div className="text-center space-y-2">
-				<div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider">
+				<div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wide">
 					<Sparkles size={13} />
 					<span>Community Suggestions</span>
 				</div>
@@ -1045,7 +1045,7 @@ export function NameSuggestionInner() {
 					<div className="flex items-center justify-between">
 						<label
 							htmlFor="suggest-name"
-							className="text-xs font-bold uppercase tracking-wider text-foreground"
+							className="text-xs font-bold tracking-wide text-foreground"
 						>
 							Cat Name
 						</label>
@@ -1071,7 +1071,7 @@ export function NameSuggestionInner() {
 					<div className="flex items-center justify-between">
 						<label
 							htmlFor="suggest-description"
-							className="text-xs font-bold uppercase tracking-wider text-foreground"
+							className="text-xs font-bold tracking-wide text-foreground"
 						>
 							Why this name? (Backstory)
 						</label>
@@ -1213,7 +1213,7 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 					<div className="flex items-center justify-between mb-1">
 						<label
 							htmlFor={nameInputId}
-							className="block text-xs font-bold text-foreground uppercase tracking-wider"
+							className="block text-xs font-bold text-foreground tracking-wide"
 						>
 							Cat Name
 						</label>
@@ -1245,7 +1245,7 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 					<div className="flex items-center justify-between mb-1">
 						<label
 							htmlFor={descInputId}
-							className="block text-xs font-bold text-foreground uppercase tracking-wider"
+							className="block text-xs font-bold text-foreground tracking-wide"
 						>
 							Why this name?
 						</label>
