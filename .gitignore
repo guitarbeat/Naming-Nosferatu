@@ -157,3 +157,6 @@ supabase/.temp/
 supabase/.branches/
 .dyad/
 .env*
+.agents/skills/ui-ux-pro-max/scripts/__pycache__/
+*.cjs
+*.sh
