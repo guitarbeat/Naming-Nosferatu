@@ -300,29 +300,34 @@ export const TopNamesChart = memo(function TopNamesChart({
 	limit?: number;
 }) {
 	const { data, allRatings } = useMemo(() => {
-		return leaderboard.reduce(
-			(acc, e, i) => {
-				if (i < limit) {
-					acc.data.push({
-						name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
-						rating: Math.round(e.avg_rating),
-						fullName: e.name,
-						percentile: e.percentile_rank ?? null,
-					});
-				}
-				acc.allRatings.push(e.avg_rating);
-				return acc;
-			},
-			{ data: [], allRatings: [] } as {
-				data: Array<{
-					name: string;
-					rating: number;
-					fullName: string;
-					percentile: number | null;
-				}>;
-				allRatings: number[];
-			},
-		);
+		// ⚡ Bolt Optimization: Replaced .reduce() and array .push() with a single-pass
+		// for loop and pre-allocated arrays to eliminate dynamic reallocation and GC overhead.
+		const len = leaderboard.length;
+		const effectiveLimit = limit ?? len;
+		const dataLen = Math.min(len, effectiveLimit);
+		const allRatings = new Array<number>(len);
+		const data = new Array<{
+			name: string;
+			rating: number;
+			fullName: string;
+			percentile: number | null;
+		}>(dataLen);
+
+		for (let i = 0; i < len; i++) {
+			const e = leaderboard[i];
+			allRatings[i] = e.avg_rating;
+
+			if (i < effectiveLimit) {
+				data[i] = {
+					name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
+					rating: Math.round(e.avg_rating),
+					fullName: e.name,
+					percentile: e.percentile_rank ?? null,
+				};
+			}
+		}
+
+		return { data, allRatings };
 	}, [leaderboard, limit]);
 
 	if (data.length === 0) {
@@ -1511,17 +1516,19 @@ export const PopularNamingTrendsChart = memo(function PopularNamingTrendsChart({
 	leaderboard: LeaderboardEntry[];
 }) {
 	const data = useMemo(() => {
+		// ⚡ Bolt Optimization: Filter, sort, and slice *before* mapping to avoid
+		// creating objects for entries that will just be discarded by the slice.
 		return leaderboard
 			.filter((e) => e.total_ratings > 0)
+			.sort((a, b) => b.total_ratings - a.total_ratings)
+			.slice(0, 30)
 			.map((e) => ({
 				name: e.name.length > 12 ? `${e.name.slice(0, 11)}…` : e.name,
 				popularity: e.total_ratings,
 				rating: Math.round(e.avg_rating),
 				wins: e.wins,
 				fullName: e.name,
-			}))
-			.sort((a, b) => b.popularity - a.popularity)
-			.slice(0, 30);
+			}));
 	}, [leaderboard]);
 
 	if (data.length === 0) {
