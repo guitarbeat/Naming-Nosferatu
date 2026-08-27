@@ -307,14 +307,14 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
 						onClick={resetError}
-						className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+						className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 						type="button"
 					>
 						Try again
 					</button>
 					<button
 						onClick={() => handleGoHome(resetError)}
-						className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+						className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 						type="button"
 					>
 						Go home
@@ -416,7 +416,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className =
 			{onDismiss && (
 				<button
 					onClick={onDismiss}
-					className="rounded-full p-1 text-yellow-100/70 transition-colors hover:bg-yellow-500/20 hover:text-yellow-50"
+					className="rounded-full p-1 text-yellow-100/70 transition-colors hover:bg-yellow-500/20 hover:text-yellow-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500"
 					aria-label="Dismiss error"
 					title="Dismiss error"
 					type="button"
@@ -729,7 +729,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					ref={closeButtonRef}
 					type="button"
 					onClick={onClose}
-					className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+					className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 					aria-label="Close lightbox and return to gallery"
 					title="Close"
 				>
@@ -743,7 +743,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 							event.stopPropagation();
 							handlePrevious();
 						}}
-						className="absolute left-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+						className="absolute left-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 						aria-label="View previous image"
 						title="Previous image"
 					>
@@ -771,7 +771,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 							event.stopPropagation();
 							handleNext();
 						}}
-						className="absolute right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+						className="absolute right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 						aria-label="View next image"
 						title="Next image"
 					>
@@ -969,7 +969,7 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 				type="button"
 				onClick={requestClose}
 				disabled={closeDisabled}
-				className={`inline-flex items-center justify-center size-8 rounded-full text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+				className={`inline-flex items-center justify-center size-8 rounded-full text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
 					hideTitle ? "absolute top-3.5 right-3.5 z-10" : ""
 				}`}
 				aria-label={`Close ${title.toLowerCase()}`}
