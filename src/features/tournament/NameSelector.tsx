@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check, Eye, EyeOff, Lock, Unlock, ZoomIn } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { useToast } from "@/app/providers/Providers";
+import { useToast } from "@/app/Providers";
 import { namesQueryOptions, SUPABASE_UNAVAILABLE_MSG, useNameAdminActions } from "@/shared/api";
 import { Button, CatImage, Lightbox, Loading, Modal } from "@/shared/components";
 import { CAT_IMAGES } from "@/shared/lib/constants";

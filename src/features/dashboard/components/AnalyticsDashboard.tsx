@@ -1,12 +1,15 @@
 import { Trophy } from "lucide-react";
 import { useMemo } from "react";
-import { useDashboardData } from "../hooks/useDashboardData";
+import { useDashboardData } from "../hooks";
 import type { DashboardProps } from "../types";
 import { ContextBadge, Panel, SectionHeader } from "./Common";
-import { CommunityChartsPanel } from "./CommunityChartsPanel";
-import { DashboardHeader, getQuickStats } from "./DashboardHeader";
-import { EngagementPanel } from "./EngagementPanel";
-import { LeaderboardPanel } from "./LeaderboardPanel";
+import {
+	CommunityChartsPanel,
+	DashboardHeader,
+	EngagementPanel,
+	getQuickStats,
+	LeaderboardPanel,
+} from "./DashboardPanels";
 import { PersonalResults } from "./PersonalResults";
 
 export function AnalyticsDashboard({

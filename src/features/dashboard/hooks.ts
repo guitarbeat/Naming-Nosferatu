@@ -1,14 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
-import { namesQueryOptions, statsAPI, useNameAdminActions } from "@/shared/api";
+import {
+	type EngagementMetrics,
+	type LeaderboardItem,
+	leaderboardAPI,
+	namesQueryOptions,
+	type SiteStats,
+	statsAPI,
+	type UserStats,
+	useNameAdminActions,
+} from "@/shared/api";
+import { useAsyncData } from "@/shared/hooks";
 import useAppStore from "@/store";
-import type { NameFilter } from "../types";
+import type { NameFilter } from "./types";
 import {
 	buildAdminStats,
 	FILTER_OPTIONS,
 	filterNamesByStatusAndSearch,
 	mapNameToDisplay,
-} from "../utils";
+} from "./utils";
 
 export function useAdminDashboard() {
 	const user = useAppStore((s) => s.user);
@@ -91,5 +101,61 @@ export function useAdminDashboard() {
 		handleSoftDelete,
 		handleFilterChange,
 		handleRefresh,
+	};
+}
+
+export type DashboardTimeframe = "day" | "week" | "month";
+
+interface UseDashboardDataParams {
+	userName?: string;
+}
+
+export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
+	const normalizedUserName = userName.trim();
+
+	const [timeframe, setTimeframe] = useState<DashboardTimeframe>("week");
+
+	const {
+		data: leaderboard,
+		isLoading: isLoadingLeaderboard,
+		error: errorLeaderboard,
+		refresh: refreshLeaderboard,
+	} = useAsyncData<LeaderboardItem[]>(() => leaderboardAPI.getLeaderboard(10), []);
+
+	const {
+		data: engagementMetrics,
+		isLoading: isLoadingEngagement,
+		error: errorEngagement,
+		refresh: refreshEngagementMetrics,
+	} = useAsyncData<EngagementMetrics | null>(() => statsAPI.getEngagementMetrics(timeframe), null, {
+		deps: [timeframe],
+	});
+
+	const { data: siteStats, error: errorSiteStats } = useAsyncData<SiteStats | null>(
+		() => statsAPI.getSiteStats(),
+		null,
+	);
+
+	const { data: userStats, error: errorUserStats } = useAsyncData<UserStats | null>(
+		() => (normalizedUserName ? statsAPI.getUserStats(normalizedUserName) : Promise.resolve(null)),
+		null,
+		{ deps: [normalizedUserName] },
+	);
+
+	return {
+		engagementMetrics,
+		errorEngagement,
+		errorLeaderboard,
+		errorSiteStats,
+		errorUserStats,
+		isLoadingEngagement,
+		isLoadingLeaderboard,
+		leaderboard,
+		refreshEngagementMetrics,
+		refreshLeaderboard,
+		setTimeframe,
+		siteStats,
+		timeframe,
+		userStats,
 	};
 }

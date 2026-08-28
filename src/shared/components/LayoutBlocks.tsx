@@ -13,9 +13,9 @@ import React, {
 	useState,
 } from "react";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { ErrorManager } from "@/shared/lib/errorManager";
 import { themeSurfaces } from "@/shared/lib/uiUtils";
 import { cn } from "@/shared/lib/utils";
-import { ErrorManager } from "@/shared/services/errorManager";
 
 const _Analytics = () => null;
 

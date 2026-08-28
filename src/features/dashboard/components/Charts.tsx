@@ -18,7 +18,7 @@ import {
 	YAxis,
 	ZAxis,
 } from "recharts";
-import { computeRatingStats } from "@/shared/lib/ratingStats";
+import { computeRatingStats } from "@/shared/lib/elo";
 import { themeSurfaces } from "@/shared/lib/uiUtils";
 import { cn } from "@/shared/lib/utils";
 import {
@@ -31,9 +31,9 @@ import {
 	CHART_SERIES,
 	CHART_TEXT_MUTED,
 	CHART_TOOLTIP_STYLE,
-} from "../../constants";
-import type { LeaderboardEntry } from "../../types";
-import { ChartFrame } from "../Common";
+} from "../constants";
+import type { LeaderboardEntry } from "../types";
+import { ChartFrame } from "./Common";
 
 /* ==========================================================================
    1. Popular Naming Trends Scatter Chart

@@ -12,8 +12,8 @@ import { motion } from "framer-motion";
 import { ChevronDown, ChevronUp, GripVertical, Loader2, Save } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { Button } from "@/shared/components";
+import { ErrorManager } from "@/shared/lib/errorManager";
 import { cn } from "@/shared/lib/utils";
-import { ErrorManager } from "@/shared/services/errorManager";
 import type { NameItem } from "@/shared/types";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {

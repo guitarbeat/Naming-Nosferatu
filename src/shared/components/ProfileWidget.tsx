@@ -4,8 +4,8 @@ import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Button, Input } from "@/shared/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { ErrorManager } from "@/shared/lib/errorManager";
 import { cn } from "@/shared/lib/utils";
-import { ErrorManager } from "@/shared/services/errorManager";
 import useAppStore from "@/store";
 
 export interface MagicProfileWidgetProps {

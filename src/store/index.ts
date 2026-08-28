@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
+import { ErrorManager } from "@/shared/lib/errorManager";
 import {
 	clearStoredUserSnapshot,
 	getStorageString,
@@ -9,7 +10,6 @@ import {
 	setStorageString,
 	writeStoredUserSnapshot,
 } from "@/shared/lib/storage";
-import { ErrorManager } from "@/shared/services/errorManager";
 import type {
 	ErrorLog,
 	ThemePreference,

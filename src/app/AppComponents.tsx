@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useAuth } from "@/app/providers/Providers";
+import { useAuth } from "@/app/Providers";
 import { NameSuggestion } from "@/features/tournament/TournamentSetup";
 import {
 	ErrorBoundary,

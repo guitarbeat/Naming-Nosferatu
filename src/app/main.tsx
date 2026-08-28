@@ -8,7 +8,7 @@ import { localAuthAdapter as authAdapter } from "@/shared/lib/authAdapter";
 import { queryClient } from "@/shared/lib/queryClient";
 
 import App from "./App";
-import { Providers } from "./providers/Providers";
+import { Providers } from "./Providers";
 import { registerServiceWorker } from "./registerServiceWorker";
 
 import "../index.css";

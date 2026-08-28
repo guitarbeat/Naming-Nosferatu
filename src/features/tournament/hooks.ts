@@ -8,7 +8,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useToast } from "@/app/providers/Providers";
+import { useToast } from "@/app/Providers";
 import { addName, ratingsAPI } from "@/shared/api";
 import { useLocalStorage } from "@/shared/hooks";
 import { ELO_RATING, TIMING } from "@/shared/lib/constants";
@@ -37,7 +37,7 @@ import {
 	type HistoryEntry,
 	resolveCurrentMatch,
 	resolveTournamentMode,
-} from "../tournamentEngine";
+} from "./tournamentEngine";
 
 // ============================================================================
 // 1. useTimedState Hook (Consolidated from useTimedState.ts)

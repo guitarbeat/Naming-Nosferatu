@@ -1,9 +1,4 @@
-import type {
-	AuthAdapter,
-	AuthUser,
-	LoginCredentials,
-	RegisterData,
-} from "@/app/providers/Providers";
+import type { AuthAdapter, AuthUser, LoginCredentials, RegisterData } from "@/app/Providers";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { getStorageString, removeStorageItem, setStorageString } from "@/shared/lib/storage";
 
