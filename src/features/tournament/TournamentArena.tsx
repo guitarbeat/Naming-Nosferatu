@@ -8,7 +8,7 @@ import { getVisibleNames } from "@/shared/lib/names";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/shared/lib/uiUtils";
 import type { TournamentProps } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { useTimedState, useTournamentState } from "./hooks";
+import { useStreakCalculator, useTimedState, useTournamentState } from "./hooks";
 import {
 	extractMatchData,
 	getFlameCount,
@@ -16,7 +16,6 @@ import {
 	getHeatGradientClasses,
 	getHeatLevel,
 	getHeatTextClasses,
-	getMatchSideId,
 	type HeatLevel,
 	normalizeParticipant,
 	STREAK_THRESHOLDS,
@@ -1038,44 +1037,15 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const previousRoundRef = useRef(roundNumber);
 	const openingRevealSignatureRef = useRef<string | null>(null);
 
-	const calculateWinStreak = useCallback(
-		(contestantId: string | number | null | undefined) => {
-			if (!contestantId || matchHistory.length === 0) {
-				return 0;
-			}
-			const targetId = String(contestantId);
-			let streak = 0;
-			for (let i = matchHistory.length - 1; i >= 0; i--) {
-				const record = matchHistory[i];
-				if (!record) {
-					continue;
-				}
-				const leftId = getMatchSideId(record.match, "left");
-				const rightId = getMatchSideId(record.match, "right");
-				if (leftId !== targetId && rightId !== targetId) {
-					continue;
-				}
-				if (String(record.winner) === targetId) {
-					streak++;
-				} else {
-					break;
-				}
-			}
-			return streak;
-		},
-		[matchHistory],
+	// ⚡ Bolt Performance Optimization:
+	// Use the central `useStreakCalculator` hook instead of re-implementing
+	// `calculateWinStreak` and manual streak/heat computations locally.
+	// Reduces component size, prevents duplicated allocations on rerenders,
+	// and shrinks the Javascript bundle slightly.
+	const { leftStreak, rightStreak, leftHeatLevel, rightHeatLevel } = useStreakCalculator(
+		currentMatch,
+		matchHistory,
 	);
-
-	const leftStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "left")) : 0),
-		[currentMatch, calculateWinStreak],
-	);
-	const rightStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "right")) : 0),
-		[currentMatch, calculateWinStreak],
-	);
-	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
-	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
 
 	const handleVoteAdapter = useCallback(
 		async (winnerId: string, _loserId: string) => {
