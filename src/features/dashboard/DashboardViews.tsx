@@ -69,7 +69,7 @@ import type {
 import { statsAPI } from "@/shared/api/mock/statsService";
 import { namesQueryOptions, useNameAdminActions } from "@/shared/api/names/api";
 import { Button, Card, EmptyState, Loading } from "@/shared/components/LayoutBlocks";
-import { SearchFilterBar } from "@/shared/components/UIBlocks";
+import { MagicToggle, SearchFilterBar } from "@/shared/components/UIBlocks";
 import {
 	getActiveNames,
 	getHiddenNames,
@@ -2529,24 +2529,13 @@ export function Dashboard(props: UnifiedDashboardProps) {
 
 	return (
 		<div className="w-full space-y-6">
-			<div className="flex items-center gap-4 border-b border-border pb-4">
-				<div className="flex gap-2">
-					{DASHBOARD_VIEW_OPTIONS.map((opt) => (
-						<button
-							key={opt.value}
-							type="button"
-							onClick={() => setActiveView(opt.value)}
-							className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-								activeView === opt.value
-									? "bg-primary text-primary-foreground"
-									: "bg-muted text-muted-foreground hover:bg-muted/80"
-							}`}
-						>
-							{opt.icon}
-							{opt.label}
-						</button>
-					))}
-				</div>
+			<div className="flex justify-center pb-4">
+				<MagicToggle
+					options={DASHBOARD_VIEW_OPTIONS}
+					value={activeView}
+					onChange={setActiveView}
+					ariaLabel="Dashboard View Selection"
+				/>
 			</div>
 
 			{activeView === "analytics" ? <AnalyticsDashboard {...props} /> : <AdminDashboard />}

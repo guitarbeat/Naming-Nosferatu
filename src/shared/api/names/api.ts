@@ -1,7 +1,6 @@
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import type { IdType } from "@/shared/api/types";
-import type { NameItem } from "./types";
+import type { IdType, NameItem } from "@/shared/types";
 
 export type NamesDataSource = "local";
 
