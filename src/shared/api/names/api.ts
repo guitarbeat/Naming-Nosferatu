@@ -16,7 +16,7 @@ export const namesQueryKeys = {
 	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
-export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
+export async function fetchNames(_includeHidden: boolean): Promise<NamesQueryResult> {
 	return { names: [], source: "local" };
 }
 
@@ -27,27 +27,27 @@ export const namesQueryOptions = (includeHidden: boolean) =>
 		staleTime: 30_000,
 	});
 
-export async function softDeleteName(params: { nameId: IdType }): Promise<void> {}
-export async function toggleNameHidden(params: {
+export async function softDeleteName(_params: { nameId: IdType }): Promise<void> {}
+export async function toggleNameHidden(_params: {
 	nameId: IdType;
 	isCurrentlyHidden: boolean;
 	userName: string;
 }): Promise<void> {}
-export async function toggleNameLocked(params: {
+export async function toggleNameLocked(_params: {
 	nameId: IdType;
 	isCurrentlyLocked: boolean;
 	userName: string;
 }): Promise<void> {}
 export async function unhideAllNames(): Promise<void> {}
-export async function batchUpdateVisibility(params: {
+export async function batchUpdateVisibility(_params: {
 	nameIds: IdType[];
 	isHidden: boolean;
 }): Promise<void> {}
-export async function batchUpdateLocked(params: {
+export async function batchUpdateLocked(_params: {
 	nameIds: IdType[];
 	isLocked: boolean;
 }): Promise<void> {}
-export async function addName(params: { name: string; description?: string }): Promise<NameItem> {
+export async function addName(_params: { name: string; description?: string }): Promise<NameItem> {
 	throw new Error("Not implemented");
 }
 
@@ -128,7 +128,7 @@ export function useNameAdminActions(userName: string) {
 		),
 	);
 
-	const uploadImage = useCallback((file: File | Blob) => Promise.resolve(), []);
+	const uploadImage = useCallback((_file: File | Blob) => Promise.resolve(), []);
 
 	return {
 		invalidateNames,

@@ -1,3 +1,3 @@
 export const ratingsAPI = {
-	applyTournamentMatch: async (params: any) => Promise.resolve(),
+	applyTournamentMatch: async (_params: any) => Promise.resolve(),
 };

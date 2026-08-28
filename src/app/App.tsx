@@ -54,7 +54,7 @@ function App() {
 		};
 	}, []);
 
-	const handleUserContext = useCallback((name: string) => {
+	const handleUserContext = useCallback((_name: string) => {
 		// No-op for now since supabase is removed
 	}, []);
 	useAppStoreInitialization(handleUserContext);

@@ -27,7 +27,6 @@ import type {
 	TournamentMode,
 } from "@/shared/types";
 import useAppStore from "@/store/appStore";
-import { IS_DEV } from "@/store/appStore.types";
 import {
 	calculateTournamentMetrics,
 	computeUpdatedRatings,
@@ -361,15 +360,15 @@ type ConnectionState = "connecting" | "connected" | "disconnected" | "error";
 
 class TournamentRealtimeService {
 	subscribeToTournament(
-		tournamentId: string,
-		callback: (update: TournamentUpdate) => void,
+		_tournamentId: string,
+		_callback: (update: TournamentUpdate) => void,
 	): () => void {
 		return () => {};
 	}
-	subscribeToMatches(callback: (result: MatchResult) => void): () => void {
+	subscribeToMatches(_callback: (result: MatchResult) => void): () => void {
 		return () => {};
 	}
-	subscribeToUserActivity(callback: (activity: UserActivity) => void): () => void {
+	subscribeToUserActivity(_callback: (activity: UserActivity) => void): () => void {
 		return () => {};
 	}
 	cleanup(): void {}

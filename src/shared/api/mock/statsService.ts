@@ -23,11 +23,11 @@ export interface UserStats {
 }
 
 export const leaderboardAPI = {
-	getLeaderboard: async (limit: number): Promise<LeaderboardItem[]> => [],
+	getLeaderboard: async (_limit: number): Promise<LeaderboardItem[]> => [],
 };
 
 export const statsAPI = {
-	getEngagementMetrics: async (timeframe: string): Promise<EngagementMetrics | null> => null,
+	getEngagementMetrics: async (_timeframe: string): Promise<EngagementMetrics | null> => null,
 	getSiteStats: async (): Promise<SiteStats | null> => null,
-	getUserStats: async (userName: string): Promise<UserStats | null> => null,
+	getUserStats: async (_userName: string): Promise<UserStats | null> => null,
 };
