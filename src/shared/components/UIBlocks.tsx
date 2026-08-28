@@ -1,24 +1,5 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-	Award,
-	Check,
-	Crown,
-	Flame,
-	Loader2,
-	LogOut,
-	Pencil,
-	Search,
-	Shield,
-	Trophy,
-	User,
-} from "lucide-react";
-import type { ChangeEvent, ReactNode, RefObject } from "react";
-import { memo, useEffect, useRef, useState } from "react";
-import { Button, Input, Loading } from "@/shared/components/LayoutBlocks";
-import { CAT_IMAGES } from "@/shared/lib/constants";
-import { cn, hapticNavTap } from "@/shared/lib/utils";
-import { ErrorManager } from "@/shared/services/errorManager";
-import useAppStore from "@/store";
+import { memo } from "react";
+import { Loading } from "@/shared/components/LayoutBlocks";
 
 export * from "./FloatingNav";
 export * from "./MagicToggle";

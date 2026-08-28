@@ -9,11 +9,12 @@ import { NameSuggestion } from "@/features/tournament/TournamentSetup";
 import {
 	ErrorBoundary,
 	ErrorComponent,
+	FloatingNav,
 	Loading,
 	Modal,
+	type NavItem,
 	OfflineIndicator,
-} from "@/shared/components/LayoutBlocks";
-import { FloatingNav, type NavItem } from "@/shared/components/UIBlocks";
+} from "@/shared/components";
 import { usePrefersReducedMotion } from "@/shared/hooks";
 import { scaleFadeMotionPreset } from "@/shared/lib/uiUtils";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/shared/lib/utils";
@@ -101,13 +102,13 @@ const keyToId = {
 // Dynamic Import for Search/Suggest Modal content
 
 const LazyProfileInner = lazy(() =>
-	import("@/shared/components/UIBlocks").then((module) => ({
+	import("@/shared/components").then((module) => ({
 		default: module.ProfileInner,
 	})),
 );
 
 const _SuggestModalContent = lazy(() =>
-	import("@/shared/components/LayoutBlocks").then((_module) => ({
+	import("@/shared/components").then((_module) => ({
 		default: NameSuggestion, // fallback
 	})),
 );

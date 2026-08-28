@@ -4,7 +4,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppLayout } from "@/app/components/AppComponents";
 import AdminRoute from "@/app/routes/AdminRoute";
 import HomeRoute from "@/app/routes/HomeRoute";
-import { RouteFallback } from "@/shared/components/UIBlocks";
+import { RouteFallback } from "@/shared/components";
 
 export default function AppShell() {
 	const { pathname } = useLocation();

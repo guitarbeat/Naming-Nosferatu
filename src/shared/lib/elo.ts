@@ -85,7 +85,7 @@ function getActualScores(outcome: EloOutcome): { left: number; right: number } {
 	return { left: 0.5, right: 0.5 };
 }
 
-function average(values: number[]): number {
+function _average(values: number[]): number {
 	if (values.length === 0) {
 		throw new Error("Cannot calculate Elo for an empty side");
 	}

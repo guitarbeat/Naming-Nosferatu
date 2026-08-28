@@ -470,8 +470,7 @@ interface BaseFieldProps {
 const inputBaseStyles =
 	"flex h-12 w-full rounded-2xl border border-border/30 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 text-foreground backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out relative z-10";
 
-const errorStyles =
-	"border-destructive focus-visible:ring-destructive";
+const errorStyles = "border-destructive focus-visible:ring-destructive";
 
 interface FormFieldProps extends BaseFieldProps {
 	children: React.ReactNode;
@@ -886,11 +885,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 						aria-hidden="true"
 						className="h-44 w-auto select-none object-contain opacity-95"
 					/>
-					{text && (
-						<p className="text-[10px] font-semibold tracking-wide text-white/35">
-							{text}
-						</p>
-					)}
+					{text && <p className="text-[10px] font-semibold tracking-wide text-white/35">{text}</p>}
 				</div>
 			);
 		}

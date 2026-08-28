@@ -6,7 +6,7 @@ import {
 	type SiteStats,
 	statsAPI,
 	type UserStats,
-} from "@/shared/api/mock/statsService";
+} from "@/shared/api";
 import { useAsyncData } from "@/shared/hooks";
 
 export type DashboardTimeframe = "day" | "week" | "month";

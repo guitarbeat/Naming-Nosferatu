@@ -1,5 +1,3 @@
-type RealtimeChannel = any;
-
 import DOMPurify from "dompurify";
 import {
 	type KeyboardEvent,
@@ -11,8 +9,7 @@ import {
 	useState,
 } from "react";
 import { useToast } from "@/app/providers/Providers";
-import { ratingsAPI } from "@/shared/api/mock/ratingService";
-import { addName } from "@/shared/api/names/api";
+import { addName, ratingsAPI } from "@/shared/api";
 import { useLocalStorage } from "@/shared/hooks";
 import { ELO_RATING, TIMING } from "@/shared/lib/constants";
 import { createSortedKey, shuffleArray } from "@/shared/lib/utils";
@@ -26,7 +23,7 @@ import type {
 	TeamMatch,
 	TournamentMode,
 } from "@/shared/types";
-import useAppStore, { IS_DEV } from "@/store";
+import useAppStore from "@/store";
 import {
 	calculateTournamentMetrics,
 	computeUpdatedRatings,
@@ -40,7 +37,7 @@ import {
 	type HistoryEntry,
 	resolveCurrentMatch,
 	resolveTournamentMode,
-} from "../tournament";
+} from "../tournamentEngine";
 
 // ============================================================================
 // 1. useTimedState Hook (Consolidated from useTimedState.ts)
@@ -360,24 +357,34 @@ export interface UserActivity {
 	timestamp: number;
 }
 
-type ConnectionState = "connecting" | "connected" | "disconnected" | "error";
-
 class TournamentRealtimeService {
 	subscribeToTournament(
-		tournamentId: string,
-		callback: (update: TournamentUpdate) => void,
+		_tournamentId: string,
+		_callback: (update: TournamentUpdate) => void,
 	): () => void {
-		return () => {};
+		return () => {
+			/* no-op realtime subscription */
+		};
 	}
-	subscribeToMatches(callback: (result: MatchResult) => void): () => void {
-		return () => {};
+	subscribeToMatches(_callback: (result: MatchResult) => void): () => void {
+		return () => {
+			/* no-op match subscription */
+		};
 	}
-	subscribeToUserActivity(callback: (activity: UserActivity) => void): () => void {
-		return () => {};
+	subscribeToUserActivity(_callback: (activity: UserActivity) => void): () => void {
+		return () => {
+			/* no-op user activity subscription */
+		};
 	}
-	cleanup(): void {}
-	acquire(): void {}
-	release(): void {}
+	cleanup(): void {
+		/* no-op */
+	}
+	acquire(): void {
+		/* no-op */
+	}
+	release(): void {
+		/* no-op */
+	}
 }
 let serviceInstance: TournamentRealtimeService | null = null;
 

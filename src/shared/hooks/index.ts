@@ -51,7 +51,10 @@ export function usePrefersReducedMotion() {
 export function useLocalStorage<T>(
 	key: string,
 	initialValue: T,
-	options: { debounceWait?: number; onError?: (error: unknown) => void } = EMPTY_OPTIONS,
+	options: {
+		debounceWait?: number;
+		onError?: (error: unknown) => void;
+	} = EMPTY_OPTIONS,
 ): [T, (value: SetStateAction<T>) => void, () => void] {
 	const initialRef = useRef(initialValue);
 	const onErrorRef = useRef(options.onError);
