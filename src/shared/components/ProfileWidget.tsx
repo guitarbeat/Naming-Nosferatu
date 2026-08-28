@@ -301,6 +301,8 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 						className="relative size-24 rounded-full overflow-hidden ring-4 ring-primary/30 ring-offset-4 ring-offset-background bg-muted shadow-lg transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
 						title="Click to choose avatar"
 						aria-label="Change profile avatar"
+						aria-expanded={showAvatarPicker}
+						aria-controls="avatar-picker-tray"
 					>
 						<img
 							src={avatarSrc}
@@ -327,6 +329,8 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 					type="button"
 					onClick={() => setShowAvatarPicker((prev) => !prev)}
 					className="text-xs text-primary/80 hover:text-primary font-medium transition-colors"
+					aria-expanded={showAvatarPicker}
+					aria-controls="avatar-picker-tray"
 				>
 					{showAvatarPicker ? "Hide Avatar Options" : "Choose Avatar"}
 				</button>
@@ -335,6 +339,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 			{/* Avatar Selector Tray */}
 			{showAvatarPicker && (
 				<motion.div
+					id="avatar-picker-tray"
 					initial={{ opacity: 0, height: 0 }}
 					animate={{ opacity: 1, height: "auto" }}
 					exit={{ opacity: 0, height: 0 }}
@@ -351,6 +356,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 									key={imgUrl || idx}
 									type="button"
 									onClick={() => handleSelectAvatar(imgUrl)}
+									aria-pressed={isSelected}
 									className={cn(
 										"relative size-12 rounded-full overflow-hidden border-2 transition-all hover:scale-110",
 										isSelected
