@@ -194,11 +194,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[onVote, currentMatch, ratings],
 	);
 
-	const _idToName = useMemo(
-		() => new Map(visibleNames.map((n) => [String(n.id), n.name])),
-		[visibleNames],
-	);
-
 	const completionHandledRef = useRef(false);
 
 	useEffect(() => {
