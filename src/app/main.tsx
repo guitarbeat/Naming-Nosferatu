@@ -3,12 +3,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
-import { ErrorBoundary } from "@/shared/components/LayoutBlocks";
+import { ErrorBoundary } from "@/shared/components";
 import { localAuthAdapter as authAdapter } from "@/shared/lib/authAdapter";
 import { queryClient } from "@/shared/lib/queryClient";
 
 import App from "./App";
-import { Providers } from "./providers/Providers";
+import { Providers } from "./Providers";
 import { registerServiceWorker } from "./registerServiceWorker";
 
 import "../index.css";

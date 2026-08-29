@@ -3,20 +3,20 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const CAT_IMAGES = [
-	"/assets/images/cat_01.avif",
-	"/assets/images/cat_02.avif",
-	"/assets/images/cat_03.avif",
-	"/assets/images/cat_04.avif",
-	"/assets/images/cat_05.avif",
-	"/assets/images/cat_06.avif",
-	"/assets/images/cat_07.avif",
-	"/assets/images/cat_08.avif",
-	"/assets/images/cat_09.avif",
-	"/assets/images/cat_10.avif",
-	"/assets/images/cat_11.avif",
-	"/assets/images/cat_12.avif",
-	"/assets/images/cat_13.avif",
-	"/assets/images/cat_14.avif",
+	"/assets/images/cats/cat_01.webp",
+	"/assets/images/cats/cat_02.webp",
+	"/assets/images/cats/cat_03.webp",
+	"/assets/images/cats/cat_04.webp",
+	"/assets/images/cats/cat_05.webp",
+	"/assets/images/cats/cat_06.webp",
+	"/assets/images/cats/cat_07.webp",
+	"/assets/images/cats/cat_08.webp",
+	"/assets/images/cats/cat_09.webp",
+	"/assets/images/cats/cat_10.webp",
+	"/assets/images/cats/cat_11.webp",
+	"/assets/images/cats/cat_12.webp",
+	"/assets/images/cats/cat_13.webp",
+	"/assets/images/cats/cat_14.webp",
 ] as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════

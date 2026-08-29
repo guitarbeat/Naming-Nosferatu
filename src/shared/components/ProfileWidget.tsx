@@ -4,8 +4,8 @@ import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Button, Input } from "@/shared/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { ErrorManager } from "@/shared/lib/errorManager";
 import { cn } from "@/shared/lib/utils";
-import { ErrorManager } from "@/shared/services/errorManager";
 import useAppStore from "@/store";
 
 export interface MagicProfileWidgetProps {
@@ -154,9 +154,7 @@ export function MagicProfileWidget({
 						className="w-full flex flex-col items-center gap-4"
 					>
 						<div className="flex items-center justify-center gap-3 bg-foreground/5 py-2 px-4 rounded-2xl border border-foreground/10">
-							<h3 className="text-2xl font-black tracking-tight text-foreground">
-								{userName}
-							</h3>
+							<h3 className="text-2xl font-black tracking-tight text-foreground">{userName}</h3>
 							<motion.button
 								whileHover={prefersReducedMotion ? {} : { scale: 1.1, rotate: 10 }}
 								whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
@@ -425,9 +423,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 					<div className="flex items-center justify-center gap-3 bg-foreground/5 py-2.5 px-5 rounded-2xl border border-foreground/10 w-full max-w-sm">
 						<div className="flex flex-col items-center">
 							<div className="flex items-center gap-2">
-								<h3 className="text-2xl font-black tracking-tight text-foreground">
-									{user.name}
-								</h3>
+								<h3 className="text-2xl font-black tracking-tight text-foreground">{user.name}</h3>
 								<button
 									type="button"
 									onClick={() => setIsEditing(true)}

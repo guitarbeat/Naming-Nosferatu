@@ -20,7 +20,7 @@ import {
 	type HeatLevel,
 	normalizeParticipant,
 	STREAK_THRESHOLDS,
-} from "./tournament";
+} from "./tournamentEngine";
 
 export interface MatchSideCardProps {
 	side: "left" | "right";
@@ -780,9 +780,7 @@ export const TournamentAnnouncements = memo(function TournamentAnnouncements({
 						<div
 							className={`rounded-2xl border px-4 py-3 shadow-[0_0_40px_rgba(249,115,22,0.35)] backdrop-blur-lg ${getHeatTextClasses(streakBurst.heatLevel)}`}
 						>
-							<p className="text-[10px] tracking-wide opacity-80 sm:text-xs">
-								Hot streak
-							</p>
+							<p className="text-[10px] tracking-wide opacity-80 sm:text-xs">Hot streak</p>
 							<p className="text-base font-black tracking-tight sm:text-lg">
 								{streakBurst.winnerName} x{streakBurst.streak}
 							</p>
@@ -887,9 +885,7 @@ export function TournamentComplete({
 					<Trophy className="size-9 text-yellow-300" />
 				</div>
 
-				<p className="text-[11px] font-semibold tracking-wide text-white/85">
-					Tournament finished
-				</p>
+				<p className="text-[11px] font-semibold tracking-wide text-white/85">Tournament finished</p>
 
 				<h1 className="mt-4 max-w-4xl text-pretty font-display text-[clamp(3rem,10vw,6.5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-white drop-shadow-[0_2px_32px_rgba(180,120,255,0.55)]">
 					Tournament Complete
@@ -901,15 +897,11 @@ export function TournamentComplete({
 
 				<div className="mt-10 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold tracking-wide text-white/80">
-							Total matches
-						</p>
+						<p className="text-[10px] font-semibold tracking-wide text-white/80">Total matches</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{totalMatches}</p>
 					</div>
 					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-5 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold tracking-wide text-white/80">
-							Participants
-						</p>
+						<p className="text-[10px] font-semibold tracking-wide text-white/80">Participants</p>
 						<p className="mt-3 text-4xl font-black leading-none text-white">{participantCount}</p>
 					</div>
 				</div>

@@ -230,32 +230,28 @@
 	--glass-bg-light: rgb(255 255 255 / 14%);
 	--glass-bg-strong: rgb(15 23 42 / 72%);
 
-	/* Floating Navbar Tokens */
-	--nav-bg: color-mix(in srgb, var(--pw-bg-1) 80%, transparent);
-	--nav-text: var(--pw-text-strong);
-	--nav-text-muted: color-mix(in srgb, var(--pw-text-base) 70%, transparent);
-	--nav-highlight: hsl(var(--pw-sage-hsl));
-	--nav-accent: hsl(var(--pw-coral-hsl));
-	--nav-shell-bg: color-mix(in srgb, var(--pw-bg-1) 84%, transparent);
-	--nav-shell-border: color-mix(in srgb, var(--nav-highlight) 18%, var(--border));
-	--nav-shell-shadow: 0 20px 44px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-	--nav-pill-bg: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--nav-highlight) 24%, transparent),
-		color-mix(in srgb, var(--nav-accent) 16%, transparent)
-	);
-	--nav-pill-hover-bg: color-mix(in srgb, var(--nav-highlight) 12%, transparent);
-	--nav-pill-border: color-mix(in srgb, var(--nav-highlight) 30%, var(--border));
-	--nav-pill-hover-border: color-mix(in srgb, var(--nav-accent) 28%, transparent);
-	--nav-pill-shadow:
-		0 10px 22px color-mix(in srgb, var(--nav-highlight) 14%, transparent),
-		inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	/* Floating Navbar Tokens - Dark (Luxury Obsidian / Minimalist Glass) */
+	--nav-bg: rgb(18 18 20 / 75%);
+	--nav-text: #f4f4f5;
+	--nav-text-muted: #71717a;
+	--nav-highlight: #fafafa;
+	--nav-accent: #e4e4e7;
+	--nav-shell-bg: rgb(24 24 27 / 70%);
+	--nav-shell-border: rgb(255 255 255 / 12%);
+	--nav-shell-shadow:
+		0 20px 40px -12px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.12);
+	--nav-pill-bg: rgb(255 255 255 / 14%);
+	--nav-pill-hover-bg: rgb(255 255 255 / 6%);
+	--nav-pill-border: rgb(255 255 255 / 18%);
+	--nav-pill-hover-border: rgb(255 255 255 / 12%);
+	--nav-pill-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 	--nav-utility-bg: color-mix(in srgb, var(--pw-bg-1) 28%, transparent);
 	--nav-utility-border: color-mix(in srgb, var(--text-primary) 10%, transparent);
 	--nav-utility-active-bg: color-mix(in srgb, var(--nav-highlight) 18%, transparent);
 	--nav-utility-active-border: color-mix(in srgb, var(--nav-highlight) 32%, transparent);
 	--nav-utility-shadow: 0 8px 18px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-	--nav-accent-text: color-mix(in srgb, var(--chart-4) 80%, var(--text-primary));
+	--nav-accent-text: #f4f4f5;
 
 	/* Direct semantic colors */
 	--color-success: var(--success);
@@ -310,12 +306,19 @@
 	--glass-bg-light: rgb(255 255 255 / 90%);
 	--glass-bg-strong: rgb(255 255 255 / 85%);
 
-	--nav-bg: color-mix(in srgb, var(--pw-bg-1) 90%, transparent);
-	--nav-text: var(--pw-text-strong);
-	--nav-text-muted: var(--pw-text-muted);
-	--nav-shell-bg: color-mix(in srgb, var(--pw-bg-1) 92%, transparent);
-	--nav-shell-border: color-mix(in srgb, var(--pw-text-strong) 14%, transparent);
-	--nav-shell-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+	--nav-bg: rgb(255 255 255 / 80%);
+	--nav-text: #18181b;
+	--nav-text-muted: #71717a;
+	--nav-shell-bg: rgb(255 255 255 / 75%);
+	--nav-shell-border: rgb(0 0 0 / 0.08);
+	--nav-shell-shadow:
+		0 16px 36px -8px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04),
+		inset 0 1px 0 rgba(255, 255, 255, 0.9);
+	--nav-pill-bg: rgb(24 24 27 / 92%);
+	--nav-pill-hover-bg: rgb(0 0 0 / 4%);
+	--nav-pill-border: rgb(0 0 0 / 0.12);
+	--nav-pill-hover-border: rgb(0 0 0 / 0.08);
+	--nav-pill-shadow: 0 2px 8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* ==========================================================================
@@ -1149,15 +1152,19 @@ a,
 
 .floating-nav-button {
 	color: var(--nav-text-muted);
-	transition: color var(--duration-moderate, 250ms) var(--ease-in-out-smooth);
+	transition: all var(--duration-base, 180ms) var(--ease-in-out-smooth);
 }
 
-.floating-nav-button:hover {
+.floating-nav-button:hover:not(.floating-nav-button--active) {
 	color: var(--nav-text);
+	background-color: var(--nav-pill-hover-bg);
 }
 
 .floating-nav-button--active {
 	color: var(--nav-text);
+	background: var(--nav-pill-bg);
+	border: 1px solid var(--nav-pill-border);
+	box-shadow: var(--nav-pill-shadow);
 }
 
 .floating-nav-button--accent {
@@ -1174,7 +1181,7 @@ a,
 /* Text & icon overrides when active */
 .floating-nav-button--active .floating-nav-icon,
 .floating-nav-button--active .floating-nav-label {
-	color: var(--primary-foreground);
+	color: var(--nav-text);
 }
 
 /* App-specific overrides that don't belong in the design system */

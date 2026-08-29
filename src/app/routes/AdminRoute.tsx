@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/app/appConfig";
-import { useAuth } from "@/app/providers/Providers";
-import { Button, ErrorBoundary, Loading, Section } from "@/shared/components/LayoutBlocks";
+import { useAuth } from "@/app/Providers";
+import { Button, ErrorBoundary, Loading, Section } from "@/shared/components";
 
 const DashboardLazy = routeComponents.DashboardLazy;
 

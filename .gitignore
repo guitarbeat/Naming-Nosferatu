@@ -30,6 +30,8 @@ jspm_packages/
 # Lock files (using pnpm only)
 package-lock.json
 yarn.lock
+bun.lock
+bun.lockb
 
 # Build outputs
 /build
