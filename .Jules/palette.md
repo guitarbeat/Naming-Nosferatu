@@ -7,3 +7,6 @@
 ## 2026-06-28 - Unified Iconography in Error Boundaries
 **Learning:** Dismiss buttons in global components like `ErrorBoundary` often use plain text `x` characters for simplicity, but this breaks the visual consistency of the design system that relies on `lucide-react` for iconography.
 **Action:** Always ensure that structural or global feedback components utilize the same standard icon library (`lucide-react` `<X />`) as the rest of the UI to maintain a cohesive look and feel.
+## 2026-08-17 - Added loading state to engagement refresh button
+**Learning:** The engagement refresh button lacked visual feedback while data was loading, which could lead to multiple clicks or user confusion. Adding a loading spinner visually communicates that the action is in progress and pairs well with the disabled state.
+**Action:** Always verify that interactive buttons have a loading state configured (using the `loading` prop) if they trigger asynchronous actions like data fetching or mutations.
