@@ -61,6 +61,8 @@ export interface ErrorActions {
 export interface AppState {
 	tournament: TournamentState;
 	tournamentActions: TournamentActions;
+	homeActionsTab?: string | null;
+	setHomeActionsTab?: (tab: string | null) => void;
 
 	user: UserState;
 	userActions: UserActions;

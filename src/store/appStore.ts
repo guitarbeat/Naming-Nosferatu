@@ -11,6 +11,8 @@ const useAppStore = create<AppState>()((...args) => ({
 	...createTournamentSlice(...args),
 	...createUserAndSettingsSlice(...args),
 	...createErrorSlice(...args),
+	homeActionsTab: null,
+	setHomeActionsTab: (tab) => args[0]({ homeActionsTab: tab }),
 }));
 
 export default useAppStore;

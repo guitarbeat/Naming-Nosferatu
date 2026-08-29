@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Loader2, Search } from "lucide-react";
 import type { ChangeEvent } from "react";
 import Button from "@/shared/components/layout/Button";
+import { MagicToggle } from "./MagicToggle";
 
 interface SearchFilterBarProps {
 	searchTerm: string;
@@ -46,29 +47,16 @@ function FilterSelect({
 	onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
 }) {
 	return (
-		<div className="relative w-full sm:w-40 h-11 bg-background/40 hover:bg-background/60 focus-within:bg-background/80 transition-colors rounded-xl flex items-center px-3 border border-transparent focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/20">
-			<select
+		<div className="relative w-full sm:w-auto h-11 flex items-center">
+			<MagicToggle
+				options={filterOptions as any}
 				value={filterStatus}
-				onChange={onChange}
-				aria-label="Filter names by status"
-				className="w-full bg-transparent text-sm text-foreground appearance-none outline-none cursor-pointer"
-			>
-				{filterOptions.map((option) => (
-					<option key={option.value} value={option.value} className="bg-background text-foreground">
-						{option.label}
-					</option>
-				))}
-			</select>
-			<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground">
-				<svg
-					className="h-4 w-4 fill-current"
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 20 20"
-					aria-hidden="true"
-				>
-					<path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-				</svg>
-			</div>
+				onChange={(value) => {
+					onChange({ target: { value } } as unknown as ChangeEvent<HTMLSelectElement>);
+				}}
+				ariaLabel="Filter names by status"
+				size="small"
+			/>
 		</div>
 	);
 }

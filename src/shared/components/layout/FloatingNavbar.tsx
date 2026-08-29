@@ -288,33 +288,6 @@ export function FloatingNavbar() {
 	return (
 		<>
 			<FloatingNav items={navItems} />
-
-			{isProfileOpen && (
-				<Modal
-					title="Your Profile"
-					hideTitle={true}
-					open={isProfileOpen}
-					onClose={() => setIsProfileOpen(false)}
-					description="Sign in to save your rankings."
-				>
-					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyProfileInner onLogin={handleLogin} onLogout={logout} />
-					</Suspense>
-				</Modal>
-			)}
-			{isSuggestOpen && (
-				<Modal
-					title="Suggest a Name"
-					hideTitle={true}
-					open={isSuggestOpen}
-					onClose={() => setIsSuggestOpen(false)}
-					description="Suggest a cat name."
-				>
-					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyNameSuggestion variant="modal" onClose={() => setIsSuggestOpen(false)} />
-					</Suspense>
-				</Modal>
-			)}
 		</>
 	);
 }

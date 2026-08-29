@@ -8,6 +8,7 @@ import Button from "@/shared/components/layout/Button";
 import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
 import { Loading } from "@/shared/components/layout/Feedback/Loading";
 import { Section } from "@/shared/components/layout/Section";
+import { HomeActions } from "@/shared/components/ui/HomeActions";
 import { SectionHeading } from "@/shared/components/ui/SectionHeading";
 import { useSectionScroll } from "@/shared/hooks/useSectionScroll";
 import { getLockedNames } from "@/shared/lib/names/nameFilters";
@@ -97,6 +98,7 @@ function HomePickSection() {
 							<TournamentFlow />
 						</Suspense>
 					</div>
+					<HomeActions />
 				</div>
 			</div>
 		</Section>
