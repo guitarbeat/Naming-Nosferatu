@@ -4,14 +4,14 @@ import { BarChart3, CheckCircle, Trophy } from "lucide-react";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { TournamentArena } from "@/features/tournament/TournamentArena";
-import { namesQueryOptions } from "@/shared/api/names/api";
+import { namesQueryOptions } from "@/shared/api";
 import { Button, ErrorBoundary, Loading, Section } from "@/shared/components/LayoutBlocks";
 import { SectionHeading } from "@/shared/components/UIBlocks";
 import { useSectionScroll } from "@/shared/hooks";
 import { TIMING } from "@/shared/lib/constants";
 import { getLockedNames } from "@/shared/lib/names";
 import { MOTION_DURATIONS, MOTION_EASING, themeText } from "@/shared/lib/uiUtils";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/store";
 
 const TournamentSetup = routeComponents.TournamentSetup;
 const DashboardLazy = routeComponents.DashboardLazy;
@@ -204,7 +204,7 @@ export default function HomeRoute() {
 											/>
 										) : (
 											<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
-												<p className="text-pretty text-sm text-muted-foreground/70">
+												<p className="text-pretty text-sm text-muted-foreground">
 													Pick at least 2 names to start comparing them.
 												</p>
 												<Button variant="glass" onClick={() => setActiveTab("pick")}>

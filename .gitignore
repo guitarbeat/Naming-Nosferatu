@@ -30,6 +30,8 @@ jspm_packages/
 # Lock files (using pnpm only)
 package-lock.json
 yarn.lock
+bun.lock
+bun.lockb
 
 # Build outputs
 /build
@@ -157,3 +159,6 @@ supabase/.temp/
 supabase/.branches/
 .dyad/
 .env*
+.agents/skills/ui-ux-pro-max/scripts/__pycache__/
+*.cjs
+*.sh

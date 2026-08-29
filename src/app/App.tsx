@@ -1,11 +1,10 @@
 import { Suspense, useCallback, useEffect } from "react";
 
-import { useAuth } from "@/app/providers/Providers";
-import { ErrorManager } from "@/shared/services/errorManager";
-import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
-
+import { useAuth } from "@/app/Providers";
+import { ErrorManager } from "@/shared/lib/errorManager";
+import useAppStore, { useAppStoreInitialization } from "@/store";
+import { AppBootScreen } from "./AppComponents";
 import AppShell from "./AppShell";
-import { AppBootScreen } from "./components/AppComponents";
 
 const BOOT_TIMEOUT_FALLBACK_MS = 2500;
 
@@ -54,7 +53,7 @@ function App() {
 		};
 	}, []);
 
-	const handleUserContext = useCallback((name: string) => {
+	const handleUserContext = useCallback((_name: string) => {
 		// No-op for now since supabase is removed
 	}, []);
 	useAppStoreInitialization(handleUserContext);
@@ -66,7 +65,7 @@ function App() {
 	return (
 		<Suspense
 			fallback={
-				<div className="flex min-h-screen items-center justify-center bg-background text-foreground">
+				<div className="flex min-h-[100dvh] items-center justify-center bg-background text-foreground">
 					Loading...
 				</div>
 			}

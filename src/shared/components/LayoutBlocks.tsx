@@ -13,9 +13,9 @@ import React, {
 	useState,
 } from "react";
 import { CAT_IMAGES } from "@/shared/lib/constants";
+import { ErrorManager } from "@/shared/lib/errorManager";
 import { themeSurfaces } from "@/shared/lib/uiUtils";
 import { cn } from "@/shared/lib/utils";
-import { ErrorManager } from "@/shared/services/errorManager";
 
 const _Analytics = () => null;
 
@@ -90,7 +90,7 @@ const ButtonComponent = ({
 			title={iconOnly && !title && ariaLabel ? ariaLabel : title}
 			{...rest}
 		>
-			{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+			{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
 			{!iconOnly && children}
 			{iconOnly && !loading && children}
 		</button>
@@ -250,12 +250,12 @@ export function EmptyState({ title, description, className }: EmptyStateProps) {
 		<div
 			className={cn(
 				themeSurfaces.panelInset,
-				"px-4 py-8 text-center text-sm text-muted-foreground/75",
+				"px-4 py-8 text-center text-sm text-muted-foreground",
 				className,
 			)}
 		>
 			<p>{title}</p>
-			{description && <p className="mt-1">{description}</p>}
+			{description ? <p className="mt-1">{description}</p> : null}
 		</div>
 	);
 }
@@ -303,18 +303,20 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 				<p className="mt-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
 					{error?.message || "An unexpected error occurred."}
 				</p>
-				{errorId && <p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>}
+				{errorId ? (
+					<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
+				) : null}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
 						onClick={resetError}
-						className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+						className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
 						type="button"
 					>
 						Try again
 					</button>
 					<button
 						onClick={() => handleGoHome(resetError)}
-						className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+						className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 						type="button"
 					>
 						Go home
@@ -416,7 +418,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className =
 			{onDismiss && (
 				<button
 					onClick={onDismiss}
-					className="rounded-full p-1 text-yellow-100/70 transition-colors hover:bg-yellow-500/20 hover:text-yellow-50"
+					className="rounded-full p-1 text-yellow-100/70 transition-colors hover:bg-yellow-500/20 hover:text-yellow-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 cursor-pointer disabled:cursor-not-allowed"
 					aria-label="Dismiss error"
 					title="Dismiss error"
 					type="button"
@@ -466,10 +468,9 @@ interface BaseFieldProps {
 }
 
 const inputBaseStyles =
-	"flex h-12 w-full rounded-2xl border border-border/20 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 text-foreground backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out relative z-10";
+	"flex h-12 w-full rounded-2xl border border-border/30 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 text-foreground backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out relative z-10";
 
-const errorStyles =
-	"border-destructive/50 focus-visible:border-transparent motion-safe:animate-pulse";
+const errorStyles = "border-destructive focus-visible:ring-destructive";
 
 interface FormFieldProps extends BaseFieldProps {
 	children: React.ReactNode;
@@ -498,12 +499,12 @@ const FormField: React.FC<FormFieldProps> = ({
 				<label
 					htmlFor={fieldId}
 					className={cn(
-						"text-sm font-medium leading-none text-foreground/80 ml-1 transition-opacity",
+						"text-sm font-medium leading-none text-foreground ml-1 transition-opacity",
 						disabled && "cursor-not-allowed opacity-50",
 					)}
 				>
 					{label}
-					{required && <span className="text-destructive ml-1">*</span>}
+					{required ? <span className="text-destructive ml-1">*</span> : null}
 				</label>
 			)}
 			{children}
@@ -729,7 +730,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					ref={closeButtonRef}
 					type="button"
 					onClick={onClose}
-					className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+					className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white cursor-pointer disabled:cursor-not-allowed"
 					aria-label="Close lightbox and return to gallery"
 					title="Close"
 				>
@@ -743,7 +744,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 							event.stopPropagation();
 							handlePrevious();
 						}}
-						className="absolute left-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+						className="absolute left-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 						aria-label="View previous image"
 						title="Previous image"
 					>
@@ -771,7 +772,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 							event.stopPropagation();
 							handleNext();
 						}}
-						className="absolute right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+						className="absolute right-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 						aria-label="View next image"
 						title="Next image"
 					>
@@ -870,7 +871,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{text && <div className="pt-2 text-center text-xs text-white/50">{text}</div>}
+					{text ? <div className="pt-2 text-center text-xs text-white/50">{text}</div> : null}
 				</div>
 			);
 		}
@@ -884,11 +885,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 						aria-hidden="true"
 						className="h-44 w-auto select-none object-contain opacity-95"
 					/>
-					{text && (
-						<p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/35">
-							{text}
-						</p>
-					)}
+					{text && <p className="text-[10px] font-semibold tracking-wide text-white/35">{text}</p>}
 				</div>
 			);
 		}
@@ -897,7 +894,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 			<div className={containerClasses} role="status" aria-label="Loading">
 				<SpinnerCircle />
 				{text ? (
-					<p className="mt-2 text-sm font-medium text-white/70">{text}</p>
+					<p className="mt-2 text-sm font-medium text-white/80">{text}</p>
 				) : (
 					<span className="sr-only">Loading...</span>
 				)}
@@ -969,7 +966,7 @@ function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHea
 				type="button"
 				onClick={requestClose}
 				disabled={closeDisabled}
-				className={`inline-flex items-center justify-center size-8 rounded-full text-muted-foreground/70 hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+				className={`inline-flex items-center justify-center size-8 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
 					hideTitle ? "absolute top-3.5 right-3.5 z-10" : ""
 				}`}
 				aria-label={`Close ${title.toLowerCase()}`}
