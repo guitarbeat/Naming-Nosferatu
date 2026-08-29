@@ -4,7 +4,7 @@ import { BarChart3, CheckCircle, Trophy } from "lucide-react";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { errorContexts, routeComponents } from "@/app/appConfig";
 import { TournamentArena } from "@/features/tournament/TournamentArena";
-import { namesQueryOptions } from "@/shared/api/names/api";
+import { namesQueryOptions } from "@/shared/api";
 import { Button, ErrorBoundary, Loading, Section } from "@/shared/components/LayoutBlocks";
 import { SectionHeading } from "@/shared/components/UIBlocks";
 import { useSectionScroll } from "@/shared/hooks";
