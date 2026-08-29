@@ -16,8 +16,8 @@ Name Nosferatu provides a platform to discover, vote on, and analyze cat names. 
 
 ## 📋 Requirements
 
-- **Node.js**: `>= 20.19.0`
-- **pnpm**: `>= 10.26.0`
+- **Node.js**: `24.x` (active LTS)
+- **pnpm**: `10.27.0` (pinned by `packageManager`)
 
 ## ⚙️ Setup & Installation
 

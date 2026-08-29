@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { type ComponentType, lazy } from "react";
 import { twMerge } from "tailwind-merge";
 
 /**
@@ -38,4 +39,72 @@ export function createSortedKey(
 		}
 	}
 	return validItems.sort().join(",");
+}
+
+export function addToSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
+	const next = new Set(source);
+	next.add(value);
+	return next;
+}
+
+export function addManyToSet<T>(source: ReadonlySet<T>, values: Iterable<T>): Set<T> {
+	const next = new Set(source);
+	for (const value of values) {
+		next.add(value);
+	}
+	return next;
+}
+
+export function removeFromSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
+	const next = new Set(source);
+	next.delete(value);
+	return next;
+}
+
+export function toggleInSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
+	if (source.has(value)) {
+		return removeFromSet(source, value);
+	}
+	return addToSet(source, value);
+}
+/**
+ * Triggers a light haptic feedback for navigation taps.
+ */
+export function hapticNavTap(): void {
+	if (typeof navigator !== "undefined") {
+		navigator.vibrate?.(10);
+	}
+}
+
+/**
+ * Triggers a sequence of haptic feedback for tournament starts.
+ */
+export function hapticTournamentStart(): void {
+	if (typeof navigator !== "undefined") {
+		navigator.vibrate?.([50, 50, 50]);
+	}
+}
+
+/**
+ * Robust lazy import helper that automatically retries/reloads once if dynamic chunk loading fails (e.g. after server restart or redeploy).
+ */
+export function safeLazy<T extends ComponentType<unknown>>(
+	importFn: () => Promise<{ default: T }>,
+) {
+	return lazy(async () => {
+		try {
+			return await importFn();
+		} catch (error) {
+			const key = "app_chunk_load_retry";
+			if (typeof window !== "undefined" && typeof sessionStorage !== "undefined") {
+				const lastReload = sessionStorage.getItem(key);
+				const now = Date.now();
+				if (!lastReload || now - Number(lastReload) > 15000) {
+					sessionStorage.setItem(key, String(now));
+					window.location.reload();
+				}
+			}
+			throw error;
+		}
+	});
 }

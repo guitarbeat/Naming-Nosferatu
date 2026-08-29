@@ -3,20 +3,20 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const CAT_IMAGES = [
-	"/assets/images/IMG_4844.avif",
-	"/assets/images/IMG_4845.avif",
-	"/assets/images/IMG_4846.avif",
-	"/assets/images/IMG_4847.avif",
-	"/assets/images/IMG_5044.avif",
-	"/assets/images/IMG_5071.avif",
-	"/assets/images/IMG_0778.avif",
-	"/assets/images/IMG_0779.avif",
-	"/assets/images/IMG_0865.avif",
-	"/assets/images/IMG_0884.avif",
-	"/assets/images/IMG_0923.avif",
-	"/assets/images/IMG_1116.avif",
-	"/assets/images/IMG_7205.avif",
-	"/assets/images/75209580524__60DCC26F-55A1-4EF8-A0B2-14E80A026A8D.avif",
+	"/assets/images/cats/cat_01.webp",
+	"/assets/images/cats/cat_02.webp",
+	"/assets/images/cats/cat_03.webp",
+	"/assets/images/cats/cat_04.webp",
+	"/assets/images/cats/cat_05.webp",
+	"/assets/images/cats/cat_06.webp",
+	"/assets/images/cats/cat_07.webp",
+	"/assets/images/cats/cat_08.webp",
+	"/assets/images/cats/cat_09.webp",
+	"/assets/images/cats/cat_10.webp",
+	"/assets/images/cats/cat_11.webp",
+	"/assets/images/cats/cat_12.webp",
+	"/assets/images/cats/cat_13.webp",
+	"/assets/images/cats/cat_14.webp",
 ] as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -61,8 +61,6 @@ export const STORAGE_KEYS = {
 	ANALYSIS_DASHBOARD_COLLAPSED: "analysis-dashboard-collapsed",
 	ADMIN_ANALYTICS_COLLAPSED: "admin-analytics-collapsed",
 	NAVBAR_COLLAPSED: "navbar-collapsed",
-	SOUND_ENABLED: "soundEnabled",
-	EFFECTS_VOLUME: "effectsVolume",
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -80,13 +78,4 @@ export const TIMING = {
 	MOTION_SLOW: 0.6, // Large elements (hero heading, CTA)
 	MOTION_CYCLE: 1500, // Name carousel, loop timing
 	MOTION_EASING: "easeOut", // Standard easing for entrances
-} as const;
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Audio & Sound
-// ═══════════════════════════════════════════════════════════════════════════════
-
-export const AUDIO = {
-	DEFAULT_EFFECTS_VOLUME: 0.3,
-	MAX_RETRIES: 3,
 } as const;

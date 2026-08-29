@@ -2,12 +2,15 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { ErrorBoundary } from "@/shared/components/layout/Feedback/ErrorBoundary";
-import { supabaseAuthAdapter as authAdapter } from "@/shared/services/supabase/authAdapter";
-import { queryClient } from "@/shared/services/supabase/runtime";
+
+import { ErrorBoundary } from "@/shared/components";
+import { localAuthAdapter as authAdapter } from "@/shared/lib/authAdapter";
+import { queryClient } from "@/shared/lib/queryClient";
+
 import App from "./App";
-import { Providers } from "./providers/Providers";
+import { Providers } from "./Providers";
 import { registerServiceWorker } from "./registerServiceWorker";
+
 import "../index.css";
 
 registerServiceWorker();
@@ -16,6 +19,7 @@ async function initSentry(): Promise<void> {
 	if (!import.meta.env.PROD || !import.meta.env.VITE_SENTRY_DSN) {
 		return;
 	}
+
 	try {
 		const Sentry = await import("@sentry/react");
 		Sentry.init({
@@ -41,7 +45,6 @@ async function initSentry(): Promise<void> {
 initSentry();
 
 const rootElement = document.getElementById("root");
-
 if (!rootElement) {
 	throw new Error("Root element #root not found");
 }

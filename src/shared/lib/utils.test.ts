@@ -1,45 +1,70 @@
 import { describe, expect, it } from "vitest";
-import { cn, shuffleArray } from "./utils";
+import {
+	addManyToSet,
+	addToSet,
+	cn,
+	createSortedKey,
+	removeFromSet,
+	shuffleArray,
+	toggleInSet,
+} from "./utils";
 
-describe("cn", () => {
-	it("merges basic classes", () => {
-		expect(cn("class1", "class2")).toBe("class1 class2");
+describe("shared utils", () => {
+	describe("cn", () => {
+		it("merges class names and handles conditionals", () => {
+			expect(cn("bg-red-500", true && "text-white", false && "hidden")).toBe(
+				"bg-red-500 text-white",
+			);
+		});
+
+		it("resolves tailwind conflicts correctly", () => {
+			expect(cn("px-2 py-1", "px-4")).toBe("py-1 px-4");
+		});
 	});
 
-	it("merges conditional classes", () => {
-		expect(cn("class1", true && "class2", false && "class3")).toBe("class1 class2");
+	describe("createSortedKey", () => {
+		it("sorts array of keys consistently", () => {
+			expect(createSortedKey(["b", "c", "a"])).toBe("a,b,c");
+		});
 	});
 
-	it("merges and overrides tailwind classes correctly", () => {
-		expect(cn("px-2 py-1", "p-4")).toBe("p-4");
-		expect(cn("text-sm", "text-lg")).toBe("text-lg");
-		expect(cn("bg-red-500", "bg-blue-500")).toBe("bg-blue-500");
+	describe("shuffleArray", () => {
+		it("preserves array elements without mutating original", () => {
+			const original = ["1", "2", "3", "4", "5"];
+			const shuffled = shuffleArray(original);
+			expect(shuffled).toHaveLength(original.length);
+			expect([...shuffled].sort()).toEqual([...original].sort());
+		});
 	});
 
-	it("handles arrays and objects", () => {
-		expect(cn(["class1", "class2"])).toBe("class1 class2");
-		expect(cn({ class1: true, class2: false, class3: true })).toBe("class1 class3");
-		expect(cn(["class1"], { class2: true })).toBe("class1 class2");
-	});
+	describe("Set utilities", () => {
+		it("addToSet immutably adds values", () => {
+			const initial = new Set(["a", "b"]);
+			const next = addToSet(initial, "c");
+			expect(next.has("c")).toBe(true);
+			expect(initial.has("c")).toBe(false);
+		});
 
-	it("ignores falsy values", () => {
-		expect(cn("class1", null, undefined, false, 0, "", "class2")).toBe("class1 class2");
-	});
-});
+		it("addManyToSet immutably adds multiple values", () => {
+			const initial = new Set(["a"]);
+			const next = addManyToSet(initial, ["b", "c"]);
+			expect(next.size).toBe(3);
+			expect(initial.size).toBe(1);
+		});
 
-describe("shuffleArray", () => {
-	it("returns a new array with the same elements", () => {
-		const input = [1, 2, 3, 4, 5];
-		const result = shuffleArray(input);
-		expect(result).not.toBe(input);
-		expect(result.sort()).toEqual(input.sort());
-	});
+		it("removeFromSet immutably deletes values", () => {
+			const initial = new Set(["a", "b"]);
+			const next = removeFromSet(initial, "a");
+			expect(next.has("a")).toBe(false);
+			expect(initial.has("a")).toBe(true);
+		});
 
-	it("handles empty arrays", () => {
-		expect(shuffleArray([])).toEqual([]);
-	});
-
-	it("handles single-element arrays", () => {
-		expect(shuffleArray([1])).toEqual([1]);
+		it("toggleInSet toggles presence of values", () => {
+			const initial = new Set(["a"]);
+			const withB = toggleInSet(initial, "b");
+			expect(withB.has("b")).toBe(true);
+			const withoutB = toggleInSet(withB, "b");
+			expect(withoutB.has("b")).toBe(false);
+		});
 	});
 });

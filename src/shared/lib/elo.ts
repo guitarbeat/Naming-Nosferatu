@@ -1,4 +1,84 @@
+import { max, mean, medianSorted, min, standardDeviation } from "simple-statistics";
 import { ELO_RATING } from "./constants";
+
+export interface RatingStats {
+	mean: number;
+	median: number;
+	stdDev: number;
+	min: number;
+	max: number;
+	count: number;
+}
+
+export interface EnrichedRating {
+	rating: number;
+	percentileRank: number;
+	confidence: number;
+	zScore: number;
+}
+
+export function computeRatingStats(ratings: number[]): RatingStats | null {
+	if (ratings.length < 2) {
+		return null;
+	}
+	const sorted = [...ratings].sort((a, b) => a - b);
+	return {
+		mean: mean(ratings),
+		median: medianSorted(sorted),
+		stdDev: standardDeviation(ratings),
+		min: min(sorted),
+		max: max(sorted),
+		count: ratings.length,
+	};
+}
+
+export function getPercentileRank(rating: number, allRatings: number[]): number {
+	if (allRatings.length === 0) {
+		return 50;
+	}
+	let belowCount = 0;
+	for (let i = 0; i < allRatings.length; i++) {
+		if (allRatings[i] < rating) {
+			belowCount++;
+		}
+	}
+	const len = allRatings.length;
+	if (len === 1) {
+		return 100;
+	}
+	return Math.round((belowCount / (len - 1)) * 100);
+}
+
+export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
+	if (gamesPlayed <= 0) {
+		return 0;
+	}
+	if (gamesPlayed >= threshold) {
+		return 1;
+	}
+	return gamesPlayed / threshold;
+}
+
+export function getZScore(rating: number, stats: RatingStats): number {
+	if (stats.stdDev === 0) {
+		return 0;
+	}
+	return (rating - stats.mean) / stats.stdDev;
+}
+
+export function enrichRating(
+	rating: number,
+	gamesPlayed: number,
+	allRatings: number[],
+	stats: RatingStats | null,
+): EnrichedRating {
+	return {
+		rating,
+		percentileRank: getPercentileRank(rating, allRatings),
+		confidence: getConfidenceScore(gamesPlayed),
+		zScore: stats ? getZScore(rating, stats) : 0,
+	};
+}
 
 export interface EloConfig {
 	defaultRating?: number;
@@ -85,7 +165,7 @@ function getActualScores(outcome: EloOutcome): { left: number; right: number } {
 	return { left: 0.5, right: 0.5 };
 }
 
-function average(values: number[]): number {
+function _average(values: number[]): number {
 	if (values.length === 0) {
 		throw new Error("Cannot calculate Elo for an empty side");
 	}
@@ -93,6 +173,37 @@ function average(values: number[]): number {
 	return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
+function applyParticipantUpdates(
+	participantIds: string[],
+	delta: number,
+	outcomeScore: number,
+	ratings: Record<string, number>,
+	stats: Record<string, EloStats> | undefined,
+	resolvedConfig: Required<EloConfig>,
+	nextRatings: Record<string, number>,
+	nextStats: Record<string, EloStats>,
+	participants: Record<string, EloParticipantResult>,
+) {
+	for (const participantId of participantIds) {
+		const currentRating = normalizeRating(ratings[participantId], resolvedConfig);
+		const currentStats = normalizeStats(stats?.[participantId]);
+
+		const updatedRating = clampRating(Math.round(currentRating + delta), resolvedConfig);
+		nextRatings[participantId] = updatedRating;
+
+		nextStats[participantId] = {
+			wins: currentStats.wins + (outcomeScore === 1 ? 1 : 0),
+			losses: currentStats.losses + (outcomeScore === 0 ? 1 : 0),
+		};
+
+		participants[participantId] = {
+			rating: updatedRating,
+			wins: nextStats[participantId]?.wins ?? 0,
+			losses: nextStats[participantId]?.losses ?? 0,
+			delta: updatedRating - currentRating,
+		};
+	}
+}
 export function getExpectedEloScore(
 	currentRating: number,
 	opponentRating: number,
@@ -186,28 +297,49 @@ export function applyEloMatchUpdate({
 	config?: EloConfig;
 }): EloMatchResult {
 	const resolved = resolveConfig(config);
-	const leftRatings = leftParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
-	const rightRatings = rightParticipantIds.map((id) => normalizeRating(ratings[id], resolved));
-	const leftAverageRating = average(leftRatings);
-	const rightAverageRating = average(rightRatings);
-	const leftAggregateStats = leftParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
-	const rightAggregateStats = rightParticipantIds.reduce(
-		(acc, participantId) => {
-			const participantStats = normalizeStats(stats?.[participantId]);
-			acc.wins += participantStats.wins;
-			acc.losses += participantStats.losses;
-			return acc;
-		},
-		{ wins: 0, losses: 0 },
-	);
+	let leftRatingSum = 0;
+	let leftWinsSum = 0;
+	let leftLossesSum = 0;
+	for (let i = 0, len = leftParticipantIds.length; i < len; i++) {
+		const id = leftParticipantIds[i];
+		const r = ratings[id];
+		leftRatingSum += typeof r === "number" && Number.isFinite(r) ? r : resolved.defaultRating;
+
+		const pStats = stats?.[id];
+		if (pStats) {
+			const w = pStats.wins;
+			const l = pStats.losses;
+			leftWinsSum += typeof w === "number" && Number.isFinite(w) ? w : 0;
+			leftLossesSum += typeof l === "number" && Number.isFinite(l) ? l : 0;
+		}
+	}
+	if (leftParticipantIds.length === 0) {
+		throw new Error("Cannot calculate Elo for an empty side");
+	}
+	const leftAverageRating = leftRatingSum / leftParticipantIds.length;
+	const leftAggregateStats = { wins: leftWinsSum, losses: leftLossesSum };
+
+	let rightRatingSum = 0;
+	let rightWinsSum = 0;
+	let rightLossesSum = 0;
+	for (let i = 0, len = rightParticipantIds.length; i < len; i++) {
+		const id = rightParticipantIds[i];
+		const r = ratings[id];
+		rightRatingSum += typeof r === "number" && Number.isFinite(r) ? r : resolved.defaultRating;
+
+		const pStats = stats?.[id];
+		if (pStats) {
+			const w = pStats.wins;
+			const l = pStats.losses;
+			rightWinsSum += typeof w === "number" && Number.isFinite(w) ? w : 0;
+			rightLossesSum += typeof l === "number" && Number.isFinite(l) ? l : 0;
+		}
+	}
+	if (rightParticipantIds.length === 0) {
+		throw new Error("Cannot calculate Elo for an empty side");
+	}
+	const rightAverageRating = rightRatingSum / rightParticipantIds.length;
+	const rightAggregateStats = { wins: rightWinsSum, losses: rightLossesSum };
 	const pairUpdate = calculatePairEloUpdate({
 		leftRating: leftAverageRating,
 		rightRating: rightAverageRating,
@@ -225,41 +357,28 @@ export function applyEloMatchUpdate({
 	const leftOutcome = actualScores.left;
 	const rightOutcome = actualScores.right;
 
-	for (const participantId of leftParticipantIds) {
-		const currentRating = normalizeRating(ratings[participantId], resolved);
-		const currentStats = normalizeStats(stats?.[participantId]);
-		const updatedRating = clampRating(Math.round(currentRating + leftDelta), resolved);
-
-		nextRatings[participantId] = updatedRating;
-		nextStats[participantId] = {
-			wins: currentStats.wins + (leftOutcome === 1 ? 1 : 0),
-			losses: currentStats.losses + (leftOutcome === 0 ? 1 : 0),
-		};
-		participants[participantId] = {
-			rating: updatedRating,
-			wins: nextStats[participantId]?.wins ?? 0,
-			losses: nextStats[participantId]?.losses ?? 0,
-			delta: updatedRating - currentRating,
-		};
-	}
-
-	for (const participantId of rightParticipantIds) {
-		const currentRating = normalizeRating(ratings[participantId], resolved);
-		const currentStats = normalizeStats(stats?.[participantId]);
-		const updatedRating = clampRating(Math.round(currentRating + rightDelta), resolved);
-
-		nextRatings[participantId] = updatedRating;
-		nextStats[participantId] = {
-			wins: currentStats.wins + (rightOutcome === 1 ? 1 : 0),
-			losses: currentStats.losses + (rightOutcome === 0 ? 1 : 0),
-		};
-		participants[participantId] = {
-			rating: updatedRating,
-			wins: nextStats[participantId]?.wins ?? 0,
-			losses: nextStats[participantId]?.losses ?? 0,
-			delta: updatedRating - currentRating,
-		};
-	}
+	applyParticipantUpdates(
+		leftParticipantIds,
+		leftDelta,
+		leftOutcome,
+		ratings,
+		stats,
+		resolved,
+		nextRatings,
+		nextStats,
+		participants,
+	);
+	applyParticipantUpdates(
+		rightParticipantIds,
+		rightDelta,
+		rightOutcome,
+		ratings,
+		stats,
+		resolved,
+		nextRatings,
+		nextStats,
+		participants,
+	);
 
 	return {
 		ratings: nextRatings,

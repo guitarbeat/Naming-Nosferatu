@@ -1,40 +1,26 @@
-import { LayoutDashboard, Shield } from "lucide-react";
-import { type ReactNode, useState } from "react";
-import { MagicToggle } from "@/shared/components/ui/MagicToggle";
-import type { NameItem, RatingData } from "@/shared/types";
-import { AdminDashboard } from "./components/admin/AdminDashboard";
-import { Dashboard as AnalyticsDashboard } from "./components/analytics/Dashboard";
+import { BarChart3, Settings } from "lucide-react";
+import { useState } from "react";
+import { AdminDashboard } from "./components/AdminDashboard";
+import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
+import type { DashboardProps } from "./types";
 
-type DashboardView = "analytics" | "moderation";
+export type DashboardView = "analytics" | "admin";
 
 const DASHBOARD_VIEW_OPTIONS = [
 	{
-		value: "analytics",
+		value: "analytics" as const,
 		label: "Analytics",
-		icon: <LayoutDashboard size={18} />,
+		icon: <BarChart3 className="h-4 w-4" />,
 	},
-	{ value: "moderation", label: "Moderation", icon: <Shield size={18} /> },
-] as const satisfies readonly {
-	value: DashboardView;
-	label: string;
-	icon: ReactNode;
-}[];
+	{
+		value: "admin" as const,
+		label: "Admin",
+		icon: <Settings className="h-4 w-4" />,
+	},
+];
 
-interface UnifiedDashboardProps {
-	personalRatings?: Record<string, RatingData>;
-	currentTournamentNames?: NameItem[];
-	onStartNew?: () => void;
-	onUpdateRatings?: (
-		ratings:
-			| Record<string, RatingData>
-			| ((prev: Record<string, RatingData>) => Record<string, RatingData>),
-	) => void;
-	userName?: string;
+export interface UnifiedDashboardProps extends DashboardProps {
 	isAdmin?: boolean;
-	isLoggedIn?: boolean;
-	avatarUrl?: string;
-	canHideNames?: boolean;
-	onNameHidden?: (nameId: string) => void;
 }
 
 export function Dashboard(props: UnifiedDashboardProps) {
@@ -51,12 +37,23 @@ export function Dashboard(props: UnifiedDashboardProps) {
 	return (
 		<div className="w-full space-y-6">
 			<div className="flex items-center gap-4 border-b border-border pb-4">
-				<MagicToggle
-					options={DASHBOARD_VIEW_OPTIONS}
-					value={activeView}
-					onChange={setActiveView}
-					ariaLabel="Dashboard view"
-				/>
+				<div className="flex gap-2">
+					{DASHBOARD_VIEW_OPTIONS.map((opt) => (
+						<button
+							key={opt.value}
+							type="button"
+							onClick={() => setActiveView(opt.value)}
+							className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+								activeView === opt.value
+									? "bg-primary text-primary-foreground"
+									: "bg-muted text-muted-foreground hover:bg-muted/80"
+							}`}
+						>
+							{opt.icon}
+							{opt.label}
+						</button>
+					))}
+				</div>
 			</div>
 
 			{activeView === "analytics" ? <AnalyticsDashboard {...props} /> : <AdminDashboard />}

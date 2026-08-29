@@ -1,5 +1,0 @@
-🎯 **What:** Added tests for the haveSameIds helper function in useTournamentState.
-
-📊 **Coverage:** Tests cover equal length, different length, different order, empty array, and duplicated elements cases.
-
-✨ **Result:** Improved test coverage for useTournamentState.

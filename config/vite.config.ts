@@ -4,7 +4,6 @@ import autoprefixer from "autoprefixer";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import { consoleForwardPlugin } from "../scripts/vite-console-forward-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,10 +12,11 @@ const __dirname = path.dirname(__filename);
 export default defineConfig(({ command }) => ({
         server: {
                 host: "0.0.0.0",
-                port: 5000,
+                port: 3000,
                 strictPort: false,
                 allowedHosts: true,
-                watch: {
+                hmr: process.env.DISABLE_HMR !== 'true',
+                watch: process.env.DISABLE_HMR === 'true' ? null : {
                         usePolling: true,
                         ignored: [
                                 "**/.local/**",
@@ -43,11 +43,6 @@ export default defineConfig(({ command }) => ({
                         jsxImportSource: command === "serve" ? "react" : "react",
                 }),
                 tailwindcss(),
-                command === "serve" && consoleForwardPlugin({
-                        enabled: true,
-                        endpoint: "/api/debug/client-logs",
-                        levels: ["log", "warn", "error", "info", "debug"],
-                }),
         ],
         build: {
                 chunkSizeWarningLimit: 600,
