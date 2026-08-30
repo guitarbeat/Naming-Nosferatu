@@ -442,29 +442,33 @@ export const TopNamesChart = memo(function TopNamesChart({
 	limit?: number;
 }) {
 	const { data, allRatings } = useMemo(() => {
-		return leaderboard.reduce(
-			(acc, e, i) => {
-				if (i < limit) {
-					acc.data.push({
-						name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
-						rating: Math.round(e.avg_rating),
-						fullName: e.name,
-						percentile: e.percentile_rank ?? null,
-					});
-				}
-				acc.allRatings.push(e.avg_rating);
-				return acc;
-			},
-			{ data: [], allRatings: [] } as {
-				data: Array<{
-					name: string;
-					rating: number;
-					fullName: string;
-					percentile: number | null;
-				}>;
-				allRatings: number[];
-			},
-		);
+		// ⚡ Bolt Performance Optimization:
+		// Replaced array .reduce() with pre-allocated arrays and single-pass for loop
+		// to minimize garbage collection overhead and reallocation pressure.
+		const safeLimit = limit ?? leaderboard.length;
+		const actualLimit = Math.min(safeLimit, leaderboard.length);
+		const data = new Array<{
+			name: string;
+			rating: number;
+			fullName: string;
+			percentile: number | null;
+		}>(actualLimit);
+		const allRatings = new Array<number>(leaderboard.length);
+
+		for (let i = 0; i < leaderboard.length; i++) {
+			const e = leaderboard[i];
+			if (i < actualLimit) {
+				data[i] = {
+					name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
+					rating: Math.round(e.avg_rating),
+					fullName: e.name,
+					percentile: e.percentile_rank ?? null,
+				};
+			}
+			allRatings[i] = e.avg_rating;
+		}
+
+		return { data, allRatings };
 	}, [leaderboard, limit]);
 
 	if (data.length === 0) {
