@@ -11,7 +11,12 @@ import {
 	writeStoredUserSnapshot,
 } from "@/shared/lib/storage";
 import type {
+	CatChosenName,
 	ErrorLog,
+	ErrorState,
+	NameItem,
+	RatingData,
+	SiteSettingsState,
 	ThemePreference,
 	ThemeValue,
 	TournamentState,

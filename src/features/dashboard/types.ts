@@ -1,4 +1,4 @@
-import type { ElementType } from "react";
+import type { ChangeEvent, ElementType } from "react";
 import type { NameItem, RatingData } from "@/shared/types";
 
 export interface LeaderboardEntry {
@@ -71,7 +71,7 @@ export interface AdminNamesTabProps {
 	onSearchTermChange: (value: string) => void;
 	filterStatus: string;
 	filterOptions: readonly { value: string; label: string }[];
-	onFilterChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+	onFilterChange: (event: ChangeEvent<HTMLSelectElement>) => void;
 	onRefresh: () => void;
 	filteredNames: NameWithStats[];
 	onToggleHidden: (nameId: string | number, isHidden: boolean) => void;

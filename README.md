@@ -1,60 +1,60 @@
 # Name Nosferatu
 
-A modern React application for managing cat names and related data, featuring tournament-style voting, advanced analytics, and Supabase integration.
+A React application for discovering, voting on, and analyzing cat names with a tournament-style Elo system.
 
-## 🚀 Overview
+## Overview
 
-Name Nosferatu provides a platform to discover, vote on, and analyze cat names. It uses a tournament-based system to find the best names and integrates with Supabase for real-time data and authentication.
+Name Nosferatu lets you pick names in a tournament, review analytics, and manage the name pool from an admin view. Data and auth currently run in local/offline mode.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: [React 19](https://react.dev/), [Vite 7](https://vitejs.dev/), [Tailwind CSS v4](https://tailwindcss.com/)
-- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) (UI state), [TanStack Query](https://tanstack.com/query/latest) (Server state)
-- **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) (UI state), [TanStack Query](https://tanstack.com/query/latest) (server state)
 - **Testing**: [Vitest](https://vitest.dev/), [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-- **Tooling**: [Biome](https://biomejs.dev/) (Linting & Formatting), [TypeScript](https://www.typescriptlang.org/), [pnpm](https://pnpm.io/)
+- **Tooling**: [Biome](https://biomejs.dev/) (linting and formatting), [TypeScript](https://www.typescriptlang.org/), [pnpm](https://pnpm.io/)
 
-## 📋 Requirements
+## Requirements
 
 - **Node.js**: `24.x` (active LTS)
 - **pnpm**: `10.27.0` (pinned by `packageManager`)
 
-## ⚙️ Setup & Installation
+## Setup & Installation
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/guitarbeat/name-nosferatu.git
-    cd name-nosferatu
-    ```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/guitarbeat/Naming-Nosferatu.git
+   cd Naming-Nosferatu
+   ```
 
-2.  **Install dependencies**:
-    ```bash
-    pnpm install
-    ```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-3.  **Configure Environment Variables**:
-    - Copy `config/.env.example` to `.env` in the root directory.
-    - Fill in the required Supabase credentials:
-      - `VITE_SUPABASE_URL`: Your Supabase project URL.
-      - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous public key.
-      - `JWT_SECRET`: (Optional) Required for certain backend operations if applicable.
+3. Configure environment variables (optional):
+   - Copy `config/.env.example` to `.env` in the root directory.
+   - Set `VITE_SENTRY_DSN` if you want production error tracking.
 
-## 🏃 Running the App
+## Running the App
 
 ### Development
-Starts the Vite dev server on port `5000`.
+
+Starts the Vite dev server on port `3000`.
+
 ```bash
 pnpm dev
 ```
 
 ### Build & Preview
-Builds the application for production and previews the build.
+
+Builds the application for production and previews the build on port `5000`.
+
 ```bash
 pnpm run build
 pnpm run preview
 ```
 
-## 🧪 Testing
+## Testing
 
 The project uses Vitest for unit and integration testing. Configuration is located in `config/vitest.config.ts`.
 
@@ -62,45 +62,27 @@ The project uses Vitest for unit and integration testing. Configuration is locat
 - **Watch mode**: `pnpm run test:watch`
 - **Coverage report**: `pnpm run test:coverage`
 
-## 🧹 Code Quality
+## Code Quality
 
-- **Lint & Format**: `pnpm run lint` (Checks architecture, code style, and types)
-- **Auto-fix**: `pnpm run fix` (Fixes linting and formatting issues)
-- **Maintenance Checks**: `pnpm run check:maintenance` (Runs specialized architectural and consistency scripts)
-- **Dependency Audit**: `pnpm run check:deps` (Uses Knip to find unused dependencies)
+- **Lint & Format**: `pnpm run lint` (Biome plus TypeScript)
+- **Auto-fix**: `pnpm run fix` (fixes linting and formatting issues)
+- **Dependency Audit**: `pnpm run check:deps` (Knip unused-dependency check)
 
-## 📁 Project Structure
+## Project Structure
 
 All configuration files are centralized in the `config/` directory to keep the root clean.
 
 ```text
-├── config/             # Centralized configuration (Vite, Vitest, Biome, etc.)
-├── docs/               # Project documentation and guides
+├── config/             # Vite, Vitest, Biome, TypeScript, Knip
 ├── public/             # Static assets
-├── scripts/            # Maintenance and build scripts
-├── shared/             # Code shared across the application
 ├── src/                # Main application source
-│   ├── app/            # App core, providers, and main entry
-│   ├── features/       # Feature-based modules (names, tournament, analytics, etc.)
-│   ├── integrations/   # External service integrations (Supabase)
-│   ├── services/       # Application services and adapters
-│   ├── shared/         # Reusable UI components, hooks, and utilities
-│   ├── store/          # Zustand state management
-│   └── styles/         # CSS modules, Tailwind tokens, and global styles
-├── supabase/           # Supabase configuration and migrations
+│   ├── app/            # App core, providers, and routes
+│   ├── features/       # Feature modules (tournament, dashboard)
+│   ├── shared/         # Reusable UI, hooks, and utilities
+│   └── store/          # Zustand state management
 └── index.html          # Application entry point
 ```
 
-## 📚 Additional Documentation
-
-- [Contributing Guide](./docs/CONTRIBUTING.md)
-- [Architecture Overview](./docs/ARCHITECTURE.md)
-- [API Reference](./docs/API.md)
-- [Design Tokens](./docs/DESIGN.md)
-
-## ⚖️ License
+## License
 
 This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.
-
----
-*Generated by Junie as part of a repository update.*

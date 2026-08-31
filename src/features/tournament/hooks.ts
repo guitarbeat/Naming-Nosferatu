@@ -1074,7 +1074,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		[currentMatch, matchNumber, round, userName, tournamentActions.recordVote],
 	);
 
-	const voteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const voteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const currentMatchRef = useRef(currentMatch);
 
 	useEffect(() => {

@@ -97,7 +97,10 @@ const keyToId = {
 	pick: "pick-names-section",
 	tournament: "tournament-section",
 	stats: "stats-section",
-};
+	analysis: "stats-section",
+} as const;
+
+type NavSection = keyof typeof keyToId;
 
 // Dynamic Import for Search/Suggest Modal content
 

@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import { type ChangeEvent, memo, type ReactNode } from "react";
 import { Button, Loading } from "@/shared/components/LayoutBlocks";
 import { hapticNavTap } from "@/shared/lib/utils";
@@ -140,8 +140,22 @@ export function SearchFilterBar({
 					value={searchTerm}
 					onChange={handleSearchChange}
 					aria-label="Search names"
-					className="w-full h-12 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground border-none outline-none ring-0 min-w-0"
+					className="w-full h-12 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground border-none outline-none ring-0 min-w-0 pr-10"
 				/>
+				{searchTerm ? (
+					<button
+						type="button"
+						onClick={() => {
+							hapticNavTap();
+							onSearchTermChange("");
+						}}
+						aria-label="Clear search"
+						title="Clear search"
+						className="absolute right-2 inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+					>
+						<X size={16} />
+					</button>
+				) : null}
 			</div>
 
 			<div className="w-px h-8 bg-border/20 hidden sm:block mx-1" />

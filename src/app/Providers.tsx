@@ -13,8 +13,6 @@ import {
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;
 
-export type { AuthAdapter, AuthUser, LoginCredentials, RegisterData };
-
 interface ProvidersProps {
 	children: ReactNode;
 	auth?: {
@@ -253,7 +251,7 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
 	"bottom-right": "bottom-4 right-4 items-end",
 };
 
-const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
+const TYPE_STYLES: Record<ToastType, { bg: string; icon: ReactNode }> = {
 	success: { bg: "bg-chart-2", icon: <CheckCircle className="size-5" /> },
 	error: { bg: "bg-destructive", icon: <XCircle className="size-5" /> },
 	warning: {

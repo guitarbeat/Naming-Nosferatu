@@ -159,6 +159,8 @@ supabase/.temp/
 supabase/.branches/
 .dyad/
 .env*
+!.env.example
+!config/.env.example
 .agents/skills/ui-ux-pro-max/scripts/__pycache__/
 *.cjs
 *.sh

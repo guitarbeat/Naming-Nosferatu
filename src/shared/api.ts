@@ -23,8 +23,10 @@ export const namesQueryKeys = {
 	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
+const localNames: NameItem[] = [];
+
 export async function fetchNames(_includeHidden: boolean): Promise<NamesQueryResult> {
-	return { names: [], source: "local" };
+	return { names: localNames.map((name) => ({ ...name })), source: "local" };
 }
 
 export const namesQueryOptions = (includeHidden: boolean) =>
@@ -74,8 +76,16 @@ export async function batchUpdateLocked(_params: {
 	// no-op
 }
 
-export async function addName(_params: { name: string; description?: string }): Promise<NameItem> {
-	throw new Error("Not implemented");
+export async function addName(params: { name: string; description?: string }): Promise<NameItem> {
+	const item: NameItem = {
+		id: `local-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+		name: params.name,
+		description: params.description ?? "",
+		status: "candidate",
+		createdAt: new Date().toISOString(),
+	};
+	localNames.push(item);
+	return { ...item };
 }
 
 /* ==========================================================================
@@ -198,10 +208,14 @@ export function useNameAdminActions(userName: string) {
    ========================================================================== */
 export interface TournamentMatchRatingParams {
 	matchId?: string;
-	winnerId: string;
-	loserId: string;
+	winnerId?: string;
+	loserId?: string;
 	newWinnerRating?: number;
 	newLoserRating?: number;
+	userName?: string;
+	leftNameIds?: string[];
+	rightNameIds?: string[];
+	winnerSide?: string;
 	[key: string]: unknown;
 }
 
@@ -219,6 +233,11 @@ export const ratingsAPI = {
 export interface LeaderboardItem {
 	name: string;
 	score: number;
+	total_ratings: number;
+	wins: number;
+	avg_rating: number;
+	losses?: number;
+	percentile_rank?: number;
 }
 
 export interface EngagementDataPoint {
@@ -242,12 +261,18 @@ export interface SiteStats {
 	totalUsers: number;
 	totalNames: number;
 	totalMatches: number;
+	activeNames: number;
+	avgRating: number;
 }
 
 export interface UserStats {
 	wins: number;
 	matches: number;
 	rank: number;
+	totalRatings: number;
+	totalSelections: number;
+	totalWins: number;
+	winRate: number;
 }
 
 export const leaderboardAPI = {

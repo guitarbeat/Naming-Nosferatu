@@ -442,29 +442,29 @@ export const TopNamesChart = memo(function TopNamesChart({
 	limit?: number;
 }) {
 	const { data, allRatings } = useMemo(() => {
-		return leaderboard.reduce(
-			(acc, e, i) => {
-				if (i < limit) {
-					acc.data.push({
-						name: e.name.length > 10 ? `${e.name.slice(0, 9)}…` : e.name,
-						rating: Math.round(e.avg_rating),
-						fullName: e.name,
-						percentile: e.percentile_rank ?? null,
-					});
-				}
-				acc.allRatings.push(e.avg_rating);
-				return acc;
-			},
-			{ data: [], allRatings: [] } as {
-				data: Array<{
-					name: string;
-					rating: number;
-					fullName: string;
-					percentile: number | null;
-				}>;
-				allRatings: number[];
-			},
-		);
+		const chartLimit = Math.min(limit, leaderboard.length);
+		const chartData: Array<{
+			name: string;
+			rating: number;
+			fullName: string;
+			percentile: number | null;
+		}> = new Array(chartLimit);
+		const ratings: number[] = new Array(leaderboard.length);
+
+		for (let i = 0; i < leaderboard.length; i++) {
+			const entry = leaderboard[i];
+			ratings[i] = entry.avg_rating;
+			if (i < chartLimit) {
+				chartData[i] = {
+					name: entry.name.length > 10 ? `${entry.name.slice(0, 9)}…` : entry.name,
+					rating: Math.round(entry.avg_rating),
+					fullName: entry.name,
+					percentile: entry.percentile_rank ?? null,
+				};
+			}
+		}
+
+		return { data: chartData, allRatings: ratings };
 	}, [leaderboard, limit]);
 
 	if (data.length === 0) {

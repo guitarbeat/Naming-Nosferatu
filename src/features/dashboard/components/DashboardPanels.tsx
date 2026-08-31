@@ -15,7 +15,7 @@ import type { EngagementMetrics, LeaderboardItem, SiteStats, UserStats } from "@
 import { Button, EmptyState, Loading } from "@/shared/components";
 import { MOTION_DURATIONS, MOTION_EASING, themeSurfaces } from "@/shared/lib/uiUtils";
 import type { DashboardTimeframe } from "../hooks";
-import type { LeaderboardEntry, QuickStat } from "../types";
+import type { QuickStat } from "../types";
 import { RatingDistributionChart, RatingRadarChart, TopNamesChart, WinLossChart } from "./Charts";
 import {
 	ContextBadge,
@@ -168,7 +168,7 @@ export const LeaderboardPanel = memo(function LeaderboardPanel({
 	isLoadingLeaderboard,
 	onStartNew,
 }: {
-	leaderboard: LeaderboardEntry[];
+	leaderboard: LeaderboardItem[];
 	isLoadingLeaderboard: boolean;
 	onStartNew?: () => void;
 }) {

@@ -1,19 +1,28 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-	readonly VITE_SENTRY_DSN?: string;
-	readonly VITE_APP_VERSION?: string;
-	readonly VITE_WEBSOCKET_URL?: string;
-	readonly VITE_SUPABASE_DEMO_PASSWORD?: string;
+export {};
+
+declare global {
+	interface Window {
+		__deferredPwaPrompt: BeforeInstallPromptEvent | null;
+	}
+
+	interface PWAInstallElement extends HTMLElement {
+		manifestUrl: string;
+		useLocalStorage: boolean;
+		installDescription: string;
+		styles: Record<string, string>;
+		externalPromptEvent: BeforeInstallPromptEvent | null;
+	}
 }
 
-interface ImportMeta {
-	readonly env: ImportMetaEnv;
-	readonly MODE: string;
-	readonly PROD: boolean;
-}
-
-/** Captured in index.html before the app bundle loads (Chromium install prompt). */
-interface Window {
-	__deferredPwaPrompt: BeforeInstallPromptEvent | null;
+declare module "react" {
+	// biome-ignore lint/style/noNamespace: JSX.IntrinsicElements can only be augmented via a namespace
+	namespace JSX {
+		interface IntrinsicElements {
+			"pwa-install": {
+				ref?: import("react").Ref<PWAInstallElement>;
+			};
+		}
+	}
 }

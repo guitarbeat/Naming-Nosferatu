@@ -5,10 +5,10 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/guitarbeat/name-nosferatu.git"
+    "url": "git+https://github.com/guitarbeat/Naming-Nosferatu.git"
   },
   "bugs": {
-    "url": "https://github.com/guitarbeat/name-nosferatu/issues"
+    "url": "https://github.com/guitarbeat/Naming-Nosferatu/issues"
   },
   "keywords": [
     "react",
@@ -34,13 +34,13 @@
     "build": "vite build --config config/vite.config.ts",
     "build:dev": "vite build --config config/vite.config.ts --mode development",
     "preview": "vite preview --config config/vite.config.ts",
-    "lint": "npm run lint:full && npm run lint:types",
+    "lint": "pnpm run lint:full && pnpm run lint:types",
     "lint:full": "biome check --config-path config/biome.json src",
     "lint:types": "tsc --project config/tsconfig.json --noEmit",
     "lint:fix": "biome check --config-path config/biome.json --write src",
     "format": "biome format --write --config-path config/biome.json src",
-    "fix": "npm run lint:fix",
-    "check": "npm run lint && npm run check:deps",
+    "fix": "pnpm run lint:fix",
+    "check": "pnpm run lint && pnpm run check:deps",
     "check:deps": "knip --config config/knip.json --dependencies --no-config-hints",
     "check:deps:fix": "knip --config config/knip.json --fix",
     "clean": "rm -rf build dist node_modules/.vite",

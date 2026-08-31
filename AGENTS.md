@@ -14,20 +14,19 @@ All commands use `pnpm` from the project root:
 | Action | Command |
 |--------|---------|
 | Install deps | `pnpm install` |
-| Dev server (port 5000) | `pnpm dev` |
+| Dev server (port 3000) | `pnpm dev` |
 | Run tests | `pnpm test` |
-| Lint (maintenance + biome + tsc) | `pnpm run lint` |
+| Lint (biome + tsc) | `pnpm run lint` |
 | Build | `pnpm run build` |
 | Auto-fix formatting | `pnpm run fix` |
 
 ### Environment variables
 
-Copy `config/.env.example` to `.env` at the project root. The app gracefully degrades when Supabase credentials are empty (runs in offline mode), so the dev server and tests work without them. Full E2E features (tournament voting, auth, leaderboard data) require valid `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+Copy `config/.env.example` to `.env` at the project root. The app runs in local/offline mode without extra credentials. Optional `VITE_SENTRY_DSN` enables production error tracking.
 
 ### Gotchas
 
-- The `pnpm run lint` command (`lint:full` step) currently reports 2 pre-existing Biome formatting errors in `dynamic-island-nav.tsx` and one tournament file. These do not block `lint:types` or tests.
 - Vite config is at `config/vite.config.ts` (not root). All config lives under `config/`.
-- The dev server binds to `0.0.0.0:5000` with `strictPort: false`, so it may pick a different port if 5000 is occupied.
+- The dev server binds to `0.0.0.0:3000` with `strictPort: false`, so it may pick a different port if 3000 is occupied. Preview uses port 5000.
 - Tests use jsdom environment and run via Vitest (`config/vitest.config.ts`).
 - There are no git hooks, Makefiles, or devcontainer configs — just `pnpm install` and go.
