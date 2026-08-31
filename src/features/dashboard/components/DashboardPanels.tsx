@@ -385,6 +385,7 @@ export const EngagementPanel = memo(function EngagementPanel({
 							size="small"
 							onClick={() => refreshEngagementMetrics()}
 							disabled={isLoadingEngagement}
+							loading={isLoadingEngagement}
 						>
 							<Activity size={14} />
 							Refresh
