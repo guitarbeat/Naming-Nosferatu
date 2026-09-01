@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Loader2, Search, X } from "lucide-react";
 import { type ChangeEvent, memo, type ReactNode } from "react";
-import { Button, Loading } from "@/shared/components/LayoutBlocks";
+import { Button, Input, Loading } from "@/shared/components/LayoutBlocks";
 import { hapticNavTap } from "@/shared/lib/utils";
 
 export * from "./FloatingNav";
@@ -131,16 +131,16 @@ export function SearchFilterBar({
 			}}
 		>
 			<div className="flex-1 w-full relative flex items-center min-w-0">
-				<div className="pl-4 pr-3 text-muted-foreground transition-colors group-focus-within:text-primary">
+				<div className="absolute left-0 pl-4 pr-3 text-muted-foreground transition-colors group-focus-within:text-primary z-20 pointer-events-none">
 					<Search size={18} />
 				</div>
-				<input
+				<Input
 					type="text"
 					placeholder="Search names..."
 					value={searchTerm}
 					onChange={handleSearchChange}
 					aria-label="Search names"
-					className="w-full h-12 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground border-none outline-none ring-0 min-w-0 pr-10"
+					className="w-full pl-11 pr-10 bg-transparent border-none outline-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-transparent text-sm sm:text-base text-foreground"
 				/>
 				{searchTerm ? (
 					<button
@@ -151,9 +151,9 @@ export function SearchFilterBar({
 						}}
 						aria-label="Clear search"
 						title="Clear search"
-						className="absolute right-2 inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+						className="absolute right-2 z-20 inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
 					>
-						<X size={16} />
+						<X size={16} className="pointer-events-none" />
 					</button>
 				) : null}
 			</div>
@@ -166,7 +166,7 @@ export function SearchFilterBar({
 						value={filterStatus}
 						onChange={onFilterChange}
 						aria-label="Filter names by status"
-						className="h-10 bg-foreground/5 hover:bg-foreground/10 transition-colors rounded-xl px-4 pr-10 text-sm font-medium text-foreground appearance-none outline-none cursor-pointer border border-transparent focus:border-primary/40 focus:ring-2 focus:ring-primary/20"
+						className="h-10 bg-foreground/5 hover:bg-foreground/10 transition-colors rounded-xl px-4 pr-10 text-sm font-medium text-foreground appearance-none outline-none cursor-pointer border border-transparent focus-visible:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20"
 					>
 						{filterOptions.map((option) => (
 							<option
