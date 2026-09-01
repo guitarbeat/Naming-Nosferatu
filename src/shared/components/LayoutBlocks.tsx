@@ -88,6 +88,7 @@ const ButtonComponent = ({
 			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
 			onClick={handleClick}
 			title={iconOnly && !title && ariaLabel ? ariaLabel : title}
+			aria-label={ariaLabel}
 			{...rest}
 		>
 			{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
