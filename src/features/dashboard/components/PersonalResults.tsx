@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, Copy, Crown } from "lucide-react";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Button } from "@/shared/components";
 import { ErrorManager } from "@/shared/lib/errorManager";
 import { cn } from "@/shared/lib/utils";
@@ -19,12 +19,14 @@ interface PersonalResultsProps {
 	userName: string;
 }
 
-export const PersonalResults = ({
+// ⚡ Bolt Performance Optimization: Wrapped PersonalResults in React.memo()
+// Prevents unnecessary re-renders when parent states in AnalyticsDashboard change
+export const PersonalResults = memo(function PersonalResults({
 	personalRatings,
 	currentTournamentNames,
 	onStartNew,
 	onUpdateRatings,
-}: PersonalResultsProps) => {
+}: PersonalResultsProps) {
 	const [hasCopied, setHasCopied] = useState(false);
 	const [showReorder, setShowReorder] = useState(false);
 
@@ -247,4 +249,4 @@ export const PersonalResults = ({
 			)}
 		</div>
 	);
-};
+});
