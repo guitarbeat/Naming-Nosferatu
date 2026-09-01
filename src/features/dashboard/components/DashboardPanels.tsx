@@ -364,13 +364,18 @@ export const EngagementPanel = memo(function EngagementPanel({
 							ease: MOTION_EASING.easeStandard,
 						}}
 					>
-						<div className="flex bg-black/20 rounded-lg p-1">
+						<div
+							className="flex bg-black/20 rounded-lg p-1"
+							role="group"
+							aria-label="Timeframe selection"
+						>
 							{TIMEFRAME_OPTIONS.map((opt) => (
 								<button
 									key={opt.value}
 									type="button"
 									onClick={() => setTimeframe(opt.value)}
-									className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+									aria-pressed={timeframe === opt.value}
+									className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
 										timeframe === opt.value
 											? "bg-primary/20 text-primary shadow-sm"
 											: "text-muted-foreground hover:text-foreground"
