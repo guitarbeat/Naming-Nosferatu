@@ -1,5 +1,5 @@
 import { Trophy } from "lucide-react";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { useDashboardData } from "../hooks";
 import type { DashboardProps } from "../types";
 import { ContextBadge, Panel, SectionHeader } from "./Common";
@@ -12,7 +12,9 @@ import {
 } from "./DashboardPanels";
 import { PersonalResults } from "./PersonalResults";
 
-export function AnalyticsDashboard({
+// ⚡ Bolt Performance Optimization: Wrapped AnalyticsDashboard in React.memo()
+// Prevents unnecessary re-renders of the entire dashboard when higher-level context changes
+export const AnalyticsDashboard = memo(function AnalyticsDashboard({
 	userName = "",
 	isAdmin = false,
 	isLoggedIn = false,
@@ -88,4 +90,4 @@ export function AnalyticsDashboard({
 			/>
 		</div>
 	);
-}
+});
