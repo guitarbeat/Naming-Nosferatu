@@ -1,11 +1,14 @@
 import { BarChart3, Eye, EyeOff, Lock, Trash2, Unlock } from "lucide-react";
+import { memo } from "react";
 import { Button, Loading, SearchFilterBar } from "@/shared/components";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names";
 import { useAdminDashboard } from "../hooks";
 import type { AdminStatsGridProps, NameWithStats } from "../types";
 import { FILTER_OPTIONS } from "../utils";
 
-function AdminStatsGrid({ stats }: AdminStatsGridProps) {
+// ⚡ Bolt Performance Optimization: Wrapped AdminStatsGrid in React.memo()
+// Prevents unnecessary re-renders of the stats grid during search input
+const AdminStatsGrid = memo(function AdminStatsGrid({ stats }: AdminStatsGridProps) {
 	const statCards = [
 		{
 			icon: BarChart3,
@@ -65,9 +68,11 @@ function AdminStatsGrid({ stats }: AdminStatsGridProps) {
 			))}
 		</div>
 	);
-}
+});
 
-function AdminNameItem({
+// ⚡ Bolt Performance Optimization: Wrapped AdminNameItem in React.memo()
+// Prevents unnecessary re-renders of all list items when search input changes or a single item is toggled
+const AdminNameItem = memo(function AdminNameItem({
 	name,
 	onToggleHidden,
 	onToggleLocked,
@@ -153,7 +158,7 @@ function AdminNameItem({
 			</div>
 		</div>
 	);
-}
+});
 
 export function AdminDashboard() {
 	const {
@@ -205,9 +210,9 @@ export function AdminDashboard() {
 							<AdminNameItem
 								key={name.id}
 								name={name}
-								onToggleHidden={(nameId, hidden) => void handleToggleHidden(nameId, hidden)}
-								onToggleLocked={(nameId, locked) => void handleToggleLocked(nameId, locked)}
-								onDelete={(nameId) => void handleSoftDelete(nameId)}
+								onToggleHidden={handleToggleHidden}
+								onToggleLocked={handleToggleLocked}
+								onDelete={handleSoftDelete}
 							/>
 						))
 					) : (
