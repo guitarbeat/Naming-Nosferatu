@@ -86,22 +86,36 @@ export const AdminActionButton = memo(function AdminActionButton({
 /**
  * Selection check badge.
  */
-export const SelectionBadge = ({ prefersReducedMotion }: { prefersReducedMotion: boolean }) => (
-	<motion.div
-		initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0.6, opacity: 0 }}
-		animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
-		className="absolute top-2.5 right-2.5 z-20"
-	>
-		<div className="flex size-7 items-center justify-center rounded-full border border-primary/40 bg-primary text-primary-foreground shadow-md">
-			<Check size={14} strokeWidth={3} />
-		</div>
-	</motion.div>
-);
+// ⚡ Bolt Performance Optimization: Wrapped with React.memo() to prevent unnecessary re-renders
+export const SelectionBadge = memo(function SelectionBadge({
+	prefersReducedMotion,
+}: {
+	prefersReducedMotion: boolean;
+}) {
+	return (
+		<motion.div
+			initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0.6, opacity: 0 }}
+			animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
+			className="absolute top-2.5 right-2.5 z-20"
+		>
+			<div className="flex size-7 items-center justify-center rounded-full border border-primary/40 bg-primary text-primary-foreground shadow-md">
+				<Check size={14} strokeWidth={3} />
+			</div>
+		</motion.div>
+	);
+});
 
 /**
  * Zoom button for expanding cat avatar into lightbox.
  */
-export function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: IdType) => void }) {
+// ⚡ Bolt Performance Optimization: Wrapped with React.memo() to prevent unnecessary re-renders
+export const ZoomButton = memo(function ZoomButton({
+	nameId,
+	onClick,
+}: {
+	nameId: IdType;
+	onClick: (id: IdType) => void;
+}) {
 	return (
 		<button
 			type="button"
@@ -116,12 +130,13 @@ export function ZoomButton({ nameId, onClick }: { nameId: IdType; onClick: (id: 
 			<ZoomIn size={13} />
 		</button>
 	);
-}
+});
 
 /**
  * Accessible cat name selection and administration grid.
  */
-export function NameSelector() {
+// ⚡ Bolt Performance Optimization: Wrapped with React.memo() to prevent unnecessary re-renders
+export const NameSelector = memo(function NameSelector() {
 	const toast = useToast();
 	const prefersReducedMotion = useReducedMotion() ?? false;
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
@@ -515,4 +530,4 @@ export function NameSelector() {
 			</Modal>
 		</div>
 	);
-}
+});
