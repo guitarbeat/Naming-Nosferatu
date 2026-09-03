@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Copy, Crown } from "lucide-react";
+import { Check, Copy, Crown, Trophy } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { Button } from "@/shared/components";
 import { ErrorManager } from "@/shared/lib/errorManager";
@@ -137,8 +137,12 @@ export const PersonalResults = memo(function PersonalResults({
 
 	if (!rankings.length) {
 		return (
-			<div className="flex h-32 items-center justify-center rounded-2xl border border-dashed text-sm text-muted-foreground">
-				No personal ratings yet.
+			<div className="flex flex-col h-40 items-center justify-center gap-3 rounded-2xl border border-dashed border-border/50 bg-muted/10 text-sm text-muted-foreground">
+				<Trophy size={24} className="text-muted-foreground/50 opacity-50" />
+				<p>No personal ratings yet.</p>
+				<Button variant="ghost" size="small" onClick={onStartNew} className="text-xs">
+					Start a Tournament
+				</Button>
 			</div>
 		);
 	}
