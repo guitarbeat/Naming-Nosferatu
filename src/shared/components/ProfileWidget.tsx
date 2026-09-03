@@ -355,6 +355,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 									type="button"
 									onClick={() => handleSelectAvatar(imgUrl)}
 									aria-pressed={isSelected}
+									aria-label={`Select avatar ${idx + 1}`}
 									className={cn(
 										"relative size-12 rounded-full overflow-hidden border-2 transition-all hover:scale-110",
 										isSelected
