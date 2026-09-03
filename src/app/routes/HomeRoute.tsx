@@ -4,6 +4,7 @@ import { Dashboard as DashboardLazy } from "@/features/dashboard/Dashboard";
 import { TournamentArena } from "@/features/tournament/TournamentArena";
 import { TournamentSetup } from "@/features/tournament/TournamentSetup";
 import { Button, ErrorBoundary, Loading, Section } from "@/shared/components/LayoutBlocks";
+import { TextLoop } from "@/shared/components/TextLoop";
 import { SectionHeading } from "@/shared/components/UIBlocks";
 import { useSectionScroll } from "@/shared/hooks";
 import useAppStore, { errorContexts } from "@/store";
@@ -80,7 +81,20 @@ export default function HomeRoute() {
 			fullpage={false}
 			ariaLabelledBy="section-heading-app"
 		>
-			<div className="flex flex-col items-center w-full py-4 md:py-8">
+			<div className="flex flex-col items-center w-full py-2 sm:py-4">
+				<div className="w-full mb-4 overflow-hidden rounded-2xl border border-primary/20 bg-background/50 backdrop-blur-md shadow-xs py-1">
+					<TextLoop
+						text="NAME NOSFERATU ✦ THE ULTIMATE CAT TOURNAMENT ✦ CHOOSE CONTENDERS ✦ VOTE & RANK CHAMPIONS"
+						shape="wave"
+						ribbon={true}
+						ribbonColor="#5227FF"
+						curviness={28}
+						fontSize={18}
+						speed={65}
+						ribbonWidth={42}
+					/>
+				</div>
+
 				<div className="w-full flex flex-col items-center gap-6">
 					{activeTab === "pick" && (
 						<div

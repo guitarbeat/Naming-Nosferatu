@@ -1,8 +1,8 @@
-import { Medal } from "lucide-react";
+import { type LucideIcon, Medal } from "lucide-react";
 import type React from "react";
 import {
+	type ComponentType,
 	cloneElement,
-	type ElementType,
 	isValidElement,
 	type ReactNode,
 	useEffect,
@@ -101,7 +101,7 @@ export function StatTile({
 }: {
 	label: string;
 	value: string | number;
-	icon?: ElementType;
+	icon?: LucideIcon | ComponentType<{ size?: number; className?: string }>;
 	accent?: boolean;
 }) {
 	return (
@@ -149,7 +149,7 @@ export function SectionHeader({
 	subtitle,
 	action,
 }: {
-	icon: ElementType;
+	icon: LucideIcon | ComponentType<{ size?: number; className?: string }>;
 	title: string;
 	subtitle?: string;
 	action?: ReactNode;

@@ -1,7 +1,7 @@
-import { toast } from "@heroui/react";
 import { type ClassValue, clsx } from "clsx";
 import { type ComponentType, lazy } from "react";
 import { twMerge } from "tailwind-merge";
+import { FALLBACK_CAT_IMAGE, FALLBACK_CAT_SVG } from "@/shared/lib/constants";
 
 /**
  * Merges Tailwind CSS classes with clsx logic.
@@ -126,6 +126,50 @@ export function safeLazy<T extends ComponentType<unknown>>(
 	});
 }
 
+/**
+ * Intercepts image load failures globally in the capture phase to replace broken <img>
+ * elements with a consistent SVG fallback UI, preventing browser broken-image icons.
+ */
+export function setupGlobalImageErrorHandler(
+	fallbackSrc: string = FALLBACK_CAT_SVG,
+	localFallback: string = FALLBACK_CAT_IMAGE,
+): () => void {
+	if (typeof window === "undefined") {
+		return () => {
+			/* no-op when window is undefined */
+		};
+	}
+
+	const handleImageError = (event: Event) => {
+		const target = event.target;
+		if (!(target instanceof HTMLImageElement)) {
+			return;
+		}
+
+		// Prevent infinite loops if the fallback itself triggers an error
+		if (target.dataset.fallbackApplied === "true") {
+			if (target.src !== fallbackSrc) {
+				target.src = fallbackSrc;
+			}
+			return;
+		}
+
+		target.dataset.fallbackApplied = "true";
+		target.dataset.originalSrc = target.currentSrc || target.src;
+		target.classList.add("img-fallback-applied");
+
+		// If current src is not already the local fallback, try local fallback first, otherwise SVG data URI
+		const isFailedLocal = target.src.includes(localFallback);
+		target.src = isFailedLocal ? fallbackSrc : localFallback;
+	};
+
+	window.addEventListener("error", handleImageError, true);
+
+	return () => {
+		window.removeEventListener("error", handleImageError, true);
+	};
+}
+
 export class ErrorManager {
 	static setupGlobalErrorHandling() {
 		const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -140,15 +184,39 @@ export class ErrorManager {
 
 		window.addEventListener("unhandledrejection", handleUnhandledRejection);
 		window.addEventListener("error", handleErrorEvent);
+		const cleanupImageErrorHandler = setupGlobalImageErrorHandler();
 
 		return () => {
 			window.removeEventListener("unhandledrejection", handleUnhandledRejection);
 			window.removeEventListener("error", handleErrorEvent);
+			cleanupImageErrorHandler();
 		};
 	}
 
-	static handleError(error: unknown) {
-		const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
-		toast(errorMessage);
+	static handleError(
+		error: unknown,
+		context?: string,
+		options?: { componentStack?: string | null; isCritical?: boolean },
+	): { id: string } {
+		const errorMessage =
+			error instanceof Error
+				? error.message
+				: typeof error === "string"
+					? error
+					: "An unexpected error occurred.";
+		const id = `err_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+		if (context) {
+			console.error(`[${context}] Error:`, error, options);
+		} else {
+			console.error("Error:", error);
+		}
+		if (typeof window !== "undefined") {
+			window.dispatchEvent(
+				new CustomEvent("app-error", {
+					detail: { id, message: errorMessage, isCritical: options?.isCritical },
+				}),
+			);
+		}
+		return { id };
 	}
 }

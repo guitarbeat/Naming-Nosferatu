@@ -4,11 +4,15 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { queryClient } from "@/shared/api";
 import { ErrorBoundary } from "@/shared/components";
+import { setupGlobalImageErrorHandler } from "@/shared/lib/utils";
 
 import App from "./App";
 import { Providers } from "./Providers";
 
 import "../index.css";
+
+// Install global image fallback error handler immediately
+setupGlobalImageErrorHandler();
 
 function registerServiceWorker(): void {
 	if (!import.meta.env.PROD || !("serviceWorker" in navigator)) {

@@ -15,8 +15,6 @@ import { getStorageString, removeStorageItem, setStorageString } from "@/shared/
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;
 
-export type { AuthAdapter, AuthUser, LoginCredentials, RegisterData };
-
 export const localAuthAdapter: AuthAdapter = {
 	getCurrentUser: async (): Promise<AuthUser | null> => {
 		const name = getStorageString(STORAGE_KEYS.USER);

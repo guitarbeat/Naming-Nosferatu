@@ -45,7 +45,7 @@ void main() {
 }
 `;
 
-export interface IridescenceProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface IridescenceProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "color"> {
 	color?: number[];
 	speed?: number;
 	amplitude?: number;
@@ -96,19 +96,28 @@ export function Iridescence({
 			if (!ctn || !renderer || !gl) {
 				return;
 			}
-			const scale = 1;
-			const width = ctn.offsetWidth || window.innerWidth;
-			const height = ctn.offsetHeight || window.innerHeight;
+			const scale = Math.min(typeof window === "undefined" ? 1 : window.devicePixelRatio || 1, 2);
+			const width = ctn.offsetWidth || window.innerWidth || 800;
+			const height = ctn.offsetHeight || window.innerHeight || 600;
 			renderer.setSize(width * scale, height * scale);
+			if (gl.canvas) {
+				gl.canvas.style.width = "100%";
+				gl.canvas.style.height = "100%";
+				gl.canvas.style.position = "absolute";
+				gl.canvas.style.inset = "0";
+				gl.canvas.style.display = "block";
+			}
 			if (program) {
 				program.uniforms.uResolution.value = new Color(
-					gl.canvas.width,
-					gl.canvas.height,
-					gl.canvas.width / (gl.canvas.height || 1),
+					width * scale,
+					height * scale,
+					(width * scale) / (height * scale || 1),
 				);
 			}
 		}
 		window.addEventListener("resize", resize, false);
+		const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(resize);
+		ro?.observe(ctn);
 		resize();
 
 		const geometry = new Triangle(gl);
@@ -149,6 +158,8 @@ export function Iridescence({
 		if (gl.canvas) {
 			gl.canvas.style.width = "100%";
 			gl.canvas.style.height = "100%";
+			gl.canvas.style.position = "absolute";
+			gl.canvas.style.inset = "0";
 			gl.canvas.style.display = "block";
 			ctn.appendChild(gl.canvas);
 		}
@@ -179,6 +190,7 @@ export function Iridescence({
 		return () => {
 			cancelAnimationFrame(animateId);
 			window.removeEventListener("resize", resize);
+			ro?.disconnect();
 			if (mouseReact) {
 				window.removeEventListener("mousemove", handleMouseMove);
 			}

@@ -536,10 +536,14 @@ export function useNameAdminActions(userName: string) {
    ========================================================================== */
 export interface TournamentMatchRatingParams {
 	matchId?: string;
-	winnerId: string;
-	loserId: string;
+	winnerId?: string;
+	loserId?: string;
 	newWinnerRating?: number;
 	newLoserRating?: number;
+	userName?: string;
+	leftNameIds?: string[];
+	rightNameIds?: string[];
+	winnerSide?: string;
 	[key: string]: unknown;
 }
 
@@ -581,6 +585,13 @@ export const ratingsAPI = {
 export interface LeaderboardItem {
 	name: string;
 	score: number;
+	total_ratings: number;
+	wins: number;
+	avg_rating: number;
+	totalRatings?: number;
+	avgRating?: number;
+	losses?: number;
+	percentile_rank?: number;
 }
 
 export interface EngagementDataPoint {
@@ -604,12 +615,18 @@ export interface SiteStats {
 	totalUsers: number;
 	totalNames: number;
 	totalMatches: number;
+	activeNames?: number;
+	avgRating?: number;
 }
 
 export interface UserStats {
 	wins: number;
 	matches: number;
 	rank: number;
+	totalRatings?: number;
+	totalSelections?: number;
+	totalWins?: number;
+	winRate?: number;
 }
 
 export const leaderboardAPI = {
@@ -619,7 +636,21 @@ export const leaderboardAPI = {
 			.filter((n) => !n.isHidden && !n.is_hidden)
 			.sort((a, b) => (b.avgRating ?? 1500) - (a.avgRating ?? 1500))
 			.slice(0, limit)
-			.map((n) => ({ name: n.name, score: Math.round(n.avgRating ?? 1500) }));
+			.map((n) => {
+				const avg = n.avgRating ?? n.rating ?? 1500;
+				const wins = n.wins ?? 0;
+				const losses = n.losses ?? 0;
+				return {
+					name: n.name,
+					score: Math.round(avg),
+					total_ratings: wins + losses,
+					totalRatings: wins + losses,
+					wins,
+					losses,
+					avg_rating: avg,
+					avgRating: avg,
+				};
+			});
 	},
 };
 

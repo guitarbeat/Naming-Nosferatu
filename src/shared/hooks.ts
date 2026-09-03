@@ -1,4 +1,5 @@
 import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { CRITICAL_SHELL_IMAGES } from "@/shared/lib/constants";
 import {
 	decryptValue,
 	getStorageString,
@@ -425,5 +426,203 @@ export function useNamesCache() {
 		getCachedData,
 		setCachedData,
 		invalidateCache,
+	};
+}
+
+// ============================================================================
+// 6. usePreloadImages (Critical Shell Image Preloader)
+// ============================================================================
+
+export interface UsePreloadImagesOptions {
+	enabled?: boolean;
+	crossOrigin?: "anonymous" | "use-credentials";
+	onComplete?: (loadedUrls: string[], failedUrls: string[]) => void;
+	onError?: (failedUrl: string) => void;
+}
+
+export interface UsePreloadImagesResult {
+	isLoading: boolean;
+	isLoaded: boolean;
+	progress: number; // 0.0 to 1.0
+	loadedCount: number;
+	totalCount: number;
+	loadedUrls: string[];
+	failedUrls: string[];
+}
+
+// Module-level cache of successfully preloaded URLs across component lifecycles
+const globalPreloadedImageCache = new Set<string>();
+
+/**
+ * Preload a single image URL into memory/browser cache.
+ */
+export function preloadImage(
+	src: string,
+	crossOrigin?: "anonymous" | "use-credentials",
+): Promise<boolean> {
+	if (!src || !IS_BROWSER) {
+		return Promise.resolve(false);
+	}
+	if (globalPreloadedImageCache.has(src)) {
+		return Promise.resolve(true);
+	}
+
+	return new Promise((resolve) => {
+		const img = new Image();
+		if (crossOrigin && !src.startsWith("data:") && !src.startsWith("blob:")) {
+			img.crossOrigin = crossOrigin;
+		}
+
+		img.onload = () => {
+			globalPreloadedImageCache.add(src);
+			resolve(true);
+		};
+
+		img.onerror = () => {
+			resolve(false);
+		};
+
+		img.src = src;
+	});
+}
+
+/**
+ * Preload a list of image URLs in parallel.
+ */
+export async function preloadImages(
+	srcs: readonly string[],
+	crossOrigin?: "anonymous" | "use-credentials",
+): Promise<boolean[]> {
+	if (!IS_BROWSER || !srcs.length) {
+		return [];
+	}
+	return Promise.all(srcs.map((src) => preloadImage(src, crossOrigin)));
+}
+
+/**
+ * React hook to pre-load critical images defined in the app shell or passed as arguments.
+ */
+export function usePreloadImages(
+	images: readonly string[] = CRITICAL_SHELL_IMAGES,
+	options: UsePreloadImagesOptions = EMPTY_OPTIONS,
+): UsePreloadImagesResult {
+	const { enabled = true, crossOrigin, onComplete, onError } = options;
+
+	const [loadedUrls, setLoadedUrls] = useState<string[]>(() => {
+		if (!IS_BROWSER) {
+			return [];
+		}
+		return images.filter((img) => globalPreloadedImageCache.has(img));
+	});
+	const [failedUrls, setFailedUrls] = useState<string[]>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(() => {
+		if (!enabled || !IS_BROWSER || images.length === 0) {
+			return false;
+		}
+		return !images.every((img) => globalPreloadedImageCache.has(img));
+	});
+
+	const onCompleteRef = useRef(onComplete);
+	const onErrorRef = useRef(onError);
+
+	useEffect(() => {
+		onCompleteRef.current = onComplete;
+		onErrorRef.current = onError;
+	}, [onComplete, onError]);
+
+	useEffect(() => {
+		if (!enabled || !IS_BROWSER || images.length === 0) {
+			setIsLoading(false);
+			return;
+		}
+
+		let isCancelled = false;
+		const activeImages = Array.from(new Set(images.filter(Boolean)));
+		const total = activeImages.length;
+
+		if (total === 0) {
+			setIsLoading(false);
+			return;
+		}
+
+		const alreadyLoaded = activeImages.filter((src) => globalPreloadedImageCache.has(src));
+		if (alreadyLoaded.length === total) {
+			setLoadedUrls(alreadyLoaded);
+			setIsLoading(false);
+			return;
+		}
+
+		setIsLoading(true);
+		let completedCount = 0;
+		const currentLoaded: string[] = [...alreadyLoaded];
+		const currentFailed: string[] = [];
+
+		const checkFinish = () => {
+			if (isCancelled) {
+				return;
+			}
+			if (completedCount >= total) {
+				setIsLoading(false);
+				onCompleteRef.current?.(currentLoaded, currentFailed);
+			}
+		};
+
+		for (const src of activeImages) {
+			if (globalPreloadedImageCache.has(src)) {
+				completedCount++;
+				checkFinish();
+				continue;
+			}
+
+			const img = new Image();
+			if (crossOrigin && !src.startsWith("data:") && !src.startsWith("blob:")) {
+				img.crossOrigin = crossOrigin;
+			}
+
+			img.onload = () => {
+				if (isCancelled) {
+					return;
+				}
+				globalPreloadedImageCache.add(src);
+				currentLoaded.push(src);
+				setLoadedUrls((prev) => (prev.includes(src) ? prev : [...prev, src]));
+				completedCount++;
+				checkFinish();
+			};
+
+			img.onerror = () => {
+				if (isCancelled) {
+					return;
+				}
+				currentFailed.push(src);
+				setFailedUrls((prev) => (prev.includes(src) ? prev : [...prev, src]));
+				onErrorRef.current?.(src);
+				completedCount++;
+				checkFinish();
+			};
+
+			img.src = src;
+		}
+
+		return () => {
+			isCancelled = true;
+		};
+	}, [images, enabled, crossOrigin]);
+
+	const totalCount = images.length;
+	const loadedCount = loadedUrls.length;
+	const isLoaded =
+		!isLoading && (totalCount === 0 || loadedCount + failedUrls.length >= totalCount);
+	const progress =
+		totalCount === 0 ? 1 : Math.min(1, (loadedCount + failedUrls.length) / totalCount);
+
+	return {
+		isLoading,
+		isLoaded,
+		progress,
+		loadedCount,
+		totalCount,
+		loadedUrls,
+		failedUrls,
 	};
 }

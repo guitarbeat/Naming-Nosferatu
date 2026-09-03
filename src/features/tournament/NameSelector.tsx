@@ -23,6 +23,7 @@ import {
 	Lightbox,
 	Loading,
 	Modal,
+	TextLoop,
 } from "@/shared/components";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getLockedNames, getVisibleNames, isNameHidden, isNameLocked } from "@/shared/lib/names";
@@ -484,6 +485,19 @@ export const NameSelector = memo(function NameSelector() {
 
 	return (
 		<div className="mx-auto w-full space-y-6">
+			<div className="w-full overflow-hidden rounded-2xl border border-primary/20 bg-background/50 backdrop-blur-md shadow-xs py-2">
+				<TextLoop
+					text="NAME NOSFERATU ✦ CAT TOURNAMENT ✦ CHOOSE YOUR CONTENDERS ✦ VOTE & RANK CHAMPIONS"
+					shape="wave"
+					ribbon={true}
+					ribbonColor="#5227FF"
+					curviness={36}
+					fontSize={22}
+					speed={70}
+					ribbonWidth={48}
+				/>
+			</div>
+
 			{availableNames.length > 0 && (
 				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-2 border-b border-border/40">
 					<div className="text-left w-full sm:w-auto">

@@ -193,10 +193,10 @@ export function GlassSurface({
 					<filter
 						id={filterId}
 						colorInterpolationFilters="sRGB"
-						x="0%"
-						y="0%"
-						width="100%"
-						height="100%"
+						x="-20%"
+						y="-20%"
+						width="140%"
+						height="140%"
 					>
 						<feImage
 							ref={feImageRef}
@@ -271,4 +271,5 @@ export function GlassSurface({
 	);
 }
 
+export const LiquidGlass = GlassSurface;
 export default GlassSurface;

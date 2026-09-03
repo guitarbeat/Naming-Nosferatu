@@ -13,7 +13,7 @@ import {
 } from "@react-three/drei";
 import { Canvas, createPortal, useFrame, useThree } from "@react-three/fiber";
 import { easing } from "maath";
-import { type CSSProperties, memo, Suspense, useEffect, useRef, useState } from "react";
+import { type CSSProperties, memo, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const IMAGE_URLS = [
@@ -24,7 +24,7 @@ const IMAGE_URLS = [
 	"https://images.unsplash.com/photo-1779684474703-5c0519bcf7e8?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8NTJ8fHxlbnwwfHx8fHw%3D",
 ];
 
-export interface NavItem {
+export interface FluidGlassNavItem {
 	label: string;
 	link: string;
 }
@@ -44,7 +44,7 @@ export interface LensProps {
 }
 
 export interface BarProps {
-	navItems?: NavItem[];
+	navItems?: FluidGlassNavItem[];
 	scale?: number;
 	ior?: number;
 	thickness?: number;
@@ -94,16 +94,15 @@ export default function FluidGlass({
 	style = {},
 }: FluidGlassProps) {
 	const Wrapper = mode === "bar" ? Bar : mode === "cube" ? Cube : Lens;
-	const rawOverrides = mode === "bar" ? barProps : mode === "cube" ? cubeProps : lensProps;
-
-	const {
-		navItems = [
-			{ label: "Home", link: "" },
-			{ label: "About", link: "" },
-			{ label: "Contact", link: "" },
-		],
-		...modeProps
-	} = rawOverrides;
+	const modeProps = mode === "bar" ? barProps : mode === "cube" ? cubeProps : lensProps;
+	const navItems =
+		mode === "bar" && barProps.navItems
+			? barProps.navItems
+			: [
+					{ label: "Home", link: "" },
+					{ label: "About", link: "" },
+					{ label: "Contact", link: "" },
+				];
 
 	return (
 		<div
@@ -117,7 +116,7 @@ export default function FluidGlass({
 			>
 				<Suspense fallback={null}>
 					<ScrollControls damping={0.2} pages={3} distance={0.4}>
-						{mode === "bar" && <NavItems items={navItems} textColor={textColor} />}
+						{mode === "bar" && <NavItems items={navItems ?? []} textColor={textColor} />}
 						<Wrapper modeProps={modeProps} backgroundColor={backgroundColor}>
 							<Scroll>
 								<Typography textColor={textColor} />
@@ -164,15 +163,25 @@ const ModeWrapper = memo(function ModeWrapper({
 	const [scene] = useState(() => new THREE.Scene());
 	const geoWidthRef = useRef(1);
 
+	const fallbackGeometry = useMemo(() => {
+		if (geometryKey === "Cylinder") {
+			return new THREE.CylinderGeometry(1.2, 1.2, 0.4, 64);
+		}
+		if (geometryKey === "Cube") {
+			return new THREE.BoxGeometry(2.4, 0.8, 0.4);
+		}
+		return new THREE.BoxGeometry(1.5, 1.5, 1.5);
+	}, [geometryKey]);
+
 	useEffect(() => {
-		const geo = nodes[geometryKey]?.geometry;
+		const geo = nodes[geometryKey]?.geometry || fallbackGeometry;
 		if (geo) {
 			geo.computeBoundingBox();
 			if (geo.boundingBox) {
 				geoWidthRef.current = geo.boundingBox.max.x - geo.boundingBox.min.x || 1;
 			}
 		}
-	}, [nodes, geometryKey]);
+	}, [nodes, geometryKey, fallbackGeometry]);
 
 	useFrame((state, delta) => {
 		const { gl, viewport, pointer, camera } = state;
@@ -189,8 +198,8 @@ const ModeWrapper = memo(function ModeWrapper({
 
 			if (modeProps.scale == null) {
 				const maxWorld = v.width * 0.9;
-				const desired = maxWorld / geoWidthRef.current;
-				ref.current.scale.setScalar(Math.min(0.15, desired));
+				const desired = maxWorld / (geoWidthRef.current || 1);
+				ref.current.scale.setScalar(Math.min(0.15, Math.max(0.05, desired)));
 			}
 		}
 
@@ -210,7 +219,7 @@ const ModeWrapper = memo(function ModeWrapper({
 		[key: string]: unknown;
 	};
 
-	const geometry = nodes[geometryKey]?.geometry;
+	const geometry = nodes[geometryKey]?.geometry || fallbackGeometry;
 
 	return (
 		<>
@@ -315,7 +324,7 @@ function getNavDevice(): "mobile" | "tablet" | "desktop" {
 	return w <= NAV_DEVICE.mobile.max ? "mobile" : w <= NAV_DEVICE.tablet.max ? "tablet" : "desktop";
 }
 
-function NavItems({ items, textColor }: { items: NavItem[]; textColor: string }) {
+function NavItems({ items, textColor }: { items: FluidGlassNavItem[]; textColor: string }) {
 	const group = useRef<THREE.Group | null>(null);
 	const { viewport, camera } = useThree();
 
@@ -361,12 +370,10 @@ function NavItems({ items, textColor }: { items: NavItem[]; textColor: string })
 					color={textColor}
 					anchorX="center"
 					anchorY="middle"
-					depthWrite={false}
 					outlineWidth={0}
 					outlineBlur="20%"
 					outlineColor="#000"
 					outlineOpacity={0.5}
-					depthTest={false}
 					renderOrder={10}
 					onClick={(e: any) => {
 						e.stopPropagation();
@@ -423,10 +430,10 @@ function Images() {
 
 	return (
 		<group ref={group}>
-			<DreiImage position={[-2, 0, 0]} scale={[3, height / 1.1, 1]} url={IMAGE_URLS[0]} />
+			<DreiImage position={[-2, 0, 0]} scale={[3, height / 1.1]} url={IMAGE_URLS[0]} />
 			<DreiImage position={[2, 0, 3]} scale={3} url={IMAGE_URLS[1]} />
-			<DreiImage position={[-2.05, -height, 6]} scale={[1, 3, 1]} url={IMAGE_URLS[2]} />
-			<DreiImage position={[-0.6, -height, 9]} scale={[1, 2, 1]} url={IMAGE_URLS[3]} />
+			<DreiImage position={[-2.05, -height, 6]} scale={[1, 3]} url={IMAGE_URLS[2]} />
+			<DreiImage position={[-0.6, -height, 9]} scale={[1, 2]} url={IMAGE_URLS[3]} />
 			<DreiImage position={[0.75, -height, 10.5]} scale={1.5} url={IMAGE_URLS[4]} />
 		</group>
 	);

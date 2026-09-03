@@ -7,6 +7,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { FALLBACK_CAT_SVG } from "@/shared/lib/constants";
 
 export interface DriftWallItem {
 	image: string;
@@ -361,6 +362,9 @@ export const DriftWall = ({
 					loading="lazy"
 					decoding="async"
 					draggable={false}
+					onError={(e) => {
+						e.currentTarget.src = FALLBACK_CAT_SVG;
+					}}
 				/>
 				{item.selected && (
 					<span className="drift-wall__badge" aria-label="Selected">

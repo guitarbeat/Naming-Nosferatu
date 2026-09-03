@@ -1,4 +1,5 @@
-import type { ChangeEvent, ElementType } from "react";
+import type { LucideIcon } from "lucide-react";
+import type { ChangeEvent, ComponentType } from "react";
 import type { NameItem, RatingData } from "@/shared/types";
 
 export interface LeaderboardEntry {
@@ -12,7 +13,7 @@ export interface LeaderboardEntry {
 
 export interface QuickStat {
 	accent?: boolean;
-	icon: ElementType;
+	icon: LucideIcon | ComponentType<{ size?: number; className?: string }>;
 	label: string;
 	value: string | number;
 }

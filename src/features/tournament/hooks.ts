@@ -19,6 +19,7 @@ import type {
 	MatchRecord,
 	NameItem,
 	PersistentTournamentState,
+	RatingData,
 	Team,
 	TeamMatch,
 	TournamentMode,
@@ -83,10 +84,7 @@ export function useTimedState<T>(defaultValue: T) {
 // 2. useStreakCalculator Hook (Consolidated from useStreakCalculator.ts)
 // ============================================================================
 
-export function useStreakCalculator(
-	currentMatch: Match | null,
-	matchHistory: Array<{ match: Match; winner: string | number }>,
-) {
+export function useStreakCalculator(currentMatch: Match | null, matchHistory: MatchRecord[]) {
 	const calculateContestantStreak = useCallback(
 		(contestantId: string | number | null | undefined) =>
 			calculateWinStreak(contestantId, matchHistory),
@@ -706,6 +704,8 @@ interface UseTournamentStateResult {
 	isVoting: boolean;
 	handleVoteWithAnimation: (winnerId: string, loserId: string) => void;
 	matchHistory: MatchRecord[];
+	bracketEntrants?: string[];
+	teams?: Team[];
 	subscribeToTournamentUpdates?: (
 		tournamentId: string,
 		callback: (update: TournamentUpdate) => void,

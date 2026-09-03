@@ -6,6 +6,7 @@ import { useAuth } from "@/app/Providers";
 import AdminRoute from "@/app/routes/AdminRoute";
 import HomeRoute from "@/app/routes/HomeRoute";
 import { RouteFallback } from "@/shared/components";
+import { usePreloadImages } from "@/shared/hooks";
 import { ErrorManager } from "@/shared/lib/utils";
 import useAppStore, { useAppStoreInitialization } from "@/store";
 import { AppBootScreen, AppLayout } from "./AppComponents";
@@ -52,6 +53,9 @@ function AppShell() {
 }
 
 function App() {
+	// Pre-load critical images defined in the app shell
+	usePreloadImages();
+
 	const { user: authUser, isLoading } = useAuth();
 	const isStoreLoggedIn = useAppStore((state) => state.user.isLoggedIn);
 	const isBootLoading = useAppStore((state) => state.ui.isBootLoading);

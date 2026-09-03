@@ -15,9 +15,12 @@ import {
 import { getRandomCatImage } from "@/shared/lib/uiUtils";
 import { ErrorManager } from "@/shared/lib/utils";
 import type {
+	CatChosenName,
 	ErrorLog,
+	ErrorState,
 	NameItem,
 	RatingData,
+	SiteSettingsState,
 	ThemePreference,
 	ThemeValue,
 	TournamentState,

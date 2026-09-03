@@ -38,10 +38,13 @@ describe("Tournament LocalStorage Persistence", () => {
 			matchHistory: [
 				{
 					winner: "1",
+					loser: "2",
+					voteType: "standard",
 					matchNumber: 1,
-					round: 1,
+					roundNumber: 1,
 					timestamp: 123456789,
 					match: {
+						mode: "1v1",
 						left: "1",
 						right: "2",
 					},

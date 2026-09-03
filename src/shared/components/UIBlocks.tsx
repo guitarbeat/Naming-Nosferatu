@@ -174,7 +174,7 @@ export interface SearchFilterBarProps {
 	onSearchTermChange: (value: string) => void;
 	filterStatus: string;
 	filterOptions: readonly { value: string; label: string }[];
-	onFilterChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+	onFilterChange: (value: string) => void;
 	onRefresh: () => void;
 }
 
@@ -190,6 +190,10 @@ export function SearchFilterBar({
 
 	const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
 		onSearchTermChange(event.target.value);
+	};
+
+	const handleFilterChange = (event: ChangeEvent<HTMLSelectElement>) => {
+		onFilterChange(event.target.value);
 	};
 
 	const handleRefresh = () => {
@@ -229,7 +233,7 @@ export function SearchFilterBar({
 				<div className="relative">
 					<select
 						value={filterStatus}
-						onChange={onFilterChange}
+						onChange={handleFilterChange}
 						aria-label="Filter names by status"
 						className="h-10 bg-foreground/5 hover:bg-foreground/10 transition-colors rounded-xl px-4 pr-10 text-sm font-medium text-foreground appearance-none outline-none cursor-pointer border border-transparent focus:border-primary/40 focus:ring-2 focus:ring-primary/20"
 					>

@@ -7,7 +7,7 @@ import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getVisibleNames } from "@/shared/lib/names";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/shared/lib/uiUtils";
 import { hapticVoteTap } from "@/shared/lib/utils";
-import type { TournamentProps } from "@/shared/types";
+import type { MatchRecord, NameItem, Team, TournamentMode, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store";
 import { useTimedState, useTournamentState } from "./hooks";
 import { TournamentBracket, TournamentBracketModal } from "./TournamentBracket";
@@ -1110,7 +1110,7 @@ function getPressureCopy({
 	return "Momentum matters now. Protect a streak or torch the favorite.";
 }
 
-const EMPTY_NAMES: string[] = [];
+const EMPTY_NAMES: NameItem[] = [];
 
 function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: TournamentProps) {
 	const navigate = useNavigate();

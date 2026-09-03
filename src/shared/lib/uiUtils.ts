@@ -78,7 +78,7 @@ export function getRandomCatImage(
 // ============================================================================
 
 /**
- * Shared Tailwind class groups aligned with design tokens in src/styles/tokens.css.
+ * Shared Tailwind class groups aligned with design tokens in src/index.css.
  * Prefer these over ad-hoc border-white/10 and bg-black/15 patterns.
  */
 export const themeSurfaces = {

@@ -14,6 +14,7 @@ import { memo } from "react";
 import { MagicToggle } from "@/components/ui/MagicToggle";
 import type { EngagementMetrics, LeaderboardItem, SiteStats, UserStats } from "@/shared/api";
 import { Button, EmptyState, Loading } from "@/shared/components";
+import { FALLBACK_CAT_SVG } from "@/shared/lib/constants";
 import { MOTION_DURATIONS, MOTION_EASING, themeSurfaces } from "@/shared/lib/uiUtils";
 import type { DashboardTimeframe } from "../hooks";
 import type { QuickStat } from "../types";
@@ -39,17 +40,17 @@ export function getQuickStats({
 }): QuickStat[] {
 	if (userName && userStats) {
 		return [
-			{ label: "Ratings", value: userStats.totalRatings, icon: BarChart3 },
-			{ label: "Selected", value: userStats.totalSelections, icon: Target },
+			{ label: "Ratings", value: userStats.totalRatings ?? userStats.matches, icon: BarChart3 },
+			{ label: "Selected", value: userStats.totalSelections ?? userStats.matches, icon: Target },
 			{
 				label: "Wins",
-				value: userStats.totalWins,
+				value: userStats.totalWins ?? userStats.wins,
 				icon: Trophy,
 				accent: true,
 			},
 			{
 				label: "Win rate",
-				value: `${userStats.winRate}%`,
+				value: `${userStats.winRate ?? (userStats.matches > 0 ? Math.round((userStats.wins / userStats.matches) * 100) : 0)}%`,
 				icon: TrendingUp,
 				accent: true,
 			},
@@ -65,13 +66,13 @@ export function getQuickStats({
 			},
 			{
 				label: "Active names",
-				value: siteStats.activeNames,
+				value: siteStats.activeNames ?? siteStats.totalNames,
 				icon: Target,
 			},
 			{ label: "Users", value: siteStats.totalUsers, icon: Users },
 			{
 				label: "Average rating",
-				value: Math.round(siteStats.avgRating),
+				value: Math.round(siteStats.avgRating ?? 1500),
 				icon: TrendingUp,
 				accent: true,
 			},
@@ -111,6 +112,9 @@ export const DashboardHeader = memo(function DashboardHeader({
 									src={avatarUrl}
 									alt={userName}
 									className={`size-16 rounded-full object-cover ring-2 ring-primary/20 ${themeSurfaces.avatar}`}
+									onError={(e) => {
+										e.currentTarget.src = FALLBACK_CAT_SVG;
+									}}
 								/>
 							) : (
 								<div

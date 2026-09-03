@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { FALLBACK_CAT_SVG } from "@/shared/lib/constants";
 
 export interface StaggeredMenuItem {
 	label: string;
@@ -461,6 +462,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 							draggable={false}
 							width={110}
 							height={24}
+							onError={(e) => {
+								e.currentTarget.src = FALLBACK_CAT_SVG;
+							}}
 						/>
 					</div>
 				) : null}

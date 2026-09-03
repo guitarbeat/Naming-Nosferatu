@@ -12,7 +12,7 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import { CAT_IMAGES } from "@/shared/lib/constants";
+import { CAT_IMAGES, FALLBACK_CAT_IMAGE, FALLBACK_CAT_SVG } from "@/shared/lib/constants";
 import { themeSurfaces } from "@/shared/lib/uiUtils";
 import { cn, ErrorManager } from "@/shared/lib/utils";
 
@@ -170,14 +170,17 @@ function CatImage({
 	onError,
 }: CatImageProps) {
 	const [hasError, setHasError] = useState(false);
-	const fallbackUrl = CAT_IMAGES[0] ?? "/assets/images/cats/baby_cat.gif";
+	const [svgFallback, setSvgFallback] = useState(false);
+	const fallbackUrl = CAT_IMAGES[0] ?? FALLBACK_CAT_IMAGE;
 
-	const currentSrc = hasError || !src ? fallbackUrl : src;
+	const currentSrc = svgFallback ? FALLBACK_CAT_SVG : hasError || !src ? fallbackUrl : src;
 	const isLocalAsset = currentSrc.startsWith("/");
 
 	const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
 		if (!hasError && src !== fallbackUrl) {
 			setHasError(true);
+		} else if (!svgFallback) {
+			setSvgFallback(true);
 		}
 		onError?.(event);
 	};
@@ -191,7 +194,7 @@ function CatImage({
 		<div className={containerClassName} style={combinedStyle}>
 			<img
 				src={currentSrc}
-				alt={hasError ? "Fallback cat picture" : alt}
+				alt={hasError || svgFallback ? "Fallback cat picture" : alt}
 				className={imageClassName}
 				loading={loading}
 				decoding={decoding}
@@ -850,6 +853,9 @@ export const Loading: React.FC<LoadingProps> = memo(
 						alt=""
 						aria-hidden="true"
 						className="h-44 w-auto select-none object-contain opacity-95"
+						onError={(e) => {
+							e.currentTarget.src = FALLBACK_CAT_SVG;
+						}}
 					/>
 					{text && <p className="text-[10px] font-semibold tracking-wide text-white/35">{text}</p>}
 				</div>

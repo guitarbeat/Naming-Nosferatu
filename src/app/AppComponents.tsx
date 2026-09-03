@@ -9,6 +9,7 @@ import { NameSuggestion } from "@/features/tournament/TournamentSetup";
 import {
 	ErrorBoundary,
 	ErrorComponent,
+	Iridescence,
 	Loading,
 	Modal,
 	type NavItem,
@@ -17,6 +18,7 @@ import {
 	type StaggeredMenuItem,
 } from "@/shared/components";
 import { usePrefersReducedMotion } from "@/shared/hooks";
+import { FALLBACK_CAT_SVG } from "@/shared/lib/constants";
 import { scaleFadeMotionPreset } from "@/shared/lib/uiUtils";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/shared/lib/utils";
 import useAppStore from "@/store";
@@ -348,6 +350,9 @@ export function FloatingNavbar() {
 						src={avatarUrl}
 						alt={profileLabel}
 						className="h-5 w-5 rounded-full border border-foreground/15 object-cover"
+						onError={(e) => {
+							e.currentTarget.src = FALLBACK_CAT_SVG;
+						}}
 					/>
 				) : (
 					<User
@@ -491,8 +496,16 @@ export function AppLayout({ children }: AppLayoutProps) {
 
 	return (
 		<ErrorBoundary context="Main Application Layout">
-			<div className="app relative min-h-dvh w-full text-foreground">
-				<div className="app-ambient" aria-hidden="true" />
+			<div className="app relative min-h-dvh w-full text-foreground overflow-x-hidden">
+				<div className="app-ambient" aria-hidden="true">
+					<Iridescence
+						color={[0.45, 0.22, 0.7]}
+						speed={0.75}
+						amplitude={0.12}
+						mouseReact={true}
+						className="w-full h-full opacity-60"
+					/>
+				</div>
 				<PwaInstallPrompt />
 				<OfflineIndicator />
 
@@ -506,7 +519,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 				<FloatingNavbar />
 				<main
 					id="main-content"
-					className="app-main relative flex w-full flex-col pt-0"
+					className="app-main relative z-10 flex w-full flex-col pt-0"
 					tabIndex={-1}
 				>
 					{Boolean(errors.current) && (

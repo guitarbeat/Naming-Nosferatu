@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Cat Images
+// Cat Images & Fallback Assets
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const CAT_IMAGES = [
@@ -17,6 +17,43 @@ export const CAT_IMAGES = [
 	"/assets/images/cats/cat_12.webp",
 	"/assets/images/cats/cat_13.webp",
 	"/assets/images/cats/cat_14.webp",
+] as const;
+
+/**
+ * Bulletproof inline SVG data URI fallback for images to prevent browser broken-image icons.
+ */
+export const FALLBACK_CAT_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
+	`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <rect width="100" height="100" rx="20" fill="#18181b"/>
+  <path d="M28 44L20 26C19.5 25 21 24 22 24.5L36 32C40 30.5 44.8 29.5 50 29.5C55.2 29.5 60 30.5 64 32L78 24.5C79 24 80.5 25 80 26L72 44C76 48.5 78 54 78 60C78 74 65.5 84 50 84C34.5 84 22 74 22 60C22 54 24 48.5 28 44Z" fill="#27272a" stroke="#52525b" stroke-width="2"/>
+  <circle cx="38" cy="54" r="4.5" fill="#a1a1aa"/>
+  <circle cx="62" cy="54" r="4.5" fill="#a1a1aa"/>
+  <polygon points="50,62 46,67 54,67" fill="#f43f5e"/>
+  <path d="M46 67 Q50 71 54 67" stroke="#71717a" stroke-width="1.5" fill="none"/>
+</svg>`,
+)}`;
+
+/**
+ * Primary local fallback image path.
+ */
+export const FALLBACK_CAT_IMAGE = "/assets/images/ui/cat_avatar_placeholder.png";
+
+/**
+ * Critical images required by the app shell (navigation, persona selectors, loading screens, and primary avatars).
+ */
+export const CRITICAL_SHELL_IMAGES = [
+	"/assets/images/ui/cat_avatar_placeholder.png",
+	"/assets/images/ui/favicon.png",
+	"/assets/images/ui/loading_preview.png",
+	"/assets/images/ui/cat_graphic_hd.png",
+	"/assets/logos/reactbits-gh-white.svg",
+	"/assets/images/cats/baby_cat.gif",
+	"/assets/images/cats/cat.gif",
+	"/assets/images/cats/cat_01.webp",
+	"/assets/images/cats/cat_02.webp",
+	"/assets/images/cats/cat_03.webp",
+	"/assets/images/cats/cat_04.webp",
+	"/assets/images/cats/cat_05.webp",
 ] as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════

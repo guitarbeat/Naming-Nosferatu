@@ -3,7 +3,7 @@ import { Award, Check, Crown, Flame, LogOut, Pencil, Shield, Trophy, User } from
 import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Button, Input } from "@/shared/components/LayoutBlocks";
-import { CAT_IMAGES } from "@/shared/lib/constants";
+import { CAT_IMAGES, FALLBACK_CAT_IMAGE, FALLBACK_CAT_SVG } from "@/shared/lib/constants";
 import { cn, ErrorManager } from "@/shared/lib/utils";
 import useAppStore from "@/store";
 
@@ -198,7 +198,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 	const user = useAppStore((s) => s.user);
 	const userActions = useAppStore((s) => s.userActions);
 	const tournament = useAppStore((s) => s.tournament);
-	const defaultAvatar = CAT_IMAGES[0] ?? "";
+	const defaultAvatar = CAT_IMAGES[0] ?? FALLBACK_CAT_IMAGE;
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const [editedName, setEditedName] = useState(user.name || "");
 	const [saveError, setSaveError] = useState<string | null>(null);
@@ -305,7 +305,9 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 							src={avatarSrc}
 							alt="Profile avatar"
 							className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
-							onError={() => setAvatarSrc(defaultAvatar)}
+							onError={() =>
+								setAvatarSrc((prev) => (prev === defaultAvatar ? FALLBACK_CAT_SVG : defaultAvatar))
+							}
 						/>
 						<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[11px] font-bold tracking-wider uppercase">
 							Change
@@ -366,6 +368,9 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 										src={imgUrl}
 										alt={`Avatar option ${idx + 1}`}
 										className="size-full object-cover"
+										onError={(e) => {
+											e.currentTarget.src = FALLBACK_CAT_SVG;
+										}}
 									/>
 									{isSelected && (
 										<div className="absolute inset-0 bg-primary/20 flex items-center justify-center">

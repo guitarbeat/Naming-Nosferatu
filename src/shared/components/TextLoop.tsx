@@ -3,8 +3,7 @@ import type React from "react";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 const DEFAULT_VIEW_W = 1920;
-const VIEW_H = 500;
-const EDGE_PAD = 10;
+const EDGE_PAD = 8;
 
 export type TextLoopShape = "wave" | "circle" | "infinity" | "arch" | "line";
 export type TextLoopDirection = "forward" | "reverse";
@@ -30,16 +29,36 @@ export interface TextLoopProps {
 	style?: React.CSSProperties;
 }
 
+export const computeViewHeight = (
+	shape: TextLoopShape,
+	curviness: number,
+	ribbonWidth: number,
+	fontSize: number,
+): number => {
+	const c = Math.max(0, curviness);
+	const rw = Math.max(16, ribbonWidth);
+	const fs = Math.max(12, fontSize);
+	if (shape === "line") {
+		return Math.max(48, Math.round(rw + fs + 16));
+	}
+	if (shape === "circle" || shape === "infinity") {
+		return Math.max(240, Math.round(c * 2 + rw * 2 + 48));
+	}
+	// wave or arch:
+	return Math.max(64, Math.round(c * 1.35 + rw + fs + 20));
+};
+
 const buildPath = (
 	shape: TextLoopShape,
 	curviness: number,
 	ribbonWidth: number,
 	viewWidth = DEFAULT_VIEW_W,
+	viewHeight = 100,
 ): string => {
 	const c = Math.max(0, curviness);
-	const cy = VIEW_H / 2;
+	const cy = viewHeight / 2;
 	const cx = viewWidth / 2;
-	const room = Math.max(20, cy - Math.max(0, ribbonWidth) / 2 - EDGE_PAD);
+	const room = Math.max(10, cy - Math.max(0, ribbonWidth) / 2 - EDGE_PAD);
 
 	switch (shape) {
 		case "circle": {
@@ -146,9 +165,14 @@ export const TextLoop = ({
 		return () => observer.disconnect();
 	}, []);
 
+	const viewHeight = useMemo(
+		() => computeViewHeight(shape, curviness, ribbonWidth, fontSize),
+		[shape, curviness, ribbonWidth, fontSize],
+	);
+
 	const d = useMemo(
-		() => path || buildPath(shape, curviness, ribbonWidth, viewWidth),
-		[path, shape, curviness, ribbonWidth, viewWidth],
+		() => path || buildPath(shape, curviness, ribbonWidth, viewWidth, viewHeight),
+		[path, shape, curviness, ribbonWidth, viewWidth, viewHeight],
 	);
 
 	const unit = useMemo(() => {
@@ -302,10 +326,11 @@ export const TextLoop = ({
 		<div ref={rootRef} className={`text-loop ${className}`.trim()} style={style}>
 			<svg
 				className="text-loop-svg"
-				viewBox={`0 0 ${viewWidth} ${VIEW_H}`}
+				viewBox={`0 0 ${viewWidth} ${viewHeight}`}
 				preserveAspectRatio="xMidYMid meet"
 				role="img"
 				aria-label={text}
+				style={{ height: `${viewHeight}px`, width: "100%" }}
 			>
 				<defs>
 					{isGlassRibbon && (
@@ -316,7 +341,7 @@ export const TextLoop = ({
 								x="-200"
 								y="-200"
 								width={viewWidth + 400}
-								height={VIEW_H + 400}
+								height={viewHeight + 400}
 								filterUnits="userSpaceOnUse"
 							>
 								<feGaussianBlur in="SourceAlpha" stdDeviation={10} result="shadowBlur" />
