@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { type ChangeEvent, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
 	type EngagementMetrics,
 	type LeaderboardItem,
@@ -78,8 +78,8 @@ export function useAdminDashboard() {
 		[deleteName],
 	);
 
-	const handleFilterChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-		const option = FILTER_OPTIONS.find((item) => item.value === event.target.value);
+	const handleFilterChange = useCallback((value: string) => {
+		const option = FILTER_OPTIONS.find((item) => item.value === value);
 		if (option) {
 			setFilterStatus(option.value);
 		}
