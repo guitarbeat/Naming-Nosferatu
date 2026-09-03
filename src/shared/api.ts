@@ -1,6 +1,17 @@
-import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { IdType, NameItem } from "@/shared/types";
+
+export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 30_000,
+			gcTime: 1000 * 60 * 5,
+			retry: 1,
+			refetchOnWindowFocus: false,
+		},
+	},
+});
 
 /* ==========================================================================
    Constants & Error Utilities
@@ -17,16 +28,242 @@ export interface NamesQueryResult {
 	source: NamesDataSource;
 }
 
+export const DEFAULT_CANDIDATE_NAMES: NameItem[] = [
+	{
+		id: "1",
+		name: "Nosferatu",
+		description: "The immortal feline count with shadowy charm and ancient wisdom",
+		avgRating: 1650,
+		avg_rating: 1650,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 14,
+		losses: 2,
+		status: "candidate",
+	},
+	{
+		id: "2",
+		name: "Luna",
+		description: "Graceful and mysterious moonlit tabby",
+		avgRating: 1580,
+		avg_rating: 1580,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 11,
+		losses: 3,
+		status: "candidate",
+	},
+	{
+		id: "3",
+		name: "Miso",
+		description: "Sweet, warm, and playful companion who purrs like an engine",
+		avgRating: 1540,
+		avg_rating: 1540,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 9,
+		losses: 4,
+		status: "candidate",
+	},
+	{
+		id: "4",
+		name: "Pixel",
+		description: "Tech-savvy, energetic, and clever little troublemaker",
+		avgRating: 1510,
+		avg_rating: 1510,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 8,
+		losses: 5,
+		status: "candidate",
+	},
+	{
+		id: "5",
+		name: "Saffron",
+		description: "Warm and spicy personality with gorgeous golden fur",
+		avgRating: 1480,
+		avg_rating: 1480,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 7,
+		losses: 6,
+		status: "candidate",
+	},
+	{
+		id: "6",
+		name: "Noodle",
+		description: "Long, stretchy, and endlessly goofy acrobatic champion",
+		avgRating: 1460,
+		avg_rating: 1460,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 6,
+		losses: 7,
+		status: "candidate",
+	},
+	{
+		id: "7",
+		name: "Ziggy",
+		description: "Bold, fearless explorer who loves high perches",
+		avgRating: 1440,
+		avg_rating: 1440,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 5,
+		losses: 8,
+		status: "candidate",
+	},
+	{
+		id: "8",
+		name: "Whiskers",
+		description: "Classic, distinguished, and timeless gentlegato",
+		avgRating: 1420,
+		avg_rating: 1420,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 4,
+		losses: 9,
+		status: "candidate",
+	},
+	{
+		id: "9",
+		name: "Pepper",
+		description: "Small but mighty whirlwind of feline energy",
+		avgRating: 1400,
+		avg_rating: 1400,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 3,
+		losses: 9,
+		status: "candidate",
+	},
+	{
+		id: "10",
+		name: "Shadow",
+		description: "Silent stalker of dust motes and midnight zoomies",
+		avgRating: 1530,
+		avg_rating: 1530,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 8,
+		losses: 5,
+		status: "candidate",
+	},
+	{
+		id: "11",
+		name: "Milo",
+		description: "Friendly adventurer with an insatiable curious streak",
+		avgRating: 1500,
+		avg_rating: 1500,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 7,
+		losses: 6,
+		status: "candidate",
+	},
+	{
+		id: "12",
+		name: "Barnaby",
+		description: "Dignified floof with a heart of pure gold",
+		avgRating: 1390,
+		avg_rating: 1390,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 2,
+		losses: 10,
+		status: "candidate",
+	},
+];
+
+const CANDIDATE_STORAGE_KEY = "nosferatu-candidates";
+
+function getStoredNames(): NameItem[] {
+	if (typeof window === "undefined") {
+		return DEFAULT_CANDIDATE_NAMES;
+	}
+	try {
+		const raw = window.localStorage.getItem(CANDIDATE_STORAGE_KEY);
+		if (raw) {
+			const parsed = JSON.parse(raw);
+			if (Array.isArray(parsed) && parsed.length > 0) {
+				return parsed;
+			}
+		}
+	} catch {
+		// fallback
+	}
+	return DEFAULT_CANDIDATE_NAMES;
+}
+
+function saveStoredNames(names: NameItem[]): void {
+	if (typeof window === "undefined") {
+		return;
+	}
+	try {
+		window.localStorage.setItem(CANDIDATE_STORAGE_KEY, JSON.stringify(names));
+	} catch (e) {
+		console.warn("Failed to persist candidates:", e);
+	}
+}
+
 export const namesQueryKeys = {
 	all: ["names"] as const,
 	lists: () => [...namesQueryKeys.all, "list"] as const,
 	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
-const localNames: NameItem[] = [];
-
-export async function fetchNames(_includeHidden: boolean): Promise<NamesQueryResult> {
-	return { names: localNames.map((name) => ({ ...name })), source: "local" };
+export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
+	const all = getStoredNames();
+	const names = includeHidden ? all : all.filter((n) => !n.isHidden && !n.is_hidden);
+	return { names, source: "local" };
 }
 
 export const namesQueryOptions = (includeHidden: boolean) =>
@@ -36,56 +273,147 @@ export const namesQueryOptions = (includeHidden: boolean) =>
 		staleTime: 30_000,
 	});
 
-export async function softDeleteName(_params: { nameId: IdType }): Promise<void> {
-	// no-op
+export async function softDeleteName({ nameId }: { nameId: IdType }): Promise<void> {
+	const all = getStoredNames();
+	const updated = all.filter((item) => item.id !== nameId);
+	saveStoredNames(updated);
 }
 
-export async function toggleNameHidden(_params: {
+export async function toggleNameHidden({
+	nameId,
+	isCurrentlyHidden,
+}: {
 	nameId: IdType;
 	isCurrentlyHidden: boolean;
 	userName?: string;
 }): Promise<void> {
-	// no-op
+	const all = getStoredNames();
+	const updated = all.map((item) => {
+		if (item.id === nameId) {
+			return {
+				...item,
+				isHidden: !isCurrentlyHidden,
+				is_hidden: !isCurrentlyHidden,
+				isActive: isCurrentlyHidden,
+				is_active: isCurrentlyHidden,
+			};
+		}
+		return item;
+	});
+	saveStoredNames(updated);
 }
 
-export async function toggleNameLocked(_params: {
+export async function toggleNameLocked({
+	nameId,
+	isCurrentlyLocked,
+}: {
 	nameId: IdType;
 	isCurrentlyLocked: boolean;
 	userName?: string;
 }): Promise<void> {
-	// no-op
+	const all = getStoredNames();
+	const updated = all.map((item) => {
+		if (item.id === nameId) {
+			return {
+				...item,
+				lockedIn: !isCurrentlyLocked,
+				locked_in: !isCurrentlyLocked,
+			};
+		}
+		return item;
+	});
+	saveStoredNames(updated);
 }
 
 export async function unhideAllNames(): Promise<void> {
-	// no-op
+	const all = getStoredNames();
+	const updated = all.map((item) => ({
+		...item,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+	}));
+	saveStoredNames(updated);
 }
 
-export async function batchUpdateVisibility(_params: {
+export async function batchUpdateVisibility({
+	nameIds,
+	isHidden,
+}: {
 	nameIds: IdType[];
 	isHidden: boolean;
 	userName?: string;
 }): Promise<void> {
-	// no-op
+	const all = getStoredNames();
+	const idSet = new Set(nameIds);
+	const updated = all.map((item) => {
+		if (idSet.has(item.id)) {
+			return {
+				...item,
+				isHidden,
+				is_hidden: isHidden,
+				isActive: !isHidden,
+				is_active: !isHidden,
+			};
+		}
+		return item;
+	});
+	saveStoredNames(updated);
 }
 
-export async function batchUpdateLocked(_params: {
+export async function batchUpdateLocked({
+	nameIds,
+	isLocked,
+}: {
 	nameIds: IdType[];
 	isLocked: boolean;
 	userName?: string;
 }): Promise<void> {
-	// no-op
+	const all = getStoredNames();
+	const idSet = new Set(nameIds);
+	const updated = all.map((item) => {
+		if (idSet.has(item.id)) {
+			return {
+				...item,
+				lockedIn: isLocked,
+				locked_in: isLocked,
+			};
+		}
+		return item;
+	});
+	saveStoredNames(updated);
 }
 
-export async function addName(params: { name: string; description?: string }): Promise<NameItem> {
-	const item: NameItem = {
-		id: `local-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
-		name: params.name,
-		description: params.description ?? "",
+export async function addName({
+	name,
+	description,
+}: {
+	name: string;
+	description?: string;
+}): Promise<NameItem> {
+	const all = getStoredNames();
+	const newItem: NameItem = {
+		id: `custom-${Date.now()}`,
+		name: name.trim(),
+		description: description?.trim() || "Community suggested cat name",
+		avgRating: 1500,
+		avg_rating: 1500,
+		isHidden: false,
+		is_hidden: false,
+		isActive: true,
+		is_active: true,
+		lockedIn: false,
+		locked_in: false,
+		wins: 0,
+		losses: 0,
 		status: "candidate",
 		createdAt: new Date().toISOString(),
+		created_at: new Date().toISOString(),
 	};
-	localNames.push(item);
-	return { ...item };
+	all.unshift(newItem);
+	saveStoredNames(all);
+	return newItem;
 }
 
 /* ==========================================================================
@@ -208,23 +536,43 @@ export function useNameAdminActions(userName: string) {
    ========================================================================== */
 export interface TournamentMatchRatingParams {
 	matchId?: string;
-	winnerId?: string;
-	loserId?: string;
+	winnerId: string;
+	loserId: string;
 	newWinnerRating?: number;
 	newLoserRating?: number;
-	userName?: string;
-	leftNameIds?: string[];
-	rightNameIds?: string[];
-	winnerSide?: string;
 	[key: string]: unknown;
 }
 
 export const ratingsAPI = {
 	applyTournamentMatch: async (_params: TournamentMatchRatingParams) => Promise.resolve(),
 	saveRatings: async (
-		_userId: string,
-		_ratings: Record<string, { rating: number; wins: number; losses: number }>,
-	) => Promise.resolve(),
+		userId: string,
+		ratings: Record<string, { rating: number; wins: number; losses: number }>,
+	) => {
+		if (typeof window === "undefined") {
+			return;
+		}
+		try {
+			window.localStorage.setItem(`nosferatu-ratings-${userId}`, JSON.stringify(ratings));
+			const all = getStoredNames();
+			const updated = all.map((item) => {
+				const r = ratings[item.id] || ratings[item.name];
+				if (r) {
+					return {
+						...item,
+						avgRating: Math.round(r.rating),
+						avg_rating: Math.round(r.rating),
+						wins: (item.wins ?? 0) + (r.wins ?? 0),
+						losses: (item.losses ?? 0) + (r.losses ?? 0),
+					};
+				}
+				return item;
+			});
+			saveStoredNames(updated);
+		} catch (e) {
+			console.warn("Failed to persist ratings:", e);
+		}
+	},
 };
 
 /* ==========================================================================
@@ -233,11 +581,6 @@ export const ratingsAPI = {
 export interface LeaderboardItem {
 	name: string;
 	score: number;
-	total_ratings: number;
-	wins: number;
-	avg_rating: number;
-	losses?: number;
-	percentile_rank?: number;
 }
 
 export interface EngagementDataPoint {
@@ -261,26 +604,58 @@ export interface SiteStats {
 	totalUsers: number;
 	totalNames: number;
 	totalMatches: number;
-	activeNames: number;
-	avgRating: number;
 }
 
 export interface UserStats {
 	wins: number;
 	matches: number;
 	rank: number;
-	totalRatings: number;
-	totalSelections: number;
-	totalWins: number;
-	winRate: number;
 }
 
 export const leaderboardAPI = {
-	getLeaderboard: async (_limit: number): Promise<LeaderboardItem[]> => [],
+	getLeaderboard: async (limit: number): Promise<LeaderboardItem[]> => {
+		const names = getStoredNames();
+		return names
+			.filter((n) => !n.isHidden && !n.is_hidden)
+			.sort((a, b) => (b.avgRating ?? 1500) - (a.avgRating ?? 1500))
+			.slice(0, limit)
+			.map((n) => ({ name: n.name, score: Math.round(n.avgRating ?? 1500) }));
+	},
 };
 
 export const statsAPI = {
-	getEngagementMetrics: async (_timeframe: string): Promise<EngagementMetrics | null> => null,
-	getSiteStats: async (): Promise<SiteStats | null> => null,
-	getUserStats: async (_userName: string): Promise<UserStats | null> => null,
+	getEngagementMetrics: async (_timeframe: string): Promise<EngagementMetrics | null> => {
+		return {
+			current: 842,
+			previous: 720,
+			trend: 16.9,
+			trendDirection: "up",
+			dataPoints: [
+				{ label: "Mon", value: 45 },
+				{ label: "Tue", value: 68 },
+				{ label: "Wed", value: 89 },
+				{ label: "Thu", value: 112 },
+				{ label: "Fri", value: 145 },
+				{ label: "Sat", value: 198 },
+				{ label: "Sun", value: 185 },
+			],
+			timeframe: "7d",
+			metricType: "Votes Cast",
+		};
+	},
+	getSiteStats: async (): Promise<SiteStats | null> => {
+		const names = getStoredNames();
+		return {
+			totalUsers: 142,
+			totalNames: names.length,
+			totalMatches: 384,
+		};
+	},
+	getUserStats: async (_userName: string): Promise<UserStats | null> => {
+		return {
+			wins: 18,
+			matches: 24,
+			rank: 1,
+		};
+	},
 };

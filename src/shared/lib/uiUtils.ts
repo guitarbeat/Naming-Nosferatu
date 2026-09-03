@@ -21,7 +21,10 @@ const imageCache = new Map<string, string>();
 const MAX_IMAGE_CACHE_SIZE = 500;
 
 const NAME_IMAGE_MAPPING: Record<string, string> = {
+	Nosferatu: CAT_IMAGES[8],
+	Shadow: CAT_IMAGES[9],
 	Luna: CAT_IMAGES[0],
+	Milo: CAT_IMAGES[10],
 	Miso: CAT_IMAGES[1],
 	Pixel: CAT_IMAGES[2],
 	Saffron: CAT_IMAGES[3],
@@ -29,6 +32,7 @@ const NAME_IMAGE_MAPPING: Record<string, string> = {
 	Ziggy: CAT_IMAGES[5],
 	Whiskers: CAT_IMAGES[6],
 	Pepper: CAT_IMAGES[7],
+	Barnaby: CAT_IMAGES[11],
 };
 
 /**

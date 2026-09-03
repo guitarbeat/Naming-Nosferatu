@@ -1,19 +1,180 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Loader2, Search, X } from "lucide-react";
-import { type ChangeEvent, memo } from "react";
-import { MagicToggle } from "@/components/ui/MagicToggle";
-import { Button, Input, Loading } from "@/shared/components/LayoutBlocks";
-import { hapticNavTap } from "@/shared/lib/utils";
+import { Loader2, Search } from "lucide-react";
+import { type ChangeEvent, memo, type ReactNode } from "react";
+import { Button, Loading } from "@/shared/components/LayoutBlocks";
+import { cn, hapticNavTap } from "@/shared/lib/utils";
 
-export * from "./FloatingNav";
 export * from "./ProfileWidget";
+
+export type NavItem = {
+	id: string;
+	label: string;
+	icon: ReactNode;
+	isActive?: boolean;
+	isAccent?: boolean;
+	hasBadge?: boolean;
+	badgeContent?: ReactNode;
+	onClick: () => void;
+};
+
+export const FloatingNav = memo(function FloatingNav({ items }: { items: NavItem[] }) {
+	const shouldReduceMotion = useReducedMotion();
+	const visibleItems = items.slice(0, 5);
+
+	return (
+		<motion.nav
+			aria-label="Main Navigation"
+			initial={shouldReduceMotion ? false : { y: 30, opacity: 0, scale: 0.95 }}
+			animate={{ y: 0, opacity: 1, scale: 1 }}
+			transition={{ type: "spring", stiffness: 400, damping: 30 }}
+			className="floating-navbar-frame"
+		>
+			<div className="floating-navbar-shell relative flex items-center p-1.5 sm:p-2 rounded-full">
+				<div className="nav-menu relative flex items-center justify-center gap-1.5 sm:gap-2 z-10">
+					{visibleItems.map((item) => {
+						const isActive = Boolean(item.isActive);
+						const isAccent = Boolean(item.isAccent);
+						const hasBadge = Boolean(item.hasBadge);
+
+						return (
+							<motion.button
+								key={item.id}
+								type="button"
+								onClick={() => {
+									hapticNavTap();
+									item.onClick();
+								}}
+								whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
+								whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+								className={cn(
+									"group relative inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary select-none cursor-pointer floating-nav-button",
+									isActive
+										? "floating-nav-button--active px-4 py-2 sm:px-5 sm:py-2.5 gap-2"
+										: "p-2 sm:p-2.5 text-muted-foreground",
+									!isActive && isAccent ? "floating-nav-button--accent" : "",
+								)}
+								aria-label={item.label}
+								title={item.label}
+								aria-current={isActive ? "page" : undefined}
+							>
+								<span
+									className={cn(
+										"relative z-10 flex items-center justify-center shrink-0 transition-colors duration-200 floating-nav-icon",
+										isActive && "text-[var(--nav-text)]",
+									)}
+								>
+									{item.icon}
+								</span>
+								{isActive && (
+									<span className="relative z-10 whitespace-nowrap tracking-normal font-semibold text-[var(--nav-text)] text-xs sm:text-sm pl-0.5">
+										{item.label}
+									</span>
+								)}
+								{hasBadge && !isActive && (
+									<span className="absolute top-1 right-1.5 sm:top-1.5 sm:right-2 flex size-2 z-20">
+										<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+										<span className="relative inline-flex size-2 rounded-full bg-accent ring-2 ring-card" />
+										{item.badgeContent && <span className="sr-only">{item.badgeContent}</span>}
+									</span>
+								)}
+							</motion.button>
+						);
+					})}
+				</div>
+			</div>
+		</motion.nav>
+	);
+});
+
+export interface MagicToggleOption<T extends string> {
+	value: T;
+	label: string;
+	icon?: ReactNode;
+}
+
+export interface MagicToggleProps<T extends string> {
+	options: readonly MagicToggleOption<T>[];
+	value: T;
+	onChange: (value: T) => void;
+	ariaLabel?: string;
+	size?: "small" | "default";
+}
+
+export function MagicToggle<T extends string>({
+	options,
+	value,
+	onChange,
+	ariaLabel,
+	size = "default",
+}: MagicToggleProps<T>) {
+	return (
+		<div
+			className={`relative inline-flex items-center w-full sm:w-auto ${size === "small" ? "p-1" : "p-1.5"} bg-white/5 dark:bg-black/40 backdrop-blur-xl ${size === "small" ? "rounded-xl" : "rounded-2xl"} border border-white/10 shadow-xl`}
+			role="tablist"
+			aria-label={ariaLabel}
+		>
+			<motion.div
+				className={`absolute ${size === "small" ? "inset-y-1 rounded-md" : "inset-y-1.5 rounded-lg"} bg-primary/20 border border-primary/30 pointer-events-none`}
+				initial={false}
+				animate={{
+					x: `calc(${options.findIndex((o) => o.value === value) * 100}% + ${options.findIndex((o) => o.value === value) * (size === "small" ? 2 : 4)}px)`,
+					width: `calc(${100 / options.length}% - ${size === "small" ? 2 : 4}px)`,
+				}}
+				transition={{
+					type: "spring",
+					stiffness: 500,
+					damping: 20,
+					mass: 0.8,
+				}}
+			/>
+			{options.map((option) => {
+				const isSelected = value === option.value;
+				return (
+					<button
+						key={option.value}
+						type="button"
+						role="tab"
+						aria-selected={isSelected}
+						onClick={() => {
+							hapticNavTap();
+							onChange(option.value);
+						}}
+						className={`relative flex-1 ${size === "small" ? "px-3 py-1.5 text-xs" : "px-5 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm"} font-semibold tracking-wide transition-colors z-10 ${size === "small" ? "rounded-md" : "rounded-lg"} ${
+							isSelected
+								? "text-primary-foreground font-bold"
+								: "text-muted-foreground hover:text-foreground"
+						}`}
+					>
+						<div className="flex items-center justify-center gap-2">
+							{option.icon && (
+								<motion.span
+									className="flex items-center justify-center"
+									animate={{
+										scale: isSelected ? [1, 1.15, 1] : 1,
+									}}
+									transition={{
+										duration: 0.3,
+										ease: "easeInOut",
+									}}
+								>
+									{option.icon}
+								</motion.span>
+							)}
+							<span>{option.label}</span>
+						</div>
+					</button>
+				);
+			})}
+		</div>
+	);
+}
 
 export interface SearchFilterBarProps {
 	searchTerm: string;
 	onSearchTermChange: (value: string) => void;
 	filterStatus: string;
 	filterOptions: readonly { value: string; label: string }[];
-	onFilterChange: (value: string) => void;
+	onFilterChange: (event: ChangeEvent<HTMLSelectElement>) => void;
 	onRefresh: () => void;
 }
 
@@ -49,48 +210,55 @@ export function SearchFilterBar({
 			}}
 		>
 			<div className="flex-1 w-full relative flex items-center min-w-0">
-				<div className="absolute left-0 pl-4 pr-3 text-muted-foreground transition-colors group-focus-within:text-primary z-20 pointer-events-none">
+				<div className="pl-4 pr-3 text-muted-foreground transition-colors group-focus-within:text-primary">
 					<Search size={18} />
 				</div>
-				<Input
+				<input
 					type="text"
 					placeholder="Search names..."
 					value={searchTerm}
 					onChange={handleSearchChange}
 					aria-label="Search names"
-					className="w-full pl-11 pr-10 bg-transparent border-none outline-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-transparent text-sm sm:text-base text-foreground"
+					className="w-full h-12 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground border-none outline-none ring-0 min-w-0"
 				/>
-				{searchTerm ? (
-					<button
-						type="button"
-						onClick={() => {
-							hapticNavTap();
-							onSearchTermChange("");
-						}}
-						aria-label="Clear search"
-						title="Clear search"
-						className="absolute right-2 z-20 inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-					>
-						<X size={16} className="pointer-events-none" />
-					</button>
-				) : null}
 			</div>
 
 			<div className="w-px h-8 bg-border/20 hidden sm:block mx-1" />
 
 			<div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-border/10 sm:border-t-0 shrink-0 px-2 sm:px-0 pb-1 sm:pb-0">
-				<MagicToggle
-					options={filterOptions}
-					value={filterStatus}
-					onChange={onFilterChange}
-					ariaLabel="Filter names by status"
-					size="small"
-				/>
+				<div className="relative">
+					<select
+						value={filterStatus}
+						onChange={onFilterChange}
+						aria-label="Filter names by status"
+						className="h-10 bg-foreground/5 hover:bg-foreground/10 transition-colors rounded-xl px-4 pr-10 text-sm font-medium text-foreground appearance-none outline-none cursor-pointer border border-transparent focus:border-primary/40 focus:ring-2 focus:ring-primary/20"
+					>
+						{filterOptions.map((option) => (
+							<option
+								key={option.value}
+								value={option.value}
+								className="bg-background text-foreground"
+							>
+								{option.label}
+							</option>
+						))}
+					</select>
+					<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground">
+						<svg
+							className="h-4 w-4 fill-current"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 20 20"
+							aria-hidden="true"
+						>
+							<path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+						</svg>
+					</div>
+				</div>
 
 				<Button
 					onClick={handleRefresh}
 					variant="primary"
-					className="h-9 w-9 sm:w-9 p-0 shrink-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
+					className="h-10 w-10 sm:w-10 p-0 shrink-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95"
 					aria-label="Refresh list"
 					title="Refresh list"
 				>
@@ -115,15 +283,15 @@ export const SectionHeading = memo(function SectionHeading({
 	subtitle?: string;
 }) {
 	return (
-		<div className="mx-auto mb-6 flex w-full max-w-2xl flex-col items-center text-center sm:mb-8">
+		<div className="mx-auto mb-4 sm:mb-6 flex w-full max-w-2xl flex-col items-center text-center">
 			<h2
 				id={id}
-				className="font-display font-bold leading-[0.96] tracking-[-0.03em] text-foreground"
+				className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight tracking-tight text-foreground"
 			>
 				{title}
 			</h2>
 			{subtitle && (
-				<p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+				<p className="mx-auto mt-2 max-w-xl text-xs sm:text-sm md:text-base leading-relaxed text-muted-foreground">
 					{subtitle}
 				</p>
 			)}

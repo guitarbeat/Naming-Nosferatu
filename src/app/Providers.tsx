@@ -9,9 +9,44 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { STORAGE_KEYS } from "@/shared/lib/constants";
+import { getStorageString, removeStorageItem, setStorageString } from "@/shared/lib/storage";
 
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;
+
+export type { AuthAdapter, AuthUser, LoginCredentials, RegisterData };
+
+export const localAuthAdapter: AuthAdapter = {
+	getCurrentUser: async (): Promise<AuthUser | null> => {
+		const name = getStorageString(STORAGE_KEYS.USER);
+		const id = getStorageString(STORAGE_KEYS.USER_ID);
+		if (!name || !id) {
+			return null;
+		}
+		return { id, name, isAdmin: name.toLowerCase() === "admin" };
+	},
+	login: async (credentials: LoginCredentials): Promise<boolean> => {
+		const name = credentials.name || credentials.email?.split("@")[0] || "Guest";
+		const id = `local-usr-${Date.now()}`;
+		setStorageString(STORAGE_KEYS.USER, name);
+		setStorageString(STORAGE_KEYS.USER_ID, id);
+		return true;
+	},
+	logout: async (): Promise<void> => {
+		removeStorageItem(STORAGE_KEYS.USER);
+		removeStorageItem(STORAGE_KEYS.USER_ID);
+	},
+	register: async (data: RegisterData): Promise<void> => {
+		const name = data.name || data.email?.split("@")[0] || "Guest";
+		const id = `local-usr-${Date.now()}`;
+		setStorageString(STORAGE_KEYS.USER, name);
+		setStorageString(STORAGE_KEYS.USER_ID, id);
+	},
+	checkAdminStatus: async (userIdOrName: string): Promise<boolean> => {
+		return userIdOrName.toLowerCase() === "admin";
+	},
+};
 
 interface ProvidersProps {
 	children: ReactNode;
@@ -31,7 +66,7 @@ export function Providers({
 	toastPosition = "top-right",
 }: ProvidersProps) {
 	return (
-		<AuthProvider adapter={auth?.adapter}>
+		<AuthProvider adapter={auth?.adapter ?? localAuthAdapter}>
 			<ToastProvider
 				maxToasts={toastMaxToasts}
 				defaultDuration={toastDefaultDuration}
@@ -84,18 +119,6 @@ export interface AuthContextValue {
 	register: (data: RegisterData) => Promise<void>;
 	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
 }
-
-const noopAdapter: AuthAdapter = {
-	getCurrentUser: async () => null,
-	login: async () => false,
-	logout: async () => {
-		/* No-op: Auth not implemented */
-	},
-	register: async () => {
-		/* No-op: Auth not implemented */
-	},
-	checkAdminStatus: async () => false,
-};
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -202,7 +225,7 @@ interface AuthProviderProps {
 	adapter?: AuthAdapter;
 }
 
-export function AuthProvider({ children, adapter = noopAdapter }: AuthProviderProps) {
+export function AuthProvider({ children, adapter = localAuthAdapter }: AuthProviderProps) {
 	const value = useAuthProvider(adapter);
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -251,7 +274,7 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
 	"bottom-right": "bottom-4 right-4 items-end",
 };
 
-const TYPE_STYLES: Record<ToastType, { bg: string; icon: ReactNode }> = {
+const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
 	success: { bg: "bg-chart-2", icon: <CheckCircle className="size-5" /> },
 	error: { bg: "bg-destructive", icon: <XCircle className="size-5" /> },
 	warning: {

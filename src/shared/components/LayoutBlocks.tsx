@@ -13,9 +13,8 @@ import React, {
 	useState,
 } from "react";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import { ErrorManager } from "@/shared/lib/errorManager";
 import { themeSurfaces } from "@/shared/lib/uiUtils";
-import { cn } from "@/shared/lib/utils";
+import { cn, ErrorManager } from "@/shared/lib/utils";
 
 const _Analytics = () => null;
 
@@ -159,21 +158,6 @@ interface CatImageProps {
 	onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 }
 
-function buildSources(src: string) {
-	if (!src.startsWith("/assets/images/")) {
-		return null;
-	}
-	const extension = src.split(".").pop()?.toLowerCase();
-	if (!extension || extension === "gif") {
-		return null;
-	}
-	const base = src.replace(/\.[^.]+$/, "");
-	return {
-		avif: `${base}.avif`,
-		webp: `${base}.webp`,
-	};
-}
-
 function CatImage({
 	src,
 	alt = "Cat picture",
@@ -185,55 +169,36 @@ function CatImage({
 	onLoad,
 	onError,
 }: CatImageProps) {
-	const [failedSrc, setFailedSrc] = useState<string | null>(null);
-	const fallbackUrl = CAT_IMAGES[0] ?? "/assets/images/baby_cat.gif";
+	const [hasError, setHasError] = useState(false);
+	const fallbackUrl = CAT_IMAGES[0] ?? "/assets/images/cats/baby_cat.gif";
 
-	const hasError = failedSrc !== null && failedSrc === src;
 	const currentSrc = hasError || !src ? fallbackUrl : src;
-	const sources = hasError ? null : buildSources(currentSrc);
 	const isLocalAsset = currentSrc.startsWith("/");
 
 	const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-		if (src) {
-			setFailedSrc(src);
+		if (!hasError && src !== fallbackUrl) {
+			setHasError(true);
 		}
 		onError?.(event);
 	};
 
-	// Use webp as the base image src for better compatibility if we know it's a generated asset
-	const imgSrc = sources ? sources.webp : currentSrc;
-
-	const image = (
-		<img
-			src={imgSrc}
-			alt={hasError ? "Fallback cat picture" : alt}
-			className={imageClassName}
-			loading={loading}
-			decoding={decoding}
-			onLoad={onLoad}
-			onError={handleError}
-			{...(isLocalAsset ? {} : { crossOrigin: "anonymous" as const })}
-		/>
-	);
-
-	const innerContent = sources ? (
-		<picture className="block h-full w-full">
-			<source type="image/avif" srcSet={sources.avif} />
-			<source type="image/webp" srcSet={sources.webp} />
-			{image}
-		</picture>
-	) : (
-		image
-	);
-
 	const combinedStyle = {
 		...containerStyle,
-		"--bg-image": `url(${imgSrc})`,
+		"--bg-image": `url(${currentSrc})`,
 	} as React.CSSProperties;
 
 	return (
 		<div className={containerClassName} style={combinedStyle}>
-			{innerContent}
+			<img
+				src={currentSrc}
+				alt={hasError ? "Fallback cat picture" : alt}
+				className={imageClassName}
+				loading={loading}
+				decoding={decoding}
+				onLoad={onLoad}
+				onError={handleError}
+				{...(isLocalAsset ? {} : { crossOrigin: "anonymous" as const })}
+			/>
 		</div>
 	);
 }
@@ -789,7 +754,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 	);
 }
 
-const LOADING_ASSET = "/assets/images/cat.gif";
+const LOADING_ASSET = "/assets/images/cats/cat.gif";
 
 interface LoadingProps {
 	variant?: "spinner" | "skeleton" | "card-skeleton" | "cat-gif";

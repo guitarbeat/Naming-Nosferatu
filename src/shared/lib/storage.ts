@@ -1,5 +1,14 @@
 import CryptoJS from "crypto-js";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
+import type {
+	MatchRecord,
+	NameItem,
+	RatingData,
+	Team,
+	TournamentMode,
+	TournamentState,
+	VoteRecord,
+} from "@/shared/types";
 
 const isDev = () => import.meta.env?.DEV ?? false;
 
@@ -196,15 +205,8 @@ export function readStorageJson<T>(key: string, fallback: T): T {
 }
 
 export function writeStorageJson<T>(key: string, value: T): boolean {
-	if (!isStorageAvailable()) {
-		return false;
-	}
-
 	try {
-		const stringValue = JSON.stringify(value);
-		const encryptedValue = encrypt(stringValue);
-		window.localStorage.setItem(key, encryptedValue);
-		return true;
+		return setStorageString(key, JSON.stringify(value));
 	} catch (error) {
 		if (isDev()) {
 			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
@@ -304,4 +306,119 @@ export function clearStoredUserSnapshot(): void {
 	removeStorageItem(STORAGE_KEYS.USER_ID);
 	removeStorageItem(STORAGE_KEYS.USER_AVATAR);
 	removeStorageItem(STORAGE_KEYS.USER_STORAGE);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Stored Tournament Snapshot
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export type StoredTournamentSnapshot = Omit<TournamentState, "isLoading">;
+
+function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnapshot | null {
+	if (!value || typeof value !== "object") {
+		return null;
+	}
+
+	const candidate = value as Record<string, unknown>;
+	const names = Array.isArray(candidate.names) ? (candidate.names as NameItem[]) : null;
+	const ratings: Record<string, RatingData> = {};
+	if (candidate.ratings && typeof candidate.ratings === "object") {
+		for (const [key, val] of Object.entries(candidate.ratings as Record<string, unknown>)) {
+			if (typeof val === "number") {
+				ratings[key] = { rating: val, wins: 0, losses: 0 };
+			} else if (val && typeof val === "object" && typeof (val as RatingData).rating === "number") {
+				ratings[key] = {
+					rating: (val as RatingData).rating,
+					wins: typeof (val as RatingData).wins === "number" ? (val as RatingData).wins : 0,
+					losses: typeof (val as RatingData).losses === "number" ? (val as RatingData).losses : 0,
+				};
+			}
+		}
+	}
+	const isComplete = Boolean(candidate.isComplete);
+	const voteHistory = Array.isArray(candidate.voteHistory)
+		? (candidate.voteHistory as VoteRecord[])
+		: [];
+	const selectedNames = Array.isArray(candidate.selectedNames)
+		? (candidate.selectedNames as NameItem[])
+		: [];
+	const matchHistory = Array.isArray(candidate.matchHistory)
+		? (candidate.matchHistory as MatchRecord[])
+		: undefined;
+	const currentRound =
+		typeof candidate.currentRound === "number" ? candidate.currentRound : undefined;
+	const currentMatch =
+		typeof candidate.currentMatch === "number" ? candidate.currentMatch : undefined;
+	const totalMatches =
+		typeof candidate.totalMatches === "number" ? candidate.totalMatches : undefined;
+	const mode =
+		candidate.mode === "1v1" || candidate.mode === "2v2"
+			? (candidate.mode as TournamentMode)
+			: undefined;
+	const teams = Array.isArray(candidate.teams) ? (candidate.teams as Team[]) : undefined;
+	const bracketEntrants = Array.isArray(candidate.bracketEntrants)
+		? (candidate.bracketEntrants as string[])
+		: undefined;
+	const lastUpdated =
+		typeof candidate.lastUpdated === "number" ? candidate.lastUpdated : Date.now();
+
+	// If snapshot is empty, treat as no stored tournament
+	if (
+		!names &&
+		selectedNames.length === 0 &&
+		Object.keys(ratings).length === 0 &&
+		voteHistory.length === 0 &&
+		(!matchHistory || matchHistory.length === 0)
+	) {
+		return null;
+	}
+
+	return {
+		names,
+		ratings,
+		isComplete,
+		voteHistory,
+		selectedNames,
+		matchHistory,
+		currentRound,
+		currentMatch,
+		totalMatches,
+		mode,
+		teams,
+		bracketEntrants,
+		lastUpdated,
+	};
+}
+
+export function readStoredTournamentSnapshot(): StoredTournamentSnapshot | null {
+	if (!isStorageAvailable()) {
+		return null;
+	}
+
+	const structuredSnapshot = normalizeStoredTournamentSnapshot(
+		readStorageJson<unknown>(STORAGE_KEYS.TOURNAMENT, null),
+	);
+	return structuredSnapshot;
+}
+
+export function writeStoredTournamentSnapshot(snapshot: StoredTournamentSnapshot | null): void {
+	if (!isStorageAvailable()) {
+		return;
+	}
+
+	const normalizedSnapshot = normalizeStoredTournamentSnapshot(snapshot);
+	if (!normalizedSnapshot) {
+		clearStoredTournamentSnapshot();
+		return;
+	}
+
+	writeStorageJson(STORAGE_KEYS.TOURNAMENT, normalizedSnapshot);
+}
+
+export function clearStoredTournamentSnapshot(): void {
+	if (!isStorageAvailable()) {
+		return;
+	}
+
+	removeStorageItem(STORAGE_KEYS.TOURNAMENT);
 }

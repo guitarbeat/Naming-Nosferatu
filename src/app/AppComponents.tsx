@@ -9,11 +9,12 @@ import { NameSuggestion } from "@/features/tournament/TournamentSetup";
 import {
 	ErrorBoundary,
 	ErrorComponent,
-	FloatingNav,
 	Loading,
 	Modal,
 	type NavItem,
 	OfflineIndicator,
+	StaggeredMenu,
+	type StaggeredMenuItem,
 } from "@/shared/components";
 import { usePrefersReducedMotion } from "@/shared/hooks";
 import { scaleFadeMotionPreset } from "@/shared/lib/uiUtils";
@@ -163,6 +164,7 @@ export function FloatingNavbar() {
 		hapticTournamentStart();
 		if (selectedNames && selectedNames.length >= 2) {
 			tournamentActions.setNames(selectedNames);
+			window.dispatchEvent(new CustomEvent("nav-tab-change", { detail: "tournament" }));
 			if (isHomeRoute) {
 				scrollToSection("tournament");
 			} else {
@@ -381,13 +383,61 @@ export function FloatingNavbar() {
 		tournament.ratings,
 	]);
 
+	const staggeredItems: StaggeredMenuItem[] = useMemo(() => {
+		const items: StaggeredMenuItem[] = [];
+
+		if (!isHomeRoute) {
+			items.push({
+				label: "Home",
+				ariaLabel: "Go to home page",
+				link: "/",
+				onClick: (e) => {
+					e.preventDefault();
+					navigate("/");
+				},
+			});
+		}
+
+		navItems.forEach((item) => {
+			items.push({
+				label: item.label,
+				ariaLabel: item.label,
+				onClick: () => {
+					hapticNavTap();
+					item.onClick();
+				},
+			});
+		});
+
+		return items;
+	}, [isHomeRoute, navItems, navigate]);
+
+	const staggeredSocials = useMemo(
+		() => [
+			{ label: "Tournament", link: "/tournament" },
+			{ label: "GitHub", link: "https://github.com/AaronLorenzoWoods" },
+		],
+		[],
+	);
+
 	if (isTournamentRoute) {
 		return null;
 	}
 
 	return (
 		<>
-			<FloatingNav items={navItems} />
+			<StaggeredMenu
+				isFixed={true}
+				position="right"
+				items={staggeredItems}
+				socialItems={staggeredSocials}
+				displaySocials={true}
+				displayItemNumbering={true}
+				menuButtonColor="#ffffff"
+				openMenuButtonColor="#ffffff"
+				colors={["#1f1430", "#3b1c60", "#6b21a8", "#9333ea"]}
+				accentColor="#c084fc"
+			/>
 
 			{isProfileOpen && (
 				<Modal

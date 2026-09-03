@@ -26,6 +26,7 @@ import type {
 import useAppStore from "@/store";
 import {
 	calculateTournamentMetrics,
+	calculateWinStreak,
 	computeUpdatedRatings,
 	createIdToNameMap,
 	createMatchRecord,
@@ -86,42 +87,20 @@ export function useStreakCalculator(
 	currentMatch: Match | null,
 	matchHistory: Array<{ match: Match; winner: string | number }>,
 ) {
-	const calculateWinStreak = useCallback(
-		(contestantId: string | number | null | undefined) => {
-			if (!contestantId || matchHistory.length === 0) {
-				return 0;
-			}
-			const targetId = String(contestantId);
-			let streak = 0;
-			for (let i = matchHistory.length - 1; i >= 0; i--) {
-				const record = matchHistory[i];
-				if (!record?.match) {
-					continue;
-				}
-				const leftId = getMatchSideId(record.match, "left");
-				const rightId = getMatchSideId(record.match, "right");
-				if (leftId !== targetId && rightId !== targetId) {
-					continue;
-				}
-				if (record.winner === targetId) {
-					streak++;
-				} else {
-					break;
-				}
-			}
-			return streak;
-		},
+	const calculateContestantStreak = useCallback(
+		(contestantId: string | number | null | undefined) =>
+			calculateWinStreak(contestantId, matchHistory),
 		[matchHistory],
 	);
 
 	const leftStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "left")) : 0),
-		[currentMatch, calculateWinStreak],
+		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "left")) : 0),
+		[currentMatch, calculateContestantStreak],
 	);
 
 	const rightStreak = useMemo(
-		() => (currentMatch ? calculateWinStreak(getMatchSideId(currentMatch, "right")) : 0),
-		[currentMatch, calculateWinStreak],
+		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "right")) : 0),
+		[currentMatch, calculateContestantStreak],
 	);
 
 	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
@@ -795,7 +774,6 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		tournamentId,
 		defaultPersistentState,
 		{
-			debounceWait: 1000,
 			onError: () => {
 				toast.showWarning(
 					"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
@@ -825,8 +803,28 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	useEffect(() => {
 		if (initializedRef.current) {
 			setPersistentState(state.persistentState);
+
+			const ratingsData: Record<string, RatingData> = {};
+			for (const [id, ratingVal] of Object.entries(state.ratings)) {
+				ratingsData[id] = {
+					rating: ratingVal,
+					wins: 0,
+					losses: 0,
+				};
+			}
+			tournamentActions.syncTournamentProgress({
+				ratings: ratingsData,
+				matchHistory: state.persistentState.matchHistory,
+				currentRound: state.persistentState.currentRound,
+				currentMatch: state.persistentState.currentMatch,
+				totalMatches: state.persistentState.totalMatches,
+				mode: state.persistentState.mode,
+				teams: state.persistentState.teams,
+				bracketEntrants: state.persistentState.bracketEntrants,
+				lastUpdated: state.persistentState.lastUpdated,
+			});
 		}
-	}, [state.persistentState, setPersistentState]);
+	}, [state.persistentState, state.ratings, setPersistentState, tournamentActions]);
 
 	useEffect(() => {
 		return () => {
@@ -857,11 +855,31 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		}
 
 		const initializeTournament = () => {
+			const storeTournament = useAppStore.getState().tournament;
+			const effectivePersistentState: PersistentTournamentState =
+				persistentState.bracketEntrants && persistentState.bracketEntrants.length > 0
+					? persistentState
+					: {
+							...persistentState,
+							matchHistory: storeTournament.matchHistory ?? persistentState.matchHistory,
+							currentRound: storeTournament.currentRound ?? persistentState.currentRound,
+							currentMatch: storeTournament.currentMatch ?? persistentState.currentMatch,
+							totalMatches: storeTournament.totalMatches ?? persistentState.totalMatches,
+							teams: storeTournament.teams ?? persistentState.teams,
+							bracketEntrants: storeTournament.bracketEntrants ?? persistentState.bracketEntrants,
+							mode: (storeTournament.mode ?? tournamentMode) as TournamentMode,
+						};
+
 			const hasValidPersistence =
-				persistentState.namesKey === namesKey && persistentState.mode === tournamentMode;
+				(persistentState.namesKey === namesKey && persistentState.mode === tournamentMode) ||
+				(Boolean(
+					effectivePersistentState.bracketEntrants &&
+						effectivePersistentState.bracketEntrants.length > 0,
+				) &&
+					storeTournament.names?.length === names.length);
 			const initialRatings = buildInitialRatings(names);
 
-			let teams = persistentState.teams;
+			let teams = effectivePersistentState.teams;
 			if (tournamentMode === "2v2" && teams.length < 2) {
 				teams = generateRandomTeams(
 					names.map((name) => ({ id: String(name.id), name: name.name })),
@@ -874,19 +892,19 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 					: names.map((name) => String(name.id));
 			const shouldResetBracket =
 				!hasValidPersistence ||
-				persistentState.bracketEntrants.length === 0 ||
+				effectivePersistentState.bracketEntrants.length === 0 ||
 				!haveSameIds(
-					persistentState.bracketEntrants.filter((id) => !id.startsWith("__BYE__")),
+					effectivePersistentState.bracketEntrants.filter((id) => !id.startsWith("__BYE__")),
 					participantIds,
 				);
 			const bracketEntrants = shouldResetBracket
 				? createBracketEntrants(participantIds)
-				: persistentState.bracketEntrants;
+				: effectivePersistentState.bracketEntrants;
 
 			const stateUpdates: Partial<PersistentTournamentState> = {
-				matchHistory: shouldResetBracket ? [] : persistentState.matchHistory,
-				currentRound: shouldResetBracket ? 1 : persistentState.currentRound,
-				currentMatch: shouldResetBracket ? 1 : persistentState.currentMatch,
+				matchHistory: shouldResetBracket ? [] : effectivePersistentState.matchHistory,
+				currentRound: shouldResetBracket ? 1 : effectivePersistentState.currentRound,
+				currentMatch: shouldResetBracket ? 1 : effectivePersistentState.currentMatch,
 				totalMatches: Math.max(0, participantIds.length - 1),
 				teams,
 				bracketEntrants,
@@ -902,22 +920,24 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				});
 			} else if (
 				shouldResetBracket ||
-				(tournamentMode === "2v2" && teams !== persistentState.teams)
+				(tournamentMode === "2v2" && teams !== effectivePersistentState.teams)
 			) {
-				stateUpdates.ratings = shouldResetBracket ? initialRatings : persistentState.ratings;
+				stateUpdates.ratings = shouldResetBracket
+					? initialRatings
+					: effectivePersistentState.ratings;
 			}
 
 			const storedRatingsAreFresh =
-				(persistentState.lastUpdated ?? 0) >= lastRatingsUpdateRef.current;
+				(effectivePersistentState.lastUpdated ?? 0) >= lastRatingsUpdateRef.current;
 
 			let activeRatings = initialRatings;
 			if (
 				hasValidPersistence &&
-				persistentState.ratings &&
-				Object.keys(persistentState.ratings).length > 0 &&
+				effectivePersistentState.ratings &&
+				Object.keys(effectivePersistentState.ratings).length > 0 &&
 				storedRatingsAreFresh
 			) {
-				activeRatings = persistentState.ratings;
+				activeRatings = effectivePersistentState.ratings;
 			} else if (lastRatingsUpdateRef.current > 0) {
 				activeRatings = ratingsRef.current;
 			} else {
@@ -930,7 +950,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				type: "INIT",
 				payload: {
 					ratings: activeRatings,
-					persistentState: { ...persistentState, ...stateUpdates },
+					persistentState: { ...effectivePersistentState, ...stateUpdates },
 				},
 			});
 
@@ -1123,31 +1143,21 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 			type: "UNDO",
 			payload: { lastEntry },
 		});
-	}, [state.history, toast]);
+		tournamentActions.undoVote();
+	}, [state.history, toast, tournamentActions]);
 
 	const handleQuit = useCallback(() => {
+		const emptyState = createDefaultPersistentState(userName);
 		dispatch({
 			type: "QUIT",
 			payload: {
-				defaultState: {
-					matchHistory: [],
-					currentRound: 1,
-					currentMatch: 1,
-					totalMatches: 0,
-					userName: userName || "anonymous",
-					lastUpdated: Date.now(),
-					namesKey: "",
-					ratings: {},
-					mode: "1v1",
-					teams: [],
-					teamMatches: [],
-					teamMatchIndex: 0,
-					bracketEntrants: [],
-				},
+				defaultState: emptyState,
 			},
 		});
+		setPersistentState(emptyState);
 		tournamentActions.clearVoteHistory();
-	}, [tournamentActions, userName]);
+		tournamentActions.resetTournament();
+	}, [setPersistentState, tournamentActions, userName]);
 
 	return {
 		currentMatch,
@@ -1169,6 +1179,8 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		isVoting,
 		handleVoteWithAnimation,
 		matchHistory: state.persistentState.matchHistory,
+		bracketEntrants: state.persistentState.bracketEntrants,
+		teams: state.persistentState.teams,
 		subscribeToTournamentUpdates: realtime.subscribeToTournament,
 		subscribeToMatchResults: realtime.subscribeToMatches,
 		subscribeToUserActivity: realtime.subscribeToUserActivity,

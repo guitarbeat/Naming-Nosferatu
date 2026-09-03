@@ -1,0 +1,216 @@
+/**
+ * @file layout.css
+ * @description Layout primitives, app shells, chart frames, responsive rules,
+ * and safe-area adjustments.
+ */
+
+/* ==========================================================================
+   LAYOUT PRIMITIVES
+   ========================================================================== */
+
+.container {
+	width: 100%;
+	max-width: var(--app-container-max-width);
+	padding: 0 var(--app-container-padding-inline);
+	margin: 0 auto;
+}
+
+/* ==========================================================================
+   APP LAYOUT
+   ========================================================================== */
+
+.app {
+	min-height: var(--app-main-min-height);
+	width: 100%;
+	font-family: var(--font-sans);
+	color: var(--foreground);
+}
+
+.app-main {
+	min-height: var(--app-main-min-height);
+	padding-bottom: var(--app-main-bottom-padding);
+}
+
+.app-main__content {
+	gap: var(--app-main-gap);
+}
+
+.app-ambient {
+	position: fixed;
+	inset: 0;
+	z-index: -10;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.home-hero-section {
+	min-height: var(--app-hero-min-height);
+}
+
+.home-hero-inner {
+	max-width: var(--app-section-max-2xl);
+	padding: var(--app-hero-padding-block-start) var(--app-section-padding-inline)
+		var(--app-hero-padding-block-end);
+}
+
+.home-hero-copy {
+	padding-bottom: var(--app-nav-safe-bottom);
+}
+
+.home-hero-preview {
+	min-height: var(--app-hero-preview-min-height);
+}
+
+@media (height > 820px) {
+	.home-hero-copy {
+		padding-bottom: 0;
+	}
+}
+
+@media (width >= 1024px) and (height <= 820px) {
+	.home-hero-stats {
+		display: none;
+	}
+}
+
+.chart-frame {
+	width: 100%;
+	height: var(--app-chart-frame-height);
+}
+
+.chart-frame--tall {
+	height: var(--app-chart-frame-height-tall);
+}
+
+/* Global loading overlay */
+.global-loading-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: var(--z-modal);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--overlay-dark);
+	backdrop-filter: blur(8px);
+}
+
+/* ==========================================================================
+   APP SECTIONS
+   ========================================================================== */
+
+.app-section {
+	scroll-margin-top: var(--app-section-scroll-margin, 6rem);
+	padding-block: var(--app-section-padding-block, 3rem);
+	padding-inline: var(--app-section-padding-inline, 1rem);
+	width: 100%;
+	margin-inline: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.app-section--max-md {
+	max-width: var(--app-section-max-md, 42rem);
+}
+
+.app-section--max-xl {
+	max-width: var(--app-section-max-xl, 72rem);
+}
+
+.app-section--max-2xl {
+	max-width: var(--app-section-max-2xl, 80rem);
+}
+
+.app-section--separator {
+	padding-top: var(--app-section-separator-padding, 3.5rem);
+	border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.app-section--fullpage {
+	min-height: var(--app-section-padding-block-fullpage, 100dvh);
+	justify-content: center;
+}
+
+@media (min-width: 640px) {
+	.app-section {
+		padding-inline: var(--space-6, 1.5rem);
+		padding-block: var(--space-16, 4rem);
+	}
+}
+
+@media (min-width: 1024px) {
+	.app-section {
+		padding-inline: var(--space-8, 2rem);
+	}
+}
+
+/* ==========================================================================
+   MOBILE SAFE AREA & TOUCH TARGETS
+   ========================================================================== */
+
+.mobile-nav-safe-bottom {
+	padding-bottom: var(--app-nav-safe-bottom);
+}
+
+@media (width <= 768px) {
+	button,
+	input[type="button"],
+	input[type="submit"],
+	input[type="reset"],
+	input[type="checkbox"],
+	input[type="radio"],
+	a[role="button"],
+	[role="button"] {
+		min-height: 2.75rem;
+		min-width: 2.75rem;
+	}
+
+	input[type="text"],
+	input[type="email"],
+	input[type="password"],
+	input[type="search"],
+	input[type="tel"],
+	input[type="url"],
+	input[type="number"],
+	textarea,
+	select {
+		min-height: 2.75rem;
+	}
+}
+
+@media (width <= 430px) {
+	.container {
+		padding: 0 var(--app-container-padding-inline);
+	}
+}
+
+@supports (padding: max(0px)) {
+	@media (width <= 768px) {
+		header {
+			padding-right: max(var(--space-4), env(safe-area-inset-right));
+			padding-left: max(var(--space-4), env(safe-area-inset-left));
+		}
+
+		.container {
+			padding-right: max(var(--space-4), env(safe-area-inset-right));
+			padding-left: max(var(--space-4), env(safe-area-inset-left));
+		}
+	}
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+	:root {
+		--color-border: #000000;
+		--color-text: #000000;
+		--color-background: #ffffff;
+	}
+}
+
+@media (prefers-contrast: more) {
+	@media (width <= 768px) {
+		button {
+			border-width: 2px;
+		}
+	}
+}

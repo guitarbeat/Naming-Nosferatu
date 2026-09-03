@@ -1,22 +1,23 @@
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
-import { ErrorManager } from "@/shared/lib/errorManager";
+import { CAT_IMAGES, STORAGE_KEYS } from "@/shared/lib/constants";
 import {
+	clearStoredTournamentSnapshot,
 	clearStoredUserSnapshot,
 	getStorageString,
+	readStoredTournamentSnapshot,
 	readStoredUserSnapshot,
 	removeStorageItem,
 	setStorageString,
+	writeStoredTournamentSnapshot,
 	writeStoredUserSnapshot,
 } from "@/shared/lib/storage";
+import { getRandomCatImage } from "@/shared/lib/uiUtils";
+import { ErrorManager } from "@/shared/lib/utils";
 import type {
-	CatChosenName,
 	ErrorLog,
-	ErrorState,
 	NameItem,
 	RatingData,
-	SiteSettingsState,
 	ThemePreference,
 	ThemeValue,
 	TournamentState,
@@ -58,6 +59,8 @@ export interface TournamentActions {
 		winnerMemberIds?: string[],
 		loserMemberIds?: string[],
 	) => void;
+	undoVote: () => void;
+	syncTournamentProgress: (progress: Partial<TournamentState>) => void;
 	clearVoteHistory: () => void;
 	replaceTournamentState: (snapshot: TournamentState) => void;
 }
@@ -155,85 +158,260 @@ export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorA
 	},
 });
 
-export const createTournamentSlice: AppSliceCreator<
-	Pick<AppState, "tournament" | "tournamentActions">
-> = (set, get) => ({
-	tournament: {
+function getInitialTournamentState(): TournamentState {
+	const base: TournamentState = {
 		names: null,
 		ratings: {},
 		isComplete: false,
 		isLoading: false,
 		voteHistory: [],
 		selectedNames: [],
-	},
+	};
+
+	if (!IS_BROWSER) {
+		return base;
+	}
+
+	const stored = readStoredTournamentSnapshot();
+	if (!stored) {
+		return base;
+	}
+
+	return {
+		...base,
+		names: stored.names ?? null,
+		ratings: stored.ratings ?? {},
+		isComplete: Boolean(stored.isComplete),
+		voteHistory: Array.isArray(stored.voteHistory) ? stored.voteHistory : [],
+		selectedNames: Array.isArray(stored.selectedNames) ? stored.selectedNames : [],
+		matchHistory: Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined,
+		currentRound: typeof stored.currentRound === "number" ? stored.currentRound : undefined,
+		currentMatch: typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
+		totalMatches: typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
+		mode: stored.mode,
+		teams: stored.teams,
+		bracketEntrants: stored.bracketEntrants,
+		lastUpdated: stored.lastUpdated,
+	};
+}
+
+function persistTournamentState(tournament: TournamentState): void {
+	if (!IS_BROWSER) {
+		return;
+	}
+
+	if (
+		!tournament.names &&
+		(!tournament.selectedNames || tournament.selectedNames.length === 0) &&
+		(!tournament.ratings || Object.keys(tournament.ratings).length === 0) &&
+		(!tournament.voteHistory || tournament.voteHistory.length === 0) &&
+		(!tournament.matchHistory || tournament.matchHistory.length === 0)
+	) {
+		clearStoredTournamentSnapshot();
+		return;
+	}
+
+	writeStoredTournamentSnapshot({
+		names: tournament.names,
+		ratings: tournament.ratings,
+		isComplete: tournament.isComplete,
+		voteHistory: tournament.voteHistory,
+		selectedNames: tournament.selectedNames,
+		matchHistory: tournament.matchHistory,
+		currentRound: tournament.currentRound,
+		currentMatch: tournament.currentMatch,
+		totalMatches: tournament.totalMatches,
+		mode: tournament.mode,
+		teams: tournament.teams,
+		bracketEntrants: tournament.bracketEntrants,
+		lastUpdated: Date.now(),
+	});
+}
+
+export const createTournamentSlice: AppSliceCreator<
+	Pick<AppState, "tournament" | "tournamentActions">
+> = (set, get) => ({
+	tournament: getInitialTournamentState(),
 
 	tournamentActions: {
 		setNames: (names) => {
 			const currentRatings = get().tournament.ratings;
-			patch(set, "tournament", {
-				names:
-					names?.map((name) => {
-						const entry = currentRatings[name.id] ?? currentRatings[name.name];
-						const ratingVal =
-							typeof entry === "number"
-								? entry
-								: typeof entry === "object" && entry !== null
-									? entry.rating
-									: undefined;
+			const processedNames =
+				names?.map((name) => {
+					const entry = currentRatings[name.id] ?? currentRatings[name.name];
+					const ratingVal =
+						typeof entry === "number"
+							? entry
+							: typeof entry === "object" && entry !== null
+								? entry.rating
+								: undefined;
 
-						return {
-							...name,
-							rating: ratingVal ?? name.rating ?? name.avgRating ?? name.avg_rating ?? 1500,
-						};
-					}) ?? null,
+					return {
+						...name,
+						rating: ratingVal ?? name.rating ?? name.avgRating ?? name.avg_rating ?? 1500,
+					};
+				}) ?? null;
+
+			const nextTournament: TournamentState = {
+				...get().tournament,
+				names: processedNames,
+				isComplete: false,
+				matchHistory: [],
+				currentRound: 1,
+				currentMatch: 1,
+				bracketEntrants: [],
+				voteHistory: [],
+			};
+			patch(set, "tournament", {
+				names: processedNames,
+				isComplete: false,
+				matchHistory: [],
+				currentRound: 1,
+				currentMatch: 1,
+				bracketEntrants: [],
+				voteHistory: [],
 			});
+			persistTournamentState(nextTournament);
 		},
 
 		setRatings: (ratingsOrFn) => {
 			const current = get().tournament.ratings;
-			const next = typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
-			patch(set, "tournament", { ratings: { ...current, ...next } });
+			const nextRatings = typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
+			const mergedRatings = { ...current, ...nextRatings };
+			const nextTournament = {
+				...get().tournament,
+				ratings: mergedRatings,
+			};
+			patch(set, "tournament", { ratings: mergedRatings });
+			persistTournamentState(nextTournament);
 		},
 
-		setComplete: (isComplete) => patch(set, "tournament", { isComplete }),
+		setComplete: (isComplete) => {
+			const nextTournament = {
+				...get().tournament,
+				isComplete,
+			};
+			patch(set, "tournament", { isComplete });
+			persistTournamentState(nextTournament);
+		},
 
 		completeTournament: (ratings) => {
 			const current = get().tournament.ratings;
+			const mergedRatings = { ...current, ...ratings };
+			const nextTournament = {
+				...get().tournament,
+				ratings: mergedRatings,
+				isComplete: true,
+			};
 			patch(set, "tournament", {
-				ratings: { ...current, ...ratings },
+				ratings: mergedRatings,
 				isComplete: true,
 			});
+			persistTournamentState(nextTournament);
 		},
 
-		resetTournament: () =>
+		resetTournament: () => {
+			const nextTournament: TournamentState = {
+				...get().tournament,
+				names: null,
+				isComplete: false,
+				voteHistory: [],
+				matchHistory: [],
+				currentRound: 1,
+				currentMatch: 1,
+				bracketEntrants: [],
+				ratings: {},
+			};
 			patch(set, "tournament", {
 				names: null,
 				isComplete: false,
 				voteHistory: [],
-			}),
+				matchHistory: [],
+				currentRound: 1,
+				currentMatch: 1,
+				bracketEntrants: [],
+				ratings: {},
+			});
+			persistTournamentState(nextTournament);
+		},
 
-		setSelection: (selectedNames) => patch(set, "tournament", { selectedNames }),
+		setSelection: (selectedNames) => {
+			const nextTournament = {
+				...get().tournament,
+				selectedNames,
+			};
+			patch(set, "tournament", { selectedNames });
+			persistTournamentState(nextTournament);
+		},
 
 		recordVote: (winnerId, loserId, winnerMemberIds, loserMemberIds) => {
 			const prev = get().tournament.voteHistory;
+			const newVote = {
+				winnerId,
+				loserId,
+				timestamp: Date.now(),
+				...(winnerMemberIds ? { winnerMemberIds } : {}),
+				...(loserMemberIds ? { loserMemberIds } : {}),
+			};
+			const nextHistory = [...prev, newVote];
+			const nextTournament = {
+				...get().tournament,
+				voteHistory: nextHistory,
+			};
 			patch(set, "tournament", {
-				voteHistory: [
-					...prev,
-					{
-						winnerId,
-						loserId,
-						timestamp: Date.now(),
-						...(winnerMemberIds ? { winnerMemberIds } : {}),
-						...(loserMemberIds ? { loserMemberIds } : {}),
-					},
-				],
+				voteHistory: nextHistory,
 			});
+			persistTournamentState(nextTournament);
 		},
 
-		clearVoteHistory: () => patch(set, "tournament", { voteHistory: [] }),
+		undoVote: () => {
+			const prev = get().tournament.voteHistory;
+			const nextHistory = prev.slice(0, -1);
+			const prevMatchHistory = get().tournament.matchHistory;
+			const nextMatchHistory = prevMatchHistory ? prevMatchHistory.slice(0, -1) : undefined;
+			const nextTournament = {
+				...get().tournament,
+				voteHistory: nextHistory,
+				matchHistory: nextMatchHistory,
+			};
+			patch(set, "tournament", {
+				voteHistory: nextHistory,
+				matchHistory: nextMatchHistory,
+			});
+			persistTournamentState(nextTournament);
+		},
+
+		syncTournamentProgress: (progressUpdates) => {
+			const current = get().tournament;
+			const nextRatings = progressUpdates.ratings
+				? { ...current.ratings, ...progressUpdates.ratings }
+				: current.ratings;
+			const nextTournament: TournamentState = {
+				...current,
+				...progressUpdates,
+				ratings: nextRatings,
+				lastUpdated: Date.now(),
+			};
+			patch(set, "tournament", {
+				...progressUpdates,
+				ratings: nextRatings,
+				lastUpdated: nextTournament.lastUpdated,
+			});
+			persistTournamentState(nextTournament);
+		},
+
+		clearVoteHistory: () => {
+			const nextTournament = {
+				...get().tournament,
+				voteHistory: [],
+			};
+			patch(set, "tournament", { voteHistory: [] });
+			persistTournamentState(nextTournament);
+		},
 
 		replaceTournamentState: (snapshot: TournamentState) => {
 			set({ tournament: { ...snapshot } });
+			persistTournamentState(snapshot);
 		},
 	},
 });
@@ -275,12 +453,16 @@ function getInitialTheme(): Pick<UIState, "theme" | "themePreference"> {
 
 	const stored = getStorageString(STORAGE_KEYS.THEME);
 	if (stored === "light" || stored === "dark" || stored === "system") {
-		const resolved: ThemeValue =
-			stored === "system"
-				? window.matchMedia("(prefers-color-scheme: dark)").matches
-					? "dark"
-					: "light"
-				: stored;
+		let prefersDark = true;
+		try {
+			if (typeof window.matchMedia === "function") {
+				prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+			}
+		} catch {
+			prefersDark = true;
+		}
+
+		const resolved: ThemeValue = stored === "system" ? (prefersDark ? "dark" : "light") : stored;
 
 		return { theme: resolved, themePreference: stored };
 	}
@@ -333,7 +515,7 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 
 		login: (userName, onContext) => {
 			const id = `user_${Math.random().toString(36).substring(2, 9)}`;
-			const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${userName}`;
+			const avatarUrl = getRandomCatImage(id, CAT_IMAGES, userName);
 			const nextUser = {
 				...get().user,
 				id,
@@ -349,6 +531,7 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 
 		logout: (onContext) => {
 			clearStoredUserSnapshot();
+			clearStoredTournamentSnapshot();
 			onContext?.(null);
 			set((state) => ({
 				...state,
@@ -357,6 +540,7 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 					...state.tournament,
 					names: null,
 					isComplete: false,
+					voteHistory: [],
 				},
 			}));
 		},
@@ -419,17 +603,29 @@ export const createUserAndSettingsSlice: AppSliceCreator<
 				return;
 			}
 
-			const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-			const resolved = mediaQuery.matches ? "dark" : "light";
+			let resolved: ThemeValue = "dark";
+			try {
+				if (typeof window.matchMedia === "function") {
+					const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+					resolved = mediaQuery.matches ? "dark" : "light";
 
-			const handleChange = (event: MediaQueryListEvent) => {
-				if (get().ui.themePreference === "system") {
-					patch(set, "ui", { theme: event.matches ? "dark" : "light" });
+					const handleChange = (event: MediaQueryListEvent) => {
+						if (get().ui.themePreference === "system") {
+							patch(set, "ui", { theme: event.matches ? "dark" : "light" });
+						}
+					};
+
+					if (mediaQuery.addEventListener) {
+						mediaQuery.addEventListener("change", handleChange);
+						systemThemeCleanup = () => mediaQuery.removeEventListener("change", handleChange);
+					} else if (mediaQuery.addListener) {
+						mediaQuery.addListener(handleChange);
+						systemThemeCleanup = () => mediaQuery.removeListener(handleChange);
+					}
 				}
-			};
-
-			mediaQuery.addEventListener("change", handleChange);
-			systemThemeCleanup = () => mediaQuery.removeEventListener("change", handleChange);
+			} catch {
+				resolved = "dark";
+			}
 
 			patch(set, "ui", { theme: resolved, themePreference: preference });
 			setStorageString(STORAGE_KEYS.THEME, preference);

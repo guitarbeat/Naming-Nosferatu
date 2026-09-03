@@ -228,6 +228,14 @@ export interface TournamentState {
 	isLoading: boolean;
 	voteHistory: VoteRecord[];
 	selectedNames: NameItem[];
+	matchHistory?: MatchRecord[];
+	currentRound?: number;
+	currentMatch?: number;
+	totalMatches?: number;
+	mode?: TournamentMode;
+	teams?: Team[];
+	bracketEntrants?: string[];
+	lastUpdated?: number;
 }
 
 export interface SiteSettingsState {

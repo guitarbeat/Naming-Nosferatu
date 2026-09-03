@@ -1,12 +1,55 @@
-import { Suspense, useCallback, useEffect } from "react";
+import { MotionConfig } from "framer-motion";
+import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { useAuth } from "@/app/Providers";
-import { ErrorManager } from "@/shared/lib/errorManager";
+import AdminRoute from "@/app/routes/AdminRoute";
+import HomeRoute from "@/app/routes/HomeRoute";
+import { RouteFallback } from "@/shared/components";
+import { ErrorManager } from "@/shared/lib/utils";
 import useAppStore, { useAppStoreInitialization } from "@/store";
-import { AppBootScreen } from "./AppComponents";
-import AppShell from "./AppShell";
+import { AppBootScreen, AppLayout } from "./AppComponents";
 
 const BOOT_TIMEOUT_FALLBACK_MS = 2500;
+
+function AppShell() {
+	const { pathname } = useLocation();
+
+	useLayoutEffect(() => {
+		if (!pathname) {
+			return;
+		}
+		document.documentElement.scrollTop = 0;
+		document.body.scrollTop = 0;
+	}, [pathname]);
+
+	return (
+		<MotionConfig reducedMotion="user">
+			<AppLayout>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<Suspense fallback={<RouteFallback text="Loading home..." />}>
+								<HomeRoute />
+							</Suspense>
+						}
+					/>
+					<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
+					<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
+					<Route
+						path="/admin"
+						element={
+							<Suspense fallback={<RouteFallback text="Loading admin..." />}>
+								<AdminRoute />
+							</Suspense>
+						}
+					/>
+				</Routes>
+			</AppLayout>
+		</MotionConfig>
+	);
+}
 
 function App() {
 	const { user: authUser, isLoading } = useAuth();

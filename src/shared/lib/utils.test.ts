@@ -1,9 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
 	addManyToSet,
 	addToSet,
 	cn,
 	createSortedKey,
+	hapticNavTap,
+	hapticTournamentStart,
+	hapticVoteTap,
 	removeFromSet,
 	shuffleArray,
 	toggleInSet,
@@ -65,6 +68,62 @@ describe("shared utils", () => {
 			expect(withB.has("b")).toBe(true);
 			const withoutB = toggleInSet(withB, "b");
 			expect(withoutB.has("b")).toBe(false);
+		});
+	});
+
+	describe("Haptic & Vibration utilities", () => {
+		it("hapticVoteTap calls navigator.vibrate with subtle default duration", () => {
+			const mockVibrate = vi.fn().mockReturnValue(true);
+			vi.stubGlobal("navigator", { vibrate: mockVibrate });
+
+			const result = hapticVoteTap();
+			expect(mockVibrate).toHaveBeenCalledWith(15);
+			expect(result).toBe(true);
+
+			vi.unstubAllGlobals();
+		});
+
+		it("hapticVoteTap supports custom duration", () => {
+			const mockVibrate = vi.fn().mockReturnValue(true);
+			vi.stubGlobal("navigator", { vibrate: mockVibrate });
+
+			const result = hapticVoteTap(20);
+			expect(mockVibrate).toHaveBeenCalledWith(20);
+			expect(result).toBe(true);
+
+			vi.unstubAllGlobals();
+		});
+
+		it("hapticVoteTap handles errors gracefully without throwing", () => {
+			const mockVibrate = vi.fn().mockImplementation(() => {
+				throw new Error("SecurityError: vibrate not allowed");
+			});
+			vi.stubGlobal("navigator", { vibrate: mockVibrate });
+
+			expect(() => hapticVoteTap()).not.toThrow();
+			expect(hapticVoteTap()).toBe(false);
+
+			vi.unstubAllGlobals();
+		});
+
+		it("hapticNavTap calls navigator.vibrate with navigation pattern", () => {
+			const mockVibrate = vi.fn();
+			vi.stubGlobal("navigator", { vibrate: mockVibrate });
+
+			hapticNavTap();
+			expect(mockVibrate).toHaveBeenCalledWith(10);
+
+			vi.unstubAllGlobals();
+		});
+
+		it("hapticTournamentStart calls navigator.vibrate with start pattern", () => {
+			const mockVibrate = vi.fn();
+			vi.stubGlobal("navigator", { vibrate: mockVibrate });
+
+			hapticTournamentStart();
+			expect(mockVibrate).toHaveBeenCalledWith([50, 50, 50]);
+
+			vi.unstubAllGlobals();
 		});
 	});
 });

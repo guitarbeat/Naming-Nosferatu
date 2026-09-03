@@ -1,0 +1,231 @@
+/**
+ * @file motion.css
+ * @description Keyframe animations, interactive transitions, micro-interactions,
+ * and reduced motion accessibility rules.
+ */
+
+/* ==========================================================================
+   KEYFRAME ANIMATIONS
+   ========================================================================== */
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes surfaceEnter {
+	from {
+		opacity: 0;
+		transform: translateY(12px) scale(0.985);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes float {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-6px);
+	}
+}
+
+@keyframes blob {
+	0%,
+	100% {
+		transform: translate(0, 0) scale(1);
+	}
+	33% {
+		transform: translate(30px, -50px) scale(1.1);
+	}
+	66% {
+		transform: translate(-20px, 20px) scale(0.9);
+	}
+}
+
+@keyframes pulseGlow {
+	0%,
+	100% {
+		opacity: 0.6;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.04);
+	}
+}
+
+/* ==========================================================================
+   ANIMATION UTILITY CLASSES
+   ========================================================================== */
+
+.animate-fade-in {
+	animation: fadeIn var(--duration-base) var(--ease-in-out-smooth) forwards;
+}
+
+.animate-surface-enter {
+	animation: surfaceEnter var(--duration-moderate) var(--ease-out-expo) forwards;
+}
+
+.animate-float {
+	animation: float 3s ease-in-out infinite;
+}
+
+.animate-blob {
+	animation: blob 7s infinite;
+}
+
+.animate-pulse-glow {
+	animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+.animation-delay-2000 {
+	animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+	animation-delay: 4s;
+}
+
+/* ==========================================================================
+   INTERACTIVE ELEMENT TRANSITIONS
+   ========================================================================== */
+
+.interactive,
+button,
+[role="button"],
+a,
+input,
+select,
+textarea {
+	transition: all var(--duration-base) var(--ease-in-out-smooth);
+}
+
+/* Button interactions */
+button:not(:disabled):hover,
+[role="button"]:not([aria-disabled="true"]):hover {
+	transform: translateY(var(--lift-small));
+	box-shadow: var(--glow-subtle);
+}
+
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+	transform: scale(var(--scale-press));
+}
+
+/* Input interactions */
+input:focus,
+textarea:focus,
+select:focus {
+	outline: none;
+	border-color: var(--primary);
+	box-shadow: 0 0 0 var(--focus-ring-spread) var(--focus-ring-color);
+	transform: scale(var(--scale-subtle));
+}
+
+/* Range slider inputs */
+input[type="range"] {
+	cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+	transition:
+		transform var(--duration-base) var(--ease-spring),
+		box-shadow var(--duration-base) var(--ease-out-expo);
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+	transform: scale(1.15);
+	box-shadow: var(--glow-medium);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+	transform: scale(1.05);
+	box-shadow: var(--glow-strong);
+}
+
+/* ==========================================================================
+   FOCUS VISIBLE (GLOBAL)
+   ========================================================================== */
+
+*:focus-visible {
+	outline: 2px solid var(--primary);
+	outline-offset: 2px;
+}
+
+/* ==========================================================================
+   DISABLED STATES
+   ========================================================================== */
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled,
+select:disabled,
+textarea:disabled,
+.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;
+	transform: none;
+	box-shadow: none;
+}
+
+/* ==========================================================================
+   CURSORS
+   ========================================================================== */
+
+button,
+a,
+[role="button"] {
+	cursor: pointer;
+}
+
+/* ==========================================================================
+   TOUCH & ACCESSIBLE REDUCED MOTION
+   ========================================================================== */
+
+@media (hover: none) {
+	:is(button, a):hover {
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	::before,
+	::after {
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+		transition-duration: 0.01ms;
+		scroll-behavior: auto;
+	}
+
+	@media (width <= 768px) {
+		.name-card,
+		.nav-menu button {
+			transition: none;
+		}
+
+		.name-card:hover,
+		.nav-menu button:hover {
+			transform: none;
+		}
+	}
+}

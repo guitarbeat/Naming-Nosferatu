@@ -1,104 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
-import { motion, useReducedMotion } from "framer-motion";
-import { BarChart3, CheckCircle, Trophy } from "lucide-react";
+import { ArrowRight, BarChart3, CheckCircle, RotateCcw, Trophy } from "lucide-react";
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { errorContexts, routeComponents } from "@/app/appConfig";
+import { Dashboard as DashboardLazy } from "@/features/dashboard/Dashboard";
 import { TournamentArena } from "@/features/tournament/TournamentArena";
-import { namesQueryOptions } from "@/shared/api";
+import { TournamentSetup } from "@/features/tournament/TournamentSetup";
 import { Button, ErrorBoundary, Loading, Section } from "@/shared/components/LayoutBlocks";
 import { SectionHeading } from "@/shared/components/UIBlocks";
 import { useSectionScroll } from "@/shared/hooks";
-import { TIMING } from "@/shared/lib/constants";
-import { getLockedNames } from "@/shared/lib/names";
-import { MOTION_DURATIONS, MOTION_EASING, themeText } from "@/shared/lib/uiUtils";
-import type { NameItem } from "@/shared/types";
-import useAppStore from "@/store";
-
-const TournamentSetup = routeComponents.TournamentSetup;
-const DashboardLazy = routeComponents.DashboardLazy;
-
-type HomeHeroState = "loading" | "ready" | "error";
-
-interface HomeHeroSectionProps {
-	state: HomeHeroState;
-	lockedNames: NameItem[];
-}
-
-interface HeroNameWordsProps {
-	state: HomeHeroState;
-	lockedNames: NameItem[];
-}
-
-function HeroNameWords({ state, lockedNames }: HeroNameWordsProps) {
-	if (state === "loading") {
-		return <span className={themeText.heroPlaceholder}>________</span>;
-	}
-	if (state === "error" || lockedNames.length === 0) {
-		return <span>NOSFERATU</span>;
-	}
-
-	const words = [...lockedNames.flatMap((n) => n.name.toUpperCase().split(/\s+/)), "WOODS"];
-
-	return (
-		<span>
-			{words.map((word, i) => {
-				const isLast = i === words.length - 1;
-				return (
-					<span key={`hero-word-${word}-${i}`} className="block sm:inline-block">
-						{isLast ? word : `${word}\u00a0`}
-					</span>
-				);
-			})}
-		</span>
-	);
-}
-
-export function HomeHeroSection({ state, lockedNames }: HomeHeroSectionProps) {
-	const prefersReducedMotion = useReducedMotion();
-
-	return (
-		<div className="home-hero-wrapper w-full">
-			<Section
-				fullpage={true}
-				className="relative isolate flex w-full flex-col items-center justify-center overflow-hidden text-foreground px-6 text-center"
-			>
-				<motion.div
-					initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20 }}
-					animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-					transition={{
-						duration: prefersReducedMotion
-							? MOTION_DURATIONS.reducedMotionDuration
-							: MOTION_DURATIONS.gentle,
-						ease: MOTION_EASING.easeStandard,
-					}}
-					className="flex flex-col items-center justify-center text-center max-w-4xl gap-8 md:gap-12"
-				>
-					<motion.div
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-						transition={{
-							delay: prefersReducedMotion ? 0 : 0.2,
-							duration: prefersReducedMotion
-								? MOTION_DURATIONS.reducedMotionDuration
-								: TIMING.MOTION_SLOW,
-							ease: TIMING.MOTION_EASING,
-						}}
-					>
-						<h1
-							className={`${themeText.heroDisplay} tracking-tighter`}
-							style={{
-								fontSize: "clamp(2.5rem, 8vw, 6.5rem)",
-								lineHeight: 1.05,
-							}}
-						>
-							<HeroNameWords state={state} lockedNames={lockedNames} />
-						</h1>
-					</motion.div>
-				</motion.div>
-			</Section>
-		</div>
-	);
-}
+import useAppStore, { errorContexts } from "@/store";
 
 type AppFlowTab = "pick" | "tournament" | "analysis";
 
@@ -112,24 +20,27 @@ export default function HomeRoute() {
 	const user = useAppStore((s) => s.user);
 	const tournament = useAppStore((s) => s.tournament);
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
-	const namesQuery = useQuery(namesQueryOptions(user.isAdmin));
 	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
 
-	const hasNamesData = typeof namesQuery.data !== "undefined";
-	const heroState =
-		!hasNamesData && namesQuery.isPending
-			? "loading"
-			: !hasNamesData && namesQuery.isError
-				? "error"
-				: "ready";
-	const names = namesQuery.data?.names ?? [];
-	const lockedNames = heroState === "ready" ? getLockedNames(names) : [];
-
-	const [activeTab, setActiveTab] = useState<AppFlowTab>("pick");
+	const [activeTab, setActiveTab] = useState<AppFlowTab>(() => {
+		if (tournament.names && tournament.names.length >= 2 && !tournament.isComplete) {
+			return "tournament";
+		}
+		if (tournament.isComplete && Object.keys(tournament.ratings).length > 0) {
+			return "analysis";
+		}
+		return "pick";
+	});
 
 	const handleActiveTabChange = useCallback((tab: AppFlowTab) => {
 		setActiveTab(tab);
 	}, []);
+
+	useEffect(() => {
+		if (tournament.names && tournament.names.length >= 2 && !tournament.isComplete) {
+			setActiveTab("tournament");
+		}
+	}, [tournament.names, tournament.isComplete]);
 
 	useEffect(() => {
 		const handleTabChange = (e: Event) => {
@@ -157,97 +68,138 @@ export default function HomeRoute() {
 
 	useEffect(() => clearPendingScroll, [clearPendingScroll]);
 
-	return (
-		<>
-			<HomeHeroSection state={heroState} lockedNames={lockedNames} />
+	const hasActiveInProgressTournament = Boolean(
+		tournament.names && tournament.names.length >= 2 && !tournament.isComplete,
+	);
 
-			<Section
-				id="app-flow"
-				maxWidth="xl"
-				separator={true}
-				fullpage={false}
-				ariaLabelledBy="section-heading-app"
-			>
-				<div className="flex flex-col items-center min-h-[100dvh] py-12 md:py-16">
-					<div className="w-full flex flex-col items-center gap-8 md:gap-12">
-						{activeTab === "pick" && (
-							<div
-								id="pick"
-								className="w-full animate-in fade-in zoom-in-95 duration-300 slide-in-from-bottom-4"
-							>
-								<div className="w-full mt-8">
-									<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-										<TournamentSetup />
-									</Suspense>
+	return (
+		<Section
+			id="app-flow"
+			maxWidth="xl"
+			separator={false}
+			fullpage={false}
+			ariaLabelledBy="section-heading-app"
+		>
+			<div className="flex flex-col items-center w-full py-4 md:py-8">
+				<div className="w-full flex flex-col items-center gap-6">
+					{activeTab === "pick" && (
+						<div
+							id="pick"
+							className="w-full animate-in fade-in zoom-in-95 duration-300 slide-in-from-bottom-4"
+						>
+							{hasActiveInProgressTournament && (
+								<div className="mx-auto mb-6 flex w-full max-w-4xl flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-primary/30 bg-primary/10 p-4 sm:p-5 shadow-sm backdrop-blur-md">
+									<div className="flex items-center gap-3.5 text-left w-full sm:w-auto">
+										<div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+											<Trophy size={20} />
+										</div>
+										<div>
+											<h4 className="text-sm font-semibold text-foreground">
+												Tournament Session in Progress
+											</h4>
+											<p className="text-xs text-muted-foreground mt-0.5">
+												{tournament.names?.length} contenders • Resume where you left off or start
+												fresh
+											</p>
+										</div>
+									</div>
+									<div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+										<Button
+											variant="ghost"
+											size="small"
+											onClick={handleStartNewTournament}
+											className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1.5"
+										>
+											<RotateCcw size={13} />
+											Start Fresh
+										</Button>
+										<Button
+											variant="primary"
+											size="small"
+											onClick={() => {
+												handleActiveTabChange("tournament");
+												scheduleSectionScroll("tournament");
+											}}
+											className="text-xs font-semibold flex items-center gap-1.5"
+										>
+											Resume Voting
+											<ArrowRight size={13} />
+										</Button>
+									</div>
 								</div>
+							)}
+							<div className="w-full mt-4 sm:mt-6">
+								<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+									<TournamentSetup />
+								</Suspense>
 							</div>
-						)}
-						{activeTab === "tournament" && (
-							<div
-								id="tournament"
-								className="w-full animate-in fade-in zoom-in-95 duration-300 slide-in-from-bottom-4"
-							>
-								<SectionHeading
-									id="section-heading-tournament"
-									title="But See How I Got There"
-									subtitle="Head-to-head matchups to rank them all."
-								/>
-								<div className="w-full mt-8">
-									<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-										{tournament.names && tournament.names.length > 0 ? (
-											<TournamentArena
-												names={tournament.names}
-												existingRatings={tournament.ratings}
-												onComplete={(ratings) => {
-													tournamentActions.completeTournament(ratings);
-													handleCompleteTournament();
-												}}
-											/>
-										) : (
-											<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
-												<p className="text-pretty text-sm text-muted-foreground">
-													Pick at least 2 names to start comparing them.
-												</p>
-												<Button variant="glass" onClick={() => setActiveTab("pick")}>
-													← Back to Pick
-												</Button>
-											</div>
-										)}
-									</Suspense>
-								</div>
+						</div>
+					)}
+					{activeTab === "tournament" && (
+						<div
+							id="tournament"
+							className="w-full animate-in fade-in zoom-in-95 duration-300 slide-in-from-bottom-4"
+						>
+							<SectionHeading
+								id="section-heading-tournament"
+								title="But See How I Got There"
+								subtitle="Head-to-head matchups to rank them all."
+							/>
+							<div className="w-full mt-4 sm:mt-6">
+								<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+									{tournament.names && tournament.names.length > 0 ? (
+										<TournamentArena
+											names={tournament.names}
+											existingRatings={tournament.ratings}
+											onComplete={(ratings) => {
+												tournamentActions.completeTournament(ratings);
+												handleCompleteTournament();
+											}}
+										/>
+									) : (
+										<div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 py-12 text-center">
+											<p className="text-pretty text-sm text-muted-foreground">
+												Pick at least 2 names to start comparing them.
+											</p>
+											<Button variant="glass" onClick={() => setActiveTab("pick")}>
+												← Back to Pick
+											</Button>
+										</div>
+									)}
+								</Suspense>
 							</div>
-						)}
-						{activeTab === "analysis" && (
-							<div
-								id="analysis"
-								className="w-full animate-in fade-in zoom-in-95 duration-300 slide-in-from-bottom-4"
-							>
-								<SectionHeading
-									id="section-heading-analysis"
-									title="Results"
-									subtitle="See how all the names ranked."
-								/>
-								<div className="w-full mt-8">
-									<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-										<ErrorBoundary context={errorContexts.analysisDashboard}>
-											<DashboardLazy
-												personalRatings={tournament.ratings}
-												currentTournamentNames={tournament.names ?? undefined}
-												onStartNew={handleStartNewTournament}
-												onUpdateRatings={tournamentActions.setRatings}
-												userName={user.name ?? ""}
-												isAdmin={user.isAdmin}
-												isLoggedIn={user.isLoggedIn}
-												avatarUrl={user.avatarUrl}
-											/>
-										</ErrorBoundary>
-									</Suspense>
-								</div>
+						</div>
+					)}
+					{activeTab === "analysis" && (
+						<div
+							id="analysis"
+							className="w-full animate-in fade-in zoom-in-95 duration-300 slide-in-from-bottom-4"
+						>
+							<SectionHeading
+								id="section-heading-analysis"
+								title="Results"
+								subtitle="See how all the names ranked."
+							/>
+							<div className="w-full mt-4 sm:mt-6">
+								<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+									<ErrorBoundary context={errorContexts.analysisDashboard}>
+										<DashboardLazy
+											personalRatings={tournament.ratings}
+											currentTournamentNames={tournament.names ?? undefined}
+											onStartNew={handleStartNewTournament}
+											onUpdateRatings={tournamentActions.setRatings}
+											userName={user.name ?? ""}
+											isAdmin={user.isAdmin}
+											isLoggedIn={user.isLoggedIn}
+											avatarUrl={user.avatarUrl}
+										/>
+									</ErrorBoundary>
+								</Suspense>
 							</div>
-						)}
-					</div>
+						</div>
+					)}
 				</div>
-			</Section>
-		</>
+			</div>
+		</Section>
 	);
 }

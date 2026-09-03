@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Help Me Name My Cat!</title>
+  <title>Naming Nosferatu</title>
 
   <!-- Mobile-specific meta tags for better navbar experience -->
   <meta name="mobile-web-app-capable" content="yes" />
@@ -16,14 +16,14 @@
 
   <!-- SEO -->
   <meta name="description"
-    content="Pick the perfect cat name via a fun tournament. Save, compare, and share results." />
+    content="A React application for managing cat names and related data" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ede4" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#12100d" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Name Nosferatu" />
-  <meta property="og:description" content="Tournament-style voting for cat names." />
+  <meta property="og:title" content="Naming Nosferatu" />
+  <meta property="og:description" content="A React application for managing cat names and related data" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="/assets/images/ui/cat_graphic_hd.png" />
 
@@ -86,25 +86,39 @@
 <body>
   <script>
     (function applyInitialTheme() {
-      const { documentElement, body } = document;
-      if (!documentElement) {
-        return;
-      }
+      try {
+        const { documentElement, body } = document;
+        if (!documentElement) {
+          return;
+        }
 
-      const storedTheme = localStorage.getItem("theme");
-      const themePreference = ["light", "dark", "system"].includes(storedTheme)
-        ? storedTheme
-        : "system";
-      const resolvedTheme =
-        themePreference === "system"
-          ? window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light"
-          : themePreference;
+        let storedTheme = "system";
+        try {
+          storedTheme = localStorage.getItem("theme") || "system";
+        } catch (_) {}
 
-      documentElement.dataset.theme = resolvedTheme;
-      if (body) {
-        body.dataset.theme = resolvedTheme;
+        const themePreference = ["light", "dark", "system"].includes(storedTheme)
+          ? storedTheme
+          : "system";
+
+        let prefersDark = true;
+        try {
+          if (typeof window.matchMedia === "function") {
+            prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          }
+        } catch (_) {}
+
+        const resolvedTheme =
+          themePreference === "system"
+            ? (prefersDark ? "dark" : "light")
+            : themePreference;
+
+        documentElement.dataset.theme = resolvedTheme;
+        if (body) {
+          body.dataset.theme = resolvedTheme;
+        }
+      } catch (err) {
+        console.warn("Theme init error:", err);
       }
     })();
   </script>

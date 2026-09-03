@@ -1,3 +1,4 @@
+import { toast } from "@heroui/react";
 import { type ClassValue, clsx } from "clsx";
 import { type ComponentType, lazy } from "react";
 import { twMerge } from "tailwind-merge";
@@ -77,6 +78,22 @@ export function hapticNavTap(): void {
 }
 
 /**
+ * Triggers subtle haptic feedback when a user clicks on a cat name during voting.
+ * Emits a crisp, subtle 15ms vibration pulse using the Vibration API.
+ */
+export function hapticVoteTap(durationMs = 15): boolean {
+	if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+		try {
+			return navigator.vibrate(durationMs);
+		} catch {
+			// Fail gracefully if Vibration API is blocked in sandbox/iframe or unsupported
+			return false;
+		}
+	}
+	return false;
+}
+
+/**
  * Triggers a sequence of haptic feedback for tournament starts.
  */
 export function hapticTournamentStart(): void {
@@ -107,4 +124,31 @@ export function safeLazy<T extends ComponentType<unknown>>(
 			throw error;
 		}
 	});
+}
+
+export class ErrorManager {
+	static setupGlobalErrorHandling() {
+		const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+			console.error("Unhandled Promise Rejection:", event.reason);
+			ErrorManager.handleError(event.reason);
+		};
+
+		const handleErrorEvent = (event: ErrorEvent) => {
+			console.error("Global Error:", event.error);
+			ErrorManager.handleError(event.error);
+		};
+
+		window.addEventListener("unhandledrejection", handleUnhandledRejection);
+		window.addEventListener("error", handleErrorEvent);
+
+		return () => {
+			window.removeEventListener("unhandledrejection", handleUnhandledRejection);
+			window.removeEventListener("error", handleErrorEvent);
+		};
+	}
+
+	static handleError(error: unknown) {
+		const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+		toast(errorMessage);
+	}
 }

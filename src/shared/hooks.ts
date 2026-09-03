@@ -35,11 +35,24 @@ export function usePrefersReducedMotion() {
 	const [matches, setMatches] = useState(false);
 
 	useEffect(() => {
-		const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-		setMatches(media.matches);
-		const handleChange = () => setMatches(media.matches);
-		media.addEventListener("change", handleChange);
-		return () => media.removeEventListener("change", handleChange);
+		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+			return;
+		}
+
+		try {
+			const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+			setMatches(media.matches);
+			const handleChange = () => setMatches(media.matches);
+			if (media.addEventListener) {
+				media.addEventListener("change", handleChange);
+				return () => media.removeEventListener("change", handleChange);
+			} else if (media.addListener) {
+				media.addListener(handleChange);
+				return () => media.removeListener(handleChange);
+			}
+		} catch {
+			// Ignore unsupported matchMedia errors
+		}
 	}, []);
 
 	return matches;

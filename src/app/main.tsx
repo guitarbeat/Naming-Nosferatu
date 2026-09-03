@@ -2,16 +2,29 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-
+import { queryClient } from "@/shared/api";
 import { ErrorBoundary } from "@/shared/components";
-import { localAuthAdapter as authAdapter } from "@/shared/lib/authAdapter";
-import { queryClient } from "@/shared/lib/queryClient";
 
 import App from "./App";
 import { Providers } from "./Providers";
-import { registerServiceWorker } from "./registerServiceWorker";
 
 import "../index.css";
+
+function registerServiceWorker(): void {
+	if (!import.meta.env.PROD || !("serviceWorker" in navigator)) {
+		return;
+	}
+
+	window.addEventListener(
+		"load",
+		() => {
+			navigator.serviceWorker.register("/sw.js").catch((error) => {
+				console.warn("Service worker registration failed:", error);
+			});
+		},
+		{ once: true },
+	);
+}
 
 registerServiceWorker();
 
@@ -59,7 +72,7 @@ ReactDOM.createRoot(rootElement).render(
 			}}
 		>
 			<QueryClientProvider client={queryClient}>
-				<Providers auth={{ adapter: authAdapter }}>
+				<Providers>
 					<BrowserRouter>
 						<App />
 					</BrowserRouter>

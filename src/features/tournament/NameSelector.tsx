@@ -1,14 +1,33 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, Eye, EyeOff, Lock, Unlock, ZoomIn } from "lucide-react";
+import {
+	Boxes,
+	Check,
+	Eye,
+	EyeOff,
+	LayoutGrid,
+	Lock,
+	Play,
+	RotateCcw,
+	Unlock,
+	ZoomIn,
+} from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/app/Providers";
 import { namesQueryOptions, SUPABASE_UNAVAILABLE_MSG, useNameAdminActions } from "@/shared/api";
-import { Button, CatImage, Lightbox, Loading, Modal } from "@/shared/components";
+import {
+	Button,
+	CatImage,
+	DriftWall,
+	type DriftWallItem,
+	Lightbox,
+	Loading,
+	Modal,
+} from "@/shared/components";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getLockedNames, getVisibleNames, isNameHidden, isNameLocked } from "@/shared/lib/names";
 import { getRandomCatImage, MOTION_SPRINGS } from "@/shared/lib/uiUtils";
-import { addToSet, hapticNavTap, removeFromSet } from "@/shared/lib/utils";
+import { addToSet, hapticNavTap, hapticTournamentStart, removeFromSet } from "@/shared/lib/utils";
 import type { IdType, NameItem } from "@/shared/types";
 import useAppStore from "@/store";
 
@@ -148,22 +167,38 @@ export const NameSelector = memo(function NameSelector() {
 	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [lightboxIndex, setLightboxIndex] = useState(0);
+	const [viewMode, setViewMode] = useState<"wall" | "grid">("wall");
 
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
 		retry: 2,
 	});
 
-	const sampleNames = [
-		{ id: "1", name: "Luna", description: "Graceful and mysterious" },
-		{ id: "2", name: "Miso", description: "Sweet and playful" },
-		{ id: "3", name: "Pixel", description: "Tech-savvy and clever" },
-		{ id: "4", name: "Saffron", description: "Warm and spicy personality" },
-		{ id: "5", name: "Noodle", description: "Long and stretchy" },
-		{ id: "6", name: "Ziggy", description: "Bold and energetic" },
-		{ id: "7", name: "Whiskers", description: "Classic and timeless" },
-		{ id: "8", name: "Pepper", description: "Small but mighty" },
-	] satisfies NameItem[];
+	const sampleNames = useMemo<NameItem[]>(
+		() => [
+			{ id: "1", name: "Nosferatu", description: "The immortal feline count with shadowy charm" },
+			{ id: "2", name: "Luna", description: "Graceful and mysterious moonlit tabby" },
+			{
+				id: "3",
+				name: "Miso",
+				description: "Sweet and playful companion who purrs like an engine",
+			},
+			{ id: "4", name: "Pixel", description: "Tech-savvy, energetic, and clever troublemaker" },
+			{ id: "5", name: "Saffron", description: "Warm and spicy personality with golden fur" },
+			{ id: "6", name: "Noodle", description: "Long, stretchy acrobatic champion" },
+			{ id: "7", name: "Ziggy", description: "Bold and energetic fearless explorer" },
+			{ id: "8", name: "Whiskers", description: "Classic, timeless, and distinguished gentlegato" },
+			{ id: "9", name: "Pepper", description: "Small but mighty whirlwind of energy" },
+			{
+				id: "10",
+				name: "Shadow",
+				description: "Silent stalker of dust motes and midnight zoomies",
+			},
+			{ id: "11", name: "Milo", description: "Friendly adventurer with curious streak" },
+			{ id: "12", name: "Barnaby", description: "Dignified floof with a heart of gold" },
+		],
+		[],
+	);
 
 	const error =
 		namesQuery.error instanceof Error
@@ -172,8 +207,11 @@ export const NameSelector = memo(function NameSelector() {
 				? "Failed to load names"
 				: null;
 	const isSupabaseUnavailable = error === SUPABASE_UNAVAILABLE_MSG;
-	const names = isSupabaseUnavailable ? sampleNames : (namesQuery.data?.names ?? []);
-	const isLoading = namesQuery.isPending && !isSupabaseUnavailable;
+	const names =
+		namesQuery.data?.names && namesQuery.data.names.length > 0
+			? namesQuery.data.names
+			: sampleNames;
+	const isLoading = namesQuery.isPending && !namesQuery.data;
 
 	const selectedIds = useMemo(
 		() => new Set(storeSelectedNames.map((item) => item.id)),
@@ -213,6 +251,18 @@ export const NameSelector = memo(function NameSelector() {
 			tournamentActions.setSelection([...storeSelectedNames, ...missingLocked]);
 		}
 	}, [names, storeSelectedNames, tournamentActions, selectedIds]);
+
+	// Pre-select 8 candidates on initial load if none are selected yet
+	useEffect(() => {
+		if (storeSelectedNames.length === 0 && names.length >= 8) {
+			const activeCandidates = names.filter((n) => !isNameHidden(n));
+			if (activeCandidates.length >= 2) {
+				tournamentActions.setSelection(
+					activeCandidates.slice(0, Math.min(8, activeCandidates.length)),
+				);
+			}
+		}
+	}, [names, storeSelectedNames.length, tournamentActions]);
 
 	const triggerHaptic = useCallback(() => {
 		hapticNavTap();
@@ -335,6 +385,27 @@ export const NameSelector = memo(function NameSelector() {
 	}, [pendingAdminAction, handleToggleHidden, handleToggleLocked]);
 
 	const availableNames = useMemo(() => getVisibleNames(names), [names]);
+
+	const driftWallItems = useMemo<DriftWallItem[]>(() => {
+		return availableNames.map((nameItem) => {
+			const isSelected = selectedIds.has(nameItem.id);
+			const catImage =
+				catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES, nameItem.name);
+			const locked = isNameLocked(nameItem);
+			return {
+				id: String(nameItem.id),
+				image: catImage,
+				title: nameItem.name,
+				subtitle: nameItem.pronunciation
+					? `/${nameItem.pronunciation}/`
+					: (nameItem.description ?? undefined),
+				selected: isSelected,
+				locked,
+				onClick: () => handleToggleName(nameItem.id),
+			};
+		});
+	}, [availableNames, selectedIds, catImageById, handleToggleName]);
+
 	const isHiddenAction = pendingAdminAction?.type === "toggle-hidden";
 	const isDisablingAction = Boolean(pendingAdminAction?.isCurrentlyEnabled);
 	const confirmTitle = isHiddenAction
@@ -370,6 +441,18 @@ export const NameSelector = memo(function NameSelector() {
 		[nameIndexById],
 	);
 
+	const handleStartTournament = useCallback(() => {
+		hapticTournamentStart();
+		if (storeSelectedNames.length >= 2) {
+			tournamentActions.setNames(storeSelectedNames);
+			window.dispatchEvent(new CustomEvent("nav-tab-change", { detail: "tournament" }));
+			const tournamentEl = document.getElementById("tournament");
+			if (tournamentEl) {
+				tournamentEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth" });
+			}
+		}
+	}, [prefersReducedMotion, storeSelectedNames, tournamentActions]);
+
 	if (isLoading) {
 		return (
 			<div className="mx-auto w-full py-16 flex items-center justify-center">
@@ -402,6 +485,117 @@ export const NameSelector = memo(function NameSelector() {
 	return (
 		<div className="mx-auto w-full space-y-6">
 			{availableNames.length > 0 && (
+				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-2 border-b border-border/40">
+					<div className="text-left w-full sm:w-auto">
+						<h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
+							<Boxes className="size-5 text-primary" />
+							Candidate Shortlist
+						</h3>
+						<p className="text-xs text-muted-foreground mt-0.5">
+							Click any name to select/deselect contenders for the tournament (
+							{storeSelectedNames.length} selected)
+						</p>
+					</div>
+
+					<div className="flex items-center gap-1.5 p-1 rounded-xl bg-card/80 border border-border/50 backdrop-blur-md shadow-xs self-start sm:self-auto">
+						<button
+							type="button"
+							onClick={() => setViewMode("wall")}
+							className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+								viewMode === "wall"
+									? "bg-primary text-primary-foreground shadow-sm"
+									: "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+							}`}
+							aria-pressed={viewMode === "wall"}
+						>
+							<Boxes size={14} />
+							<span>3D Drift Wall</span>
+						</button>
+						<button
+							type="button"
+							onClick={() => setViewMode("grid")}
+							className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+								viewMode === "grid"
+									? "bg-primary text-primary-foreground shadow-sm"
+									: "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+							}`}
+							aria-pressed={viewMode === "grid"}
+						>
+							<LayoutGrid size={14} />
+							<span>Classic Grid</span>
+						</button>
+					</div>
+				</div>
+			)}
+
+			{availableNames.length > 0 && (
+				<div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-card/90 border border-primary/20 shadow-sm backdrop-blur-md">
+					<div className="flex items-center gap-2.5">
+						<span className="flex size-7 items-center justify-center rounded-lg bg-primary/15 text-primary text-xs font-bold">
+							{storeSelectedNames.length}
+						</span>
+						<span className="text-xs sm:text-sm font-medium text-foreground">
+							{storeSelectedNames.length === 1
+								? "1 contender selected"
+								: `${storeSelectedNames.length} contenders selected for tournament`}
+						</span>
+					</div>
+					<div className="flex items-center gap-2">
+						<Button
+							type="button"
+							variant="outline"
+							size="small"
+							onClick={() => {
+								hapticNavTap();
+								const allVisible = availableNames.filter((n) => !isNameHidden(n));
+								tournamentActions.setSelection(
+									storeSelectedNames.length === allVisible.length ? [] : allVisible.slice(0, 8),
+								);
+							}}
+						>
+							<RotateCcw className="size-3.5 mr-1" />
+							{storeSelectedNames.length > 0 ? "Clear Selection" : "Select Top 8"}
+						</Button>
+						<Button
+							type="button"
+							variant="primary"
+							size="small"
+							onClick={handleStartTournament}
+							disabled={storeSelectedNames.length < 2}
+						>
+							<Play className="size-3.5 mr-1 fill-current" />
+							Start Tournament ({storeSelectedNames.length})
+						</Button>
+					</div>
+				</div>
+			)}
+
+			{availableNames.length > 0 && viewMode === "wall" && (
+				<div className="w-full relative h-[600px] md:h-[640px] rounded-3xl overflow-hidden border border-border/50 bg-background/60 shadow-2xl backdrop-blur-md">
+					<DriftWall
+						items={driftWallItems}
+						columns={5}
+						tileWidth={210}
+						tileHeight={140}
+						gap={18}
+						tilt={16}
+						turn={-14}
+						perspective={1200}
+						depth={120}
+						speed={42}
+						direction="up"
+						variance={0.45}
+						parallax={0.6}
+						lift={64}
+						fade={0.6}
+						dim={0.65}
+						pauseOnHover={true}
+						overlayColor="#060010"
+					/>
+				</div>
+			)}
+
+			{availableNames.length > 0 && viewMode === "grid" && (
 				<div className="grid grid-cols-2 min-[540px]:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
 					{availableNames.map((nameItem) => {
 						const isSelected = selectedIds.has(nameItem.id);

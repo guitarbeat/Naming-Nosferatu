@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 import { useNavigate } from "react-router-dom";
-import { errorContexts, routeComponents } from "@/app/appConfig";
 import { useAuth } from "@/app/Providers";
+import { Dashboard as DashboardLazy } from "@/features/dashboard/Dashboard";
 import { Button, ErrorBoundary, Loading, Section } from "@/shared/components";
-
-const DashboardLazy = routeComponents.DashboardLazy;
+import { errorContexts } from "@/store";
 
 function AdminLoading() {
 	return (

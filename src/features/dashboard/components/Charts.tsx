@@ -21,19 +21,44 @@ import {
 import { computeRatingStats } from "@/shared/lib/elo";
 import { themeSurfaces } from "@/shared/lib/uiUtils";
 import { cn } from "@/shared/lib/utils";
-import {
-	BUCKET_SIZE,
-	CHART_AXIS,
-	CHART_CURSOR,
-	CHART_FOREGROUND,
-	CHART_GRID,
-	CHART_PALETTE,
-	CHART_SERIES,
-	CHART_TEXT_MUTED,
-	CHART_TOOLTIP_STYLE,
-} from "../constants";
 import type { LeaderboardEntry } from "../types";
 import { ChartFrame } from "./Common";
+
+export const CHART_PALETTE = {
+	teal: "#3FB8B0",
+	coral: "#E5764A",
+	sand: "#D4B483",
+	violet: "#9F7AEA",
+	sky: "#5BA8E8",
+	rose: "#E26E9D",
+} as const;
+
+export const CHART_SERIES = [
+	CHART_PALETTE.teal,
+	CHART_PALETTE.coral,
+	CHART_PALETTE.sand,
+	CHART_PALETTE.violet,
+	CHART_PALETTE.sky,
+	CHART_PALETTE.rose,
+] as const;
+
+export const CHART_TEXT_MUTED = "rgba(200, 210, 222, 0.55)";
+export const CHART_GRID = "rgba(200, 210, 222, 0.12)";
+export const CHART_AXIS = "rgba(200, 210, 222, 0.18)";
+export const CHART_FOREGROUND = "#ebf1f7";
+
+export const CHART_TOOLTIP_STYLE = {
+	background: "var(--chart-tooltip-bg)",
+	border: "1px solid var(--chart-tooltip-border)",
+	borderRadius: 10,
+	fontSize: 12,
+	color: "var(--chart-tooltip-fg)",
+	boxShadow: "var(--chart-tooltip-shadow)",
+} as const;
+
+export const CHART_CURSOR = { fill: "var(--chart-cursor-fill)" } as const;
+
+export const BUCKET_SIZE = 25;
 
 /* ==========================================================================
    1. Popular Naming Trends Scatter Chart

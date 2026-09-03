@@ -1,0 +1,364 @@
+/**
+ * @file tokens.css
+ * @description Unified design tokens, color system, and Tailwind theme mapping.
+ */
+
+/* ==========================================================================
+   1. CORE DESIGN TOKENS
+   ========================================================================== */
+:root {
+	/* Typography */
+	--font-sans:
+		"Space Grotesk", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI",
+		roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
+	--font-ui: "Inter", var(--font-sans);
+	--font-ui-mono: "Inter", var(--font-mono);
+	--font-display: "Syne", var(--font-sans);
+	--font-whimsical: "Patrick Hand", cursive;
+	--font-serif: ui-serif, georgia, cambria, "Times New Roman", times, serif;
+	--font-mono:
+		"Space Mono", ui-monospace, sfmono-regular, menlo, monaco, consolas, "Liberation Mono",
+		"Courier New", monospace;
+
+	/* Spacing scale */
+	--spacing: 0.25rem;
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+	--space-10: 2.5rem;
+	--space-12: 3rem;
+	--space-16: 4rem;
+	--space-20: 5rem;
+	--space-24: 6rem;
+	--space-28: 7rem;
+	--space-32: 8rem;
+
+	/* Border Radius */
+	--radius: 0.75rem;
+	--radius-none: 0;
+	--radius-xs: 0.125rem;
+	--radius-sm: 0.375rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.75rem;
+	--radius-xl: 1rem;
+	--radius-2xl: 1.5rem;
+	--radius-full: 9999px;
+
+	/* Z-Index Hierarchy */
+	--z-dropdown: 100;
+	--z-sticky: 200;
+	--z-drawer: 200;
+	--z-modal: 300;
+	--z-popover: 400;
+	--z-toast: 500;
+	--z-navbar: 1000;
+	--z-modal-backdrop: 9998;
+	--z-modal-dialog: 9999;
+	--z-max: 10000;
+
+	/* Motion & Transitions */
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+	--duration-fast: 100ms;
+	--duration-base: 180ms;
+	--duration-moderate: 250ms;
+	--duration-gentle: 350ms;
+	--duration-normal: var(--duration-moderate);
+	--transition-base: all 0.2s ease-in-out;
+	--transition-all: all 0.3s ease;
+	--transition-theme: color 0.2s ease, background-color 0.2s ease;
+	--transition-opacity: opacity 0.2s ease;
+
+	/* Micro-transforms */
+	--lift-small: -2px;
+	--scale-press: 0.98;
+	--scale-subtle: 1.01;
+	--radius-button: var(--radius-lg, 0.75rem);
+	--overlay-dark: rgba(0, 0, 0, 0.75);
+
+	/* Chart Tooltip Tokens */
+	--chart-tooltip-bg: var(--card);
+	--chart-tooltip-border: var(--border);
+	--chart-tooltip-fg: var(--foreground);
+	--chart-tooltip-shadow: var(--shadow-lg);
+	--chart-cursor-fill: color-mix(in srgb, var(--primary) 10%, transparent);
+
+	/* Shadows */
+	--shadow-2xs: 1px 1px 0px 0px rgba(0, 0, 0, 0.5);
+	--shadow-xs: 2px 2px 0px 0px rgba(0, 0, 0, 0.5);
+	--shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.25);
+	--shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
+	--shadow-lg: 0 16px 36px -6px rgba(0, 0, 0, 0.45);
+	--shadow-xl: 0 24px 48px -8px rgba(0, 0, 0, 0.55);
+	--shadow-2xl: 0 32px 64px -12px rgba(0, 0, 0, 0.65);
+
+	/* Layout constants */
+	--app-container-max-width: clamp(70rem, 95vw, 150rem);
+	--app-container-padding-inline: var(--space-4);
+	--app-main-min-height: 100dvh;
+	--app-main-gap: 0;
+	--app-nav-frame-width: min(95vw, 58rem);
+	--app-nav-frame-width-compact: min(calc(100vw - 1rem), 32rem);
+	--app-nav-bottom-offset: max(var(--space-4), calc(env(safe-area-inset-bottom) + var(--space-3)));
+	--app-nav-shell-height: 4.75rem;
+	--app-nav-safe-bottom: calc(
+		var(--app-nav-shell-height) +
+		var(--app-nav-bottom-offset) +
+		var(--space-6)
+	);
+	--app-main-bottom-padding: var(--app-nav-safe-bottom);
+	--app-section-padding-inline: var(--space-4);
+	--app-section-padding-block: var(--space-12);
+	--app-section-padding-block-fullpage: max(
+		var(--space-24),
+		calc(100dvh - var(--app-nav-shell-height) - var(--space-16))
+	);
+	--app-section-scroll-margin: var(--space-24);
+	--app-section-separator-padding: var(--space-14, 3.5rem);
+	--app-section-max-md: 42rem;
+	--app-section-max-xl: 72rem;
+	--app-section-max-2xl: 80rem;
+	--app-hero-min-height: calc(100dvh - var(--app-nav-shell-height));
+	--app-hero-padding-block-start: var(--space-24);
+	--app-hero-padding-block-end: max(var(--space-24), var(--app-nav-safe-bottom));
+	--app-hero-preview-min-height: 26rem;
+	--app-chart-frame-height: 13rem;
+	--app-chart-frame-height-tall: 14rem;
+
+	/* Focus & Glow */
+	--focus-ring-color: color-mix(in srgb, var(--primary) 40%, transparent);
+	--focus-ring-spread: 3px;
+	--glow-subtle: 0 0 12px color-mix(in srgb, var(--primary) 15%, transparent);
+	--glow-medium: 0 0 20px color-mix(in srgb, var(--primary) 25%, transparent);
+	--glow-strong: 0 0 30px color-mix(in srgb, var(--primary) 35%, transparent);
+
+	/* Palette HSL components */
+	--pw-sage-hsl: 152 26% 42%;
+	--pw-coral-hsl: 24 48% 54%;
+	--pw-sand-hsl: 34 32% 62%;
+	--pw-indigo-hsl: 28 16% 18%;
+	--pw-mimosa-hsl: 38 72% 58%;
+	--pw-danger-hsl: 8 58% 48%;
+	--pw-info-hsl: 205 42% 52%;
+	--pw-cream-hsl: 38 42% 92%;
+}
+
+@media (min-width: 640px) {
+	:root {
+		--app-container-padding-inline: var(--space-6);
+		--app-section-padding-inline: var(--space-6);
+		--app-section-padding-block: var(--space-16);
+		--app-section-scroll-margin: var(--space-16);
+		--app-section-separator-padding: var(--space-28);
+		--app-hero-padding-block-start: var(--space-28);
+		--app-chart-frame-height: 16rem;
+		--app-chart-frame-height-tall: 18rem;
+	}
+}
+
+/* ==========================================================================
+   2. DARK THEME PALETTE (Default)
+   ========================================================================== */
+:root {
+	color-scheme: dark;
+
+	/* Backgrounds & Surfaces */
+	--background: hsl(32deg 18% 8%);
+	--foreground: hsl(38deg 35% 94%);
+	--card: hsl(30deg 14% 12%);
+	--card-foreground: hsl(38deg 35% 94%);
+	--popover: hsl(30deg 14% 12%);
+	--popover-foreground: hsl(38deg 35% 94%);
+
+	/* Semantic Colors */
+	--primary: hsl(var(--pw-sage-hsl));
+	--primary-foreground: hsl(38deg 42% 96%);
+	--secondary: hsl(28deg 12% 18%);
+	--secondary-foreground: hsl(36deg 28% 88%);
+	--muted: hsl(28deg 10% 16%);
+	--muted-foreground: hsl(32deg 12% 62%);
+	--accent: hsl(var(--pw-coral-hsl));
+	--accent-foreground: hsl(38deg 42% 96%);
+	--destructive: hsl(8deg 58% 48%);
+	--destructive-foreground: hsl(0deg 0% 98%);
+	--success: hsl(var(--pw-sage-hsl));
+	--success-foreground: hsl(0deg 0% 100%);
+	--warning: hsl(var(--pw-mimosa-hsl));
+	--warning-foreground: hsl(224deg 28% 12%);
+	--border: hsl(30deg 12% 26%);
+	--input: hsl(30deg 12% 26%);
+	--ring: hsl(var(--pw-coral-hsl));
+
+	/* Charts */
+	--chart-1: hsl(var(--pw-coral-hsl));
+	--chart-2: hsl(var(--pw-sage-hsl));
+	--chart-3: hsl(var(--pw-indigo-hsl));
+	--chart-4: hsl(var(--pw-mimosa-hsl));
+	--chart-5: hsl(330deg 73% 64%);
+
+	/* PW Color Bridge */
+	--pw-bg-0: #12100d;
+	--pw-bg-1: #1a1713;
+	--pw-bg-2: #242019;
+	--pw-bg-3: #2f2922;
+	--pw-text-strong: #f5f0e8;
+	--pw-text-base: #d4c8b8;
+	--pw-text-muted: #9a8b7a;
+	--pw-border-soft: color-mix(in srgb, var(--pw-text-strong) 16%, transparent);
+	--pw-border-strong: color-mix(in srgb, var(--pw-text-strong) 28%, transparent);
+	--surface-muted: var(--pw-bg-1);
+	--surface-elevated: var(--pw-bg-2);
+	--text-primary: var(--pw-text-strong);
+	--text-secondary: var(--pw-text-base);
+	--text-tertiary: var(--pw-text-muted);
+
+	/* Glassmorphism */
+	--glass-radius: 1.5rem;
+	--glass-blur: 16px;
+	--glass-saturation: 1.08;
+	--glass-border: color-mix(in srgb, white 14%, transparent);
+	--glass-border-hover: color-mix(in srgb, white 24%, transparent);
+	--glass-bg: rgb(15 23 42 / 48%);
+	--glass-bg-light: rgb(255 255 255 / 14%);
+	--glass-bg-strong: rgb(15 23 42 / 72%);
+
+	/* Floating Navbar Tokens - Dark */
+	--nav-bg: rgb(18 18 20 / 75%);
+	--nav-text: #f4f4f5;
+	--nav-text-muted: #71717a;
+	--nav-highlight: #fafafa;
+	--nav-accent: #e4e4e7;
+	--nav-shell-bg: rgb(24 24 27 / 70%);
+	--nav-shell-border: rgb(255 255 255 / 12%);
+	--nav-shell-shadow:
+		0 20px 40px -12px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(0, 0, 0, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.12);
+	--nav-pill-bg: rgb(255 255 255 / 14%);
+	--nav-pill-hover-bg: rgb(255 255 255 / 6%);
+	--nav-pill-border: rgb(255 255 255 / 18%);
+	--nav-pill-hover-border: rgb(255 255 255 / 12%);
+	--nav-pill-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+	--nav-utility-bg: color-mix(in srgb, var(--pw-bg-1) 28%, transparent);
+	--nav-utility-border: color-mix(in srgb, var(--text-primary) 10%, transparent);
+	--nav-utility-active-bg: color-mix(in srgb, var(--nav-highlight) 18%, transparent);
+	--nav-utility-active-border: color-mix(in srgb, var(--nav-highlight) 32%, transparent);
+	--nav-utility-shadow: 0 8px 18px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+	--nav-accent-text: #f4f4f5;
+
+	/* Direct semantic colors */
+	--color-success: var(--success);
+	--color-error: var(--destructive);
+	--color-warning: var(--warning);
+	--color-info: hsl(var(--pw-info-hsl));
+}
+
+/* ==========================================================================
+   3. LIGHT THEME PALETTE
+   ========================================================================== */
+:root[data-theme="light"] {
+	color-scheme: light;
+
+	--background: hsl(38deg 42% 96%);
+	--foreground: hsl(28deg 22% 16%);
+	--card: hsl(40deg 38% 99%);
+	--card-foreground: hsl(28deg 22% 16%);
+	--popover: hsl(40deg 38% 99%);
+	--popover-foreground: hsl(28deg 22% 16%);
+
+	--primary: hsl(152deg 26% 38%);
+	--primary-foreground: hsl(38deg 42% 98%);
+	--secondary: hsl(34deg 22% 90%);
+	--secondary-foreground: hsl(28deg 18% 22%);
+	--muted: hsl(36deg 20% 88%);
+	--muted-foreground: hsl(30deg 10% 42%);
+	--accent: hsl(var(--pw-coral-hsl));
+	--accent-foreground: hsl(38deg 42% 98%);
+	--border: hsl(32deg 18% 78%);
+	--input: hsl(32deg 18% 78%);
+	--ring: hsl(var(--pw-coral-hsl));
+
+	--pw-bg-0: #f3ede4;
+	--pw-bg-1: #faf6f0;
+	--pw-bg-2: #ebe4d8;
+	--pw-bg-3: #ddd4c4;
+	--pw-text-strong: #2a2218;
+	--pw-text-base: #4a4034;
+	--pw-text-muted: #7a6e5e;
+	--pw-border-soft: color-mix(in srgb, var(--pw-text-strong) 18%, transparent);
+	--pw-border-strong: color-mix(in srgb, var(--pw-text-strong) 28%, transparent);
+	--surface-muted: var(--pw-bg-1);
+	--surface-elevated: var(--pw-bg-2);
+	--text-primary: var(--pw-text-strong);
+	--text-secondary: var(--pw-text-base);
+	--text-tertiary: var(--pw-text-muted);
+
+	--glass-border: color-mix(in srgb, black 10%, transparent);
+	--glass-border-hover: color-mix(in srgb, black 18%, transparent);
+	--glass-bg: rgb(255 255 255 / 75%);
+	--glass-bg-light: rgb(255 255 255 / 90%);
+	--glass-bg-strong: rgb(255 255 255 / 85%);
+
+	--nav-bg: rgb(255 255 255 / 80%);
+	--nav-text: #18181b;
+	--nav-text-muted: #71717a;
+	--nav-shell-bg: rgb(255 255 255 / 75%);
+	--nav-shell-border: rgb(0 0 0 / 0.08);
+	--nav-shell-shadow:
+		0 16px 36px -8px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04),
+		inset 0 1px 0 rgba(255, 255, 255, 0.9);
+	--nav-pill-bg: rgb(24 24 27 / 92%);
+	--nav-pill-hover-bg: rgb(0 0 0 / 4%);
+	--nav-pill-border: rgb(0 0 0 / 0.12);
+	--nav-pill-hover-border: rgb(0 0 0 / 0.08);
+	--nav-pill-shadow: 0 2px 8px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ==========================================================================
+   4. TAILWIND CSS @theme INLINE CONFIGURATION
+   ========================================================================== */
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+
+	--font-sans: var(--font-sans);
+	--font-ui: var(--font-ui);
+	--font-ui-mono: var(--font-ui-mono);
+	--font-display: var(--font-display);
+	--font-whimsical: var(--font-whimsical);
+	--font-serif: var(--font-serif);
+	--font-mono: var(--font-mono);
+
+	--radius: var(--radius);
+	--spacing: var(--spacing);
+}

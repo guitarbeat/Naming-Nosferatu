@@ -2,8 +2,7 @@ import { motion } from "framer-motion";
 import { Check, Copy, Crown, Trophy } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { Button } from "@/shared/components";
-import { ErrorManager } from "@/shared/lib/errorManager";
-import { cn } from "@/shared/lib/utils";
+import { cn, ErrorManager } from "@/shared/lib/utils";
 import type { NameItem, RatingData } from "@/shared/types";
 import { RankingAdjustment } from "./RankingAdjustment";
 

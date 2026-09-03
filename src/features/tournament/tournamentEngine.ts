@@ -279,6 +279,34 @@ export function getMatchSideId(match: Match, side: "left" | "right"): string {
 	return normalizeParticipant(match[side]).id;
 }
 
+export function calculateWinStreak(
+	contestantId: string | number | null | undefined,
+	matchHistory?: MatchRecord[] | null,
+): number {
+	if (!contestantId || !matchHistory || matchHistory.length === 0) {
+		return 0;
+	}
+	const targetId = String(contestantId);
+	let streak = 0;
+	for (let i = matchHistory.length - 1; i >= 0; i--) {
+		const record = matchHistory[i];
+		if (!record?.match) {
+			continue;
+		}
+		const leftId = getMatchSideId(record.match, "left");
+		const rightId = getMatchSideId(record.match, "right");
+		if (leftId !== targetId && rightId !== targetId) {
+			continue;
+		}
+		if (String(record.winner) === targetId) {
+			streak++;
+		} else {
+			break;
+		}
+	}
+	return streak;
+}
+
 export function getMatchSideName(match: Match, side: "left" | "right"): string {
 	return normalizeParticipant(match[side]).name;
 }
