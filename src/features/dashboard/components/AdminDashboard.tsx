@@ -1,7 +1,6 @@
 import { BarChart3, Eye, EyeOff, Lock, Trash2, Unlock } from "lucide-react";
 import { memo } from "react";
-import { SearchFilterBar } from "@/components/ui/SearchFilterBar";
-import { Button, Loading } from "@/shared/components";
+import { Button, Loading, SearchFilterBar } from "@/shared/components";
 import { isNameHidden, isNameLocked } from "@/shared/lib/names";
 import { useAdminDashboard } from "../hooks";
 import type { AdminStatsGridProps, NameWithStats } from "../types";

@@ -1,6 +1,5 @@
 import { BarChart3, Settings } from "lucide-react";
 import { useState } from "react";
-import { MagicToggle } from "@/components/ui/MagicToggle";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
 import type { DashboardProps } from "./types";
@@ -38,12 +37,24 @@ export function Dashboard(props: UnifiedDashboardProps) {
 	return (
 		<div className="w-full space-y-6">
 			<div className="flex items-center gap-4 border-b border-border pb-4">
-				<MagicToggle<DashboardView>
-					options={DASHBOARD_VIEW_OPTIONS}
-					value={activeView}
-					onChange={(val: DashboardView) => setActiveView(val)}
-					ariaLabel="Dashboard view options"
-				/>
+				<div className="flex gap-2" role="group" aria-label="Dashboard view options">
+					{DASHBOARD_VIEW_OPTIONS.map((opt) => (
+						<button
+							key={opt.value}
+							type="button"
+							onClick={() => setActiveView(opt.value)}
+							aria-pressed={activeView === opt.value}
+							className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+								activeView === opt.value
+									? "bg-primary text-primary-foreground"
+									: "bg-muted text-muted-foreground hover:bg-muted/80"
+							}`}
+						>
+							{opt.icon}
+							{opt.label}
+						</button>
+					))}
+				</div>
 			</div>
 
 			{activeView === "analytics" ? <AnalyticsDashboard {...props} /> : <AdminDashboard />}
