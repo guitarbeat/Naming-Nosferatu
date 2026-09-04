@@ -1142,7 +1142,7 @@ export function OfflineIndicator() {
 interface SectionProps {
 	id?: string;
 	children: ReactNode;
-	maxWidth?: "md" | "xl" | "2xl";
+	maxWidth?: "md" | "xl" | "2xl" | "full";
 	className?: string;
 	separator?: boolean;
 	fullpage?: boolean;
@@ -1154,6 +1154,7 @@ const maxWidthClasses = {
 	md: "app-section--max-md",
 	xl: "app-section--max-xl",
 	"2xl": "app-section--max-2xl",
+	full: "w-full max-w-none px-0",
 } as const;
 
 export function Section({

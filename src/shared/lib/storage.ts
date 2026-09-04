@@ -27,6 +27,30 @@ const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 const DEVICE_KEY_STORAGE_KEY = "__device_key__";
 
 let cachedDeviceKeyHex: CryptoJS.lib.WordArray | null = null;
+const memoryFallbackStore = new Map<string, string>();
+const decryptionCache = new Map<string, string>();
+const MAX_DECRYPT_CACHE = 100;
+
+function isQuotaExceeded(error: unknown): boolean {
+	return (
+		error instanceof DOMException &&
+		(error.code === 22 ||
+			error.code === 1014 ||
+			error.name === "QuotaExceededError" ||
+			error.name === "NS_ERROR_DOM_QUOTA_REACHED")
+	);
+}
+
+function evictTransientCache(): void {
+	try {
+		if (typeof window !== "undefined") {
+			window.localStorage.removeItem("names_cache_map");
+			window.localStorage.removeItem("__storage_test__");
+		}
+	} catch {
+		// Ignore
+	}
+}
 
 function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
 	if (cachedDeviceKeyHex) {
@@ -66,6 +90,14 @@ function encrypt(text: string): string {
 }
 
 function decrypt(text: string): string {
+	if (!text) {
+		return "";
+	}
+	const cached = decryptionCache.get(text);
+	if (cached !== undefined) {
+		return cached;
+	}
+
 	try {
 		let iv: CryptoJS.lib.WordArray = LEGACY_IV; // Default static IV for legacy data
 		let ciphertext = text;
@@ -79,6 +111,13 @@ function decrypt(text: string): string {
 		} else {
 			// If it's plain text without IV separator and doesn't look like cipher data, return as-is
 			if (!text.includes("=") && /^[a-zA-Z0-9_\s-]+$/.test(text) && text !== "plain_text_data") {
+				if (decryptionCache.size > MAX_DECRYPT_CACHE) {
+					const firstKey = decryptionCache.keys().next().value;
+					if (firstKey) {
+						decryptionCache.delete(firstKey);
+					}
+				}
+				decryptionCache.set(text, text);
 				return text;
 			}
 		}
@@ -92,6 +131,13 @@ function decrypt(text: string): string {
 			});
 			const decrypted = bytes.toString(CryptoJS.enc.Utf8);
 			if (decrypted) {
+				if (decryptionCache.size > MAX_DECRYPT_CACHE) {
+					const firstKey = decryptionCache.keys().next().value;
+					if (firstKey) {
+						decryptionCache.delete(firstKey);
+					}
+				}
+				decryptionCache.set(text, decrypted);
 				return decrypted;
 			}
 		} catch (_error) {
@@ -107,6 +153,13 @@ function decrypt(text: string): string {
 			});
 			const legacyDecrypted = legacyBytes.toString(CryptoJS.enc.Utf8);
 			if (legacyDecrypted) {
+				if (decryptionCache.size > MAX_DECRYPT_CACHE) {
+					const firstKey = decryptionCache.keys().next().value;
+					if (firstKey) {
+						decryptionCache.delete(firstKey);
+					}
+				}
+				decryptionCache.set(text, legacyDecrypted);
 				return legacyDecrypted;
 			}
 		} catch (_error) {
@@ -137,41 +190,64 @@ export function isStorageAvailable(): boolean {
 
 export function getStorageString(key: string, fallback: string | null = null): string | null {
 	if (!isStorageAvailable()) {
-		return fallback;
+		const memVal = memoryFallbackStore.get(key);
+		return memVal === undefined ? fallback : decrypt(memVal);
 	}
 
 	try {
 		const value = window.localStorage.getItem(key);
 		if (value === null) {
-			return fallback;
+			const memVal = memoryFallbackStore.get(key);
+			return memVal === undefined ? fallback : decrypt(memVal);
 		}
 		return decrypt(value);
 	} catch (error) {
 		if (isDev()) {
 			console.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		}
-		return fallback;
+		const memVal = memoryFallbackStore.get(key);
+		return memVal === undefined ? fallback : decrypt(memVal);
 	}
 }
 
 export function setStorageString(key: string, value: string): boolean {
-	if (!isStorageAvailable()) {
-		return false;
-	}
-
 	try {
 		const encryptedValue = encrypt(value);
-		window.localStorage.setItem(key, encryptedValue);
+		if (isStorageAvailable()) {
+			try {
+				window.localStorage.setItem(key, encryptedValue);
+				memoryFallbackStore.set(key, encryptedValue);
+				return true;
+			} catch (writeError) {
+				if (isQuotaExceeded(writeError)) {
+					evictTransientCache();
+					try {
+						window.localStorage.setItem(key, encryptedValue);
+						memoryFallbackStore.set(key, encryptedValue);
+						return true;
+					} catch {
+						// Fallback to in-memory store
+						memoryFallbackStore.set(key, encryptedValue);
+						return true;
+					}
+				}
+				memoryFallbackStore.set(key, encryptedValue);
+				return true;
+			}
+		}
+
+		memoryFallbackStore.set(key, encryptedValue);
 		return true;
 	} catch (error) {
 		if (isDev()) {
-			console.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+			console.error(`[storage] Failed to write key "${key}":`, error);
 		}
 		return false;
 	}
 }
 
 export function removeStorageItem(key: string): void {
+	memoryFallbackStore.delete(key);
 	if (!isStorageAvailable()) {
 		return;
 	}

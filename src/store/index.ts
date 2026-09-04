@@ -2,12 +2,18 @@ import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
 import { CAT_IMAGES, STORAGE_KEYS } from "@/shared/lib/constants";
 import {
+	clearStoredTournamentFromIDB,
+	getStoredTournamentFromIDB,
+	saveStoredTournamentToIDB,
+} from "@/shared/lib/indexedDB";
+import {
 	clearStoredTournamentSnapshot,
 	clearStoredUserSnapshot,
 	getStorageString,
 	readStoredTournamentSnapshot,
 	readStoredUserSnapshot,
 	removeStorageItem,
+	type StoredTournamentSnapshot,
 	setStorageString,
 	writeStoredTournamentSnapshot,
 	writeStoredUserSnapshot,
@@ -39,10 +45,23 @@ export function patch<K extends keyof AppState>(
 	key: K,
 	updates: Partial<AppState[K]>,
 ): void {
-	set((state) => ({
-		...state,
-		[key]: { ...state[key], ...updates },
-	}));
+	set((state) => {
+		const current = state[key];
+		let hasChanged = false;
+		for (const uKey in updates) {
+			if (updates[uKey] !== current[uKey as unknown as keyof typeof current]) {
+				hasChanged = true;
+				break;
+			}
+		}
+		if (!hasChanged) {
+			return state;
+		}
+		return {
+			...state,
+			[key]: { ...state[key], ...updates },
+		};
+	});
 }
 
 export interface TournamentActions {
@@ -211,10 +230,11 @@ function persistTournamentState(tournament: TournamentState): void {
 		(!tournament.matchHistory || tournament.matchHistory.length === 0)
 	) {
 		clearStoredTournamentSnapshot();
+		void clearStoredTournamentFromIDB();
 		return;
 	}
 
-	writeStoredTournamentSnapshot({
+	const snapshot: StoredTournamentSnapshot = {
 		names: tournament.names,
 		ratings: tournament.ratings,
 		isComplete: tournament.isComplete,
@@ -228,7 +248,10 @@ function persistTournamentState(tournament: TournamentState): void {
 		teams: tournament.teams,
 		bracketEntrants: tournament.bracketEntrants,
 		lastUpdated: Date.now(),
-	});
+	};
+
+	writeStoredTournamentSnapshot(snapshot);
+	void saveStoredTournamentToIDB(snapshot);
 }
 
 export const createTournamentSlice: AppSliceCreator<
@@ -664,6 +687,54 @@ const useAppStore = create<AppState>()((...args) => ({
 
 export default useAppStore;
 
+/**
+ * Hydrates tournament state from IndexedDB if in-memory state is empty or IndexedDB snapshot is newer.
+ */
+export async function hydrateTournamentFromIndexedDB(): Promise<StoredTournamentSnapshot | null> {
+	if (!IS_BROWSER) {
+		return null;
+	}
+
+	try {
+		const stored = await getStoredTournamentFromIDB();
+		if (!stored) {
+			return null;
+		}
+
+		const current = useAppStore.getState().tournament;
+		const isCurrentEmpty =
+			!current.names &&
+			(!current.selectedNames || current.selectedNames.length === 0) &&
+			(!current.ratings || Object.keys(current.ratings).length === 0);
+
+		if (
+			isCurrentEmpty ||
+			(stored.lastUpdated && (!current.lastUpdated || stored.lastUpdated > current.lastUpdated))
+		) {
+			useAppStore.getState().tournamentActions.replaceTournamentState({
+				...current,
+				names: stored.names ?? null,
+				ratings: stored.ratings ?? {},
+				isComplete: Boolean(stored.isComplete),
+				voteHistory: Array.isArray(stored.voteHistory) ? stored.voteHistory : [],
+				selectedNames: Array.isArray(stored.selectedNames) ? stored.selectedNames : [],
+				matchHistory: Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined,
+				currentRound: typeof stored.currentRound === "number" ? stored.currentRound : undefined,
+				currentMatch: typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
+				totalMatches: typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
+				mode: stored.mode,
+				teams: stored.teams,
+				bracketEntrants: stored.bracketEntrants,
+				lastUpdated: stored.lastUpdated,
+			});
+		}
+		return stored;
+	} catch (err) {
+		ErrorManager.handleError(err, "hydrateTournamentFromIndexedDB");
+		return null;
+	}
+}
+
 export function useAppStoreInitialization(onUserContext?: (name: string) => void): void {
 	const initializeUser = useAppStore((state) => state.userActions.initializeFromStorage);
 	const initializeTheme = useAppStore((state) => state.uiActions.initializeTheme);
@@ -671,6 +742,7 @@ export function useAppStoreInitialization(onUserContext?: (name: string) => void
 	useEffect(() => {
 		initializeUser(onUserContext);
 		initializeTheme();
+		void hydrateTournamentFromIndexedDB();
 	}, [initializeTheme, initializeUser, onUserContext]);
 }
 
@@ -679,3 +751,31 @@ export const errorContexts = {
 	analysisDashboard: "Analysis Dashboard",
 	mainLayout: "Main Application Layout",
 } as const;
+
+// Atomic selector hooks to eliminate unnecessary component re-renders
+export const useTournament = () => useAppStore((state) => state.tournament);
+export const useTournamentActions = () => useAppStore((state) => state.tournamentActions);
+export const useTournamentIsComplete = () => useAppStore((state) => state.tournament.isComplete);
+export const useTournamentNames = () => useAppStore((state) => state.tournament.names);
+export const useTournamentRatings = () => useAppStore((state) => state.tournament.ratings);
+export const useTournamentSelectedNames = () =>
+	useAppStore((state) => state.tournament.selectedNames);
+
+export const useUser = () => useAppStore((state) => state.user);
+export const useUserName = () => useAppStore((state) => state.user.name);
+export const useIsLoggedIn = () => useAppStore((state) => state.user.isLoggedIn);
+export const useIsAdmin = () => useAppStore((state) => state.user.isAdmin);
+export const useUserAvatar = () => useAppStore((state) => state.user.avatarUrl);
+export const useUserActions = () => useAppStore((state) => state.userActions);
+
+export const useTheme = () => useAppStore((state) => state.ui.theme);
+export const useThemePreference = () => useAppStore((state) => state.ui.themePreference);
+export const useIsBootLoading = () => useAppStore((state) => state.ui.isBootLoading);
+export const useUIActions = () => useAppStore((state) => state.uiActions);
+
+export const useSiteSettings = () => useAppStore((state) => state.siteSettings);
+export const useCatChosenName = () => useAppStore((state) => state.siteSettings.catChosenName);
+export const useSiteSettingsActions = () => useAppStore((state) => state.siteSettingsActions);
+
+export const useErrorState = () => useAppStore((state) => state.errors);
+export const useErrorActions = () => useAppStore((state) => state.errorActions);

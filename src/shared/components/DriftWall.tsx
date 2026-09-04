@@ -115,6 +115,24 @@ export const DriftWall = ({
 	const pointerDampedRef = useRef({ x: 0, y: 0 });
 	const lastTsRef = useRef<number | null>(null);
 
+	const isIntersectingRef = useRef(true);
+
+	useEffect(() => {
+		if (!containerRef.current || typeof IntersectionObserver === "undefined") {
+			return;
+		}
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				isIntersectingRef.current = entry.isIntersecting;
+			},
+			{ threshold: 0 },
+		);
+		observer.observe(containerRef.current);
+		return () => {
+			observer.disconnect();
+		};
+	}, []);
+	const [containerWidth, setContainerWidth] = useState(1200);
 	const [containerHeight, setContainerHeight] = useState(600);
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const activeIdRef = useRef<string | null>(null);
@@ -140,38 +158,51 @@ export const DriftWall = ({
 		}
 	}, []);
 
-	const columnItems = useMemo(() => {
-		const cols: DriftWallItem[][] = Array.from({ length: columns }, () => []);
-		items.forEach((item, i) => {
-			const targetCol = cols[i % columns];
-			if (targetCol) {
-				targetCol.push(item);
-			}
-		});
-		return cols.map((col) => (col.length ? col : items.slice(0, 1)));
-	}, [items, columns]);
-
-	const columnMeta = useMemo(() => {
-		const unit = tileHeight + gap;
-		return columnItems.map((col) => {
-			const copyHeight = Math.max(unit, col.length * unit);
-			const copies = Math.max(2, Math.ceil((containerHeight * 1.6) / copyHeight) + 1);
-			return { copyHeight, copies };
-		});
-	}, [columnItems, tileHeight, gap, containerHeight]);
-
 	useLayoutEffect(() => {
 		if (!containerRef.current) {
 			return;
 		}
 		const ro = new ResizeObserver(([entry]) => {
 			if (entry?.contentRect) {
+				setContainerWidth(entry.contentRect.width || 1200);
 				setContainerHeight(entry.contentRect.height || 600);
 			}
 		});
 		ro.observe(containerRef.current);
 		return () => ro.disconnect();
 	}, []);
+
+	const isMobile = containerWidth < 640;
+	const isTablet = containerWidth >= 640 && containerWidth < 1024;
+
+	const effectiveTileWidth = isMobile ? 140 : isTablet ? 175 : tileWidth;
+	const effectiveTileHeight = isMobile ? 95 : isTablet ? 120 : tileHeight;
+
+	const effectiveColumns = useMemo(() => {
+		const unit = effectiveTileWidth + gap;
+		const calculated = Math.max(2, Math.round(containerWidth / unit));
+		return columns && columns !== 5 ? columns : calculated;
+	}, [containerWidth, effectiveTileWidth, gap, columns]);
+
+	const columnItems = useMemo(() => {
+		const cols: DriftWallItem[][] = Array.from({ length: effectiveColumns }, () => []);
+		items.forEach((item, i) => {
+			const targetCol = cols[i % effectiveColumns];
+			if (targetCol) {
+				targetCol.push(item);
+			}
+		});
+		return cols.map((col) => (col.length ? col : items.slice(0, 1)));
+	}, [items, effectiveColumns]);
+
+	const columnMeta = useMemo(() => {
+		const unit = effectiveTileHeight + gap;
+		return columnItems.map((col) => {
+			const copyHeight = Math.max(unit, col.length * unit);
+			const copies = Math.max(2, Math.ceil((containerHeight * 1.6) / copyHeight) + 1);
+			return { copyHeight, copies };
+		});
+	}, [columnItems, effectiveTileHeight, gap, containerHeight]);
 
 	const baseVelocities = useMemo(() => {
 		const dirSign = direction === "up" ? 1 : -1;
@@ -193,15 +224,24 @@ export const DriftWall = ({
 				return;
 			}
 			plane.style.transform =
-				"translate(-50%, -50%) scale(1.18) " +
+				"translate(-50%, -50%) scale(0.95) " +
 				`rotateX(${tilt + py}deg) rotateY(${turn + px}deg) rotateZ(${roll}deg) ` +
 				`translateZ(${-depth}px)`;
 		},
 		[tilt, turn, roll, depth],
 	);
 
+	useLayoutEffect(() => {
+		applyPlaneTransform(0, 0);
+	}, [applyPlaneTransform]);
+
 	useEffect(() => {
 		const animate = (ts: number) => {
+			if (!isIntersectingRef.current) {
+				lastTsRef.current = null;
+				rafRef.current = requestAnimationFrame(animate);
+				return;
+			}
 			if (lastTsRef.current === null) {
 				lastTsRef.current = ts;
 			}
@@ -217,6 +257,7 @@ export const DriftWall = ({
 			applyPlaneTransform(pointerDampedRef.current.x, pointerDampedRef.current.y);
 
 			if (reduced) {
+				applyPlaneTransform(0, 0);
 				for (let c = 0; c < trackRefs.current.length; c++) {
 					const el = trackRefs.current[c];
 					const meta = columnMeta[c];
@@ -224,29 +265,30 @@ export const DriftWall = ({
 						el.style.transform = `translate3d(0, ${-(offsetsRef.current[c] ?? 0)}px, 0)`;
 					}
 				}
-			} else {
-				for (let c = 0; c < trackRefs.current.length; c++) {
-					const meta = columnMeta[c];
-					if (!meta) {
-						continue;
-					}
-					const paused = wallHoveredRef.current && pauseOnHover;
-					const factor = paused || hoveredColRef.current === c ? 0 : 1;
-					const target = (baseVelocities[c] ?? 0) * factor;
+				return;
+			}
 
-					const ease = 1 - Math.exp(-dt / (target === 0 ? 0.16 : 0.28));
-					const currentVel = velocitiesRef.current[c] ?? 0;
-					const nextVel = currentVel + (target - currentVel) * ease;
-					velocitiesRef.current[c] = nextVel;
+			for (let c = 0; c < trackRefs.current.length; c++) {
+				const meta = columnMeta[c];
+				if (!meta) {
+					continue;
+				}
+				const paused = wallHoveredRef.current && pauseOnHover;
+				const factor = paused || hoveredColRef.current === c ? 0 : 1;
+				const target = (baseVelocities[c] ?? 0) * factor;
 
-					let next = (offsetsRef.current[c] ?? 0) + nextVel * dt;
-					next = ((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
-					offsetsRef.current[c] = next;
+				const ease = 1 - Math.exp(-dt / (target === 0 ? 0.16 : 0.28));
+				const currentVel = velocitiesRef.current[c] ?? 0;
+				const nextVel = currentVel + (target - currentVel) * ease;
+				velocitiesRef.current[c] = nextVel;
 
-					const el = trackRefs.current[c];
-					if (el) {
-						el.style.transform = `translate3d(0, ${-next}px, 0)`;
-					}
+				let next = (offsetsRef.current[c] ?? 0) + nextVel * dt;
+				next = ((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
+				offsetsRef.current[c] = next;
+
+				const el = trackRefs.current[c];
+				if (el) {
+					el.style.transform = `translate3d(0, ${-next}px, 0)`;
 				}
 			}
 
@@ -277,7 +319,7 @@ export const DriftWall = ({
 
 	const handlePointerMove = useCallback(
 		(e: React.PointerEvent<HTMLDivElement>) => {
-			const rect = containerRef.current?.getBoundingClientRect();
+			const rect = e.currentTarget.getBoundingClientRect();
 			if (!rect) {
 				return;
 			}
@@ -287,8 +329,8 @@ export const DriftWall = ({
 					y: (e.clientY - rect.top) / rect.height - 0.5,
 				};
 			}
-			const hit = document.elementFromPoint(e.clientX, e.clientY);
-			const tile = hit?.closest?.("[data-tile-id]") as HTMLElement | null;
+			const targetEl = e.target as HTMLElement | null;
+			const tile = targetEl?.closest?.("[data-tile-id]") as HTMLElement | null;
 			if (!tile) {
 				return;
 			}
@@ -314,8 +356,8 @@ export const DriftWall = ({
 	const cssVars = useMemo(
 		() =>
 			({
-				"--dw-tile-w": `${tileWidth}px`,
-				"--dw-tile-h": `${tileHeight}px`,
+				"--dw-tile-w": `${effectiveTileWidth}px`,
+				"--dw-tile-h": `${effectiveTileHeight}px`,
 				"--dw-gap": `${gap}px`,
 				"--dw-radius": `${radius}px`,
 				"--dw-perspective": `${perspective}px`,
@@ -327,8 +369,8 @@ export const DriftWall = ({
 				...style,
 			}) as CSSProperties,
 		[
-			tileWidth,
-			tileHeight,
+			effectiveTileWidth,
+			effectiveTileHeight,
 			gap,
 			radius,
 			perspective,

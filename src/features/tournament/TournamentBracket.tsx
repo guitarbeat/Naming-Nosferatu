@@ -1116,12 +1116,40 @@ export function TournamentBracket({
 
 	const progressPct = totalMatches ? Math.round((completedMatches / totalMatches) * 100) : 0;
 
+	// Accessible ARIA live status announcement for screen readers
+	const liveAnnouncement = useMemo(() => {
+		if (isComplete && champion) {
+			return `Tournament completed! Champion is ${champion.name}.`;
+		}
+		if (activeMatch) {
+			const c1 = activeMatch.contender1?.name || "TBD";
+			const c2 = activeMatch.contender2?.name || "TBD";
+			return `Current active match in ${activeMatch.roundName}: ${c1} versus ${c2}. Progress: ${completedMatches} of ${totalMatches} matches completed (${progressPct}%).`;
+		}
+		return `Viewing tournament bracket with ${rounds.length} rounds. Progress: ${progressPct}%.`;
+	}, [
+		isComplete,
+		champion,
+		activeMatch,
+		completedMatches,
+		totalMatches,
+		progressPct,
+		rounds.length,
+	]);
+
 	return (
 		<div
+			role="region"
+			aria-label="Tournament Bracket Interactive Visualizer"
 			className={`relative flex flex-col w-full rounded-3xl border border-border/50 bg-card/80 shadow-2xl backdrop-blur-xl overflow-hidden font-display text-foreground ${
 				isModal ? "max-h-[90vh]" : ""
 			} ${className}`}
 		>
+			{/* Accessible Screen Reader Live Announcement */}
+			<div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+				{liveAnnouncement}
+			</div>
+
 			{/* Top Header & Toolbar */}
 			<div className="flex flex-col gap-3 border-b border-border/40 p-4 sm:p-5 bg-card/90">
 				<div className="flex flex-wrap items-center justify-between gap-3">

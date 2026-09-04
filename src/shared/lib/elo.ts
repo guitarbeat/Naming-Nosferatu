@@ -18,52 +18,63 @@ export interface EnrichedRating {
 }
 
 export function computeRatingStats(ratings: number[]): RatingStats | null {
-	if (ratings.length < 2) {
+	if (!Array.isArray(ratings) || ratings.length < 2) {
 		return null;
 	}
-	const sorted = [...ratings].sort((a, b) => a - b);
+	const validRatings = ratings.filter((r) => typeof r === "number" && Number.isFinite(r));
+	if (validRatings.length < 2) {
+		return null;
+	}
+	const sorted = [...validRatings].sort((a, b) => a - b);
+	const calculatedStdDev = standardDeviation(validRatings);
 	return {
-		mean: mean(ratings),
+		mean: mean(validRatings),
 		median: medianSorted(sorted),
-		stdDev: standardDeviation(ratings),
+		stdDev: Number.isFinite(calculatedStdDev) ? calculatedStdDev : 0,
 		min: min(sorted),
 		max: max(sorted),
-		count: ratings.length,
+		count: validRatings.length,
 	};
 }
 
 export function getPercentileRank(rating: number, allRatings: number[]): number {
-	if (allRatings.length === 0) {
+	if (!Array.isArray(allRatings) || allRatings.length === 0) {
 		return 50;
 	}
 	let belowCount = 0;
-	for (let i = 0; i < allRatings.length; i++) {
-		if (allRatings[i] < rating) {
-			belowCount++;
+	let validCount = 0;
+	const len = allRatings.length;
+	for (let i = 0; i < len; i++) {
+		const val = allRatings[i];
+		if (typeof val === "number" && Number.isFinite(val)) {
+			validCount++;
+			if (val < rating) {
+				belowCount++;
+			}
 		}
 	}
-	const len = allRatings.length;
-	if (len === 1) {
+	if (validCount <= 1) {
 		return 100;
 	}
-	return Math.round((belowCount / (len - 1)) * 100);
+	return Math.round((belowCount / (validCount - 1)) * 100);
 }
 
 export function getConfidenceScore(gamesPlayed: number, threshold = 15): number {
-	if (gamesPlayed <= 0) {
+	if (!Number.isFinite(gamesPlayed) || gamesPlayed <= 0) {
 		return 0;
 	}
 	if (gamesPlayed >= threshold) {
 		return 1;
 	}
-	return gamesPlayed / threshold;
+	return Math.min(1, Math.max(0, gamesPlayed / threshold));
 }
 
 export function getZScore(rating: number, stats: RatingStats): number {
-	if (stats.stdDev === 0) {
+	if (!stats || !Number.isFinite(stats.stdDev) || stats.stdDev <= 0) {
 		return 0;
 	}
-	return (rating - stats.mean) / stats.stdDev;
+	const z = (rating - stats.mean) / stats.stdDev;
+	return Number.isFinite(z) ? Math.round(z * 100) / 100 : 0;
 }
 
 export function enrichRating(
@@ -210,7 +221,24 @@ export function getExpectedEloScore(
 	config?: EloConfig,
 ): number {
 	const resolved = resolveConfig(config);
-	return 1 / (1 + 10 ** ((opponentRating - currentRating) / resolved.ratingDivisor));
+	const r1 =
+		typeof currentRating === "number" && Number.isFinite(currentRating)
+			? currentRating
+			: resolved.defaultRating;
+	const r2 =
+		typeof opponentRating === "number" && Number.isFinite(opponentRating)
+			? opponentRating
+			: resolved.defaultRating;
+	const divisor =
+		typeof resolved.ratingDivisor === "number" &&
+		Number.isFinite(resolved.ratingDivisor) &&
+		resolved.ratingDivisor !== 0
+			? resolved.ratingDivisor
+			: 400;
+	// Clamp exponent to prevent floating point overflow / NaN
+	const exponent = Math.max(-100, Math.min(100, (r2 - r1) / divisor));
+	const expected = 1 / (1 + 10 ** exponent);
+	return Number.isFinite(expected) ? Math.max(0, Math.min(1, expected)) : 0.5;
 }
 
 export function updateEloRating({
@@ -227,12 +255,23 @@ export function updateEloRating({
 	config?: EloConfig;
 }): number {
 	const resolved = resolveConfig(config);
+	const validRating =
+		typeof rating === "number" && Number.isFinite(rating) ? rating : resolved.defaultRating;
+	const validExpected =
+		typeof expectedScore === "number" && Number.isFinite(expectedScore) ? expectedScore : 0.5;
+	const validActual =
+		typeof actualScore === "number" && Number.isFinite(actualScore) ? actualScore : 0.5;
+	const validGames =
+		typeof gamesPlayed === "number" && Number.isFinite(gamesPlayed) && gamesPlayed >= 0
+			? gamesPlayed
+			: 0;
+
 	const multiplier =
-		gamesPlayed < resolved.newPlayerGameThreshold ? resolved.newPlayerKMultiplier : 1;
+		validGames < resolved.newPlayerGameThreshold ? resolved.newPlayerKMultiplier : 1;
 	const updated = Math.round(
-		rating + resolved.kFactor * multiplier * (actualScore - expectedScore),
+		validRating + resolved.kFactor * multiplier * (validActual - validExpected),
 	);
-	return clampRating(updated, resolved);
+	return clampRating(Number.isFinite(updated) ? updated : validRating, resolved);
 }
 
 export function calculatePairEloUpdate({

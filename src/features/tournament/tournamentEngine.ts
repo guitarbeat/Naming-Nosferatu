@@ -275,8 +275,15 @@ export function normalizeParticipant(
 	};
 }
 
+function getFastParticipantId(participant: Match["left"] | Match["right"]): string {
+	if (typeof participant === "object" && participant !== null) {
+		return String(participant.id);
+	}
+	return String(participant);
+}
+
 export function getMatchSideId(match: Match, side: "left" | "right"): string {
-	return normalizeParticipant(match[side]).id;
+	return getFastParticipantId(match[side]);
 }
 
 export function calculateWinStreak(
@@ -293,8 +300,8 @@ export function calculateWinStreak(
 		if (!record?.match) {
 			continue;
 		}
-		const leftId = getMatchSideId(record.match, "left");
-		const rightId = getMatchSideId(record.match, "right");
+		const leftId = getFastParticipantId(record.match.left);
+		const rightId = getFastParticipantId(record.match.right);
 		if (leftId !== targetId && rightId !== targetId) {
 			continue;
 		}
@@ -429,34 +436,44 @@ function makePendingResult(
 }
 
 function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
-	const validEntrants: string[] = [];
-	for (let i = 0; i < bracketEntrants.length; i++) {
-		const str = String(bracketEntrants[i]);
+	const entrantsLen = bracketEntrants.length;
+	let entrantsKey = "";
+	for (let i = 0; i < entrantsLen; i++) {
+		const str = bracketEntrants[i];
 		if (str) {
-			validEntrants.push(str);
+			if (entrantsKey) {
+				entrantsKey += ",";
+			}
+			entrantsKey += str;
 		}
 	}
-	const entrantsKey = validEntrants.join(",");
 
 	let historyKey = "";
-	for (let i = 0; i < matchHistory.length; i++) {
-		if (i > 0) {
-			historyKey += "|";
+	const historyLen = matchHistory.length;
+	for (let i = 0; i < historyLen; i++) {
+		const rec = matchHistory[i];
+		if (rec) {
+			if (i > 0) {
+				historyKey += "|";
+			}
+			historyKey += `${rec.winner}-${rec.loser}`;
 		}
-		historyKey += `${matchHistory[i].winner}-${matchHistory[i].loser}`;
 	}
 
 	return `${entrantsKey}:${historyKey}`;
 }
 
 function getCachedRound(entrantsCount: number): number {
+	if (!Number.isFinite(entrantsCount) || entrantsCount <= 1) {
+		return 1;
+	}
 	const cacheKey = `round_${entrantsCount}`;
 	const cached = roundCache.get(cacheKey);
 	if (cached !== undefined) {
 		return cached;
 	}
 
-	const round = Math.max(1, Math.ceil(Math.log2(entrantsCount)));
+	const round = Math.max(1, Math.ceil(Math.log2(Math.max(2, entrantsCount))));
 	roundCache.set(cacheKey, round);
 	evictIfNeeded(roundCache, 50);
 
@@ -676,13 +693,17 @@ export function calculateTournamentMetrics({
 	const { totalMatches, completedMatches, round, totalRounds, stageLabel, roundSize, isComplete } =
 		derived;
 	const matchNumber = isComplete ? completedMatches : completedMatches + 1;
-	const progress = totalMatches
-		? Math.round((Math.min(completedMatches, totalMatches) / totalMatches) * 100)
-		: 0;
+	const progress =
+		totalMatches > 0
+			? Math.min(
+					100,
+					Math.max(0, Math.round((Math.min(completedMatches, totalMatches) / totalMatches) * 100)),
+				)
+			: 0;
 	const etaMinutes =
 		!totalMatches || completedMatches >= totalMatches
 			? 0
-			: Math.ceil(((totalMatches - completedMatches) * 3) / 60);
+			: Math.max(0, Math.ceil(((totalMatches - completedMatches) * 3) / 60));
 
 	return {
 		totalMatches,

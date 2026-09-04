@@ -1,14 +1,17 @@
 import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
-import { CRITICAL_SHELL_IMAGES } from "@/shared/lib/constants";
+import { CRITICAL_SHELL_IMAGES, INDEXED_DB_CONFIG } from "@/shared/lib/constants";
+import { deleteRecordFromDB, getRecordFromDB, setRecordInDB } from "@/shared/lib/indexedDB";
 import {
 	decryptValue,
 	getStorageString,
 	parseJsonValue,
 	readStorageJson,
 	removeStorageItem,
+	type StoredTournamentSnapshot,
 	writeStorageJson,
 } from "@/shared/lib/storage";
 import type { NameItem } from "@/shared/types";
+import useAppStore from "@/store";
 
 const IS_BROWSER = typeof window !== "undefined";
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -218,7 +221,279 @@ export function useLocalStorage<T>(
 }
 
 // ============================================================================
-// 3. useSectionScroll
+// 3. useIndexedDB & useTournamentIndexedDB (Offline-first persistence)
+// ============================================================================
+
+export type IDBSyncStatus = "idle" | "loading" | "saving" | "synced" | "error";
+
+export interface UseIndexedDBOptions<T> {
+	dbName?: string;
+	storeName?: string;
+	key?: IDBValidKey;
+	initialValue?: T | null;
+	syncWithStore?: boolean;
+	debounceMs?: number;
+	onHydrate?: (data: T) => void;
+	onError?: (error: Error) => void;
+}
+
+export interface UseIndexedDBResult<T> {
+	data: T | null;
+	isLoading: boolean;
+	isReady: boolean;
+	error: Error | null;
+	syncStatus: IDBSyncStatus;
+	save: (value: T) => Promise<boolean>;
+	load: () => Promise<T | null>;
+	clear: () => Promise<boolean>;
+}
+
+export function useIndexedDB<T = StoredTournamentSnapshot>(
+	options: UseIndexedDBOptions<T> = {},
+): UseIndexedDBResult<T> {
+	const {
+		dbName = INDEXED_DB_CONFIG.DB_NAME,
+		storeName = INDEXED_DB_CONFIG.STORES.TOURNAMENTS,
+		key = INDEXED_DB_CONFIG.KEYS.ACTIVE_TOURNAMENT,
+		initialValue = null,
+		syncWithStore = false,
+		debounceMs = 300,
+		onHydrate,
+		onError,
+	} = options;
+
+	const [data, setData] = useState<T | null>(initialValue);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isReady, setIsReady] = useState(false);
+	const [error, setError] = useState<Error | null>(null);
+	const [syncStatus, setSyncStatus] = useState<IDBSyncStatus>("idle");
+
+	const isMountedRef = useRef(true);
+	const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const onHydrateRef = useRef(onHydrate);
+	onHydrateRef.current = onHydrate;
+	const onErrorRef = useRef(onError);
+	onErrorRef.current = onError;
+
+	// Load data from IndexedDB
+	const load = useCallback(async (): Promise<T | null> => {
+		if (!IS_BROWSER) {
+			return null;
+		}
+		try {
+			setIsLoading(true);
+			setSyncStatus("loading");
+			const record = await getRecordFromDB<T>(storeName, key, dbName);
+			if (!isMountedRef.current) {
+				return record;
+			}
+			setData(record);
+			setError(null);
+			setSyncStatus(record ? "synced" : "idle");
+			setIsReady(true);
+			if (record !== null && onHydrateRef.current) {
+				onHydrateRef.current(record);
+			}
+
+			// If syncWithStore is enabled and record is a tournament snapshot, sync into useAppStore
+			if (syncWithStore && record) {
+				const snapshot = record as unknown as StoredTournamentSnapshot;
+				const current = useAppStore.getState().tournament;
+				const isCurrentEmpty =
+					!current.names &&
+					(!current.selectedNames || current.selectedNames.length === 0) &&
+					(!current.ratings || Object.keys(current.ratings).length === 0);
+
+				if (
+					isCurrentEmpty ||
+					(snapshot.lastUpdated &&
+						(!current.lastUpdated || snapshot.lastUpdated > current.lastUpdated))
+				) {
+					useAppStore.getState().tournamentActions.replaceTournamentState({
+						...current,
+						names: snapshot.names ?? null,
+						ratings: snapshot.ratings ?? {},
+						isComplete: Boolean(snapshot.isComplete),
+						voteHistory: Array.isArray(snapshot.voteHistory) ? snapshot.voteHistory : [],
+						selectedNames: Array.isArray(snapshot.selectedNames) ? snapshot.selectedNames : [],
+						matchHistory: Array.isArray(snapshot.matchHistory) ? snapshot.matchHistory : undefined,
+						currentRound:
+							typeof snapshot.currentRound === "number" ? snapshot.currentRound : undefined,
+						currentMatch:
+							typeof snapshot.currentMatch === "number" ? snapshot.currentMatch : undefined,
+						totalMatches:
+							typeof snapshot.totalMatches === "number" ? snapshot.totalMatches : undefined,
+						mode: snapshot.mode,
+						teams: snapshot.teams,
+						bracketEntrants: snapshot.bracketEntrants,
+						lastUpdated: snapshot.lastUpdated,
+					});
+				}
+			}
+
+			return record;
+		} catch (err) {
+			const wrapped = err instanceof Error ? err : new Error(String(err));
+			if (isMountedRef.current) {
+				setError(wrapped);
+				setSyncStatus("error");
+				onErrorRef.current?.(wrapped);
+			}
+			return null;
+		} finally {
+			if (isMountedRef.current) {
+				setIsLoading(false);
+			}
+		}
+	}, [dbName, key, storeName, syncWithStore]);
+
+	// Save data to IndexedDB
+	const save = useCallback(
+		async (value: T): Promise<boolean> => {
+			if (!IS_BROWSER) {
+				return false;
+			}
+			try {
+				setSyncStatus("saving");
+				await setRecordInDB<T>(storeName, key, value, dbName);
+				if (isMountedRef.current) {
+					setData(value);
+					setError(null);
+					setSyncStatus("synced");
+				}
+				return true;
+			} catch (err) {
+				const wrapped = err instanceof Error ? err : new Error(String(err));
+				if (isMountedRef.current) {
+					setError(wrapped);
+					setSyncStatus("error");
+					onErrorRef.current?.(wrapped);
+				}
+				return false;
+			}
+		},
+		[dbName, key, storeName],
+	);
+
+	// Clear data from IndexedDB
+	const clear = useCallback(async (): Promise<boolean> => {
+		if (!IS_BROWSER) {
+			return false;
+		}
+		try {
+			await deleteRecordFromDB(storeName, key, dbName);
+			if (isMountedRef.current) {
+				setData(null);
+				setError(null);
+				setSyncStatus("idle");
+			}
+			return true;
+		} catch (err) {
+			const wrapped = err instanceof Error ? err : new Error(String(err));
+			if (isMountedRef.current) {
+				setError(wrapped);
+				setSyncStatus("error");
+				onErrorRef.current?.(wrapped);
+			}
+			return false;
+		}
+	}, [dbName, key, storeName]);
+
+	// Initial load on mount
+	useEffect(() => {
+		isMountedRef.current = true;
+		void load();
+
+		return () => {
+			isMountedRef.current = false;
+			if (debounceTimerRef.current) {
+				clearTimeout(debounceTimerRef.current);
+			}
+		};
+	}, [load]);
+
+	// Automatic bidirectional synchronization with useAppStore if requested
+	useEffect(() => {
+		if (!syncWithStore || !IS_BROWSER) {
+			return;
+		}
+
+		// Subscribe to tournament changes in useAppStore
+		const unsubscribe = useAppStore.subscribe((state) => {
+			const t = state.tournament;
+			const isEmpty =
+				!t.names &&
+				(!t.selectedNames || t.selectedNames.length === 0) &&
+				(!t.ratings || Object.keys(t.ratings).length === 0) &&
+				(!t.voteHistory || t.voteHistory.length === 0) &&
+				(!t.matchHistory || t.matchHistory.length === 0);
+
+			if (debounceTimerRef.current) {
+				clearTimeout(debounceTimerRef.current);
+			}
+
+			if (isEmpty) {
+				void clear();
+				return;
+			}
+
+			setSyncStatus("saving");
+			debounceTimerRef.current = setTimeout(() => {
+				const snapshot: StoredTournamentSnapshot = {
+					names: t.names,
+					ratings: t.ratings,
+					isComplete: t.isComplete,
+					voteHistory: t.voteHistory,
+					selectedNames: t.selectedNames,
+					matchHistory: t.matchHistory,
+					currentRound: t.currentRound,
+					currentMatch: t.currentMatch,
+					totalMatches: t.totalMatches,
+					mode: t.mode,
+					teams: t.teams,
+					bracketEntrants: t.bracketEntrants,
+					lastUpdated: t.lastUpdated ?? Date.now(),
+				};
+				void save(snapshot as unknown as T);
+			}, debounceMs);
+		});
+
+		return () => {
+			unsubscribe();
+			if (debounceTimerRef.current) {
+				clearTimeout(debounceTimerRef.current);
+			}
+		};
+	}, [clear, debounceMs, save, syncWithStore]);
+
+	return {
+		data,
+		isLoading,
+		isReady,
+		error,
+		syncStatus,
+		save,
+		load,
+		clear,
+	};
+}
+
+/**
+ * Specialized hook for offline-first tournament persistence with IndexedDB and useAppStore.
+ */
+export function useTournamentIndexedDB(
+	options?: Omit<UseIndexedDBOptions<StoredTournamentSnapshot>, "storeName" | "key">,
+): UseIndexedDBResult<StoredTournamentSnapshot> {
+	return useIndexedDB<StoredTournamentSnapshot>({
+		storeName: INDEXED_DB_CONFIG.STORES.TOURNAMENTS,
+		key: INDEXED_DB_CONFIG.KEYS.ACTIVE_TOURNAMENT,
+		syncWithStore: true,
+		...options,
+	});
+}
+
+// ============================================================================
+// 4. useSectionScroll
 // ============================================================================
 export function useSectionScroll() {
 	const prefersReducedMotion = usePrefersReducedMotion();

@@ -55,10 +55,14 @@ export function TournamentSetup() {
 	}, [tournament.isComplete, tournament.ratings, user.id, user.name]);
 
 	return (
-		<div className="w-full flex flex-col gap-2">
+		<div className="w-full flex flex-col flex-1 min-h-[520px] gap-2">
 			<AnimatePresence mode="wait">
 				{!tournament.isComplete && (
-					<motion.div key="setup" {...fadeMotionPreset} className="w-full py-0">
+					<motion.div
+						key="setup"
+						{...fadeMotionPreset}
+						className="w-full flex flex-col flex-1 min-h-[520px] py-0"
+					>
 						<NameSelector />
 					</motion.div>
 				)}

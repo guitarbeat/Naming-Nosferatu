@@ -29,6 +29,12 @@ export interface GlassSurfaceProps {
 	mixBlendMode?: string;
 	className?: string;
 	style?: CSSProperties;
+	role?: string;
+	"aria-label"?: string;
+	"aria-hidden"?: boolean;
+	tabIndex?: number;
+	onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+	onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
 }
 
 export function GlassSurface({
@@ -52,6 +58,12 @@ export function GlassSurface({
 	mixBlendMode = "difference",
 	className = "",
 	style = {},
+	role,
+	"aria-label": ariaLabel,
+	"aria-hidden": ariaHidden,
+	tabIndex,
+	onClick,
+	onKeyDown,
 }: GlassSurfaceProps) {
 	const uniqueId = useId().replace(/:/g, "-");
 	const filterId = `glass-filter-${uniqueId}`;
@@ -182,10 +194,29 @@ export function GlassSurface({
 		["--filter-id" as string]: `url(#${filterId})`,
 	};
 
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+		if (onKeyDown) {
+			onKeyDown(e);
+		} else if (onClick && (e.key === "Enter" || e.key === " ")) {
+			e.preventDefault();
+			onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
+		}
+	};
+
 	return (
 		<div
 			ref={containerRef}
-			className={`glass-surface ${svgSupported ? "glass-surface--svg" : "glass-surface--fallback"} ${className}`.trim()}
+			role={role || (onClick ? "button" : undefined)}
+			aria-label={ariaLabel}
+			aria-hidden={ariaHidden}
+			tabIndex={tabIndex === undefined ? (onClick ? 0 : undefined) : tabIndex}
+			onClick={onClick}
+			onKeyDown={onClick || onKeyDown ? handleKeyDown : undefined}
+			className={`glass-surface ${svgSupported ? "glass-surface--svg" : "glass-surface--fallback"} ${
+				onClick
+					? "cursor-pointer focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 "
+					: ""
+			}${className}`.trim()}
 			style={containerStyle}
 		>
 			<svg className="glass-surface__filter" xmlns="http://www.w3.org/2000/svg">

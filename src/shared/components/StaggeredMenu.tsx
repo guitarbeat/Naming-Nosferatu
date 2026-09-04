@@ -34,7 +34,100 @@ export interface StaggeredMenuProps {
 	closeOnClickAway?: boolean;
 	onMenuOpen?: () => void;
 	onMenuClose?: () => void;
+	hideHeader?: boolean;
 }
+
+export interface MenuContextType {
+	open: boolean;
+	toggle: () => void;
+	openMenu: () => void;
+	closeMenu: () => void;
+}
+
+export const MenuContext = React.createContext<MenuContextType | null>(null);
+export const useMenu = () => React.useContext(MenuContext);
+
+export const StaggeredMenuToggle: React.FC<{ className?: string }> = ({ className = "" }) => {
+	const menu = useMenu();
+	const btnRef = useRef<HTMLButtonElement>(null);
+	const iconRef = useRef<SVGSVGElement>(null);
+	const textInnerRef = useRef<HTMLSpanElement>(null);
+	const [textLines, setTextLines] = React.useState<string[]>(["Menu", "Close"]);
+	const animRef = useRef<gsap.core.Tween | null>(null);
+	const isOpen = menu?.open;
+
+	React.useEffect(() => {
+		const inner = textInnerRef.current;
+		const icon = iconRef.current;
+		if (!inner || !icon) {
+			return;
+		}
+
+		animRef.current?.kill();
+
+		const opening = Boolean(isOpen);
+		const startLabel = opening ? "Menu" : "Close";
+		const endLabel = opening ? "Close" : "Menu";
+		setTextLines([startLabel, endLabel]);
+
+		gsap.set(inner, { yPercent: opening ? 0 : -50 });
+		animRef.current = gsap.to(inner, {
+			yPercent: opening ? -50 : 0,
+			duration: 0.6,
+			ease: "power4.out",
+		});
+
+		gsap.to(icon, {
+			rotate: opening ? 225 : 0,
+			duration: 0.7,
+			ease: "power4.out",
+			overwrite: "auto",
+		});
+	}, [isOpen]);
+
+	if (!menu) {
+		return null;
+	}
+
+	return (
+		<button
+			ref={btnRef}
+			className={`sm-toggle focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${className}`}
+			aria-label={menu.open ? "Close navigation menu" : "Open navigation menu"}
+			aria-expanded={menu.open}
+			aria-controls="staggered-menu-panel"
+			onClick={(e) => {
+				e.stopPropagation();
+				menu.toggle();
+			}}
+			type="button"
+		>
+			<span className="sm-toggle-textWrap" aria-hidden="true">
+				<span ref={textInnerRef} className="sm-toggle-textInner">
+					{textLines.map((l, i) => (
+						<span className="sm-toggle-line" key={i}>
+							{l}
+						</span>
+					))}
+				</span>
+			</span>
+			<svg
+				ref={iconRef}
+				className="sm-icon"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				strokeWidth="2.5"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M12 5v14" />
+				<path d="M5 12h14" />
+			</svg>
+		</button>
+	);
+};
 
 export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 	position = "right",
@@ -53,15 +146,14 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 	closeOnClickAway = true,
 	onMenuOpen,
 	onMenuClose,
+	hideHeader = false,
 }) => {
 	const [open, setOpen] = useState(false);
 	const openRef = useRef(false);
 	const panelRef = useRef<HTMLElement>(null);
 	const preLayersRef = useRef<HTMLDivElement>(null);
 	const preLayerElsRef = useRef<HTMLElement[]>([]);
-	const plusHRef = useRef<HTMLSpanElement>(null);
-	const plusVRef = useRef<HTMLSpanElement>(null);
-	const iconRef = useRef<HTMLSpanElement>(null);
+	const iconRef = useRef<SVGSVGElement>(null);
 	const textInnerRef = useRef<HTMLSpanElement>(null);
 	const textWrapRef = useRef<HTMLSpanElement>(null);
 	const [textLines, setTextLines] = useState(["Menu", "Close"]);
@@ -82,11 +174,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 		const ctx = gsap.context(() => {
 			const panel = panelRef.current;
 			const preContainer = preLayersRef.current;
-			const plusH = plusHRef.current;
-			const plusV = plusVRef.current;
 			const icon = iconRef.current;
 			const textInner = textInnerRef.current;
-			if (!panel || !plusH || !plusV || !icon || !textInner) {
+			if (!panel || !icon || !textInner) {
 				return;
 			}
 
@@ -101,8 +191,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 			if (preContainer) {
 				gsap.set(preContainer, { xPercent: 0, opacity: 1 });
 			}
-			gsap.set(plusH, { transformOrigin: "50% 50%", rotate: 0 });
-			gsap.set(plusV, { transformOrigin: "50% 50%", rotate: 90 });
 			gsap.set(icon, { rotate: 0, transformOrigin: "50% 50%" });
 			gsap.set(textInner, { yPercent: 0 });
 			if (toggleBtnRef.current) {
@@ -138,7 +226,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 		const panelStart = offscreen;
 
 		if (itemEls.length) {
-			gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+			gsap.set(itemEls, { yPercent: 140, rotate: 10, opacity: 0 });
 		}
 		if (numberEls.length) {
 			gsap.set(numberEls, { "--sm-num-opacity": 0 });
@@ -178,9 +266,10 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 				{
 					yPercent: 0,
 					rotate: 0,
-					duration: 1,
+					opacity: 1,
+					duration: 1.1,
 					ease: "power4.out",
-					stagger: { each: 0.1, from: "start" },
+					stagger: { each: 0.09, from: "start" },
 				},
 				itemsStart,
 			);
@@ -408,18 +497,69 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 		}
 	}, [playClose, animateIcon, animateColor, animateText, onMenuClose]);
 
+	const openMenu = useCallback(() => {
+		if (!openRef.current) {
+			openRef.current = true;
+			setOpen(true);
+			onMenuOpen?.();
+			playOpen();
+			animateIcon(true);
+			animateColor(true);
+			animateText(true);
+		}
+	}, [playOpen, animateIcon, animateColor, animateText, onMenuOpen]);
+
+	React.useEffect(() => {
+		if (!open) {
+			return;
+		}
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") {
+				event.preventDefault();
+				closeMenu();
+				toggleBtnRef.current?.focus();
+			} else if (event.key === "Tab" && panelRef.current) {
+				const focusableEls = panelRef.current.querySelectorAll<HTMLElement>(
+					'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+				);
+				if (focusableEls.length === 0) {
+					return;
+				}
+				const firstEl = focusableEls[0];
+				const lastEl = focusableEls[focusableEls.length - 1];
+
+				if (event.shiftKey && document.activeElement === firstEl) {
+					event.preventDefault();
+					lastEl.focus();
+				} else if (!event.shiftKey && document.activeElement === lastEl) {
+					event.preventDefault();
+					firstEl.focus();
+				}
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [open, closeMenu]);
+
 	React.useEffect(() => {
 		if (!closeOnClickAway || !open) {
 			return;
 		}
 
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				panelRef.current &&
-				!panelRef.current.contains(event.target as Node) &&
-				toggleBtnRef.current &&
-				!toggleBtnRef.current.contains(event.target as Node)
-			) {
+			const target = event.target as Node | null;
+			if (!target) {
+				return;
+			}
+			const isInsidePanel = Boolean(panelRef.current?.contains(target));
+			const isInsideInternalToggle = Boolean(toggleBtnRef.current?.contains(target));
+			const isInsideAnyToggle = Boolean((target as Element).closest?.(".sm-toggle"));
+
+			if (!isInsidePanel && !isInsideInternalToggle && !isInsideAnyToggle) {
 				closeMenu();
 			}
 		};
@@ -431,133 +571,150 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 	}, [closeOnClickAway, open, closeMenu]);
 
 	return (
-		<div
-			className={`${className ? `${className} ` : ""}staggered-menu-wrapper${
-				isFixed ? " fixed-wrapper" : ""
-			}`}
-			style={accentColor ? ({ "--sm-accent": accentColor } as React.CSSProperties) : undefined}
-			data-position={position}
-			data-open={open || undefined}
-		>
-			<div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
-				{(() => {
-					const raw = colors?.length ? colors.slice(0, 4) : ["#1e1e22", "#35353c"];
-					const arr = [...raw];
-					if (arr.length >= 3) {
-						const mid = Math.floor(arr.length / 2);
-						arr.splice(mid, 1);
-					}
-					return arr.map((c, i) => (
-						<div key={i} className="sm-prelayer" style={{ background: c }} />
-					));
-				})()}
-			</div>
-			<header className="staggered-menu-header" aria-label="Main navigation header">
-				{logoUrl ? (
-					<div className="sm-logo" aria-label="Logo">
-						<img
-							src={logoUrl}
-							alt="Logo"
-							className="sm-logo-img"
-							draggable={false}
-							width={110}
-							height={24}
-							onError={(e) => {
-								e.currentTarget.src = FALLBACK_CAT_SVG;
-							}}
-						/>
-					</div>
-				) : null}
-				<button
-					ref={toggleBtnRef}
-					className="sm-toggle"
-					aria-label={open ? "Close menu" : "Open menu"}
-					aria-expanded={open}
-					aria-controls="staggered-menu-panel"
-					onClick={toggleMenu}
-					type="button"
-				>
-					<span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
-						<span ref={textInnerRef} className="sm-toggle-textInner">
-							{textLines.map((l, i) => (
-								<span className="sm-toggle-line" key={i}>
-									{l}
-								</span>
-							))}
-						</span>
-					</span>
-					<span ref={iconRef} className="sm-icon" aria-hidden="true">
-						<span ref={plusHRef} className="sm-icon-line" />
-						<span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
-					</span>
-				</button>
-			</header>
-
-			<aside
-				id="staggered-menu-panel"
-				ref={panelRef}
-				className="staggered-menu-panel"
-				aria-hidden={!open}
+		<MenuContext.Provider value={{ open, toggle: toggleMenu, openMenu, closeMenu }}>
+			<div
+				className={`${className ? `${className} ` : ""}staggered-menu-wrapper${
+					isFixed ? " fixed-wrapper" : ""
+				}`}
+				style={accentColor ? ({ "--sm-accent": accentColor } as React.CSSProperties) : undefined}
+				data-position={position}
+				data-open={open || undefined}
 			>
-				<div className="sm-panel-inner">
-					<ul
-						className="sm-panel-list"
-						role="list"
-						data-numbering={displayItemNumbering || undefined}
-					>
-						{items?.length ? (
-							items.map((it, idx) => (
-								<li className="sm-panel-itemWrap" key={it.label + idx}>
-									<a
-										className="sm-panel-item"
-										href={it.link || "#"}
-										aria-label={it.ariaLabel}
-										data-index={idx + 1}
-										onClick={(e) => {
-											if (it.onClick) {
-												it.onClick(e);
-											}
-											if (!it.link || it.link.startsWith("#")) {
-												closeMenu();
-											}
-										}}
-									>
-										<span className="sm-panel-itemLabel">{it.label}</span>
-									</a>
-								</li>
-							))
-						) : (
-							<li className="sm-panel-itemWrap" aria-hidden="true">
-								<span className="sm-panel-item">
-									<span className="sm-panel-itemLabel">No items</span>
+				<div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
+					{(() => {
+						const raw = colors?.length ? colors.slice(0, 4) : ["#1e1e22", "#35353c"];
+						const arr = [...raw];
+						if (arr.length >= 3) {
+							const mid = Math.floor(arr.length / 2);
+							arr.splice(mid, 1);
+						}
+						return arr.map((c, i) => (
+							<div key={i} className="sm-prelayer" style={{ background: c }} />
+						));
+					})()}
+				</div>
+				{!hideHeader && (
+					<header className="staggered-menu-header" aria-label="Main navigation header">
+						{logoUrl ? (
+							<div className="sm-logo" aria-label="Logo">
+								<img
+									src={logoUrl}
+									alt="Logo"
+									className="sm-logo-img"
+									draggable={false}
+									width={110}
+									height={24}
+									onError={(e) => {
+										e.currentTarget.src = FALLBACK_CAT_SVG;
+									}}
+								/>
+							</div>
+						) : null}
+						<button
+							ref={toggleBtnRef}
+							className="sm-toggle focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+							aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+							aria-expanded={open}
+							aria-controls="staggered-menu-panel"
+							onClick={toggleMenu}
+							type="button"
+						>
+							<span ref={textWrapRef} className="sm-toggle-textWrap" aria-hidden="true">
+								<span ref={textInnerRef} className="sm-toggle-textInner">
+									{textLines.map((l, i) => (
+										<span className="sm-toggle-line" key={i}>
+											{l}
+										</span>
+									))}
 								</span>
-							</li>
-						)}
-					</ul>
-					{displaySocials && socialItems && socialItems.length > 0 && (
-						<div className="sm-socials" aria-label="Social links">
-							<h3 className="sm-socials-title">Socials</h3>
-							<ul className="sm-socials-list" role="list">
-								{socialItems.map((s, i) => (
-									<li key={s.label + i} className="sm-socials-item">
+							</span>
+							<svg
+								ref={iconRef}
+								className="sm-icon"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2.5"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								aria-hidden="true"
+							>
+								<path d="M12 5v14" />
+								<path d="M5 12h14" />
+							</svg>
+						</button>
+					</header>
+				)}
+
+				<aside
+					id="staggered-menu-panel"
+					ref={panelRef}
+					className="staggered-menu-panel"
+					role="dialog"
+					aria-modal={open}
+					aria-label="Navigation Menu"
+					aria-hidden={!open}
+				>
+					<div className="sm-panel-inner">
+						<ul
+							className="sm-panel-list"
+							role="list"
+							data-numbering={displayItemNumbering || undefined}
+						>
+							{items?.length ? (
+								items.map((it, idx) => (
+									<li className="sm-panel-itemWrap" key={it.label + idx}>
 										<a
-											href={s.link}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="sm-socials-link"
-											aria-label={s.ariaLabel || s.label}
-											onClick={() => closeMenu()}
+											className="sm-panel-item"
+											href={it.link || "#"}
+											aria-label={it.ariaLabel}
+											data-index={idx + 1}
+											onClick={(e) => {
+												if (it.onClick) {
+													it.onClick(e);
+												}
+												if (!it.link || it.link.startsWith("#")) {
+													closeMenu();
+												}
+											}}
 										>
-											{s.label}
+											<span className="sm-panel-itemLabel">{it.label}</span>
 										</a>
 									</li>
-								))}
-							</ul>
-						</div>
-					)}
-				</div>
-			</aside>
-		</div>
+								))
+							) : (
+								<li className="sm-panel-itemWrap" aria-hidden="true">
+									<span className="sm-panel-item">
+										<span className="sm-panel-itemLabel">No items</span>
+									</span>
+								</li>
+							)}
+						</ul>
+						{displaySocials && socialItems && socialItems.length > 0 && (
+							<div className="sm-socials" aria-label="Social links">
+								<h3 className="sm-socials-title">Socials</h3>
+								<ul className="sm-socials-list" role="list">
+									{socialItems.map((s, i) => (
+										<li key={s.label + i} className="sm-socials-item">
+											<a
+												href={s.link}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="sm-socials-link"
+												aria-label={s.ariaLabel || s.label}
+												onClick={() => closeMenu()}
+											>
+												{s.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+					</div>
+				</aside>
+			</div>
+		</MenuContext.Provider>
 	);
 };
 

@@ -101,6 +101,22 @@ export const STORAGE_KEYS = {
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// IndexedDB Configuration
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const INDEXED_DB_CONFIG = {
+	DB_NAME: "nosferatu_offline_db",
+	DB_VERSION: 1,
+	STORES: {
+		TOURNAMENTS: "tournaments",
+		KEYVAL: "keyval",
+	},
+	KEYS: {
+		ACTIVE_TOURNAMENT: "active_tournament",
+	},
+} as const;
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Animation & Timing
 // ═══════════════════════════════════════════════════════════════════════════════
 

@@ -417,14 +417,6 @@ export function FloatingNavbar() {
 		return items;
 	}, [isHomeRoute, navItems, navigate]);
 
-	const staggeredSocials = useMemo(
-		() => [
-			{ label: "Tournament", link: "/tournament" },
-			{ label: "GitHub", link: "https://github.com/AaronLorenzoWoods" },
-		],
-		[],
-	);
-
 	if (isTournamentRoute) {
 		return null;
 	}
@@ -435,13 +427,13 @@ export function FloatingNavbar() {
 				isFixed={true}
 				position="right"
 				items={staggeredItems}
-				socialItems={staggeredSocials}
-				displaySocials={true}
+				displaySocials={false}
 				displayItemNumbering={true}
 				menuButtonColor="#ffffff"
 				openMenuButtonColor="#ffffff"
 				colors={["#1f1430", "#3b1c60", "#6b21a8", "#9333ea"]}
 				accentColor="#c084fc"
+				hideHeader={true}
 			/>
 
 			{isProfileOpen && (

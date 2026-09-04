@@ -181,6 +181,9 @@ const ModeWrapper = memo(function ModeWrapper({
 				geoWidthRef.current = geo.boundingBox.max.x - geo.boundingBox.min.x || 1;
 			}
 		}
+		return () => {
+			fallbackGeometry.dispose();
+		};
 	}, [nodes, geometryKey, fallbackGeometry]);
 
 	useFrame((state, delta) => {

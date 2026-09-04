@@ -35,11 +35,13 @@ export const PersonalResults = memo(function PersonalResults({
 		}
 
 		return currentTournamentNames
-			.filter((name) => personalRatings[name.name] !== undefined)
 			.map((name) => {
-				const pr = personalRatings[name.name];
+				const pr =
+					personalRatings[name.id] ??
+					personalRatings[String(name.id)] ??
+					personalRatings[name.name];
 				if (!pr) {
-					return name;
+					return null;
 				}
 
 				return {
@@ -50,7 +52,17 @@ export const PersonalResults = memo(function PersonalResults({
 					total_ratings: pr.wins + pr.losses,
 				};
 			})
-			.sort((a, b) => (b.rating as number) - (a.rating as number));
+			.filter(
+				(
+					item,
+				): item is NameItem & {
+					rating: number;
+					wins: number;
+					losses: number;
+					total_ratings: number;
+				} => item !== null,
+			)
+			.sort((a, b) => b.rating - a.rating);
 	}, [personalRatings, currentTournamentNames]);
 
 	const topThree = rankings.slice(0, 3);
@@ -118,12 +130,14 @@ export const PersonalResults = memo(function PersonalResults({
 
 			const normalizedPosition = 1 - i / (numRankings - 1 || 1);
 			const newRating = minRating + ratingRange * normalizedPosition;
+			const idStr = String(item.id);
+			const key = idStr in newRatings ? idStr : item.name in newRatings ? item.name : idStr;
 
-			if (newRatings[item.name]) {
-				const existing = newRatings[item.name];
-				newRatings[item.name] = { ...existing, rating: Math.round(newRating) };
+			const existing = newRatings[key];
+			if (existing) {
+				newRatings[key] = { ...existing, rating: Math.round(newRating) };
 			} else {
-				newRatings[item.name] = {
+				newRatings[key] = {
 					rating: Math.round(newRating),
 					wins: 0,
 					losses: 0,

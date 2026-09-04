@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useToast } from "@/app/Providers";
 import { addName, ratingsAPI } from "@/shared/api";
-import { useLocalStorage } from "@/shared/hooks";
+import { useIndexedDB, useLocalStorage, useTournamentIndexedDB } from "@/shared/hooks";
 import { ELO_RATING, TIMING } from "@/shared/lib/constants";
 import { createSortedKey, shuffleArray } from "@/shared/lib/utils";
 
@@ -1186,3 +1186,5 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		subscribeToUserActivity: realtime.subscribeToUserActivity,
 	};
 }
+
+export { useIndexedDB, useTournamentIndexedDB };

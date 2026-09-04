@@ -27,6 +27,8 @@ export interface TextLoopProps {
 	pauseOnHover?: boolean;
 	className?: string;
 	style?: React.CSSProperties;
+	children?: React.ReactNode;
+	onClick?: () => void;
 }
 
 export const computeViewHeight = (
@@ -119,6 +121,8 @@ export const TextLoop = ({
 	pauseOnHover = true,
 	className = "",
 	style = {},
+	children,
+	onClick,
 }: TextLoopProps) => {
 	const rootRef = useRef<HTMLDivElement>(null);
 	const pathRef = useRef<SVGPathElement>(null);
@@ -323,7 +327,24 @@ export const TextLoop = ({
 	const loopText = unit.repeat(metrics.reps);
 
 	return (
-		<div ref={rootRef} className={`text-loop ${className}`.trim()} style={style}>
+		<div
+			ref={rootRef}
+			className={`text-loop ${onClick ? "cursor-pointer" : ""} ${className}`.trim()}
+			style={{ position: "relative", ...style }}
+			onClick={onClick}
+			role={onClick ? "button" : undefined}
+			tabIndex={onClick ? 0 : undefined}
+			onKeyDown={
+				onClick
+					? (e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								onClick();
+							}
+						}
+					: undefined
+			}
+		>
 			<svg
 				className="text-loop-svg"
 				viewBox={`0 0 ${viewWidth} ${viewHeight}`}
@@ -495,6 +516,14 @@ export const TextLoop = ({
 					</textPath>
 				</text>
 			</svg>
+			{children && (
+				<div
+					className="absolute inset-0 flex items-center justify-center z-25 pointer-events-auto"
+					onClick={(e) => e.stopPropagation()}
+				>
+					{children}
+				</div>
+			)}
 		</div>
 	);
 };
