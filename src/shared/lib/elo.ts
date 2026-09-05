@@ -181,7 +181,12 @@ function _average(values: number[]): number {
 		throw new Error("Cannot calculate Elo for an empty side");
 	}
 
-	return values.reduce((sum, value) => sum + value, 0) / values.length;
+	// ⚡ Bolt Performance Optimization: Replaced reduce with a for loop to avoid allocations
+	let sum = 0;
+	for (let i = 0; i < values.length; i++) {
+		sum += values[i] as number;
+	}
+	return sum / values.length;
 }
 
 function applyParticipantUpdates(
