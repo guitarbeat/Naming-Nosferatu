@@ -988,32 +988,30 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		});
 	}, [state.refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
 
-	const openingEntrants = useMemo(
-		() =>
-			state.persistentState.bracketEntrants.reduce<{ id: string; label: string }[]>(
-				(acc, entrantId) => {
-					const entrantKey = String(entrantId);
-					if (!entrantKey.startsWith("__BYE__")) {
-						if (tournamentMode === "2v2") {
-							const team = teamsById.get(entrantKey);
-							acc.push({
-								id: entrantKey,
-								label: team ? team.memberNames.join(" + ") : entrantKey,
-							});
-						} else {
-							const name = idToNameMap.get(entrantKey);
-							acc.push({
-								id: entrantKey,
-								label: name?.name ?? entrantKey,
-							});
-						}
-					}
-					return acc;
-				},
-				[],
-			),
-		[state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap],
-	);
+	const openingEntrants = useMemo(() => {
+		// ⚡ Bolt Performance Optimization: Replaced reduce with a for loop to avoid allocations
+		const entrants = state.persistentState.bracketEntrants;
+		const acc: { id: string; label: string }[] = [];
+		for (let i = 0; i < entrants.length; i++) {
+			const entrantKey = String(entrants[i]);
+			if (!entrantKey.startsWith("__BYE__")) {
+				if (tournamentMode === "2v2") {
+					const team = teamsById.get(entrantKey);
+					acc.push({
+						id: entrantKey,
+						label: team ? team.memberNames.join(" + ") : entrantKey,
+					});
+				} else {
+					const name = idToNameMap.get(entrantKey);
+					acc.push({
+						id: entrantKey,
+						label: name?.name ?? entrantKey,
+					});
+				}
+			}
+		}
+		return acc;
+	}, [state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap]);
 
 	const isComplete = bracketDerived.isComplete;
 	const metrics = useMemo(
