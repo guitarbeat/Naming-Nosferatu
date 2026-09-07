@@ -275,10 +275,27 @@ function sanitizePersistentState(
 	};
 
 	const mode: TournamentMode = merged.mode === "2v2" ? "2v2" : "1v1";
-	const teams = Array.isArray(merged.teams) ? merged.teams.filter(isValidTeam) : [];
-	const teamMatches = Array.isArray(merged.teamMatches)
-		? merged.teamMatches.filter(isValidTeamMatch)
-		: [];
+
+	// Salvaged from Jules PR #1494: native for loops instead of filter
+	const teams: Team[] = [];
+	if (Array.isArray(merged.teams)) {
+		for (let i = 0; i < merged.teams.length; i++) {
+			const team = merged.teams[i];
+			if (isValidTeam(team)) {
+				teams.push(team);
+			}
+		}
+	}
+
+	const teamMatches: TeamMatch[] = [];
+	if (Array.isArray(merged.teamMatches)) {
+		for (let i = 0; i < merged.teamMatches.length; i++) {
+			const match = merged.teamMatches[i];
+			if (isValidTeamMatch(match)) {
+				teamMatches.push(match);
+			}
+		}
+	}
 
 	return {
 		...merged,

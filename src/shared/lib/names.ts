@@ -107,7 +107,15 @@ export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter((name) => !isNameHidden(name));
+	// Salvaged from Jules PR #1518: single-pass filter
+	const result: NameItem[] = [];
+	for (let i = 0; i < names.length; i++) {
+		const name = names[i];
+		if (!isNameHidden(name)) {
+			result.push(name);
+		}
+	}
+	return result;
 }
 
 /**
@@ -117,7 +125,15 @@ export function getActiveNames(names: NameItem[] | null | undefined): NameItem[]
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter(isNameActive);
+	// Salvaged from Jules PR #1518: single-pass filter
+	const result: NameItem[] = [];
+	for (let i = 0; i < names.length; i++) {
+		const name = names[i];
+		if (isNameActive(name)) {
+			result.push(name);
+		}
+	}
+	return result;
 }
 
 /**
@@ -127,7 +143,15 @@ export function getHiddenNames(names: NameItem[] | null | undefined): NameItem[]
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter(isNameHidden);
+	// Salvaged from Jules PR #1518: single-pass filter
+	const result: NameItem[] = [];
+	for (let i = 0; i < names.length; i++) {
+		const name = names[i];
+		if (isNameHidden(name)) {
+			result.push(name);
+		}
+	}
+	return result;
 }
 
 /**
@@ -137,7 +161,15 @@ export function getLockedNames(names: NameItem[] | null | undefined): NameItem[]
 	if (!Array.isArray(names)) {
 		return [];
 	}
-	return names.filter(isNameLocked);
+	// Salvaged from Jules PR #1518: single-pass filter
+	const result: NameItem[] = [];
+	for (let i = 0; i < names.length; i++) {
+		const name = names[i];
+		if (isNameLocked(name)) {
+			result.push(name);
+		}
+	}
+	return result;
 }
 
 /**
