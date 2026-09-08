@@ -23,7 +23,6 @@ import React, {
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Dashboard as DashboardLazy } from "@/features/dashboard/Dashboard";
-import { CatHeroCard } from "@/features/tournament/CatHeroCard";
 import { NameSuggestion } from "@/features/tournament/NameSuggestion";
 import { TournamentSetup } from "@/features/tournament/TournamentSetup";
 import { queryClient } from "@/shared/api";
@@ -333,19 +332,13 @@ export function HomeRoute() {
 
 	return (
 		<div className="w-full flex flex-col items-center">
-			{/* HERO SECTION - integrating previously unused styling classes */}
+			{/* HERO SECTION */}
 			<section className="home-hero-section w-full relative flex flex-col justify-center items-center">
-				<div className="home-hero-inner w-full flex flex-col lg:flex-row items-center justify-between gap-12 z-10 relative">
-					{/* Left Copy Column */}
-					<div className="home-hero-copy flex flex-col items-start w-full lg:w-1/2 gap-6 z-10 text-left">
-						<h1 className="gradient-heading text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.05] tracking-tight">
+				<div className="home-hero-inner w-full flex flex-col items-center justify-center z-10 relative text-center">
+					<div className="home-hero-copy flex flex-col items-center w-full max-w-4xl z-10">
+						<h1 className="gradient-heading text-6xl sm:text-7xl md:text-8xl lg:text-[7rem] leading-[1.05] tracking-tight">
 							Name Nosferatu.
 						</h1>
-					</div>
-
-					{/* Right Graphic Column: Interactive Cat Photo Card */}
-					<div className="home-hero-preview relative w-full lg:w-1/2 flex justify-center lg:justify-end items-center z-10">
-						<CatHeroCard />
 					</div>
 				</div>
 

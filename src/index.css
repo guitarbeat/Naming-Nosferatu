@@ -383,10 +383,6 @@ h3 {
 	padding-bottom: var(--app-nav-safe-bottom);
 }
 
-.home-hero-preview {
-	min-height: var(--app-hero-preview-min-height);
-}
-
 @media (height > 820px) {
 	.home-hero-copy {
 		padding-bottom: 0;
