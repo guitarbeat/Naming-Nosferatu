@@ -801,11 +801,11 @@ export function FloatingNavbar() {
 						? `Vote (${selectedCount})`
 						: "Contenders",
 				icon: isTournamentActive ? (
-					<PlayCircle className="h-4 w-4" />
+					<PlayCircle className="h-[22px] w-[22px]" strokeWidth={1.5} />
 				) : selectedCount >= 2 ? (
-					<PlayCircle className="h-4 w-4" />
+					<PlayCircle className="h-[22px] w-[22px]" strokeWidth={1.5} />
 				) : (
-					<CheckCircle className="h-4 w-4" />
+					<CheckCircle className="h-[22px] w-[22px]" strokeWidth={1.5} />
 				),
 				isActive: activeSection === "pick" || activeSection === "tournament",
 				isAccent: isTournamentActive || selectedCount >= 2,
@@ -823,7 +823,7 @@ export function FloatingNavbar() {
 			items.push({
 				id: "analysis",
 				label: "Results",
-				icon: <Trophy className="h-4 w-4" />,
+				icon: <Trophy className="h-[22px] w-[22px]" strokeWidth={1.5} />,
 				isActive: activeSection === "analysis" || activeSection === "stats",
 				hasBadge: Object.keys(tournament.ratings).length > 0 && activeSection !== "analysis",
 				onClick: () => handleNavClick("analysis"),
@@ -832,7 +832,7 @@ export function FloatingNavbar() {
 			items.push({
 				id: "pick",
 				label: "Home",
-				icon: <Home className="h-4 w-4" />,
+				icon: <Home className="h-[22px] w-[22px]" strokeWidth={1.5} />,
 				isActive: false,
 				onClick: () => {
 					hapticNavTap();
@@ -844,7 +844,7 @@ export function FloatingNavbar() {
 		items.push({
 			id: "suggest",
 			label: "Suggest",
-			icon: <Lightbulb className="h-4 w-4" />,
+			icon: <Lightbulb className="h-[22px] w-[22px]" strokeWidth={1.5} />,
 			isActive: isSuggestOpen,
 			onClick: openSuggestModal,
 		});
@@ -853,7 +853,7 @@ export function FloatingNavbar() {
 			items.push({
 				id: "admin",
 				label: "Admin",
-				icon: <Lock className="h-4 w-4" />,
+				icon: <Lock className="h-[22px] w-[22px]" strokeWidth={1.5} />,
 				isActive: isAdminRoute,
 				onClick: handleAdminClick,
 			});
@@ -867,16 +867,17 @@ export function FloatingNavbar() {
 					<img
 						src={avatarUrl}
 						alt={profileLabel}
-						className="h-5 w-5 rounded-full border border-foreground/15 object-cover"
+						className="h-6 w-6 rounded-full border border-foreground/15 object-cover"
 						onError={handleImgError}
 					/>
 				) : (
 					<User
 						className={cn(
-							"h-4 w-4",
+							"h-[22px] w-[22px]",
 							isLoggedIn && isAdmin && "text-chart-4",
 							isLoggedIn && !isAdmin && "text-primary",
 						)}
+						strokeWidth={1.5}
 					/>
 				),
 			isActive: isProfileOpen,
@@ -921,9 +922,9 @@ export function FloatingNavbar() {
 							aria-label={item.label}
 							aria-current={item.isActive ? "page" : undefined}
 							className={cn(
-								"floating-nav-button relative flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-medium cursor-pointer select-none",
-								item.isActive && "floating-nav-button--active font-bold",
-								item.isAccent && !item.isActive && "floating-nav-button--accent font-bold",
+								"floating-nav-button relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-[17px] font-light cursor-pointer select-none",
+								item.isActive && "floating-nav-button--active",
+								item.isAccent && !item.isActive && "floating-nav-button--accent",
 							)}
 						>
 							<span className="floating-nav-icon flex items-center justify-center">

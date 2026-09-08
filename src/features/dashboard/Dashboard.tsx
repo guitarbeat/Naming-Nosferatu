@@ -15,6 +15,8 @@ import {
 import { Button, Card, Loading, MagicToggle } from "@/shared/components/LayoutBlocks";
 import { useAdminDashboard, useDashboardData } from "./hooks";
 import type { DashboardProps } from "./types";
+import { CatDetailsModal } from "./CatDetailsModal";
+import type { LeaderboardItem } from "@/shared/api";
 import { getQuickStats } from "./utils";
 
 function AdminDashboard() {
@@ -224,7 +226,7 @@ function EngagementPanel({
 	);
 }
 
-function LeaderboardPanel({ leaderboard, isLoadingLeaderboard, _onStartNew }: any) {
+function LeaderboardPanel({ leaderboard, isLoadingLeaderboard, _onStartNew, onSelectCat }: any) {
 	return (
 		<Panel>
 			<SectionHeader icon={Trophy} title="Global Leaderboard" subtitle="Top community choices" />
@@ -237,7 +239,8 @@ function LeaderboardPanel({ leaderboard, isLoadingLeaderboard, _onStartNew }: an
 					{leaderboard?.slice(0, 10).map((l: any, i: number) => (
 						<div
 							key={l.name || i}
-							className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/50"
+							onClick={() => onSelectCat?.(l)}
+							className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/50 cursor-pointer hover:bg-muted/50 transition-colors"
 						>
 							<div className="flex items-center gap-3">
 								<span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold">
@@ -265,6 +268,7 @@ function PersonalResults({
 	onStartNew,
 	_onUpdateRatings,
 	_userName,
+	onSelectCat,
 }: any) {
 	const sortedRatings = Object.entries(personalRatings || {}).sort(
 		(a: any, b: any) => b[1].rating - a[1].rating,
@@ -279,7 +283,15 @@ function PersonalResults({
 				{sortedRatings.slice(0, 10).map(([name, data]: any, i) => (
 					<div
 						key={name}
-						className="flex items-center justify-between p-3 bg-card border border-border/60 rounded-lg shadow-sm"
+						onClick={() => onSelectCat?.({
+							name,
+							avg_rating: data.rating,
+							score: data.rating,
+							wins: data.wins || 0,
+							losses: data.losses || 0,
+							total_ratings: (data.wins || 0) + (data.losses || 0),
+						})}
+						className="flex items-center justify-between p-3 bg-card border border-border/60 rounded-lg shadow-sm cursor-pointer hover:bg-muted/30 transition-colors"
 					>
 						<div className="flex items-center gap-3">
 							<span className="text-muted-foreground text-xs font-bold">#{i + 1}</span>
@@ -327,6 +339,8 @@ const AnalyticsDashboard = memo(function AnalyticsDashboard({
 	} = useDashboardData({ userName });
 	const quickStats = useMemo(() => getQuickStats({ siteStats, userStats }), [siteStats, userStats]);
 	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
+	
+	const [selectedCat, setSelectedCat] = useState<LeaderboardItem | null>(null);
 
 	return (
 		<div className="w-full space-y-8 sm:space-y-10">
@@ -353,6 +367,7 @@ const AnalyticsDashboard = memo(function AnalyticsDashboard({
 						onStartNew={handleStartNew}
 						onUpdateRatings={onUpdateRatings}
 						userName={userName}
+						onSelectCat={setSelectedCat}
 					/>
 				</Panel>
 			)}
@@ -362,6 +377,7 @@ const AnalyticsDashboard = memo(function AnalyticsDashboard({
 					leaderboard={leaderboard}
 					isLoadingLeaderboard={isLoadingLeaderboard}
 					onStartNew={onStartNew}
+					onSelectCat={setSelectedCat}
 				/>
 
 				<CommunityChartsPanel leaderboard={leaderboard} siteStats={siteStats} />
@@ -374,6 +390,8 @@ const AnalyticsDashboard = memo(function AnalyticsDashboard({
 				refreshEngagementMetrics={refreshEngagementMetrics}
 				isLoadingEngagement={isLoadingEngagement}
 			/>
+			
+			<CatDetailsModal cat={selectedCat} onClose={() => setSelectedCat(null)} />
 		</div>
 	);
 });

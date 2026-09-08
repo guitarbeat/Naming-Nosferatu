@@ -83,16 +83,16 @@
 	--glow-subtle: 0 0 12px oklch(var(--accent) / 0.25);
 
 	/* Navbar overrides */
-	--nav-shell-bg: oklch(var(--surface) / 0.8);
-	--nav-shell-border: oklch(var(--accent) / 0.2);
-	--nav-shell-shadow: var(--shadow-soft);
-	--nav-text: oklch(var(--fg));
-	--nav-text-muted: oklch(var(--fg) / 0.5);
-	--nav-pill-bg: oklch(var(--accent));
-	--nav-pill-border: oklch(var(--accent));
-	--nav-pill-shadow: 0 4px 12px oklch(var(--accent) / 0.4);
-	--nav-pill-hover-bg: oklch(var(--accent) / 0.1);
-	--nav-accent-text: oklch(var(--surface));
+	--nav-shell-bg: oklch(var(--surface) / 0.55);
+	--nav-shell-border: transparent;
+	--nav-shell-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+	--nav-text: oklch(0.25 0.02 280);
+	--nav-text-muted: oklch(0.55 0.02 280);
+	--nav-pill-bg: oklch(0.75 0.15 350);
+	--nav-pill-border: transparent;
+	--nav-pill-shadow: none;
+	--nav-pill-hover-bg: oklch(var(--fg) / 0.05);
+	--nav-accent-text: oklch(var(--fg));
 
 	color-scheme: light;
 }
