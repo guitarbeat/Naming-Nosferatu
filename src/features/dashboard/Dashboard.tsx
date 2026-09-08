@@ -1,6 +1,6 @@
 import { BarChart3, Settings, Trophy } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import { MagicToggle } from "@/shared/components/UIBlocks";
+import { MagicToggle } from "@/shared/components/LayoutBlocks";
 import {
 	AdminDashboard,
 	CommunityChartsPanel,

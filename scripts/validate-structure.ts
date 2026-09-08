@@ -40,9 +40,14 @@ function checkNamingConventions(dir: string) {
 		} else {
 			// Files
 			if (parsed.ext === ".tsx" && parsed.name !== "index") {
-				// Must be PascalCase
-				if (!/^[A-Z][a-zA-Z0-9]*(\.test)?$/.test(parsed.name)) {
-					reportError(`React Component file '${fullPath}' must be PascalCase.`);
+				// Must be PascalCase or camelCase starting with 'use'
+				if (
+					!/^[A-Z][a-zA-Z0-9]*(\.test)?$/.test(parsed.name) &&
+					!/^use[A-Z][a-zA-Z0-9]*(\.test)?$/.test(parsed.name)
+				) {
+					reportError(
+						`React Component or Hook file '${fullPath}' must be PascalCase or start with 'use'.`,
+					);
 				}
 			} else if (parsed.ext === ".ts" && parsed.name !== "index" && !item.endsWith(".d.ts")) {
 				// Must be camelCase

@@ -1,0 +1,53 @@
+import { ErrorManager } from "@/shared/lib/utils";
+import type { ErrorLog } from "@/shared/types";
+import type { AppSliceCreator, AppState } from "./types";
+import { patch } from "./utils";
+
+const MAX_ERROR_HISTORY = 100;
+
+export const createErrorSlice: AppSliceCreator<
+	Pick<AppState, "errors" | "errorActions">
+> = (set, get) => ({
+	errors: {
+		current: null,
+		history: [],
+	},
+
+	errorActions: {
+		setError: (error) => {
+			const log: ErrorLog | null = error
+				? {
+						error,
+						context: "setError",
+						metadata: {},
+						timestamp: new Date().toISOString(),
+					}
+				: null;
+
+			patch(set, "errors", {
+				current: error,
+				history: log
+					? [...get().errors.history, log].slice(-MAX_ERROR_HISTORY)
+					: get().errors.history,
+			});
+		},
+
+		clearError: () => patch(set, "errors", { current: null }),
+
+		logError: (error, context, metadata = {}) => {
+			const entry: ErrorLog = {
+				error,
+				context,
+				metadata,
+				timestamp: new Date().toISOString(),
+			};
+
+			patch(set, "errors", {
+				history: [...get().errors.history, entry].slice(-MAX_ERROR_HISTORY),
+			});
+
+			// Defer to ErrorManager for standardized logging
+			ErrorManager.handleError(error, context, metadata);
+		},
+	},
+});

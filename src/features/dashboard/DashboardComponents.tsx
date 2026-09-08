@@ -11,8 +11,12 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
-import { Button, Card, Loading } from "@/shared/components/LayoutBlocks";
-import { MagicToggle } from "@/shared/components/UIBlocks";
+import {
+	Button,
+	Card,
+	Loading,
+	MagicToggle,
+} from "@/shared/components/LayoutBlocks";
 import { useAdminDashboard } from "./hooks";
 
 export function AdminDashboard() {

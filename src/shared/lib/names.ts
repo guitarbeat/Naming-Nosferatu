@@ -121,7 +121,7 @@ function _getRatingForName(
 /**
  * Checks if a name item is hidden.
  */
-function isNameHidden(name: NameItem | null | undefined): boolean {
+export function isNameHidden(name: NameItem | null | undefined): boolean {
 	return name?.is_hidden === true || name?.isHidden === true;
 }
 

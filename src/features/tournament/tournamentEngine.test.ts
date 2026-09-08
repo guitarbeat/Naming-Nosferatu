@@ -93,9 +93,15 @@ describe("tournamentEngine", () => {
 
 		describe("getHeatCardClasses", () => {
 			it("returns expected card classes for each heat level", () => {
-				expect(getHeatCardClasses("blazing")).toBe("ring-2 ring-orange-500/80 shadow-lg");
-				expect(getHeatCardClasses("hot")).toBe("ring-2 ring-amber-500/70 shadow-md");
-				expect(getHeatCardClasses("warm")).toBe("ring-1 ring-orange-400/50 shadow-sm");
+				expect(getHeatCardClasses("blazing")).toBe(
+					"ring-2 ring-orange-500/80 shadow-lg",
+				);
+				expect(getHeatCardClasses("hot")).toBe(
+					"ring-2 ring-amber-500/70 shadow-md",
+				);
+				expect(getHeatCardClasses("warm")).toBe(
+					"ring-1 ring-orange-400/50 shadow-sm",
+				);
 				expect(getHeatCardClasses(null)).toBe("");
 			});
 		});

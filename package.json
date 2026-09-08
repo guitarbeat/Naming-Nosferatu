@@ -85,7 +85,8 @@
     "tsx": "^4.22.4",
     "typescript": "^5.9.3",
     "vite": "^7.3.5",
-    "vite-plugin-pwa": "^1.3.0"
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^5.0.0"
   },
   "browserslist": {
     "production": [

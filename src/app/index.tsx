@@ -1,39 +1,44 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig, motion } from "framer-motion";
-import { AlertTriangle, Info, X, XCircle } from "lucide-react";
+import { ChevronDown, RotateCcw, Trophy } from "lucide-react";
 import React, {
-	createContext,
-	lazy,
-	type ReactNode,
 	Suspense,
 	useCallback,
-	useContext,
 	useEffect,
 	useLayoutEffect,
 	useMemo,
-	useRef,
-	useState,
 } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import { NameSuggestion } from "@/features/tournament/NameSuggestion";
+import {
+	BrowserRouter,
+	Navigate,
+	Route,
+	Routes,
+	useLocation,
+	useNavigate,
+} from "react-router-dom";
+import { Dashboard as DashboardLazy } from "@/features/dashboard/Dashboard";
+import { TournamentSetup } from "@/features/tournament/TournamentSetup";
 import { queryClient } from "@/shared/api";
 import { Iridescence } from "@/shared/components/Iridescence";
 import {
+	Button,
 	ErrorBoundary,
 	ErrorComponent,
 	Loading,
-	Modal,
 	OfflineIndicator,
+	RouteFallback,
+	Section,
+	SectionHeading,
 } from "@/shared/components/LayoutBlocks";
 import { StaggeredMenu } from "@/shared/components/StaggeredMenu";
-import { RouteFallback } from "@/shared/components/UIBlocks";
-import { usePrefersReducedMotion, usePreloadImages } from "@/shared/hooks";
-import { STORAGE_KEYS } from "@/shared/lib/constants";
+import { usePreloadImages, useSectionScroll } from "@/shared/hooks";
 import { scaleFadeMotionPreset } from "@/shared/lib/uiUtils";
-import { setupGlobalImageErrorHandler } from "@/shared/lib/utils";
-import useAppStore, { useAppStoreInitialization } from "@/store";
-import { AdminRoute, HomeRoute } from "./routes/Routes";
+import { ErrorManager, setupGlobalImageErrorHandler } from "@/shared/lib/utils";
+import useAppStore, { errorContexts, useAppStoreInitialization } from "@/store";
+
+import { FloatingNavbar } from "./FloatingNavbar";
+import { Providers, useAuth } from "./Providers";
 
 import "../index.css";
 
@@ -113,541 +118,6 @@ if (rootElement) {
 	);
 }
 
-import {
-	getStorageString,
-	removeStorageItem,
-	setStorageString,
-} from "@/shared/lib/storage";
-
-const DEFAULT_TOAST_DURATION_MS = 5000;
-const DEFAULT_MAX_TOASTS = 5;
-
-export const localAuthAdapter: AuthAdapter = {
-	getCurrentUser: async (): Promise<AuthUser | null> => {
-		const name = getStorageString(STORAGE_KEYS.USER);
-		const id = getStorageString(STORAGE_KEYS.USER_ID);
-		if (!name || !id) {
-			return null;
-		}
-		return { id, name, isAdmin: name.toLowerCase() === "admin" };
-	},
-	login: async (credentials: LoginCredentials): Promise<boolean> => {
-		const name =
-			credentials.name || credentials.email?.split("@")[0] || "Guest";
-		const id = `local-usr-${Date.now()}`;
-		setStorageString(STORAGE_KEYS.USER, name);
-		setStorageString(STORAGE_KEYS.USER_ID, id);
-		return true;
-	},
-	logout: async (): Promise<void> => {
-		removeStorageItem(STORAGE_KEYS.USER);
-		removeStorageItem(STORAGE_KEYS.USER_ID);
-	},
-	register: async (data: RegisterData): Promise<void> => {
-		const name = data.name || data.email?.split("@")[0] || "Guest";
-		const id = `local-usr-${Date.now()}`;
-		setStorageString(STORAGE_KEYS.USER, name);
-		setStorageString(STORAGE_KEYS.USER_ID, id);
-	},
-	checkAdminStatus: async (userIdOrName: string): Promise<boolean> => {
-		return userIdOrName.toLowerCase() === "admin";
-	},
-};
-
-interface ProvidersProps {
-	children: ReactNode;
-	auth?: {
-		adapter: AuthAdapter;
-	};
-	toastMaxToasts?: number;
-	toastDefaultDuration?: number;
-	toastPosition?: ToastPosition;
-}
-
-export function Providers({
-	children,
-	auth,
-	toastMaxToasts = DEFAULT_MAX_TOASTS,
-	toastDefaultDuration = DEFAULT_TOAST_DURATION_MS,
-	toastPosition = "top-right",
-}: ProvidersProps) {
-	return (
-		<AuthProvider adapter={auth?.adapter ?? localAuthAdapter}>
-			<ToastProvider
-				maxToasts={toastMaxToasts}
-				defaultDuration={toastDefaultDuration}
-				position={toastPosition}
-			>
-				{children}
-			</ToastProvider>
-		</AuthProvider>
-	);
-}
-
-type UserRole = "user" | "moderator" | "admin";
-
-interface AuthUser {
-	id: string;
-	name: string;
-	email?: string;
-	isAdmin: boolean;
-	isLoggedIn?: boolean;
-	avatarUrl?: string;
-	role?: UserRole;
-}
-
-interface LoginCredentials {
-	email?: string;
-	password?: string;
-	name?: string;
-}
-
-interface RegisterData {
-	email: string;
-	password: string;
-	name: string;
-}
-
-interface AuthAdapter {
-	getCurrentUser: () => Promise<AuthUser | null>;
-	login: (credentials: LoginCredentials) => Promise<boolean>;
-	logout: () => Promise<void>;
-	register: (data: RegisterData) => Promise<void>;
-	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
-}
-
-interface AuthContextValue {
-	user: AuthUser | null;
-	isLoading: boolean;
-	isAuthenticated: boolean;
-	login: (credentials: LoginCredentials) => Promise<boolean>;
-	logout: () => Promise<void>;
-	register: (data: RegisterData) => Promise<void>;
-	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-export function useAuth(): AuthContextValue {
-	const context = useContext(AuthContext);
-	if (!context) {
-		throw new Error(
-			"useAuth must be used within <Providers>. Wrap your component tree with <Providers> in main.tsx.",
-		);
-	}
-
-	return context;
-}
-
-function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
-	const [user, setUser] = useState<AuthContextValue["user"]>(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const adapterRef = useRef(adapter);
-	useEffect(() => {
-		adapterRef.current = adapter;
-	}, [adapter]);
-
-	useEffect(() => {
-		let cancelled = false;
-
-		// Fallback timeout to ensure isLoading does not stay true forever if getCurrentUser stalls
-		const timeoutId = setTimeout(() => {
-			if (!cancelled) {
-				setIsLoading(false);
-			}
-		}, 2500);
-
-		adapterRef.current
-			.getCurrentUser()
-			.then((nextUser) => {
-				if (!cancelled) {
-					setUser(nextUser);
-				}
-			})
-			.catch((error) => {
-				console.error("[Providers] Failed to fetch current user:", error);
-			})
-			.finally(() => {
-				if (!cancelled) {
-					clearTimeout(timeoutId);
-					setIsLoading(false);
-				}
-			});
-
-		return () => {
-			cancelled = true;
-			clearTimeout(timeoutId);
-		};
-	}, []);
-
-	const login = useCallback(
-		async (credentials: LoginCredentials): Promise<boolean> => {
-			try {
-				const success = await adapterRef.current.login(credentials);
-				if (success) {
-					const updatedUser = await adapterRef.current.getCurrentUser();
-					setUser(updatedUser);
-				}
-				return success;
-			} catch (error) {
-				console.error("[Providers] Login failed:", error);
-				throw error;
-			}
-		},
-		[],
-	);
-
-	const logout = useCallback(async () => {
-		try {
-			await adapterRef.current.logout();
-			setUser(null);
-		} catch (error) {
-			console.error("[Providers] Logout failed:", error);
-			throw error;
-		}
-	}, []);
-
-	const register = useCallback(async (data: RegisterData) => {
-		await adapterRef.current.register(data);
-	}, []);
-
-	const checkAdminStatus = useCallback(async (userIdOrName: string) => {
-		return adapterRef.current.checkAdminStatus(userIdOrName);
-	}, []);
-
-	return useMemo(
-		() => ({
-			user,
-			isLoading,
-			isAuthenticated: user !== null,
-			login,
-			logout,
-			register,
-			checkAdminStatus,
-		}),
-		[user, isLoading, login, logout, register, checkAdminStatus],
-	);
-}
-
-interface AuthProviderProps {
-	children: ReactNode;
-	adapter?: AuthAdapter;
-}
-
-export function AuthProvider({
-	children,
-	adapter = localAuthAdapter,
-}: AuthProviderProps) {
-	const value = useAuthProvider(adapter);
-	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-type ToastType = "success" | "error" | "info" | "warning";
-
-interface ToastOptions {
-	duration?: number;
-	autoDismiss?: boolean;
-}
-
-interface ToastItem {
-	id: string;
-	message: string;
-	type: ToastType;
-	duration: number;
-	autoDismiss: boolean;
-	createdAt: number;
-}
-
-interface ToastContextValue {
-	toasts: ToastItem[];
-	showToast: (
-		message: string,
-		type?: ToastType,
-		options?: ToastOptions,
-	) => string;
-	hideToast: (id: string) => void;
-	clearToasts: () => void;
-	showSuccess: (message: string, options?: ToastOptions) => string;
-	showError: (message: string, options?: ToastOptions) => string;
-	showInfo: (message: string, options?: ToastOptions) => string;
-	showWarning: (message: string, options?: ToastOptions) => string;
-}
-
-type ToastPosition =
-	| "top-left"
-	| "top-center"
-	| "top-right"
-	| "bottom-left"
-	| "bottom-center"
-	| "bottom-right";
-
-const POSITION_CLASSES: Record<ToastPosition, string> = {
-	"top-left": "top-4 left-4 items-start",
-	"top-center": "top-4 left-1/2 -translate-x-1/2 items-center",
-	"top-right": "top-4 right-4 items-end",
-	"bottom-left": "bottom-4 left-4 items-start",
-	"bottom-center": "bottom-4 left-1/2 -translate-x-1/2 items-center",
-	"bottom-right": "bottom-4 right-4 items-end",
-};
-
-const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
-	success: { bg: "bg-chart-2", icon: <CheckCircle className="size-5" /> },
-	error: { bg: "bg-destructive", icon: <XCircle className="size-5" /> },
-	warning: {
-		bg: "bg-chart-4 text-foreground",
-		icon: <AlertTriangle className="size-5" />,
-	},
-	info: { bg: "bg-primary", icon: <Info className="size-5" /> },
-};
-
-const ToastContext = createContext<ToastContextValue | null>(null);
-
-export function useToast(): ToastContextValue {
-	const context = useContext(ToastContext);
-	if (!context) {
-		throw new Error(
-			"useToast must be used within <Providers>. Wrap your component tree with <Providers> in main.tsx.",
-		);
-	}
-
-	return context;
-}
-
-function ToastMessage({
-	toast,
-	onDismiss,
-}: {
-	toast: ToastItem;
-	onDismiss: (id: string) => void;
-}) {
-	const style = TYPE_STYLES[toast.type];
-	return (
-		<div
-			className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-2 ${style.bg}`}
-			role="alert"
-		>
-			<span className="text-base leading-none" aria-hidden={true}>
-				{style.icon}
-			</span>
-			<span className="flex-1">{toast.message}</span>
-			<button
-				onClick={() => onDismiss(toast.id)}
-				className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
-				aria-label="Dismiss"
-				title="Dismiss"
-				type="button"
-			>
-				<X className="size-4" />
-			</button>
-		</div>
-	);
-}
-
-function ToastContainer({
-	toasts,
-	onDismiss,
-	position,
-}: {
-	toasts: ToastItem[];
-	onDismiss: (id: string) => void;
-	position: ToastPosition;
-}) {
-	if (toasts.length === 0) {
-		return null;
-	}
-
-	return (
-		<section
-			className={`fixed z-[9999] flex flex-col gap-2 ${POSITION_CLASSES[position]}`}
-			aria-live="polite"
-			aria-label="Notifications"
-		>
-			{toasts.map((toast) => (
-				<ToastMessage key={toast.id} toast={toast} onDismiss={onDismiss} />
-			))}
-		</section>
-	);
-}
-
-function useToastProvider(
-	maxToasts: number,
-	defaultDuration: number,
-): ToastContextValue & {
-	toastList: ToastItem[];
-	dismiss: (id: string) => void;
-} {
-	const [toasts, setToasts] = useState<ToastItem[]>([]);
-	const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
-	const toastCounter = useRef(0);
-
-	const scheduleAutoDismiss = useCallback((id: string, duration: number) => {
-		const timer = setTimeout(() => {
-			setToasts((previous) => previous.filter((toast) => toast.id !== id));
-			timers.current.delete(id);
-		}, duration);
-
-		timers.current.set(id, timer);
-	}, []);
-
-	useEffect(() => {
-		return () => {
-			for (const timer of timers.current.values()) {
-				clearTimeout(timer);
-			}
-			timers.current.clear();
-		};
-	}, []);
-
-	const showToast = useCallback(
-		(
-			message: string,
-			type: ToastType = "info",
-			options: ToastOptions = {},
-		): string => {
-			const id = `toast-${++toastCounter.current}`;
-			const duration = options.duration ?? defaultDuration;
-			const autoDismiss = options.autoDismiss ?? true;
-
-			const item: ToastItem = {
-				id,
-				message,
-				type,
-				duration,
-				autoDismiss,
-				createdAt: Date.now(),
-			};
-
-			setToasts((previous) => [item, ...previous].slice(0, maxToasts));
-
-			if (autoDismiss) {
-				scheduleAutoDismiss(id, duration);
-			}
-
-			return id;
-		},
-		[defaultDuration, maxToasts, scheduleAutoDismiss],
-	);
-
-	const hideToast = useCallback((id: string) => {
-		setToasts((previous) => previous.filter((toast) => toast.id !== id));
-		const timer = timers.current.get(id);
-		if (timer) {
-			clearTimeout(timer);
-			timers.current.delete(id);
-		}
-	}, []);
-
-	const clearToasts = useCallback(() => {
-		setToasts([]);
-		for (const timer of timers.current.values()) {
-			clearTimeout(timer);
-		}
-		timers.current.clear();
-	}, []);
-
-	const showSuccess = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "success", options),
-		[showToast],
-	);
-	const showError = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "error", options),
-		[showToast],
-	);
-	const showInfo = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "info", options),
-		[showToast],
-	);
-	const showWarning = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "warning", options),
-		[showToast],
-	);
-
-	return useMemo(
-		() => ({
-			toasts,
-			showToast,
-			hideToast,
-			clearToasts,
-			showSuccess,
-			showError,
-			showInfo,
-			showWarning,
-			toastList: toasts,
-			dismiss: hideToast,
-		}),
-		[
-			toasts,
-			showToast,
-			hideToast,
-			clearToasts,
-			showSuccess,
-			showError,
-			showInfo,
-			showWarning,
-		],
-	);
-}
-
-interface ToastProviderProps {
-	children: ReactNode;
-	defaultDuration: number;
-	maxToasts: number;
-	position: ToastPosition;
-}
-
-export function ToastProvider({
-	children,
-	defaultDuration,
-	maxToasts,
-	position,
-}: ToastProviderProps) {
-	const { toastList, dismiss, ...value } = useToastProvider(
-		maxToasts,
-		defaultDuration,
-	);
-
-	return (
-		<ToastContext.Provider value={value}>
-			{children}
-			<ToastContainer
-				toasts={toastList}
-				onDismiss={dismiss}
-				position={position}
-			/>
-		</ToastContext.Provider>
-	);
-}
-
-import {
-	CheckCircle,
-	Home,
-	Lightbulb,
-	Lock,
-	PlayCircle,
-	Trophy,
-	User,
-} from "lucide-react";
-
-import {
-	Navigate,
-	Route,
-	Routes,
-	useLocation,
-	useNavigate,
-} from "react-router-dom";
-
-import {
-	cn,
-	ErrorManager,
-	handleImgError,
-	hapticNavTap,
-	hapticTournamentStart,
-} from "@/shared/lib/utils";
-
 const BOOT_TIMEOUT_FALLBACK_MS = 2500;
 const INSTALL_DESCRIPTION =
 	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";
@@ -695,7 +165,7 @@ export function AppBootScreen({
  * Cross-browser PWA install dialog (Chromium prompt + Apple share instructions).
  */
 export function PwaInstallPrompt() {
-	const installRef = useRef<PWAInstallElement | null>(null);
+	const installRef = React.useRef<PWAInstallElement | null>(null);
 
 	useEffect(() => {
 		const element = installRef.current;
@@ -717,418 +187,7 @@ export function PwaInstallPrompt() {
 	return <pwa-install ref={installRef} />;
 }
 
-const keyToId = {
-	landing: "pick",
-	about: "pick",
-	pick: "pick",
-	tournament: "pick",
-	stats: "analysis",
-	analysis: "analysis",
-	results: "analysis",
-} as const;
-
-type NavSection = keyof typeof keyToId;
-
-interface NavItem {
-	id: string;
-	label: string;
-	icon: ReactNode;
-	isActive?: boolean;
-	isAccent?: boolean;
-	hasBadge?: boolean;
-	onClick: () => void;
-}
-
-const LazyProfileInner = lazy(() =>
-	import("@/shared/components").then((module) => ({
-		default: module.ProfileInner,
-	})),
-);
-
-export function FloatingNavbar() {
-	const tournament = useAppStore((s) => s.tournament);
-	const tournamentActions = useAppStore((s) => s.tournamentActions);
-	const user = useAppStore((s) => s.user);
-	const navigate = useNavigate();
-	const location = useLocation();
-	const { login, logout } = useAuth();
-	const { selectedNames } = tournament;
-	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
-	const [activeSection, setActiveSection] = useState<NavSection>("pick");
-	const prefersReducedMotion = usePrefersReducedMotion();
-	const [pendingScroll, setPendingScroll] = useState<NavSection | null>(null);
-	const [isProfileOpen, setIsProfileOpen] = useState(false);
-	const [isSuggestOpen, setIsSuggestOpen] = useState(false);
-
-	const isHomeRoute = location.pathname === "/";
-	const isAdminRoute = location.pathname === "/admin";
-	const isTournamentRoute = location.pathname === "/tournament";
-
-	const selectedCount = selectedNames?.length || 0;
-	const isTournamentActive = Boolean(
-		tournament.names && tournament.names.length >= 2 && !tournament.isComplete,
-	);
-	const profileLabel = isLoggedIn
-		? userName?.split(" ")[0] || "Profile"
-		: "Profile";
-
-	const scrollToSection = useCallback(
-		(key: NavSection | string) => {
-			const id = keyToId[key as NavSection] || key;
-			const target =
-				document.getElementById(id) || document.getElementById(key);
-			if (!target) {
-				window.scrollTo({
-					top: 0,
-					behavior: prefersReducedMotion ? "auto" : "smooth",
-				});
-				return;
-			}
-
-			target.scrollIntoView({
-				behavior: prefersReducedMotion ? "auto" : "smooth",
-				block: "start",
-			});
-		},
-		[prefersReducedMotion],
-	);
-
-	const handleStartTournament = useCallback(() => {
-		hapticTournamentStart();
-		if (selectedNames && selectedNames.length >= 2) {
-			tournamentActions.setNames(selectedNames);
-			window.dispatchEvent(
-				new CustomEvent("nav-tab-change", { detail: "tournament" }),
-			);
-			if (isHomeRoute) {
-				scrollToSection("tournament");
-			} else {
-				setPendingScroll("tournament");
-				navigate("/");
-			}
-		}
-	}, [
-		isHomeRoute,
-		navigate,
-		scrollToSection,
-		selectedNames,
-		tournamentActions,
-	]);
-
-	const handleNavClick = useCallback(
-		(key: NavSection) => {
-			hapticNavTap();
-			if (!isHomeRoute) {
-				setPendingScroll(key);
-				navigate(`/#${key}`);
-				return;
-			}
-			setActiveSection(key);
-			scrollToSection(key);
-			if (typeof window !== "undefined" && window.history?.replaceState) {
-				window.history.replaceState(null, "", `#${key}`);
-			}
-		},
-		[isHomeRoute, navigate, scrollToSection],
-	);
-
-	const handleAdminClick = useCallback(() => {
-		hapticNavTap();
-		if (!isAdminRoute) {
-			navigate("/admin");
-		}
-	}, [isAdminRoute, navigate]);
-
-	const openProfileModal = useCallback(() => {
-		hapticNavTap();
-		setIsSuggestOpen(false);
-		setIsProfileOpen((prev) => !prev);
-	}, []);
-
-	const openSuggestModal = useCallback(() => {
-		hapticNavTap();
-		setIsProfileOpen(false);
-		setIsSuggestOpen((prev) => !prev);
-	}, []);
-
-	const handleLogin = useCallback(
-		async (name: string) => {
-			const ok = await login({ name });
-			if (ok !== false) {
-				setIsProfileOpen(false);
-			}
-			return ok;
-		},
-		[login],
-	);
-
-	useEffect(() => {
-		if (isHomeRoute && location.hash) {
-			const hashKey = location.hash.replace("#", "") as NavSection;
-			if (hashKey) {
-				scrollToSection(hashKey);
-			}
-		}
-	}, [isHomeRoute, location.hash, scrollToSection]);
-
-	useEffect(() => {
-		if (!isHomeRoute || !pendingScroll) {
-			return;
-		}
-		scrollToSection(pendingScroll);
-		setPendingScroll(null);
-	}, [isHomeRoute, pendingScroll, scrollToSection]);
-
-	useEffect(() => {
-		const handleTabChange = (e: Event) => {
-			const customEvent = e as CustomEvent<NavSection>;
-			if (customEvent.detail) {
-				setActiveSection(customEvent.detail);
-				scrollToSection(customEvent.detail);
-			}
-		};
-		window.addEventListener("nav-tab-change", handleTabChange);
-		return () => window.removeEventListener("nav-tab-change", handleTabChange);
-	}, [scrollToSection]);
-
-	useEffect(() => {
-		if (!isHomeRoute) {
-			return;
-		}
-
-		let rafId: number | null = null;
-		const sections: NavSection[] = ["pick", "analysis"];
-
-		const handleScroll = () => {
-			if (rafId) {
-				return;
-			}
-			rafId = requestAnimationFrame(() => {
-				rafId = null;
-				let current: NavSection | null = null;
-				let minDistance = Number.POSITIVE_INFINITY;
-
-				for (const section of sections) {
-					const targetId = keyToId[section] || section;
-					const element =
-						document.getElementById(targetId) ||
-						document.getElementById(section);
-					if (!element) {
-						continue;
-					}
-					const rect = element.getBoundingClientRect();
-					const distance = Math.abs(rect.top);
-					if (distance < minDistance && rect.top < window.innerHeight * 0.7) {
-						minDistance = distance;
-						current = section;
-					}
-				}
-				if (current) {
-					setActiveSection(current);
-				}
-			});
-		};
-
-		window.addEventListener("scroll", handleScroll, { passive: true });
-		handleScroll();
-		return () => {
-			window.removeEventListener("scroll", handleScroll);
-			if (rafId) {
-				cancelAnimationFrame(rafId);
-			}
-		};
-	}, [isHomeRoute]);
-
-	const navItems = useMemo((): NavItem[] => {
-		const items: NavItem[] = [];
-
-		if (isHomeRoute) {
-			items.push({
-				id: "pick",
-				label: isTournamentActive
-					? "Arena"
-					: selectedCount >= 2
-						? `Vote (${selectedCount})`
-						: "Contenders",
-				icon: isTournamentActive ? (
-					<PlayCircle className="h-4 w-4" />
-				) : selectedCount >= 2 ? (
-					<PlayCircle className="h-4 w-4" />
-				) : (
-					<CheckCircle className="h-4 w-4" />
-				),
-				isActive: activeSection === "pick" || activeSection === "tournament",
-				isAccent: isTournamentActive || selectedCount >= 2,
-				onClick: () => {
-					if (isTournamentActive) {
-						handleNavClick("tournament");
-					} else if (selectedCount >= 2) {
-						handleStartTournament();
-					} else {
-						handleNavClick("pick");
-					}
-				},
-			});
-
-			items.push({
-				id: "analysis",
-				label: "Results",
-				icon: <Trophy className="h-4 w-4" />,
-				isActive: activeSection === "analysis" || activeSection === "stats",
-				hasBadge:
-					Object.keys(tournament.ratings).length > 0 &&
-					activeSection !== "analysis",
-				onClick: () => handleNavClick("analysis"),
-			});
-		} else {
-			items.push({
-				id: "pick",
-				label: "Home",
-				icon: <Home className="h-4 w-4" />,
-				isActive: false,
-				onClick: () => {
-					hapticNavTap();
-					navigate("/");
-				},
-			});
-		}
-
-		items.push({
-			id: "suggest",
-			label: "Suggest",
-			icon: <Lightbulb className="h-4 w-4" />,
-			isActive: isSuggestOpen,
-			onClick: openSuggestModal,
-		});
-
-		if (isAdmin) {
-			items.push({
-				id: "admin",
-				label: "Admin",
-				icon: <Lock className="h-4 w-4" />,
-				isActive: isAdminRoute,
-				onClick: handleAdminClick,
-			});
-		}
-
-		items.push({
-			id: "profile",
-			label: profileLabel,
-			icon:
-				isLoggedIn && avatarUrl ? (
-					<img
-						src={avatarUrl}
-						alt={profileLabel}
-						className="h-5 w-5 rounded-full border border-foreground/15 object-cover"
-						onError={handleImgError}
-					/>
-				) : (
-					<User
-						className={cn(
-							"h-4 w-4",
-							isLoggedIn && isAdmin && "text-chart-4",
-							isLoggedIn && !isAdmin && "text-primary",
-						)}
-					/>
-				),
-			isActive: isProfileOpen,
-			onClick: openProfileModal,
-		});
-
-		return items;
-	}, [
-		activeSection,
-		avatarUrl,
-		handleAdminClick,
-		handleNavClick,
-		handleStartTournament,
-		isAdmin,
-		isAdminRoute,
-		isHomeRoute,
-		isLoggedIn,
-		isProfileOpen,
-		isSuggestOpen,
-		isTournamentActive,
-		navigate,
-		openProfileModal,
-		openSuggestModal,
-		profileLabel,
-		selectedCount,
-		tournament.ratings,
-	]);
-
-	if (isTournamentRoute) {
-		return null;
-	}
-
-	return (
-		<>
-			<nav className="floating-navbar-frame" aria-label="Main Navigation">
-				<div className="floating-navbar-shell flex items-center justify-center gap-1 sm:gap-1.5 p-1.5 rounded-full">
-					{navItems.map((item) => (
-						<button
-							key={item.id}
-							type="button"
-							onClick={item.onClick}
-							aria-label={item.label}
-							aria-current={item.isActive ? "page" : undefined}
-							className={cn(
-								"floating-nav-button relative flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-medium cursor-pointer select-none",
-								item.isActive && "floating-nav-button--active font-bold",
-								item.isAccent &&
-									!item.isActive &&
-									"floating-nav-button--accent font-bold",
-							)}
-						>
-							<span className="floating-nav-icon flex items-center justify-center">
-								{item.icon}
-							</span>
-							<span className="floating-nav-label whitespace-nowrap">
-								{item.label}
-							</span>
-							{item.hasBadge && (
-								<span
-									className="size-2 rounded-full bg-primary animate-pulse"
-									aria-hidden="true"
-								/>
-							)}
-						</button>
-					))}
-				</div>
-			</nav>
-
-			{isProfileOpen && (
-				<Modal
-					title="Player Profile"
-					open={isProfileOpen}
-					onClose={() => setIsProfileOpen(false)}
-					description="Sign in to save your rankings and track your stats."
-				>
-					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<LazyProfileInner onLogin={handleLogin} onLogout={logout} />
-					</Suspense>
-				</Modal>
-			)}
-			{isSuggestOpen && (
-				<Modal
-					title="Suggest a Cat Name"
-					open={isSuggestOpen}
-					onClose={() => setIsSuggestOpen(false)}
-					description="Suggest a cat name for the tournament bracket."
-				>
-					<Suspense fallback={<Loading variant="card-skeleton" height={260} />}>
-						<NameSuggestion
-							variant="modal"
-							onClose={() => setIsSuggestOpen(false)}
-						/>
-					</Suspense>
-				</Modal>
-			)}
-		</>
-	);
-}
-
-export function AppLayout({ children }: { children: ReactNode }) {
+export function AppLayout({ children }: { children: React.ReactNode }) {
 	const navigate = useNavigate();
 	const tournament = useAppStore((s) => s.tournament);
 	const errors = useAppStore((s) => s.errors);
@@ -1156,10 +215,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
 			{
 				label: "Admin Dashboard",
 				onClick: () => navigate("/admin"),
-			},
-			{
-				label: "Tournament Setup",
-				onClick: () => navigate("/setup"),
 			},
 		],
 		[navigate],
@@ -1241,6 +296,207 @@ export function AppLayout({ children }: { children: ReactNode }) {
 	);
 }
 
+export function HomeRoute() {
+	const user = useAppStore((s) => s.user);
+	const tournament = useAppStore((s) => s.tournament);
+	const tournamentActions = useAppStore((s) => s.tournamentActions);
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } =
+		useSectionScroll();
+
+	useEffect(() => {
+		const handleTabChange = (e: Event) => {
+			const customEvent = e as CustomEvent<string>;
+			if (customEvent.detail) {
+				scrollToSection(customEvent.detail);
+			}
+		};
+		window.addEventListener("nav-tab-change", handleTabChange);
+		return () => window.removeEventListener("nav-tab-change", handleTabChange);
+	}, [scrollToSection]);
+
+	const handleStartNewTournament = useCallback(() => {
+		clearPendingScroll();
+		tournamentActions.resetTournament();
+		scheduleSectionScroll("pick");
+	}, [clearPendingScroll, tournamentActions, scheduleSectionScroll]);
+
+	useEffect(() => clearPendingScroll, [clearPendingScroll]);
+
+	const hasActiveInProgressTournament = Boolean(
+		tournament.names && tournament.names.length >= 2 && !tournament.isComplete,
+	);
+
+	return (
+		<div className="w-full flex flex-col items-center">
+			{/* HERO SECTION - integrating previously unused styling classes */}
+			<section className="home-hero-section w-full relative flex flex-col justify-center items-center">
+				<div className="home-hero-inner w-full flex flex-col lg:flex-row items-center justify-between gap-12 z-10 relative">
+					{/* Left Copy Column */}
+					<div className="home-hero-copy flex flex-col items-start w-full lg:w-1/2 gap-6 z-10 text-left">
+						<h1 className="gradient-heading text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.05] tracking-tight">
+							Name Nosferatu.
+						</h1>
+					</div>
+
+					{/* Right Graphic Column */}
+					<div className="home-hero-preview relative w-full lg:w-1/2 flex justify-center lg:justify-end items-center z-10">
+						<div className="relative w-full max-w-[500px] aspect-square rounded-[2.5rem] glass-surface glass-surface--fallback p-2 animate-float">
+							<div className="relative w-full h-full rounded-[2rem] overflow-hidden">
+								<img
+									src="/assets/images/ui/cat_graphic_hd.png"
+									alt="Nosferatu"
+									className="w-full h-full object-cover rounded-[2rem] opacity-90 transition-transform duration-1000 hover:scale-110"
+								/>
+								<div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent pointer-events-none rounded-[2rem]" />
+							</div>
+						</div>
+
+						{/* Ambient Glow */}
+						<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/20 blur-[100px] rounded-full pointer-events-none -z-10" />
+					</div>
+				</div>
+
+				<div
+					className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary transition-colors z-20"
+					onClick={() => scrollToSection("app-flow")}
+				>
+					<span className="text-xs uppercase tracking-widest font-semibold">
+						Scroll to Discover
+					</span>
+					<ChevronDown className="w-6 h-6 animate-bounce" />
+				</div>
+			</section>
+
+			<div
+				id="app-flow"
+				className="w-full flex flex-col items-center gap-10 sm:gap-14 py-4 sm:py-6 px-3 sm:px-6 md:px-8 max-w-7xl mx-auto"
+			>
+				{/* 1. Pick Contenders / Tournament Arena */}
+				<section id="pick" className="w-full scroll-mt-20 sm:scroll-mt-24">
+					<div id="tournament" className="scroll-mt-20 sm:scroll-mt-24" />
+					<div id="contenders" className="scroll-mt-20 sm:scroll-mt-24" />
+					{hasActiveInProgressTournament && (
+						<div className="mx-auto mb-6 flex w-full max-w-4xl flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-border/70 bg-card/80 p-3.5 sm:p-4 shadow-sm">
+							<div className="flex items-center gap-3 text-left w-full sm:w-auto">
+								<div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+									<Trophy size={18} />
+								</div>
+								<div>
+									<h4 className="text-sm font-semibold text-foreground">
+										Tournament in Progress
+									</h4>
+									<p className="text-xs text-muted-foreground">
+										{tournament.names?.length} contenders seeded
+									</p>
+								</div>
+							</div>
+							<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+								<Button
+									variant="ghost"
+									size="small"
+									onClick={handleStartNewTournament}
+									className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1.5"
+								>
+									<RotateCcw size={13} />
+									Start Fresh
+								</Button>
+							</div>
+						</div>
+					)}
+					<div className="w-full min-h-[480px] flex flex-col flex-1">
+						<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+							<TournamentSetup />
+						</Suspense>
+					</div>
+				</section>
+
+				{/* 2. Results & Leaderboards */}
+				<section
+					id="analysis"
+					className="w-full scroll-mt-20 sm:scroll-mt-24 pt-8 border-t border-border/20"
+				>
+					<div id="results" className="scroll-mt-20 sm:scroll-mt-24" />
+					<div id="stats" className="scroll-mt-20 sm:scroll-mt-24" />
+					<SectionHeading
+						id="section-heading-analysis"
+						title="Results & Leaderboards"
+						subtitle="See how all the contenders ranked across tournaments."
+					/>
+					<div className="w-full mt-4 sm:mt-6">
+						<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+							<ErrorBoundary context={errorContexts.analysisDashboard}>
+								<DashboardLazy
+									personalRatings={tournament.ratings}
+									currentTournamentNames={tournament.names ?? undefined}
+									onStartNew={handleStartNewTournament}
+									onUpdateRatings={tournamentActions.setRatings}
+									userName={user.name ?? ""}
+									isAdmin={user.isAdmin}
+									isLoggedIn={user.isLoggedIn}
+									avatarUrl={user.avatarUrl}
+								/>
+							</ErrorBoundary>
+						</Suspense>
+					</div>
+				</section>
+			</div>
+		</div>
+	);
+}
+
+function AdminLoading() {
+	return (
+		<div className="fixed inset-0 flex items-center justify-center bg-background">
+			<Loading variant="skeleton" height={600} />
+		</div>
+	);
+}
+
+function AccessDenied() {
+	const navigate = useNavigate();
+	return (
+		<Section id="admin" maxWidth="md">
+			<div className="flex flex-col items-center gap-4 py-10 text-center">
+				<h2 className="text-3xl font-bold text-destructive">Access Denied</h2>
+				<p className="max-w-md text-muted-foreground">
+					Admin access is required to view this page. Head back home to log in
+					or return to the main tournament flow.
+				</p>
+				<Button variant="glass" onClick={() => navigate("/")}>
+					Back Home
+				</Button>
+			</div>
+		</Section>
+	);
+}
+
+export function AdminRoute() {
+	const { user: authUser, isLoading: authLoading } = useAuth();
+
+	if (authLoading) {
+		return <AdminLoading />;
+	}
+
+	if (!authUser?.isAdmin) {
+		return <AccessDenied />;
+	}
+
+	return (
+		<Section id="admin">
+			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+				<ErrorBoundary context={errorContexts.analysisDashboard}>
+					<DashboardLazy
+						isAdmin={authUser?.isAdmin}
+						userName={authUser?.name}
+						isLoggedIn={authUser?.isLoggedIn}
+						avatarUrl={authUser?.avatarUrl}
+					/>
+				</ErrorBoundary>
+			</Suspense>
+		</Section>
+	);
+}
+
 function AppShell() {
 	const { pathname } = useLocation();
 
@@ -1280,6 +536,7 @@ function AppShell() {
 							</Suspense>
 						}
 					/>
+					<Route path="*" element={<Navigate to="/" replace={true} />} />
 				</Routes>
 			</AppLayout>
 		</MotionConfig>

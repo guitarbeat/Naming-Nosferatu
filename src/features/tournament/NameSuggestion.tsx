@@ -17,7 +17,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useToast } from "@/app";
+import { useToast } from "@/app/Providers";
 import { addName } from "@/shared/api";
 import {
 	Button,
