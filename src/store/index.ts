@@ -105,14 +105,10 @@ export type AppSet = Parameters<StateCreator<AppState>>[0];
 export type AppGet = Parameters<StateCreator<AppState>>[1];
 export type AppSliceCreator<TSlice> = StateCreator<AppState, [], [], TSlice>;
 
-export const IS_BROWSER = typeof window !== "undefined";
-export const _IS_DEV = import.meta.env?.DEV ?? false;
+const IS_BROWSER = typeof window !== "undefined";
+const _IS_DEV = import.meta.env?.DEV ?? false;
 
-export function patch<K extends keyof AppState>(
-	set: AppSet,
-	key: K,
-	updates: Partial<AppState[K]>,
-): void {
+function patch<K extends keyof AppState>(set: AppSet, key: K, updates: Partial<AppState[K]>): void {
 	set((state) => {
 		const current = state[key];
 		let hasChanged = false;
@@ -134,7 +130,7 @@ export function patch<K extends keyof AppState>(
 
 const MAX_ERROR_HISTORY = 100;
 
-export const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
+const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
 	set,
 	get,
 ) => ({
@@ -256,9 +252,10 @@ export function persistTournamentState(tournament: TournamentState): void {
 	void saveStoredTournamentToIDB(snapshot);
 }
 
-export const createTournamentSlice: AppSliceCreator<
-	Pick<AppState, "tournament" | "tournamentActions">
-> = (set, get) => ({
+const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tournamentActions">> = (
+	set,
+	get,
+) => ({
 	tournament: getInitialTournamentState(),
 
 	tournamentActions: {
@@ -526,7 +523,7 @@ function persistUserState(user: UserState): void {
 	});
 }
 
-export const createUserAndSettingsSlice: AppSliceCreator<
+const createUserAndSettingsSlice: AppSliceCreator<
 	Pick<
 		AppState,
 		"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"

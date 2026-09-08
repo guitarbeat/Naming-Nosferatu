@@ -57,7 +57,7 @@ export interface AuthContextValue {
 	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
 }
 
-export const localAuthAdapter: AuthAdapter = {
+const localAuthAdapter: AuthAdapter = {
 	getCurrentUser: async (): Promise<AuthUser | null> => {
 		const name = getStorageString(STORAGE_KEYS.USER);
 		const id = getStorageString(STORAGE_KEYS.USER_ID);
@@ -192,7 +192,7 @@ interface AuthProviderProps {
 	adapter?: AuthAdapter;
 }
 
-export function AuthProvider({ children, adapter = localAuthAdapter }: AuthProviderProps) {
+function AuthProvider({ children, adapter = localAuthAdapter }: AuthProviderProps) {
 	const value = useAuthProvider(adapter);
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -427,12 +427,7 @@ interface ToastProviderProps {
 	position: ToastPosition;
 }
 
-export function ToastProvider({
-	children,
-	defaultDuration,
-	maxToasts,
-	position,
-}: ToastProviderProps) {
+function ToastProvider({ children, defaultDuration, maxToasts, position }: ToastProviderProps) {
 	const { toastList, dismiss, ...value } = useToastProvider(maxToasts, defaultDuration);
 
 	return (

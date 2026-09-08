@@ -17,7 +17,7 @@ import { useAdminDashboard, useDashboardData } from "./hooks";
 import type { DashboardProps } from "./types";
 import { getQuickStats } from "./utils";
 
-export function AdminDashboard() {
+function AdminDashboard() {
 	const { isLoading, filteredNames } = useAdminDashboard();
 
 	if (isLoading) {
@@ -29,11 +29,11 @@ export function AdminDashboard() {
 	);
 }
 
-export function ContextBadge({ label, tone = "accent" }: { label: string; tone?: string }) {
+function ContextBadge({ label, tone = "accent" }: { label: string; tone?: string }) {
 	return <span className={`text-xs px-2 py-1 rounded bg-${tone}/20 text-${tone}`}>{label}</span>;
 }
 
-export function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
+function Panel({ children, className = "" }: { children: ReactNode; className?: string }) {
 	return (
 		<Card className={className} padding="medium">
 			{children}
@@ -41,7 +41,7 @@ export function Panel({ children, className = "" }: { children: ReactNode; class
 	);
 }
 
-export function SectionHeader({
+function SectionHeader({
 	icon: Icon,
 	title,
 	subtitle,
@@ -66,7 +66,7 @@ export function SectionHeader({
 	);
 }
 
-export function CommunityChartsPanel({ leaderboard, _siteStats }: any) {
+function CommunityChartsPanel({ leaderboard, _siteStats }: any) {
 	const data = (leaderboard || []).slice(0, 5).map((l: any) => ({
 		name: l.name,
 		rating: Math.round(l.avg_rating),
@@ -118,7 +118,7 @@ export function CommunityChartsPanel({ leaderboard, _siteStats }: any) {
 	);
 }
 
-export function DashboardHeader({
+function DashboardHeader({
 	_isLoggedIn,
 	_userName,
 	_avatarUrl,
@@ -149,7 +149,7 @@ const TIMEFRAME_OPTIONS = [
 	{ value: "month", label: "Month" },
 ] as const;
 
-export function EngagementPanel({
+function EngagementPanel({
 	engagementMetrics,
 	timeframe,
 	setTimeframe,
@@ -224,7 +224,7 @@ export function EngagementPanel({
 	);
 }
 
-export function LeaderboardPanel({ leaderboard, isLoadingLeaderboard, _onStartNew }: any) {
+function LeaderboardPanel({ leaderboard, isLoadingLeaderboard, _onStartNew }: any) {
 	return (
 		<Panel>
 			<SectionHeader icon={Trophy} title="Global Leaderboard" subtitle="Top community choices" />
@@ -259,7 +259,7 @@ export function LeaderboardPanel({ leaderboard, isLoadingLeaderboard, _onStartNe
 	);
 }
 
-export function PersonalResults({
+function PersonalResults({
 	personalRatings,
 	_currentTournamentNames,
 	onStartNew,

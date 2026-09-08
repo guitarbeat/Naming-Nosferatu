@@ -1,12 +1,4 @@
-import {
-	type KeyboardEvent,
-	useCallback,
-	useEffect,
-	useMemo,
-	useReducer,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useToast } from "@/app/Providers";
 import { ratingsAPI } from "@/shared/api";
 import { useIndexedDB, useLocalStorage, useTournamentIndexedDB } from "@/shared/hooks";
@@ -26,15 +18,12 @@ import type {
 import useAppStore from "@/store";
 import {
 	calculateTournamentMetrics,
-	calculateWinStreak,
 	computeUpdatedRatings,
 	createIdToNameMap,
 	createMatchRecord,
 	createTeamsById,
 	deriveBracketState,
 	generateRandomTeams,
-	getHeatLevel,
-	getMatchSideId,
 	type HistoryEntry,
 	resolveCurrentMatch,
 	resolveTournamentMode,
@@ -78,117 +67,10 @@ export function useTimedState<T>(defaultValue: T) {
 }
 
 // ============================================================================
-// 2. useStreakCalculator Hook (Consolidated from useStreakCalculator.ts)
-// ============================================================================
-
-export function useStreakCalculator(currentMatch: Match | null, matchHistory: MatchRecord[]) {
-	const calculateContestantStreak = useCallback(
-		(contestantId: string | number | null | undefined) =>
-			calculateWinStreak(contestantId, matchHistory),
-		[matchHistory],
-	);
-
-	const leftStreak = useMemo(
-		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "left")) : 0),
-		[currentMatch, calculateContestantStreak],
-	);
-
-	const rightStreak = useMemo(
-		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "right")) : 0),
-		[currentMatch, calculateContestantStreak],
-	);
-
-	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
-	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
-
-	return {
-		leftStreak,
-		rightStreak,
-		leftHeatLevel,
-		rightHeatLevel,
-		calculateWinStreak,
-	};
-}
-
-// ============================================================================
-// 3. useTournamentKeyboard Hook (Consolidated from useTournamentKeyboard.ts)
-// ============================================================================
-
-function isInteractiveTarget(target: EventTarget | null): boolean {
-	if (!(target instanceof HTMLElement)) {
-		return false;
-	}
-	const tagName = target.tagName;
-	return (
-		tagName === "INPUT" ||
-		tagName === "TEXTAREA" ||
-		tagName === "SELECT" ||
-		target.isContentEditable
-	);
-}
-
-interface UseTournamentKeyboardOptions {
-	onVoteForSide: (side: "left" | "right") => void;
-	onUndo: () => void;
-	onQuit: () => void;
-	canUndo: boolean;
-	isVoting: boolean;
-	isOpeningReveal: boolean;
-}
-
-export function useTournamentKeyboard({
-	onVoteForSide,
-	onUndo,
-	onQuit,
-	canUndo,
-	isVoting,
-	isOpeningReveal,
-}: UseTournamentKeyboardOptions) {
-	const handleKeyDown = useCallback(
-		(event: KeyboardEvent<HTMLElement>, side: "left" | "right") => {
-			if (event.key === "Enter" || event.key === " ") {
-				event.preventDefault();
-				onVoteForSide(side);
-			}
-		},
-		[onVoteForSide],
-	);
-
-	const handleGlobalKeyDown = useCallback(
-		(event: globalThis.KeyboardEvent) => {
-			if (isInteractiveTarget(event.target)) {
-				return;
-			}
-			if (isVoting || isOpeningReveal) {
-				return;
-			}
-
-			const key = event.key.toLowerCase();
-			if (key === "1" || key === "arrowleft") {
-				event.preventDefault();
-				onVoteForSide("left");
-			} else if (key === "2" || key === "arrowright") {
-				event.preventDefault();
-				onVoteForSide("right");
-			} else if (key === "u" && canUndo) {
-				event.preventDefault();
-				onUndo();
-			} else if (key === "q") {
-				event.preventDefault();
-				onQuit();
-			}
-		},
-		[isVoting, isOpeningReveal, onVoteForSide, canUndo, onUndo, onQuit],
-	);
-
-	return { handleKeyDown, handleGlobalKeyDown };
-}
-
-// ============================================================================
 // 4. Tournament State persistence helpers (Consolidated from tournamentPersistence.ts)
 // ============================================================================
 
-export function createDefaultPersistentState(userName: string): PersistentTournamentState {
+function createDefaultPersistentState(userName: string): PersistentTournamentState {
 	return {
 		matchHistory: [],
 		currentRound: 1,
@@ -214,7 +96,7 @@ export function buildInitialRatings(names: NameItem[]): Record<string, number> {
 	return initial;
 }
 
-export function createNamesKey(names: NameItem[]): string {
+function createNamesKey(names: NameItem[]): string {
 	return createSortedKey(names.map((n) => n?.id || ""));
 }
 

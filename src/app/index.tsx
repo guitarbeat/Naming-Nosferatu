@@ -2,7 +2,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig, motion } from "framer-motion";
 import {
 	CheckCircle,
-	ChevronDown,
 	Home,
 	Lightbulb,
 	Lock,
@@ -340,16 +339,6 @@ export function HomeRoute() {
 							Name Nosferatu.
 						</h1>
 					</div>
-				</div>
-
-				<div
-					className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary transition-colors z-20"
-					onClick={() => scrollToSection("app-flow")}
-				>
-					<span className="text-xs uppercase tracking-widest font-semibold">
-						Scroll to Discover
-					</span>
-					<ChevronDown className="w-6 h-6 animate-bounce" />
 				</div>
 			</section>
 

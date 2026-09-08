@@ -253,7 +253,7 @@ export function parseJsonValue<T>(value: string | null, fallback: T): T {
 	}
 }
 
-export function readStorageJson<T>(key: string, fallback: T): T {
+function readStorageJson<T>(key: string, fallback: T): T {
 	return parseJsonValue<T>(getStorageString(key), fallback);
 }
 
