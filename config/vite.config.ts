@@ -42,7 +42,7 @@ export default defineConfig(({ command }) => ({
 			plugins: [autoprefixer()],
 		},
 	},
-	assetsInclude: ["**/*.glb", "**/*.gltf", "**/*.hdr", "**/*.webp"],
+	assetsInclude: ["**/*.webp"],
 	plugins: [
 		react({
 			jsxImportSource: command === "serve" ? "react" : "react",
@@ -53,7 +53,6 @@ export default defineConfig(({ command }) => ({
 			includeAssets: [
 				"assets/images/favicon.png",
 				"assets/images/ui/cat_graphic_hd.png",
-				"assets/3d/*.glb",
 			],
 			manifest: {
 				id: "/",
@@ -91,7 +90,7 @@ export default defineConfig(({ command }) => ({
 				],
 			},
 			workbox: {
-				globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,gif,glb,woff,woff2}"],
+				globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,gif,woff,woff2}"],
 				maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
 				runtimeCaching: [
 					{
@@ -123,7 +122,7 @@ export default defineConfig(({ command }) => ({
 						},
 					},
 					{
-						urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|glb)$/i,
+						urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
 						handler: "StaleWhileRevalidate",
 						options: {
 							cacheName: "static-media-cache",
@@ -151,14 +150,6 @@ export default defineConfig(({ command }) => ({
 			output: {
 				manualChunks(id) {
 					if (id.includes("node_modules")) {
-						if (
-							id.includes("three") ||
-							id.includes("@react-three/fiber") ||
-							id.includes("@react-three/drei") ||
-							id.includes("maath")
-						) {
-							return "vendor-three";
-						}
 						if (id.includes("ogl")) {
 							return "vendor-ogl";
 						}
@@ -170,12 +161,6 @@ export default defineConfig(({ command }) => ({
 						}
 						if (id.includes("framer-motion")) {
 							return "vendor-motion";
-						}
-						if (id.includes("@heroui")) {
-							return "vendor-heroui";
-						}
-						if (id.includes("@hello-pangea/dnd") || id.includes("@hello-pangea")) {
-							return "vendor-dnd";
 						}
 						if (id.includes("simple-statistics")) {
 							return "vendor-stats";
@@ -204,6 +189,11 @@ export default defineConfig(({ command }) => ({
 			"@/app": path.resolve(__dirname, "..", "src/app"),
 			"@/features": path.resolve(__dirname, "..", "src/features"),
 			"@/shared": path.resolve(__dirname, "..", "src/shared"),
+			"@/store": path.resolve(__dirname, "..", "src/store"),
 		},
+	},
+	test: {
+		environment: "happy-dom",
+		globals: true,
 	},
 }));

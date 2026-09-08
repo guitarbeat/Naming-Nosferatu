@@ -9,11 +9,7 @@ import {
 } from "react";
 import { useToast } from "@/app/Providers";
 import { ratingsAPI } from "@/shared/api";
-import {
-	useIndexedDB,
-	useLocalStorage,
-	useTournamentIndexedDB,
-} from "@/shared/hooks";
+import { useIndexedDB, useLocalStorage, useTournamentIndexedDB } from "@/shared/hooks";
 import { ELO_RATING, TIMING } from "@/shared/lib/constants";
 import { createSortedKey, shuffleArray } from "@/shared/lib/utils";
 
@@ -85,10 +81,7 @@ export function useTimedState<T>(defaultValue: T) {
 // 2. useStreakCalculator Hook (Consolidated from useStreakCalculator.ts)
 // ============================================================================
 
-export function useStreakCalculator(
-	currentMatch: Match | null,
-	matchHistory: MatchRecord[],
-) {
+export function useStreakCalculator(currentMatch: Match | null, matchHistory: MatchRecord[]) {
 	const calculateContestantStreak = useCallback(
 		(contestantId: string | number | null | undefined) =>
 			calculateWinStreak(contestantId, matchHistory),
@@ -96,26 +89,17 @@ export function useStreakCalculator(
 	);
 
 	const leftStreak = useMemo(
-		() =>
-			currentMatch
-				? calculateContestantStreak(getMatchSideId(currentMatch, "left"))
-				: 0,
+		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "left")) : 0),
 		[currentMatch, calculateContestantStreak],
 	);
 
 	const rightStreak = useMemo(
-		() =>
-			currentMatch
-				? calculateContestantStreak(getMatchSideId(currentMatch, "right"))
-				: 0,
+		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "right")) : 0),
 		[currentMatch, calculateContestantStreak],
 	);
 
 	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
-	const rightHeatLevel = useMemo(
-		() => getHeatLevel(rightStreak),
-		[rightStreak],
-	);
+	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
 
 	return {
 		leftStreak,
@@ -204,9 +188,7 @@ export function useTournamentKeyboard({
 // 4. Tournament State persistence helpers (Consolidated from tournamentPersistence.ts)
 // ============================================================================
 
-export function createDefaultPersistentState(
-	userName: string,
-): PersistentTournamentState {
+export function createDefaultPersistentState(userName: string): PersistentTournamentState {
 	return {
 		matchHistory: [],
 		currentRound: 1,
@@ -272,10 +254,7 @@ function isValidTeamMatch(value: unknown): value is TeamMatch {
 		return false;
 	}
 	const candidate = value as TeamMatch;
-	return (
-		typeof candidate.leftTeamId === "string" &&
-		typeof candidate.rightTeamId === "string"
-	);
+	return typeof candidate.leftTeamId === "string" && typeof candidate.rightTeamId === "string";
 }
 
 function sanitizePersistentState(
@@ -322,10 +301,7 @@ function sanitizePersistentState(
 		...merged,
 		mode,
 		matchHistory: Array.isArray(merged.matchHistory) ? merged.matchHistory : [],
-		ratings:
-			merged.ratings && typeof merged.ratings === "object"
-				? merged.ratings
-				: {},
+		ratings: merged.ratings && typeof merged.ratings === "object" ? merged.ratings : {},
 		namesKey: typeof merged.namesKey === "string" ? merged.namesKey : "",
 		teams,
 		teamMatches,
@@ -397,14 +373,7 @@ function tournamentReducer(
 			};
 		}
 		case "VOTE": {
-			const {
-				currentMatch,
-				winnerId,
-				loserId,
-				matchNumber,
-				round,
-				voteTimestamp,
-			} = action.payload;
+			const { currentMatch, winnerId, loserId, matchNumber, round, voteTimestamp } = action.payload;
 
 			const newRatings = computeUpdatedRatings({
 				currentMatch,
@@ -433,10 +402,7 @@ function tournamentReducer(
 				history: [...state.history, newHistoryEntry],
 				persistentState: {
 					...state.persistentState,
-					matchHistory: [
-						...(state.persistentState.matchHistory || []),
-						matchRecord,
-					],
+					matchHistory: [...(state.persistentState.matchHistory || []), matchRecord],
 					currentMatch: matchNumber + 1,
 					currentRound: round,
 					ratings: newRatings,
@@ -448,10 +414,7 @@ function tournamentReducer(
 		case "UNDO": {
 			const { lastEntry } = action.payload;
 			const newHistory = state.history.slice(0, -1);
-			const newMatchHistory = (state.persistentState.matchHistory || []).slice(
-				0,
-				-1,
-			);
+			const newMatchHistory = (state.persistentState.matchHistory || []).slice(0, -1);
 
 			return {
 				...state,
@@ -547,42 +510,32 @@ function haveSameIds(a: string[], b: string[]): boolean {
 	return true;
 }
 
-export function useTournamentState(
-	names: NameItem[],
-	userName?: string,
-): UseTournamentStateResult {
+export function useTournamentState(names: NameItem[], userName?: string): UseTournamentStateResult {
 	const toast = useToast();
 	const [isVoting, setIsVoting] = useState(false);
 
-	const tournamentMode = useMemo(
-		() => resolveTournamentMode(names.length),
-		[names.length],
-	);
+	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
-	const tournamentId = useMemo(
-		() => createTournamentId(names, userName),
-		[names, userName],
-	);
+	const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
 
 	const defaultPersistentState = useMemo(
 		() => createDefaultPersistentState(userName || "anonymous"),
 		[userName],
 	);
 
-	const [persistentStateRaw, setPersistentState] =
-		useLocalStorage<PersistentTournamentState>(
-			tournamentId,
-			defaultPersistentState,
-			{
-				onError: () => {
-					toast.showWarning(
-						"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
-					);
-				},
+	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
+		tournamentId,
+		defaultPersistentState,
+		{
+			onError: () => {
+				toast.showWarning(
+					"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
+				);
 			},
-		);
+		},
+	);
 
 	const persistentState = useMemo(
 		(): PersistentTournamentState =>
@@ -626,12 +579,7 @@ export function useTournamentState(
 				lastUpdated: state.persistentState.lastUpdated,
 			});
 		}
-	}, [
-		state.persistentState,
-		state.ratings,
-		setPersistentState,
-		tournamentActions,
-	]);
+	}, [state.persistentState, state.ratings, setPersistentState, tournamentActions]);
 
 	useEffect(() => {
 		ratingsRef.current = state.ratings;
@@ -656,29 +604,21 @@ export function useTournamentState(
 		const initializeTournament = () => {
 			const storeTournament = useAppStore.getState().tournament;
 			const effectivePersistentState: PersistentTournamentState =
-				persistentState.bracketEntrants &&
-				persistentState.bracketEntrants.length > 0
+				persistentState.bracketEntrants && persistentState.bracketEntrants.length > 0
 					? persistentState
 					: {
 							...persistentState,
-							matchHistory:
-								storeTournament.matchHistory ?? persistentState.matchHistory,
-							currentRound:
-								storeTournament.currentRound ?? persistentState.currentRound,
-							currentMatch:
-								storeTournament.currentMatch ?? persistentState.currentMatch,
-							totalMatches:
-								storeTournament.totalMatches ?? persistentState.totalMatches,
+							matchHistory: storeTournament.matchHistory ?? persistentState.matchHistory,
+							currentRound: storeTournament.currentRound ?? persistentState.currentRound,
+							currentMatch: storeTournament.currentMatch ?? persistentState.currentMatch,
+							totalMatches: storeTournament.totalMatches ?? persistentState.totalMatches,
 							teams: storeTournament.teams ?? persistentState.teams,
-							bracketEntrants:
-								storeTournament.bracketEntrants ??
-								persistentState.bracketEntrants,
+							bracketEntrants: storeTournament.bracketEntrants ?? persistentState.bracketEntrants,
 							mode: (storeTournament.mode ?? tournamentMode) as TournamentMode,
 						};
 
 			const hasValidPersistence =
-				(persistentState.namesKey === namesKey &&
-					persistentState.mode === tournamentMode) ||
+				(persistentState.namesKey === namesKey && persistentState.mode === tournamentMode) ||
 				(Boolean(
 					effectivePersistentState.bracketEntrants &&
 						effectivePersistentState.bracketEntrants.length > 0,
@@ -701,9 +641,7 @@ export function useTournamentState(
 				!hasValidPersistence ||
 				effectivePersistentState.bracketEntrants.length === 0 ||
 				!haveSameIds(
-					effectivePersistentState.bracketEntrants.filter(
-						(id) => !id.startsWith("__BYE__"),
-					),
+					effectivePersistentState.bracketEntrants.filter((id) => !id.startsWith("__BYE__")),
 					participantIds,
 				);
 			const bracketEntrants = shouldResetBracket
@@ -711,15 +649,9 @@ export function useTournamentState(
 				: effectivePersistentState.bracketEntrants;
 
 			const stateUpdates: Partial<PersistentTournamentState> = {
-				matchHistory: shouldResetBracket
-					? []
-					: effectivePersistentState.matchHistory,
-				currentRound: shouldResetBracket
-					? 1
-					: effectivePersistentState.currentRound,
-				currentMatch: shouldResetBracket
-					? 1
-					: effectivePersistentState.currentMatch,
+				matchHistory: shouldResetBracket ? [] : effectivePersistentState.matchHistory,
+				currentRound: shouldResetBracket ? 1 : effectivePersistentState.currentRound,
+				currentMatch: shouldResetBracket ? 1 : effectivePersistentState.currentMatch,
 				totalMatches: Math.max(0, participantIds.length - 1),
 				teams,
 				bracketEntrants,
@@ -743,8 +675,7 @@ export function useTournamentState(
 			}
 
 			const storedRatingsAreFresh =
-				(effectivePersistentState.lastUpdated ?? 0) >=
-				lastRatingsUpdateRef.current;
+				(effectivePersistentState.lastUpdated ?? 0) >= lastRatingsUpdateRef.current;
 
 			let activeRatings = initialRatings;
 			if (
@@ -790,10 +721,7 @@ export function useTournamentState(
 	);
 	const bracketDerived = useMemo(
 		() =>
-			deriveBracketState(
-				state.persistentState.bracketEntrants,
-				state.persistentState.matchHistory,
-			),
+			deriveBracketState(state.persistentState.bracketEntrants, state.persistentState.matchHistory),
 		[state.persistentState.bracketEntrants, state.persistentState.matchHistory],
 	);
 
@@ -805,13 +733,7 @@ export function useTournamentState(
 			teamsById,
 			idToNameMap,
 		});
-	}, [
-		state.refreshKey,
-		idToNameMap,
-		tournamentMode,
-		bracketDerived.pendingMatchIds,
-		teamsById,
-	]);
+	}, [state.refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
 
 	const openingEntrants = useMemo(() => {
 		// ⚡ Bolt Performance Optimization: Replaced reduce with a for loop to avoid allocations
@@ -836,12 +758,7 @@ export function useTournamentState(
 			}
 		}
 		return acc;
-	}, [
-		state.persistentState.bracketEntrants,
-		tournamentMode,
-		teamsById,
-		idToNameMap,
-	]);
+	}, [state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap]);
 
 	const isComplete = bracketDerived.isComplete;
 	const metrics = useMemo(
@@ -851,15 +768,8 @@ export function useTournamentState(
 			}),
 		[bracketDerived],
 	);
-	const {
-		totalMatches,
-		matchNumber,
-		round,
-		totalRounds,
-		stageLabel,
-		progress,
-		etaMinutes,
-	} = metrics;
+	const { totalMatches, matchNumber, round, totalRounds, stageLabel, progress, etaMinutes } =
+		metrics;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -875,9 +785,7 @@ export function useTournamentState(
 					? currentMatch.left.memberIds
 					: [
 							String(
-								typeof currentMatch.left === "string"
-									? currentMatch.left
-									: currentMatch.left.id,
+								typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id,
 							),
 						];
 			const rightIds =
@@ -885,9 +793,7 @@ export function useTournamentState(
 					? currentMatch.right.memberIds
 					: [
 							String(
-								typeof currentMatch.right === "string"
-									? currentMatch.right
-									: currentMatch.right.id,
+								typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
 							),
 						];
 
@@ -914,10 +820,7 @@ export function useTournamentState(
 					winnerSide,
 				})
 				.catch((err: unknown) => {
-					console.warn(
-						"[tournament] apply_tournament_match_elo failed (non-fatal):",
-						err,
-					);
+					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
 				});
 
 			dispatch({

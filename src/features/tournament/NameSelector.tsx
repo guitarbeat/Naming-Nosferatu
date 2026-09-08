@@ -21,9 +21,7 @@ import useAppStore from "@/store";
 export const NameSelector = memo(function NameSelector() {
 	const prefersReducedMotion = useReducedMotion() ?? false;
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
-	const storeSelectedNames = useAppStore(
-		(state) => state.tournament.selectedNames,
-	);
+	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesQuery = useQuery({
@@ -117,9 +115,7 @@ export const NameSelector = memo(function NameSelector() {
 		hapticTournamentStart();
 		if (storeSelectedNames.length >= 2) {
 			tournamentActions.setNames(storeSelectedNames);
-			window.dispatchEvent(
-				new CustomEvent("nav-tab-change", { detail: "tournament" }),
-			);
+			window.dispatchEvent(new CustomEvent("nav-tab-change", { detail: "tournament" }));
 			const tournamentEl = document.getElementById("tournament");
 			if (tournamentEl) {
 				tournamentEl.scrollIntoView({
@@ -148,15 +144,9 @@ export const NameSelector = memo(function NameSelector() {
 						<h3 className="font-display text-xl font-bold text-foreground">
 							Could not load shortlist
 						</h3>
-						<p className="text-xs text-muted-foreground leading-relaxed">
-							{error}
-						</p>
+						<p className="text-xs text-muted-foreground leading-relaxed">{error}</p>
 					</div>
-					<Button
-						onClick={() => void namesQuery.refetch()}
-						variant="outline"
-						size="small"
-					>
+					<Button onClick={() => void namesQuery.refetch()} variant="outline" size="small">
 						Try Again
 					</Button>
 				</div>

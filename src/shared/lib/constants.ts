@@ -24,20 +24,18 @@ export const CAT_IMAGES = [
  */
 export const FALLBACK_CAT_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
 	`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-  <rect width="100" height="100" rx="20" fill="#18181b"/>
-  <path d="M28 44L20 26C19.5 25 21 24 22 24.5L36 32C40 30.5 44.8 29.5 50 29.5C55.2 29.5 60 30.5 64 32L78 24.5C79 24 80.5 25 80 26L72 44C76 48.5 78 54 78 60C78 74 65.5 84 50 84C34.5 84 22 74 22 60C22 54 24 48.5 28 44Z" fill="#27272a" stroke="#52525b" stroke-width="2"/>
-  <circle cx="38" cy="54" r="4.5" fill="#a1a1aa"/>
-  <circle cx="62" cy="54" r="4.5" fill="#a1a1aa"/>
-  <polygon points="50,62 46,67 54,67" fill="#f43f5e"/>
-  <path d="M46 67 Q50 71 54 67" stroke="#71717a" stroke-width="1.5" fill="none"/>
+  <rect width="100" height="100" rx="20" fill="#f4f4f5"/>
+  <circle cx="50" cy="42" r="16" fill="#d4d4d8"/>
+  <path d="M26 80C26 66 36 57 50 57C64 57 74 66 74 80" fill="#d4d4d8"/>
+  <circle cx="44" cy="30" r="3.5" fill="#a1a1aa"/>
+  <circle cx="56" cy="30" r="3.5" fill="#a1a1aa"/>
 </svg>`,
 )}`;
 
 /**
- * Primary local fallback image path.
+ * Primary local fallback image path - defaults to authentic cat photography.
  */
-export const FALLBACK_CAT_IMAGE =
-	"/assets/images/ui/cat_avatar_placeholder.png";
+export const FALLBACK_CAT_IMAGE = "/assets/images/cats/cat_01.webp";
 
 /**
  * Critical images required by the app shell (navigation, persona selectors, loading screens, and primary avatars).

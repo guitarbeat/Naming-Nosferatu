@@ -48,6 +48,7 @@
     "check:lifecycle": "knip --config config/knip.json --dependencies --include files,duplicates --no-config-hints",
     "check:deps": "knip --config config/knip.json --dependencies --no-config-hints",
     "check:deps:fix": "knip --config config/knip.json --fix",
+    "test": "vitest run --config config/vite.config.ts",
     "clean": "rm -rf build dist node_modules/.vite"
   },
   "dependencies": {
@@ -79,6 +80,7 @@
     "@types/web-app-manifest": "^1.0.9",
     "@vitejs/plugin-react": "^5.2.0",
     "autoprefixer": "^10.5.4",
+    "happy-dom": "^20.14.0",
     "knip": "^5.88.1",
     "postcss": "^8.5.23",
     "tailwindcss": "4.3.2",

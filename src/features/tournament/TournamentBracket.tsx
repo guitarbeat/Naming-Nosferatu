@@ -17,13 +17,7 @@ import { Button, CatImage } from "@/shared/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/shared/lib/uiUtils";
 import { hapticVoteTap } from "@/shared/lib/utils";
-import type {
-	Match,
-	MatchRecord,
-	NameItem,
-	Team,
-	TournamentMode,
-} from "@/shared/types";
+import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/shared/types";
 import {
 	calculateWinStreak,
 	getBracketStageLabel,
@@ -279,8 +273,7 @@ function deriveVisualBracketTree({
 		}
 	}
 
-	let currentRoundEntrants: (string | null)[] =
-		padEntrantsForRound(bracketEntrants);
+	let currentRoundEntrants: (string | null)[] = padEntrantsForRound(bracketEntrants);
 	let historyCursor = 0;
 	let matchSequenceCounter = 1;
 	let activeMatchNode: VisualMatch | null = null;
@@ -297,8 +290,7 @@ function deriveVisualBracketTree({
 			const leftId = currentRoundEntrants[2 * m] ?? null;
 			const rightId = currentRoundEntrants[2 * m + 1] ?? null;
 			const matchId = `r${r}-m${m}`;
-			const targetMatchId =
-				r < totalRounds ? `r${r + 1}-m${Math.floor(m / 2)}` : undefined;
+			const targetMatchId = r < totalRounds ? `r${r + 1}-m${Math.floor(m / 2)}` : undefined;
 			const targetSlot = (m % 2) as 0 | 1;
 
 			const leftIsBye = isByeId(leftId);
@@ -530,9 +522,7 @@ function ContenderRow({
 	}
 
 	const isHeat = contender.streak && contender.streak >= STREAK_THRESHOLDS.warm;
-	const _flameCount = isHeat
-		? Math.min(getFlameCount(contender.streak ?? 0), 4)
-		: 0;
+	const _flameCount = isHeat ? Math.min(getFlameCount(contender.streak ?? 0), 4) : 0;
 
 	return (
 		<motion.div
@@ -580,16 +570,8 @@ function ContenderRow({
 					<AnimatePresence>
 						{isWinner && (
 							<motion.div
-								initial={
-									prefersReducedMotion
-										? { opacity: 0 }
-										: { scale: 0, rotate: -45 }
-								}
-								animate={
-									prefersReducedMotion
-										? { opacity: 1 }
-										: { scale: 1, rotate: 0 }
-								}
+								initial={prefersReducedMotion ? { opacity: 0 } : { scale: 0, rotate: -45 }}
+								animate={prefersReducedMotion ? { opacity: 1 } : { scale: 1, rotate: 0 }}
 								exit={{ scale: 0 }}
 								transition={{ type: "spring", stiffness: 450, damping: 22 }}
 								className="absolute -top-1 -right-1 size-3.5 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-xs"
@@ -623,9 +605,7 @@ function ContenderRow({
 
 					<div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
 						{contender.rating && (
-							<span className="tabular-nums">
-								{Math.round(contender.rating)}
-							</span>
+							<span className="tabular-nums">{Math.round(contender.rating)}</span>
 						)}
 						{isHeat && (
 							<span className="inline-flex items-center gap-0.5 text-amber-500 dark:text-amber-400 font-sans font-bold">
@@ -698,9 +678,7 @@ const MatchNodeCard = memo(function MatchNodeCard({
 			<div className="flex items-center justify-between border-b border-border/40 px-5 py-2.5 text-[10px] font-semibold tracking-wider text-muted-foreground">
 				<div className="flex items-center gap-1.5">
 					<span className="font-mono">
-						{match.overallMatchNumber
-							? `M${match.overallMatchNumber}`
-							: match.roundName}
+						{match.overallMatchNumber ? `M${match.overallMatchNumber}` : match.roundName}
 					</span>
 					{isLive && (
 						<span className="inline-flex items-center gap-1 rounded-full bg-primary/20 text-primary px-1.5 py-0.2 font-bold animate-pulse">
@@ -708,12 +686,8 @@ const MatchNodeCard = memo(function MatchNodeCard({
 							LIVE VOTE
 						</span>
 					)}
-					{isCompleted && (
-						<span className="text-muted-foreground/75 font-normal">Final</span>
-					)}
-					{isBye && (
-						<span className="text-muted-foreground/60 font-normal">Bye</span>
-					)}
+					{isCompleted && <span className="text-muted-foreground/75 font-normal">Final</span>}
+					{isBye && <span className="text-muted-foreground/60 font-normal">Bye</span>}
 				</div>
 
 				<button
@@ -768,11 +742,7 @@ interface ChampionPodiumProps {
 	onSelectContender?: (id: string) => void;
 }
 
-function ChampionPodium({
-	champion,
-	isComplete,
-	onSelectContender,
-}: ChampionPodiumProps) {
+function ChampionPodium({ champion, isComplete, onSelectContender }: ChampionPodiumProps) {
 	if (!champion && !isComplete) {
 		return (
 			<div className="w-56 sm:w-64 flex flex-col items-center justify-center p-6 rounded-3xl border border-dashed border-border/50 bg-card/30 text-center gap-3">
@@ -781,9 +751,7 @@ function ChampionPodium({
 				</div>
 				<div className="space-y-1">
 					<p className="text-xs font-bold text-muted-foreground">The Crown</p>
-					<p className="text-[11px] text-muted-foreground/70">
-						Awaiting final match champion
-					</p>
+					<p className="text-[11px] text-muted-foreground/70">Awaiting final match champion</p>
 				</div>
 			</div>
 		);
@@ -906,9 +874,7 @@ function ContenderDetailModal({
 		return leftId === contenderId || rightId === contenderId;
 	});
 
-	const wins = matchesInvolved.filter(
-		(m) => String(m.winner) === contenderId,
-	).length;
+	const wins = matchesInvolved.filter((m) => String(m.winner) === contenderId).length;
 	const losses = matchesInvolved.length - wins;
 
 	return (
@@ -950,9 +916,7 @@ function ContenderDetailModal({
 						</div>
 					)}
 
-					<h3 className="text-3xl font-display font-black text-foreground">
-						{contender.name}
-					</h3>
+					<h3 className="text-3xl font-display font-black text-foreground">{contender.name}</h3>
 					{contender.pronunciation && (
 						<p className="text-xs font-mono text-muted-foreground mt-1">
 							/{contender.pronunciation}/
@@ -993,10 +957,7 @@ function ContenderDetailModal({
 								Tourney W/L
 							</p>
 							<p className="mt-1 font-mono text-xl font-black text-primary">
-								{wins}{" "}
-								<span className="text-sm text-muted-foreground">
-									/ {losses}
-								</span>
+								{wins} <span className="text-sm text-muted-foreground">/ {losses}</span>
 							</p>
 						</div>
 						<div className="text-center">
@@ -1051,9 +1012,7 @@ export function TournamentBracket({
 	const [activeRoundTab, setActiveRoundTabState] = useState<number>(1);
 	const [roundDirection, setRoundDirection] = useState<number>(0);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedContenderId, setSelectedContenderId] = useState<string | null>(
-		null,
-	);
+	const [selectedContenderId, setSelectedContenderId] = useState<string | null>(null);
 	const [_selectedMatch, setSelectedMatch] = useState<VisualMatch | null>(null);
 	const [zoomLevel, setZoomLevel] = useState<number>(1);
 
@@ -1088,8 +1047,7 @@ export function TournamentBracket({
 		tournamentMode,
 	]);
 
-	const { rounds, champion, totalMatches, completedMatches, activeMatch } =
-		bracketTree;
+	const { rounds, champion, totalMatches, completedMatches, activeMatch } = bracketTree;
 
 	// Maps for quick detail lookup
 	const namesMap = useMemo(() => {
@@ -1147,14 +1105,8 @@ export function TournamentBracket({
 				return;
 			}
 			hapticVoteTap();
-			const winnerId =
-				side === "left"
-					? activeMatch.contender1?.id
-					: activeMatch.contender2?.id;
-			const loserId =
-				side === "left"
-					? activeMatch.contender2?.id
-					: activeMatch.contender1?.id;
+			const winnerId = side === "left" ? activeMatch.contender1?.id : activeMatch.contender2?.id;
+			const loserId = side === "left" ? activeMatch.contender2?.id : activeMatch.contender1?.id;
 			if (winnerId && loserId) {
 				onVote(winnerId, loserId);
 			}
@@ -1162,9 +1114,7 @@ export function TournamentBracket({
 		[activeMatch, onVote],
 	);
 
-	const progressPct = totalMatches
-		? Math.round((completedMatches / totalMatches) * 100)
-		: 0;
+	const progressPct = totalMatches ? Math.round((completedMatches / totalMatches) * 100) : 0;
 
 	// Accessible ARIA live status announcement for screen readers
 	const liveAnnouncement = useMemo(() => {
@@ -1196,12 +1146,7 @@ export function TournamentBracket({
 			} ${className}`}
 		>
 			{/* Accessible Screen Reader Live Announcement */}
-			<div
-				className="sr-only"
-				role="status"
-				aria-live="polite"
-				aria-atomic="true"
-			>
+			<div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
 				{liveAnnouncement}
 			</div>
 
@@ -1218,14 +1163,11 @@ export function TournamentBracket({
 									Tournament Bracket
 								</h2>
 								<span className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5 font-mono text-[10px] text-muted-foreground">
-									{tournamentMode === "2v2"
-										? "2v2 Teams"
-										: "1v1 Single Elimination"}
+									{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Single Elimination"}
 								</span>
 							</div>
 							<p className="text-xs text-muted-foreground">
-								Live tree of match progress, bracket paths, and cat contender
-								seedings.
+								Live tree of match progress, bracket paths, and cat contender seedings.
 							</p>
 						</div>
 					</div>
@@ -1280,11 +1222,8 @@ export function TournamentBracket({
 					<div className="flex items-center gap-3">
 						<div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
 							<span>
-								Matches:{" "}
-								<strong className="text-primary font-bold">
-									{completedMatches}
-								</strong>{" "}
-								/ {totalMatches}
+								Matches: <strong className="text-primary font-bold">{completedMatches}</strong> /{" "}
+								{totalMatches}
 							</span>
 							<span className="text-muted-foreground/40">&middot;</span>
 							<span>{progressPct}% Completed</span>
@@ -1397,10 +1336,7 @@ export function TournamentBracket({
 								{/* Matches in this Round Column */}
 								<div className="flex flex-col justify-around gap-6 sm:gap-8 flex-1">
 									{round.matches.map((match) => (
-										<div
-											key={`tree-node-${match.id}`}
-											className="relative flex items-center"
-										>
+										<div key={`tree-node-${match.id}`} className="relative flex items-center">
 											<MatchNodeCard
 												match={match}
 												highlightedContenderId={highlightedContenderId}
@@ -1425,9 +1361,7 @@ export function TournamentBracket({
 						{/* Final Championship Podium Pillar */}
 						<motion.div
 							layout={true}
-							initial={
-								_prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }
-							}
+							initial={_prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{ duration: 0.35, delay: rounds.length * 0.05 }}
 							className="flex flex-col items-center justify-center shrink-0 pl-4"
@@ -1489,11 +1423,7 @@ export function TournamentBracket({
 						</div>
 
 						{/* Matches Grid for Selected Round with Slide and Fade Transitions */}
-						<AnimatePresence
-							mode="wait"
-							custom={roundDirection}
-							initial={false}
-						>
+						<AnimatePresence mode="wait" custom={roundDirection} initial={false}>
 							{activeRoundTab <= rounds.length ? (
 								<motion.div
 									key={`tab-round-grid-${activeRoundTab}`}
@@ -1546,9 +1476,7 @@ export function TournamentBracket({
 									{rounds[activeRoundTab - 1]?.matches.map((match, mIdx) => (
 										<motion.div
 											key={`tab-match-${match.id}`}
-											initial={
-												_prefersReducedMotion ? false : { opacity: 0, y: 14 }
-											}
+											initial={_prefersReducedMotion ? false : { opacity: 0, y: 14 }}
 											animate={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.25, delay: mIdx * 0.03 }}
 										>
@@ -1639,11 +1567,7 @@ interface TournamentBracketModalProps extends TournamentBracketProps {
 	onClose: () => void;
 }
 
-export function TournamentBracketModal({
-	isOpen,
-	onClose,
-	...props
-}: TournamentBracketModalProps) {
+export function TournamentBracketModal({ isOpen, onClose, ...props }: TournamentBracketModalProps) {
 	if (!isOpen) {
 		return null;
 	}

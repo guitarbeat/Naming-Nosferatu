@@ -4,9 +4,7 @@ import { createRoot } from "react-dom/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Configure React act environment for jsdom
-(
-	globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
-).IS_REACT_ACT_ENVIRONMENT = true;
+(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 import useAppStore from "@/store";
 import { useAdminDashboard, useDashboardData } from "./hooks";
@@ -59,9 +57,7 @@ function renderHookHarness<T>(hookFn: () => T) {
 describe("Dashboard Hooks", () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
-		useAppStore
-			.getState()
-			.userActions.setUser({ name: "AdminUser", isAdmin: true });
+		useAppStore.getState().userActions.setUser({ name: "AdminUser", isAdmin: true });
 	});
 
 	describe("useAdminDashboard", () => {
@@ -99,9 +95,7 @@ describe("Dashboard Hooks", () => {
 
 			expect(harness.current.searchTerm).toBe("Nosferatu");
 			expect(
-				harness.current.filteredNames.every((n) =>
-					n.name.toLowerCase().includes("nosferatu"),
-				),
+				harness.current.filteredNames.every((n) => n.name.toLowerCase().includes("nosferatu")),
 			).toBe(true);
 
 			harness.unmount();
@@ -151,6 +145,9 @@ describe("Dashboard Hooks", () => {
 
 		it("handles soft delete based on window.confirm", async () => {
 			const harness = renderHookHarness(() => useAdminDashboard());
+			if (typeof window.confirm !== "function") {
+				window.confirm = vi.fn();
+			}
 			const confirmSpy = vi.spyOn(window, "confirm");
 
 			// Case 1: User cancels deletion
@@ -186,9 +183,7 @@ describe("Dashboard Hooks", () => {
 
 	describe("useDashboardData", () => {
 		it("loads dashboard metrics and allows changing timeframe", async () => {
-			const harness = renderHookHarness(() =>
-				useDashboardData({ userName: "AdminUser" }),
-			);
+			const harness = renderHookHarness(() => useDashboardData({ userName: "AdminUser" }));
 
 			expect(harness.current.timeframe).toBe("week");
 
@@ -217,9 +212,7 @@ describe("Dashboard Hooks", () => {
 		});
 
 		it("handles empty userName gracefully when fetching dashboard data", async () => {
-			const harness = renderHookHarness(() =>
-				useDashboardData({ userName: "" }),
-			);
+			const harness = renderHookHarness(() => useDashboardData({ userName: "" }));
 
 			await act(async () => {
 				await new Promise((resolve) => setTimeout(resolve, 50));

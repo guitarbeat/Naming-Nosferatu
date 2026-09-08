@@ -1,17 +1,7 @@
 import { ELO_RATING } from "@/shared/lib/constants";
-import {
-	applyEloMatchUpdate,
-	calculatePairEloUpdate,
-	getExpectedEloScore,
-} from "@/shared/lib/elo";
+import { applyEloMatchUpdate, calculatePairEloUpdate, getExpectedEloScore } from "@/shared/lib/elo";
 import { shuffleArray } from "@/shared/lib/utils";
-import type {
-	Match,
-	MatchRecord,
-	NameItem,
-	Team,
-	TournamentMode,
-} from "@/shared/types";
+import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/shared/types";
 
 // ============================================================================
 // ELO RATING SYSTEM HELPERS & CLASSES
@@ -71,9 +61,7 @@ export function resolveTournamentMode(selectedCount: number): TournamentMode {
 	return selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2" : "1v1";
 }
 
-export function generateRandomTeams(
-	participants: Array<{ id: string; name: string }>,
-): Team[] {
+export function generateRandomTeams(participants: Array<{ id: string; name: string }>): Team[] {
 	const shuffled = shuffleArray(participants);
 	const teams: Team[] = [];
 
@@ -93,10 +81,7 @@ export function generateRandomTeams(
 	return teams;
 }
 
-export function getBracketStageLabel(
-	round: number,
-	totalRounds: number,
-): string {
+export function getBracketStageLabel(round: number, totalRounds: number): string {
 	const safeRound = Math.max(1, round);
 	const safeTotal = Math.max(1, totalRounds);
 	const remaining = safeTotal - safeRound;
@@ -198,11 +183,8 @@ export function normalizeParticipant(
 		if ("memberNames" in participant) {
 			return {
 				id: String(participant.id),
-				name:
-					(participant.memberNames ?? []).join(" + ") || String(participant.id),
-				memberIds: participant.memberIds?.map(String) ?? [
-					String(participant.id),
-				],
+				name: (participant.memberNames ?? []).join(" + ") || String(participant.id),
+				memberIds: participant.memberIds?.map(String) ?? [String(participant.id)],
 				memberNames: participant.memberNames ?? [],
 				isTeam: true,
 			};
@@ -226,9 +208,7 @@ export function normalizeParticipant(
 	};
 }
 
-function getFastParticipantId(
-	participant: Match["left"] | Match["right"],
-): string {
+function getFastParticipantId(participant: Match["left"] | Match["right"]): string {
 	if (typeof participant === "object" && participant !== null) {
 		return String(participant.id);
 	}
@@ -352,10 +332,7 @@ function evictIfNeeded<V>(cache: Map<string, V>, limit: number): void {
 	}
 }
 
-function setBracketCache(
-	key: string,
-	result: BracketDerivation,
-): BracketDerivation {
+function setBracketCache(key: string, result: BracketDerivation): BracketDerivation {
 	bracketStateCache.set(key, result);
 	evictIfNeeded(bracketStateCache, MAX_CACHE_SIZE);
 	return result;
@@ -387,10 +364,7 @@ function makePendingResult(
 	return result;
 }
 
-function getCacheKey(
-	bracketEntrants: string[],
-	matchHistory: MatchRecord[],
-): string {
+function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
 	const entrantsLen = bracketEntrants.length;
 	let entrantsKey = "";
 	for (let i = 0; i < entrantsLen; i++) {
@@ -652,26 +626,14 @@ export function calculateTournamentMetrics({
 }: {
 	derived: BracketDerivation;
 }): TournamentMetrics {
-	const {
-		totalMatches,
-		completedMatches,
-		round,
-		totalRounds,
-		stageLabel,
-		roundSize,
-		isComplete,
-	} = derived;
+	const { totalMatches, completedMatches, round, totalRounds, stageLabel, roundSize, isComplete } =
+		derived;
 	const matchNumber = isComplete ? completedMatches : completedMatches + 1;
 	const progress =
 		totalMatches > 0
 			? Math.min(
 					100,
-					Math.max(
-						0,
-						Math.round(
-							(Math.min(completedMatches, totalMatches) / totalMatches) * 100,
-						),
-					),
+					Math.max(0, Math.round((Math.min(completedMatches, totalMatches) / totalMatches) * 100)),
 				)
 			: 0;
 	const etaMinutes =
@@ -704,21 +666,13 @@ export function computeUpdatedRatings({
 	const leftParticipantIds =
 		currentMatch.mode === "2v2"
 			? currentMatch.left.memberIds
-			: [
-					String(
-						typeof currentMatch.left === "string"
-							? currentMatch.left
-							: currentMatch.left.id,
-					),
-				];
+			: [String(typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id)];
 	const rightParticipantIds =
 		currentMatch.mode === "2v2"
 			? currentMatch.right.memberIds
 			: [
 					String(
-						typeof currentMatch.right === "string"
-							? currentMatch.right
-							: currentMatch.right.id,
+						typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
 					),
 				];
 	const isLeftWinner =

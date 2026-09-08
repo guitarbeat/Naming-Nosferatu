@@ -25,26 +25,11 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import {
-	CAT_IMAGES,
-	FALLBACK_CAT_IMAGE,
-	FALLBACK_CAT_SVG,
-} from "@/shared/lib/constants";
-import {
-	cn,
-	ErrorManager,
-	handleImgError,
-	hapticNavTap,
-} from "@/shared/lib/utils";
+import { CAT_IMAGES, FALLBACK_CAT_IMAGE, FALLBACK_CAT_SVG } from "@/shared/lib/constants";
+import { cn, ErrorManager, handleImgError, hapticNavTap } from "@/shared/lib/utils";
 import useAppStore from "@/store";
 
-type ButtonVariant =
-	| "primary"
-	| "danger"
-	| "ghost"
-	| "outline"
-	| "flat"
-	| "glass";
+type ButtonVariant = "primary" | "danger" | "ghost" | "outline" | "flat" | "glass";
 type ButtonSize = "small" | "medium" | "large" | "icon";
 
 const baseButtonClass =
@@ -55,8 +40,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 		"bg-primary text-primary-foreground shadow-sm hover:brightness-110 motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 motion-safe:active:scale-[0.93] border-b-4 border-primary/20",
 	danger:
 		"bg-destructive text-destructive-foreground shadow-sm hover:brightness-110 motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 active:brightness-95 motion-safe:active:scale-[0.93] border-b-4 border-destructive/30",
-	ghost:
-		"text-foreground/80 hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
+	ghost: "text-foreground/80 hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
 	outline:
 		"border-2 border-border/80 bg-white/40 text-foreground shadow-sm hover:bg-accent/20 hover:border-accent hover:text-accent-foreground motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 active:bg-accent/40 motion-safe:active:scale-[0.93] backdrop-blur-sm",
 	flat: "text-foreground/80 hover:bg-accent/30 active:bg-accent/50",
@@ -71,8 +55,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 	icon: "h-11 w-11 p-0 [&_svg]:size-4 min-h-[44px] min-w-[44px]",
 };
 
-interface ButtonProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
 	variant?: ButtonVariant;
 	size?: ButtonSize;
@@ -112,12 +95,7 @@ const ButtonComponent = ({
 		<button
 			type={type}
 			disabled={disabled || loading}
-			className={cn(
-				baseButtonClass,
-				variantClasses[variant],
-				sizeClasses[finalSize],
-				className,
-			)}
+			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
 			onClick={handleClick}
 			title={iconOnly && !title && ariaLabel ? ariaLabel : title}
 			aria-label={ariaLabel}
@@ -156,9 +134,7 @@ const CardBase = memo(
 		) => {
 			const finalClasses = cn(
 				"relative flex flex-col overflow-hidden rounded-[2rem] transition-all duration-300 backdrop-blur-md",
-				variant === "filled"
-					? "bg-primary/5 border-none"
-					: "bg-card border border-primary/10",
+				variant === "filled" ? "bg-primary/5 border-none" : "bg-card border border-primary/10",
 				padding === "none" ? "p-0" : "p-5",
 				shadow === "large" ? "shadow-lg" : "shadow-sm",
 				className,
@@ -204,16 +180,10 @@ function CatImage({
 	const [svgFallback, setSvgFallback] = useState(false);
 	const fallbackUrl = CAT_IMAGES[0] ?? FALLBACK_CAT_IMAGE;
 
-	const currentSrc = svgFallback
-		? FALLBACK_CAT_SVG
-		: hasError || !src
-			? fallbackUrl
-			: src;
+	const currentSrc = svgFallback ? FALLBACK_CAT_SVG : hasError || !src ? fallbackUrl : src;
 	const isLocalAsset = currentSrc.startsWith("/");
 
-	const handleError = (
-		event: React.SyntheticEvent<HTMLImageElement, Event>,
-	) => {
+	const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
 		if (!hasError && src !== fallbackUrl) {
 			setHasError(true);
 		} else if (!svgFallback) {
@@ -283,19 +253,13 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	return (
 		<div className="mx-auto my-8 flex min-h-[40vh] w-full max-w-xl items-center justify-center px-4">
 			<div className="w-full rounded-lg border border-destructive/30 bg-background/80 p-6 text-center shadow-xl backdrop-blur">
-				<h2 className="text-2xl font-bold text-foreground">
-					Something went wrong
-				</h2>
-				<p className="mt-2 text-sm text-muted-foreground">
-					{context} could not finish loading.
-				</p>
+				<h2 className="text-2xl font-bold text-foreground">Something went wrong</h2>
+				<p className="mt-2 text-sm text-muted-foreground">{context} could not finish loading.</p>
 				<p className="mt-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
 					{error?.message || "An unexpected error occurred."}
 				</p>
 				{errorId ? (
-					<p className="mt-2 font-mono text-xs text-muted-foreground">
-						ID: {errorId}
-					</p>
+					<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
 				) : null}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
@@ -318,10 +282,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	);
 };
 
-export class ErrorBoundary extends Component<
-	ErrorBoundaryProps,
-	ErrorBoundaryState
-> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -394,16 +355,11 @@ interface ErrorInlineProps {
 	className?: string;
 }
 
-const ErrorInline: React.FC<ErrorInlineProps> = ({
-	error,
-	onDismiss,
-	className = "",
-}) => {
+const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className = "" }) => {
 	if (!error) {
 		return null;
 	}
-	const msg =
-		typeof error === "string" ? error : (error as AppError).message || "Error";
+	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
 		<div
 			className={cn(
@@ -438,15 +394,9 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 	children,
 }) => {
 	if (variant === "boundary") {
-		return (
-			<ErrorBoundary context={context || "Component Boundary"}>
-				{children}
-			</ErrorBoundary>
-		);
+		return <ErrorBoundary context={context || "Component Boundary"}>{children}</ErrorBoundary>;
 	}
-	return (
-		<ErrorInline error={error} onDismiss={onDismiss} className={className} />
-	);
+	return <ErrorInline error={error} onDismiss={onDismiss} className={className} />;
 };
 
 ErrorComponent.displayName = "ErrorComponent";
@@ -526,13 +476,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 		const [_isFocused, setIsFocused] = useState(false);
 
 		return (
-			<FormField
-				id={id}
-				label={label}
-				error={error}
-				required={required}
-				disabled={props.disabled}
-			>
+			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
 				<div className="relative isolate group">
 					<input
 						{...props}
@@ -570,18 +514,7 @@ interface TextareaProps
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-	(
-		{
-			label,
-			error,
-			required,
-			value,
-			showCount = false,
-			className = "",
-			...props
-		},
-		ref,
-	) => {
+	({ label, error, required, value, showCount = false, className = "", ...props }, ref) => {
 		const internalId = useId();
 		const id = props.id || internalId;
 		const hasError = Boolean(error);
@@ -599,13 +532,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			.join(" ");
 
 		return (
-			<FormField
-				id={id}
-				label={label}
-				error={error}
-				required={required}
-				disabled={props.disabled}
-			>
+			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
 				<div className="relative isolate group">
 					<textarea
 						{...props}
@@ -685,13 +612,7 @@ function SpinnerCircle({
 	);
 }
 
-function SkeletonBlock({
-	className,
-	style,
-}: {
-	className?: string;
-	style?: React.CSSProperties;
-}) {
+function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
 	return (
 		<div
 			className={cn(
@@ -706,10 +627,7 @@ function SkeletonBlock({
 
 export const Loading: React.FC<LoadingProps> = memo(
 	({ variant = "spinner", text, className = "", height = 20 }) => {
-		const containerClasses = cn(
-			"flex flex-col items-center justify-center gap-3 p-4",
-			className,
-		);
+		const containerClasses = cn("flex flex-col items-center justify-center gap-3 p-4", className);
 
 		if (variant === "skeleton") {
 			return (
@@ -747,9 +665,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{text ? (
-						<div className="pt-2 text-center text-xs text-white/50">{text}</div>
-					) : null}
+					{text ? <div className="pt-2 text-center text-xs text-white/50">{text}</div> : null}
 				</div>
 			);
 		}
@@ -764,11 +680,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 						className="h-44 w-auto select-none object-contain opacity-95 animate-bounce"
 						onError={handleImgError}
 					/>
-					{text && (
-						<p className="text-[12px] font-bold tracking-wide text-foreground/50">
-							{text}
-						</p>
-					)}
+					{text && <p className="text-[12px] font-bold tracking-wide text-foreground/50">{text}</p>}
 				</div>
 			);
 		}
@@ -834,20 +746,13 @@ interface ModalHeaderProps {
 	closeDisabled: boolean;
 }
 
-function ModalHeader({
-	title,
-	hideTitle,
-	requestClose,
-	closeDisabled,
-}: ModalHeaderProps) {
+function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
 	const headerContent = (
 		<>
 			<h2
 				id="modal-title"
 				className={
-					hideTitle
-						? "sr-only"
-						: "text-base sm:text-lg font-bold text-foreground tracking-tight"
+					hideTitle ? "sr-only" : "text-base sm:text-lg font-bold text-foreground tracking-tight"
 				}
 			>
 				{title}
@@ -959,10 +864,7 @@ export function Modal({
 			const lastElement = focusableElements[focusableElements.length - 1];
 
 			if (event.shiftKey) {
-				if (
-					document.activeElement === firstElement ||
-					document.activeElement === dialog
-				) {
+				if (document.activeElement === firstElement || document.activeElement === dialog) {
 					event.preventDefault();
 					lastElement?.focus();
 				}
@@ -1223,9 +1125,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 							alt="Profile avatar"
 							className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
 							onError={() =>
-								setAvatarSrc((prev) =>
-									prev === defaultAvatar ? FALLBACK_CAT_SVG : defaultAvatar,
-								)
+								setAvatarSrc((prev) => (prev === defaultAvatar ? FALLBACK_CAT_SVG : defaultAvatar))
 							}
 						/>
 						<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[11px] font-bold tracking-wider uppercase">
@@ -1291,10 +1191,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 									/>
 									{isSelected && (
 										<div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-											<Check
-												size={14}
-												className="text-primary-foreground stroke-[3]"
-											/>
+											<Check size={14} className="text-primary-foreground stroke-[3]" />
 										</div>
 									)}
 								</button>
@@ -1321,10 +1218,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 						/>
 					</div>
 					{saveError && (
-						<p
-							role="alert"
-							className="text-sm text-destructive text-center font-medium"
-						>
+						<p role="alert" className="text-sm text-destructive text-center font-medium">
 							{saveError}
 						</p>
 					)}
@@ -1357,9 +1251,7 @@ export function ProfileInner({ onLogin, onLogout }: ProfileInnerProps) {
 					<div className="flex items-center justify-center gap-3 bg-card py-3 px-6 rounded-[2rem] border border-primary/10 shadow-sm w-full max-w-sm">
 						<div className="flex flex-col items-center">
 							<div className="flex items-center gap-2">
-								<h3 className="text-2xl font-black tracking-tight text-foreground">
-									{user.name}
-								</h3>
+								<h3 className="text-2xl font-black tracking-tight text-foreground">{user.name}</h3>
 								<button
 									type="button"
 									onClick={() => setIsEditing(true)}
@@ -1521,14 +1413,8 @@ export const SectionHeading = memo(function SectionHeading({
 }) {
 	return (
 		<div id={id} className="mb-6 flex flex-col items-center text-center">
-			<h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-				{title}
-			</h2>
-			{subtitle && (
-				<p className="mt-2 text-sm text-muted-foreground sm:text-base">
-					{subtitle}
-				</p>
-			)}
+			<h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{title}</h2>
+			{subtitle && <p className="mt-2 text-sm text-muted-foreground sm:text-base">{subtitle}</p>}
 		</div>
 	);
 });

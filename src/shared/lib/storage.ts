@@ -109,11 +109,7 @@ function decrypt(text: string): string {
 			ciphertext = text.slice(33);
 		} else {
 			// If it's plain text without IV separator and doesn't look like cipher data, return as-is
-			if (
-				!text.includes("=") &&
-				/^[a-zA-Z0-9_\s-]+$/.test(text) &&
-				text !== "plain_text_data"
-			) {
+			if (!text.includes("=") && /^[a-zA-Z0-9_\s-]+$/.test(text) && text !== "plain_text_data") {
 				if (decryptionCache.size > MAX_DECRYPT_CACHE) {
 					const firstKey = decryptionCache.keys().next().value;
 					if (firstKey) {
@@ -177,10 +173,7 @@ function decrypt(text: string): string {
 	}
 }
 
-export function getStorageString(
-	key: string,
-	fallback: string | null = null,
-): string | null {
+export function getStorageString(key: string, fallback: string | null = null): string | null {
 	if (!isStorageAvailable()) {
 		const memVal = memoryFallbackStore.get(key);
 		return memVal === undefined ? fallback : decrypt(memVal);
@@ -194,10 +187,7 @@ export function getStorageString(
 		}
 		return decrypt(value);
 	} catch (error) {
-		logger.error(
-			`[storage] Failed to read key "${key}" from localStorage:`,
-			error,
-		);
+		logger.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		const memVal = memoryFallbackStore.get(key);
 		return memVal === undefined ? fallback : decrypt(memVal);
 	}
@@ -246,10 +236,7 @@ export function removeStorageItem(key: string): void {
 	try {
 		window.localStorage.removeItem(key);
 	} catch (error) {
-		logger.error(
-			`[storage] Failed to remove key "${key}" from localStorage:`,
-			error,
-		);
+		logger.error(`[storage] Failed to remove key "${key}" from localStorage:`, error);
 	}
 }
 
@@ -274,10 +261,7 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 	try {
 		return setStorageString(key, JSON.stringify(value));
 	} catch (error) {
-		logger.error(
-			`[storage] Failed to write key "${key}" to localStorage:`,
-			error,
-		);
+		logger.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
 		return false;
 	}
 }
@@ -302,9 +286,7 @@ export interface StoredUserSnapshot {
 	email?: string;
 }
 
-function normalizeStoredUserSnapshot(
-	value: unknown,
-): StoredUserSnapshot | null {
+function normalizeStoredUserSnapshot(value: unknown): StoredUserSnapshot | null {
 	if (!value || typeof value !== "object") {
 		return null;
 	}
@@ -316,17 +298,10 @@ function normalizeStoredUserSnapshot(
 	}
 
 	return {
-		id:
-			typeof candidate.id === "string"
-				? candidate.id
-				: candidate.id === null
-					? null
-					: undefined,
+		id: typeof candidate.id === "string" ? candidate.id : candidate.id === null ? null : undefined,
 		name,
-		isAdmin:
-			typeof candidate.isAdmin === "boolean" ? candidate.isAdmin : undefined,
-		avatarUrl:
-			typeof candidate.avatarUrl === "string" ? candidate.avatarUrl : undefined,
+		isAdmin: typeof candidate.isAdmin === "boolean" ? candidate.isAdmin : undefined,
+		avatarUrl: typeof candidate.avatarUrl === "string" ? candidate.avatarUrl : undefined,
 		email: typeof candidate.email === "string" ? candidate.email : undefined,
 	};
 }
@@ -346,9 +321,7 @@ export function readStoredUserSnapshot(): StoredUserSnapshot | null {
 	return null;
 }
 
-export function writeStoredUserSnapshot(
-	snapshot: StoredUserSnapshot | null,
-): void {
+export function writeStoredUserSnapshot(snapshot: StoredUserSnapshot | null): void {
 	if (!isStorageAvailable()) {
 		return;
 	}
@@ -392,39 +365,23 @@ export function clearStoredUserSnapshot(): void {
 
 export type StoredTournamentSnapshot = Omit<TournamentState, "isLoading">;
 
-function normalizeStoredTournamentSnapshot(
-	value: unknown,
-): StoredTournamentSnapshot | null {
+function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnapshot | null {
 	if (!value || typeof value !== "object") {
 		return null;
 	}
 
 	const candidate = value as Record<string, unknown>;
-	const names = Array.isArray(candidate.names)
-		? (candidate.names as NameItem[])
-		: null;
+	const names = Array.isArray(candidate.names) ? (candidate.names as NameItem[]) : null;
 	const ratings: Record<string, RatingData> = {};
 	if (candidate.ratings && typeof candidate.ratings === "object") {
-		for (const [key, val] of Object.entries(
-			candidate.ratings as Record<string, unknown>,
-		)) {
+		for (const [key, val] of Object.entries(candidate.ratings as Record<string, unknown>)) {
 			if (typeof val === "number") {
 				ratings[key] = { rating: val, wins: 0, losses: 0 };
-			} else if (
-				val &&
-				typeof val === "object" &&
-				typeof (val as RatingData).rating === "number"
-			) {
+			} else if (val && typeof val === "object" && typeof (val as RatingData).rating === "number") {
 				ratings[key] = {
 					rating: (val as RatingData).rating,
-					wins:
-						typeof (val as RatingData).wins === "number"
-							? (val as RatingData).wins
-							: 0,
-					losses:
-						typeof (val as RatingData).losses === "number"
-							? (val as RatingData).losses
-							: 0,
+					wins: typeof (val as RatingData).wins === "number" ? (val as RatingData).wins : 0,
+					losses: typeof (val as RatingData).losses === "number" ? (val as RatingData).losses : 0,
 				};
 			}
 		}
@@ -440,31 +397,21 @@ function normalizeStoredTournamentSnapshot(
 		? (candidate.matchHistory as MatchRecord[])
 		: undefined;
 	const currentRound =
-		typeof candidate.currentRound === "number"
-			? candidate.currentRound
-			: undefined;
+		typeof candidate.currentRound === "number" ? candidate.currentRound : undefined;
 	const currentMatch =
-		typeof candidate.currentMatch === "number"
-			? candidate.currentMatch
-			: undefined;
+		typeof candidate.currentMatch === "number" ? candidate.currentMatch : undefined;
 	const totalMatches =
-		typeof candidate.totalMatches === "number"
-			? candidate.totalMatches
-			: undefined;
+		typeof candidate.totalMatches === "number" ? candidate.totalMatches : undefined;
 	const mode =
 		candidate.mode === "1v1" || candidate.mode === "2v2"
 			? (candidate.mode as TournamentMode)
 			: undefined;
-	const teams = Array.isArray(candidate.teams)
-		? (candidate.teams as Team[])
-		: undefined;
+	const teams = Array.isArray(candidate.teams) ? (candidate.teams as Team[]) : undefined;
 	const bracketEntrants = Array.isArray(candidate.bracketEntrants)
 		? (candidate.bracketEntrants as string[])
 		: undefined;
 	const lastUpdated =
-		typeof candidate.lastUpdated === "number"
-			? candidate.lastUpdated
-			: Date.now();
+		typeof candidate.lastUpdated === "number" ? candidate.lastUpdated : Date.now();
 
 	// If snapshot is empty, treat as no stored tournament
 	if (
@@ -505,9 +452,7 @@ export function readStoredTournamentSnapshot(): StoredTournamentSnapshot | null 
 	return structuredSnapshot;
 }
 
-export function writeStoredTournamentSnapshot(
-	snapshot: StoredTournamentSnapshot | null,
-): void {
+export function writeStoredTournamentSnapshot(snapshot: StoredTournamentSnapshot | null): void {
 	if (!isStorageAvailable()) {
 		return;
 	}

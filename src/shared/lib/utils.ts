@@ -81,10 +81,7 @@ export function hapticNavTap(): void {
  * Emits a crisp, subtle 15ms vibration pulse using the Vibration API.
  */
 export function hapticVoteTap(durationMs = 15): boolean {
-	if (
-		typeof navigator !== "undefined" &&
-		typeof navigator.vibrate === "function"
-	) {
+	if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
 		try {
 			return navigator.vibrate(durationMs);
 		} catch {
@@ -177,10 +174,7 @@ export const ErrorManager = {
 		const cleanupImageErrorHandler = setupGlobalImageErrorHandler();
 
 		return () => {
-			window.removeEventListener(
-				"unhandledrejection",
-				handleUnhandledRejection,
-			);
+			window.removeEventListener("unhandledrejection", handleUnhandledRejection);
 			window.removeEventListener("error", handleErrorEvent);
 			cleanupImageErrorHandler();
 		};

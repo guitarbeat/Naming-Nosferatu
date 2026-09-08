@@ -15,11 +15,11 @@
 	--app-hero-preview-min-height: 400px;
 	/* Typography */
 	--font-sans:
-		"Quicksand", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont,
-		"Segoe UI", roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
+		"Quicksand", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI", roboto,
+		"Helvetica Neue", arial, "Noto Sans", sans-serif;
 	--font-display:
-		"Fredoka", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont,
-		"Segoe UI", roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
+		"Fredoka", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI", roboto,
+		"Helvetica Neue", arial, "Noto Sans", sans-serif;
 
 	/* Spacing base */
 	--spacing: 0.25rem;
@@ -201,11 +201,7 @@ blockquote {
 /* Scrollbar Theming */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: color-mix(
-			in srgb,
-			var(--color-neutral-200, #e5e7eb) 35%,
-			transparent
-		)
+	scrollbar-color: color-mix(in srgb, var(--color-neutral-200, #e5e7eb) 35%, transparent)
 		transparent;
 }
 
@@ -219,20 +215,12 @@ blockquote {
 }
 
 *::-webkit-scrollbar-thumb {
-	background: color-mix(
-		in srgb,
-		var(--color-neutral-200, #e5e7eb) 35%,
-		transparent
-	);
+	background: color-mix(in srgb, var(--color-neutral-200, #e5e7eb) 35%, transparent);
 	border-radius: 9999px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-	background: color-mix(
-		in srgb,
-		var(--color-neutral-200, #e5e7eb) 55%,
-		transparent
-	);
+	background: color-mix(in srgb, var(--color-neutral-200, #e5e7eb) 55%, transparent);
 }
 
 /* View Transitions */
@@ -324,12 +312,7 @@ h3 {
 .gradient-heading {
 	font-weight: 700;
 	text-wrap: balance;
-	background: linear-gradient(
-		115deg,
-		var(--primary),
-		var(--accent) 55%,
-		var(--foreground)
-	);
+	background: linear-gradient(115deg, var(--primary), var(--accent) 55%, var(--foreground));
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
@@ -914,8 +897,7 @@ a,
 		hsl(0 0% 100% / var(--glass-frost, 0.15)),
 		hsl(0 0% 0% / var(--glass-frost, 0.25))
 	);
-	backdrop-filter: var(--filter-id, none) blur(14px)
-		saturate(var(--glass-saturation, 1.6));
+	backdrop-filter: var(--filter-id, none) blur(14px) saturate(var(--glass-saturation, 1.6));
 	-webkit-backdrop-filter: blur(14px) saturate(var(--glass-saturation, 1.6));
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	box-shadow:
@@ -1027,36 +1009,12 @@ a,
 	--dw-overlay: #060010;
 	--dw-edge: 100%;
 	-webkit-mask-image:
-		linear-gradient(
-			to bottom,
-			transparent 0%,
-			#000 8%,
-			#000 92%,
-			transparent 100%
-		),
-		linear-gradient(
-			to right,
-			transparent 0%,
-			#000 3%,
-			#000 97%,
-			transparent 100%
-		);
+		linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%),
+		linear-gradient(to right, transparent 0%, #000 3%, #000 97%, transparent 100%);
 	-webkit-mask-composite: source-in;
 	mask-image:
-		linear-gradient(
-			to bottom,
-			transparent 0%,
-			#000 8%,
-			#000 92%,
-			transparent 100%
-		),
-		linear-gradient(
-			to right,
-			transparent 0%,
-			#000 3%,
-			#000 97%,
-			transparent 100%
-		);
+		linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%),
+		linear-gradient(to right, transparent 0%, #000 3%, #000 97%, transparent 100%);
 	mask-composite: intersect;
 }
 
@@ -1106,11 +1064,7 @@ a,
 	border-radius: var(--dw-radius);
 	overflow: hidden;
 	background:
-		radial-gradient(
-			circle at 50% 25%,
-			rgba(255, 255, 255, 0.05) 0%,
-			transparent 60%
-		),
+		radial-gradient(circle at 50% 25%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
 		var(--card, hsl(30deg 14% 12%));
 	border: 1px solid var(--border, hsl(30deg 12% 26%));
 	box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
@@ -1313,36 +1267,24 @@ a,
 }
 
 .drift-wall__tile:hover .drift-wall__inner {
-	border-color: color-mix(
-		in srgb,
-		var(--primary, hsl(152 26% 42%)) 65%,
-		transparent
-	);
+	border-color: color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 65%, transparent);
 	transform: translateZ(var(--dw-lift, 24px)) scale(1.04);
 	box-shadow:
 		0 12px 28px -6px rgba(0, 0, 0, 0.6),
-		0 0 16px
-		color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 20%, transparent);
+		0 0 16px color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 20%, transparent);
 }
 
 .drift-wall__tile.is-selected .drift-wall__inner {
 	border-color: var(--primary, hsl(152 26% 42%));
 	background: radial-gradient(
 		circle at 50% 35%,
-		color-mix(
-				in srgb,
-				var(--primary, hsl(152 26% 42%)) 22%,
-				var(--card, hsl(30deg 14% 12%))
-			)
-			0%,
+		color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 22%, var(--card, hsl(30deg 14% 12%))) 0%,
 		var(--card, hsl(30deg 14% 12%)) 100%
 	);
 	box-shadow:
 		0 12px 32px -6px rgba(0, 0, 0, 0.6),
-		0 0 0 2px
-		color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 60%, transparent),
-		0 0 20px
-		color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 25%, transparent);
+		0 0 0 2px color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 60%, transparent),
+		0 0 20px color-mix(in srgb, var(--primary, hsl(152 26% 42%)) 25%, transparent);
 }
 
 .drift-wall__tile.is-active .drift-wall__inner,
@@ -1707,9 +1649,7 @@ a,
 	opacity: 0.35;
 }
 
-.staggered-menu-panel
-	.sm-socials-list:focus-within
-	.sm-socials-link:not(:focus-visible) {
+.staggered-menu-panel .sm-socials-list:focus-within .sm-socials-link:not(:focus-visible) {
 	opacity: 0.35;
 }
 

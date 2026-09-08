@@ -43,10 +43,11 @@ function checkNamingConventions(dir: string) {
 				// Must be PascalCase or camelCase starting with 'use'
 				if (
 					!/^[A-Z][a-zA-Z0-9]*(\.test)?$/.test(parsed.name) &&
-					!/^use[A-Z][a-zA-Z0-9]*(\.test)?$/.test(parsed.name)
+					!/^use[A-Z][a-zA-Z0-9]*(\.test)?$/.test(parsed.name) &&
+					!/^[a-z][a-zA-Z0-9]*\.test$/.test(parsed.name)
 				) {
 					reportError(
-						`React Component or Hook file '${fullPath}' must be PascalCase or start with 'use'.`,
+						`React Component or Hook file '${fullPath}' must be PascalCase or start with 'use' (or be a valid test file).`,
 					);
 				}
 			} else if (parsed.ext === ".ts" && parsed.name !== "index" && !item.endsWith(".d.ts")) {

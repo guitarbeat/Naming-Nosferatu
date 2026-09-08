@@ -23,8 +23,7 @@ import {
 export function useAdminDashboard() {
 	const user = useAppStore((s) => s.user);
 	const actorName = user.name.trim();
-	const { deleteName, toggleHidden, toggleLocked } =
-		useNameAdminActions(actorName);
+	const { deleteName, toggleHidden, toggleLocked } = useNameAdminActions(actorName);
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterStatus, setFilterStatus] = useState<NameFilter>("all");
@@ -71,9 +70,7 @@ export function useAdminDashboard() {
 
 	const handleSoftDelete = useCallback(
 		async (nameId: string | number) => {
-			if (
-				!window.confirm("Permanently delete this name? This cannot be undone.")
-			) {
+			if (!window.confirm("Permanently delete this name? This cannot be undone.")) {
 				return;
 			}
 			await deleteName({ nameId: String(nameId) });
@@ -123,36 +120,27 @@ export function useDashboardData({ userName = "" }: UseDashboardDataParams) {
 		isLoading: isLoadingLeaderboard,
 		error: errorLeaderboard,
 		refresh: refreshLeaderboard,
-	} = useAsyncData<LeaderboardItem[]>(
-		() => leaderboardAPI.getLeaderboard(10),
-		[],
-	);
+	} = useAsyncData<LeaderboardItem[]>(() => leaderboardAPI.getLeaderboard(10), []);
 
 	const {
 		data: engagementMetrics,
 		isLoading: isLoadingEngagement,
 		error: errorEngagement,
 		refresh: refreshEngagementMetrics,
-	} = useAsyncData<EngagementMetrics | null>(
-		() => statsAPI.getEngagementMetrics(timeframe),
+	} = useAsyncData<EngagementMetrics | null>(() => statsAPI.getEngagementMetrics(timeframe), null, {
+		deps: [timeframe],
+	});
+
+	const { data: siteStats, error: errorSiteStats } = useAsyncData<SiteStats | null>(
+		() => statsAPI.getSiteStats(),
 		null,
-		{
-			deps: [timeframe],
-		},
 	);
 
-	const { data: siteStats, error: errorSiteStats } =
-		useAsyncData<SiteStats | null>(() => statsAPI.getSiteStats(), null);
-
-	const { data: userStats, error: errorUserStats } =
-		useAsyncData<UserStats | null>(
-			() =>
-				normalizedUserName
-					? statsAPI.getUserStats(normalizedUserName)
-					: Promise.resolve(null),
-			null,
-			{ deps: [normalizedUserName] },
-		);
+	const { data: userStats, error: errorUserStats } = useAsyncData<UserStats | null>(
+		() => (normalizedUserName ? statsAPI.getUserStats(normalizedUserName) : Promise.resolve(null)),
+		null,
+		{ deps: [normalizedUserName] },
+	);
 
 	return {
 		engagementMetrics,

@@ -1,19 +1,6 @@
-import {
-	type SetStateAction,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import {
-	CRITICAL_SHELL_IMAGES,
-	INDEXED_DB_CONFIG,
-} from "@/shared/lib/constants";
-import {
-	deleteRecordFromDB,
-	getRecordFromDB,
-	setRecordInDB,
-} from "@/shared/lib/indexedDB";
+import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { CRITICAL_SHELL_IMAGES, INDEXED_DB_CONFIG } from "@/shared/lib/constants";
+import { deleteRecordFromDB, getRecordFromDB, setRecordInDB } from "@/shared/lib/indexedDB";
 import {
 	decryptValue,
 	getStorageString,
@@ -29,10 +16,7 @@ const IS_BROWSER = typeof window !== "undefined";
 const IS_DEV = import.meta.env?.DEV ?? false;
 
 // Helper debounce for useLocalStorage
-function debounce<T extends (...args: unknown[]) => void>(
-	func: T,
-	wait: number,
-): T {
+function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number): T {
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
 	return function (this: unknown, ...args: Parameters<T>) {
@@ -54,10 +38,7 @@ export function usePrefersReducedMotion() {
 	const [matches, setMatches] = useState(false);
 
 	useEffect(() => {
-		if (
-			typeof window === "undefined" ||
-			typeof window.matchMedia !== "function"
-		) {
+		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
 			return;
 		}
 
@@ -104,9 +85,7 @@ export function useLocalStorage<T>(
 		}
 
 		const raw = getStorageString(key, null);
-		return raw === null
-			? initialRef.current
-			: parseJsonValue(raw, initialRef.current);
+		return raw === null ? initialRef.current : parseJsonValue(raw, initialRef.current);
 	}, [key]);
 
 	const [stored, setStored] = useState<T>(readValue);
@@ -132,9 +111,7 @@ export function useLocalStorage<T>(
 
 					const success = writeStorageJson(key, value);
 					if (!success) {
-						onErrorRef.current?.(
-							new Error(`localStorage write failed for key "${key}"`),
-						);
+						onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
 					}
 				}) as (...args: unknown[]) => void,
 				options.debounceWait,
@@ -175,9 +152,7 @@ export function useLocalStorage<T>(
 		(next: SetStateAction<T>) => {
 			try {
 				const resolved =
-					typeof next === "function"
-						? (next as (previous: T) => T)(valueRef.current)
-						: next;
+					typeof next === "function" ? (next as (previous: T) => T)(valueRef.current) : next;
 
 				setStored(resolved);
 				valueRef.current = resolved;
@@ -193,16 +168,11 @@ export function useLocalStorage<T>(
 
 				const success = writeStorageJson(key, resolved);
 				if (!success) {
-					onErrorRef.current?.(
-						new Error(`localStorage write failed for key "${key}"`),
-					);
+					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
 				}
 			} catch (error) {
 				if (IS_DEV) {
-					console.error(
-						`[useLocalStorage] Unexpected error for key "${key}":`,
-						error,
-					);
+					console.error(`[useLocalStorage] Unexpected error for key "${key}":`, error);
 				}
 				onErrorRef.current?.(error);
 			}
@@ -336,35 +306,22 @@ export function useIndexedDB<T = StoredTournamentSnapshot>(
 				if (
 					isCurrentEmpty ||
 					(snapshot.lastUpdated &&
-						(!current.lastUpdated ||
-							snapshot.lastUpdated > current.lastUpdated))
+						(!current.lastUpdated || snapshot.lastUpdated > current.lastUpdated))
 				) {
 					useAppStore.getState().tournamentActions.replaceTournamentState({
 						...current,
 						names: snapshot.names ?? null,
 						ratings: snapshot.ratings ?? {},
 						isComplete: Boolean(snapshot.isComplete),
-						voteHistory: Array.isArray(snapshot.voteHistory)
-							? snapshot.voteHistory
-							: [],
-						selectedNames: Array.isArray(snapshot.selectedNames)
-							? snapshot.selectedNames
-							: [],
-						matchHistory: Array.isArray(snapshot.matchHistory)
-							? snapshot.matchHistory
-							: undefined,
+						voteHistory: Array.isArray(snapshot.voteHistory) ? snapshot.voteHistory : [],
+						selectedNames: Array.isArray(snapshot.selectedNames) ? snapshot.selectedNames : [],
+						matchHistory: Array.isArray(snapshot.matchHistory) ? snapshot.matchHistory : undefined,
 						currentRound:
-							typeof snapshot.currentRound === "number"
-								? snapshot.currentRound
-								: undefined,
+							typeof snapshot.currentRound === "number" ? snapshot.currentRound : undefined,
 						currentMatch:
-							typeof snapshot.currentMatch === "number"
-								? snapshot.currentMatch
-								: undefined,
+							typeof snapshot.currentMatch === "number" ? snapshot.currentMatch : undefined,
 						totalMatches:
-							typeof snapshot.totalMatches === "number"
-								? snapshot.totalMatches
-								: undefined,
+							typeof snapshot.totalMatches === "number" ? snapshot.totalMatches : undefined,
 						mode: snapshot.mode,
 						teams: snapshot.teams,
 						bracketEntrants: snapshot.bracketEntrants,
@@ -524,10 +481,7 @@ export function useIndexedDB<T = StoredTournamentSnapshot>(
  * Specialized hook for offline-first tournament persistence with IndexedDB and useAppStore.
  */
 export function useTournamentIndexedDB(
-	options?: Omit<
-		UseIndexedDBOptions<StoredTournamentSnapshot>,
-		"storeName" | "key"
-	>,
+	options?: Omit<UseIndexedDBOptions<StoredTournamentSnapshot>, "storeName" | "key">,
 ): UseIndexedDBResult<StoredTournamentSnapshot> {
 	return useIndexedDB<StoredTournamentSnapshot>({
 		storeName: INDEXED_DB_CONFIG.STORES.TOURNAMENTS,
@@ -565,8 +519,7 @@ export function useSectionScroll() {
 								id === "contenders"
 							? "pick"
 							: id;
-				const element =
-					document.getElementById(targetId) || document.getElementById(id);
+				const element = document.getElementById(targetId) || document.getElementById(id);
 				if (element) {
 					element.scrollIntoView?.({
 						behavior: prefersReducedMotion ? "auto" : "smooth",
@@ -704,9 +657,7 @@ function _isCacheEntry(value: unknown): value is CacheEntry {
 		return false;
 	}
 	const candidate = value as Partial<CacheEntry>;
-	return (
-		typeof candidate.timestamp === "number" && isNameItemArray(candidate.data)
-	);
+	return typeof candidate.timestamp === "number" && isNameItemArray(candidate.data);
 }
 
 // ============================================================================
@@ -825,9 +776,7 @@ export function usePreloadImages(
 			return;
 		}
 
-		const alreadyLoaded = activeImages.filter((src) =>
-			globalPreloadedImageCache.has(src),
-		);
+		const alreadyLoaded = activeImages.filter((src) => globalPreloadedImageCache.has(src));
 		if (alreadyLoaded.length === total) {
 			setLoadedUrls(alreadyLoaded);
 			setIsLoading(false);
@@ -894,12 +843,9 @@ export function usePreloadImages(
 	const totalCount = images.length;
 	const loadedCount = loadedUrls.length;
 	const isLoaded =
-		!isLoading &&
-		(totalCount === 0 || loadedCount + failedUrls.length >= totalCount);
+		!isLoading && (totalCount === 0 || loadedCount + failedUrls.length >= totalCount);
 	const progress =
-		totalCount === 0
-			? 1
-			: Math.min(1, (loadedCount + failedUrls.length) / totalCount);
+		totalCount === 0 ? 1 : Math.min(1, (loadedCount + failedUrls.length) / totalCount);
 
 	return {
 		isLoading,

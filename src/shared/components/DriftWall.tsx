@@ -50,8 +50,7 @@ interface DriftWallProps {
 
 const DEFAULT_ITEMS: DriftWallItem[] = Array.from({ length: 15 }, (_, i) => {
 	const ids = [
-		1015, 1025, 1039, 1043, 1044, 1050, 1062, 1069, 1074, 1080, 1084, 106, 110,
-		133, 164,
+		1015, 1025, 1039, 1043, 1044, 1050, 1062, 1069, 1074, 1080, 1084, 106, 110, 133, 164,
 	];
 	return {
 		image: `https://picsum.photos/id/${ids[i % ids.length]}/600/400`,
@@ -141,10 +140,7 @@ export const DriftWall = ({
 
 	useEffect(() => {
 		setReduced(prefersReducedMotion());
-		if (
-			typeof window === "undefined" ||
-			typeof window.matchMedia !== "function"
-		) {
+		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
 			return;
 		}
 		try {
@@ -200,14 +196,8 @@ export const DriftWall = ({
 		if (!items.length) {
 			return Array.from({ length: effectiveColumns }, () => []);
 		}
-		const cols: DriftWallItem[][] = Array.from(
-			{ length: effectiveColumns },
-			() => [],
-		);
-		const minPerCol = Math.max(
-			3,
-			Math.ceil(items.length / effectiveColumns) + 1,
-		);
+		const cols: DriftWallItem[][] = Array.from({ length: effectiveColumns }, () => []);
+		const minPerCol = Math.max(3, Math.ceil(items.length / effectiveColumns) + 1);
 		for (let c = 0; c < effectiveColumns; c++) {
 			const colList: DriftWallItem[] = [];
 			for (let r = 0; r < minPerCol; r++) {
@@ -226,10 +216,7 @@ export const DriftWall = ({
 		const unit = effectiveTileHeight + gap;
 		return columnItems.map((col) => {
 			const copyHeight = Math.max(unit, col.length * unit);
-			const copies = Math.max(
-				2,
-				Math.ceil((containerHeight * 1.6) / copyHeight) + 1,
-			);
+			const copies = Math.max(2, Math.ceil((containerHeight * 1.6) / copyHeight) + 1);
 			return { copyHeight, copies };
 		});
 	}, [columnItems, effectiveTileHeight, gap, containerHeight]);
@@ -246,9 +233,7 @@ export const DriftWall = ({
 		offsetsRef.current = columnMeta.map(
 			(meta, c) => offsetsRef.current[c] ?? meta.copyHeight * ((c * 0.37) % 1),
 		);
-		velocitiesRef.current = columnItems.map(
-			(_, c) => velocitiesRef.current[c] ?? 0,
-		);
+		velocitiesRef.current = columnItems.map((_, c) => velocitiesRef.current[c] ?? 0);
 	}, [columnMeta, columnItems]);
 
 	const applyPlaneTransform = useCallback(
@@ -286,14 +271,9 @@ export const DriftWall = ({
 			const targetX = pointerRef.current.x * maxTilt;
 			const targetY = -pointerRef.current.y * maxTilt;
 			const damp = 1 - Math.exp(-dt / 0.12);
-			pointerDampedRef.current.x +=
-				(targetX - pointerDampedRef.current.x) * damp;
-			pointerDampedRef.current.y +=
-				(targetY - pointerDampedRef.current.y) * damp;
-			applyPlaneTransform(
-				pointerDampedRef.current.x,
-				pointerDampedRef.current.y,
-			);
+			pointerDampedRef.current.x += (targetX - pointerDampedRef.current.x) * damp;
+			pointerDampedRef.current.y += (targetY - pointerDampedRef.current.y) * damp;
+			applyPlaneTransform(pointerDampedRef.current.x, pointerDampedRef.current.y);
 
 			if (reduced) {
 				applyPlaneTransform(0, 0);
@@ -342,14 +322,7 @@ export const DriftWall = ({
 			rafRef.current = null;
 			lastTsRef.current = null;
 		};
-	}, [
-		baseVelocities,
-		columnMeta,
-		pauseOnHover,
-		parallax,
-		reduced,
-		applyPlaneTransform,
-	]);
+	}, [baseVelocities, columnMeta, pauseOnHover, parallax, reduced, applyPlaneTransform]);
 
 	const activate = useCallback((id: string, index: number) => {
 		activeIdRef.current = id;
@@ -445,12 +418,7 @@ export const DriftWall = ({
 		[onItemClick],
 	);
 
-	const renderTile = (
-		item: DriftWallItem,
-		id: string,
-		colIndex: number,
-		originalIndex: number,
-	) => {
+	const renderTile = (item: DriftWallItem, id: string, colIndex: number, originalIndex: number) => {
 		const pathId = `textpath-${id.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 		const desc = item.subtitle ? String(item.subtitle).trim() : "";
 		const title = item.title ? String(item.title).trim() : "";
@@ -458,29 +426,12 @@ export const DriftWall = ({
 		// Dynamic font size and letter-spacing scaling for maximum curved text legibility
 		const descLen = desc.length;
 		const descFontSize =
-			descLen > 65
-				? 9.8
-				: descLen > 50
-					? 10.5
-					: descLen > 35
-						? 11.5
-						: descLen > 20
-							? 12.5
-							: 13.5;
+			descLen > 65 ? 9.8 : descLen > 50 ? 10.5 : descLen > 35 ? 11.5 : descLen > 20 ? 12.5 : 13.5;
 		const descLetterSpacing =
-			descLen > 65
-				? 0.4
-				: descLen > 50
-					? 0.5
-					: descLen > 35
-						? 0.6
-						: descLen > 20
-							? 0.7
-							: 0.8;
+			descLen > 65 ? 0.4 : descLen > 50 ? 0.5 : descLen > 35 ? 0.6 : descLen > 20 ? 0.7 : 0.8;
 
 		const titleLen = title.length;
-		const titleFontSize =
-			titleLen > 11 ? 16 : titleLen > 8 ? 18.5 : titleLen > 5 ? 21.5 : 24.5;
+		const titleFontSize = titleLen > 11 ? 16 : titleLen > 8 ? 18.5 : titleLen > 5 ? 21.5 : 24.5;
 
 		const fullLabel = title ? (desc ? `${title} - ${desc}` : title) : "tile";
 
@@ -551,11 +502,7 @@ export const DriftWall = ({
 									letterSpacing: `${descLetterSpacing}px`,
 								}}
 							>
-								<textPath
-									href={`#${pathId}`}
-									startOffset="0%"
-									textAnchor="start"
-								>
+								<textPath href={`#${pathId}`} startOffset="0%" textAnchor="start">
 									{orbitPhrase}
 								</textPath>
 							</text>
@@ -572,9 +519,7 @@ export const DriftWall = ({
 						</text>
 					</svg>
 				)}
-				{Boolean(item.image) && (
-					<span className="drift-wall__overlay" aria-hidden="true" />
-				)}
+				{Boolean(item.image) && <span className="drift-wall__overlay" aria-hidden="true" />}
 			</span>
 		);
 		const commonProps = {
@@ -620,11 +565,7 @@ export const DriftWall = ({
 		);
 	};
 
-	const rootClass = [
-		"drift-wall",
-		reduced ? "drift-wall--reduced" : "",
-		className,
-	]
+	const rootClass = ["drift-wall", reduced ? "drift-wall--reduced" : "", className]
 		.filter(Boolean)
 		.join(" ");
 
@@ -662,9 +603,7 @@ export const DriftWall = ({
 											item,
 											`${c}-${copyIndex}-${itemIndex}`,
 											c,
-											items.indexOf(item) === -1
-												? itemIndex
-												: items.indexOf(item),
+											items.indexOf(item) === -1 ? itemIndex : items.indexOf(item),
 										),
 									),
 								)}

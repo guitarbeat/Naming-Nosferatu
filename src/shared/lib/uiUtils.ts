@@ -90,10 +90,8 @@ export const themeSurfaces = {
 	avatar: "border border-border/50 bg-foreground/[0.04]",
 	statTile:
 		"flex flex-col items-center justify-center gap-2 rounded-xl border border-border/35 bg-card/30 px-4 py-5 text-center",
-	statIcon:
-		"rounded-lg border border-border/35 bg-foreground/[0.03] text-muted-foreground",
-	statIconAccent:
-		"rounded-lg border border-primary/20 bg-primary/10 text-primary",
+	statIcon: "rounded-lg border border-border/35 bg-foreground/[0.03] text-muted-foreground",
+	statIconAccent: "rounded-lg border border-primary/20 bg-primary/10 text-primary",
 	badge:
 		"inline-flex items-center rounded-full border border-border/35 bg-card/25 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-muted-foreground",
 	badgeAccent:
@@ -106,8 +104,7 @@ const _themeText = {
 	sectionLabel: "text-xs font-semibold tracking-wide text-muted-foreground",
 	subtitle: "text-sm leading-relaxed text-muted-foreground",
 	statValue: "text-2xl font-semibold leading-none text-foreground/90",
-	heroDisplay:
-		"font-black uppercase leading-[0.88] tracking-tighter text-foreground",
+	heroDisplay: "font-black uppercase leading-[0.88] tracking-tighter text-foreground",
 	heroPlaceholder: "text-muted-foreground",
 } as const;
 

@@ -1,40 +1,13 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-	Clock,
-	Gamepad2,
-	Layers,
-	LogOut,
-	Trophy,
-	Undo2,
-	X,
-} from "lucide-react";
-import {
-	type KeyboardEvent,
-	memo,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { Clock, Gamepad2, Layers, LogOut, Trophy, Undo2, X } from "lucide-react";
+import { type KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	Button,
-	Card,
-	CatImage,
-	ErrorComponent,
-} from "@/shared/components/LayoutBlocks";
+import { Button, Card, CatImage, ErrorComponent } from "@/shared/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getVisibleNames } from "@/shared/lib/names";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/shared/lib/uiUtils";
 import { hapticVoteTap } from "@/shared/lib/utils";
-import type {
-	MatchRecord,
-	NameItem,
-	Team,
-	TournamentMode,
-	TournamentProps,
-} from "@/shared/types";
+import type { MatchRecord, NameItem, Team, TournamentMode, TournamentProps } from "@/shared/types";
 import useAppStore from "@/store";
 import { useTimedState, useTournamentState } from "./hooks";
 import { TournamentBracket, TournamentBracketModal } from "./TournamentBracket";
@@ -132,12 +105,7 @@ function ContenderBadges({
 				<div
 					className={`absolute top-3 sm:top-4 z-20 ${streakSideClass} inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-2.5 py-1 sm:px-3 sm:py-1.5 shadow-sm backdrop-blur-md transition-transform`}
 				>
-					<StreakEmbers
-						count={streakBadgeCount}
-						side={side}
-						name={name}
-						streak={streak}
-					/>
+					<StreakEmbers count={streakBadgeCount} side={side} name={name} streak={streak} />
 					<span className="text-[10px] font-bold tracking-wide text-foreground/90">
 						{streak} in a row
 					</span>
@@ -313,13 +281,8 @@ const MatchSideCard = memo(function MatchSideCard({
 					)}
 
 					{heatLevel && (
-						<div
-							className="pointer-events-none absolute inset-0 z-10"
-							aria-hidden="true"
-						>
-							<div
-								className={`absolute inset-0 ${getHeatGradientClasses(heatLevel)}`}
-							/>
+						<div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
+							<div className={`absolute inset-0 ${getHeatGradientClasses(heatLevel)}`} />
 						</div>
 					)}
 
@@ -391,10 +354,7 @@ function BracketTree({
 		() => Array.from({ length: Math.max(1, totalRounds) }, (_, i) => i + 1),
 		[totalRounds],
 	);
-	const stageFlavor = useMemo(
-		() => getStageFlavor(round, totalRounds),
-		[round, totalRounds],
-	);
+	const stageFlavor = useMemo(() => getStageFlavor(round, totalRounds), [round, totalRounds]);
 
 	if (onOpenBracket) {
 		return (
@@ -425,10 +385,7 @@ function BracketTree({
 								: "border-border/20 bg-foreground/5 text-muted-foreground";
 
 						return (
-							<div
-								key={`bracket-round-${stageRound}`}
-								className="flex items-center gap-1"
-							>
+							<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
 								<div
 									className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${tone}`}
 								>
@@ -438,11 +395,7 @@ function BracketTree({
 								{index < rounds.length - 1 && (
 									<div
 										className={`h-[1px] w-4 sm:w-6 ${
-											isDone
-												? "bg-chart-2/70"
-												: isActive
-													? "bg-primary/70"
-													: "bg-border/20"
+											isDone ? "bg-chart-2/70" : isActive ? "bg-primary/70" : "bg-border/20"
 										}`}
 									/>
 								)}
@@ -474,10 +427,7 @@ function BracketTree({
 							: "border-border/20 bg-foreground/5 text-muted-foreground";
 
 					return (
-						<div
-							key={`bracket-round-${stageRound}`}
-							className="flex items-center gap-1"
-						>
+						<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
 							<div
 								className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${tone}`}
 							>
@@ -487,11 +437,7 @@ function BracketTree({
 							{index < rounds.length - 1 && (
 								<div
 									className={`h-[1px] w-4 sm:w-6 ${
-										isDone
-											? "bg-chart-2/70"
-											: isActive
-												? "bg-primary/70"
-												: "bg-border/20"
+										isDone ? "bg-chart-2/70" : isActive ? "bg-primary/70" : "bg-border/20"
 									}`}
 								/>
 							)}
@@ -559,16 +505,11 @@ function HeaderTitle({
 					<span className="text-muted-foreground" aria-hidden="true">
 						&middot;
 					</span>
-					<span>
-						{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}
-					</span>
+					<span>{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}</span>
 				</div>
 				<div className="flex items-baseline gap-2">
 					<h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
-						Match{" "}
-						<span className="font-mono tabular-nums text-primary">
-							{currentMatchNumber}
-						</span>{" "}
+						Match <span className="font-mono tabular-nums text-primary">{currentMatchNumber}</span>{" "}
 						of <span className="font-mono tabular-nums">{totalMatches}</span>
 					</h2>
 					{etaMinutes > 0 && (
@@ -591,10 +532,7 @@ function HeaderControls({
 	handleUndo,
 	quitTournament,
 	onOpenBracket,
-}: Pick<
-	TournamentHeaderProps,
-	"canUndo" | "handleUndo" | "quitTournament" | "onOpenBracket"
->) {
+}: Pick<TournamentHeaderProps, "canUndo" | "handleUndo" | "quitTournament" | "onOpenBracket">) {
 	return (
 		<div className="flex items-center gap-1.5 sm:gap-2">
 			{onOpenBracket && (
@@ -643,9 +581,7 @@ function HeaderControls({
 /**
  * Fluid progress bar indicating tournament progress.
  */
-function ProgressBar({
-	progressWidth,
-}: Pick<TournamentHeaderProps, "progressWidth">) {
+function ProgressBar({ progressWidth }: Pick<TournamentHeaderProps, "progressWidth">) {
 	return (
 		<div
 			className="h-1.5 w-full overflow-hidden rounded-full bg-secondary/50"
@@ -681,9 +617,7 @@ function ContextRibbon({
 					{matchupTone}
 				</span>
 				<span className="hidden md:inline text-muted-foreground">&middot;</span>
-				<span className="hidden md:inline text-muted-foreground">
-					{pressureCopy}
-				</span>
+				<span className="hidden md:inline text-muted-foreground">{pressureCopy}</span>
 			</div>
 
 			{dominantStreak && (
@@ -692,9 +626,7 @@ function ContextRibbon({
 						dominantStreak.heatLevel,
 					)}`}
 				>
-					<span className="rounded-full bg-foreground/10 px-1 py-0.2 text-[9px]">
-						HOT
-					</span>
+					<span className="rounded-full bg-foreground/10 px-1 py-0.2 text-[9px]">HOT</span>
 					<span>
 						{dominantStreak.name} &times;{dominantStreak.streak}
 					</span>
@@ -807,44 +739,29 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{openingBracketReveal && "The bracket is set. First match begins now."}
 				{roundAnnouncement !== null && `Round ${roundAnnouncement} begins.`}
 				{voteAnnouncement && `${voteAnnouncement} advances.`}
-				{streakBurst &&
-					`${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
+				{streakBurst && `${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
 			</div>
 
 			<AnimatePresence>
 				{openingBracketReveal && openingEntrants.length > 1 && (
 					<motion.div
-						initial={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, scale: 0.97 }
-						}
-						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
 						exit={
 							prefersReducedMotion
 								? { opacity: 0 }
 								: { opacity: 0, scale: 1.03, filter: "blur(6px)" }
 						}
 						transition={{
-							duration: prefersReducedMotion
-								? MOTION_DURATIONS.reducedMotionDuration
-								: 0.42,
+							duration: prefersReducedMotion ? MOTION_DURATIONS.reducedMotionDuration : 0.42,
 						}}
 						className="absolute inset-0 z-40 flex items-center justify-center px-3 sm:px-6"
 					>
 						<div className="absolute inset-0 bg-white/80 backdrop-blur-md" />
 						<motion.div
-							initial={
-								prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
-							}
-							animate={
-								prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-							}
-							exit={
-								prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }
-							}
+							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
+							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+							exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }}
 							transition={{
 								duration: prefersReducedMotion
 									? MOTION_DURATIONS.reducedMotionDuration
@@ -883,16 +800,8 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 									{openingEntrants.slice(0, 8).map((entrant, index) => (
 										<motion.div
 											key={`opening-entrant-${entrant.id}`}
-											initial={
-												prefersReducedMotion
-													? { opacity: 1 }
-													: { opacity: 0, y: 18 }
-											}
-											animate={
-												prefersReducedMotion
-													? { opacity: 1 }
-													: { opacity: 1, y: 0 }
-											}
+											initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
+											animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
 											transition={{
 												duration: prefersReducedMotion
 													? MOTION_DURATIONS.reducedMotionDuration
@@ -913,8 +822,7 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 								</div>
 								{openingEntrants.length > 8 && (
 									<p className="mt-4 text-center text-xs tracking-wide text-muted-foreground">
-										+ {openingEntrants.length - 8} more contenders in the
-										shadows
+										+ {openingEntrants.length - 8} more contenders in the shadows
 									</p>
 								)}
 							</div>
@@ -927,21 +835,9 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{voteAnnouncement && (
 					<motion.div
 						key={`${voteAnnouncement}-${currentMatchKey}`}
-						initial={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, y: -16, scale: 0.95 }
-						}
-						animate={
-							prefersReducedMotion
-								? { opacity: 1 }
-								: { opacity: 1, y: 0, scale: 1 }
-						}
-						exit={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, y: -20, scale: 0.98 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.95 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
 						transition={{
 							duration: prefersReducedMotion
 								? MOTION_DURATIONS.reducedMotionDuration
@@ -965,38 +861,22 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{streakBurst && (
 					<motion.div
 						key={`streak-burst-${streakBurst.key}`}
-						initial={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, y: 18, scale: 0.94 }
-						}
-						animate={
-							prefersReducedMotion
-								? { opacity: 1 }
-								: { opacity: 1, y: 0, scale: 1 }
-						}
-						exit={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, y: -18, scale: 1.03 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.94 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 1.03 }}
 						transition={{
 							duration: prefersReducedMotion
 								? MOTION_DURATIONS.reducedMotionDuration
 								: MOTION_DURATIONS.base,
 						}}
 						className={`pointer-events-none absolute top-[20%] z-30 ${
-							streakBurst.side === "left"
-								? "left-3 sm:left-6"
-								: "right-3 text-right sm:right-6"
+							streakBurst.side === "left" ? "left-3 sm:left-6" : "right-3 text-right sm:right-6"
 						}`}
 					>
 						<div
 							className={`rounded-2xl border px-4 py-3 shadow-[0_0_40px_rgba(249,115,22,0.35)] backdrop-blur-lg ${getHeatTextClasses(streakBurst.heatLevel)}`}
 						>
-							<p className="text-[10px] tracking-wide opacity-80 sm:text-xs">
-								Hot streak
-							</p>
+							<p className="text-[10px] tracking-wide opacity-80 sm:text-xs">Hot streak</p>
 							<p className="text-base font-black tracking-tight sm:text-lg">
 								{streakBurst.winnerName} x{streakBurst.streak}
 							</p>
@@ -1020,19 +900,9 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{roundAnnouncement !== null && (
 					<motion.div
 						key={`round-announcement-${roundAnnouncement}`}
-						initial={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, scale: 0.96 }
-						}
-						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
-						}
-						exit={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, scale: 1.02 }
-						}
+						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
 						transition={{
 							duration: prefersReducedMotion
 								? MOTION_DURATIONS.reducedMotionDuration
@@ -1041,15 +911,9 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 						className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
 					>
 						<motion.div
-							initial={
-								prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }
-							}
-							animate={
-								prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-							}
-							exit={
-								prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }
-							}
+							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }}
+							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+							exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
 							transition={{
 								duration: prefersReducedMotion
 									? MOTION_DURATIONS.reducedMotionDuration
@@ -1140,8 +1004,8 @@ function TournamentComplete({
 				</h1>
 
 				<p className="mt-3 max-w-xl text-balance text-sm leading-relaxed text-muted-foreground sm:text-base">
-					Your results are ready to review below. Inspect the final bracket tree
-					and champion pathway!
+					Your results are ready to review below. Inspect the final bracket tree and champion
+					pathway!
 				</p>
 
 				<div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-3 sm:grid-cols-2">
@@ -1149,9 +1013,7 @@ function TournamentComplete({
 						<p className="text-[10px] font-semibold tracking-wide text-muted-foreground">
 							Total matches
 						</p>
-						<p className="mt-2 text-3xl font-black leading-none text-foreground">
-							{totalMatches}
-						</p>
+						<p className="mt-2 text-3xl font-black leading-none text-foreground">{totalMatches}</p>
 					</Card>
 					<Card className="px-6 py-4 shadow-[0_16px_40px_rgba(0,0,0,0.05)] bg-card/80">
 						<p className="text-[10px] font-semibold tracking-wide text-muted-foreground">
@@ -1270,11 +1132,7 @@ function getPressureCopy({
 
 const EMPTY_NAMES: NameItem[] = [];
 
-function TournamentContent({
-	onComplete,
-	names = EMPTY_NAMES,
-	onVote,
-}: TournamentProps) {
+function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: TournamentProps) {
 	const navigate = useNavigate();
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
@@ -1305,9 +1163,7 @@ function TournamentContent({
 		teams,
 	} = tournament;
 
-	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(
-		null,
-	);
+	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(null);
 	const [isBracketModalOpen, setIsBracketModalOpen] = useState(false);
 	const voteAnnouncement = useTimedState<string | null>(null);
 	const roundAnnouncement = useTimedState<number | null>(null);
@@ -1323,24 +1179,15 @@ function TournamentContent({
 	);
 
 	const leftStreak = useMemo(
-		() =>
-			currentMatch
-				? calculateContestantStreak(getMatchSideId(currentMatch, "left"))
-				: 0,
+		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "left")) : 0),
 		[currentMatch, calculateContestantStreak],
 	);
 	const rightStreak = useMemo(
-		() =>
-			currentMatch
-				? calculateContestantStreak(getMatchSideId(currentMatch, "right"))
-				: 0,
+		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "right")) : 0),
 		[currentMatch, calculateContestantStreak],
 	);
 	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
-	const rightHeatLevel = useMemo(
-		() => getHeatLevel(rightStreak),
-		[rightStreak],
-	);
+	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
 
 	const handleVoteAdapter = useCallback(
 		async (winnerId: string, _loserId: string) => {
@@ -1401,8 +1248,7 @@ function TournamentContent({
 			const right = normalizeParticipant(record.match.right);
 
 			const isLeftWinner =
-				left.memberIds.includes(String(record.winner)) ||
-				left.id === String(record.winner);
+				left.memberIds.includes(String(record.winner)) || left.id === String(record.winner);
 			const winnerIds = isLeftWinner ? left.memberIds : right.memberIds;
 			const loserIds = isLeftWinner ? right.memberIds : left.memberIds;
 
@@ -1418,10 +1264,7 @@ function TournamentContent({
 			}
 		}
 
-		const results: Record<
-			string,
-			{ rating: number; wins: number; losses: number }
-		> = {};
+		const results: Record<string, { rating: number; wins: number; losses: number }> = {};
 		for (const [id, rating] of Object.entries(ratings)) {
 			results[id] = {
 				rating,
@@ -1452,10 +1295,7 @@ function TournamentContent({
 			return;
 		}
 		if (roundNumber > previousRoundRef.current) {
-			roundAnnouncement.setTimed(
-				roundNumber,
-				prefersReducedMotion ? 350 : 1200,
-			);
+			roundAnnouncement.setTimed(roundNumber, prefersReducedMotion ? 350 : 1200);
 		}
 		previousRoundRef.current = roundNumber;
 	}, [roundNumber, isComplete, roundAnnouncement, prefersReducedMotion]);
@@ -1474,10 +1314,7 @@ function TournamentContent({
 		}
 
 		openingRevealSignatureRef.current = openingRevealSignature;
-		openingBracketReveal.setTimed(
-			true,
-			prefersReducedMotion ? 700 : OPENING_BRACKET_REVEAL_MS,
-		);
+		openingBracketReveal.setTimed(true, prefersReducedMotion ? 700 : OPENING_BRACKET_REVEAL_MS);
 	}, [openingRevealSignature, openingBracketReveal, prefersReducedMotion]);
 
 	const handleVoteForSide = useCallback(
@@ -1491,8 +1328,7 @@ function TournamentContent({
 
 			const winnerId = side === "left" ? matchData.leftId : matchData.rightId;
 			const loserId = side === "left" ? matchData.rightId : matchData.leftId;
-			const winnerName =
-				side === "left" ? matchData.leftName : matchData.rightName;
+			const winnerName = side === "left" ? matchData.leftName : matchData.rightName;
 			const expectedStreak = (side === "left" ? leftStreak : rightStreak) + 1;
 			const heatLevel = getHeatLevel(expectedStreak);
 
@@ -1565,13 +1401,7 @@ function TournamentContent({
 		const start = touchStartRef.current;
 		const touch = e.changedTouches[0];
 		touchStartRef.current = null;
-		if (
-			!start ||
-			!touch ||
-			isVoting ||
-			openingBracketReveal.value ||
-			!matchData
-		) {
+		if (!start || !touch || isVoting || openingBracketReveal.value || !matchData) {
 			return;
 		}
 		const dx = touch.clientX - start.x;
@@ -1614,22 +1444,12 @@ function TournamentContent({
 				setIsBracketModalOpen((prev) => !prev);
 				return;
 			}
-			if (
-				key === "arrowleft" ||
-				key === "a" ||
-				key === "1" ||
-				key === "arrowup"
-			) {
+			if (key === "arrowleft" || key === "a" || key === "1" || key === "arrowup") {
 				event.preventDefault();
 				handleVoteForSide("left");
 				return;
 			}
-			if (
-				key === "arrowright" ||
-				key === "d" ||
-				key === "2" ||
-				key === "arrowdown"
-			) {
+			if (key === "arrowright" || key === "d" || key === "2" || key === "arrowdown") {
 				event.preventDefault();
 				handleVoteForSide("right");
 				return;
@@ -1703,10 +1523,7 @@ function TournamentContent({
 	const leftIsFavored = leftRating > rightRating;
 	const rightIsFavored = rightRating > leftRating;
 	const matchesRemaining = Math.max(0, totalMatches - currentMatchNumber);
-	const roundMatchesLeft = Math.max(
-		0,
-		Math.ceil((totalMatches - currentMatchNumber) / 2),
-	);
+	const roundMatchesLeft = Math.max(0, Math.ceil((totalMatches - currentMatchNumber) / 2));
 	const stageHeadline = getStageHeadline(roundNumber, totalRounds);
 	const pressureCopy = getPressureCopy({
 		round: roundNumber,
@@ -1762,19 +1579,13 @@ function TournamentContent({
 					<motion.div
 						key={currentMatchKey}
 						initial={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, y: 14, filter: "blur(6px)" }
+							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: "blur(6px)" }
 						}
 						animate={
-							prefersReducedMotion
-								? { opacity: 1 }
-								: { opacity: 1, y: 0, filter: "blur(0px)" }
+							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }
 						}
 						exit={
-							prefersReducedMotion
-								? { opacity: 0 }
-								: { opacity: 0, y: -12, filter: "blur(6px)" }
+							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
 						}
 						transition={{
 							duration: prefersReducedMotion

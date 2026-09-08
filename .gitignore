@@ -37,16 +37,17 @@ bun.lockb
 /build
 /dist
 *.tsbuildinfo
+.vite/
+workbox-*.js
+workbox-*.js.map
+sw.js.map
 
 # Environment variables
-.env
-.env.local
-.env*.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
+!.env.example
+!config/.env.example
 
-# Logs
+# Logs and Reports
 logs/
 *.log
 build_success.log
@@ -58,6 +59,23 @@ lerna-debug.log*
 .enforcer/Enforcer_last_check.log
 .enforcer/Enforcer_stats.log
 biome_output.txt
+*-report.txt
+*-output.txt
+knip-report.txt
+skill_output.txt
+stats.html
+stats.json
+jscpd-report.html
+purgecss-report/
+uncss-report.css
+*.uncss.css
+
+# Scratch & patch scripts
+fix_*.js
+patch_*.js
+update_*.js
+*.patch
+*.diff
 
 # Cache
 .cache/
@@ -101,18 +119,24 @@ analysis/
 *.tmp
 *.temp
 reports/
-purgecss-report/
-uncss-report.css
-*.uncss.css
 verification/*.png
 verification/*.jpg
 verification/*.jpeg
 !verification/verify_button_style.py
 .internal-docs/
 scripts/data
-stats.html
-stats.json
-jscpd-report.html
+
+# Vite & Vitest cache
+.vitest/
+*.tsbuildinfo
+vite.config.ts.timestamp-*
+vitest.config.ts.timestamp-*
+
+# Windows & Other OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
 
 # Accidental local copy artifacts (for example: "file 2.ts")
 * 2.*
@@ -154,13 +178,9 @@ jscpd-report.html
 !.Jules/
 !.Jules/**
 
-# Supabase
+# Supabase & External tool artifacts
 supabase/.temp/
 supabase/.branches/
 .dyad/
-.env*
-!.env.example
-!config/.env.example
 .agents/skills/ui-ux-pro-max/scripts/__pycache__/
-*.cjs
 *.sh

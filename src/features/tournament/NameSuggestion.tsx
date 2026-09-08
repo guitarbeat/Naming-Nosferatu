@@ -1,13 +1,6 @@
 import DOMPurify from "dompurify";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-	AlertCircle,
-	CheckCircle2,
-	Dices,
-	Plus,
-	Trophy,
-	Zap,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, Dices, Plus, Trophy, Zap } from "lucide-react";
 import {
 	type FormEvent,
 	type KeyboardEvent,
@@ -19,17 +12,9 @@ import {
 } from "react";
 import { useToast } from "@/app/Providers";
 import { addName } from "@/shared/api";
-import {
-	Button,
-	CatImage,
-	Input,
-	Textarea,
-} from "@/shared/components/LayoutBlocks";
+import { Button, CatImage, Input, Textarea } from "@/shared/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/shared/lib/constants";
-import {
-	scaleFadeMotionPreset,
-	statusMessageMotionPreset,
-} from "@/shared/lib/uiUtils";
+import { scaleFadeMotionPreset, statusMessageMotionPreset } from "@/shared/lib/uiUtils";
 
 interface UseNameSuggestionProps {
 	onSuccess?: () => void;
@@ -50,13 +35,9 @@ interface UseNameSuggestionResult {
 	setGlobalError: (error: string) => void;
 }
 
-function useNameSuggestion(
-	props: UseNameSuggestionProps = {},
-): UseNameSuggestionResult {
+function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
-	const [errors, setErrors] = useState<{ name?: string; description?: string }>(
-		{},
-	);
+	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
 	const [touched, setTouched] = useState<{
 		name?: boolean;
 		description?: boolean;
@@ -65,14 +46,11 @@ function useNameSuggestion(
 	const [globalError, setGlobalError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");
 
-	const handleChange = useCallback(
-		(field: "name" | "description", value: string) => {
-			setValues((previous) => ({ ...previous, [field]: value }));
-			setErrors((previous) => ({ ...previous, [field]: undefined }));
-			setGlobalError("");
-		},
-		[],
-	);
+	const handleChange = useCallback((field: "name" | "description", value: string) => {
+		setValues((previous) => ({ ...previous, [field]: value }));
+		setErrors((previous) => ({ ...previous, [field]: undefined }));
+		setGlobalError("");
+	}, []);
 
 	const handleBlur = useCallback((field: "name" | "description") => {
 		setTouched((previous) => ({ ...previous, [field]: true }));
@@ -117,9 +95,7 @@ function useNameSuggestion(
 			props.onSuccess?.();
 		} catch (submitError) {
 			setGlobalError(
-				submitError instanceof Error
-					? submitError.message
-					: "Failed to submit suggestion",
+				submitError instanceof Error ? submitError.message : "Failed to submit suggestion",
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -134,8 +110,7 @@ function useNameSuggestion(
 		setSuccessMessage("");
 	}, []);
 
-	const isValid =
-		!errors.name && !errors.description && values.name.trim() !== "";
+	const isValid = !errors.name && !errors.description && values.name.trim() !== "";
 
 	return {
 		values,
@@ -173,18 +148,15 @@ const INSPIRATION_ARCHETYPES: InspirationArchetype[] = [
 		names: [
 			{
 				name: "Nosferpaws",
-				description:
-					"Only comes out at 3 AM to zoom silently across the velvet sofa.",
+				description: "Only comes out at 3 AM to zoom silently across the velvet sofa.",
 			},
 			{
 				name: "Count Whiskula",
-				description:
-					"Drinks goat milk from a crystal goblet and casts no mirror reflection.",
+				description: "Drinks goat milk from a crystal goblet and casts no mirror reflection.",
 			},
 			{
 				name: "Lord Vladiclaw",
-				description:
-					"Ancient vampire lord who demands fresh tuna sacrifices upon waking.",
+				description: "Ancient vampire lord who demands fresh tuna sacrifices upon waking.",
 			},
 		],
 	},
@@ -195,8 +167,7 @@ const INSPIRATION_ARCHETYPES: InspirationArchetype[] = [
 		names: [
 			{
 				name: "Sir Paws-a-lot",
-				description:
-					"Knighted for defending the realm against the red laser dot.",
+				description: "Knighted for defending the realm against the red laser dot.",
 			},
 			{
 				name: "Duchess Fluffington",
@@ -204,8 +175,7 @@ const INSPIRATION_ARCHETYPES: InspirationArchetype[] = [
 			},
 			{
 				name: "Baron Von Claw",
-				description:
-					"Monocled aristocrat who refuses to sit on unbrushed cushions.",
+				description: "Monocled aristocrat who refuses to sit on unbrushed cushions.",
 			},
 		],
 	},
@@ -216,18 +186,15 @@ const INSPIRATION_ARCHETYPES: InspirationArchetype[] = [
 		names: [
 			{
 				name: "Shadowfax",
-				description:
-					"Swift as moonlight, capable of vanishing between dimension folds.",
+				description: "Swift as moonlight, capable of vanishing between dimension folds.",
 			},
 			{
 				name: "Cosmic Whisker",
-				description:
-					"Travels across the astral plane to knock over celestial cups.",
+				description: "Travels across the astral plane to knock over celestial cups.",
 			},
 			{
 				name: "Grimoire",
-				description:
-					"An enchanted familiar containing secrets of the ancient purrs.",
+				description: "An enchanted familiar containing secrets of the ancient purrs.",
 			},
 		],
 	},
@@ -238,18 +205,15 @@ const INSPIRATION_ARCHETYPES: InspirationArchetype[] = [
 		names: [
 			{
 				name: "Bitey McBiteface",
-				description:
-					"Zero thoughts, maximum chaos, attacks ankles with precision.",
+				description: "Zero thoughts, maximum chaos, attacks ankles with precision.",
 			},
 			{
 				name: "Captain Turbo Zoomies",
-				description:
-					"Breaks the sound barrier across hallways at 4:15 in the morning.",
+				description: "Breaks the sound barrier across hallways at 4:15 in the morning.",
 			},
 			{
 				name: "Goblin Mode",
-				description:
-					"Hoards hair ties beneath the washing machine with demonic glee.",
+				description: "Hoards hair ties beneath the washing machine with demonic glee.",
 			},
 		],
 	},
@@ -260,18 +224,15 @@ const INSPIRATION_ARCHETYPES: InspirationArchetype[] = [
 		names: [
 			{
 				name: "Baguette",
-				description:
-					"Warm, golden, elongated, and delightfully crusty in the morning.",
+				description: "Warm, golden, elongated, and delightfully crusty in the morning.",
 			},
 			{
 				name: "Tiramisu",
-				description:
-					"Layers of sweetness topped with a dust of cocoa espresso attitude.",
+				description: "Layers of sweetness topped with a dust of cocoa espresso attitude.",
 			},
 			{
 				name: "Wasabi",
-				description:
-					"Small, seemingly sweet, but packs an unexpectedly fiery kick.",
+				description: "Small, seemingly sweet, but packs an unexpectedly fiery kick.",
 			},
 		],
 	},
@@ -300,14 +261,9 @@ function getAvatarForName(nameStr: string): string {
 	return CAT_IMAGES[index] || CAT_IMAGES[0] || "";
 }
 
-function ContenderCardPreview({
-	name,
-	description,
-	archetypeIcon = "🐾",
-}: CardPreviewProps) {
+function ContenderCardPreview({ name, description, archetypeIcon = "🐾" }: CardPreviewProps) {
 	const displayName = name.trim() || "Feline Contender";
-	const displayLore =
-		description.trim() || "Backstory and tournament lore will appear here...";
+	const displayLore = description.trim() || "Backstory and tournament lore will appear here...";
 	const hasContent = Boolean(name.trim() || description.trim());
 	const previewAvatar = getAvatarForName(name);
 
@@ -344,9 +300,7 @@ function ContenderCardPreview({
 					{hasContent ? (
 						displayName
 					) : (
-						<span className="text-muted-foreground/50 italic">
-							Name your feline warrior...
-						</span>
+						<span className="text-muted-foreground/50 italic">Name your feline warrior...</span>
 					)}
 				</div>
 				<p className="text-xs sm:text-sm leading-relaxed text-muted-foreground line-clamp-2 italic">
@@ -370,13 +324,7 @@ function ContenderCardPreview({
 // STATUS MESSAGE
 // ============================================================================
 
-function StatusMessage({
-	error,
-	success,
-}: {
-	error?: string;
-	success?: string;
-}) {
+function StatusMessage({ error, success }: { error?: string; success?: string }) {
 	return (
 		<AnimatePresence mode="wait">
 			{error && (
@@ -433,12 +381,9 @@ function SuggestionSuccessView({
 			</div>
 
 			<div className="space-y-1.5">
-				<h4 className="text-xl font-bold text-foreground">
-					Added to Tournament Pool!
-				</h4>
+				<h4 className="text-xl font-bold text-foreground">Added to Tournament Pool!</h4>
 				<p className="text-xs sm:text-sm text-muted-foreground max-w-sm">
-					Your cat has entered the arena. Contenders will face off in upcoming
-					head-to-head matches!
+					Your cat has entered the arena. Contenders will face off in upcoming head-to-head matches!
 				</p>
 			</div>
 
@@ -462,13 +407,7 @@ function SuggestionSuccessView({
 					Suggest Another
 				</Button>
 				{onClose && (
-					<Button
-						type="button"
-						variant="primary"
-						size="medium"
-						onClick={onClose}
-						className="px-6"
-					>
+					<Button type="button" variant="primary" size="medium" onClick={onClose} className="px-6">
 						Done
 					</Button>
 				)}
@@ -487,11 +426,7 @@ interface ArchetypeBarProps {
 	disabled?: boolean;
 }
 
-function ArchetypeBar({
-	onSelectIdea,
-	onRandomize,
-	disabled,
-}: ArchetypeBarProps) {
+function ArchetypeBar({ onSelectIdea, onRandomize, disabled }: ArchetypeBarProps) {
 	return (
 		<div className="space-y-2">
 			<div className="flex items-center justify-between">
@@ -511,8 +446,7 @@ function ArchetypeBar({
 
 			<div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
 				{INSPIRATION_ARCHETYPES.map((cat) => {
-					const sample =
-						cat.names[Math.floor(Math.random() * cat.names.length)];
+					const sample = cat.names[Math.floor(Math.random() * cat.names.length)];
 					return (
 						<button
 							key={cat.id}
@@ -577,18 +511,13 @@ function NameSuggestionInner() {
 
 	const handleRandomize = () => {
 		const randomArchetype =
-			INSPIRATION_ARCHETYPES[
-				Math.floor(Math.random() * INSPIRATION_ARCHETYPES.length)
-			];
+			INSPIRATION_ARCHETYPES[Math.floor(Math.random() * INSPIRATION_ARCHETYPES.length)];
 		const randomPick =
-			randomArchetype.names[
-				Math.floor(Math.random() * randomArchetype.names.length)
-			];
+			randomArchetype.names[Math.floor(Math.random() * randomArchetype.names.length)];
 		handleSelectIdea(randomPick.name, randomPick.description);
 	};
 
-	const isFormComplete =
-		values.name.trim().length > 0 && values.description.trim().length > 0;
+	const isFormComplete = values.name.trim().length > 0 && values.description.trim().length > 0;
 
 	if (submittedPreview) {
 		return (
@@ -680,10 +609,7 @@ function NameSuggestionInner() {
 				</div>
 			</div>
 
-			<ContenderCardPreview
-				name={values.name}
-				description={values.description}
-			/>
+			<ContenderCardPreview name={values.name} description={values.description} />
 
 			<StatusMessage error={globalError} success={successMessage} />
 
@@ -761,12 +687,7 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 	const handleKeyDown = (e: KeyboardEvent) => {
 		if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
 			e.preventDefault();
-			if (
-				isValid &&
-				!isSubmitting &&
-				values.name.trim() &&
-				values.description.trim()
-			) {
+			if (isValid && !isSubmitting && values.name.trim() && values.description.trim()) {
 				void handleSubmit();
 			}
 		}
@@ -779,13 +700,9 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 
 	const handleRandomize = () => {
 		const randomArchetype =
-			INSPIRATION_ARCHETYPES[
-				Math.floor(Math.random() * INSPIRATION_ARCHETYPES.length)
-			];
+			INSPIRATION_ARCHETYPES[Math.floor(Math.random() * INSPIRATION_ARCHETYPES.length)];
 		const randomPick =
-			randomArchetype.names[
-				Math.floor(Math.random() * randomArchetype.names.length)
-			];
+			randomArchetype.names[Math.floor(Math.random() * randomArchetype.names.length)];
 		handleSelectIdea(randomPick.name, randomPick.description);
 	};
 
@@ -870,23 +787,14 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 				</div>
 			</div>
 
-			<ContenderCardPreview
-				name={values.name}
-				description={values.description}
-			/>
+			<ContenderCardPreview name={values.name} description={values.description} />
 
 			<StatusMessage error={globalError} />
 
 			<div className="flex items-center justify-between pt-2 border-t border-border/40">
 				<span className="hidden sm:inline-block text-[11px] text-muted-foreground">
-					Tip: Press{" "}
-					<kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-[10px]">
-						⌘
-					</kbd>{" "}
-					+{" "}
-					<kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-[10px]">
-						Enter
-					</kbd>
+					Tip: Press <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-[10px]">⌘</kbd> +{" "}
+					<kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-[10px]">Enter</kbd>
 				</span>
 				<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
 					<Button
@@ -903,12 +811,7 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 						type="submit"
 						variant="primary"
 						size="medium"
-						disabled={
-							isSubmitting ||
-							!isValid ||
-							!values.name.trim() ||
-							!values.description.trim()
-						}
+						disabled={isSubmitting || !isValid || !values.name.trim() || !values.description.trim()}
 						loading={isSubmitting}
 						className="px-5 font-semibold"
 					>
@@ -924,10 +827,7 @@ function ModalNameSuggestionContent({ onClose }: { onClose: () => void }) {
 // UNIFIED EXPORT
 // ============================================================================
 
-export function NameSuggestion({
-	variant = "inline",
-	onClose,
-}: NameSuggestionProps) {
+export function NameSuggestion({ variant = "inline", onClose }: NameSuggestionProps) {
 	const handleClose = onClose ?? (() => undefined);
 
 	if (variant === "modal") {

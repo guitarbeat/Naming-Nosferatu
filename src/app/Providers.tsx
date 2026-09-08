@@ -10,11 +10,7 @@ import React, {
 	useState,
 } from "react";
 import { STORAGE_KEYS } from "@/shared/lib/constants";
-import {
-	getStorageString,
-	removeStorageItem,
-	setStorageString,
-} from "@/shared/lib/storage";
+import { getStorageString, removeStorageItem, setStorageString } from "@/shared/lib/storage";
 
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;
@@ -71,8 +67,7 @@ export const localAuthAdapter: AuthAdapter = {
 		return { id, name, isAdmin: name.toLowerCase() === "admin" };
 	},
 	login: async (credentials: LoginCredentials): Promise<boolean> => {
-		const name =
-			credentials.name || credentials.email?.split("@")[0] || "Guest";
+		const name = credentials.name || credentials.email?.split("@")[0] || "Guest";
 		const id = `local-usr-${Date.now()}`;
 		setStorageString(STORAGE_KEYS.USER, name);
 		setStorageString(STORAGE_KEYS.USER_ID, id);
@@ -146,22 +141,19 @@ function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
 		};
 	}, []);
 
-	const login = useCallback(
-		async (credentials: LoginCredentials): Promise<boolean> => {
-			try {
-				const success = await adapterRef.current.login(credentials);
-				if (success) {
-					const updatedUser = await adapterRef.current.getCurrentUser();
-					setUser(updatedUser);
-				}
-				return success;
-			} catch (error) {
-				console.error("[Providers] Login failed:", error);
-				throw error;
+	const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
+		try {
+			const success = await adapterRef.current.login(credentials);
+			if (success) {
+				const updatedUser = await adapterRef.current.getCurrentUser();
+				setUser(updatedUser);
 			}
-		},
-		[],
-	);
+			return success;
+		} catch (error) {
+			console.error("[Providers] Login failed:", error);
+			throw error;
+		}
+	}, []);
 
 	const logout = useCallback(async () => {
 		try {
@@ -200,10 +192,7 @@ interface AuthProviderProps {
 	adapter?: AuthAdapter;
 }
 
-export function AuthProvider({
-	children,
-	adapter = localAuthAdapter,
-}: AuthProviderProps) {
+export function AuthProvider({ children, adapter = localAuthAdapter }: AuthProviderProps) {
 	const value = useAuthProvider(adapter);
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -226,11 +215,7 @@ export interface ToastItem {
 
 export interface ToastContextValue {
 	toasts: ToastItem[];
-	showToast: (
-		message: string,
-		type?: ToastType,
-		options?: ToastOptions,
-	) => string;
+	showToast: (message: string, type?: ToastType, options?: ToastOptions) => string;
 	hideToast: (id: string) => void;
 	clearToasts: () => void;
 	showSuccess: (message: string, options?: ToastOptions) => string;
@@ -279,13 +264,7 @@ export function useToast(): ToastContextValue {
 	return context;
 }
 
-function ToastMessage({
-	toast,
-	onDismiss,
-}: {
-	toast: ToastItem;
-	onDismiss: (id: string) => void;
-}) {
+function ToastMessage({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: string) => void }) {
 	const style = TYPE_STYLES[toast.type];
 	return (
 		<div
@@ -365,11 +344,7 @@ function useToastProvider(
 	}, []);
 
 	const showToast = useCallback(
-		(
-			message: string,
-			type: ToastType = "info",
-			options: ToastOptions = {},
-		): string => {
+		(message: string, type: ToastType = "info", options: ToastOptions = {}): string => {
 			const id = `toast-${++toastCounter.current}`;
 			const duration = options.duration ?? defaultDuration;
 			const autoDismiss = options.autoDismiss ?? true;
@@ -412,23 +387,19 @@ function useToastProvider(
 	}, []);
 
 	const showSuccess = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "success", options),
+		(message: string, options?: ToastOptions) => showToast(message, "success", options),
 		[showToast],
 	);
 	const showError = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "error", options),
+		(message: string, options?: ToastOptions) => showToast(message, "error", options),
 		[showToast],
 	);
 	const showInfo = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "info", options),
+		(message: string, options?: ToastOptions) => showToast(message, "info", options),
 		[showToast],
 	);
 	const showWarning = useCallback(
-		(message: string, options?: ToastOptions) =>
-			showToast(message, "warning", options),
+		(message: string, options?: ToastOptions) => showToast(message, "warning", options),
 		[showToast],
 	);
 
@@ -445,16 +416,7 @@ function useToastProvider(
 			toastList: toasts,
 			dismiss: hideToast,
 		}),
-		[
-			toasts,
-			showToast,
-			hideToast,
-			clearToasts,
-			showSuccess,
-			showError,
-			showInfo,
-			showWarning,
-		],
+		[toasts, showToast, hideToast, clearToasts, showSuccess, showError, showInfo, showWarning],
 	);
 }
 
@@ -471,19 +433,12 @@ export function ToastProvider({
 	maxToasts,
 	position,
 }: ToastProviderProps) {
-	const { toastList, dismiss, ...value } = useToastProvider(
-		maxToasts,
-		defaultDuration,
-	);
+	const { toastList, dismiss, ...value } = useToastProvider(maxToasts, defaultDuration);
 
 	return (
 		<ToastContext.Provider value={value}>
 			{children}
-			<ToastContainer
-				toasts={toastList}
-				onDismiss={dismiss}
-				position={position}
-			/>
+			<ToastContainer toasts={toastList} onDismiss={dismiss} position={position} />
 		</ToastContext.Provider>
 	);
 }

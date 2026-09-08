@@ -5,12 +5,7 @@ import {
 	matchesNameSearchTerm,
 } from "@/shared/lib/names";
 import type { NameItem } from "@/shared/types";
-import type {
-	AdminStats,
-	NameFilter,
-	NameWithStats,
-	SiteStatsLike,
-} from "./types";
+import type { AdminStats, NameFilter, NameWithStats, SiteStatsLike } from "./types";
 
 function toNumber(value: unknown): number {
 	const parsed = Number(value);
@@ -60,9 +55,7 @@ export function filterNamesByStatusAndSearch(
 		return filtered;
 	}
 
-	return filtered.filter((name) =>
-		matchesNameSearchTerm(name, normalizedSearch),
-	);
+	return filtered.filter((name) => matchesNameSearchTerm(name, normalizedSearch));
 }
 
 const _ADMIN_TABS: readonly { value: string; label: string }[] = [
@@ -79,13 +72,7 @@ export const FILTER_OPTIONS: readonly { value: NameFilter; label: string }[] = [
 	{ value: "locked", label: "Locked In" },
 ];
 
-export function getQuickStats({
-	siteStats,
-	userStats,
-}: {
-	siteStats: any;
-	userStats: any;
-}) {
+export function getQuickStats({ siteStats, userStats }: { siteStats: any; userStats: any }) {
 	return [
 		{ label: "Total Ratings", value: siteStats?.totalRatings || 0 },
 		{ label: "Your Ratings", value: userStats?.totalRatings || 0 },

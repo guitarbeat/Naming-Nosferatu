@@ -1,9 +1,4 @@
-import {
-	QueryClient,
-	queryOptions,
-	useMutation,
-	useQueryClient,
-} from "@tanstack/react-query";
+import { QueryClient, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { IdType, NameItem } from "@/shared/types";
 
@@ -21,8 +16,7 @@ export const queryClient = new QueryClient({
 /* ==========================================================================
    Constants & Error Utilities
    ========================================================================== */
-export const SUPABASE_UNAVAILABLE_MSG =
-	"Database is unavailable. Running in local mode.";
+export const SUPABASE_UNAVAILABLE_MSG = "Database is unavailable. Running in local mode.";
 
 /* ==========================================================================
    Names API Types & Queries
@@ -38,8 +32,7 @@ const DEFAULT_CANDIDATE_NAMES: NameItem[] = [
 	{
 		id: "1",
 		name: "Nosferatu",
-		description:
-			"The immortal feline count with shadowy charm and ancient wisdom",
+		description: "The immortal feline count with shadowy charm and ancient wisdom",
 		avgRating: 1650,
 		avg_rating: 1650,
 		isHidden: false,
@@ -264,15 +257,12 @@ function saveStoredNames(names: NameItem[]): void {
 const namesQueryKeys = {
 	all: ["names"] as const,
 	lists: () => [...namesQueryKeys.all, "list"] as const,
-	list: (includeHidden: boolean) =>
-		[...namesQueryKeys.lists(), { includeHidden }] as const,
+	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
 async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	const all = getStoredNames();
-	const names = includeHidden
-		? all
-		: all.filter((n) => !n.isHidden && !n.is_hidden);
+	const names = includeHidden ? all : all.filter((n) => !n.isHidden && !n.is_hidden);
 	return { names, source: "local" };
 }
 
@@ -528,10 +518,7 @@ export function useNameAdminActions(userName: string) {
 		),
 	);
 
-	const uploadImage = useCallback(
-		(_file: File | Blob) => Promise.resolve(),
-		[],
-	);
+	const uploadImage = useCallback((_file: File | Blob) => Promise.resolve(), []);
 
 	return {
 		invalidateNames,
@@ -561,8 +548,7 @@ interface TournamentMatchRatingParams {
 }
 
 export const ratingsAPI = {
-	applyTournamentMatch: async (_params: TournamentMatchRatingParams) =>
-		Promise.resolve(),
+	applyTournamentMatch: async (_params: TournamentMatchRatingParams) => Promise.resolve(),
 	saveRatings: async (
 		userId: string,
 		ratings: Record<string, { rating: number; wins: number; losses: number }>,
@@ -571,10 +557,7 @@ export const ratingsAPI = {
 			return;
 		}
 		try {
-			window.localStorage.setItem(
-				`nosferatu-ratings-${userId}`,
-				JSON.stringify(ratings),
-			);
+			window.localStorage.setItem(`nosferatu-ratings-${userId}`, JSON.stringify(ratings));
 			const all = getStoredNames();
 			const updated = all.map((item) => {
 				const r = ratings[item.id] || ratings[item.name];
@@ -672,9 +655,7 @@ export const leaderboardAPI = {
 };
 
 export const statsAPI = {
-	getEngagementMetrics: async (
-		_timeframe: string,
-	): Promise<EngagementMetrics | null> => {
+	getEngagementMetrics: async (_timeframe: string): Promise<EngagementMetrics | null> => {
 		return {
 			current: 842,
 			previous: 720,
