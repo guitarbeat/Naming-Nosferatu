@@ -25,7 +25,7 @@ function getMemoryStore(storeName: string): Map<IDBValidKey, unknown> {
 /**
  * Check whether IndexedDB is accessible and usable in current environment.
  */
-export function isIndexedDBAvailable(): boolean {
+function isIndexedDBAvailable(): boolean {
 	if (typeof window === "undefined") {
 		return false;
 	}
@@ -51,7 +51,7 @@ export function isIndexedDBAvailable(): boolean {
 /**
  * Resets any in-memory fallback stores (useful for test suites).
  */
-export function clearMemoryFallbackStores(): void {
+function _clearMemoryFallbackStores(): void {
 	fallbackMemoryStores.clear();
 }
 
@@ -84,7 +84,10 @@ export async function getRecordFromDB<T>(
 
 				request.onerror = () => {
 					reject(
-						request.error || new Error(`Failed to read key "${String(key)}" from ${storeName}`),
+						request.error ||
+							new Error(
+								`Failed to read key "${String(key)}" from ${storeName}`,
+							),
 					);
 				};
 			} catch (err) {
@@ -124,7 +127,8 @@ export async function setRecordInDB<T>(
 				const request = store.put(value, key);
 
 				tx.oncomplete = () => resolve();
-				tx.onerror = () => reject(tx.error || request.error || new Error("Transaction error"));
+				tx.onerror = () =>
+					reject(tx.error || request.error || new Error("Transaction error"));
 				tx.onabort = () => reject(tx.error || new Error("Transaction aborted"));
 			} catch (err) {
 				reject(err);
@@ -197,7 +201,11 @@ export async function saveStoredTournamentToIDB(
 	snapshot: StoredTournamentSnapshot,
 	key: IDBValidKey = ACTIVE_TOURNAMENT_KEY,
 ): Promise<void> {
-	return setRecordInDB<StoredTournamentSnapshot>(TOURNAMENT_STORE, key, snapshot);
+	return setRecordInDB<StoredTournamentSnapshot>(
+		TOURNAMENT_STORE,
+		key,
+		snapshot,
+	);
 }
 
 /**
@@ -283,7 +291,9 @@ async function getAllRecordsFromDB<T>(
 
 				request.onsuccess = () => resolve(request.result as T[]);
 				request.onerror = () =>
-					reject(request.error || new Error(`Failed to read all from ${storeName}`));
+					reject(
+						request.error || new Error(`Failed to read all from ${storeName}`),
+					);
 			} catch (err) {
 				reject(err);
 			}
@@ -312,7 +322,8 @@ async function _clearStoreInDB(
 				const request = store.clear();
 
 				request.onsuccess = () => resolve();
-				request.onerror = () => reject(request.error || new Error(`Failed to clear ${storeName}`));
+				request.onerror = () =>
+					reject(request.error || new Error(`Failed to clear ${storeName}`));
 			} catch (err) {
 				reject(err);
 			}
@@ -322,6 +333,8 @@ async function _clearStoreInDB(
 	}
 }
 
-async function _getAllStoredTournamentsFromIDB(): Promise<StoredTournamentSnapshot[]> {
+async function _getAllStoredTournamentsFromIDB(): Promise<
+	StoredTournamentSnapshot[]
+> {
 	return getAllRecordsFromDB<StoredTournamentSnapshot>(TOURNAMENT_STORE);
 }

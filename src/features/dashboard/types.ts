@@ -1,22 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-import type { ComponentType } from "react";
 import type { NameItem, RatingData } from "@/shared/types";
-
-export interface LeaderboardEntry {
-	name: string;
-	total_ratings: number;
-	wins: number;
-	avg_rating: number;
-	losses?: number;
-	percentile_rank?: number;
-}
-
-export interface QuickStat {
-	accent?: boolean;
-	icon: LucideIcon | ComponentType<{ size?: number; className?: string }>;
-	label: string;
-	value: string | number;
-}
 
 export interface DashboardProps {
 	personalRatings?: Record<string, RatingData>;
@@ -55,8 +37,4 @@ export interface NameWithStats extends NameItem {
 export interface SiteStatsLike {
 	totalUsers?: unknown;
 	totalRatings?: unknown;
-}
-
-export interface AdminStatsGridProps {
-	stats: AdminStats;
 }

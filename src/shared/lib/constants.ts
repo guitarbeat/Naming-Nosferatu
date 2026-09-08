@@ -36,7 +36,8 @@ export const FALLBACK_CAT_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
 /**
  * Primary local fallback image path.
  */
-export const FALLBACK_CAT_IMAGE = "/assets/images/ui/cat_avatar_placeholder.png";
+export const FALLBACK_CAT_IMAGE =
+	"/assets/images/ui/cat_avatar_placeholder.png";
 
 /**
  * Critical images required by the app shell (navigation, persona selectors, loading screens, and primary avatars).

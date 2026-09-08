@@ -10,37 +10,48 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import { CAT_IMAGES, FALLBACK_CAT_IMAGE, FALLBACK_CAT_SVG } from "@/shared/lib/constants";
-import { themeSurfaces } from "@/shared/lib/uiUtils";
+import {
+	CAT_IMAGES,
+	FALLBACK_CAT_IMAGE,
+	FALLBACK_CAT_SVG,
+} from "@/shared/lib/constants";
 import { cn, ErrorManager, handleImgError } from "@/shared/lib/utils";
 
-export type ButtonVariant = "primary" | "danger" | "ghost" | "outline" | "flat" | "glass";
-export type ButtonSize = "small" | "medium" | "large" | "icon";
+type ButtonVariant =
+	| "primary"
+	| "danger"
+	| "ghost"
+	| "outline"
+	| "flat"
+	| "glass";
+type ButtonSize = "small" | "medium" | "large" | "icon";
 
 const baseButtonClass =
-	"inline-flex items-center justify-center gap-2.5 whitespace-nowrap font-medium tracking-wide rounded-[var(--radius-button)] transition-transform transition-opacity duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none";
+	"inline-flex items-center justify-center gap-2.5 whitespace-nowrap font-medium tracking-wide rounded-full transition-transform transition-opacity duration-[300ms] ease-spring focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none";
 
 const variantClasses: Record<ButtonVariant, string> = {
 	primary:
-		"bg-primary text-primary-foreground shadow-sm hover:brightness-105 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.97] active:brightness-95 border border-primary/20",
+		"bg-primary text-primary-foreground shadow-sm hover:brightness-110 motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 motion-safe:active:scale-[0.93] border-b-4 border-primary/20",
 	danger:
-		"bg-destructive text-destructive-foreground shadow-sm hover:brightness-105 motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 active:brightness-95 motion-safe:active:scale-[0.96]",
-	ghost: "text-foreground/80 hover:bg-accent/40 hover:text-accent-foreground active:bg-accent/60",
+		"bg-destructive text-destructive-foreground shadow-sm hover:brightness-110 motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 active:brightness-95 motion-safe:active:scale-[0.93] border-b-4 border-destructive/30",
+	ghost:
+		"text-foreground/80 hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
 	outline:
-		"border border-border/80 bg-white/5 text-foreground shadow-sm hover:bg-accent/20 hover:border-border hover:text-accent-foreground motion-safe:hover:-translate-y-px motion-safe:active:translate-y-0 active:bg-accent/40 motion-safe:active:scale-[0.96] backdrop-blur-sm",
+		"border-2 border-border/80 bg-white/40 text-foreground shadow-sm hover:bg-accent/20 hover:border-accent hover:text-accent-foreground motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 active:bg-accent/40 motion-safe:active:scale-[0.93] backdrop-blur-sm",
 	flat: "text-foreground/80 hover:bg-accent/30 active:bg-accent/50",
 	glass:
-		"border border-white/15 bg-white/10 text-foreground backdrop-blur-md hover:bg-white/15 hover:border-white/25 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 active:bg-white/20 motion-safe:active:scale-[0.97]",
+		"border-2 border-white/40 bg-white/20 text-foreground backdrop-blur-md hover:bg-white/40 hover:border-white/60 motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 active:bg-white/30 motion-safe:active:scale-[0.93]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-	small: "h-8 px-3 text-xs rounded-md [&_svg]:size-3.5 min-h-[44px] sm:min-h-0",
-	medium: "h-10 px-4 text-sm rounded-md [&_svg]:size-4 min-h-[44px] sm:min-h-0",
-	large: "h-12 px-6 text-base font-semibold rounded-lg [&_svg]:size-5 min-h-[44px]",
-	icon: "h-10 w-10 p-0 rounded-md [&_svg]:size-4 min-h-[44px] min-w-[44px]",
+	small: "h-9 px-4 sm:px-5 text-xs [&_svg]:size-3.5 min-h-[44px] sm:min-h-0",
+	medium: "h-11 px-6 sm:px-8 text-sm [&_svg]:size-4 min-h-[44px] sm:min-h-0",
+	large: "h-14 px-8 sm:px-10 text-base font-bold [&_svg]:size-5 min-h-[44px]",
+	icon: "h-11 w-11 p-0 [&_svg]:size-4 min-h-[44px] min-w-[44px]",
 };
 
-export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+interface ButtonProps
+	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
 	variant?: ButtonVariant;
 	size?: ButtonSize;
@@ -80,7 +91,12 @@ const ButtonComponent = ({
 		<button
 			type={type}
 			disabled={disabled || loading}
-			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
+			className={cn(
+				baseButtonClass,
+				variantClasses[variant],
+				sizeClasses[finalSize],
+				className,
+			)}
 			onClick={handleClick}
 			title={iconOnly && !title && ariaLabel ? ariaLabel : title}
 			aria-label={ariaLabel}
@@ -97,7 +113,7 @@ ButtonComponent.displayName = "Button";
 
 export const Button = memo(ButtonComponent);
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	children?: React.ReactNode;
 	variant?: "default" | "filled";
 	padding?: "none" | "medium";
@@ -118,15 +134,13 @@ const CardBase = memo(
 			ref,
 		) => {
 			const finalClasses = cn(
-				"relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 backdrop-blur-md",
+				"relative flex flex-col overflow-hidden rounded-[2rem] transition-all duration-300 backdrop-blur-md",
 				variant === "filled"
-					? "bg-foreground/10 border-none"
-					: "bg-foreground/5 border border-border/10 bg-background/40",
+					? "bg-primary/5 border-none"
+					: "bg-card border border-primary/10",
 				padding === "none" ? "p-0" : "p-5",
-				shadow === "large" ? "shadow-lg" : "shadow-md",
+				shadow === "large" ? "shadow-lg" : "shadow-sm",
 				className,
-				"before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
-				"before:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_55%)]",
 			);
 
 			return (
@@ -142,7 +156,7 @@ CardBase.displayName = "Card";
 
 export const Card = CardBase;
 
-export interface CatImageProps {
+interface CatImageProps {
 	src?: string;
 	alt?: string;
 	containerClassName?: string;
@@ -169,10 +183,16 @@ function CatImage({
 	const [svgFallback, setSvgFallback] = useState(false);
 	const fallbackUrl = CAT_IMAGES[0] ?? FALLBACK_CAT_IMAGE;
 
-	const currentSrc = svgFallback ? FALLBACK_CAT_SVG : hasError || !src ? fallbackUrl : src;
+	const currentSrc = svgFallback
+		? FALLBACK_CAT_SVG
+		: hasError || !src
+			? fallbackUrl
+			: src;
 	const isLocalAsset = currentSrc.startsWith("/");
 
-	const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+	const handleError = (
+		event: React.SyntheticEvent<HTMLImageElement, Event>,
+	) => {
 		if (!hasError && src !== fallbackUrl) {
 			setHasError(true);
 		} else if (!svgFallback) {
@@ -204,41 +224,20 @@ function CatImage({
 
 export { CatImage };
 
-export interface EmptyStateProps {
-	title: string;
-	description?: ReactNode;
-	className?: string;
-}
-
-export function EmptyState({ title, description, className }: EmptyStateProps) {
-	return (
-		<div
-			className={cn(
-				themeSurfaces.panelInset,
-				"px-4 py-8 text-center text-sm text-muted-foreground",
-				className,
-			)}
-		>
-			<p>{title}</p>
-			{description ? <p className="mt-1">{description}</p> : null}
-		</div>
-	);
-}
-
-export interface ErrorBoundaryProps {
+interface ErrorBoundaryProps {
 	children: ReactNode;
 	fallback?: React.ComponentType<ErrorFallbackProps>;
 	onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 	context?: string;
 }
 
-export interface ErrorBoundaryState {
+interface ErrorBoundaryState {
 	hasError: boolean;
 	error: Error | null;
 	errorId: string | null;
 }
 
-export interface ErrorFallbackProps {
+interface ErrorFallbackProps {
 	error: Error | null;
 	errorId: string | null;
 	resetError: () => void;
@@ -263,13 +262,19 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	return (
 		<div className="mx-auto my-8 flex min-h-[40vh] w-full max-w-xl items-center justify-center px-4">
 			<div className="w-full rounded-lg border border-destructive/30 bg-background/80 p-6 text-center shadow-xl backdrop-blur">
-				<h2 className="text-2xl font-bold text-foreground">Something went wrong</h2>
-				<p className="mt-2 text-sm text-muted-foreground">{context} could not finish loading.</p>
+				<h2 className="text-2xl font-bold text-foreground">
+					Something went wrong
+				</h2>
+				<p className="mt-2 text-sm text-muted-foreground">
+					{context} could not finish loading.
+				</p>
 				<p className="mt-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
 					{error?.message || "An unexpected error occurred."}
 				</p>
 				{errorId ? (
-					<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
+					<p className="mt-2 font-mono text-xs text-muted-foreground">
+						ID: {errorId}
+					</p>
 				) : null}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
@@ -292,7 +297,10 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	);
 };
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+	ErrorBoundaryProps,
+	ErrorBoundaryState
+> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -335,7 +343,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 	}
 }
 
-export interface AppError {
+interface AppError {
 	message?: string;
 	severity?: string;
 	isRetryable?: boolean;
@@ -350,7 +358,7 @@ export interface AppError {
 	[key: string]: unknown;
 }
 
-export interface ErrorProps {
+interface ErrorProps {
 	variant?: "boundary" | "inline";
 	error?: AppError | string | unknown;
 	onDismiss?: () => void;
@@ -359,17 +367,22 @@ export interface ErrorProps {
 	children?: React.ReactNode;
 }
 
-export interface ErrorInlineProps {
+interface ErrorInlineProps {
 	error: AppError | string | unknown;
 	onDismiss?: () => void;
 	className?: string;
 }
 
-const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className = "" }) => {
+const ErrorInline: React.FC<ErrorInlineProps> = ({
+	error,
+	onDismiss,
+	className = "",
+}) => {
 	if (!error) {
 		return null;
 	}
-	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
+	const msg =
+		typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
 		<div
 			className={cn(
@@ -404,14 +417,20 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 	children,
 }) => {
 	if (variant === "boundary") {
-		return <ErrorBoundary context={context || "Component Boundary"}>{children}</ErrorBoundary>;
+		return (
+			<ErrorBoundary context={context || "Component Boundary"}>
+				{children}
+			</ErrorBoundary>
+		);
 	}
-	return <ErrorInline error={error} onDismiss={onDismiss} className={className} />;
+	return (
+		<ErrorInline error={error} onDismiss={onDismiss} className={className} />
+	);
 };
 
 ErrorComponent.displayName = "ErrorComponent";
 
-export interface BaseFieldProps {
+interface BaseFieldProps {
 	label?: string;
 	error?: string | null;
 	required?: boolean;
@@ -419,11 +438,11 @@ export interface BaseFieldProps {
 }
 
 const inputBaseStyles =
-	"flex h-12 w-full rounded-2xl border border-border/30 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent disabled:cursor-not-allowed disabled:opacity-50 text-foreground backdrop-blur-md transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out relative z-10";
+	"flex h-12 w-full rounded-full border border-primary/20 bg-card px-5 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-bold placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 text-foreground shadow-inner transition-[background-color,border-color,box-shadow,transform] duration-[300ms] ease-spring relative z-10 hover:border-primary/40";
 
 const errorStyles = "border-destructive focus-visible:ring-destructive";
 
-export interface FormFieldProps extends BaseFieldProps {
+interface FormFieldProps extends BaseFieldProps {
 	children: React.ReactNode;
 	id?: string;
 	name?: string;
@@ -474,7 +493,7 @@ const FormField: React.FC<FormFieldProps> = ({
 
 FormField.displayName = "FormField";
 
-export interface InputProps
+interface InputProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className">,
 		BaseFieldProps {}
 
@@ -483,10 +502,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 		const internalId = useId();
 		const id = props.id || internalId;
 		const hasError = Boolean(error);
-		const [isFocused, setIsFocused] = useState(false);
+		const [_isFocused, setIsFocused] = useState(false);
 
 		return (
-			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
+			<FormField
+				id={id}
+				label={label}
+				error={error}
+				required={required}
+				disabled={props.disabled}
+			>
 				<div className="relative isolate group">
 					<input
 						{...props}
@@ -500,12 +525,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 							setIsFocused(false);
 							props.onBlur?.(e);
 						}}
-						className={cn(
-							inputBaseStyles,
-							hasError && errorStyles,
-							isFocused ? "bg-white/10" : "hover:bg-white/10 hover:border-border/40",
-							className,
-						)}
+						className={cn(inputBaseStyles, hasError && errorStyles, className)}
 						aria-invalid={hasError || undefined}
 						aria-describedby={hasError ? `${id}-error` : undefined}
 					/>
@@ -522,18 +542,29 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
 Input.displayName = "Input";
 
-export interface TextareaProps
+interface TextareaProps
 	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "className">,
 		BaseFieldProps {
 	showCount?: boolean;
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-	({ label, error, required, value, showCount = false, className = "", ...props }, ref) => {
+	(
+		{
+			label,
+			error,
+			required,
+			value,
+			showCount = false,
+			className = "",
+			...props
+		},
+		ref,
+	) => {
 		const internalId = useId();
 		const id = props.id || internalId;
 		const hasError = Boolean(error);
-		const [isFocused, setIsFocused] = useState(false);
+		const [_isFocused, setIsFocused] = useState(false);
 
 		const currentLength = String(value || "").length;
 		const maxLength = props.maxLength;
@@ -547,7 +578,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			.join(" ");
 
 		return (
-			<FormField id={id} label={label} error={error} required={required} disabled={props.disabled}>
+			<FormField
+				id={id}
+				label={label}
+				error={error}
+				required={required}
+				disabled={props.disabled}
+			>
 				<div className="relative isolate group">
 					<textarea
 						{...props}
@@ -564,9 +601,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 						}}
 						className={cn(
 							inputBaseStyles,
-							"min-h-[80px] py-3",
+							"min-h-[80px] py-4 rounded-3xl",
 							hasError && errorStyles,
-							isFocused ? "bg-white/10" : "hover:bg-white/10 hover:border-border/40",
 							className,
 						)}
 						aria-invalid={hasError || undefined}
@@ -600,7 +636,7 @@ Textarea.displayName = "Textarea";
 
 const LOADING_ASSET = "/assets/images/cats/cat.gif";
 
-export interface LoadingProps {
+interface LoadingProps {
 	variant?: "spinner" | "skeleton" | "card-skeleton" | "cat-gif";
 	text?: string;
 	className?: string;
@@ -628,7 +664,13 @@ function SpinnerCircle({
 	);
 }
 
-function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
+function SkeletonBlock({
+	className,
+	style,
+}: {
+	className?: string;
+	style?: React.CSSProperties;
+}) {
 	return (
 		<div
 			className={cn(
@@ -643,7 +685,10 @@ function SkeletonBlock({ className, style }: { className?: string; style?: React
 
 export const Loading: React.FC<LoadingProps> = memo(
 	({ variant = "spinner", text, className = "", height = 20 }) => {
-		const containerClasses = cn("flex flex-col items-center justify-center gap-3 p-4", className);
+		const containerClasses = cn(
+			"flex flex-col items-center justify-center gap-3 p-4",
+			className,
+		);
 
 		if (variant === "skeleton") {
 			return (
@@ -681,7 +726,9 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{text ? <div className="pt-2 text-center text-xs text-white/50">{text}</div> : null}
+					{text ? (
+						<div className="pt-2 text-center text-xs text-white/50">{text}</div>
+					) : null}
 				</div>
 			);
 		}
@@ -693,10 +740,14 @@ export const Loading: React.FC<LoadingProps> = memo(
 						src={LOADING_ASSET}
 						alt=""
 						aria-hidden="true"
-						className="h-44 w-auto select-none object-contain opacity-95"
+						className="h-44 w-auto select-none object-contain opacity-95 animate-bounce"
 						onError={handleImgError}
 					/>
-					{text && <p className="text-[10px] font-semibold tracking-wide text-white/35">{text}</p>}
+					{text && (
+						<p className="text-[12px] font-bold tracking-wide text-foreground/50">
+							{text}
+						</p>
+					)}
 				</div>
 			);
 		}
@@ -719,7 +770,7 @@ Loading.displayName = "Loading";
 const FOCUSABLE_SELECTOR =
 	'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export interface ModalProps {
+interface ModalProps {
 	title: string;
 	open?: boolean;
 	onClose: () => void;
@@ -755,20 +806,27 @@ function useModalAnimation(isOpenResolved: boolean) {
 	return { isClosing, shouldRender };
 }
 
-export interface ModalHeaderProps {
+interface ModalHeaderProps {
 	title: string;
 	hideTitle: boolean;
 	requestClose: () => void;
 	closeDisabled: boolean;
 }
 
-function ModalHeader({ title, hideTitle, requestClose, closeDisabled }: ModalHeaderProps) {
+function ModalHeader({
+	title,
+	hideTitle,
+	requestClose,
+	closeDisabled,
+}: ModalHeaderProps) {
 	const headerContent = (
 		<>
 			<h2
 				id="modal-title"
 				className={
-					hideTitle ? "sr-only" : "text-base sm:text-lg font-bold text-foreground tracking-tight"
+					hideTitle
+						? "sr-only"
+						: "text-base sm:text-lg font-bold text-foreground tracking-tight"
 				}
 			>
 				{title}
@@ -880,7 +938,10 @@ export function Modal({
 			const lastElement = focusableElements[focusableElements.length - 1];
 
 			if (event.shiftKey) {
-				if (document.activeElement === firstElement || document.activeElement === dialog) {
+				if (
+					document.activeElement === firstElement ||
+					document.activeElement === dialog
+				) {
 					event.preventDefault();
 					lastElement?.focus();
 				}
@@ -927,7 +988,7 @@ export function Modal({
 				aria-describedby={description ? "modal-description" : undefined}
 				tabIndex={-1}
 				onKeyDown={handleKeyDown}
-				className={`glass-surface relative z-modal-dialog w-full max-w-md overflow-hidden rounded-2xl border border-border/40 bg-card/85 backdrop-blur-xl p-5 sm:p-6 shadow-2xl ${surfaceAnimation}`}
+				className={`relative z-modal-dialog w-full max-w-md overflow-hidden rounded-[2.5rem] border border-primary/20 bg-card p-5 sm:p-8 shadow-xl ${surfaceAnimation}`}
 			>
 				<ModalHeader
 					title={title}
@@ -978,7 +1039,7 @@ export function OfflineIndicator() {
 	);
 }
 
-export interface SectionProps {
+interface SectionProps {
 	id?: string;
 	children: ReactNode;
 	maxWidth?: "md" | "xl" | "2xl" | "full";

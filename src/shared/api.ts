@@ -1,4 +1,9 @@
-import { QueryClient, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+	QueryClient,
+	queryOptions,
+	useMutation,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { IdType, NameItem } from "@/shared/types";
 
@@ -16,23 +21,25 @@ export const queryClient = new QueryClient({
 /* ==========================================================================
    Constants & Error Utilities
    ========================================================================== */
-export const SUPABASE_UNAVAILABLE_MSG = "Database is unavailable. Running in local mode.";
+export const SUPABASE_UNAVAILABLE_MSG =
+	"Database is unavailable. Running in local mode.";
 
 /* ==========================================================================
    Names API Types & Queries
    ========================================================================== */
-export type NamesDataSource = "local";
+type NamesDataSource = "local";
 
-export interface NamesQueryResult {
+interface NamesQueryResult {
 	names: NameItem[];
 	source: NamesDataSource;
 }
 
-export const DEFAULT_CANDIDATE_NAMES: NameItem[] = [
+const DEFAULT_CANDIDATE_NAMES: NameItem[] = [
 	{
 		id: "1",
 		name: "Nosferatu",
-		description: "The immortal feline count with shadowy charm and ancient wisdom",
+		description:
+			"The immortal feline count with shadowy charm and ancient wisdom",
 		avgRating: 1650,
 		avg_rating: 1650,
 		isHidden: false,
@@ -254,15 +261,18 @@ function saveStoredNames(names: NameItem[]): void {
 	}
 }
 
-export const namesQueryKeys = {
+const namesQueryKeys = {
 	all: ["names"] as const,
 	lists: () => [...namesQueryKeys.all, "list"] as const,
-	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
+	list: (includeHidden: boolean) =>
+		[...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
-export async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
+async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	const all = getStoredNames();
-	const names = includeHidden ? all : all.filter((n) => !n.isHidden && !n.is_hidden);
+	const names = includeHidden
+		? all
+		: all.filter((n) => !n.isHidden && !n.is_hidden);
 	return { names, source: "local" };
 }
 
@@ -273,13 +283,13 @@ export const namesQueryOptions = (includeHidden: boolean) =>
 		staleTime: 30_000,
 	});
 
-export async function softDeleteName({ nameId }: { nameId: IdType }): Promise<void> {
+async function softDeleteName({ nameId }: { nameId: IdType }): Promise<void> {
 	const all = getStoredNames();
 	const updated = all.filter((item) => item.id !== nameId);
 	saveStoredNames(updated);
 }
 
-export async function toggleNameHidden({
+async function toggleNameHidden({
 	nameId,
 	isCurrentlyHidden,
 }: {
@@ -303,7 +313,7 @@ export async function toggleNameHidden({
 	saveStoredNames(updated);
 }
 
-export async function toggleNameLocked({
+async function toggleNameLocked({
 	nameId,
 	isCurrentlyLocked,
 }: {
@@ -325,7 +335,7 @@ export async function toggleNameLocked({
 	saveStoredNames(updated);
 }
 
-export async function unhideAllNames(): Promise<void> {
+async function _unhideAllNames(): Promise<void> {
 	const all = getStoredNames();
 	const updated = all.map((item) => ({
 		...item,
@@ -337,7 +347,7 @@ export async function unhideAllNames(): Promise<void> {
 	saveStoredNames(updated);
 }
 
-export async function batchUpdateVisibility({
+async function batchUpdateVisibility({
 	nameIds,
 	isHidden,
 }: {
@@ -362,7 +372,7 @@ export async function batchUpdateVisibility({
 	saveStoredNames(updated);
 }
 
-export async function batchUpdateLocked({
+async function batchUpdateLocked({
 	nameIds,
 	isLocked,
 }: {
@@ -419,26 +429,26 @@ export async function addName({
 /* ==========================================================================
    Admin Actions Mutation Hook
    ========================================================================== */
-export interface ToggleHiddenInput {
+interface ToggleHiddenInput {
 	nameId: IdType;
 	isCurrentlyHidden: boolean;
 }
 
-export interface ToggleLockedInput {
+interface ToggleLockedInput {
 	nameId: IdType;
 	isCurrentlyLocked: boolean;
 }
 
-export interface DeleteNameInput {
+interface DeleteNameInput {
 	nameId: IdType;
 }
 
-export interface BatchUpdateVisibilityInput {
+interface BatchUpdateVisibilityInput {
 	nameIds: IdType[];
 	isHidden: boolean;
 }
 
-export interface BatchUpdateLockedInput {
+interface BatchUpdateLockedInput {
 	nameIds: IdType[];
 	isLocked: boolean;
 }
@@ -518,7 +528,10 @@ export function useNameAdminActions(userName: string) {
 		),
 	);
 
-	const uploadImage = useCallback((_file: File | Blob) => Promise.resolve(), []);
+	const uploadImage = useCallback(
+		(_file: File | Blob) => Promise.resolve(),
+		[],
+	);
 
 	return {
 		invalidateNames,
@@ -534,7 +547,7 @@ export function useNameAdminActions(userName: string) {
 /* ==========================================================================
    Ratings & Tournament API
    ========================================================================== */
-export interface TournamentMatchRatingParams {
+interface TournamentMatchRatingParams {
 	matchId?: string;
 	winnerId?: string;
 	loserId?: string;
@@ -548,7 +561,8 @@ export interface TournamentMatchRatingParams {
 }
 
 export const ratingsAPI = {
-	applyTournamentMatch: async (_params: TournamentMatchRatingParams) => Promise.resolve(),
+	applyTournamentMatch: async (_params: TournamentMatchRatingParams) =>
+		Promise.resolve(),
 	saveRatings: async (
 		userId: string,
 		ratings: Record<string, { rating: number; wins: number; losses: number }>,
@@ -557,7 +571,10 @@ export const ratingsAPI = {
 			return;
 		}
 		try {
-			window.localStorage.setItem(`nosferatu-ratings-${userId}`, JSON.stringify(ratings));
+			window.localStorage.setItem(
+				`nosferatu-ratings-${userId}`,
+				JSON.stringify(ratings),
+			);
 			const all = getStoredNames();
 			const updated = all.map((item) => {
 				const r = ratings[item.id] || ratings[item.name];
@@ -655,7 +672,9 @@ export const leaderboardAPI = {
 };
 
 export const statsAPI = {
-	getEngagementMetrics: async (_timeframe: string): Promise<EngagementMetrics | null> => {
+	getEngagementMetrics: async (
+		_timeframe: string,
+	): Promise<EngagementMetrics | null> => {
 		return {
 			current: 842,
 			previous: 720,

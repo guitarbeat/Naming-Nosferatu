@@ -1,21 +1,38 @@
-
-import { createContext, lazy, Suspense, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ErrorBoundary, ErrorComponent, Iridescence, Loading, Modal, OfflineIndicator, RouteFallback, Section, StaggeredMenu, type StaggeredMenuItem } from '@/shared/components';
-import { useAppStoreInitialization } from "@/store";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MotionConfig, motion } from "framer-motion";
 import { AlertTriangle, Info, X, XCircle } from "lucide-react";
-import React from "react";
+import React, {
+	createContext,
+	lazy,
+	type ReactNode,
+	Suspense,
+	useCallback,
+	useContext,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { NameSuggestion } from "@/features/tournament/NameSuggestion";
 import { queryClient } from "@/shared/api";
-
+import { Iridescence } from "@/shared/components/Iridescence";
+import {
+	ErrorBoundary,
+	ErrorComponent,
+	Loading,
+	Modal,
+	OfflineIndicator,
+} from "@/shared/components/LayoutBlocks";
+import { StaggeredMenu } from "@/shared/components/StaggeredMenu";
+import { RouteFallback } from "@/shared/components/UIBlocks";
 import { usePrefersReducedMotion, usePreloadImages } from "@/shared/hooks";
-import { STORAGE_KEYS } from '@/shared/lib/constants';
+import { STORAGE_KEYS } from "@/shared/lib/constants";
 import { scaleFadeMotionPreset } from "@/shared/lib/uiUtils";
 import { setupGlobalImageErrorHandler } from "@/shared/lib/utils";
-import useAppStore from "@/store";
+import useAppStore, { useAppStoreInitialization } from "@/store";
 import { AdminRoute, HomeRoute } from "./routes/Routes";
 
 import "../index.css";
@@ -74,30 +91,27 @@ async function initSentry(): Promise<void> {
 initSentry();
 
 const rootElement = document.getElementById("root");
-if (!rootElement) {
-	throw new Error("Root element #root not found");
+if (rootElement) {
+	ReactDOM.createRoot(rootElement).render(
+		<React.StrictMode>
+			<ErrorBoundary
+				context="Application Root"
+				onError={(error: Error, errorInfo: React.ErrorInfo) => {
+					// Sentry will automatically capture this through ErrorManager
+					console.error("Application error:", error, errorInfo);
+				}}
+			>
+				<QueryClientProvider client={queryClient}>
+					<Providers>
+						<BrowserRouter>
+							<App />
+						</BrowserRouter>
+					</Providers>
+				</QueryClientProvider>
+			</ErrorBoundary>
+		</React.StrictMode>,
+	);
 }
-
-ReactDOM.createRoot(rootElement).render(
-	<React.StrictMode>
-		<ErrorBoundary
-			context="Application Root"
-			onError={(error: Error, errorInfo: React.ErrorInfo) => {
-				// Sentry will automatically capture this through ErrorManager
-				console.error("Application error:", error, errorInfo);
-			}}
-		>
-			<QueryClientProvider client={queryClient}>
-				<Providers>
-					<BrowserRouter>
-						<App />
-					</BrowserRouter>
-				</Providers>
-			</QueryClientProvider>
-		</ErrorBoundary>
-	</React.StrictMode>,
-);
-
 
 import {
 	getStorageString,
@@ -609,10 +623,11 @@ export function ToastProvider({
 }
 
 import {
-	BarChart3,
 	CheckCircle,
+	Home,
 	Lightbulb,
 	Lock,
+	PlayCircle,
 	Trophy,
 	User,
 } from "lucide-react";
@@ -624,7 +639,6 @@ import {
 	useLocation,
 	useNavigate,
 } from "react-router-dom";
-
 
 import {
 	cn,
@@ -937,9 +951,9 @@ export function FloatingNavbar() {
 						? `Vote (${selectedCount})`
 						: "Contenders",
 				icon: isTournamentActive ? (
-					<Trophy className="h-4 w-4" />
+					<PlayCircle className="h-4 w-4" />
 				) : selectedCount >= 2 ? (
-					<Trophy className="h-4 w-4" />
+					<PlayCircle className="h-4 w-4" />
 				) : (
 					<CheckCircle className="h-4 w-4" />
 				),
@@ -959,7 +973,7 @@ export function FloatingNavbar() {
 			items.push({
 				id: "analysis",
 				label: "Results",
-				icon: <BarChart3 className="h-4 w-4" />,
+				icon: <Trophy className="h-4 w-4" />,
 				isActive: activeSection === "analysis" || activeSection === "stats",
 				hasBadge:
 					Object.keys(tournament.ratings).length > 0 &&
@@ -970,7 +984,7 @@ export function FloatingNavbar() {
 			items.push({
 				id: "pick",
 				label: "Home",
-				icon: <Trophy className="h-4 w-4" />,
+				icon: <Home className="h-4 w-4" />,
 				isActive: false,
 				onClick: () => {
 					hapticNavTap();
@@ -1043,47 +1057,14 @@ export function FloatingNavbar() {
 		tournament.ratings,
 	]);
 
-	const staggeredItems: StaggeredMenuItem[] = useMemo(() => {
-		const items: StaggeredMenuItem[] = [];
-
-		if (!isHomeRoute) {
-			items.push({
-				label: "Home",
-				ariaLabel: "Go to home page",
-				link: "/",
-				onClick: (e) => {
-					e.preventDefault();
-					navigate("/");
-				},
-			});
-		}
-
-		navItems.forEach((item) => {
-			items.push({
-				label: item.label,
-				ariaLabel: item.label,
-				onClick: () => {
-					hapticNavTap();
-					item.onClick();
-				},
-			});
-		});
-
-		return items;
-	}, [isHomeRoute, navItems, navigate]);
-
 	if (isTournamentRoute) {
 		return null;
 	}
 
 	return (
 		<>
-			<div
-				className="floating-navbar-frame"
-				role="navigation"
-				aria-label="Main Navigation"
-			>
-				<nav className="floating-navbar-shell flex items-center justify-center gap-1 sm:gap-1.5 p-1.5 rounded-full">
+			<nav className="floating-navbar-frame" aria-label="Main Navigation">
+				<div className="floating-navbar-shell flex items-center justify-center gap-1 sm:gap-1.5 p-1.5 rounded-full">
 					{navItems.map((item) => (
 						<button
 							key={item.id}
@@ -1093,10 +1074,10 @@ export function FloatingNavbar() {
 							aria-current={item.isActive ? "page" : undefined}
 							className={cn(
 								"floating-nav-button relative flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-medium cursor-pointer select-none",
-								item.isActive && "floating-nav-button--active font-semibold",
+								item.isActive && "floating-nav-button--active font-bold",
 								item.isAccent &&
 									!item.isActive &&
-									"floating-nav-button--accent font-semibold",
+									"floating-nav-button--accent font-bold",
 							)}
 						>
 							<span className="floating-nav-icon flex items-center justify-center">
@@ -1113,21 +1094,8 @@ export function FloatingNavbar() {
 							)}
 						</button>
 					))}
-				</nav>
-			</div>
-
-			<StaggeredMenu
-				isFixed={true}
-				position="right"
-				items={staggeredItems}
-				displaySocials={false}
-				displayItemNumbering={true}
-				menuButtonColor="#ffffff"
-				openMenuButtonColor="#ffffff"
-				colors={["#1f1430", "#3b1c60", "#6b21a8", "#9333ea"]}
-				accentColor="#c084fc"
-				hideHeader={true}
-			/>
+				</div>
+			</nav>
 
 			{isProfileOpen && (
 				<Modal
@@ -1161,6 +1129,7 @@ export function FloatingNavbar() {
 }
 
 export function AppLayout({ children }: { children: ReactNode }) {
+	const navigate = useNavigate();
 	const tournament = useAppStore((s) => s.tournament);
 	const errors = useAppStore((s) => s.errors);
 	const errorActions = useAppStore((s) => s.errorActions);
@@ -1178,20 +1147,59 @@ export function AppLayout({ children }: { children: ReactNode }) {
 		errorActions.clearError();
 	};
 
+	const staggeredMenuItems = useMemo(
+		() => [
+			{
+				label: "Home",
+				onClick: () => navigate("/"),
+			},
+			{
+				label: "Admin Dashboard",
+				onClick: () => navigate("/admin"),
+			},
+			{
+				label: "Tournament Setup",
+				onClick: () => navigate("/setup"),
+			},
+		],
+		[navigate],
+	);
+
+	const socialItems = useMemo(
+		() => [
+			{
+				label: "GitHub",
+				link: "https://github.com/google/ai-studio",
+			},
+			{
+				label: "About",
+				link: "#",
+			},
+		],
+		[],
+	);
+
 	return (
 		<ErrorBoundary context="Main Application Layout">
 			<div className="app relative min-h-dvh w-full text-foreground overflow-x-hidden">
-				<div className="app-ambient" aria-hidden="true">
-					<Iridescence
-						color={[0.45, 0.22, 0.7]}
-						speed={0.75}
-						amplitude={0.12}
-						mouseReact={true}
-						className="w-full h-full opacity-60"
-					/>
-				</div>
+				<Iridescence
+					color={[1, 0.75, 0.9]}
+					speed={0.8}
+					amplitude={0.06}
+					className="fixed inset-0 z-0 opacity-50"
+				/>
 				<PwaInstallPrompt />
+
 				<OfflineIndicator />
+				<StaggeredMenu
+					position="right"
+					items={staggeredMenuItems}
+					socialItems={socialItems}
+					colors={["#FFD6E8", "#FFA3CC", "#FF70B0"]}
+					accentColor="#FF70B0"
+					menuButtonColor="var(--primary)"
+					isFixed={true}
+				/>
 
 				<button
 					type="button"

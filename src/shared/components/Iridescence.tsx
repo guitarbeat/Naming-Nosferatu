@@ -45,7 +45,8 @@ void main() {
 }
 `;
 
-export interface IridescenceProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "color"> {
+interface IridescenceProps
+	extends Omit<React.HTMLAttributes<HTMLDivElement>, "color"> {
 	color?: number[];
 	speed?: number;
 	amplitude?: number;
@@ -96,7 +97,10 @@ export function Iridescence({
 			if (!ctn || !renderer || !gl) {
 				return;
 			}
-			const scale = Math.min(typeof window === "undefined" ? 1 : window.devicePixelRatio || 1, 2);
+			const scale = Math.min(
+				typeof window === "undefined" ? 1 : window.devicePixelRatio || 1,
+				2,
+			);
 			const width = ctn.offsetWidth || window.innerWidth || 800;
 			const height = ctn.offsetHeight || window.innerHeight || 600;
 			renderer.setSize(width * scale, height * scale);
@@ -116,13 +120,16 @@ export function Iridescence({
 			}
 		}
 		window.addEventListener("resize", resize, false);
-		const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(resize);
+		const ro =
+			typeof ResizeObserver === "undefined" ? null : new ResizeObserver(resize);
 		ro?.observe(ctn);
 		resize();
 
 		const geometry = new Triangle(gl);
 		const baseColor =
-			color.length >= 3 ? new Color(color[0], color[1], color[2]) : new Color(1, 1, 1);
+			color.length >= 3
+				? new Color(color[0], color[1], color[2])
+				: new Color(1, 1, 1);
 
 		program = new Program(gl, {
 			vertex: vertexShader,
@@ -137,7 +144,9 @@ export function Iridescence({
 						gl.canvas.width / (gl.canvas.height || 1),
 					),
 				},
-				uMouse: { value: new Float32Array([mousePos.current.x, mousePos.current.y]) },
+				uMouse: {
+					value: new Float32Array([mousePos.current.x, mousePos.current.y]),
+				},
 				uAmplitude: { value: amplitude },
 				uSpeed: { value: speed },
 			},
@@ -201,7 +210,9 @@ export function Iridescence({
 		};
 	}, [color, speed, amplitude, mouseReact]);
 
-	const rootClass = ["iridescence-container", className].filter(Boolean).join(" ");
+	const rootClass = ["iridescence-container", className]
+		.filter(Boolean)
+		.join(" ");
 
 	return <div ref={ctnDom} className={rootClass} style={style} {...rest} />;
 }

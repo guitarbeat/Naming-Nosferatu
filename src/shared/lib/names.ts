@@ -4,26 +4,62 @@ import type { IdType, NameItem, RatingData, RatingInput } from "@/shared/types";
  * Default sample names used as fallback when database is empty or offline.
  */
 export const DEFAULT_SAMPLE_NAMES: NameItem[] = [
-	{ id: "1", name: "Nosferatu", description: "The immortal feline count with shadowy charm" },
-	{ id: "2", name: "Luna", description: "Graceful and mysterious moonlit tabby" },
+	{
+		id: "1",
+		name: "Nosferatu",
+		description: "The immortal feline count with shadowy charm",
+	},
+	{
+		id: "2",
+		name: "Luna",
+		description: "Graceful and mysterious moonlit tabby",
+	},
 	{
 		id: "3",
 		name: "Miso",
 		description: "Sweet and playful companion who purrs like an engine",
 	},
-	{ id: "4", name: "Pixel", description: "Tech-savvy, energetic, and clever troublemaker" },
-	{ id: "5", name: "Saffron", description: "Warm and spicy personality with golden fur" },
+	{
+		id: "4",
+		name: "Pixel",
+		description: "Tech-savvy, energetic, and clever troublemaker",
+	},
+	{
+		id: "5",
+		name: "Saffron",
+		description: "Warm and spicy personality with golden fur",
+	},
 	{ id: "6", name: "Noodle", description: "Long, stretchy acrobatic champion" },
-	{ id: "7", name: "Ziggy", description: "Bold and energetic fearless explorer" },
-	{ id: "8", name: "Whiskers", description: "Classic, timeless, and distinguished gentlegato" },
-	{ id: "9", name: "Pepper", description: "Small but mighty whirlwind of energy" },
+	{
+		id: "7",
+		name: "Ziggy",
+		description: "Bold and energetic fearless explorer",
+	},
+	{
+		id: "8",
+		name: "Whiskers",
+		description: "Classic, timeless, and distinguished gentlegato",
+	},
+	{
+		id: "9",
+		name: "Pepper",
+		description: "Small but mighty whirlwind of energy",
+	},
 	{
 		id: "10",
 		name: "Shadow",
 		description: "Silent stalker of dust motes and midnight zoomies",
 	},
-	{ id: "11", name: "Milo", description: "Friendly adventurer with curious streak" },
-	{ id: "12", name: "Barnaby", description: "Dignified floof with a heart of gold" },
+	{
+		id: "11",
+		name: "Milo",
+		description: "Friendly adventurer with curious streak",
+	},
+	{
+		id: "12",
+		name: "Barnaby",
+		description: "Dignified floof with a heart of gold",
+	},
 ];
 
 /**
@@ -57,7 +93,7 @@ export function normalizeRatingsWithStats(
 /**
  * Safely looks up the rating data for a name by id, stringified id, or name.
  */
-export function getRatingForName(
+function _getRatingForName(
 	ratings: Record<string, RatingData | undefined> | null | undefined,
 	name: NameItem | { id?: IdType | number; name?: string } | null | undefined,
 ): RatingData | undefined {
@@ -85,7 +121,7 @@ export function getRatingForName(
 /**
  * Checks if a name item is hidden.
  */
-export function isNameHidden(name: NameItem | null | undefined): boolean {
+function isNameHidden(name: NameItem | null | undefined): boolean {
 	return name?.is_hidden === true || name?.isHidden === true;
 }
 
@@ -103,7 +139,9 @@ export function isNameLocked(name: NameItem | null | undefined): boolean {
 /**
  * Filters a list of names to only those that are not hidden.
  */
-export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getVisibleNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -121,7 +159,9 @@ export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[
 /**
  * Filters a list of names to only those that are active (neither hidden nor locked).
  */
-export function getActiveNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getActiveNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -139,7 +179,9 @@ export function getActiveNames(names: NameItem[] | null | undefined): NameItem[]
 /**
  * Filters a list of names to only those that are hidden.
  */
-export function getHiddenNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getHiddenNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -157,7 +199,9 @@ export function getHiddenNames(names: NameItem[] | null | undefined): NameItem[]
 /**
  * Filters a list of names to only those that are locked in.
  */
-export function getLockedNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getLockedNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}

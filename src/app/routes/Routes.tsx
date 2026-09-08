@@ -1,14 +1,14 @@
-import { RotateCcw, Trophy } from "lucide-react";
+import { ChevronDown, RotateCcw, Trophy } from "lucide-react";
 import { Suspense, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/app";
 import { Dashboard as DashboardLazy } from "@/features/dashboard/Dashboard";
 import { TournamentSetup } from "@/features/tournament/TournamentSetup";
-import { Section } from "@/shared/components";
 import {
 	Button,
 	ErrorBoundary,
 	Loading,
+	Section,
 } from "@/shared/components/LayoutBlocks";
 import { SectionHeading } from "@/shared/components/UIBlocks";
 import { useSectionScroll } from "@/shared/hooks";
@@ -46,6 +46,45 @@ export function HomeRoute() {
 
 	return (
 		<div className="w-full flex flex-col items-center">
+			{/* HERO SECTION - integrating previously unused styling classes */}
+			<section className="home-hero-section w-full relative flex flex-col justify-center items-center">
+				<div className="home-hero-inner w-full flex flex-col lg:flex-row items-center justify-between gap-12 z-10 relative">
+					{/* Left Copy Column */}
+					<div className="home-hero-copy flex flex-col items-start w-full lg:w-1/2 gap-6 z-10 text-left">
+						<h1 className="gradient-heading text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.05] tracking-tight">
+							Name Nosferatu.
+						</h1>
+					</div>
+
+					{/* Right Graphic Column */}
+					<div className="home-hero-preview relative w-full lg:w-1/2 flex justify-center lg:justify-end items-center z-10">
+						<div className="relative w-full max-w-[500px] aspect-square rounded-[2.5rem] glass-surface glass-surface--fallback p-2 animate-float">
+							<div className="relative w-full h-full rounded-[2rem] overflow-hidden">
+								<img
+									src="/assets/images/ui/cat_graphic_hd.png"
+									alt="Nosferatu"
+									className="w-full h-full object-cover rounded-[2rem] opacity-90 transition-transform duration-1000 hover:scale-110"
+								/>
+								<div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent pointer-events-none rounded-[2rem]" />
+							</div>
+						</div>
+
+						{/* Ambient Glow */}
+						<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/20 blur-[100px] rounded-full pointer-events-none -z-10" />
+					</div>
+				</div>
+
+				<div
+					className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary transition-colors z-20"
+					onClick={() => scrollToSection("app-flow")}
+				>
+					<span className="text-xs uppercase tracking-widest font-semibold">
+						Scroll to Discover
+					</span>
+					<ChevronDown className="w-6 h-6 animate-bounce" />
+				</div>
+			</section>
+
 			<div
 				id="app-flow"
 				className="w-full flex flex-col items-center gap-10 sm:gap-14 py-4 sm:py-6 px-3 sm:px-6 md:px-8 max-w-7xl mx-auto"
@@ -141,7 +180,7 @@ function AccessDenied() {
 					Admin access is required to view this page. Head back home to log in
 					or return to the main tournament flow.
 				</p>
-				<Button variant="outline" onClick={() => navigate("/")}>
+				<Button variant="glass" onClick={() => navigate("/")}>
 					Back Home
 				</Button>
 			</div>

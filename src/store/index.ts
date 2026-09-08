@@ -40,7 +40,11 @@ type AppSliceCreator<TSlice> = StateCreator<AppState, [], [], TSlice>;
 const IS_BROWSER = typeof window !== "undefined";
 const _IS_DEV = import.meta.env?.DEV ?? false;
 
-function patch<K extends keyof AppState>(set: AppSet, key: K, updates: Partial<AppState[K]>): void {
+function patch<K extends keyof AppState>(
+	set: AppSet,
+	key: K,
+	updates: Partial<AppState[K]>,
+): void {
 	set((state) => {
 		const current = state[key];
 		let hasChanged = false;
@@ -106,7 +110,11 @@ interface SiteSettingsActions {
 interface ErrorActions {
 	setError: (error: unknown | null) => void;
 	clearError: () => void;
-	logError: (error: unknown, context: string, metadata?: Record<string, unknown>) => void;
+	logError: (
+		error: unknown,
+		context: string,
+		metadata?: Record<string, unknown>,
+	) => void;
 }
 
 interface AppState {
@@ -128,10 +136,9 @@ interface AppState {
 
 const MAX_ERROR_HISTORY = 100;
 
-const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
-	set,
-	get,
-) => ({
+const createErrorSlice: AppSliceCreator<
+	Pick<AppState, "errors" | "errorActions">
+> = (set, get) => ({
 	errors: {
 		current: null,
 		history: [],
@@ -201,11 +208,18 @@ function getInitialTournamentState(): TournamentState {
 		ratings: stored.ratings ?? {},
 		isComplete: Boolean(stored.isComplete),
 		voteHistory: Array.isArray(stored.voteHistory) ? stored.voteHistory : [],
-		selectedNames: Array.isArray(stored.selectedNames) ? stored.selectedNames : [],
-		matchHistory: Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined,
-		currentRound: typeof stored.currentRound === "number" ? stored.currentRound : undefined,
-		currentMatch: typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
-		totalMatches: typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
+		selectedNames: Array.isArray(stored.selectedNames)
+			? stored.selectedNames
+			: [],
+		matchHistory: Array.isArray(stored.matchHistory)
+			? stored.matchHistory
+			: undefined,
+		currentRound:
+			typeof stored.currentRound === "number" ? stored.currentRound : undefined,
+		currentMatch:
+			typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
+		totalMatches:
+			typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
 		mode: stored.mode,
 		teams: stored.teams,
 		bracketEntrants: stored.bracketEntrants,
@@ -250,10 +264,9 @@ function persistTournamentState(tournament: TournamentState): void {
 	void saveStoredTournamentToIDB(snapshot);
 }
 
-const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tournamentActions">> = (
-	set,
-	get,
-) => ({
+const createTournamentSlice: AppSliceCreator<
+	Pick<AppState, "tournament" | "tournamentActions">
+> = (set, get) => ({
 	tournament: getInitialTournamentState(),
 
 	tournamentActions: {
@@ -271,7 +284,12 @@ const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tour
 
 					return {
 						...name,
-						rating: ratingVal ?? name.rating ?? name.avgRating ?? name.avg_rating ?? 1500,
+						rating:
+							ratingVal ??
+							name.rating ??
+							name.avgRating ??
+							name.avg_rating ??
+							1500,
 					};
 				}) ?? null;
 
@@ -299,7 +317,8 @@ const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tour
 
 		setRatings: (ratingsOrFn) => {
 			const current = get().tournament.ratings;
-			const nextRatings = typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
+			const nextRatings =
+				typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
 			const mergedRatings = { ...current, ...nextRatings };
 			const nextTournament = {
 				...get().tournament,
@@ -391,7 +410,9 @@ const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tour
 			const prev = get().tournament.voteHistory;
 			const nextHistory = prev.slice(0, -1);
 			const prevMatchHistory = get().tournament.matchHistory;
-			const nextMatchHistory = prevMatchHistory ? prevMatchHistory.slice(0, -1) : undefined;
+			const nextMatchHistory = prevMatchHistory
+				? prevMatchHistory.slice(0, -1)
+				: undefined;
 			const nextTournament = {
 				...get().tournament,
 				voteHistory: nextHistory,
@@ -485,7 +506,8 @@ function getInitialTheme(): Pick<UIState, "theme" | "themePreference"> {
 			prefersDark = true;
 		}
 
-		const resolved: ThemeValue = stored === "system" ? (prefersDark ? "dark" : "light") : stored;
+		const resolved: ThemeValue =
+			stored === "system" ? (prefersDark ? "dark" : "light") : stored;
 
 		return { theme: resolved, themePreference: stored };
 	}
@@ -504,7 +526,9 @@ function persistOptionalString(key: string, value: string | undefined): void {
 
 function readThemePreferenceFromStorage(): ThemePreference {
 	const stored = getStorageString(STORAGE_KEYS.THEME) ?? "dark";
-	return ["light", "dark", "system"].includes(stored) ? (stored as ThemePreference) : "dark";
+	return ["light", "dark", "system"].includes(stored)
+		? (stored as ThemePreference)
+		: "dark";
 }
 
 function persistUserState(user: UserState): void {
@@ -524,7 +548,12 @@ function persistUserState(user: UserState): void {
 const createUserAndSettingsSlice: AppSliceCreator<
 	Pick<
 		AppState,
-		"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
+		| "user"
+		| "userActions"
+		| "ui"
+		| "uiActions"
+		| "siteSettings"
+		| "siteSettingsActions"
 	>
 > = (set, get) => ({
 	user: getInitialUserState(),
@@ -599,7 +628,10 @@ const createUserAndSettingsSlice: AppSliceCreator<
 				updates.isAdmin = Boolean(storedUser.isAdmin);
 			}
 
-			if (storedUser?.avatarUrl && get().user.avatarUrl !== storedUser.avatarUrl) {
+			if (
+				storedUser?.avatarUrl &&
+				get().user.avatarUrl !== storedUser.avatarUrl
+			) {
 				updates.avatarUrl = storedUser.avatarUrl;
 			}
 
@@ -640,7 +672,8 @@ const createUserAndSettingsSlice: AppSliceCreator<
 
 					if (mediaQuery.addEventListener) {
 						mediaQuery.addEventListener("change", handleChange);
-						systemThemeCleanup = () => mediaQuery.removeEventListener("change", handleChange);
+						systemThemeCleanup = () =>
+							mediaQuery.removeEventListener("change", handleChange);
 					} else if (mediaQuery.addListener) {
 						mediaQuery.addListener(handleChange);
 						systemThemeCleanup = () => mediaQuery.removeListener(handleChange);
@@ -671,7 +704,8 @@ const createUserAndSettingsSlice: AppSliceCreator<
 	},
 
 	siteSettingsActions: {
-		setCatChosenName: (data) => patch(set, "siteSettings", { catChosenName: data }),
+		setCatChosenName: (data) =>
+			patch(set, "siteSettings", { catChosenName: data }),
 		markSettingsLoaded: () => patch(set, "siteSettings", { isLoaded: true }),
 	},
 });
@@ -687,7 +721,7 @@ export default useAppStore;
 /**
  * Hydrates tournament state from IndexedDB if in-memory state is empty or IndexedDB snapshot is newer.
  */
-export async function hydrateTournamentFromIndexedDB(): Promise<StoredTournamentSnapshot | null> {
+async function hydrateTournamentFromIndexedDB(): Promise<StoredTournamentSnapshot | null> {
 	if (!IS_BROWSER) {
 		return null;
 	}
@@ -706,19 +740,35 @@ export async function hydrateTournamentFromIndexedDB(): Promise<StoredTournament
 
 		if (
 			isCurrentEmpty ||
-			(stored.lastUpdated && (!current.lastUpdated || stored.lastUpdated > current.lastUpdated))
+			(stored.lastUpdated &&
+				(!current.lastUpdated || stored.lastUpdated > current.lastUpdated))
 		) {
 			useAppStore.getState().tournamentActions.replaceTournamentState({
 				...current,
 				names: stored.names ?? null,
 				ratings: stored.ratings ?? {},
 				isComplete: Boolean(stored.isComplete),
-				voteHistory: Array.isArray(stored.voteHistory) ? stored.voteHistory : [],
-				selectedNames: Array.isArray(stored.selectedNames) ? stored.selectedNames : [],
-				matchHistory: Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined,
-				currentRound: typeof stored.currentRound === "number" ? stored.currentRound : undefined,
-				currentMatch: typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
-				totalMatches: typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
+				voteHistory: Array.isArray(stored.voteHistory)
+					? stored.voteHistory
+					: [],
+				selectedNames: Array.isArray(stored.selectedNames)
+					? stored.selectedNames
+					: [],
+				matchHistory: Array.isArray(stored.matchHistory)
+					? stored.matchHistory
+					: undefined,
+				currentRound:
+					typeof stored.currentRound === "number"
+						? stored.currentRound
+						: undefined,
+				currentMatch:
+					typeof stored.currentMatch === "number"
+						? stored.currentMatch
+						: undefined,
+				totalMatches:
+					typeof stored.totalMatches === "number"
+						? stored.totalMatches
+						: undefined,
 				mode: stored.mode,
 				teams: stored.teams,
 				bracketEntrants: stored.bracketEntrants,
@@ -732,9 +782,15 @@ export async function hydrateTournamentFromIndexedDB(): Promise<StoredTournament
 	}
 }
 
-export function useAppStoreInitialization(onUserContext?: (name: string) => void): void {
-	const initializeUser = useAppStore((state) => state.userActions.initializeFromStorage);
-	const initializeTheme = useAppStore((state) => state.uiActions.initializeTheme);
+export function useAppStoreInitialization(
+	onUserContext?: (name: string) => void,
+): void {
+	const initializeUser = useAppStore(
+		(state) => state.userActions.initializeFromStorage,
+	);
+	const initializeTheme = useAppStore(
+		(state) => state.uiActions.initializeTheme,
+	);
 
 	useEffect(() => {
 		initializeUser(onUserContext);
@@ -748,31 +804,3 @@ export const errorContexts = {
 	analysisDashboard: "Analysis Dashboard",
 	mainLayout: "Main Application Layout",
 } as const;
-
-// Atomic selector hooks to eliminate unnecessary component re-renders
-export const useTournament = () => useAppStore((state) => state.tournament);
-export const useTournamentActions = () => useAppStore((state) => state.tournamentActions);
-export const useTournamentIsComplete = () => useAppStore((state) => state.tournament.isComplete);
-export const useTournamentNames = () => useAppStore((state) => state.tournament.names);
-export const useTournamentRatings = () => useAppStore((state) => state.tournament.ratings);
-export const useTournamentSelectedNames = () =>
-	useAppStore((state) => state.tournament.selectedNames);
-
-export const useUser = () => useAppStore((state) => state.user);
-export const useUserName = () => useAppStore((state) => state.user.name);
-export const useIsLoggedIn = () => useAppStore((state) => state.user.isLoggedIn);
-export const useIsAdmin = () => useAppStore((state) => state.user.isAdmin);
-export const useUserAvatar = () => useAppStore((state) => state.user.avatarUrl);
-export const useUserActions = () => useAppStore((state) => state.userActions);
-
-export const useTheme = () => useAppStore((state) => state.ui.theme);
-export const useThemePreference = () => useAppStore((state) => state.ui.themePreference);
-export const useIsBootLoading = () => useAppStore((state) => state.ui.isBootLoading);
-export const useUIActions = () => useAppStore((state) => state.uiActions);
-
-export const useSiteSettings = () => useAppStore((state) => state.siteSettings);
-export const useCatChosenName = () => useAppStore((state) => state.siteSettings.catChosenName);
-export const useSiteSettingsActions = () => useAppStore((state) => state.siteSettingsActions);
-
-export const useErrorState = () => useAppStore((state) => state.errors);
-export const useErrorActions = () => useAppStore((state) => state.errorActions);

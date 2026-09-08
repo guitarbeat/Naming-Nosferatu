@@ -23,7 +23,6 @@
 		"strict": false,
 		"target": "ES2020",
 		"types": [
-			"vitest/globals",
 			"dom-chromium-installation-events",
 			"web-app-manifest",
 			"vite-plugin-pwa/client"

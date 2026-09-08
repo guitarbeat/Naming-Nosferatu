@@ -41,13 +41,13 @@ export function createSortedKey(
 	return validItems.sort().join(",");
 }
 
-export function addToSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
+function addToSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
 	const next = new Set(source);
 	next.add(value);
 	return next;
 }
 
-export function addManyToSet<T>(source: ReadonlySet<T>, values: Iterable<T>): Set<T> {
+function _addManyToSet<T>(source: ReadonlySet<T>, values: Iterable<T>): Set<T> {
 	const next = new Set(source);
 	for (const value of values) {
 		next.add(value);
@@ -55,13 +55,13 @@ export function addManyToSet<T>(source: ReadonlySet<T>, values: Iterable<T>): Se
 	return next;
 }
 
-export function removeFromSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
+function removeFromSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
 	const next = new Set(source);
 	next.delete(value);
 	return next;
 }
 
-export function toggleInSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
+function _toggleInSet<T>(source: ReadonlySet<T>, value: T): Set<T> {
 	if (source.has(value)) {
 		return removeFromSet(source, value);
 	}
@@ -81,7 +81,10 @@ export function hapticNavTap(): void {
  * Emits a crisp, subtle 15ms vibration pulse using the Vibration API.
  */
 export function hapticVoteTap(durationMs = 15): boolean {
-	if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+	if (
+		typeof navigator !== "undefined" &&
+		typeof navigator.vibrate === "function"
+	) {
 		try {
 			return navigator.vibrate(durationMs);
 		} catch {
@@ -157,8 +160,8 @@ export function setupGlobalImageErrorHandler(
 	};
 }
 
-export class ErrorManager {
-	static setupGlobalErrorHandling() {
+export const ErrorManager = {
+	setupGlobalErrorHandling() {
 		const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
 			console.error("Unhandled Promise Rejection:", event.reason);
 			ErrorManager.handleError(event.reason);
@@ -174,13 +177,16 @@ export class ErrorManager {
 		const cleanupImageErrorHandler = setupGlobalImageErrorHandler();
 
 		return () => {
-			window.removeEventListener("unhandledrejection", handleUnhandledRejection);
+			window.removeEventListener(
+				"unhandledrejection",
+				handleUnhandledRejection,
+			);
 			window.removeEventListener("error", handleErrorEvent);
 			cleanupImageErrorHandler();
 		};
-	}
+	},
 
-	static handleError(
+	handleError(
 		error: unknown,
 		context?: string,
 		options?: { componentStack?: string | null; isCritical?: boolean },
@@ -200,10 +206,14 @@ export class ErrorManager {
 		if (typeof window !== "undefined") {
 			window.dispatchEvent(
 				new CustomEvent("app-error", {
-					detail: { id, message: errorMessage, isCritical: options?.isCritical },
+					detail: {
+						id,
+						message: errorMessage,
+						isCritical: options?.isCritical,
+					},
 				}),
 			);
 		}
 		return { id };
-	}
-}
+	},
+};

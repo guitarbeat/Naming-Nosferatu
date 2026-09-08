@@ -1,13 +1,40 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Clock, Gamepad2, Layers, LogOut, Trophy, Undo2, X } from "lucide-react";
-import { type KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	Clock,
+	Gamepad2,
+	Layers,
+	LogOut,
+	Trophy,
+	Undo2,
+	X,
+} from "lucide-react";
+import {
+	type KeyboardEvent,
+	memo,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, CatImage, ErrorComponent } from "@/shared/components/LayoutBlocks";
+import {
+	Button,
+	Card,
+	CatImage,
+	ErrorComponent,
+} from "@/shared/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/shared/lib/constants";
 import { getVisibleNames } from "@/shared/lib/names";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/shared/lib/uiUtils";
 import { hapticVoteTap } from "@/shared/lib/utils";
-import type { MatchRecord, NameItem, Team, TournamentMode, TournamentProps } from "@/shared/types";
+import type {
+	MatchRecord,
+	NameItem,
+	Team,
+	TournamentMode,
+	TournamentProps,
+} from "@/shared/types";
 import useAppStore from "@/store";
 import { useTimedState, useTournamentState } from "./hooks";
 import { TournamentBracket, TournamentBracketModal } from "./TournamentBracket";
@@ -105,7 +132,12 @@ function ContenderBadges({
 				<div
 					className={`absolute top-3 sm:top-4 z-20 ${streakSideClass} inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/70 px-2.5 py-1 sm:px-3 sm:py-1.5 shadow-sm backdrop-blur-md transition-transform`}
 				>
-					<StreakEmbers count={streakBadgeCount} side={side} name={name} streak={streak} />
+					<StreakEmbers
+						count={streakBadgeCount}
+						side={side}
+						name={name}
+						streak={streak}
+					/>
 					<span className="text-[10px] font-bold tracking-wide text-foreground/90">
 						{streak} in a row
 					</span>
@@ -255,7 +287,7 @@ const MatchSideCard = memo(function MatchSideCard({
 			<button
 				type="button"
 				id={`match-card-${side}`}
-				className={`group relative flex h-full flex-1 overflow-hidden rounded-2xl sm:rounded-3xl border border-border/40 bg-card/60 shadow-lg backdrop-blur-sm transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.985] hover:border-border/80 hover:bg-card/85 hover:shadow-2xl hover:-translate-y-1.5 ${
+				className={`group relative flex h-full flex-1 overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-border/60 bg-card shadow-lg transition-all duration-[300ms] ease-spring focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background active:scale-[0.93] hover:border-border/80 hover:bg-card/90 hover:shadow-2xl hover:-translate-y-2 ${
 					isVoting ? "pointer-events-none" : "cursor-pointer"
 				} ${getHeatCardClasses(heatLevel)} ${selectionClass}`}
 				style={animationDelay ? { animationDelay } : undefined}
@@ -264,7 +296,7 @@ const MatchSideCard = memo(function MatchSideCard({
 				onClick={onVote}
 				onKeyDown={onKeyDown}
 			>
-				<div className="relative flex h-full w-full items-center justify-center bg-muted/20">
+				<div className="relative flex h-full w-full items-center justify-center bg-muted/30">
 					{img ? (
 						<CatImage
 							src={img}
@@ -281,8 +313,13 @@ const MatchSideCard = memo(function MatchSideCard({
 					)}
 
 					{heatLevel && (
-						<div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
-							<div className={`absolute inset-0 ${getHeatGradientClasses(heatLevel)}`} />
+						<div
+							className="pointer-events-none absolute inset-0 z-10"
+							aria-hidden="true"
+						>
+							<div
+								className={`absolute inset-0 ${getHeatGradientClasses(heatLevel)}`}
+							/>
 						</div>
 					)}
 
@@ -354,7 +391,10 @@ function BracketTree({
 		() => Array.from({ length: Math.max(1, totalRounds) }, (_, i) => i + 1),
 		[totalRounds],
 	);
-	const stageFlavor = useMemo(() => getStageFlavor(round, totalRounds), [round, totalRounds]);
+	const stageFlavor = useMemo(
+		() => getStageFlavor(round, totalRounds),
+		[round, totalRounds],
+	);
 
 	if (onOpenBracket) {
 		return (
@@ -385,7 +425,10 @@ function BracketTree({
 								: "border-border/20 bg-foreground/5 text-muted-foreground";
 
 						return (
-							<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
+							<div
+								key={`bracket-round-${stageRound}`}
+								className="flex items-center gap-1"
+							>
 								<div
 									className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${tone}`}
 								>
@@ -395,7 +438,11 @@ function BracketTree({
 								{index < rounds.length - 1 && (
 									<div
 										className={`h-[1px] w-4 sm:w-6 ${
-											isDone ? "bg-chart-2/70" : isActive ? "bg-primary/70" : "bg-border/20"
+											isDone
+												? "bg-chart-2/70"
+												: isActive
+													? "bg-primary/70"
+													: "bg-border/20"
 										}`}
 									/>
 								)}
@@ -427,7 +474,10 @@ function BracketTree({
 							: "border-border/20 bg-foreground/5 text-muted-foreground";
 
 					return (
-						<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
+						<div
+							key={`bracket-round-${stageRound}`}
+							className="flex items-center gap-1"
+						>
 							<div
 								className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${tone}`}
 							>
@@ -437,7 +487,11 @@ function BracketTree({
 							{index < rounds.length - 1 && (
 								<div
 									className={`h-[1px] w-4 sm:w-6 ${
-										isDone ? "bg-chart-2/70" : isActive ? "bg-primary/70" : "bg-border/20"
+										isDone
+											? "bg-chart-2/70"
+											: isActive
+												? "bg-primary/70"
+												: "bg-border/20"
 									}`}
 								/>
 							)}
@@ -505,11 +559,16 @@ function HeaderTitle({
 					<span className="text-muted-foreground" aria-hidden="true">
 						&middot;
 					</span>
-					<span>{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}</span>
+					<span>
+						{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}
+					</span>
 				</div>
 				<div className="flex items-baseline gap-2">
 					<h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
-						Match <span className="font-mono tabular-nums text-primary">{currentMatchNumber}</span>{" "}
+						Match{" "}
+						<span className="font-mono tabular-nums text-primary">
+							{currentMatchNumber}
+						</span>{" "}
 						of <span className="font-mono tabular-nums">{totalMatches}</span>
 					</h2>
 					{etaMinutes > 0 && (
@@ -532,14 +591,17 @@ function HeaderControls({
 	handleUndo,
 	quitTournament,
 	onOpenBracket,
-}: Pick<TournamentHeaderProps, "canUndo" | "handleUndo" | "quitTournament" | "onOpenBracket">) {
+}: Pick<
+	TournamentHeaderProps,
+	"canUndo" | "handleUndo" | "quitTournament" | "onOpenBracket"
+>) {
 	return (
 		<div className="flex items-center gap-1.5 sm:gap-2">
 			{onOpenBracket && (
 				<button
 					type="button"
 					onClick={onOpenBracket}
-					className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-primary/30 bg-primary/10 px-3 text-xs font-semibold text-primary transition-all hover:bg-primary/20 active:scale-[0.95] shadow-xs cursor-pointer"
+					className="inline-flex h-9 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-xs font-semibold text-primary transition-all duration-[300ms] ease-spring hover:bg-primary/20 hover:-translate-y-0.5 active:scale-[0.93] shadow-xs cursor-pointer"
 					aria-label="View tournament bracket tree"
 					title="View tournament bracket (Press B)"
 				>
@@ -552,9 +614,9 @@ function HeaderControls({
 				type="button"
 				onClick={() => handleUndo()}
 				disabled={!canUndo}
-				className={`inline-flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-all active:scale-[0.95] ${
+				className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-xs font-medium transition-all duration-[300ms] ease-spring active:scale-[0.93] ${
 					canUndo
-						? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
+						? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:-translate-y-0.5 cursor-pointer"
 						: "cursor-not-allowed border-border/30 bg-secondary/10 text-muted-foreground opacity-60"
 				}`}
 				aria-label="Undo last vote"
@@ -567,7 +629,7 @@ function HeaderControls({
 			<button
 				type="button"
 				onClick={quitTournament}
-				className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-destructive/20 bg-destructive/10 px-3 text-xs font-medium text-destructive transition-all hover:bg-destructive/20 active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
+				className="inline-flex h-9 items-center gap-1.5 rounded-full border border-destructive/20 bg-destructive/10 px-4 text-xs font-medium text-destructive transition-all duration-[300ms] ease-spring hover:bg-destructive/20 hover:-translate-y-0.5 active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
 				aria-label="Exit tournament"
 				title="Exit tournament"
 			>
@@ -581,7 +643,9 @@ function HeaderControls({
 /**
  * Fluid progress bar indicating tournament progress.
  */
-function ProgressBar({ progressWidth }: Pick<TournamentHeaderProps, "progressWidth">) {
+function ProgressBar({
+	progressWidth,
+}: Pick<TournamentHeaderProps, "progressWidth">) {
 	return (
 		<div
 			className="h-1.5 w-full overflow-hidden rounded-full bg-secondary/50"
@@ -617,7 +681,9 @@ function ContextRibbon({
 					{matchupTone}
 				</span>
 				<span className="hidden md:inline text-muted-foreground">&middot;</span>
-				<span className="hidden md:inline text-muted-foreground">{pressureCopy}</span>
+				<span className="hidden md:inline text-muted-foreground">
+					{pressureCopy}
+				</span>
 			</div>
 
 			{dominantStreak && (
@@ -626,7 +692,9 @@ function ContextRibbon({
 						dominantStreak.heatLevel,
 					)}`}
 				>
-					<span className="rounded-full bg-foreground/10 px-1 py-0.2 text-[9px]">HOT</span>
+					<span className="rounded-full bg-foreground/10 px-1 py-0.2 text-[9px]">
+						HOT
+					</span>
 					<span>
 						{dominantStreak.name} &times;{dominantStreak.streak}
 					</span>
@@ -739,55 +807,70 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{openingBracketReveal && "The bracket is set. First match begins now."}
 				{roundAnnouncement !== null && `Round ${roundAnnouncement} begins.`}
 				{voteAnnouncement && `${voteAnnouncement} advances.`}
-				{streakBurst && `${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
+				{streakBurst &&
+					`${streakBurst.winnerName} is on a ${streakBurst.streak} win streak.`}
 			</div>
 
 			<AnimatePresence>
 				{openingBracketReveal && openingEntrants.length > 1 && (
 					<motion.div
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, scale: 0.97 }
+						}
+						animate={
+							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+						}
 						exit={
 							prefersReducedMotion
 								? { opacity: 0 }
 								: { opacity: 0, scale: 1.03, filter: "blur(6px)" }
 						}
 						transition={{
-							duration: prefersReducedMotion ? MOTION_DURATIONS.reducedMotionDuration : 0.42,
+							duration: prefersReducedMotion
+								? MOTION_DURATIONS.reducedMotionDuration
+								: 0.42,
 						}}
 						className="absolute inset-0 z-40 flex items-center justify-center px-3 sm:px-6"
 					>
-						<div className="absolute inset-0 bg-slate-950/82 backdrop-blur-md" />
+						<div className="absolute inset-0 bg-white/80 backdrop-blur-md" />
 						<motion.div
-							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-							exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }}
+							initial={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }
+							}
+							animate={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+							}
+							exit={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -16 }
+							}
 							transition={{
 								duration: prefersReducedMotion
 									? MOTION_DURATIONS.reducedMotionDuration
 									: MOTION_DURATIONS.moderate,
 							}}
-							className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 overflow-hidden rounded-[2rem] border border-primary/20 bg-[radial-gradient(circle_at_top,rgba(57,189,216,0.18),rgba(2,6,23,0.96)_46%)] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.45)] sm:p-8"
+							className="relative mx-auto flex w-full max-w-5xl flex-col gap-5 overflow-hidden rounded-[2.5rem] border border-primary/20 bg-card p-5 shadow-[0_30px_90px_rgba(0,0,0,0.1)] sm:p-8"
 						>
-							<div className="absolute inset-0 bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.05),transparent)]" />
+							<div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-transparent" />
 							<div className="relative flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 								<div>
-									<p className="text-[10px] font-semibold tracking-wide text-primary/70">
+									<p className="text-[10px] font-semibold tracking-wide text-primary/80">
 										Bracket Reveal
 									</p>
-									<h3 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
+									<h3 className="mt-2 text-3xl font-black tracking-tight text-foreground sm:text-4xl">
 										The field is set
 									</h3>
-									<p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/80 sm:text-base">
+									<p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
 										{tournamentMode === "2v2"
-											? "Teams enter the night bracket. Watch the path lock in before Match 1 ignites."
+											? "Teams enter the arena. Watch the path lock in before Match 1 begins."
 											: "Every contender is seeded. The opening duel begins as soon as the bracket settles."}
 									</p>
 								</div>
-								<div className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-white/[0.05] px-3 py-1.5 text-[11px] font-semibold tracking-wide text-white/85">
+								<div className="inline-flex items-center gap-2 self-start rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-foreground">
 									<Trophy className="size-3.5 text-primary" />
 									<span>{openingEntrants.length} contenders</span>
-									<span className="h-1 w-1 rounded-full bg-white/25" />
+									<span className="h-1 w-1 rounded-full bg-primary/30" />
 									<span>{totalRounds} rounds</span>
 								</div>
 							</div>
@@ -800,29 +883,38 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 									{openingEntrants.slice(0, 8).map((entrant, index) => (
 										<motion.div
 											key={`opening-entrant-${entrant.id}`}
-											initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 18 }}
-											animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+											initial={
+												prefersReducedMotion
+													? { opacity: 1 }
+													: { opacity: 0, y: 18 }
+											}
+											animate={
+												prefersReducedMotion
+													? { opacity: 1 }
+													: { opacity: 1, y: 0 }
+											}
 											transition={{
 												duration: prefersReducedMotion
 													? MOTION_DURATIONS.reducedMotionDuration
 													: MOTION_DURATIONS.base,
 												delay: prefersReducedMotion ? 0 : 0.12 + index * 0.06,
 											}}
-											className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4"
+											className="group relative overflow-hidden rounded-[2rem] border border-border/50 bg-background/50 px-4 py-4"
 										>
-											<div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-primary via-accent to-chart-4" />
-											<p className="pl-2 text-[10px] font-semibold tracking-wide text-white/65">
+											<div className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-primary via-accent to-chart-4" />
+											<p className="pl-3 text-[10px] font-semibold tracking-wide text-muted-foreground">
 												Seed {index + 1}
 											</p>
-											<p className="pl-2 pt-2 font-display text-xl leading-tight text-white sm:text-2xl">
+											<p className="pl-3 pt-2 font-display text-xl leading-tight text-foreground sm:text-2xl">
 												{entrant.label}
 											</p>
 										</motion.div>
 									))}
 								</div>
 								{openingEntrants.length > 8 && (
-									<p className="mt-4 text-center text-xs tracking-wide text-white/65">
-										+ {openingEntrants.length - 8} more contenders in the shadows
+									<p className="mt-4 text-center text-xs tracking-wide text-muted-foreground">
+										+ {openingEntrants.length - 8} more contenders in the
+										shadows
 									</p>
 								)}
 							</div>
@@ -835,9 +927,21 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{voteAnnouncement && (
 					<motion.div
 						key={`${voteAnnouncement}-${currentMatchKey}`}
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.95 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -16, scale: 0.95 }
+						}
+						animate={
+							prefersReducedMotion
+								? { opacity: 1 }
+								: { opacity: 1, y: 0, scale: 1 }
+						}
+						exit={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -20, scale: 0.98 }
+						}
 						transition={{
 							duration: prefersReducedMotion
 								? MOTION_DURATIONS.reducedMotionDuration
@@ -861,22 +965,38 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{streakBurst && (
 					<motion.div
 						key={`streak-burst-${streakBurst.key}`}
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.94 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -18, scale: 1.03 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: 18, scale: 0.94 }
+						}
+						animate={
+							prefersReducedMotion
+								? { opacity: 1 }
+								: { opacity: 1, y: 0, scale: 1 }
+						}
+						exit={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -18, scale: 1.03 }
+						}
 						transition={{
 							duration: prefersReducedMotion
 								? MOTION_DURATIONS.reducedMotionDuration
 								: MOTION_DURATIONS.base,
 						}}
 						className={`pointer-events-none absolute top-[20%] z-30 ${
-							streakBurst.side === "left" ? "left-3 sm:left-6" : "right-3 text-right sm:right-6"
+							streakBurst.side === "left"
+								? "left-3 sm:left-6"
+								: "right-3 text-right sm:right-6"
 						}`}
 					>
 						<div
 							className={`rounded-2xl border px-4 py-3 shadow-[0_0_40px_rgba(249,115,22,0.35)] backdrop-blur-lg ${getHeatTextClasses(streakBurst.heatLevel)}`}
 						>
-							<p className="text-[10px] tracking-wide opacity-80 sm:text-xs">Hot streak</p>
+							<p className="text-[10px] tracking-wide opacity-80 sm:text-xs">
+								Hot streak
+							</p>
 							<p className="text-base font-black tracking-tight sm:text-lg">
 								{streakBurst.winnerName} x{streakBurst.streak}
 							</p>
@@ -900,9 +1020,19 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 				{roundAnnouncement !== null && (
 					<motion.div
 						key={`round-announcement-${roundAnnouncement}`}
-						initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
-						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
+						initial={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, scale: 0.96 }
+						}
+						animate={
+							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+						}
+						exit={
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, scale: 1.02 }
+						}
 						transition={{
 							duration: prefersReducedMotion
 								? MOTION_DURATIONS.reducedMotionDuration
@@ -911,25 +1041,31 @@ const TournamentAnnouncements = memo(function TournamentAnnouncements({
 						className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4"
 					>
 						<motion.div
-							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }}
-							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-							exit={prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }}
+							initial={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0.85, y: 8 }
+							}
+							animate={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+							}
+							exit={
+								prefersReducedMotion ? { opacity: 1 } : { opacity: 0.7, y: -6 }
+							}
 							transition={{
 								duration: prefersReducedMotion
 									? MOTION_DURATIONS.reducedMotionDuration
 									: MOTION_DURATIONS.base,
 							}}
-							className="relative overflow-hidden rounded-2xl border border-primary/35 bg-slate-900/80 px-5 py-5 text-center shadow-[0_0_80px_rgba(39,135,153,0.25)] backdrop-blur-xl sm:px-8 sm:py-6"
+							className="relative overflow-hidden rounded-[2rem] border border-primary/35 bg-card px-5 py-5 text-center shadow-[0_0_80px_var(--primary)] backdrop-blur-xl sm:px-8 sm:py-6"
 						>
-							<div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/10 to-chart-4/20" />
+							<div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/5 to-chart-4/10" />
 							<div className="relative">
-								<p className="mb-2 text-[11px] tracking-wide text-primary/70 sm:text-xs sm:tracking-[0.3em]">
+								<p className="mb-2 text-[11px] tracking-wide text-primary/80 sm:text-xs sm:tracking-[0.3em]">
 									Next stage
 								</p>
-								<p className="text-2xl font-black tracking-tight text-white sm:text-3xl md:text-4xl">
+								<p className="text-2xl font-black tracking-tight text-foreground sm:text-3xl md:text-4xl">
 									Round {roundAnnouncement}
 								</p>
-								<p className="mt-1 text-xs text-white/85 sm:text-sm">
+								<p className="mt-1 text-xs text-muted-foreground sm:text-sm">
 									New head-to-head matchups ready
 								</p>
 							</div>
@@ -973,11 +1109,11 @@ function TournamentComplete({
 				aria-hidden="true"
 				style={{
 					background: `
-						radial-gradient(ellipse 70% 55% at 15% 15%, hsl(280 80% 40% / 0.60) 0%, transparent 65%),
-						radial-gradient(ellipse 60% 50% at 85% 20%, hsl(190 90% 35% / 0.55) 0%, transparent 60%),
-						radial-gradient(ellipse 65% 55% at 50% 90%, hsl(340 75% 38% / 0.50) 0%, transparent 65%),
-						radial-gradient(ellipse 50% 45% at 80% 70%, hsl(25 85% 40% / 0.45) 0%, transparent 55%),
-						radial-gradient(ellipse 55% 50% at 20% 75%, hsl(150 70% 30% / 0.45) 0%, transparent 60%)
+						radial-gradient(ellipse 70% 55% at 15% 15%, var(--primary) 0%, transparent 65%),
+						radial-gradient(ellipse 60% 50% at 85% 20%, var(--primary) 0%, transparent 60%),
+						radial-gradient(ellipse 65% 55% at 50% 90%, var(--primary) 0%, transparent 65%),
+						radial-gradient(ellipse 50% 45% at 80% 70%, var(--primary) 0%, transparent 55%),
+						radial-gradient(ellipse 55% 50% at 20% 75%, var(--primary) 0%, transparent 60%)
 					`,
 				}}
 			/>
@@ -986,35 +1122,45 @@ function TournamentComplete({
 				aria-hidden="true"
 				style={{
 					background:
-						"radial-gradient(ellipse 80% 70% at 50% 50%, transparent 10%, hsl(230 30% 6% / 0.50) 100%)",
+						"radial-gradient(ellipse 80% 70% at 50% 50%, transparent 10%, var(--primary) 100%)",
 				}}
 			/>
 
 			<div className="relative z-10 flex w-full max-w-5xl flex-col items-center px-4 text-center sm:px-6">
-				<div className="mb-6 flex size-20 items-center justify-center rounded-[1.75rem] border border-white/25 bg-white/10 shadow-[0_0_60px_rgba(180,120,255,0.55)] backdrop-blur-xl">
-					<Trophy className="size-9 text-yellow-300" />
+				<div className="mb-6 flex size-20 items-center justify-center rounded-[2rem] border border-primary/20 bg-card shadow-[0_0_40px_var(--primary)] backdrop-blur-xl">
+					<Trophy className="size-9 text-primary" />
 				</div>
 
-				<p className="text-[11px] font-semibold tracking-wide text-white/85">Tournament finished</p>
+				<p className="text-[11px] font-semibold tracking-wide text-muted-foreground">
+					Tournament finished
+				</p>
 
-				<h1 className="mt-2 max-w-4xl text-pretty font-display text-[clamp(2.5rem,8vw,5.5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-white drop-shadow-[0_2px_32px_rgba(180,120,255,0.55)]">
+				<h1 className="mt-2 max-w-4xl text-pretty font-display text-[clamp(2.5rem,8vw,5.5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-foreground drop-shadow-[0_2px_20px_var(--primary)]">
 					Tournament Complete
 				</h1>
 
-				<p className="mt-3 max-w-xl text-balance text-sm leading-relaxed text-white/80 sm:text-base">
-					Your results are ready to review below. Inspect the final bracket tree and champion
-					pathway!
+				<p className="mt-3 max-w-xl text-balance text-sm leading-relaxed text-muted-foreground sm:text-base">
+					Your results are ready to review below. Inspect the final bracket tree
+					and champion pathway!
 				</p>
 
 				<div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-3 sm:grid-cols-2">
-					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-4 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold tracking-wide text-white/80">Total matches</p>
-						<p className="mt-2 text-3xl font-black leading-none text-white">{totalMatches}</p>
-					</div>
-					<div className="rounded-[1.5rem] border border-white/20 bg-white/[0.08] px-6 py-4 text-left shadow-[0_16px_40px_rgba(0,0,0,0.3)] backdrop-blur-sm">
-						<p className="text-[10px] font-semibold tracking-wide text-white/80">Participants</p>
-						<p className="mt-2 text-3xl font-black leading-none text-white">{participantCount}</p>
-					</div>
+					<Card className="px-6 py-4 shadow-[0_16px_40px_rgba(0,0,0,0.05)] bg-card/80">
+						<p className="text-[10px] font-semibold tracking-wide text-muted-foreground">
+							Total matches
+						</p>
+						<p className="mt-2 text-3xl font-black leading-none text-foreground">
+							{totalMatches}
+						</p>
+					</Card>
+					<Card className="px-6 py-4 shadow-[0_16px_40px_rgba(0,0,0,0.05)] bg-card/80">
+						<p className="text-[10px] font-semibold tracking-wide text-muted-foreground">
+							Participants
+						</p>
+						<p className="mt-2 text-3xl font-black leading-none text-foreground">
+							{participantCount}
+						</p>
+					</Card>
 				</div>
 
 				{/* Full Visual Bracket Component in Post-Game State */}
@@ -1030,31 +1176,31 @@ function TournamentComplete({
 							ratings={ratings}
 							totalRounds={totalRounds}
 							tournamentMode={tournamentMode}
-							className="shadow-2xl border-white/20 bg-slate-950/70"
+							className="shadow-2xl border-primary/20 bg-card/70 backdrop-blur-xl"
 						/>
 					</div>
 				)}
 
 				<div className="mt-8 flex w-full max-w-xl flex-col sm:flex-row gap-3">
 					<Button
-						variant="glass"
+						variant="primary"
 						size="large"
 						onClick={() =>
 							document
 								.getElementById("analysis")
 								?.scrollIntoView({ behavior: "smooth", block: "start" })
 						}
-						className="flex-1 flex justify-center gap-2.5 rounded-2xl border-white/30 bg-white/15 shadow-[0_0_30px_rgba(180,120,255,0.35)] hover:bg-white/22 hover:shadow-[0_0_40px_rgba(180,120,255,0.55)] text-white transition-all duration-300"
+						className="flex-1 flex justify-center gap-2.5 rounded-full shadow-lg"
 					>
 						<Trophy size={15} />
 						View Leaderboard Analysis
 					</Button>
 
 					<Button
-						variant="glass"
+						variant="outline"
 						size="large"
 						onClick={onNewTournament}
-						className="flex-1 flex justify-center gap-2.5 rounded-2xl border-white/15 bg-white/[0.05] text-white/80 hover:border-white/25 hover:bg-white/10 hover:text-white transition-all duration-300"
+						className="flex-1 flex justify-center gap-2.5 rounded-full"
 					>
 						<LogOut size={15} />
 						Start New Tournament
@@ -1124,7 +1270,11 @@ function getPressureCopy({
 
 const EMPTY_NAMES: NameItem[] = [];
 
-function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: TournamentProps) {
+function TournamentContent({
+	onComplete,
+	names = EMPTY_NAMES,
+	onVote,
+}: TournamentProps) {
 	const navigate = useNavigate();
 	const userName = useAppStore((state) => state.user.name);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
@@ -1155,7 +1305,9 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		teams,
 	} = tournament;
 
-	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(null);
+	const [selectedSide, setSelectedSide] = useState<"left" | "right" | null>(
+		null,
+	);
 	const [isBracketModalOpen, setIsBracketModalOpen] = useState(false);
 	const voteAnnouncement = useTimedState<string | null>(null);
 	const roundAnnouncement = useTimedState<number | null>(null);
@@ -1171,15 +1323,24 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 	);
 
 	const leftStreak = useMemo(
-		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "left")) : 0),
+		() =>
+			currentMatch
+				? calculateContestantStreak(getMatchSideId(currentMatch, "left"))
+				: 0,
 		[currentMatch, calculateContestantStreak],
 	);
 	const rightStreak = useMemo(
-		() => (currentMatch ? calculateContestantStreak(getMatchSideId(currentMatch, "right")) : 0),
+		() =>
+			currentMatch
+				? calculateContestantStreak(getMatchSideId(currentMatch, "right"))
+				: 0,
 		[currentMatch, calculateContestantStreak],
 	);
 	const leftHeatLevel = useMemo(() => getHeatLevel(leftStreak), [leftStreak]);
-	const rightHeatLevel = useMemo(() => getHeatLevel(rightStreak), [rightStreak]);
+	const rightHeatLevel = useMemo(
+		() => getHeatLevel(rightStreak),
+		[rightStreak],
+	);
 
 	const handleVoteAdapter = useCallback(
 		async (winnerId: string, _loserId: string) => {
@@ -1240,7 +1401,8 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 			const right = normalizeParticipant(record.match.right);
 
 			const isLeftWinner =
-				left.memberIds.includes(String(record.winner)) || left.id === String(record.winner);
+				left.memberIds.includes(String(record.winner)) ||
+				left.id === String(record.winner);
 			const winnerIds = isLeftWinner ? left.memberIds : right.memberIds;
 			const loserIds = isLeftWinner ? right.memberIds : left.memberIds;
 
@@ -1256,7 +1418,10 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 			}
 		}
 
-		const results: Record<string, { rating: number; wins: number; losses: number }> = {};
+		const results: Record<
+			string,
+			{ rating: number; wins: number; losses: number }
+		> = {};
 		for (const [id, rating] of Object.entries(ratings)) {
 			results[id] = {
 				rating,
@@ -1287,7 +1452,10 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 			return;
 		}
 		if (roundNumber > previousRoundRef.current) {
-			roundAnnouncement.setTimed(roundNumber, prefersReducedMotion ? 350 : 1200);
+			roundAnnouncement.setTimed(
+				roundNumber,
+				prefersReducedMotion ? 350 : 1200,
+			);
 		}
 		previousRoundRef.current = roundNumber;
 	}, [roundNumber, isComplete, roundAnnouncement, prefersReducedMotion]);
@@ -1306,7 +1474,10 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		}
 
 		openingRevealSignatureRef.current = openingRevealSignature;
-		openingBracketReveal.setTimed(true, prefersReducedMotion ? 700 : OPENING_BRACKET_REVEAL_MS);
+		openingBracketReveal.setTimed(
+			true,
+			prefersReducedMotion ? 700 : OPENING_BRACKET_REVEAL_MS,
+		);
 	}, [openingRevealSignature, openingBracketReveal, prefersReducedMotion]);
 
 	const handleVoteForSide = useCallback(
@@ -1320,7 +1491,8 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 
 			const winnerId = side === "left" ? matchData.leftId : matchData.rightId;
 			const loserId = side === "left" ? matchData.rightId : matchData.leftId;
-			const winnerName = side === "left" ? matchData.leftName : matchData.rightName;
+			const winnerName =
+				side === "left" ? matchData.leftName : matchData.rightName;
 			const expectedStreak = (side === "left" ? leftStreak : rightStreak) + 1;
 			const heatLevel = getHeatLevel(expectedStreak);
 
@@ -1393,7 +1565,13 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		const start = touchStartRef.current;
 		const touch = e.changedTouches[0];
 		touchStartRef.current = null;
-		if (!start || !touch || isVoting || openingBracketReveal.value || !matchData) {
+		if (
+			!start ||
+			!touch ||
+			isVoting ||
+			openingBracketReveal.value ||
+			!matchData
+		) {
 			return;
 		}
 		const dx = touch.clientX - start.x;
@@ -1436,12 +1614,22 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 				setIsBracketModalOpen((prev) => !prev);
 				return;
 			}
-			if (key === "arrowleft" || key === "a" || key === "1" || key === "arrowup") {
+			if (
+				key === "arrowleft" ||
+				key === "a" ||
+				key === "1" ||
+				key === "arrowup"
+			) {
 				event.preventDefault();
 				handleVoteForSide("left");
 				return;
 			}
-			if (key === "arrowright" || key === "d" || key === "2" || key === "arrowdown") {
+			if (
+				key === "arrowright" ||
+				key === "d" ||
+				key === "2" ||
+				key === "arrowdown"
+			) {
 				event.preventDefault();
 				handleVoteForSide("right");
 				return;
@@ -1515,7 +1703,10 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 	const leftIsFavored = leftRating > rightRating;
 	const rightIsFavored = rightRating > leftRating;
 	const matchesRemaining = Math.max(0, totalMatches - currentMatchNumber);
-	const roundMatchesLeft = Math.max(0, Math.ceil((totalMatches - currentMatchNumber) / 2));
+	const roundMatchesLeft = Math.max(
+		0,
+		Math.ceil((totalMatches - currentMatchNumber) / 2),
+	);
 	const stageHeadline = getStageHeadline(roundNumber, totalRounds);
 	const pressureCopy = getPressureCopy({
 		round: roundNumber,
@@ -1571,13 +1762,19 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 					<motion.div
 						key={currentMatchKey}
 						initial={
-							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: "blur(6px)" }
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: 14, filter: "blur(6px)" }
 						}
 						animate={
-							prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }
+							prefersReducedMotion
+								? { opacity: 1 }
+								: { opacity: 1, y: 0, filter: "blur(0px)" }
 						}
 						exit={
-							prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(6px)" }
+							prefersReducedMotion
+								? { opacity: 0 }
+								: { opacity: 0, y: -12, filter: "blur(6px)" }
 						}
 						transition={{
 							duration: prefersReducedMotion

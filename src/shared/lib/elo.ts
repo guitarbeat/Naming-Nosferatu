@@ -1,4 +1,10 @@
-import { max, mean, medianSorted, min, standardDeviation } from "simple-statistics";
+import {
+	max,
+	mean,
+	medianSorted,
+	min,
+	standardDeviation,
+} from "simple-statistics";
 import { ELO_RATING } from "./constants";
 
 interface RatingStats {
@@ -10,11 +16,13 @@ interface RatingStats {
 	count: number;
 }
 
-export function computeRatingStats(ratings: number[]): RatingStats | null {
+function _computeRatingStats(ratings: number[]): RatingStats | null {
 	if (!Array.isArray(ratings) || ratings.length < 2) {
 		return null;
 	}
-	const validRatings = ratings.filter((r) => typeof r === "number" && Number.isFinite(r));
+	const validRatings = ratings.filter(
+		(r) => typeof r === "number" && Number.isFinite(r),
+	);
 	if (validRatings.length < 2) {
 		return null;
 	}
@@ -94,14 +102,25 @@ function clampRating(rating: number, config: Required<EloConfig>): number {
 	return Math.max(config.minRating, Math.min(config.maxRating, rating));
 }
 
-function normalizeRating(rating: number | undefined, config: Required<EloConfig>): number {
-	return typeof rating === "number" && Number.isFinite(rating) ? rating : config.defaultRating;
+function normalizeRating(
+	rating: number | undefined,
+	config: Required<EloConfig>,
+): number {
+	return typeof rating === "number" && Number.isFinite(rating)
+		? rating
+		: config.defaultRating;
 }
 
 function normalizeStats(stats?: EloStats): { wins: number; losses: number } {
 	return {
-		wins: typeof stats?.wins === "number" && Number.isFinite(stats.wins) ? stats.wins : 0,
-		losses: typeof stats?.losses === "number" && Number.isFinite(stats.losses) ? stats.losses : 0,
+		wins:
+			typeof stats?.wins === "number" && Number.isFinite(stats.wins)
+				? stats.wins
+				: 0,
+		losses:
+			typeof stats?.losses === "number" && Number.isFinite(stats.losses)
+				? stats.losses
+				: 0,
 	};
 }
 
@@ -140,10 +159,16 @@ function applyParticipantUpdates(
 	participants: Record<string, EloParticipantResult>,
 ) {
 	for (const participantId of participantIds) {
-		const currentRating = normalizeRating(ratings[participantId], resolvedConfig);
+		const currentRating = normalizeRating(
+			ratings[participantId],
+			resolvedConfig,
+		);
 		const currentStats = normalizeStats(stats?.[participantId]);
 
-		const updatedRating = clampRating(Math.round(currentRating + delta), resolvedConfig);
+		const updatedRating = clampRating(
+			Math.round(currentRating + delta),
+			resolvedConfig,
+		);
 		nextRatings[participantId] = updatedRating;
 
 		nextStats[participantId] = {
@@ -185,7 +210,7 @@ export function getExpectedEloScore(
 	return Number.isFinite(expected) ? Math.max(0, Math.min(1, expected)) : 0.5;
 }
 
-export function updateEloRating({
+function updateEloRating({
 	rating,
 	expectedScore,
 	actualScore,
@@ -200,22 +225,35 @@ export function updateEloRating({
 }): number {
 	const resolved = resolveConfig(config);
 	const validRating =
-		typeof rating === "number" && Number.isFinite(rating) ? rating : resolved.defaultRating;
+		typeof rating === "number" && Number.isFinite(rating)
+			? rating
+			: resolved.defaultRating;
 	const validExpected =
-		typeof expectedScore === "number" && Number.isFinite(expectedScore) ? expectedScore : 0.5;
+		typeof expectedScore === "number" && Number.isFinite(expectedScore)
+			? expectedScore
+			: 0.5;
 	const validActual =
-		typeof actualScore === "number" && Number.isFinite(actualScore) ? actualScore : 0.5;
+		typeof actualScore === "number" && Number.isFinite(actualScore)
+			? actualScore
+			: 0.5;
 	const validGames =
-		typeof gamesPlayed === "number" && Number.isFinite(gamesPlayed) && gamesPlayed >= 0
+		typeof gamesPlayed === "number" &&
+		Number.isFinite(gamesPlayed) &&
+		gamesPlayed >= 0
 			? gamesPlayed
 			: 0;
 
 	const multiplier =
-		validGames < resolved.newPlayerGameThreshold ? resolved.newPlayerKMultiplier : 1;
+		validGames < resolved.newPlayerGameThreshold
+			? resolved.newPlayerKMultiplier
+			: 1;
 	const updated = Math.round(
 		validRating + resolved.kFactor * multiplier * (validActual - validExpected),
 	);
-	return clampRating(Number.isFinite(updated) ? updated : validRating, resolved);
+	return clampRating(
+		Number.isFinite(updated) ? updated : validRating,
+		resolved,
+	);
 }
 
 export function calculatePairEloUpdate({
@@ -280,7 +318,8 @@ function calculateSideAggregate(
 	for (let i = 0, len = participantIds.length; i < len; i++) {
 		const id = participantIds[i];
 		const r = ratings[id];
-		ratingSum += typeof r === "number" && Number.isFinite(r) ? r : defaultRating;
+		ratingSum +=
+			typeof r === "number" && Number.isFinite(r) ? r : defaultRating;
 
 		const pStats = stats?.[id];
 		if (pStats) {
@@ -312,10 +351,24 @@ export function applyEloMatchUpdate({
 	config?: EloConfig;
 }): EloMatchResult {
 	const resolved = resolveConfig(config);
-	const { averageRating: leftAverageRating, aggregateStats: leftAggregateStats } =
-		calculateSideAggregate(leftParticipantIds, ratings, stats, resolved.defaultRating);
-	const { averageRating: rightAverageRating, aggregateStats: rightAggregateStats } =
-		calculateSideAggregate(rightParticipantIds, ratings, stats, resolved.defaultRating);
+	const {
+		averageRating: leftAverageRating,
+		aggregateStats: leftAggregateStats,
+	} = calculateSideAggregate(
+		leftParticipantIds,
+		ratings,
+		stats,
+		resolved.defaultRating,
+	);
+	const {
+		averageRating: rightAverageRating,
+		aggregateStats: rightAggregateStats,
+	} = calculateSideAggregate(
+		rightParticipantIds,
+		ratings,
+		stats,
+		resolved.defaultRating,
+	);
 	const pairUpdate = calculatePairEloUpdate({
 		leftRating: leftAverageRating,
 		rightRating: rightAverageRating,

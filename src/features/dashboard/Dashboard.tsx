@@ -1,23 +1,25 @@
 import { BarChart3, Settings, Trophy } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import { AdminDashboard } from "./components";
-import { ContextBadge, Panel, SectionHeader } from "./components";
-import { MagicToggle } from "@/shared/components";
+import { MagicToggle } from "@/shared/components/UIBlocks";
 import {
+	AdminDashboard,
 	CommunityChartsPanel,
+	ContextBadge,
 	DashboardHeader,
 	EngagementPanel,
-	getQuickStats,
 	LeaderboardPanel,
-} from "./components";
-import { PersonalResults } from "./components";
+	Panel,
+	PersonalResults,
+	SectionHeader,
+} from "./DashboardComponents";
 import { useDashboardData } from "./hooks";
 import type { DashboardProps } from "./types";
+import { getQuickStats } from "./utils";
 
 type DashboardView = "analytics" | "admin";
 
 // ⚡ Bolt Performance Optimization: Wrapped AnalyticsDashboard in React.memo()
-export const AnalyticsDashboard = memo(function AnalyticsDashboard({
+const AnalyticsDashboard = memo(function AnalyticsDashboard({
 	userName = "",
 	isAdmin = false,
 	isLoggedIn = false,
@@ -40,10 +42,12 @@ export const AnalyticsDashboard = memo(function AnalyticsDashboard({
 		userStats,
 	} = useDashboardData({ userName });
 	const quickStats = useMemo(
-		() => getQuickStats({ siteStats, userName, userStats }),
-		[siteStats, userName, userStats],
+		() => getQuickStats({ siteStats, userStats }),
+		[siteStats, userStats],
 	);
-	const hasPersonalRatings = Boolean(personalRatings && Object.keys(personalRatings).length > 0);
+	const hasPersonalRatings = Boolean(
+		personalRatings && Object.keys(personalRatings).length > 0,
+	);
 
 	return (
 		<div className="w-full space-y-8 sm:space-y-10">
@@ -136,7 +140,11 @@ export const Dashboard = memo(function Dashboard(props: UnifiedDashboardProps) {
 				/>
 			</div>
 
-			{activeView === "analytics" ? <AnalyticsDashboard {...props} /> : <AdminDashboard />}
+			{activeView === "analytics" ? (
+				<AnalyticsDashboard {...props} />
+			) : (
+				<AdminDashboard />
+			)}
 		</div>
 	);
 });

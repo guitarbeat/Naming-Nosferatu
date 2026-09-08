@@ -3,7 +3,8 @@ import { useReducedMotion } from "framer-motion";
 import { Play, RotateCcw } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { namesQueryOptions, SUPABASE_UNAVAILABLE_MSG } from "@/shared/api";
-import { Button, DriftWall, type DriftWallItem, Loading } from "@/shared/components";
+import { DriftWall, type DriftWallItem } from "@/shared/components/DriftWall";
+import { Button, Loading } from "@/shared/components/LayoutBlocks";
 import {
 	DEFAULT_SAMPLE_NAMES,
 	getLockedNames,
@@ -20,7 +21,9 @@ import useAppStore from "@/store";
 export const NameSelector = memo(function NameSelector() {
 	const prefersReducedMotion = useReducedMotion() ?? false;
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
-	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const storeSelectedNames = useAppStore(
+		(state) => state.tournament.selectedNames,
+	);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesQuery = useQuery({
@@ -114,10 +117,14 @@ export const NameSelector = memo(function NameSelector() {
 		hapticTournamentStart();
 		if (storeSelectedNames.length >= 2) {
 			tournamentActions.setNames(storeSelectedNames);
-			window.dispatchEvent(new CustomEvent("nav-tab-change", { detail: "tournament" }));
+			window.dispatchEvent(
+				new CustomEvent("nav-tab-change", { detail: "tournament" }),
+			);
 			const tournamentEl = document.getElementById("tournament");
 			if (tournamentEl) {
-				tournamentEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth" });
+				tournamentEl.scrollIntoView({
+					behavior: prefersReducedMotion ? "auto" : "smooth",
+				});
 			}
 		}
 	}, [prefersReducedMotion, storeSelectedNames, tournamentActions]);
@@ -141,9 +148,15 @@ export const NameSelector = memo(function NameSelector() {
 						<h3 className="font-display text-xl font-bold text-foreground">
 							Could not load shortlist
 						</h3>
-						<p className="text-xs text-muted-foreground leading-relaxed">{error}</p>
+						<p className="text-xs text-muted-foreground leading-relaxed">
+							{error}
+						</p>
 					</div>
-					<Button onClick={() => void namesQuery.refetch()} variant="outline" size="small">
+					<Button
+						onClick={() => void namesQuery.refetch()}
+						variant="outline"
+						size="small"
+					>
 						Try Again
 					</Button>
 				</div>
@@ -156,42 +169,48 @@ export const NameSelector = memo(function NameSelector() {
 			{availableNames.length > 0 && (
 				<>
 					{/* Header Controls Bar */}
-					<div className="flex items-center justify-between gap-3 px-1 py-1.5 sm:px-2 mb-2">
+					<div className="sticky top-3 z-30 flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 mb-4 glass-surface glass-surface--fallback rounded-full border border-primary/20 shadow-lg mx-2 mt-3 pr-[140px]">
 						<div className="flex items-center gap-2">
 							<h2 className="font-display text-sm sm:text-base font-bold tracking-tight text-foreground">
-								Choose Contenders
+								CHOOSE CONTENDERS
 							</h2>
 							<span className="text-xs text-muted-foreground font-medium">
 								({storeSelectedNames.length} selected)
 							</span>
 						</div>
 
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2 sm:gap-3 shrink-0">
 							<Button
 								type="button"
 								variant="outline"
 								size="small"
-								className="h-8 text-xs px-3"
+								className="text-[10px] sm:text-xs shrink-0"
 								onClick={() => {
 									hapticNavTap();
 									tournamentActions.setSelection(
-										storeSelectedNames.length > 0 ? [] : availableNames.slice(0, 8),
+										storeSelectedNames.length > 0 ? [] : availableNames,
 									);
 								}}
 							>
-								<RotateCcw className="size-3.5 mr-1.5" />
-								{storeSelectedNames.length > 0 ? "Clear" : "Select Top 8"}
+								<RotateCcw className="size-3 sm:size-3.5" />
+								<span className="hidden sm:inline">
+									{storeSelectedNames.length > 0 ? "Clear" : "Select All"}
+								</span>
+								<span className="sm:hidden">
+									{storeSelectedNames.length > 0 ? "Clear" : "Select All"}
+								</span>
 							</Button>
 							<Button
 								type="button"
 								variant="primary"
 								size="small"
-								className="h-8 text-xs px-3.5"
+								className="text-[10px] sm:text-xs shrink-0"
 								onClick={handleStartTournament}
 								disabled={storeSelectedNames.length < 2}
 							>
-								<Play className="size-3.5 mr-1.5 fill-current" />
-								Start Tournament
+								<Play className="size-3 sm:size-3.5 fill-current" />
+								<span className="hidden sm:inline">Start Tournament</span>
+								<span className="sm:hidden">Start</span>
 							</Button>
 						</div>
 					</div>
