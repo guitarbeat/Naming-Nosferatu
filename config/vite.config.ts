@@ -1,6 +1,5 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import autoprefixer from "autoprefixer";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
@@ -36,11 +35,6 @@ export default defineConfig(({ command }) => ({
 		port: 5000,
 		strictPort: false,
 		allowedHosts: true,
-	},
-	css: {
-		postcss: {
-			plugins: [autoprefixer()],
-		},
 	},
 	assetsInclude: ["**/*.webp"],
 	plugins: [
@@ -162,9 +156,6 @@ export default defineConfig(({ command }) => ({
 						if (id.includes("framer-motion")) {
 							return "vendor-motion";
 						}
-						if (id.includes("simple-statistics")) {
-							return "vendor-stats";
-						}
 						if (id.includes("crypto-js")) {
 							return "vendor-crypto";
 						}
@@ -186,10 +177,6 @@ export default defineConfig(({ command }) => ({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "..", "src"),
-			"@/app": path.resolve(__dirname, "..", "src/app"),
-			"@/features": path.resolve(__dirname, "..", "src/features"),
-			"@/shared": path.resolve(__dirname, "..", "src/shared"),
-			"@/store": path.resolve(__dirname, "..", "src/store"),
 		},
 	},
 	test: {

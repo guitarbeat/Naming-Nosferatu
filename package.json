@@ -65,7 +65,6 @@
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.2",
     "recharts": "^3.10.1",
-    "simple-statistics": "^7.9.3",
     "tailwind-merge": "3.6.0",
     "zustand": "^5.0.14"
   },
@@ -79,10 +78,8 @@
     "@types/react-dom": "^19.2.3",
     "@types/web-app-manifest": "^1.0.9",
     "@vitejs/plugin-react": "^5.2.0",
-    "autoprefixer": "^10.5.4",
     "happy-dom": "^20.14.0",
     "knip": "^5.88.1",
-    "postcss": "^8.5.23",
     "tailwindcss": "4.3.2",
     "tsx": "^4.22.4",
     "typescript": "^5.9.3",

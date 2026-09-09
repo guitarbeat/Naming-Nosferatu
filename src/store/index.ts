@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
-import { CAT_IMAGES, STORAGE_KEYS } from "@/shared/lib/constants";
+import { CAT_IMAGES, STORAGE_KEYS } from "@/lib/constants";
 import {
 	clearStoredTournamentFromIDB,
 	getStoredTournamentFromIDB,
 	saveStoredTournamentToIDB,
-} from "@/shared/lib/indexedDB";
+} from "@/lib/indexedDB";
 import {
 	clearStoredTournamentSnapshot,
 	clearStoredUserSnapshot,
@@ -18,9 +18,9 @@ import {
 	setStorageString,
 	writeStoredTournamentSnapshot,
 	writeStoredUserSnapshot,
-} from "@/shared/lib/storage";
-import { getRandomCatImage } from "@/shared/lib/uiUtils";
-import { ErrorManager } from "@/shared/lib/utils";
+} from "@/lib/storage";
+import { getRandomCatImage } from "@/lib/uiUtils";
+import { ErrorManager } from "@/lib/utils";
 import type {
 	CatChosenName,
 	ErrorLog,
@@ -33,9 +33,9 @@ import type {
 	TournamentState,
 	UIState,
 	UserState,
-} from "@/shared/types";
+} from "@/types";
 
-export interface TournamentActions {
+interface TournamentActions {
 	setNames: (names: NameItem[] | null) => void;
 	setRatings: (
 		ratings:
@@ -58,7 +58,7 @@ export interface TournamentActions {
 	replaceTournamentState: (snapshot: TournamentState) => void;
 }
 
-export interface UserActions {
+interface UserActions {
 	setUser: (data: Partial<UserState>) => void;
 	login: (userName: string, onContext?: (name: string) => void) => void;
 	logout: (onContext?: (name: null) => void) => void;
@@ -67,24 +67,24 @@ export interface UserActions {
 	initializeFromStorage: (onContext?: (name: string) => void) => void;
 }
 
-export interface UIActions {
+interface UIActions {
 	setTheme: (theme: ThemePreference) => void;
 	initializeTheme: () => void;
 	setBootLoading: (loading: boolean) => void;
 }
 
-export interface SiteSettingsActions {
+interface SiteSettingsActions {
 	setCatChosenName: (data: CatChosenName | null) => void;
 	markSettingsLoaded: () => void;
 }
 
-export interface ErrorActions {
+interface ErrorActions {
 	setError: (error: unknown | null) => void;
 	clearError: () => void;
 	logError: (error: unknown, context: string, metadata?: Record<string, unknown>) => void;
 }
 
-export interface AppState {
+interface AppState {
 	tournament: TournamentState;
 	tournamentActions: TournamentActions;
 
@@ -101,9 +101,8 @@ export interface AppState {
 	errorActions: ErrorActions;
 }
 
-export type AppSet = Parameters<StateCreator<AppState>>[0];
-export type AppGet = Parameters<StateCreator<AppState>>[1];
-export type AppSliceCreator<TSlice> = StateCreator<AppState, [], [], TSlice>;
+type AppSet = Parameters<StateCreator<AppState>>[0];
+type AppSliceCreator<TSlice> = StateCreator<AppState, [], [], TSlice>;
 
 const IS_BROWSER = typeof window !== "undefined";
 const _IS_DEV = import.meta.env?.DEV ?? false;
@@ -178,7 +177,7 @@ const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions"
 	},
 });
 
-export function getInitialTournamentState(): TournamentState {
+function getInitialTournamentState(): TournamentState {
 	const base: TournamentState = {
 		names: null,
 		ratings: {},
@@ -215,7 +214,7 @@ export function getInitialTournamentState(): TournamentState {
 	};
 }
 
-export function persistTournamentState(tournament: TournamentState): void {
+function persistTournamentState(tournament: TournamentState): void {
 	if (!IS_BROWSER) {
 		return;
 	}

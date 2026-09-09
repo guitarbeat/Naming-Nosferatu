@@ -14,9 +14,6 @@
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"paths": {
-			"@/app/*": ["../src/app/*"],
-			"@/features/*": ["../src/features/*"],
-			"@/shared/*": ["../src/shared/*"],
 			"@/*": ["../src/*"]
 		},
 		"skipLibCheck": true,

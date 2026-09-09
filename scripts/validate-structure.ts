@@ -2,7 +2,22 @@ import { readdirSync, statSync } from "fs";
 import { join, parse } from "path";
 
 const SRC_DIR = join(process.cwd(), "src");
-const ALLOWED_TOP_LEVEL = ["app", "features", "shared", "store", "assets", "index.css", "vite-env.d.ts"];
+const ALLOWED_TOP_LEVEL = [
+	"components",
+	"dashboard",
+	"lib",
+	"store",
+	"tournament",
+	"assets",
+	"api.ts",
+	"App.tsx",
+	"hooks.ts",
+	"index.css",
+	"main.tsx",
+	"Providers.tsx",
+	"types.ts",
+	"vite-env.d.ts",
+];
 
 let hasErrors = false;
 
@@ -16,7 +31,9 @@ function checkTopLevel() {
 	const items = readdirSync(SRC_DIR);
 	for (const item of items) {
 		if (!ALLOWED_TOP_LEVEL.includes(item)) {
-			reportError(`Top-level item 'src/${item}' is not allowed. Only use app/, features/, shared/, store/, assets/.`);
+			reportError(
+				`Top-level item 'src/${item}' is not allowed. Allowed top-level: ${ALLOWED_TOP_LEVEL.join(", ")}`,
+			);
 		}
 	}
 }
@@ -29,17 +46,13 @@ function checkNamingConventions(dir: string) {
 		const parsed = parse(item);
 
 		if (stat.isDirectory()) {
-			// Feature Folders (and generally all directories) should be lowercase/kebab-case
-			// We'll enforce this for directories inside src/features
-			if (dir.includes(join("src", "features"))) {
-				if (!/^[a-z0-9-]+$/.test(item)) {
-					reportError(`Feature folder '${fullPath}' must be lowercase/kebab-case.`);
-				}
+			if (!/^[a-z0-9-]+$/.test(item)) {
+				reportError(`Directory '${fullPath}' must be lowercase/kebab-case.`);
 			}
 			checkNamingConventions(fullPath);
 		} else {
 			// Files
-			if (parsed.ext === ".tsx" && parsed.name !== "index") {
+			if (parsed.ext === ".tsx" && parsed.name !== "index" && parsed.name !== "main") {
 				// Must be PascalCase or camelCase starting with 'use'
 				if (
 					!/^[A-Z][a-zA-Z0-9]*(\.test)?$/.test(parsed.name) &&
