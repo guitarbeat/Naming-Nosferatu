@@ -1247,12 +1247,14 @@ export function TournamentBracket({
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
 								placeholder="Find cat in bracket..."
+								aria-label="Search bracket"
 								className="h-8 w-36 sm:w-48 rounded-xl border border-white/25 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-md pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]"
 							/>
 							{searchQuery && (
 								<button
 									type="button"
 									onClick={() => setSearchQuery("")}
+									aria-label="Clear search"
 									className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
 								>
 									<X className="size-3" />
