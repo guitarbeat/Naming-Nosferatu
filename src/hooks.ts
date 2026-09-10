@@ -7,7 +7,6 @@ import {
 	removeStorageItem,
 	writeStorageJson,
 } from "@/lib/storage";
-import type { NameItem } from "@/types";
 
 const IS_BROWSER = typeof window !== "undefined";
 const IS_DEV = import.meta.env?.DEV ?? false;
@@ -222,19 +221,23 @@ export function useLocalStorage<T>(
 export function useSectionScroll() {
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const pendingScrollRef = useRef<number | null>(null);
+	const pendingRafRef = useRef<number | null>(null);
 
 	const clearPendingScroll = useCallback(() => {
-		if (pendingScrollRef.current === null) {
-			return;
+		if (pendingScrollRef.current !== null) {
+			window.clearTimeout(pendingScrollRef.current);
+			pendingScrollRef.current = null;
 		}
-		window.clearTimeout(pendingScrollRef.current);
-		pendingScrollRef.current = null;
+		if (pendingRafRef.current !== null) {
+			window.cancelAnimationFrame(pendingRafRef.current);
+			pendingRafRef.current = null;
+		}
 	}, []);
 
 	const scrollToSection = useCallback(
 		(id: string) => {
 			clearPendingScroll();
-			pendingScrollRef.current = window.setTimeout(() => {
+			pendingRafRef.current = window.requestAnimationFrame(() => {
 				const targetId =
 					id === "stats" || id === "stats-section" || id === "results"
 						? "analysis"
@@ -256,8 +259,8 @@ export function useSectionScroll() {
 						behavior: prefersReducedMotion ? "auto" : "smooth",
 					});
 				}
-				pendingScrollRef.current = null;
-			}, 10);
+				pendingRafRef.current = null;
+			});
 		},
 		[clearPendingScroll, prefersReducedMotion],
 	);
@@ -277,30 +280,7 @@ export function useSectionScroll() {
 }
 
 // ============================================================================
-// 5. useNamesCache
-// ============================================================================
-interface CacheEntry {
-	data: NameItem[];
-	timestamp: number;
-}
-
-const _CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-const _CACHE_KEY = "names_cache_v2";
-
-function isNameItemArray(value: unknown): value is NameItem[] {
-	return Array.isArray(value);
-}
-
-function _isCacheEntry(value: unknown): value is CacheEntry {
-	if (!value || typeof value !== "object") {
-		return false;
-	}
-	const candidate = value as Partial<CacheEntry>;
-	return typeof candidate.timestamp === "number" && isNameItemArray(candidate.data);
-}
-
-// ============================================================================
-// 6. usePreloadImages (Critical Shell Image Preloader)
+// 5. usePreloadImages (Critical Shell Image Preloader)
 // ============================================================================
 
 interface UsePreloadImagesOptions {
@@ -322,52 +302,6 @@ interface UsePreloadImagesResult {
 
 // Module-level cache of successfully preloaded URLs across component lifecycles
 const globalPreloadedImageCache = new Set<string>();
-
-/**
- * Preload a single image URL into memory/browser cache.
- */
-function preloadImage(
-	src: string,
-	crossOrigin?: "anonymous" | "use-credentials",
-): Promise<boolean> {
-	if (!src || !IS_BROWSER) {
-		return Promise.resolve(false);
-	}
-	if (globalPreloadedImageCache.has(src)) {
-		return Promise.resolve(true);
-	}
-
-	return new Promise((resolve) => {
-		const img = new Image();
-		if (crossOrigin && !src.startsWith("data:") && !src.startsWith("blob:")) {
-			img.crossOrigin = crossOrigin;
-		}
-
-		img.onload = () => {
-			globalPreloadedImageCache.add(src);
-			resolve(true);
-		};
-
-		img.onerror = () => {
-			resolve(false);
-		};
-
-		img.src = src;
-	});
-}
-
-/**
- * Preload a list of image URLs in parallel.
- */
-async function _preloadImages(
-	srcs: readonly string[],
-	crossOrigin?: "anonymous" | "use-credentials",
-): Promise<boolean[]> {
-	if (!IS_BROWSER || !srcs.length) {
-		return [];
-	}
-	return Promise.all(srcs.map((src) => preloadImage(src, crossOrigin)));
-}
 
 /**
  * React hook to pre-load critical images defined in the app shell or passed as arguments.

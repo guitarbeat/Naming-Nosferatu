@@ -82,7 +82,7 @@ export function Iridescence({
 				dpr: Math.min(window.devicePixelRatio || 1, 2),
 			});
 			const gl = renderer.gl;
-			gl.clearColor(1, 1, 1, 1);
+			gl.clearColor(0, 0, 0, 0);
 
 			resize = () => {
 				if (!renderer || !ctn) {

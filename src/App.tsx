@@ -109,7 +109,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 					speed={0.8}
 					amplitude={0.08}
 					mouseReact={true}
-					className="fixed inset-0 z-0 opacity-40 pointer-events-none"
+					className="fixed inset-0 z-0 opacity-80 pointer-events-none"
 				/>
 				<PwaInstallPrompt />
 

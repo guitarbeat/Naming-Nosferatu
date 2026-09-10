@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import {
 	type CSSProperties,
 	useCallback,
@@ -8,12 +7,14 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { handleImgError } from "@/lib/utils";
+import { DriftWallTile } from "./DriftWallTile";
 
 export interface DriftWallItem {
 	image?: string;
 	title?: string;
+	name?: string;
 	subtitle?: string;
+	orbitText?: string;
 	href?: string;
 	id?: string | number;
 	selected?: boolean;
@@ -22,7 +23,151 @@ export interface DriftWallItem {
 	[key: string]: unknown;
 }
 
-interface DriftWallProps {
+const DRIFT_WALL_DATA: DriftWallItem[] = [
+	{
+		id: "cosmo",
+		title: "Cosmo",
+		name: "Cosmo",
+		subtitle: "Cosmic Explorer",
+		orbitText: "Cosmic Explorer",
+	},
+	{
+		id: "miso",
+		title: "Miso",
+		name: "Miso",
+		subtitle: "Warm & Savory",
+		orbitText: "Warm & Savory",
+	},
+	{
+		id: "churro",
+		title: "Churro",
+		name: "Churro",
+		subtitle: "Cinnamon Twist",
+		orbitText: "Cinnamon Twist",
+	},
+	{
+		id: "noodle",
+		title: "Noodle",
+		name: "Noodle",
+		subtitle: "Long & Wobbly",
+		orbitText: "Long & Wobbly",
+	},
+	{
+		id: "fig",
+		title: "Fig",
+		name: "Fig",
+		subtitle: "Sweet Little Tree",
+		orbitText: "Sweet Little Tree",
+	},
+	{
+		id: "shadow",
+		title: "Shadow",
+		name: "Shadow",
+		subtitle: "Midnight Prowler",
+		orbitText: "Midnight Prowler",
+	},
+	{
+		id: "gizmo",
+		title: "Gizmo",
+		name: "Gizmo",
+		subtitle: "Clever Tinkerer",
+		orbitText: "Clever Tinkerer",
+	},
+	{
+		id: "simon",
+		title: "Simon",
+		name: "Simon",
+		subtitle: "Gentle Velvet Paws",
+		orbitText: "Gentle Velvet Paws",
+	},
+	{
+		id: "atticus",
+		title: "Atticus",
+		name: "Atticus",
+		subtitle: "Noble & Wise Thinker",
+		orbitText: "Noble & Wise Thinker",
+	},
+	{
+		id: "binx",
+		title: "Binx",
+		name: "Binx",
+		subtitle: "Shadow Familiar",
+		orbitText: "Shadow Familiar",
+	},
+	{
+		id: "luna",
+		title: "Luna",
+		name: "Luna",
+		subtitle: "Moonlit Dreamer",
+		orbitText: "Moonlit Dreamer",
+	},
+	{
+		id: "clover",
+		title: "Clover",
+		name: "Clover",
+		subtitle: "Lucky Four-Leaf",
+		orbitText: "Lucky Four-Leaf",
+	},
+	{
+		id: "basil",
+		title: "Basil",
+		name: "Basil",
+		subtitle: "Fresh Fragrant Herb",
+		orbitText: "Fresh Fragrant Herb",
+	},
+	{
+		id: "salem",
+		title: "Salem",
+		name: "Salem",
+		subtitle: "Midnight Enchanter",
+		orbitText: "Midnight Enchanter",
+	},
+	{
+		id: "smeemo",
+		title: "Smeemo",
+		name: "Smeemo",
+		subtitle: "Curious Spirit",
+		orbitText: "Curious Spirit",
+	},
+	{
+		id: "peanut",
+		title: "Peanut",
+		name: "Peanut",
+		subtitle: "Tiny Butterball",
+		orbitText: "Tiny Butterball",
+	},
+	{
+		id: "pepper",
+		title: "Pepper",
+		name: "Pepper",
+		subtitle: "Spicy Firecracker",
+		orbitText: "Spicy Firecracker",
+	},
+	{
+		id: "dumpling",
+		title: "Dumpling",
+		name: "Dumpling",
+		subtitle: "Steamed Bun",
+		orbitText: "Steamed Bun",
+	},
+	{ id: "suki", title: "Suki", name: "Suki", subtitle: "Golden Heart", orbitText: "Golden Heart" },
+	{
+		id: "casper",
+		title: "Casper",
+		name: "Casper",
+		subtitle: "Friendly Ghost",
+		orbitText: "Friendly Ghost",
+	},
+	{
+		id: "boris",
+		title: "Boris",
+		name: "Boris",
+		subtitle: "Gentle Giant",
+		orbitText: "Gentle Giant",
+	},
+];
+
+export interface DriftWallProps {
 	items?: DriftWallItem[];
 	columns?: number;
 	tileWidth?: number;
@@ -49,16 +194,7 @@ interface DriftWallProps {
 	onItemClick?: (item: DriftWallItem, index: number) => void;
 }
 
-const DEFAULT_ITEMS: DriftWallItem[] = Array.from({ length: 15 }, (_, i) => {
-	const ids = [
-		1015, 1025, 1039, 1043, 1044, 1050, 1062, 1069, 1074, 1080, 1084, 106, 110, 133, 164,
-	];
-	return {
-		image: `https://picsum.photos/id/${ids[i % ids.length]}/600/400`,
-		title: `Tile ${i + 1}`,
-		href: undefined,
-	};
-});
+const DEFAULT_ITEMS: DriftWallItem[] = DRIFT_WALL_DATA;
 
 const prefersReducedMotion = () => {
 	try {
@@ -110,11 +246,14 @@ export const DriftWall = ({
 
 	const offsetsRef = useRef<number[]>([]);
 	const velocitiesRef = useRef<number[]>([]);
+	const wheelDeltaRef = useRef(0);
+	const wheelVelocityRef = useRef(0);
 	const hoveredColRef = useRef<number>(-1);
 	const wallHoveredRef = useRef(false);
 	const pointerRef = useRef({ x: 0, y: 0 });
 	const pointerDampedRef = useRef({ x: 0, y: 0 });
 	const lastTsRef = useRef<number | null>(null);
+	const containerRectRef = useRef<DOMRect | null>(null);
 
 	const isIntersectingRef = useRef(true);
 
@@ -222,55 +361,29 @@ export const DriftWall = ({
 			return Array.from({ length: effectiveColumns }, () => []);
 		}
 
-		// 2. Distribute contenders across columns round-robin.
-		// Each contender is assigned to exactly ONE column — zero duplicate contenders across columns!
+		// 2. Distribute contenders across columns round-robin deterministically.
 		const cols: DriftWallItem[][] = Array.from({ length: effectiveColumns }, () => []);
 		for (let i = 0; i < totalUnique; i++) {
 			cols[i % effectiveColumns].push(uniquePool[i]);
 		}
 
-		// 3. Ensure track has sufficient vertical height for smooth infinite scrolling:
-		// When unique items per column cover the viewport height, NO item ever repeats on screen simultaneously.
-		const unit = effectiveTileHeight + gap;
-		const minItemsPerCol = Math.max(3, Math.ceil((containerHeight * 1.2) / unit));
-
+		// Ensure every column has at least 1 item
 		for (let c = 0; c < effectiveColumns; c++) {
 			if (cols[c].length === 0) {
 				cols[c].push(uniquePool[c % totalUnique]);
 			}
-			// If a column still needs height to loop seamlessly (e.g. if the item pool is very small),
-			// fill with remaining unique items using a rotation offset to maximize separation and prevent adjacent repeats.
-			if (cols[c].length < minItemsPerCol && totalUnique > cols[c].length) {
-				let step = 1;
-				while (cols[c].length < minItemsPerCol && step < effectiveColumns) {
-					const donorCol = (c + step) % effectiveColumns;
-					const donorItems = cols[donorCol] || [];
-					let added = false;
-					for (const donorItem of donorItems) {
-						if (!cols[c].includes(donorItem)) {
-							cols[c].push(donorItem);
-							added = true;
-							if (cols[c].length >= minItemsPerCol) {
-								break;
-							}
-						}
-					}
-					step++;
-					if (!added) {
-						break;
-					}
-				}
-			}
 		}
 
 		return cols;
-	}, [items, effectiveColumns, effectiveTileHeight, gap, containerHeight]);
+	}, [items, effectiveColumns]);
 
 	const columnMeta = useMemo(() => {
 		const unit = effectiveTileHeight + gap;
 		return columnItems.map((col) => {
-			const copyHeight = Math.max(unit, col.length * unit);
-			const copies = Math.max(2, Math.ceil((containerHeight * 1.6) / copyHeight) + 1);
+			const count = Math.max(1, col.length);
+			const copyHeight = count * unit;
+			// Render ample buffer copies so scrolling never exposes edges or pops in tiles
+			const copies = Math.max(4, Math.ceil((containerHeight * 2.5) / copyHeight) + 2);
 			return { copyHeight, copies };
 		});
 	}, [columnItems, effectiveTileHeight, gap, containerHeight]);
@@ -284,9 +397,13 @@ export const DriftWall = ({
 	}, [columnItems, speed, direction, variance]);
 
 	useEffect(() => {
-		offsetsRef.current = columnMeta.map(
-			(meta, c) => offsetsRef.current[c] ?? meta.copyHeight * ((c * 0.37) % 1),
-		);
+		offsetsRef.current = columnMeta.map((meta, c) => {
+			const existing = offsetsRef.current[c];
+			if (typeof existing === "number" && !Number.isNaN(existing)) {
+				return ((existing % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
+			}
+			return (meta.copyHeight * (c * 0.382)) % meta.copyHeight;
+		});
 		velocitiesRef.current = columnItems.map((_, c) => velocitiesRef.current[c] ?? 0);
 	}, [columnMeta, columnItems]);
 
@@ -329,25 +446,61 @@ export const DriftWall = ({
 			pointerDampedRef.current.y += (targetY - pointerDampedRef.current.y) * damp;
 			applyPlaneTransform(pointerDampedRef.current.x, pointerDampedRef.current.y);
 
+			// Ingest accumulated wheel delta with smooth decay into RAF loop
+			const pendingWheel = wheelDeltaRef.current;
+			if (pendingWheel !== 0) {
+				wheelVelocityRef.current += pendingWheel * 0.9;
+				wheelDeltaRef.current = 0;
+			}
+			const wheelImpulse = wheelVelocityRef.current;
+			if (Math.abs(wheelImpulse) > 0.05) {
+				wheelVelocityRef.current *= Math.exp(-dt / 0.18);
+			} else {
+				wheelVelocityRef.current = 0;
+			}
+
 			if (reduced) {
 				applyPlaneTransform(0, 0);
 				for (let c = 0; c < trackRefs.current.length; c++) {
 					const el = trackRefs.current[c];
 					const meta = columnMeta[c];
 					if (el && meta) {
+						if (Math.abs(wheelImpulse) > 0.05) {
+							const colDir = c % 2 === 0 ? 1 : -1;
+							let next = (offsetsRef.current[c] ?? 0) + wheelImpulse * dt * 0.45 * colDir;
+							next = ((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
+							offsetsRef.current[c] = next;
+						}
 						el.style.transform = `translate3d(0, ${-(offsetsRef.current[c] ?? 0)}px, 0)`;
 					}
 				}
+				rafRef.current = requestAnimationFrame(animate);
 				return;
 			}
+
+			const isAnyTileActive = activeIdRef.current !== null || hoveredColRef.current !== -1;
+			const isFocusedInWall = containerRef.current?.contains(document.activeElement);
 
 			for (let c = 0; c < trackRefs.current.length; c++) {
 				const meta = columnMeta[c];
 				if (!meta) {
 					continue;
 				}
-				const paused = wallHoveredRef.current && pauseOnHover;
-				const factor = paused || hoveredColRef.current === c ? 0 : 1;
+
+				// Pause scrolling when hovering directly over a name/tile or navigating with keyboard
+				let factor = 1;
+				if (pauseOnHover) {
+					if (hoveredColRef.current === c || (isFocusedInWall && activeIdRef.current !== null)) {
+						// Complete pause on the hovered or active name column to assist selection
+						factor = 0;
+					} else if (isAnyTileActive) {
+						// Gentle slow-down on other columns while inspecting a name
+						factor = 0.2;
+					} else if (wallHoveredRef.current) {
+						factor = 0.4;
+					}
+				}
+
 				const target = (baseVelocities[c] ?? 0) * factor;
 
 				const ease = 1 - Math.exp(-dt / (target === 0 ? 0.16 : 0.28));
@@ -355,7 +508,8 @@ export const DriftWall = ({
 				const nextVel = currentVel + (target - currentVel) * ease;
 				velocitiesRef.current[c] = nextVel;
 
-				let next = (offsetsRef.current[c] ?? 0) + nextVel * dt;
+				const colDir = c % 2 === 0 ? 1 : -1;
+				let next = (offsetsRef.current[c] ?? 0) + nextVel * dt + wheelImpulse * dt * 0.45 * colDir;
 				next = ((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
 				offsetsRef.current[c] = next;
 
@@ -377,6 +531,11 @@ export const DriftWall = ({
 			lastTsRef.current = null;
 		};
 	}, [baseVelocities, columnMeta, pauseOnHover, parallax, reduced, applyPlaneTransform]);
+
+	const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+		// Accumulate wheel delta to be processed in the next RAF frame to eliminate stutter and layout thrashing
+		wheelDeltaRef.current += e.deltaY;
+	}, []);
 
 	const activate = useCallback((id: string, index: number, el?: HTMLElement | null) => {
 		activeIdRef.current = id;
@@ -401,11 +560,12 @@ export const DriftWall = ({
 
 	const handlePointerMove = useCallback(
 		(e: React.PointerEvent<HTMLDivElement>) => {
-			const rect = e.currentTarget.getBoundingClientRect();
+			let rect = containerRectRef.current;
 			if (!rect) {
-				return;
+				rect = e.currentTarget.getBoundingClientRect();
+				containerRectRef.current = rect;
 			}
-			if (parallax > 0 && !reduced) {
+			if (parallax > 0 && !reduced && rect && rect.width > 0 && rect.height > 0) {
 				pointerRef.current = {
 					x: (e.clientX - rect.left) / rect.width - 0.5,
 					y: (e.clientY - rect.top) / rect.height - 0.5,
@@ -433,11 +593,203 @@ export const DriftWall = ({
 		[parallax, reduced, activate, release],
 	);
 
+	const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+		wallHoveredRef.current = true;
+		containerRectRef.current = e.currentTarget.getBoundingClientRect();
+	}, []);
+
 	const handlePointerLeaveWall = useCallback(() => {
 		wallHoveredRef.current = false;
+		containerRectRef.current = null;
 		pointerRef.current = { x: 0, y: 0 };
 		release();
 	}, [release]);
+
+	// Keyboard navigation support: Up/Down/Left/Right/Home/End with seamless loop-around
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			const active = document.activeElement as HTMLElement | null;
+			if (
+				active &&
+				(active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)
+			) {
+				return;
+			}
+
+			const key = e.key;
+			if (
+				key !== "ArrowUp" &&
+				key !== "ArrowDown" &&
+				key !== "ArrowLeft" &&
+				key !== "ArrowRight" &&
+				key !== "Home" &&
+				key !== "End" &&
+				key !== "PageUp" &&
+				key !== "PageDown"
+			) {
+				return;
+			}
+
+			const container = containerRef.current;
+			if (!container) {
+				return;
+			}
+
+			const containerRect = container.getBoundingClientRect();
+			const allTiles = Array.from(container.querySelectorAll<HTMLElement>("[data-tile-id]")).filter(
+				(el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true",
+			);
+
+			if (allTiles.length === 0) {
+				return;
+			}
+
+			// Identify current active tile
+			let currentTile: HTMLElement | null = null;
+			if (active && allTiles.includes(active)) {
+				currentTile = active;
+			} else if (activeIdRef.current) {
+				currentTile = allTiles.find((t) => t.dataset.tileId === activeIdRef.current) || null;
+			}
+
+			// If no tile currently active, pick the middle-most visible tile
+			if (!currentTile) {
+				const visible = allTiles
+					.map((el) => ({ el, rect: el.getBoundingClientRect() }))
+					.filter(
+						(t) => t.rect.bottom > containerRect.top + 40 && t.rect.top < containerRect.bottom - 40,
+					);
+				const target =
+					visible.length > 0 ? visible[Math.floor(visible.length / 2)].el : allTiles[0];
+				e.preventDefault();
+				target.focus({ preventScroll: true });
+				activate(target.dataset.tileId || "", Number(target.dataset.col), target);
+				return;
+			}
+
+			const currentCol = Number(currentTile.dataset.col);
+			const colTiles = allTiles.filter((t) => Number(t.dataset.col) === currentCol);
+
+			// Measure visual on-screen positions
+			const tilePositions = colTiles
+				.map((el) => ({ el, rect: el.getBoundingClientRect() }))
+				.sort((a, b) => a.rect.top - b.rect.top);
+
+			const currentIndex = tilePositions.findIndex((t) => t.el === currentTile);
+			const visibleTiles = tilePositions.filter(
+				(t) => t.rect.bottom > containerRect.top && t.rect.top < containerRect.bottom,
+			);
+
+			let nextTile: HTMLElement | null = null;
+
+			if (key === "ArrowDown") {
+				// If currently on or near the bottom visible boundary, wrap to top to reappear from top
+				const isAtBottomEdge =
+					currentIndex >= tilePositions.length - 1 ||
+					(visibleTiles.length > 0 && currentTile === visibleTiles[visibleTiles.length - 1].el) ||
+					tilePositions[currentIndex]?.rect.bottom >= containerRect.bottom - 60;
+
+				if (isAtBottomEdge) {
+					// Wrap to the top-most visible or entering tile in the column
+					const topTarget = visibleTiles[0] || tilePositions[0];
+					nextTile = topTarget.el;
+
+					// Smoothly ensure the top tile is framed cleanly at the top of the viewport
+					const meta = columnMeta[currentCol];
+					if (meta && trackRefs.current[currentCol]) {
+						const currentOffset = offsetsRef.current[currentCol] ?? 0;
+						const rect = nextTile.getBoundingClientRect();
+						if (rect.top < containerRect.top + 20) {
+							const diff = containerRect.top + 30 - rect.top;
+							offsetsRef.current[currentCol] =
+								(((currentOffset - diff) % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
+						}
+					}
+				} else if (currentIndex !== -1 && currentIndex + 1 < tilePositions.length) {
+					nextTile = tilePositions[currentIndex + 1].el;
+				} else {
+					nextTile = visibleTiles[0]?.el || tilePositions[0]?.el;
+				}
+			} else if (key === "ArrowUp") {
+				// If currently on or near top visible boundary, wrap to bottom to reappear from bottom
+				const isAtTopEdge =
+					currentIndex <= 0 ||
+					(visibleTiles.length > 0 && currentTile === visibleTiles[0].el) ||
+					tilePositions[currentIndex]?.rect.top <= containerRect.top + 60;
+
+				if (isAtTopEdge) {
+					// Wrap to bottom-most visible tile
+					const bottomTarget =
+						visibleTiles[visibleTiles.length - 1] || tilePositions[tilePositions.length - 1];
+					nextTile = bottomTarget.el;
+				} else if (currentIndex > 0) {
+					nextTile = tilePositions[currentIndex - 1].el;
+				} else {
+					nextTile =
+						visibleTiles[visibleTiles.length - 1]?.el ||
+						tilePositions[tilePositions.length - 1]?.el;
+				}
+			} else if (key === "Home") {
+				nextTile = visibleTiles[0]?.el || tilePositions[0]?.el;
+			} else if (key === "End") {
+				nextTile =
+					visibleTiles[visibleTiles.length - 1]?.el || tilePositions[tilePositions.length - 1]?.el;
+			} else if (key === "ArrowRight") {
+				const allCols = Array.from(new Set(allTiles.map((t) => Number(t.dataset.col)))).sort(
+					(a, b) => a - b,
+				);
+				const colIdx = allCols.indexOf(currentCol);
+				const nextColNum = allCols[(colIdx + 1) % allCols.length];
+				const nextColTiles = allTiles
+					.filter((t) => Number(t.dataset.col) === nextColNum)
+					.map((el) => ({ el, rect: el.getBoundingClientRect() }));
+
+				const currentCenterY = currentTile.getBoundingClientRect().top;
+				let closest = nextColTiles[0];
+				let minDiff = Infinity;
+				for (const item of nextColTiles) {
+					const diff = Math.abs(item.rect.top - currentCenterY);
+					if (diff < minDiff) {
+						minDiff = diff;
+						closest = item;
+					}
+				}
+				nextTile = closest?.el || null;
+			} else if (key === "ArrowLeft") {
+				const allCols = Array.from(new Set(allTiles.map((t) => Number(t.dataset.col)))).sort(
+					(a, b) => a - b,
+				);
+				const colIdx = allCols.indexOf(currentCol);
+				const prevColNum = allCols[(colIdx - 1 + allCols.length) % allCols.length];
+				const prevColTiles = allTiles
+					.filter((t) => Number(t.dataset.col) === prevColNum)
+					.map((el) => ({ el, rect: el.getBoundingClientRect() }));
+
+				const currentCenterY = currentTile.getBoundingClientRect().top;
+				let closest = prevColTiles[0];
+				let minDiff = Infinity;
+				for (const item of prevColTiles) {
+					const diff = Math.abs(item.rect.top - currentCenterY);
+					if (diff < minDiff) {
+						minDiff = diff;
+						closest = item;
+					}
+				}
+				nextTile = closest?.el || null;
+			}
+
+			if (nextTile) {
+				e.preventDefault();
+				nextTile.focus({ preventScroll: true });
+				activate(nextTile.dataset.tileId || "", Number(nextTile.dataset.col), nextTile);
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [activate, columnMeta]);
 
 	const cssVars = useMemo(
 		() =>
@@ -481,163 +833,6 @@ export const DriftWall = ({
 		[onItemClick],
 	);
 
-	const renderTile = (
-		item: DriftWallItem,
-		id: string,
-		colIndex: number,
-		originalIndex: number,
-		itemIndex: number,
-		copyIndex: number,
-	) => {
-		const pathId = `textpath-${id.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
-		const desc = item.subtitle ? String(item.subtitle).trim() : "";
-		const title = item.title ? String(item.title).trim() : "";
-
-		// Dynamic font size and letter-spacing scaling for maximum curved text legibility
-		const descLen = desc.length;
-		const descFontSize =
-			descLen > 65 ? 9.8 : descLen > 50 ? 10.5 : descLen > 35 ? 11.5 : descLen > 20 ? 12.5 : 13.5;
-		const descLetterSpacing =
-			descLen > 65 ? 0.4 : descLen > 50 ? 0.5 : descLen > 35 ? 0.6 : descLen > 20 ? 0.7 : 0.8;
-
-		const titleLen = title.length;
-		const titleFontSize = titleLen > 11 ? 16 : titleLen > 8 ? 18.5 : titleLen > 5 ? 21.5 : 24.5;
-
-		const fullLabel = title ? (desc ? `${title} - ${desc}` : title) : "tile";
-
-		// Compute repeated orbit phrase with clean space separation (no diamond)
-		const spacer = "\u00A0\u00A0\u00A0\u00A0\u00A0";
-		const baseOrbitUnit = desc ? `${desc}${spacer}` : `${title}${spacer}`;
-		const approxCharWidth = descFontSize * 0.54 + descLetterSpacing;
-		const unitWidth = Math.max(40, baseOrbitUnit.length * approxCharWidth);
-		const reps = Math.max(1, Math.min(3, Math.floor(496 / unitWidth)));
-		const orbitPhrase = baseOrbitUnit.repeat(reps);
-
-		// Closed 360-degree circle path of radius 79 centered at (100, 100)
-		const circlePath = "M 100 21 A 79 79 0 1 1 99.9 21 Z";
-
-		// Calm, smooth spin speed (26s - 38s)
-		const spinDuration = 26 + (originalIndex % 4) * 4;
-		const spinDirection = originalIndex % 2 === 0 ? "normal" : "reverse";
-
-		// Staggered entry animation with Framer Motion:
-		// Produces an organic diagonal cascade across columns and rows upon initial load
-		const staggerDelay = reduced
-			? 0
-			: Math.min(0.95, 0.04 + colIndex * 0.055 + copyIndex * 0.16 + itemIndex * 0.065);
-
-		const tileMotionProps = {
-			initial: reduced ? false : { opacity: 0, y: 32 },
-			animate: { opacity: 1, y: 0 },
-			transition: {
-				duration: 0.55,
-				delay: staggerDelay,
-				ease: [0.21, 1, 0.36, 1] as const,
-			},
-		};
-
-		const inner = (
-			<span className="drift-wall__inner">
-				{Boolean(item.image) && (
-					<img
-						src={item.image}
-						alt={title || "tile"}
-						loading="lazy"
-						decoding="async"
-						draggable={false}
-						onError={handleImgError}
-					/>
-				)}
-				{Boolean(title) && (
-					<svg
-						className="drift-wall__svg-face"
-						viewBox="0 0 200 200"
-						aria-hidden="true"
-						focusable="false"
-					>
-						<defs>
-							<path id={pathId} d={circlePath} fill="none" />
-						</defs>
-						<g
-							className="drift-wall__orbit-group"
-							style={{
-								animationDuration: `${spinDuration}s`,
-								animationDirection: spinDirection,
-							}}
-						>
-							<text
-								className="drift-wall__arc-text"
-								dominantBaseline="central"
-								textAnchor="start"
-								style={{
-									fontSize: `${descFontSize}px`,
-									letterSpacing: `${descLetterSpacing}px`,
-								}}
-							>
-								<textPath href={`#${pathId}`} startOffset="0%" textAnchor="start">
-									{orbitPhrase}
-								</textPath>
-							</text>
-						</g>
-						<text
-							x="100"
-							y="100"
-							className="drift-wall__center-name"
-							dominantBaseline="central"
-							textAnchor="middle"
-							style={{ fontSize: `${titleFontSize}px` }}
-						>
-							{title}
-						</text>
-					</svg>
-				)}
-				{Boolean(item.image) && <span className="drift-wall__overlay" aria-hidden="true" />}
-			</span>
-		);
-		const commonProps = {
-			className: `drift-wall__tile${item.selected ? " is-selected" : ""}`,
-			"data-tile-id": id,
-			"data-col": colIndex,
-			"aria-pressed": item.selected,
-			onFocus: (e: React.FocusEvent<HTMLElement>) => activate(id, colIndex, e.currentTarget),
-			onBlur: release,
-			onClick: () => handleTileClick(item, originalIndex),
-		};
-		if (item.href) {
-			return (
-				<motion.a
-					key={id}
-					href={item.href}
-					target="_blank"
-					rel="noreferrer noopener"
-					aria-label={fullLabel}
-					{...tileMotionProps}
-					{...commonProps}
-				>
-					{inner}
-				</motion.a>
-			);
-		}
-		return (
-			<motion.div
-				key={id}
-				tabIndex={0}
-				role="button"
-				aria-label={fullLabel}
-				onKeyDown={(e) => {
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault();
-						handleTileClick(item, originalIndex);
-					}
-				}}
-				{...tileMotionProps}
-				{...commonProps}
-			>
-				{inner}
-			</motion.div>
-		);
-	};
-
 	const rootClass = ["drift-wall", reduced ? "drift-wall--reduced" : "", className]
 		.filter(Boolean)
 		.join(" ");
@@ -648,9 +843,8 @@ export const DriftWall = ({
 			className={rootClass}
 			style={cssVars}
 			onPointerMove={handlePointerMove}
-			onPointerEnter={() => {
-				wallHoveredRef.current = true;
-			}}
+			onWheel={handleWheel}
+			onPointerEnter={handlePointerEnter}
 			onPointerLeave={handlePointerLeaveWall}
 			role="group"
 			aria-label="Drifting wall of tiles"
@@ -671,16 +865,31 @@ export const DriftWall = ({
 								}}
 							>
 								{copies.map((_, copyIndex) =>
-									col.map((item, itemIndex) =>
-										renderTile(
-											item,
-											`${c}-${copyIndex}-${itemIndex}`,
-											c,
-											items.indexOf(item) === -1 ? itemIndex : items.indexOf(item),
-											itemIndex,
-											copyIndex,
-										),
-									),
+									col.map((item, itemIndex) => {
+										const tileId = `${c}-${copyIndex}-${itemIndex}`;
+										const originalIndex =
+											items.indexOf(item) === -1 ? itemIndex : items.indexOf(item);
+										return (
+											<DriftWallTile
+												key={tileId}
+												tileId={tileId}
+												col={c}
+												name={item.title || item.name || "tile"}
+												orbitText={item.subtitle || item.orbitText || ""}
+												isSelected={Boolean(item.selected)}
+												image={item.image}
+												href={item.href}
+												locked={item.locked}
+												originalIndex={originalIndex}
+												itemIndex={itemIndex}
+												copyIndex={copyIndex}
+												reduced={reduced}
+												onClick={() => handleTileClick(item, originalIndex)}
+												onFocus={(e) => activate(tileId, c, e.currentTarget)}
+												onBlur={release}
+											/>
+										);
+									}),
 								)}
 							</div>
 						</div>
