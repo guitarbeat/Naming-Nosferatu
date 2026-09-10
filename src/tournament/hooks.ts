@@ -354,6 +354,7 @@ interface UseTournamentStateResult {
 
 const VOTE_COOLDOWN = TIMING.VOTE_COOLDOWN_MS;
 
+// ⚡ Bolt Performance Optimization: Simplified array ID comparison by using native sort instead of Map allocations
 function haveSameIds(a: string[], b: string[]): boolean {
 	if (a.length !== b.length) {
 		return false;
@@ -370,21 +371,12 @@ function haveSameIds(a: string[], b: string[]): boolean {
 		return true;
 	}
 
-	const map = new Map<string, number>();
-	for (let i = 0; i < a.length; i++) {
-		const val = a[i];
-		if (val != null) {
-			map.set(val, (map.get(val) || 0) + 1);
-		}
-	}
-	for (let i = 0; i < b.length; i++) {
-		const val = b[i];
-		if (val != null) {
-			const count = map.get(val);
-			if (!count) {
-				return false;
-			}
-			map.set(val, count - 1);
+	const sortedA = [...a].sort();
+	const sortedB = [...b].sort();
+
+	for (let i = 0; i < sortedA.length; i++) {
+		if (sortedA[i] !== sortedB[i]) {
+			return false;
 		}
 	}
 
