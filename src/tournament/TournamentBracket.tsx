@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Button, CatImage } from "@/components/LayoutBlocks";
+import { useDebounce } from "@/hooks";
 import { CAT_IMAGES } from "@/lib/constants";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/lib/uiUtils";
 import { hapticVoteTap } from "@/lib/utils";
@@ -1066,12 +1067,15 @@ export function TournamentBracket({
 		return map;
 	}, [teams]);
 
+	// ⚡ Bolt Performance Optimization: Added debouncing for name search/filter
+	const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
 	// Highlight match / contestant based on search query
 	const highlightedContenderId = useMemo(() => {
-		if (!searchQuery.trim()) {
+		if (!debouncedSearchQuery.trim()) {
 			return null;
 		}
-		const query = searchQuery.toLowerCase().trim();
+		const query = debouncedSearchQuery.toLowerCase().trim();
 		for (const [id, item] of namesMap) {
 			if (item.name.toLowerCase().includes(query)) {
 				return id;
@@ -1083,7 +1087,7 @@ export function TournamentBracket({
 			}
 		}
 		return null;
-	}, [searchQuery, namesMap, teamsMap]);
+	}, [debouncedSearchQuery, namesMap, teamsMap]);
 
 	// Zoom handlers
 	const handleZoomIn = useCallback(() => {
