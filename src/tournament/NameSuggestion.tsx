@@ -11,7 +11,8 @@ import {
 	useState,
 } from "react";
 import { addName } from "@/api";
-import { Button, CatImage, Input, Textarea } from "@/components/LayoutBlocks";
+import { Input, Textarea } from "@/components/ui/Input";
+import { Button, CatImage } from "@/components/LayoutBlocks";
 import { CAT_IMAGES } from "@/lib/constants";
 import { scaleFadeMotionPreset, statusMessageMotionPreset } from "@/lib/uiUtils";
 import { useToast } from "@/Providers";
