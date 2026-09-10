@@ -10,7 +10,7 @@ import {
 	type UserStats,
 	useNameAdminActions,
 } from "@/api";
-import { useAsyncData } from "@/hooks";
+import { useAsyncData, useDebounce } from "@/hooks";
 import useAppStore from "@/store";
 import type { NameFilter } from "./types";
 import {
@@ -47,9 +47,12 @@ export function useAdminDashboard() {
 
 	const isLoading = namesQuery.isPending || siteStatsQuery.isPending;
 
+	// ⚡ Bolt Performance Optimization: Added debouncing for name search/filter
+	const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
 	const filteredNames = useMemo(
-		() => filterNamesByStatusAndSearch(names, filterStatus, searchTerm),
-		[names, filterStatus, searchTerm],
+		() => filterNamesByStatusAndSearch(names, filterStatus, debouncedSearchTerm),
+		[names, filterStatus, debouncedSearchTerm],
 	);
 
 	const handleToggleHidden = useCallback(
