@@ -743,9 +743,3 @@ export function useAppStoreInitialization(onUserContext?: (name: string) => void
 		void hydrateTournamentFromIndexedDB();
 	}, [initializeTheme, initializeUser, onUserContext]);
 }
-
-export const errorContexts = {
-	tournamentFlow: "Tournament Flow",
-	analysisDashboard: "Analysis Dashboard",
-	mainLayout: "Main Application Layout",
-} as const;

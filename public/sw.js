@@ -1,7 +1,7 @@
-const CACHE_VERSION = "2025-12-08";
-const STATIC_CACHE = `harmonic-studio-static-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `harmonic-studio-runtime-${CACHE_VERSION}`;
-const HTML_CACHE = `harmonic-studio-html-${CACHE_VERSION}`;
+const CACHE_VERSION = "2026-09-10";
+const STATIC_CACHE = `name-nosferatu-static-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `name-nosferatu-runtime-${CACHE_VERSION}`;
+const HTML_CACHE = `name-nosferatu-html-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
 	"/", // Basic shell; navigation responses use network-first to avoid staleness
@@ -35,7 +35,7 @@ self.addEventListener("activate", (event) => {
 					keys
 						.filter(
 							(key) =>
-								key.startsWith("harmonic-studio-") &&
+								(key.startsWith("name-nosferatu-") || key.startsWith("harmonic-studio-")) &&
 								key !== STATIC_CACHE &&
 								key !== RUNTIME_CACHE &&
 								key !== HTML_CACHE,

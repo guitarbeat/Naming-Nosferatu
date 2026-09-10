@@ -93,15 +93,6 @@ export function hapticVoteTap(durationMs = 15): boolean {
 }
 
 /**
- * Triggers a sequence of haptic feedback for tournament starts.
- */
-export function hapticTournamentStart(): void {
-	if (typeof navigator !== "undefined") {
-		navigator.vibrate?.([50, 50, 50]);
-	}
-}
-
-/**
  * React image onError fallback handler to replace broken images with consistent fallback SVG.
  */
 export function handleImgError(

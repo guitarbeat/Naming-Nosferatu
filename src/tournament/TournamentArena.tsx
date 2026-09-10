@@ -260,6 +260,7 @@ const MatchSideCard = memo(function MatchSideCard({
 				} ${getHeatCardClasses(heatLevel)} ${selectionClass}`}
 				style={animationDelay ? { animationDelay } : undefined}
 				aria-label={`Vote for ${isTeam ? "team" : "name"} ${name}`}
+				aria-keyshortcuts={side === "left" ? "ArrowLeft ArrowUp 1 a" : "ArrowRight ArrowDown 2 d"}
 				aria-disabled={isVoting}
 				onClick={onVote}
 				onKeyDown={onKeyDown}
@@ -1385,6 +1386,26 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 			if (event.key === "Enter" || event.key === " ") {
 				event.preventDefault();
 				handleVoteForSide(side);
+				return;
+			}
+			const key = event.key.toLowerCase();
+			if (key === "arrowright" || key === "arrowdown") {
+				event.preventDefault();
+				if (side === "left") {
+					document.getElementById("match-card-right")?.focus();
+				} else {
+					handleVoteForSide("right");
+				}
+				return;
+			}
+			if (key === "arrowleft" || key === "arrowup") {
+				event.preventDefault();
+				if (side === "right") {
+					document.getElementById("match-card-left")?.focus();
+				} else {
+					handleVoteForSide("left");
+				}
+				return;
 			}
 		},
 		[handleVoteForSide],

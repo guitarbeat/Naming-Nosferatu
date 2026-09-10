@@ -24,7 +24,9 @@ describe("logger", () => {
 	});
 
 	it("handles debug without crashing", () => {
+		const spy = vi.spyOn(console, "debug").mockImplementation(() => {});
 		expect(() => logger.debug("test debug")).not.toThrow();
+		spy.mockRestore();
 	});
 
 	it("handles multiple arguments", () => {

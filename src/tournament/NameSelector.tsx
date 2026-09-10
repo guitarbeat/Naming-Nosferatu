@@ -9,7 +9,7 @@ import useAppStore from "@/store";
 import type { IdType, NameItem } from "@/types";
 
 /**
- * Accessible cat name contender selection via 3D Drift Wall.
+ * Accessible cat name contender selection via full-screen 3D Drift Wall.
  */
 export const NameSelector = memo(function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
@@ -101,7 +101,7 @@ export const NameSelector = memo(function NameSelector() {
 
 	if (isLoading) {
 		return (
-			<div className="mx-auto w-full py-16 flex items-center justify-center">
+			<div className="w-full h-screen min-h-[100dvh] flex items-center justify-center">
 				<Loading variant="spinner" text="Loading contenders..." />
 			</div>
 		);
@@ -109,7 +109,7 @@ export const NameSelector = memo(function NameSelector() {
 
 	if (error && !isSupabaseUnavailable && availableNames.length === 0) {
 		return (
-			<div className="mx-auto w-full py-12 flex flex-col items-center justify-center text-center">
+			<div className="w-full h-screen min-h-[100dvh] flex flex-col items-center justify-center text-center px-4">
 				<div className="p-6 rounded-3xl bg-destructive/10 border border-destructive/20 max-w-md space-y-4">
 					<p className="size-10 rounded-2xl bg-destructive/20 text-destructive flex items-center justify-center mx-auto text-lg font-bold">
 						!
@@ -129,28 +129,29 @@ export const NameSelector = memo(function NameSelector() {
 	}
 
 	return (
-		<div className="mx-auto w-full flex flex-col">
+		<div className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden select-none">
+			{/* Full-Screen Drift Wall */}
 			{availableNames.length > 0 && (
-				<div className="relative min-h-[540px] h-[clamp(540px,72vh,820px)] w-full overflow-hidden">
+				<div className="absolute inset-0 w-full h-full overflow-hidden">
 					<DriftWall
 						items={driftWallItems}
-						columns={6}
-						tileWidth={156}
-						tileHeight={156}
-						gap={24}
+						columns={7}
+						tileWidth={150}
+						tileHeight={150}
+						gap={22}
 						radius={9999}
 						tilt={0}
 						turn={0}
 						roll={0}
 						perspective={1200}
-						depth={140}
-						speed={26}
+						depth={120}
+						speed={22}
 						direction="up"
 						variance={0.45}
-						parallax={0.6}
-						lift={36}
+						parallax={0.55}
+						lift={0}
 						fade={0}
-						dim={0.96}
+						dim={1}
 						pauseOnHover={true}
 						grayscale={false}
 						className="w-full h-full"

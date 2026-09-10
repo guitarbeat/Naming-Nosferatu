@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { logger } from "./logger";
 import {
 	getStorageString,
 	parseJsonValue,
@@ -36,7 +37,10 @@ describe("storage", () => {
 	});
 
 	it("returns fallback for invalid JSON values", () => {
+		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
 		localStorage.setItem("corrupted", "{invalid_json");
 		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe("fallback");
+		expect(spy).toHaveBeenCalled();
+		spy.mockRestore();
 	});
 });

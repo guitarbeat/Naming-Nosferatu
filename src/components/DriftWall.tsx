@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
 	type CSSProperties,
 	useCallback,
@@ -134,8 +135,8 @@ export const DriftWall = ({
 	}, []);
 	const [containerWidth, setContainerWidth] = useState(1200);
 	const [containerHeight, setContainerHeight] = useState(600);
-	const [activeId, setActiveId] = useState<string | null>(null);
 	const activeIdRef = useRef<string | null>(null);
+	const activeTileElRef = useRef<HTMLElement | null>(null);
 	const [reduced, setReduced] = useState(false);
 
 	useEffect(() => {
@@ -197,21 +198,73 @@ export const DriftWall = ({
 		if (!items.length) {
 			return Array.from({ length: effectiveColumns }, () => []);
 		}
+
+		// 1. Strict deduplication of input items by ID or title so each contender is unique
+		const seen = new Set<string>();
+		const uniquePool: DriftWallItem[] = [];
+		for (const item of items) {
+			const key =
+				item.id != null && String(item.id).trim()
+					? String(item.id).trim()
+					: item.title
+						? item.title.trim().toLowerCase()
+						: "";
+			if (!key || !seen.has(key)) {
+				if (key) {
+					seen.add(key);
+				}
+				uniquePool.push(item);
+			}
+		}
+
+		const totalUnique = uniquePool.length;
+		if (totalUnique === 0) {
+			return Array.from({ length: effectiveColumns }, () => []);
+		}
+
+		// 2. Distribute contenders across columns round-robin.
+		// Each contender is assigned to exactly ONE column — zero duplicate contenders across columns!
 		const cols: DriftWallItem[][] = Array.from({ length: effectiveColumns }, () => []);
-		const minPerCol = Math.max(3, Math.ceil(items.length / effectiveColumns) + 1);
+		for (let i = 0; i < totalUnique; i++) {
+			cols[i % effectiveColumns].push(uniquePool[i]);
+		}
+
+		// 3. Ensure track has sufficient vertical height for smooth infinite scrolling:
+		// When unique items per column cover the viewport height, NO item ever repeats on screen simultaneously.
+		const unit = effectiveTileHeight + gap;
+		const minItemsPerCol = Math.max(3, Math.ceil((containerHeight * 1.2) / unit));
+
 		for (let c = 0; c < effectiveColumns; c++) {
-			const colList: DriftWallItem[] = [];
-			for (let r = 0; r < minPerCol; r++) {
-				const itemIndex = (c + r * 3) % items.length;
-				const candidate = items[itemIndex] ?? items[0];
-				if (candidate) {
-					colList.push(candidate);
+			if (cols[c].length === 0) {
+				cols[c].push(uniquePool[c % totalUnique]);
+			}
+			// If a column still needs height to loop seamlessly (e.g. if the item pool is very small),
+			// fill with remaining unique items using a rotation offset to maximize separation and prevent adjacent repeats.
+			if (cols[c].length < minItemsPerCol && totalUnique > cols[c].length) {
+				let step = 1;
+				while (cols[c].length < minItemsPerCol && step < effectiveColumns) {
+					const donorCol = (c + step) % effectiveColumns;
+					const donorItems = cols[donorCol] || [];
+					let added = false;
+					for (const donorItem of donorItems) {
+						if (!cols[c].includes(donorItem)) {
+							cols[c].push(donorItem);
+							added = true;
+							if (cols[c].length >= minItemsPerCol) {
+								break;
+							}
+						}
+					}
+					step++;
+					if (!added) {
+						break;
+					}
 				}
 			}
-			cols[c] = colList;
 		}
+
 		return cols;
-	}, [items, effectiveColumns]);
+	}, [items, effectiveColumns, effectiveTileHeight, gap, containerHeight]);
 
 	const columnMeta = useMemo(() => {
 		const unit = effectiveTileHeight + gap;
@@ -325,16 +378,25 @@ export const DriftWall = ({
 		};
 	}, [baseVelocities, columnMeta, pauseOnHover, parallax, reduced, applyPlaneTransform]);
 
-	const activate = useCallback((id: string, index: number) => {
+	const activate = useCallback((id: string, index: number, el?: HTMLElement | null) => {
 		activeIdRef.current = id;
 		hoveredColRef.current = index;
-		setActiveId(id);
+		if (activeTileElRef.current && activeTileElRef.current !== el) {
+			activeTileElRef.current.classList.remove("is-active");
+		}
+		if (el) {
+			el.classList.add("is-active");
+			activeTileElRef.current = el;
+		}
 	}, []);
 
 	const release = useCallback(() => {
 		activeIdRef.current = null;
 		hoveredColRef.current = -1;
-		setActiveId(null);
+		if (activeTileElRef.current) {
+			activeTileElRef.current.classList.remove("is-active");
+			activeTileElRef.current = null;
+		}
 	}, []);
 
 	const handlePointerMove = useCallback(
@@ -365,7 +427,7 @@ export const DriftWall = ({
 				return;
 			}
 			if (id) {
-				activate(id, Number(tile.dataset.col));
+				activate(id, Number(tile.dataset.col), tile);
 			}
 		},
 		[parallax, reduced, activate, release],
@@ -419,7 +481,14 @@ export const DriftWall = ({
 		[onItemClick],
 	);
 
-	const renderTile = (item: DriftWallItem, id: string, colIndex: number, originalIndex: number) => {
+	const renderTile = (
+		item: DriftWallItem,
+		id: string,
+		colIndex: number,
+		originalIndex: number,
+		itemIndex: number,
+		copyIndex: number,
+	) => {
 		const pathId = `textpath-${id.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 		const desc = item.subtitle ? String(item.subtitle).trim() : "";
 		const title = item.title ? String(item.title).trim() : "";
@@ -451,6 +520,22 @@ export const DriftWall = ({
 		const spinDuration = 26 + (originalIndex % 4) * 4;
 		const spinDirection = originalIndex % 2 === 0 ? "normal" : "reverse";
 
+		// Staggered entry animation with Framer Motion:
+		// Produces an organic diagonal cascade across columns and rows upon initial load
+		const staggerDelay = reduced
+			? 0
+			: Math.min(0.95, 0.04 + colIndex * 0.055 + copyIndex * 0.16 + itemIndex * 0.065);
+
+		const tileMotionProps = {
+			initial: reduced ? false : { opacity: 0, y: 32 },
+			animate: { opacity: 1, y: 0 },
+			transition: {
+				duration: 0.55,
+				delay: staggerDelay,
+				ease: [0.21, 1, 0.36, 1] as const,
+			},
+		};
+
 		const inner = (
 			<span className="drift-wall__inner">
 				{Boolean(item.image) && (
@@ -463,11 +548,6 @@ export const DriftWall = ({
 						onError={handleImgError}
 					/>
 				)}
-				{item.selected && (
-					<span className="drift-wall__badge" aria-label="Selected">
-						✓
-					</span>
-				)}
 				{Boolean(title) && (
 					<svg
 						className="drift-wall__svg-face"
@@ -478,15 +558,6 @@ export const DriftWall = ({
 						<defs>
 							<path id={pathId} d={circlePath} fill="none" />
 						</defs>
-						<circle
-							cx="100"
-							cy="100"
-							r="79"
-							fill="none"
-							stroke="rgba(255, 255, 255, 0.07)"
-							strokeWidth="1"
-							strokeDasharray="2 4"
-						/>
 						<g
 							className="drift-wall__orbit-group"
 							style={{
@@ -524,31 +595,31 @@ export const DriftWall = ({
 			</span>
 		);
 		const commonProps = {
-			className: `drift-wall__tile${activeId === id ? " is-active" : ""}${
-				item.selected ? " is-selected" : ""
-			}`,
+			className: `drift-wall__tile${item.selected ? " is-selected" : ""}`,
 			"data-tile-id": id,
 			"data-col": colIndex,
-			onFocus: () => activate(id, colIndex),
+			"aria-pressed": item.selected,
+			onFocus: (e: React.FocusEvent<HTMLElement>) => activate(id, colIndex, e.currentTarget),
 			onBlur: release,
 			onClick: () => handleTileClick(item, originalIndex),
 		};
 		if (item.href) {
 			return (
-				<a
+				<motion.a
 					key={id}
 					href={item.href}
 					target="_blank"
 					rel="noreferrer noopener"
 					aria-label={fullLabel}
+					{...tileMotionProps}
 					{...commonProps}
 				>
 					{inner}
-				</a>
+				</motion.a>
 			);
 		}
 		return (
-			<div
+			<motion.div
 				key={id}
 				tabIndex={0}
 				role="button"
@@ -559,10 +630,11 @@ export const DriftWall = ({
 						handleTileClick(item, originalIndex);
 					}
 				}}
+				{...tileMotionProps}
 				{...commonProps}
 			>
 				{inner}
-			</div>
+			</motion.div>
 		);
 	};
 
@@ -605,6 +677,8 @@ export const DriftWall = ({
 											`${c}-${copyIndex}-${itemIndex}`,
 											c,
 											items.indexOf(item) === -1 ? itemIndex : items.indexOf(item),
+											itemIndex,
+											copyIndex,
 										),
 									),
 								)}

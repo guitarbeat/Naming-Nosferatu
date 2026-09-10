@@ -9,193 +9,9 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import { STORAGE_KEYS } from "@/lib/constants";
-import { getStorageString, removeStorageItem, setStorageString } from "@/lib/storage";
 
 const DEFAULT_TOAST_DURATION_MS = 5000;
 const DEFAULT_MAX_TOASTS = 5;
-
-type UserRole = "user" | "moderator" | "admin";
-
-interface AuthUser {
-	id: string;
-	name: string;
-	email?: string;
-	isAdmin: boolean;
-	isLoggedIn?: boolean;
-	avatarUrl?: string;
-	role?: UserRole;
-}
-
-interface LoginCredentials {
-	email?: string;
-	password?: string;
-	name?: string;
-}
-
-interface RegisterData {
-	email: string;
-	password: string;
-	name: string;
-}
-
-interface AuthAdapter {
-	getCurrentUser: () => Promise<AuthUser | null>;
-	login: (credentials: LoginCredentials) => Promise<boolean>;
-	logout: () => Promise<void>;
-	register: (data: RegisterData) => Promise<void>;
-	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
-}
-
-interface AuthContextValue {
-	user: AuthUser | null;
-	isLoading: boolean;
-	isAuthenticated: boolean;
-	login: (credentials: LoginCredentials) => Promise<boolean>;
-	logout: () => Promise<void>;
-	register: (data: RegisterData) => Promise<void>;
-	checkAdminStatus: (userIdOrName: string) => Promise<boolean>;
-}
-
-const localAuthAdapter: AuthAdapter = {
-	getCurrentUser: async (): Promise<AuthUser | null> => {
-		const name = getStorageString(STORAGE_KEYS.USER);
-		const id = getStorageString(STORAGE_KEYS.USER_ID);
-		if (!name || !id) {
-			return null;
-		}
-		return { id, name, isAdmin: name.toLowerCase() === "admin" };
-	},
-	login: async (credentials: LoginCredentials): Promise<boolean> => {
-		const name = credentials.name || credentials.email?.split("@")[0] || "Guest";
-		const id = `local-usr-${Date.now()}`;
-		setStorageString(STORAGE_KEYS.USER, name);
-		setStorageString(STORAGE_KEYS.USER_ID, id);
-		return true;
-	},
-	logout: async (): Promise<void> => {
-		removeStorageItem(STORAGE_KEYS.USER);
-		removeStorageItem(STORAGE_KEYS.USER_ID);
-	},
-	register: async (data: RegisterData): Promise<void> => {
-		const name = data.name || data.email?.split("@")[0] || "Guest";
-		const id = `local-usr-${Date.now()}`;
-		setStorageString(STORAGE_KEYS.USER, name);
-		setStorageString(STORAGE_KEYS.USER_ID, id);
-	},
-	checkAdminStatus: async (userIdOrName: string): Promise<boolean> => {
-		return userIdOrName.toLowerCase() === "admin";
-	},
-};
-
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-export function useAuth(): AuthContextValue {
-	const context = useContext(AuthContext);
-	if (!context) {
-		throw new Error(
-			"useAuth must be used within <Providers>. Wrap your component tree with <Providers> in main.tsx.",
-		);
-	}
-
-	return context;
-}
-
-function useAuthProvider(adapter: AuthAdapter): AuthContextValue {
-	const [user, setUser] = useState<AuthContextValue["user"]>(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const adapterRef = useRef(adapter);
-	useEffect(() => {
-		adapterRef.current = adapter;
-	}, [adapter]);
-
-	useEffect(() => {
-		let cancelled = false;
-
-		const timeoutId = setTimeout(() => {
-			if (!cancelled) {
-				setIsLoading(false);
-			}
-		}, 2500);
-
-		adapterRef.current
-			.getCurrentUser()
-			.then((nextUser) => {
-				if (!cancelled) {
-					setUser(nextUser);
-				}
-			})
-			.catch((error) => {
-				console.error("[Providers] Failed to fetch current user:", error);
-			})
-			.finally(() => {
-				if (!cancelled) {
-					clearTimeout(timeoutId);
-					setIsLoading(false);
-				}
-			});
-
-		return () => {
-			cancelled = true;
-			clearTimeout(timeoutId);
-		};
-	}, []);
-
-	const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
-		try {
-			const success = await adapterRef.current.login(credentials);
-			if (success) {
-				const updatedUser = await adapterRef.current.getCurrentUser();
-				setUser(updatedUser);
-			}
-			return success;
-		} catch (error) {
-			console.error("[Providers] Login failed:", error);
-			throw error;
-		}
-	}, []);
-
-	const logout = useCallback(async () => {
-		try {
-			await adapterRef.current.logout();
-			setUser(null);
-		} catch (error) {
-			console.error("[Providers] Logout failed:", error);
-			throw error;
-		}
-	}, []);
-
-	const register = useCallback(async (data: RegisterData) => {
-		await adapterRef.current.register(data);
-	}, []);
-
-	const checkAdminStatus = useCallback(async (userIdOrName: string) => {
-		return adapterRef.current.checkAdminStatus(userIdOrName);
-	}, []);
-
-	return useMemo(
-		() => ({
-			user,
-			isLoading,
-			isAuthenticated: user !== null,
-			login,
-			logout,
-			register,
-			checkAdminStatus,
-		}),
-		[user, isLoading, login, logout, register, checkAdminStatus],
-	);
-}
-
-interface AuthProviderProps {
-	children: ReactNode;
-	adapter?: AuthAdapter;
-}
-
-function AuthProvider({ children, adapter = localAuthAdapter }: AuthProviderProps) {
-	const value = useAuthProvider(adapter);
-	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
 
 type ToastType = "success" | "error" | "info" | "warning";
 
@@ -440,9 +256,6 @@ function ToastProvider({ children, defaultDuration, maxToasts, position }: Toast
 
 interface ProvidersProps {
 	children: ReactNode;
-	auth?: {
-		adapter: AuthAdapter;
-	};
 	toastMaxToasts?: number;
 	toastDefaultDuration?: number;
 	toastPosition?: ToastPosition;
@@ -450,20 +263,17 @@ interface ProvidersProps {
 
 export function Providers({
 	children,
-	auth,
 	toastMaxToasts = DEFAULT_MAX_TOASTS,
 	toastDefaultDuration = DEFAULT_TOAST_DURATION_MS,
 	toastPosition = "top-right",
 }: ProvidersProps) {
 	return (
-		<AuthProvider adapter={auth?.adapter ?? localAuthAdapter}>
-			<ToastProvider
-				maxToasts={toastMaxToasts}
-				defaultDuration={toastDefaultDuration}
-				position={toastPosition}
-			>
-				{children}
-			</ToastProvider>
-		</AuthProvider>
+		<ToastProvider
+			maxToasts={toastMaxToasts}
+			defaultDuration={toastDefaultDuration}
+			position={toastPosition}
+		>
+			{children}
+		</ToastProvider>
 	);
 }

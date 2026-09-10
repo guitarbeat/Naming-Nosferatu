@@ -1,4 +1,4 @@
-export interface EloConfig {
+interface EloConfig {
 	kFactor?: number;
 	defaultRating?: number;
 	minRating?: number;

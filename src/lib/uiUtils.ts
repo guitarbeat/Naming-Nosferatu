@@ -20,13 +20,6 @@ export const scaleFadeMotionPreset = {
 	transition: { duration: MOTION_DURATIONS.base },
 } as const;
 
-export const statusMessageMotionPreset = {
-	initial: { opacity: 0, y: -6 },
-	animate: { opacity: 1, y: 0 },
-	exit: { opacity: 0, y: -6 },
-	transition: { duration: MOTION_DURATIONS.fast },
-} as const;
-
 export function getRandomCatImage(
 	id: string | number,
 	images: readonly string[],

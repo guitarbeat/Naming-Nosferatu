@@ -1,7 +1,7 @@
 import { Color, Mesh, Program, Renderer, Triangle } from "ogl";
 import { useEffect, useRef } from "react";
 
-export interface IridescenceProps {
+interface IridescenceProps {
 	color?: [number, number, number] | number[];
 	speed?: number;
 	amplitude?: number;
