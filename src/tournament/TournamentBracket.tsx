@@ -1179,10 +1179,15 @@ export function TournamentBracket({
 					{/* Right Side Controls */}
 					<div className="flex items-center gap-2">
 						{/* View Switcher Tabs */}
-						<div className="inline-flex rounded-xl border border-white/20 dark:border-white/10 bg-white/25 dark:bg-white/5 backdrop-blur-md p-0.5 text-xs">
+						<div
+							className="inline-flex rounded-xl border border-white/20 dark:border-white/10 bg-white/25 dark:bg-white/5 backdrop-blur-md p-0.5 text-xs"
+							role="group"
+							aria-label="View mode"
+						>
 							<button
 								type="button"
 								onClick={() => setViewMode("tree")}
+								aria-pressed={viewMode === "tree"}
 								className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-all ${
 									viewMode === "tree"
 										? "bg-card text-foreground shadow-xs font-semibold"
@@ -1195,6 +1200,7 @@ export function TournamentBracket({
 							<button
 								type="button"
 								onClick={() => setViewMode("cards")}
+								aria-pressed={viewMode === "cards"}
 								className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-all ${
 									viewMode === "cards"
 										? "bg-card text-foreground shadow-xs font-semibold"
