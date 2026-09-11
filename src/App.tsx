@@ -14,7 +14,7 @@ import {
 import { usePreloadImages, useSectionScroll } from "@/hooks";
 import { scaleFadeMotionPreset } from "@/lib/uiUtils";
 import { ErrorManager } from "@/lib/utils";
-import useAppStore, { useAppStoreInitialization } from "@/store";
+import useAppStore, { useActiveTournamentStatus, useAppStoreInitialization } from "@/store";
 import { TournamentSetup } from "@/tournament/TournamentSetup";
 
 const INSTALL_DESCRIPTION =
@@ -85,8 +85,8 @@ function PwaInstallPrompt() {
 }
 
 function AppLayout({ children }: { children: React.ReactNode }) {
-	const tournament = useAppStore((s) => s.tournament);
-	const errors = useAppStore((s) => s.errors);
+	const isLoading = useAppStore((s) => s.tournament.isLoading);
+	const currentError = useAppStore((s) => s.errors.current);
 	const errorActions = useAppStore((s) => s.errorActions);
 
 	const handleSkipToMain = () => {
@@ -110,7 +110,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 					speed={0.8}
 					amplitude={0.08}
 					mouseReact={true}
-					className="fixed inset-0 z-0 opacity-80 pointer-events-none"
+					className="fixed inset-0 z-0 opacity-100 pointer-events-none"
 				/>
 				<PwaInstallPrompt />
 
@@ -128,15 +128,15 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 					className="app-main relative z-10 flex w-full flex-col pt-0"
 					tabIndex={-1}
 				>
-					{Boolean(errors.current) && (
+					{Boolean(currentError) && (
 						<div className="mx-auto mb-4 w-full max-w-4xl px-3 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
-							<ErrorComponent error={String(errors.current)} onDismiss={handleDismissError} />
+							<ErrorComponent error={String(currentError)} onDismiss={handleDismissError} />
 						</div>
 					)}
 					<div className="app-main__content flex w-full flex-1 flex-col items-stretch">
 						{children}
 					</div>
-					{tournament.isLoading && (
+					{isLoading && (
 						<div
 							className="global-loading-overlay"
 							role="status"
@@ -153,7 +153,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 function HomeRoute() {
-	const tournament = useAppStore((s) => s.tournament);
+	const { hasActiveTournament, namesCount } = useActiveTournamentStatus();
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
 	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
 
@@ -176,11 +176,7 @@ function HomeRoute() {
 
 	useEffect(() => clearPendingScroll, [clearPendingScroll]);
 
-	const hasActiveInProgressTournament = Boolean(
-		tournament.names && tournament.names.length >= 2 && !tournament.isComplete,
-	);
-
-	if (hasActiveInProgressTournament) {
+	if (hasActiveTournament) {
 		return (
 			<div className="w-full flex flex-col items-center">
 				<div
@@ -197,9 +193,7 @@ function HomeRoute() {
 								</div>
 								<div>
 									<h4 className="text-sm font-semibold text-foreground">Tournament in Progress</h4>
-									<p className="text-xs text-muted-foreground">
-										{tournament.names?.length} contenders seeded
-									</p>
+									<p className="text-xs text-muted-foreground">{namesCount} contenders seeded</p>
 								</div>
 							</div>
 							<div className="flex items-center gap-2 w-full sm:w-auto justify-end">

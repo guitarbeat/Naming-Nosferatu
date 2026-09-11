@@ -449,3 +449,113 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 	return debouncedValue;
 }
+
+// ============================================================================
+// 8. useIntersectionObserver
+// ============================================================================
+export interface UseIntersectionObserverOptions {
+	root?: Element | Document | null;
+	rootMargin?: string;
+	threshold?: number | number[];
+	enabled?: boolean;
+	initialIsVisible?: boolean;
+}
+
+interface PooledObserverRecord {
+	observer: IntersectionObserver;
+	callbacks: Map<Element, (entry: IntersectionObserverEntry) => void>;
+}
+
+const observerPool = new Map<string, PooledObserverRecord>();
+
+function getObserverPoolKey(
+	root: Element | Document | null,
+	rootMargin: string,
+	threshold: number | number[],
+): string {
+	const threshStr = Array.isArray(threshold) ? threshold.join(",") : String(threshold);
+	return `${root ? "custom" : "viewport"}_${rootMargin}_${threshStr}`;
+}
+
+function observeWithPool(
+	element: Element,
+	callback: (entry: IntersectionObserverEntry) => void,
+	options: { root: Element | Document | null; rootMargin: string; threshold: number | number[] },
+): () => void {
+	const key = getObserverPoolKey(options.root, options.rootMargin, options.threshold);
+	let record = observerPool.get(key);
+
+	if (!record) {
+		const callbacks = new Map<Element, (entry: IntersectionObserverEntry) => void>();
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					const cb = callbacks.get(entry.target);
+					if (cb) {
+						cb(entry);
+					}
+				}
+			},
+			{ root: options.root, rootMargin: options.rootMargin, threshold: options.threshold },
+		);
+		record = { observer, callbacks };
+		observerPool.set(key, record);
+	}
+
+	record.callbacks.set(element, callback);
+	record.observer.observe(element);
+
+	return () => {
+		record?.callbacks.delete(element);
+		record?.observer.unobserve(element);
+		if (record && record.callbacks.size === 0) {
+			record.observer.disconnect();
+			observerPool.delete(key);
+		}
+	};
+}
+
+export function useIntersectionObserver(
+	targetRef: React.RefObject<Element | null>,
+	options: UseIntersectionObserverOptions = EMPTY_OPTIONS,
+): boolean {
+	const {
+		root = null,
+		rootMargin = "80px",
+		threshold = 0,
+		enabled = true,
+		initialIsVisible = true,
+	} = options;
+
+	const [isVisible, setIsVisible] = useState<boolean>(() => {
+		if (!enabled) {
+			return true;
+		}
+		return initialIsVisible;
+	});
+
+	useEffect(() => {
+		if (!enabled) {
+			setIsVisible(true);
+			return;
+		}
+
+		const element = targetRef.current;
+		if (!element || typeof window === "undefined" || !("IntersectionObserver" in window)) {
+			setIsVisible(true);
+			return;
+		}
+
+		const unobserve = observeWithPool(
+			element,
+			(entry) => {
+				setIsVisible(entry.isIntersecting);
+			},
+			{ root, rootMargin, threshold },
+		);
+
+		return unobserve;
+	}, [targetRef, root, rootMargin, threshold, enabled]);
+
+	return isVisible;
+}

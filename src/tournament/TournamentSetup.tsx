@@ -11,14 +11,13 @@ import { useEffect, useRef } from "react";
 import { ratingsAPI } from "@/api";
 import { normalizeRatingsWithStats } from "@/lib/names";
 import { fadeMotionPreset } from "@/lib/uiUtils";
-import useAppStore from "@/store";
+import useAppStore, { useTournamentSetupState } from "@/store";
 import type { RatingData } from "@/types";
 import { NameSelector } from "./NameSelector";
 import { TournamentArena } from "./TournamentArena";
 
 export function TournamentSetup() {
-	const user = useAppStore((s) => s.user);
-	const tournament = useAppStore((s) => s.tournament);
+	const { names, isComplete, ratings, userId, userName } = useTournamentSetupState();
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
 	const hasSavedRef = useRef(false);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -321,11 +320,15 @@ export function TournamentSetup() {
 		};
 
 		const autoScrollLoop = (time: number) => {
+			if (document.hidden) {
+				autoScrollRafRef.current = null;
+				return;
+			}
 			const lastTime = lastAutoScrollTimeRef.current || time;
 			const dt = Math.min(50, Math.max(1, time - lastTime));
 			lastAutoScrollTimeRef.current = time;
 
-			if (!prefersReducedMotion && !isAutoScrollPausedRef.current && !isIntertiaActiveRef.current) {
+			if (!isAutoScrollPausedRef.current && !isIntertiaActiveRef.current) {
 				const speed = 0.02;
 				const delta = speed * dt;
 				scrollY.set(scrollY.get() + delta);
@@ -334,8 +337,24 @@ export function TournamentSetup() {
 			autoScrollRafRef.current = window.requestAnimationFrame(autoScrollLoop);
 		};
 
-		lastAutoScrollTimeRef.current = performance.now();
-		autoScrollRafRef.current = window.requestAnimationFrame(autoScrollLoop);
+		if (!prefersReducedMotion) {
+			lastAutoScrollTimeRef.current = performance.now();
+			autoScrollRafRef.current = window.requestAnimationFrame(autoScrollLoop);
+		}
+
+		const handleVisibilityChange = () => {
+			if (document.hidden) {
+				if (autoScrollRafRef.current !== null) {
+					window.cancelAnimationFrame(autoScrollRafRef.current);
+					autoScrollRafRef.current = null;
+				}
+			} else if (!prefersReducedMotion && autoScrollRafRef.current === null) {
+				lastAutoScrollTimeRef.current = performance.now();
+				autoScrollRafRef.current = window.requestAnimationFrame(autoScrollLoop);
+			}
+		};
+
+		document.addEventListener("visibilitychange", handleVisibilityChange);
 
 		targetEl.addEventListener("mouseenter", handleMouseEnter);
 		targetEl.addEventListener("mouseleave", handleMouseLeave);
@@ -346,6 +365,7 @@ export function TournamentSetup() {
 		window.addEventListener("keydown", handleKeyDown);
 
 		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
 			targetEl.removeEventListener("mouseenter", handleMouseEnter);
 			targetEl.removeEventListener("mouseleave", handleMouseLeave);
 			targetEl.removeEventListener("wheel", handleWheel);
@@ -370,36 +390,36 @@ export function TournamentSetup() {
 	}, [prefersReducedMotion, scrollY]);
 
 	useEffect(() => {
-		if (!tournament.isComplete) {
+		if (!isComplete) {
 			hasSavedRef.current = false;
 			return;
 		}
 		if (hasSavedRef.current) {
 			return;
 		}
-		if (Object.keys(tournament.ratings).length > 0) {
+		if (Object.keys(ratings).length > 0) {
 			hasSavedRef.current = true;
-			const userId = user.id || user.name || "anonymous";
-			const ratingsWithStats = normalizeRatingsWithStats(tournament.ratings);
-			saveRatingsMutation.mutate({ userId, ratings: ratingsWithStats });
+			const effectiveUserId = userId || userName || "anonymous";
+			const ratingsWithStats = normalizeRatingsWithStats(ratings);
+			saveRatingsMutation.mutate({ userId: effectiveUserId, ratings: ratingsWithStats });
 		}
-	}, [tournament.isComplete, tournament.ratings, user.id, user.name, saveRatingsMutation.mutate]);
+	}, [isComplete, ratings, userId, userName, saveRatingsMutation.mutate]);
 
 	return (
 		<div ref={containerRef} className="w-full flex flex-col flex-1 min-h-[520px] gap-2">
 			<AnimatePresence mode="wait">
-				{tournament.names && tournament.names.length >= 2 ? (
+				{names && names.length >= 2 ? (
 					<motion.div
 						key="arena"
 						{...fadeMotionPreset}
 						className="w-full flex flex-col flex-1 min-h-[520px] py-0"
 					>
 						<TournamentArena
-							names={tournament.names}
-							onComplete={(ratings) => {
-								tournamentActions.completeTournament(ratings);
+							names={names}
+							onComplete={(completedRatings) => {
+								tournamentActions.completeTournament(completedRatings);
 							}}
-							userName={user.name ?? undefined}
+							userName={userName ?? undefined}
 						/>
 					</motion.div>
 				) : (

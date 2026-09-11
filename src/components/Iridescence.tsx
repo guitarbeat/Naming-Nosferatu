@@ -1,5 +1,6 @@
 import { Color, Mesh, Program, Renderer, Triangle } from "ogl";
-import { memo, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { isMobileOrLowPowerDevice } from "@/lib/uiUtils";
 
 interface IridescenceProps {
 	color?: [number, number, number] | number[];
@@ -21,8 +22,11 @@ void main() {
 }
 `;
 
-const fragmentShader = `
-precision highp float;
+function getFragmentShader(isLowPower: boolean): string {
+	const precision = isLowPower ? "mediump" : "highp";
+	const iterations = isLowPower ? "5.0" : "8.0";
+	return `
+precision ${precision} float;
 
 uniform float uTime;
 uniform vec3 uColor;
@@ -41,7 +45,7 @@ void main() {
 
   float d = -uTime * 0.5 * uSpeed;
   float a = 0.0;
-  for (float i = 0.0; i < 8.0; ++i) {
+  for (float i = 0.0; i < ${iterations}; ++i) {
     a += cos(i - d - a * uv.x);
     d += sin(uv.y * i + a);
   }
@@ -52,9 +56,9 @@ void main() {
   gl_FragColor = vec4(col, 1.0);
 }
 `;
+}
 
-// ⚡ Bolt Performance Optimization: Wrapped Iridescence in React.memo() to prevent unnecessary re-renders of the expensive WebGL background component.
-export const Iridescence = memo(function Iridescence({
+export function Iridescence({
 	color = [1, 1, 1],
 	speed = 1.0,
 	amplitude = 0.1,
@@ -63,6 +67,32 @@ export const Iridescence = memo(function Iridescence({
 }: IridescenceProps) {
 	const ctnDom = useRef<HTMLDivElement>(null);
 	const mousePos = useRef({ x: 0.5, y: 0.5 });
+	const programRef = useRef<Program | null>(null);
+
+	const r = color[0] ?? 1;
+	const g = color[1] ?? 1;
+	const b = color[2] ?? 1;
+
+	const rRef = useRef(r);
+	const gRef = useRef(g);
+	const bRef = useRef(b);
+	const speedRef = useRef(speed);
+	const amplitudeRef = useRef(amplitude);
+
+	// Update uniforms dynamically without re-initializing WebGL or re-compiling shaders
+	useEffect(() => {
+		rRef.current = r;
+		gRef.current = g;
+		bRef.current = b;
+		speedRef.current = speed;
+		amplitudeRef.current = amplitude;
+		const program = programRef.current;
+		if (program) {
+			program.uniforms.uColor.value.set(r, g, b);
+			program.uniforms.uSpeed.value = speed;
+			program.uniforms.uAmplitude.value = amplitude;
+		}
+	}, [r, g, b, speed, amplitude]);
 
 	useEffect(() => {
 		const ctn = ctnDom.current;
@@ -75,12 +105,27 @@ export const Iridescence = memo(function Iridescence({
 		let program: Program | null = null;
 		let handleMouseMove: ((e: MouseEvent) => void) | null = null;
 		let resize: (() => void) | null = null;
+		let handleVisibilityChange: (() => void) | null = null;
+		let isElementVisible = true;
+
+		let cachedWidth = ctn.clientWidth || window.innerWidth || 1;
+		let cachedHeight = ctn.clientHeight || window.innerHeight || 1;
+		let cachedLeft = 0;
+		let cachedTop = 0;
+
+		const isLowPower = isMobileOrLowPowerDevice();
+		const prefersReduced =
+			typeof window !== "undefined" &&
+			Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
+		// Limit DPR on mobile/budget devices to save fillrate and battery
+		const maxDpr = isLowPower ? 1.0 : 1.25;
 
 		try {
 			renderer = new Renderer({
 				alpha: true,
-				antialias: true,
-				dpr: Math.min(window.devicePixelRatio || 1, 2),
+				antialias: !isLowPower,
+				dpr: Math.min(window.devicePixelRatio || 1, maxDpr),
 			});
 			const gl = renderer.gl;
 			gl.clearColor(0, 0, 0, 0);
@@ -89,11 +134,15 @@ export const Iridescence = memo(function Iridescence({
 				if (!renderer || !ctn) {
 					return;
 				}
-				const width = ctn.clientWidth || window.innerWidth;
-				const height = ctn.clientHeight || window.innerHeight;
-				renderer.setSize(width, height);
+				const rect = ctn.getBoundingClientRect();
+				cachedWidth = rect.width || ctn.clientWidth || window.innerWidth || 1;
+				cachedHeight = rect.height || ctn.clientHeight || window.innerHeight || 1;
+				cachedLeft = rect.left;
+				cachedTop = rect.top;
+
+				renderer.setSize(cachedWidth, cachedHeight);
 				if (program) {
-					program.uniforms.uResolution.value = new Color(
+					program.uniforms.uResolution.value.set(
 						gl.canvas.width,
 						gl.canvas.height,
 						gl.canvas.width / (gl.canvas.height || 1),
@@ -105,11 +154,11 @@ export const Iridescence = memo(function Iridescence({
 			resize();
 
 			const geometry = new Triangle(gl);
-			const baseColor = new Color(color[0] ?? 1, color[1] ?? 1, color[2] ?? 1);
+			const baseColor = new Color(rRef.current, gRef.current, bRef.current);
 
 			program = new Program(gl, {
 				vertex: vertexShader,
-				fragment: fragmentShader,
+				fragment: getFragmentShader(isLowPower),
 				uniforms: {
 					uTime: { value: 0 },
 					uColor: { value: baseColor },
@@ -123,22 +172,64 @@ export const Iridescence = memo(function Iridescence({
 					uMouse: {
 						value: new Float32Array([mousePos.current.x, mousePos.current.y]),
 					},
-					uAmplitude: { value: amplitude },
-					uSpeed: { value: speed },
+					uAmplitude: { value: amplitudeRef.current },
+					uSpeed: { value: speedRef.current },
 				},
 			});
+			programRef.current = program;
 
 			const mesh = new Mesh(gl, { geometry, program });
 
+			let lastFrameTime = 0;
+			const minFrameInterval = isLowPower ? 33.3 : 16.6; // ~30fps cap on budget mobile to prevent thermal throttling
+
 			const update = (t: number) => {
-				animateId = requestAnimationFrame(update);
-				if (program && renderer) {
-					program.uniforms.uTime.value = t * 0.001;
-					renderer.render({ scene: mesh });
+				if (document.hidden || !isElementVisible) {
+					animateId = 0;
+					return;
+				}
+
+				const elapsed = t - lastFrameTime;
+				if (elapsed >= minFrameInterval) {
+					lastFrameTime = t - (elapsed % minFrameInterval);
+					if (program && renderer) {
+						program.uniforms.uTime.value = t * 0.001;
+						renderer.render({ scene: mesh });
+					}
+				}
+
+				if (!prefersReduced) {
+					animateId = requestAnimationFrame(update);
 				}
 			};
 
-			animateId = requestAnimationFrame(update);
+			if (prefersReduced) {
+				update(0);
+			} else {
+				animateId = requestAnimationFrame(update);
+			}
+
+			// Intersection observer to pause rendering when background is not visible
+			const observer =
+				typeof IntersectionObserver === "undefined"
+					? null
+					: new IntersectionObserver(([entry]) => {
+							isElementVisible = entry.isIntersecting;
+							if (isElementVisible && !animateId && !prefersReduced && !document.hidden) {
+								animateId = requestAnimationFrame(update);
+							}
+						});
+
+			if (observer && ctn) {
+				observer.observe(ctn);
+			}
+
+			handleVisibilityChange = () => {
+				if (!document.hidden && !animateId && !prefersReduced && isElementVisible) {
+					animateId = requestAnimationFrame(update);
+				}
+			};
+			document.addEventListener("visibilitychange", handleVisibilityChange);
 
 			gl.canvas.style.display = "block";
 			gl.canvas.style.width = "100%";
@@ -147,20 +238,19 @@ export const Iridescence = memo(function Iridescence({
 			ctn.appendChild(gl.canvas);
 
 			handleMouseMove = (e: MouseEvent) => {
-				if (!ctn) {
-					return;
-				}
-				const rect = ctn.getBoundingClientRect();
-				const x = (e.clientX - rect.left) / (rect.width || 1);
-				const y = 1.0 - (e.clientY - rect.top) / (rect.height || 1);
+				const x = (e.clientX - cachedLeft) / cachedWidth;
+				const y = 1.0 - (e.clientY - cachedTop) / cachedHeight;
 				mousePos.current = { x, y };
 				if (program) {
 					(program.uniforms.uMouse.value as Float32Array)[0] = x;
 					(program.uniforms.uMouse.value as Float32Array)[1] = y;
+					if (prefersReduced && renderer) {
+						renderer.render({ scene: mesh });
+					}
 				}
 			};
 
-			if (mouseReact) {
+			if (mouseReact && !isLowPower) {
 				window.addEventListener("mousemove", handleMouseMove, { passive: true });
 			}
 		} catch (err) {
@@ -168,11 +258,15 @@ export const Iridescence = memo(function Iridescence({
 		}
 
 		return () => {
+			programRef.current = null;
 			if (animateId) {
 				cancelAnimationFrame(animateId);
 			}
 			if (resize) {
 				window.removeEventListener("resize", resize);
+			}
+			if (handleVisibilityChange) {
+				document.removeEventListener("visibilitychange", handleVisibilityChange);
 			}
 			if (mouseReact && handleMouseMove) {
 				window.removeEventListener("mousemove", handleMouseMove);
@@ -182,7 +276,7 @@ export const Iridescence = memo(function Iridescence({
 				renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
 			}
 		};
-	}, [color, speed, amplitude, mouseReact]);
+	}, [mouseReact]);
 
 	return <div ref={ctnDom} className={`iridescence-container ${className}`} aria-hidden="true" />;
-});
+}

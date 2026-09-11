@@ -219,6 +219,30 @@ export function getMatchSideId(match: Match, side: "left" | "right"): string {
 	return getFastParticipantId(match[side]);
 }
 
+const streakCache = new WeakMap<MatchRecord[], Map<string, number>>();
+
+export function getContestantStreak(
+	contestantId: string | number | null | undefined,
+	matchHistory?: MatchRecord[] | null,
+): number {
+	if (!contestantId || !matchHistory || matchHistory.length === 0) {
+		return 0;
+	}
+	let map = streakCache.get(matchHistory);
+	if (!map) {
+		map = new Map<string, number>();
+		streakCache.set(matchHistory, map);
+	}
+	const targetId = String(contestantId);
+	const cached = map.get(targetId);
+	if (cached !== undefined) {
+		return cached;
+	}
+	const streak = calculateWinStreak(targetId, matchHistory);
+	map.set(targetId, streak);
+	return streak;
+}
+
 export function calculateWinStreak(
 	contestantId: string | number | null | undefined,
 	matchHistory?: MatchRecord[] | null,
@@ -364,32 +388,27 @@ function makePendingResult(
 	return result;
 }
 
+const entrantsKeyCache = new WeakMap<string[], string>();
+
 function getCacheKey(bracketEntrants: string[], matchHistory: MatchRecord[]): string {
-	const entrantsLen = bracketEntrants.length;
-	let entrantsKey = "";
-	for (let i = 0; i < entrantsLen; i++) {
-		const str = bracketEntrants[i];
-		if (str) {
-			if (entrantsKey) {
-				entrantsKey += ",";
-			}
-			entrantsKey += str;
-		}
+	let entrantsKey = entrantsKeyCache.get(bracketEntrants);
+	if (entrantsKey === undefined) {
+		entrantsKey = bracketEntrants.join(",");
+		entrantsKeyCache.set(bracketEntrants, entrantsKey);
 	}
 
-	let historyKey = "";
 	const historyLen = matchHistory.length;
+	if (historyLen === 0) {
+		return `${entrantsKey}:`;
+	}
+
+	const parts = new Array<string>(historyLen);
 	for (let i = 0; i < historyLen; i++) {
 		const rec = matchHistory[i];
-		if (rec) {
-			if (i > 0) {
-				historyKey += "|";
-			}
-			historyKey += `${rec.winner}-${rec.loser}`;
-		}
+		parts[i] = rec ? `${rec.winner}-${rec.loser}` : "";
 	}
 
-	return `${entrantsKey}:${historyKey}`;
+	return `${entrantsKey}:${parts.join("|")}`;
 }
 
 function getCachedRound(entrantsCount: number): number {
@@ -409,29 +428,32 @@ function getCachedRound(entrantsCount: number): number {
 	return round;
 }
 
-const BYE_PREFIX = "__BYE__";
+export const BYE_PREFIX = "__BYE__";
 
-function nextPowerOfTwo(value: number): number {
+export function nextPowerOfTwo(value: number): number {
 	if (value <= 1) {
 		return 1;
 	}
 	return 2 ** Math.ceil(Math.log2(value));
 }
 
-function isBye(id: string): boolean {
-	return id.startsWith(BYE_PREFIX);
+export function isBye(id: string | null | undefined): boolean {
+	return Boolean(id?.startsWith(BYE_PREFIX));
 }
 
-function createBye(round: number, index: number): string {
+export function createBye(round: number, index: number): string {
 	return `${BYE_PREFIX}${round}_${index}`;
 }
 
-function padForRound(entrants: string[], round: number): string[] {
+export function padForRound(entrants: string[], round: number = 1): string[] {
 	if (entrants.length <= 1) {
 		return entrants;
 	}
 	const targetSize = nextPowerOfTwo(entrants.length);
-	const padded = [...entrants];
+	if (entrants.length === targetSize) {
+		return entrants;
+	}
+	const padded = entrants.slice();
 	while (padded.length < targetSize) {
 		padded.push(createBye(round, padded.length));
 	}

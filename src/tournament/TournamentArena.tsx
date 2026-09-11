@@ -3,7 +3,6 @@ import { Clock, Gamepad2, Layers, LogOut, Trophy, Undo2, X } from "lucide-react"
 import { type KeyboardEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, CatImage, ErrorComponent } from "@/components/LayoutBlocks";
-import { CAT_IMAGES } from "@/lib/constants";
 import { getVisibleNames } from "@/lib/names";
 import { getRandomCatImage, MOTION_DURATIONS } from "@/lib/uiUtils";
 import { hapticVoteTap } from "@/lib/utils";
@@ -12,8 +11,8 @@ import type { MatchRecord, NameItem, Team, TournamentMode, TournamentProps } fro
 import { useTimedState, useTournamentState } from "./hooks";
 import { TournamentBracket, TournamentBracketModal } from "./TournamentBracket";
 import {
-	calculateWinStreak,
 	extractMatchData,
+	getContestantStreak,
 	getFlameCount,
 	getHeatCardClasses,
 	getHeatGradientClasses,
@@ -1188,7 +1187,7 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 
 	const calculateContestantStreak = useCallback(
 		(contestantId: string | number | null | undefined) =>
-			calculateWinStreak(contestantId, matchHistory),
+			getContestantStreak(contestantId, matchHistory),
 		[matchHistory],
 	);
 
@@ -1411,12 +1410,14 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		[handleVoteForSide],
 	);
 
-	const leftImg = matchData
-		? getRandomCatImage(matchData.leftId, CAT_IMAGES, matchData.leftName)
-		: null;
-	const rightImg = matchData
-		? getRandomCatImage(matchData.rightId, CAT_IMAGES, matchData.rightName)
-		: null;
+	const leftImg = useMemo(
+		() => (matchData ? getRandomCatImage(matchData.leftId, undefined, matchData.leftName) : null),
+		[matchData],
+	);
+	const rightImg = useMemo(
+		() => (matchData ? getRandomCatImage(matchData.rightId, undefined, matchData.rightName) : null),
+		[matchData],
+	);
 	const hasSelectionFeedback = selectedSide !== null;
 	const currentMatchKey = matchData
 		? `${roundNumber}-${currentMatchNumber}-${matchData.leftId}-${matchData.rightId}`
@@ -1506,6 +1507,83 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		openingBracketReveal.value,
 	]);
 
+	const matchupMetrics = useMemo(() => {
+		if (!matchData) {
+			return null;
+		}
+
+		const dominant =
+			leftStreak >= rightStreak
+				? leftStreak >= STREAK_THRESHOLDS.warm
+					? {
+							name: matchData.leftName,
+							streak: leftStreak,
+							heatLevel: leftHeatLevel ?? ("warm" as HeatLevel),
+						}
+					: null
+				: rightStreak >= STREAK_THRESHOLDS.warm
+					? {
+							name: matchData.rightName,
+							streak: rightStreak,
+							heatLevel: rightHeatLevel ?? ("warm" as HeatLevel),
+						}
+					: null;
+
+		const progressWidth = progress || (currentMatchNumber / totalMatches) * 100;
+		const leftRating = ratings[matchData.leftId] ?? 1500;
+		const rightRating = ratings[matchData.rightId] ?? 1500;
+		const leftWinOdds = 1 / (1 + 10 ** ((rightRating - leftRating) / 400));
+		const rightWinOdds = 1 - leftWinOdds;
+		const ratingGap = Math.abs(leftRating - rightRating);
+		const leftIsFavored = leftRating > rightRating;
+		const rightIsFavored = rightRating > leftRating;
+		const matchesRemaining = Math.max(0, totalMatches - currentMatchNumber);
+		const roundMatchesLeft = Math.max(0, Math.ceil((totalMatches - currentMatchNumber) / 2));
+		const stageHeadline = getStageHeadline(roundNumber, totalRounds);
+		const pressureCopy = getPressureCopy({
+			round: roundNumber,
+			totalRounds,
+			currentMatchNumber,
+			totalMatches,
+			ratingGap,
+		});
+		const matchupTone =
+			ratingGap <= 24
+				? "Close rating"
+				: leftIsFavored
+					? `${matchData.leftName} leads by ${Math.round(ratingGap)}`
+					: `${matchData.rightName} leads by ${Math.round(ratingGap)}`;
+
+		return {
+			dominantStreak: dominant,
+			progressWidth,
+			leftRating,
+			rightRating,
+			leftWinOdds,
+			rightWinOdds,
+			ratingGap,
+			leftIsFavored,
+			rightIsFavored,
+			matchesRemaining,
+			roundMatchesLeft,
+			stageHeadline,
+			pressureCopy,
+			matchupTone,
+		};
+	}, [
+		matchData,
+		leftStreak,
+		rightStreak,
+		leftHeatLevel,
+		rightHeatLevel,
+		progress,
+		currentMatchNumber,
+		totalMatches,
+		ratings,
+		roundNumber,
+		totalRounds,
+	]);
+
 	if (isComplete) {
 		return (
 			<TournamentComplete
@@ -1523,7 +1601,7 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		);
 	}
 
-	if (!matchData) {
+	if (!matchData || !matchupMetrics) {
 		return (
 			<div className="flex min-h-[50vh] items-center justify-center">
 				<div className="text-muted-foreground">Loading tournament...</div>
@@ -1531,47 +1609,21 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		);
 	}
 
-	const dominantStreak =
-		leftStreak >= rightStreak
-			? leftStreak >= STREAK_THRESHOLDS.warm
-				? {
-						name: matchData.leftName,
-						streak: leftStreak,
-						heatLevel: leftHeatLevel ?? ("warm" as HeatLevel),
-					}
-				: null
-			: rightStreak >= STREAK_THRESHOLDS.warm
-				? {
-						name: matchData.rightName,
-						streak: rightStreak,
-						heatLevel: rightHeatLevel ?? ("warm" as HeatLevel),
-					}
-				: null;
-
-	const progressWidth = progress || (currentMatchNumber / totalMatches) * 100;
-	const leftRating = ratings[matchData.leftId] ?? 1500;
-	const rightRating = ratings[matchData.rightId] ?? 1500;
-	const leftWinOdds = 1 / (1 + 10 ** ((rightRating - leftRating) / 400));
-	const rightWinOdds = 1 - leftWinOdds;
-	const ratingGap = Math.abs(leftRating - rightRating);
-	const leftIsFavored = leftRating > rightRating;
-	const rightIsFavored = rightRating > leftRating;
-	const matchesRemaining = Math.max(0, totalMatches - currentMatchNumber);
-	const roundMatchesLeft = Math.max(0, Math.ceil((totalMatches - currentMatchNumber) / 2));
-	const stageHeadline = getStageHeadline(roundNumber, totalRounds);
-	const pressureCopy = getPressureCopy({
-		round: roundNumber,
-		totalRounds,
-		currentMatchNumber,
-		totalMatches,
-		ratingGap,
-	});
-	const matchupTone =
-		ratingGap <= 24
-			? "Close rating"
-			: leftIsFavored
-				? `${matchData.leftName} leads by ${Math.round(ratingGap)}`
-				: `${matchData.rightName} leads by ${Math.round(ratingGap)}`;
+	const {
+		dominantStreak,
+		progressWidth,
+		leftRating,
+		rightRating,
+		leftWinOdds,
+		rightWinOdds,
+		leftIsFavored,
+		rightIsFavored,
+		matchesRemaining,
+		roundMatchesLeft,
+		stageHeadline,
+		pressureCopy,
+		matchupTone,
+	} = matchupMetrics;
 
 	return (
 		<div className="relative flex w-full flex-col font-display text-foreground selection:bg-primary/30">

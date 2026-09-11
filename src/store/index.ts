@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
-import { CAT_IMAGES, STORAGE_KEYS } from "@/lib/constants";
+import { useShallow } from "zustand/react/shallow";
+import { STORAGE_KEYS } from "@/lib/constants";
 import {
 	clearStoredTournamentFromIDB,
 	getStoredTournamentFromIDB,
@@ -539,7 +540,7 @@ const createUserAndSettingsSlice: AppSliceCreator<
 
 		login: (userName, onContext) => {
 			const id = `user_${Math.random().toString(36).substring(2, 9)}`;
-			const avatarUrl = getRandomCatImage(id, CAT_IMAGES, userName);
+			const avatarUrl = getRandomCatImage(id, undefined, userName);
 			const nextUser = {
 				...get().user,
 				id,
@@ -742,4 +743,39 @@ export function useAppStoreInitialization(onUserContext?: (name: string) => void
 		initializeTheme();
 		void hydrateTournamentFromIndexedDB();
 	}, [initializeTheme, initializeUser, onUserContext]);
+}
+
+export { useShallow };
+
+/**
+ * Selector for checking if an active tournament is currently running,
+ * preventing re-renders on per-vote tournament progress mutations.
+ */
+export function useActiveTournamentStatus() {
+	return useAppStore(
+		useShallow((state) => ({
+			hasActiveTournament: Boolean(
+				state.tournament.names &&
+					state.tournament.names.length >= 2 &&
+					!state.tournament.isComplete,
+			),
+			namesCount: state.tournament.names?.length ?? 0,
+		})),
+	);
+}
+
+/**
+ * Memoized selector for TournamentSetup container, isolating stable tournament
+ * setup fields and user IDs from rapid vote/rating progress mutations.
+ */
+export function useTournamentSetupState() {
+	return useAppStore(
+		useShallow((state) => ({
+			names: state.tournament.names,
+			isComplete: state.tournament.isComplete,
+			ratings: state.tournament.ratings,
+			userId: state.user.id,
+			userName: state.user.name,
+		})),
+	);
 }

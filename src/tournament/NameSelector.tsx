@@ -6,7 +6,8 @@ import { Button, Loading } from "@/components/LayoutBlocks";
 import { DEFAULT_SAMPLE_NAMES, getLockedNames, getVisibleNames, isNameLocked } from "@/lib/names";
 import { hapticNavTap } from "@/lib/utils";
 import useAppStore from "@/store";
-import type { IdType, NameItem } from "@/types";
+import { createIdToNameMap } from "@/tournament/tournamentEngine";
+import type { IdType } from "@/types";
 
 /**
  * Accessible cat name contender selection via full-screen 3D Drift Wall.
@@ -39,14 +40,7 @@ export const NameSelector = memo(function NameSelector() {
 		[storeSelectedNames],
 	);
 
-	const namesById = useMemo(() => {
-		const map = new Map<IdType, NameItem>();
-		for (let i = 0; i < names.length; i++) {
-			const nameItem = names[i];
-			map.set(nameItem.id, nameItem);
-		}
-		return map;
-	}, [names]);
+	const namesById = useMemo(() => createIdToNameMap(names), [names]);
 
 	const availableNames = useMemo(() => getVisibleNames(names), [names]);
 	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
@@ -154,6 +148,16 @@ export const NameSelector = memo(function NameSelector() {
 						dim={1}
 						pauseOnHover={true}
 						grayscale={false}
+						displace={0}
+						distortionScale={-160}
+						redOffset={5}
+						greenOffset={15}
+						blueOffset={25}
+						borderWidth={0.16}
+						brightness={60}
+						opacity={0.85}
+						blur={11}
+						mixBlendMode="screen"
 						className="w-full h-full"
 					/>
 				</div>

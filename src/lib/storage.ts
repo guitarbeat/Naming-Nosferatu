@@ -85,7 +85,15 @@ function encrypt(text: string): string {
 		padding: CryptoJS.pad.Pkcs7,
 	}).toString();
 	const ivHexStr = CryptoJS.enc.Hex.stringify(iv);
-	return `${ivHexStr}:${encrypted}`;
+	const result = `${ivHexStr}:${encrypted}`;
+	if (decryptionCache.size >= MAX_DECRYPT_CACHE) {
+		const firstKey = decryptionCache.keys().next().value;
+		if (firstKey) {
+			decryptionCache.delete(firstKey);
+		}
+	}
+	decryptionCache.set(result, text);
+	return result;
 }
 
 function decrypt(text: string): string {

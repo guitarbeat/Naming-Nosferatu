@@ -59,20 +59,42 @@
 	--destructive: oklch(var(--error));
 	--destructive-foreground: white;
 
-	/* DriftWall High-Contrast Theme Variables */
-	--dw-tile-bg: #ffffff;
-	--dw-tile-border: rgba(15, 23, 42, 0.16);
-	--dw-tile-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.06);
-	--dw-name-fill: #0f172a;
-	--dw-arc-fill: #475569;
-	--dw-hover-border: rgba(15, 23, 42, 0.45);
-	--dw-hover-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.12);
+	/* DriftWall Crystal Liquid Glass Variables */
+	--dw-tile-bg: radial-gradient(
+		circle at 50% 50%,
+		rgba(255, 255, 255, 0.04) 0%,
+		rgba(255, 255, 255, 0.08) 60%,
+		rgba(255, 255, 255, 0.2) 88%,
+		rgba(255, 255, 255, 0.45) 100%
+	);
+	--dw-tile-border: rgba(255, 255, 255, 0.55);
+	--dw-tile-shadow:
+		0 12px 32px -4px rgba(0, 0, 0, 0.1),
+		0 4px 12px -2px rgba(0, 0, 0, 0.05),
+		0 0 0 1px rgba(255, 255, 255, 0.45),
+		inset 0 2px 3px 0 rgba(255, 255, 255, 0.9),
+		inset 0 -2px 4px 0 rgba(255, 255, 255, 0.3),
+		inset 0 0 20px 2px rgba(255, 255, 255, 0.18),
+		inset 0 0 15px 0 rgba(0, 0, 0, 0.05);
+	--dw-name-fill: #090d16;
+	--dw-arc-fill: #1e293b;
+	--dw-hover-bg: radial-gradient(
+		circle at 50% 50%,
+		rgba(255, 255, 255, 0.12) 0%,
+		rgba(255, 255, 255, 0.2) 60%,
+		rgba(255, 255, 255, 0.4) 88%,
+		rgba(255, 255, 255, 0.7) 100%
+	);
+	--dw-hover-border: rgba(255, 255, 255, 0.85);
+	--dw-hover-shadow:
+		0 20px 45px -5px rgba(0, 0, 0, 0.16),
+		0 8px 20px -4px rgba(0, 0, 0, 0.08),
+		0 0 0 1.5px rgba(255, 255, 255, 0.75),
+		inset 0 2.5px 4px 0 rgba(255, 255, 255, 0.95),
+		inset 0 -2.5px 4px 0 rgba(255, 255, 255, 0.4),
+		inset 0 0 25px 4px rgba(255, 255, 255, 0.3),
+		inset 0 0 20px 0 rgba(0, 0, 0, 0.06);
 	--dw-hover-name-fill: #000000;
-	--dw-sel-bg: #fff1f2;
-	--dw-sel-border: #e11d48;
-	--dw-sel-shadow: 0 8px 24px 0 rgba(225, 29, 72, 0.18);
-	--dw-sel-name-fill: #881337;
-	--dw-sel-arc-fill: #be123c;
 
 	/* Shadows */
 	--shadow-soft: 0 10px 40px -10px oklch(var(--accent) / 0.15);
@@ -1137,15 +1159,11 @@ a,
 	pointer-events: none;
 	border-radius: var(--dw-radius);
 	overflow: hidden;
-	background: var(--dw-tile-bg);
-	border: 1.5px solid var(--dw-tile-border);
-	box-shadow: var(--dw-tile-shadow);
 	opacity: var(--dw-dim);
 	transform: translateZ(0);
 	transition:
 		opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-		border-color 0.25s ease,
-		background 0.25s ease,
+		transform 0.25s ease,
 		box-shadow 0.25s ease;
 }
 
@@ -1231,6 +1249,25 @@ a,
 .drift-wall__arc-group {
 	transform-box: view-box;
 	transform-origin: 100px 100px;
+	animation: drift-wall-orbit var(--orbit-duration, 26s) linear infinite;
+	animation-delay: var(--orbit-delay, 0s);
+	animation-direction: var(--orbit-direction, normal);
+	will-change: transform;
+}
+
+@keyframes drift-wall-orbit {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.drift-wall__arc-group {
+		animation: none;
+	}
 }
 
 .drift-wall__arc-text {
@@ -1248,7 +1285,10 @@ a,
 	letter-spacing: 0.04em;
 	dominant-baseline: central;
 	text-anchor: middle;
-	transition: fill 0.25s ease;
+	filter: drop-shadow(0 1px 1.5px rgba(255, 255, 255, 0.85));
+	transition:
+		fill 0.25s ease,
+		filter 0.25s ease;
 }
 
 .drift-wall__center-name {
@@ -1267,8 +1307,10 @@ a,
 	text-transform: uppercase;
 	dominant-baseline: central;
 	text-anchor: middle;
+	filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.9));
 	transition:
 		fill 0.25s ease,
+		filter 0.25s ease,
 		transform 0.25s ease;
 }
 
@@ -1282,11 +1324,19 @@ a,
 	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.95));
 }
 
+.drift-wall__tile:hover .drift-wall__arc-group,
+.drift-wall__tile.is-active .drift-wall__arc-group,
+.drift-wall__tile:focus .drift-wall__arc-group,
+.drift-wall__tile:focus-visible .drift-wall__arc-group {
+	animation-play-state: paused;
+}
+
 .drift-wall__tile:hover .drift-wall__arc-text,
 .drift-wall__tile.is-active .drift-wall__arc-text,
 .drift-wall__tile:focus .drift-wall__arc-text,
 .drift-wall__tile:focus-visible .drift-wall__arc-text {
 	fill: var(--dw-hover-name-fill);
+	filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 1));
 }
 
 .drift-wall__tile:hover .drift-wall__center-name,
@@ -1294,24 +1344,7 @@ a,
 .drift-wall__tile:focus .drift-wall__center-name,
 .drift-wall__tile:focus-visible .drift-wall__center-name {
 	fill: var(--dw-hover-name-fill);
-}
-
-.drift-wall__tile.is-selected .drift-wall__arc-text {
-	fill: var(--dw-sel-arc-fill);
-}
-
-.drift-wall__tile.is-selected .drift-wall__center-name {
-	fill: var(--dw-sel-name-fill);
-}
-
-.drift-wall__tile.is-selected .drift-wall__inner,
-.drift-wall__tile.is-selected:hover .drift-wall__inner,
-.drift-wall__tile.is-selected.is-active .drift-wall__inner,
-.drift-wall__tile.is-selected:focus .drift-wall__inner,
-.drift-wall__tile.is-selected:focus-visible .drift-wall__inner {
-	border-color: var(--dw-sel-border);
-	background: var(--dw-sel-bg);
-	box-shadow: var(--dw-sel-shadow);
+	filter: drop-shadow(0 1.5px 3px rgba(255, 255, 255, 1));
 }
 
 .drift-wall__tile:hover .drift-wall__inner,
@@ -1319,9 +1352,9 @@ a,
 .drift-wall__tile:focus .drift-wall__inner,
 .drift-wall__tile:focus-visible .drift-wall__inner {
 	opacity: 1;
-	border-color: var(--dw-hover-border);
-	transform: none;
-	box-shadow: var(--dw-hover-shadow);
+	background: transparent;
+	transform: translateZ(8px) scale(1.015);
+	box-shadow: none;
 }
 
 .drift-wall__tile:hover img,
@@ -1340,7 +1373,7 @@ a,
 
 .drift-wall__tile:focus .drift-wall__inner,
 .drift-wall__tile:focus-visible .drift-wall__inner {
-	outline: 2px solid var(--foreground, #ffffff);
+	outline: 2px solid var(--primary, #007aff);
 	outline-offset: 2px;
 }
 

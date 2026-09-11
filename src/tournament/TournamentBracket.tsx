@@ -15,73 +15,23 @@ import {
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Button, CatImage } from "@/components/LayoutBlocks";
 import { useDebounce } from "@/hooks";
-import { CAT_IMAGES } from "@/lib/constants";
-import { getRandomCatImage, MOTION_DURATIONS } from "@/lib/uiUtils";
+import { MOTION_DURATIONS } from "@/lib/uiUtils";
 import { hapticVoteTap } from "@/lib/utils";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
 import {
-	calculateWinStreak,
-	getBracketStageLabel,
+	areMatchNodePropsEqual,
+	buildVisualContender,
+	deriveVisualBracketTree,
+	type VisualContender,
+	type VisualMatch,
+} from "./bracketUtils";
+import {
+	createIdToNameMap,
+	createTeamsById,
 	getFlameCount,
 	getMatchSideId,
 	STREAK_THRESHOLDS,
 } from "./tournamentEngine";
-
-// ============================================================================
-// TYPES & INTERFACES FOR VISUAL BRACKET
-// ============================================================================
-
-interface VisualContender {
-	id: string;
-	name: string;
-	isBye: boolean;
-	isWinner: boolean;
-	isLoser: boolean;
-	rating?: number;
-	seed?: number;
-	avatarUrl?: string | null;
-	isTeam?: boolean;
-	members?: string[];
-	description?: string;
-	pronunciation?: string;
-	streak?: number;
-}
-
-interface VisualMatch {
-	id: string; // e.g. "r1-m0"
-	overallMatchNumber?: number; // 1-based order in the tournament sequence
-	roundNumber: number; // 1-based round index
-	roundName: string; // e.g. "Quarterfinals"
-	matchIndex: number; // 0-based match index in this round
-	contender1: VisualContender | null;
-	contender2: VisualContender | null;
-	winnerId: string | null;
-	loserId: string | null;
-	status: "completed" | "active" | "upcoming" | "bye";
-	isCurrentMatch: boolean;
-	placeholder1Text?: string;
-	placeholder2Text?: string;
-	targetMatchId?: string; // which match in next round this feeds into
-	targetSlot?: 0 | 1; // top or bottom slot in next match
-}
-
-interface VisualRound {
-	roundNumber: number;
-	roundName: string;
-	matches: VisualMatch[];
-	isCurrentRound: boolean;
-	isCompleted: boolean;
-}
-
-interface VisualBracketTree {
-	rounds: VisualRound[];
-	champion: VisualContender | null;
-	totalEntrants: number;
-	totalRounds: number;
-	totalMatches: number;
-	completedMatches: number;
-	activeMatch: VisualMatch | null;
-}
 
 interface TournamentBracketProps {
 	bracketEntrants?: string[];
@@ -101,360 +51,6 @@ interface TournamentBracketProps {
 }
 
 // ============================================================================
-// TREE DERIVATION HELPER
-// ============================================================================
-
-const BYE_PREFIX = "__BYE__";
-
-function isByeId(id: string | null | undefined): boolean {
-	return Boolean(id?.startsWith(BYE_PREFIX));
-}
-
-function nextPowerOfTwo(value: number): number {
-	if (value <= 1) {
-		return 1;
-	}
-	return 2 ** Math.ceil(Math.log2(value));
-}
-
-function padEntrantsForRound(entrants: string[]): string[] {
-	if (entrants.length <= 1) {
-		return entrants;
-	}
-	const targetSize = nextPowerOfTwo(entrants.length);
-	const padded = [...entrants];
-	while (padded.length < targetSize) {
-		padded.push(`${BYE_PREFIX}1_${padded.length}`);
-	}
-	return padded;
-}
-
-function buildVisualContender({
-	id,
-	seed,
-	namesMap,
-	teamsMap,
-	ratings,
-	tournamentMode,
-	isWinner = false,
-	isLoser = false,
-	matchHistory,
-}: {
-	id: string;
-	seed?: number;
-	namesMap: Map<string, NameItem>;
-	teamsMap: Map<string, Team>;
-	ratings: Record<string, number>;
-	tournamentMode: TournamentMode;
-	isWinner?: boolean;
-	isLoser?: boolean;
-	matchHistory?: MatchRecord[];
-}): VisualContender {
-	if (isByeId(id)) {
-		return {
-			id,
-			name: "BYE",
-			isBye: true,
-			isWinner: false,
-			isLoser: false,
-		};
-	}
-
-	const streak = calculateWinStreak(id, matchHistory);
-
-	if (tournamentMode === "2v2") {
-		const team = teamsMap.get(id);
-		const teamName = team ? team.memberNames.join(" + ") : id;
-		const memberNames = team ? team.memberNames : [id];
-		const rating = ratings[id] ?? 1500;
-
-		return {
-			id,
-			name: teamName,
-			isBye: false,
-			isWinner,
-			isLoser,
-			rating,
-			seed,
-			isTeam: true,
-			members: memberNames,
-			avatarUrl: null,
-			streak,
-		};
-	}
-
-	const nameItem = namesMap.get(id);
-	const catName = nameItem?.name ?? id;
-	const rating = ratings[id] ?? nameItem?.rating ?? 1500;
-	const avatarUrl = getRandomCatImage(id, CAT_IMAGES, catName);
-
-	return {
-		id,
-		name: catName,
-		isBye: false,
-		isWinner,
-		isLoser,
-		rating,
-		seed,
-		isTeam: false,
-		description: nameItem?.description,
-		pronunciation: nameItem?.pronunciation,
-		avatarUrl,
-		streak,
-	};
-}
-
-function deriveVisualBracketTree({
-	bracketEntrants = [],
-	matchHistory = [],
-	names = [],
-	teams = [],
-	ratings = {},
-	totalRounds: passedTotalRounds,
-	tournamentMode = "1v1",
-}: {
-	bracketEntrants?: string[];
-	matchHistory?: MatchRecord[];
-	currentMatch?: Match | null;
-	names?: NameItem[];
-	teams?: Team[];
-	ratings?: Record<string, number>;
-	totalRounds?: number;
-	tournamentMode?: TournamentMode;
-}): VisualBracketTree {
-	const namesMap = new Map<string, NameItem>();
-	for (const n of names) {
-		namesMap.set(String(n.id), n);
-	}
-
-	const teamsMap = new Map<string, Team>();
-	for (const t of teams) {
-		teamsMap.set(t.id, t);
-	}
-
-	const realEntrants = bracketEntrants.filter((id) => !isByeId(id));
-	const totalEntrants = realEntrants.length;
-
-	if (totalEntrants < 2) {
-		const singleContender = realEntrants[0]
-			? buildVisualContender({
-					id: realEntrants[0],
-					seed: 1,
-					namesMap,
-					teamsMap,
-					ratings,
-					tournamentMode,
-					isWinner: true,
-					matchHistory,
-				})
-			: null;
-
-		return {
-			rounds: [],
-			champion: singleContender,
-			totalEntrants,
-			totalRounds: 1,
-			totalMatches: 0,
-			completedMatches: 0,
-			activeMatch: null,
-		};
-	}
-
-	const calcRounds = Math.max(1, Math.ceil(Math.log2(totalEntrants)));
-	const totalRounds = passedTotalRounds ?? calcRounds;
-	const totalMatches = Math.max(0, totalEntrants - 1);
-	const completedMatches = matchHistory.length;
-
-	// Build seed map for round 1 entrants
-	const seedMap = new Map<string, number>();
-	let seedCounter = 1;
-	for (const id of bracketEntrants) {
-		if (!isByeId(id) && !seedMap.has(id)) {
-			seedMap.set(id, seedCounter++);
-		}
-	}
-
-	let currentRoundEntrants: (string | null)[] = padEntrantsForRound(bracketEntrants);
-	let historyCursor = 0;
-	let matchSequenceCounter = 1;
-	let activeMatchNode: VisualMatch | null = null;
-
-	const rounds: VisualRound[] = [];
-
-	for (let r = 1; r <= totalRounds; r++) {
-		const matchCount = Math.max(1, Math.floor(currentRoundEntrants.length / 2));
-		const nextRoundEntrants: (string | null)[] = [];
-		const roundMatches: VisualMatch[] = [];
-		const stageLabel = getBracketStageLabel(r, totalRounds);
-
-		for (let m = 0; m < matchCount; m++) {
-			const leftId = currentRoundEntrants[2 * m] ?? null;
-			const rightId = currentRoundEntrants[2 * m + 1] ?? null;
-			const matchId = `r${r}-m${m}`;
-			const targetMatchId = r < totalRounds ? `r${r + 1}-m${Math.floor(m / 2)}` : undefined;
-			const targetSlot = (m % 2) as 0 | 1;
-
-			const leftIsBye = isByeId(leftId);
-			const rightIsBye = isByeId(rightId);
-
-			let status: VisualMatch["status"] = "upcoming";
-			let winnerId: string | null = null;
-			let loserId: string | null = null;
-			let isCurrentMatch = false;
-			let overallMatchNumber: number | undefined;
-
-			if (leftIsBye && rightIsBye) {
-				// Double bye (rare)
-				status = "bye";
-				nextRoundEntrants.push(null);
-			} else if (leftIsBye && rightId) {
-				// Right advances by bye
-				status = "bye";
-				winnerId = rightId;
-				loserId = leftId;
-				nextRoundEntrants.push(rightId);
-			} else if (rightIsBye && leftId) {
-				// Left advances by bye
-				status = "bye";
-				winnerId = leftId;
-				loserId = rightId;
-				nextRoundEntrants.push(leftId);
-			} else if (leftId && rightId) {
-				// Regular head-to-head match
-				overallMatchNumber = matchSequenceCounter++;
-
-				if (historyCursor < matchHistory.length) {
-					const record = matchHistory[historyCursor];
-					status = "completed";
-					winnerId = String(record.winner);
-					loserId = String(record.loser);
-					nextRoundEntrants.push(winnerId);
-					historyCursor++;
-				} else if (historyCursor === matchHistory.length) {
-					status = "active";
-					isCurrentMatch = true;
-					nextRoundEntrants.push(null);
-					historyCursor++;
-				} else {
-					status = "upcoming";
-					nextRoundEntrants.push(null);
-					historyCursor++;
-				}
-			} else {
-				// Unknown contender(s) from earlier pending rounds
-				status = "upcoming";
-				nextRoundEntrants.push(null);
-			}
-
-			const contender1 = leftId
-				? buildVisualContender({
-						id: leftId,
-						seed: r === 1 ? seedMap.get(leftId) : undefined,
-						namesMap,
-						teamsMap,
-						ratings,
-						tournamentMode,
-						isWinner: winnerId === leftId && !leftIsBye,
-						isLoser: loserId === leftId,
-						matchHistory,
-					})
-				: null;
-
-			const contender2 = rightId
-				? buildVisualContender({
-						id: rightId,
-						seed: r === 1 ? seedMap.get(rightId) : undefined,
-						namesMap,
-						teamsMap,
-						ratings,
-						tournamentMode,
-						isWinner: winnerId === rightId && !rightIsBye,
-						isLoser: loserId === rightId,
-						matchHistory,
-					})
-				: null;
-
-			const placeholder1Text = contender1
-				? undefined
-				: r > 1
-					? `Winner R${r - 1}·M${2 * m + 1}`
-					: "TBD";
-			const placeholder2Text = contender2
-				? undefined
-				: r > 1
-					? `Winner R${r - 1}·M${2 * m + 2}`
-					: "TBD";
-
-			const matchNode: VisualMatch = {
-				id: matchId,
-				overallMatchNumber,
-				roundNumber: r,
-				roundName: stageLabel,
-				matchIndex: m,
-				contender1,
-				contender2,
-				winnerId,
-				loserId,
-				status,
-				isCurrentMatch,
-				placeholder1Text,
-				placeholder2Text,
-				targetMatchId,
-				targetSlot,
-			};
-
-			if (isCurrentMatch) {
-				activeMatchNode = matchNode;
-			}
-
-			roundMatches.push(matchNode);
-		}
-
-		const isRoundCompleted = roundMatches.every(
-			(m) => m.status === "completed" || m.status === "bye",
-		);
-		const isCurrentRound = roundMatches.some((m) => m.status === "active");
-
-		rounds.push({
-			roundNumber: r,
-			roundName: stageLabel,
-			matches: roundMatches,
-			isCurrentRound,
-			isCompleted: isRoundCompleted,
-		});
-
-		currentRoundEntrants = nextRoundEntrants;
-	}
-
-	// Derive the crowned Champion if the final match is completed
-	const finalRound = rounds[rounds.length - 1];
-	const finalMatch = finalRound?.matches[0];
-	let champion: VisualContender | null = null;
-
-	if (finalMatch && finalMatch.status === "completed" && finalMatch.winnerId) {
-		champion = buildVisualContender({
-			id: finalMatch.winnerId,
-			namesMap,
-			teamsMap,
-			ratings,
-			tournamentMode,
-			isWinner: true,
-			matchHistory,
-		});
-	}
-
-	return {
-		rounds,
-		champion,
-		totalEntrants,
-		totalRounds,
-		totalMatches,
-		completedMatches,
-		activeMatch: activeMatchNode,
-	};
-}
-
-// ============================================================================
 // SUB-COMPONENTS: MATCH NODE, CONTENDER ROW, CONNECTOR LINES, PODIUM
 // ============================================================================
 
@@ -470,7 +66,7 @@ interface ContenderRowProps {
 	showVoteButton?: boolean;
 }
 
-function ContenderRow({
+const ContenderRow = memo(function ContenderRow({
 	contender,
 	placeholderText,
 	isWinner,
@@ -635,7 +231,7 @@ function ContenderRow({
 			)}
 		</motion.div>
 	);
-}
+});
 
 interface MatchNodeCardProps {
 	match: VisualMatch;
@@ -655,6 +251,14 @@ const MatchNodeCard = memo(function MatchNodeCard({
 	const isLive = match.status === "active";
 	const isCompleted = match.status === "completed";
 	const isBye = match.status === "bye";
+
+	const handleVoteLeft = useCallback(() => {
+		onVoteForSide?.("left");
+	}, [onVoteForSide]);
+
+	const handleVoteRight = useCallback(() => {
+		onVoteForSide?.("right");
+	}, [onVoteForSide]);
 
 	const hasHighlight =
 		highlightedContenderId &&
@@ -713,7 +317,7 @@ const MatchNodeCard = memo(function MatchNodeCard({
 					isHighlighted={highlightedContenderId === match.contender1?.id}
 					onSelectContender={onSelectContender}
 					showVoteButton={isLive && Boolean(match.contender1)}
-					onVote={() => onVoteForSide?.("left")}
+					onVote={handleVoteLeft}
 				/>
 
 				{/* Contender 2 (Bottom slot) */}
@@ -726,12 +330,12 @@ const MatchNodeCard = memo(function MatchNodeCard({
 					isHighlighted={highlightedContenderId === match.contender2?.id}
 					onSelectContender={onSelectContender}
 					showVoteButton={isLive && Boolean(match.contender2)}
-					onVote={() => onVoteForSide?.("right")}
+					onVote={handleVoteRight}
 				/>
 			</div>
 		</motion.div>
 	);
-});
+}, areMatchNodePropsEqual);
 
 // ============================================================================
 // CHAMPION SPOTLIGHT PODIUM
@@ -743,7 +347,11 @@ interface ChampionPodiumProps {
 	onSelectContender?: (id: string) => void;
 }
 
-function ChampionPodium({ champion, isComplete, onSelectContender }: ChampionPodiumProps) {
+const ChampionPodium = memo(function ChampionPodium({
+	champion,
+	isComplete,
+	onSelectContender,
+}: ChampionPodiumProps) {
 	if (!champion && !isComplete) {
 		return (
 			<div className="w-56 sm:w-64 flex flex-col items-center justify-center p-6 rounded-3xl border border-dashed border-white/20 dark:border-white/10 bg-card/40 dark:bg-black/30 backdrop-blur-xl text-center gap-3 shadow-[0_8px_24px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.15)]">
@@ -830,7 +438,7 @@ function ChampionPodium({ champion, isComplete, onSelectContender }: ChampionPod
 			</div>
 		</motion.div>
 	);
-}
+});
 
 // ============================================================================
 // CONTENDER DETAIL MODAL / DRAWER
@@ -1051,21 +659,8 @@ export function TournamentBracket({
 	const { rounds, champion, totalMatches, completedMatches, activeMatch } = bracketTree;
 
 	// Maps for quick detail lookup
-	const namesMap = useMemo(() => {
-		const map = new Map<string, NameItem>();
-		for (const n of names) {
-			map.set(String(n.id), n);
-		}
-		return map;
-	}, [names]);
-
-	const teamsMap = useMemo(() => {
-		const map = new Map<string, Team>();
-		for (const t of teams) {
-			map.set(t.id, t);
-		}
-		return map;
-	}, [teams]);
+	const namesMap = useMemo(() => createIdToNameMap(names), [names]);
+	const teamsMap = useMemo(() => createTeamsById(teams), [teams]);
 
 	// ⚡ Bolt Performance Optimization: Added debouncing for name search/filter
 	const debouncedSearchQuery = useDebounce(searchQuery, 300);

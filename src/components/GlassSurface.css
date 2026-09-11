@@ -1,0 +1,130 @@
+.glass-surface {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	transition: opacity 0.26s ease-out;
+}
+
+.glass-surface__filter {
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	z-index: -1;
+}
+
+.glass-surface__content {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem;
+	border-radius: inherit;
+	position: relative;
+	z-index: 3;
+}
+
+.drift-wall__inner .glass-surface__content {
+	padding: 0;
+}
+
+.glass-surface__refraction-lens {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	border-radius: inherit;
+	z-index: 0;
+	filter: var(--filter-id, none);
+	background: radial-gradient(
+		circle at 50% 50%,
+		transparent 0%,
+		rgba(255, 255, 255, 0.02) 50%,
+		rgba(255, 255, 255, 0.08) 82%,
+		rgba(255, 255, 255, 0.18) 95%,
+		transparent 100%
+	);
+	backdrop-filter: blur(2px) saturate(2) brightness(1.04) contrast(1.02);
+	-webkit-backdrop-filter: blur(2px) saturate(2) brightness(1.04) contrast(1.02);
+	mix-blend-mode: normal;
+}
+
+.glass-surface__caustic-ring {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	border-radius: inherit;
+	z-index: 1;
+	background: radial-gradient(
+		circle at 48% 48%,
+		transparent 68%,
+		rgba(255, 75, 140, 0.16) 80%,
+		rgba(50, 190, 255, 0.2) 88%,
+		rgba(255, 225, 90, 0.15) 94%,
+		rgba(255, 255, 255, 0.38) 98%,
+		transparent 100%
+	);
+	mix-blend-mode: screen;
+}
+
+.glass-surface__specular-dome {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	border-radius: inherit;
+	z-index: 2;
+	box-shadow:
+		0 12px 32px -4px rgba(0, 0, 0, 0.12),
+		0 4px 12px -2px rgba(0, 0, 0, 0.06),
+		0 0 0 1px rgba(255, 255, 255, 0.55),
+		inset 0 2.5px 3.5px 0 rgba(255, 255, 255, 0.95),
+		inset 0 -2.5px 4px 0 rgba(255, 255, 255, 0.35),
+		inset 0 0 18px 2px rgba(255, 255, 255, 0.18),
+		inset 0 0 20px 0 rgba(0, 0, 0, 0.06);
+	transition: box-shadow 0.25s ease;
+}
+
+.glass-surface:hover .glass-surface__specular-dome {
+	box-shadow:
+		0 12px 32px -4px rgba(0, 0, 0, 0.12),
+		0 4px 12px -2px rgba(0, 0, 0, 0.06),
+		0 0 0 1px rgba(255, 255, 255, 0.55),
+		inset 0 2.5px 3.5px 0 rgba(255, 255, 255, 0.95),
+		inset 0 -2.5px 4px 0 rgba(255, 255, 255, 0.35),
+		inset 0 0 18px 2px rgba(255, 255, 255, 0.18),
+		inset 0 0 20px 0 rgba(0, 0, 0, 0.06);
+}
+
+.glass-surface--svg,
+.glass-surface--fallback {
+	background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+	.glass-surface--fallback {
+		background: radial-gradient(
+			circle at 50% 50%,
+			rgba(255, 255, 255, 0.03) 0%,
+			rgba(255, 255, 255, 0.06) 60%,
+			rgba(255, 255, 255, 0.15) 88%,
+			rgba(255, 255, 255, 0.3) 100%
+		);
+		backdrop-filter: blur(4px) saturate(2) brightness(1.1);
+		-webkit-backdrop-filter: blur(4px) saturate(2) brightness(1.1);
+		border: 1px solid rgba(255, 255, 255, 0.35);
+		box-shadow:
+			0 12px 32px -4px rgba(0, 0, 0, 0.25),
+			inset 0 1.5px 2.5px 0 rgba(255, 255, 255, 0.7),
+			inset 0 -1.5px 2.5px 0 rgba(255, 255, 255, 0.2),
+			inset 0 0 16px 2px rgba(255, 255, 255, 0.1);
+	}
+}
+
+.glass-surface:focus-visible {
+	outline: 2px solid light-dark(#007aff, #0a84ff);
+	outline-offset: 2px;
+}

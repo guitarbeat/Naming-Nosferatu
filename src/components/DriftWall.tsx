@@ -8,6 +8,7 @@ import {
 	useState,
 } from "react";
 import { DriftWallTile } from "./DriftWallTile";
+import { triggerGlobalScroll } from "./GlassSurface";
 
 export interface DriftWallItem {
 	image?: string;
@@ -19,6 +20,17 @@ export interface DriftWallItem {
 	id?: string | number;
 	selected?: boolean;
 	locked?: boolean;
+	displace?: number;
+	distortionScale?: number;
+	redOffset?: number;
+	greenOffset?: number;
+	blueOffset?: number;
+	brightness?: number;
+	opacity?: number;
+	blur?: number;
+	borderWidth?: number;
+	borderRadius?: number;
+	mixBlendMode?: string;
 	onClick?: () => void;
 	[key: string]: unknown;
 }
@@ -189,6 +201,16 @@ export interface DriftWallProps {
 	dim?: number;
 	grayscale?: boolean;
 	overlayColor?: string;
+	displace?: number;
+	distortionScale?: number;
+	redOffset?: number;
+	greenOffset?: number;
+	blueOffset?: number;
+	brightness?: number;
+	opacity?: number;
+	blur?: number;
+	borderWidth?: number;
+	mixBlendMode?: string;
 	className?: string;
 	style?: CSSProperties;
 	onItemClick?: (item: DriftWallItem, index: number) => void;
@@ -207,6 +229,16 @@ const prefersReducedMotion = () => {
 		return false;
 	}
 };
+
+const copyIndicesCache: number[][] = [];
+function getCopyIndices(copies: number): number[] {
+	let cached = copyIndicesCache[copies];
+	if (!cached) {
+		cached = Array.from({ length: copies }, (_, i) => i);
+		copyIndicesCache[copies] = cached;
+	}
+	return cached;
+}
 
 const columnFactor = (index: number, variance: number) => {
 	const pseudo = ((index * 0.6180339887 + 0.35) % 1) * 2 - 1;
@@ -235,6 +267,16 @@ export const DriftWall = ({
 	dim = 1,
 	grayscale = false,
 	overlayColor = "#060010",
+	displace = 0,
+	distortionScale = -160,
+	redOffset = 5,
+	greenOffset = 15,
+	blueOffset = 25,
+	brightness = 60,
+	opacity = 0.85,
+	blur = 11,
+	borderWidth = 0.16,
+	mixBlendMode = "screen",
 	className = "",
 	style,
 	onItemClick,
@@ -244,6 +286,7 @@ export const DriftWall = ({
 	const trackRefs = useRef<(HTMLDivElement | null)[]>([]);
 	const rafRef = useRef<number | null>(null);
 
+	const startLoopRef = useRef<(() => void) | null>(null);
 	const offsetsRef = useRef<number[]>([]);
 	const velocitiesRef = useRef<number[]>([]);
 	const wheelDeltaRef = useRef(0);
@@ -256,22 +299,6 @@ export const DriftWall = ({
 	const containerRectRef = useRef<DOMRect | null>(null);
 
 	const isIntersectingRef = useRef(true);
-
-	useEffect(() => {
-		if (!containerRef.current || typeof IntersectionObserver === "undefined") {
-			return;
-		}
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				isIntersectingRef.current = entry.isIntersecting;
-			},
-			{ threshold: 0 },
-		);
-		observer.observe(containerRef.current);
-		return () => {
-			observer.disconnect();
-		};
-	}, []);
 	const [containerWidth, setContainerWidth] = useState(1200);
 	const [containerHeight, setContainerHeight] = useState(600);
 	const activeIdRef = useRef<string | null>(null);
@@ -382,11 +409,14 @@ export const DriftWall = ({
 		return columnItems.map((col) => {
 			const count = Math.max(1, col.length);
 			const copyHeight = count * unit;
-			// Render ample buffer copies so scrolling never exposes edges or pops in tiles
-			const copies = Math.max(4, Math.ceil((containerHeight * 2.5) / copyHeight) + 2);
-			return { copyHeight, copies };
+			// Render buffer copies proportionally: fewer on mobile to conserve memory and DOM nodes
+			const copies = isMobile
+				? Math.max(2, Math.ceil((containerHeight * 1.4) / copyHeight) + 1)
+				: Math.max(3, Math.ceil((containerHeight * 2.2) / copyHeight) + 1);
+			const copyIndices = getCopyIndices(copies);
+			return { copyHeight, copies, copyIndices };
 		});
-	}, [columnItems, effectiveTileHeight, gap, containerHeight]);
+	}, [columnItems, effectiveTileHeight, gap, containerHeight, isMobile]);
 
 	const baseVelocities = useMemo(() => {
 		const dirSign = direction === "up" ? 1 : -1;
@@ -426,10 +456,27 @@ export const DriftWall = ({
 	}, [applyPlaneTransform]);
 
 	useEffect(() => {
-		const animate = (ts: number) => {
-			if (!isIntersectingRef.current) {
+		let isIntersecting = isIntersectingRef.current;
+
+		const startLoop = () => {
+			if (rafRef.current === null && isIntersecting && !document.hidden) {
 				lastTsRef.current = null;
 				rafRef.current = requestAnimationFrame(animate);
+			}
+		};
+		startLoopRef.current = startLoop;
+
+		const stopLoop = () => {
+			if (rafRef.current !== null) {
+				cancelAnimationFrame(rafRef.current);
+				rafRef.current = null;
+			}
+			lastTsRef.current = null;
+		};
+
+		const animate = (ts: number) => {
+			if (!isIntersecting || document.hidden) {
+				stopLoop();
 				return;
 			}
 			if (lastTsRef.current === null) {
@@ -474,7 +521,12 @@ export const DriftWall = ({
 						el.style.transform = `translate3d(0, ${-(offsetsRef.current[c] ?? 0)}px, 0)`;
 					}
 				}
-				rafRef.current = requestAnimationFrame(animate);
+				if (Math.abs(wheelImpulse) > 0.05) {
+					rafRef.current = requestAnimationFrame(animate);
+				} else {
+					rafRef.current = null;
+					lastTsRef.current = null;
+				}
 				return;
 			}
 
@@ -522,19 +574,55 @@ export const DriftWall = ({
 			rafRef.current = requestAnimationFrame(animate);
 		};
 
-		rafRef.current = requestAnimationFrame(animate);
-		return () => {
-			if (rafRef.current) {
-				cancelAnimationFrame(rafRef.current);
+		const observer =
+			typeof IntersectionObserver !== "undefined" && containerRef.current
+				? new IntersectionObserver(
+						([entry]) => {
+							isIntersecting = entry.isIntersecting;
+							isIntersectingRef.current = isIntersecting;
+							if (isIntersecting) {
+								startLoop();
+							} else {
+								stopLoop();
+							}
+						},
+						{ threshold: 0 },
+					)
+				: null;
+
+		if (observer && containerRef.current) {
+			observer.observe(containerRef.current);
+		}
+
+		const handleVisibilityChange = () => {
+			if (document.hidden) {
+				stopLoop();
+			} else if (isIntersecting) {
+				startLoop();
 			}
-			rafRef.current = null;
-			lastTsRef.current = null;
+		};
+
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+
+		startLoop();
+
+		return () => {
+			stopLoop();
+			startLoopRef.current = null;
+			if (observer) {
+				observer.disconnect();
+			}
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
 		};
 	}, [baseVelocities, columnMeta, pauseOnHover, parallax, reduced, applyPlaneTransform]);
 
 	const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
 		// Accumulate wheel delta to be processed in the next RAF frame to eliminate stutter and layout thrashing
 		wheelDeltaRef.current += e.deltaY;
+		triggerGlobalScroll();
+		if (rafRef.current === null) {
+			startLoopRef.current?.();
+		}
 	}, []);
 
 	const activate = useCallback((id: string, index: number, el?: HTMLElement | null) => {
@@ -821,6 +909,14 @@ export const DriftWall = ({
 		],
 	);
 
+	const itemIndexMap = useMemo(() => {
+		const map = new Map<DriftWallItem, number>();
+		for (let i = 0; i < items.length; i++) {
+			map.set(items[i], i);
+		}
+		return map;
+	}, [items]);
+
 	const handleTileClick = useCallback(
 		(item: DriftWallItem, originalIndex: number) => {
 			if (item.onClick) {
@@ -833,6 +929,48 @@ export const DriftWall = ({
 		[onItemClick],
 	);
 
+	const handleTileClickDelegated = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			const target = e.target as HTMLElement | null;
+			const tile =
+				target && typeof target.closest === "function"
+					? (target.closest("[data-tile-id]") as HTMLElement | null)
+					: null;
+			if (!tile) {
+				return;
+			}
+			const originalIndex = Number(tile.dataset.originalIndex);
+			const item = items[originalIndex];
+			if (item) {
+				handleTileClick(item, originalIndex);
+			}
+		},
+		[items, handleTileClick],
+	);
+
+	const handleFocusCapture = useCallback(
+		(e: React.FocusEvent<HTMLDivElement>) => {
+			const target = e.target as HTMLElement | null;
+			const tile =
+				target && typeof target.closest === "function"
+					? (target.closest("[data-tile-id]") as HTMLElement | null)
+					: null;
+			if (tile?.dataset.tileId) {
+				activate(tile.dataset.tileId, Number(tile.dataset.col), tile);
+			}
+		},
+		[activate],
+	);
+
+	const handleBlurCapture = useCallback(
+		(e: React.FocusEvent<HTMLDivElement>) => {
+			if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+				release();
+			}
+		},
+		[release],
+	);
+
 	const rootClass = ["drift-wall", reduced ? "drift-wall--reduced" : "", className]
 		.filter(Boolean)
 		.join(" ");
@@ -842,6 +980,9 @@ export const DriftWall = ({
 			ref={containerRef}
 			className={rootClass}
 			style={cssVars}
+			onClick={handleTileClickDelegated}
+			onFocusCapture={handleFocusCapture}
+			onBlurCapture={handleBlurCapture}
 			onPointerMove={handlePointerMove}
 			onWheel={handleWheel}
 			onPointerEnter={handlePointerEnter}
@@ -855,7 +996,6 @@ export const DriftWall = ({
 					if (!meta) {
 						return null;
 					}
-					const copies = Array.from({ length: meta.copies });
 					return (
 						<div className="drift-wall__col" key={`col-${c}`}>
 							<div
@@ -864,16 +1004,17 @@ export const DriftWall = ({
 									trackRefs.current[c] = el;
 								}}
 							>
-								{copies.map((_, copyIndex) =>
+								{meta.copyIndices.map((copyIndex) =>
 									col.map((item, itemIndex) => {
 										const tileId = `${c}-${copyIndex}-${itemIndex}`;
-										const originalIndex =
-											items.indexOf(item) === -1 ? itemIndex : items.indexOf(item);
+										const originalIndex = itemIndexMap.get(item) ?? itemIndex;
 										return (
 											<DriftWallTile
 												key={tileId}
 												tileId={tileId}
 												col={c}
+												width={effectiveTileWidth}
+												height={effectiveTileHeight}
 												name={item.title || item.name || "tile"}
 												orbitText={item.subtitle || item.orbitText || ""}
 												isSelected={Boolean(item.selected)}
@@ -884,9 +1025,16 @@ export const DriftWall = ({
 												itemIndex={itemIndex}
 												copyIndex={copyIndex}
 												reduced={reduced}
-												onClick={() => handleTileClick(item, originalIndex)}
-												onFocus={(e) => activate(tileId, c, e.currentTarget)}
-												onBlur={release}
+												displace={item.displace ?? displace}
+												distortionScale={item.distortionScale ?? distortionScale}
+												redOffset={item.redOffset ?? redOffset}
+												greenOffset={item.greenOffset ?? greenOffset}
+												blueOffset={item.blueOffset ?? blueOffset}
+												brightness={item.brightness ?? brightness}
+												opacity={item.opacity ?? opacity}
+												blur={item.blur ?? blur}
+												borderWidth={item.borderWidth ?? borderWidth}
+												mixBlendMode={item.mixBlendMode ?? mixBlendMode}
 											/>
 										);
 									}),

@@ -24,6 +24,7 @@ import {
 	deriveBracketState,
 	generateRandomTeams,
 	type HistoryEntry,
+	isBye,
 	resolveCurrentMatch,
 	resolveTournamentMode,
 } from "./tournamentEngine";
@@ -432,10 +433,11 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		if (initializedRef.current) {
 			setPersistentState(state.persistentState);
 
+			const ratings = state.ratings;
 			const ratingsData: Record<string, RatingData> = {};
-			for (const [id, ratingVal] of Object.entries(state.ratings)) {
+			for (const id in ratings) {
 				ratingsData[id] = {
-					rating: ratingVal,
+					rating: ratings[id],
 					wins: 0,
 					losses: 0,
 				};
@@ -514,7 +516,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				!hasValidPersistence ||
 				effectivePersistentState.bracketEntrants.length === 0 ||
 				!haveSameIds(
-					effectivePersistentState.bracketEntrants.filter((id) => !id.startsWith("__BYE__")),
+					effectivePersistentState.bracketEntrants.filter((id) => !isBye(id)),
 					participantIds,
 				);
 			const bracketEntrants = shouldResetBracket
@@ -614,7 +616,7 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 		const acc: { id: string; label: string }[] = [];
 		for (let i = 0; i < entrants.length; i++) {
 			const entrantKey = String(entrants[i]);
-			if (!entrantKey.startsWith("__BYE__")) {
+			if (!isBye(entrantKey)) {
 				if (tournamentMode === "2v2") {
 					const team = teamsById.get(entrantKey);
 					acc.push({

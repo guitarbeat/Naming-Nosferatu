@@ -1,10 +1,13 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
+import { GlassSurface } from "@/components/GlassSurface";
 import { handleImgError } from "@/lib/utils";
 
 export interface DriftWallTileProps {
 	tileId: string;
 	col: number;
 	name: string;
+	width?: number;
+	height?: number;
 	orbitText?: string;
 	isSelected?: boolean;
 	image?: string;
@@ -14,51 +17,134 @@ export interface DriftWallTileProps {
 	itemIndex?: number;
 	copyIndex?: number;
 	reduced?: boolean;
+	displace?: number;
+	distortionScale?: number;
+	redOffset?: number;
+	greenOffset?: number;
+	blueOffset?: number;
+	brightness?: number;
+	opacity?: number;
+	blur?: number;
+	borderWidth?: number;
+	borderRadius?: number;
+	mixBlendMode?: string;
 	onClick?: () => void;
 	onFocus?: (e: React.FocusEvent<HTMLElement>) => void;
 	onBlur?: () => void;
 }
 
+const DESC_TYPOGRAPHY = {
+	xs: { fontSize: 10.5, letterSpacing: 0.35 },
+	sm: { fontSize: 11.5, letterSpacing: 0.45 },
+	md: { fontSize: 12.5, letterSpacing: 0.6 },
+	lg: { fontSize: 13.5, letterSpacing: 0.75 },
+} as const;
+
+function getDescTypography(length: number) {
+	if (length > 55) {
+		return DESC_TYPOGRAPHY.xs;
+	}
+	if (length > 40) {
+		return DESC_TYPOGRAPHY.sm;
+	}
+	if (length > 25) {
+		return DESC_TYPOGRAPHY.md;
+	}
+	return DESC_TYPOGRAPHY.lg;
+}
+
+function getTitleFontSize(length: number) {
+	if (length > 11) {
+		return 16;
+	}
+	if (length > 8) {
+		return 18.5;
+	}
+	if (length > 5) {
+		return 21.5;
+	}
+	return 24.5;
+}
+
 /**
- * Reusable Drift Wall tile component with curved SVG orbit text and smooth animation.
+ * Reusable Drift Wall tile component with curved SVG orbit text and physical glass refraction.
  */
 export const DriftWallTile = memo(function DriftWallTile({
 	tileId,
 	col,
 	name,
+	width,
+	height,
 	orbitText,
 	isSelected = false,
 	image,
 	href,
+	originalIndex,
+	displace = 0,
+	distortionScale = -160,
+	redOffset = 5,
+	greenOffset = 15,
+	blueOffset = 25,
+	brightness = 60,
+	opacity = 0.85,
+	blur = 11,
+	borderWidth = 0.16,
+	borderRadius = 9999,
+	mixBlendMode = "screen",
 	onClick,
 	onFocus,
 	onBlur,
 }: DriftWallTileProps) {
-	// Dynamic, unique SVG textpath IDs for top and bottom arcs
-	const topPathId = `textpath-top-${tileId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
-	const bottomPathId = `textpath-bottom-${tileId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+	const sanitizedId = tileId.replace(/[^a-zA-Z0-9_-]/g, "_");
+	const arcPathId = `textpath-top-${sanitizedId}`;
 
 	const desc = orbitText ? String(orbitText).trim() : "";
 	const title = name ? String(name).trim() : "";
 
-	// Split description cleanly if it's long, or place on top/bottom arc
-	const descLen = desc.length;
-	const descFontSize = descLen > 55 ? 10.5 : descLen > 40 ? 11.5 : descLen > 25 ? 12.5 : 13.5;
-	const descLetterSpacing = descLen > 55 ? 0.35 : descLen > 40 ? 0.45 : descLen > 25 ? 0.6 : 0.75;
-
-	const titleLen = title.length;
-	const titleFontSize = titleLen > 11 ? 16 : titleLen > 8 ? 18.5 : titleLen > 5 ? 21.5 : 24.5;
-
+	const descStyle = getDescTypography(desc.length);
+	const titleFontSize = getTitleFontSize(title.length);
 	const fullLabel = title ? (desc ? `${title} - ${desc}` : title) : "tile";
 
-	// Arcs oriented so text is ALWAYS right-side-up
-	// Top arc curves over the top rim from left to right (y=100 -> top y=24 -> y=100)
-	const topArcPath = "M 24 100 A 76 76 0 0 1 176 100";
-	// Bottom arc curves under the bottom rim from left to right (y=100 -> bottom y=176 -> y=100)
-	const bottomArcPath = "M 24 100 A 76 76 0 0 0 176 100";
+	// Full circular path centered at (100, 100) with radius 76
+	const circleArcPath = "M 100, 176 a 76,76 0 1,1 0,-152 a 76,76 0 1,1 0,152";
+
+	const { orbitDuration, orbitDelay, orbitDirection } = useMemo(() => {
+		let h = 0;
+		const str = `${sanitizedId}-${title}`;
+		for (let i = 0; i < str.length; i++) {
+			h = (h << 5) - h + str.charCodeAt(i);
+			h |= 0;
+		}
+		const seed = Math.abs(h);
+		const duration = 22 + (seed % 14); // 22s - 35s
+		const delay = -(((seed % 1000) / 1000) * duration);
+		const direction = seed % 3 === 0 ? "reverse" : "normal";
+		return { orbitDuration: duration, orbitDelay: delay, orbitDirection: direction };
+	}, [sanitizedId, title]);
+
+	const arcGroupStyle: React.CSSProperties = {
+		"--orbit-duration": `${orbitDuration}s`,
+		"--orbit-delay": `${orbitDelay}s`,
+		"--orbit-direction": orbitDirection,
+	} as React.CSSProperties;
 
 	const inner = (
-		<span className="drift-wall__inner">
+		<GlassSurface
+			className="drift-wall__inner"
+			width={width ?? "100%"}
+			height={height ?? "100%"}
+			borderRadius={borderRadius}
+			borderWidth={borderWidth}
+			distortionScale={distortionScale}
+			redOffset={redOffset}
+			greenOffset={greenOffset}
+			blueOffset={blueOffset}
+			brightness={brightness}
+			opacity={opacity}
+			blur={blur}
+			displace={displace}
+			mixBlendMode={mixBlendMode}
+		>
 			{Boolean(image) && (
 				<img
 					src={image}
@@ -77,21 +163,20 @@ export const DriftWallTile = memo(function DriftWallTile({
 					focusable="false"
 				>
 					<defs>
-						<path id={topPathId} d={topArcPath} fill="none" />
-						<path id={bottomPathId} d={bottomArcPath} fill="none" />
+						<path id={arcPathId} d={circleArcPath} fill="none" />
 					</defs>
 					{Boolean(desc) && (
-						<g className="drift-wall__arc-group">
+						<g className="drift-wall__arc-group" style={arcGroupStyle}>
 							<text
 								className="drift-wall__arc-text"
 								dominantBaseline="central"
 								textAnchor="middle"
 								style={{
-									fontSize: `${descFontSize}px`,
-									letterSpacing: `${descLetterSpacing}px`,
+									fontSize: `${descStyle.fontSize}px`,
+									letterSpacing: `${descStyle.letterSpacing}px`,
 								}}
 							>
-								<textPath href={`#${topPathId}`} startOffset="50%" textAnchor="middle">
+								<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
 									{desc}
 								</textPath>
 							</text>
@@ -110,13 +195,14 @@ export const DriftWallTile = memo(function DriftWallTile({
 				</svg>
 			)}
 			{Boolean(image) && <span className="drift-wall__overlay" aria-hidden="true" />}
-		</span>
+		</GlassSurface>
 	);
 
 	const commonProps = {
 		className: `drift-wall__tile${isSelected ? " is-selected" : ""}`,
 		"data-tile-id": tileId,
 		"data-col": col,
+		"data-original-index": originalIndex,
 		"aria-pressed": isSelected,
 		onFocus,
 		onBlur,
@@ -145,7 +231,11 @@ export const DriftWallTile = memo(function DriftWallTile({
 			onKeyDown={(e) => {
 				if (e.key === "Enter" || e.key === " ") {
 					e.preventDefault();
-					onClick?.();
+					if (onClick) {
+						onClick();
+					} else {
+						e.currentTarget.click();
+					}
 				}
 			}}
 			{...commonProps}
