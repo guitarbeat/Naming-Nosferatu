@@ -1,0 +1,3 @@
+## 2025-02-12 - WebGL Component Memoization Breakage
+**Learning:** Even when wrapping an expensive WebGL component (like `Iridescence`) in `React.memo()`, it will still needlessly re-render if the parent component passes inline array props (like `color={[1, 1, 1]}`). This happens because inline arrays create a new reference on every parent render, defeating the shallow comparison of `memo`. This causes severe performance issues as the WebGL context is torn down and recreated.
+**Action:** Always extract inline array or object props to constants outside the parent component when passing them to memoized, performance-sensitive child components.

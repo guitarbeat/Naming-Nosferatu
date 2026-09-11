@@ -1,5 +1,5 @@
 import { Color, Mesh, Program, Renderer, Triangle } from "ogl";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 
 interface IridescenceProps {
 	color?: [number, number, number] | number[];
@@ -53,7 +53,8 @@ void main() {
 }
 `;
 
-export function Iridescence({
+// ⚡ Bolt Performance Optimization: Wrapped Iridescence in React.memo() to prevent unnecessary re-renders of the expensive WebGL background component.
+export const Iridescence = memo(function Iridescence({
 	color = [1, 1, 1],
 	speed = 1.0,
 	amplitude = 0.1,
@@ -184,4 +185,4 @@ export function Iridescence({
 	}, [color, speed, amplitude, mouseReact]);
 
 	return <div ref={ctnDom} className={`iridescence-container ${className}`} aria-hidden="true" />;
-}
+});
