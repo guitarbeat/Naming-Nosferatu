@@ -20,6 +20,7 @@ import { TournamentSetup } from "@/tournament/TournamentSetup";
 const INSTALL_DESCRIPTION =
 	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";
 const PWA_TINT = "hsl(152, 26%, 42%)";
+const IRIDESCENCE_COLOR: [number, number, number] = [1, 1, 1];
 
 function AppBootScreen({
 	message = "Preparing the tournament...",
@@ -105,7 +106,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 		<ErrorBoundary context="Main Application Layout">
 			<div className="app relative min-h-dvh w-full bg-background text-foreground overflow-x-hidden">
 				<Iridescence
-					color={[1, 1, 1]}
+					color={IRIDESCENCE_COLOR}
 					speed={0.8}
 					amplitude={0.08}
 					mouseReact={true}
