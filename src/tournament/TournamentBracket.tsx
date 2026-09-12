@@ -846,7 +846,7 @@ export function TournamentBracket({
 					<div className="flex items-center gap-2">
 						{/* Search Input */}
 						<div className="relative">
-							<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+							<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
 							<input
 								type="text"
 								value={searchQuery}
@@ -991,13 +991,21 @@ export function TournamentBracket({
 					   ========================================================== */
 					<div className="flex flex-col gap-6 max-w-4xl mx-auto overflow-hidden">
 						{/* Round Switcher Pills */}
-						<div className="flex items-center gap-2 overflow-x-auto pb-2">
+						<div
+							className="flex items-center gap-2 overflow-x-auto pb-2"
+							role="tablist"
+							aria-label="Tournament rounds"
+						>
 							{rounds.map((round) => {
 								const isActive = activeRoundTab === round.roundNumber;
 								return (
 									<button
 										key={`round-tab-${round.roundNumber}`}
+										id={`tab-round-${round.roundNumber}`}
 										type="button"
+										role="tab"
+										aria-selected={isActive}
+										aria-controls={`panel-round-${round.roundNumber}`}
 										onClick={() => setActiveRoundTab(round.roundNumber)}
 										className={`shrink-0 flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${
 											isActive
@@ -1016,7 +1024,11 @@ export function TournamentBracket({
 							})}
 
 							<button
+								id="tab-champion-podium"
 								type="button"
+								role="tab"
+								aria-selected={activeRoundTab === rounds.length + 1}
+								aria-controls="panel-champion-podium"
 								onClick={() => setActiveRoundTab(rounds.length + 1)}
 								className={`shrink-0 flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${
 									activeRoundTab === rounds.length + 1
@@ -1034,6 +1046,9 @@ export function TournamentBracket({
 							{activeRoundTab <= rounds.length ? (
 								<motion.div
 									key={`tab-round-grid-${activeRoundTab}`}
+									id={`panel-round-${activeRoundTab}`}
+									role="tabpanel"
+									aria-labelledby={`tab-round-${activeRoundTab}`}
 									custom={roundDirection}
 									initial={
 										_prefersReducedMotion
@@ -1100,6 +1115,9 @@ export function TournamentBracket({
 							) : (
 								<motion.div
 									key="tab-podium"
+									id="panel-champion-podium"
+									role="tabpanel"
+									aria-labelledby="tab-champion-podium"
 									custom={roundDirection}
 									initial={
 										_prefersReducedMotion
