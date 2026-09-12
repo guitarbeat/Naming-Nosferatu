@@ -1,5 +1,5 @@
 import { Color, Mesh, Program, Renderer, Triangle } from "ogl";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { isMobileOrLowPowerDevice } from "@/lib/uiUtils";
 
 interface IridescenceProps {
@@ -58,7 +58,8 @@ void main() {
 `;
 }
 
-export function Iridescence({
+// ⚡ Bolt Performance Optimization: Wrapped expensive WebGL Iridescence component in React.memo()
+export const Iridescence = memo(function Iridescence({
 	color = [1, 1, 1],
 	speed = 1.0,
 	amplitude = 0.1,
@@ -279,4 +280,4 @@ export function Iridescence({
 	}, [mouseReact]);
 
 	return <div ref={ctnDom} className={`iridescence-container ${className}`} aria-hidden="true" />;
-}
+});
