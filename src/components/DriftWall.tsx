@@ -1,5 +1,6 @@
 import {
 	type CSSProperties,
+	memo,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -245,7 +246,8 @@ const columnFactor = (index: number, variance: number) => {
 	return 1 + variance * pseudo;
 };
 
-export const DriftWall = ({
+// ⚡ Bolt Performance Optimization: Wrapped DriftWall component in React.memo()
+export const DriftWall = memo(function DriftWall({
 	items = DEFAULT_ITEMS,
 	columns = 8,
 	tileWidth = 116,
@@ -280,7 +282,7 @@ export const DriftWall = ({
 	className = "",
 	style,
 	onItemClick,
-}: DriftWallProps) => {
+}: DriftWallProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const planeRef = useRef<HTMLDivElement>(null);
 	const trackRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -1046,4 +1048,4 @@ export const DriftWall = ({
 			</div>
 		</div>
 	);
-};
+});
