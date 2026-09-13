@@ -300,6 +300,7 @@ const MatchNodeCard = memo(function MatchNodeCard({
 					onClick={() => onSelectMatch?.(match)}
 					className="text-muted-foreground/60 hover:text-foreground transition-colors"
 					title="View match details"
+					aria-label="View match details"
 				>
 					<Eye className="size-3" />
 				</button>
@@ -875,6 +876,7 @@ export function TournamentBracket({
 									onClick={handleZoomOut}
 									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors"
 									title="Zoom out"
+									aria-label="Zoom out"
 								>
 									<ZoomOut className="size-3.5" />
 								</button>
@@ -883,6 +885,7 @@ export function TournamentBracket({
 									onClick={handleResetZoom}
 									className="px-2 text-[11px] font-mono text-muted-foreground hover:text-foreground"
 									title="Reset zoom"
+									aria-label="Reset zoom"
 								>
 									{Math.round(zoomLevel * 100)}%
 								</button>
@@ -891,6 +894,7 @@ export function TournamentBracket({
 									onClick={handleZoomIn}
 									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors"
 									title="Zoom in"
+									aria-label="Zoom in"
 								>
 									<ZoomIn className="size-3.5" />
 								</button>
