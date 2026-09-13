@@ -31,14 +31,10 @@ const sizeClasses: Record<ButtonSize, string> = {
 };
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
-	children: React.ReactNode;
 	variant?: ButtonVariant;
 	size?: ButtonSize;
-	disabled?: boolean;
 	loading?: boolean;
 	type?: "button" | "submit" | "reset";
-	className?: string;
-	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 	iconOnly?: boolean;
 }
 
