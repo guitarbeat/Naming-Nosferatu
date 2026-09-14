@@ -1249,10 +1249,11 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 		}
 		completionHandledRef.current = true;
 
-		const winsByName: Record<string, number> = {};
-		const lossesByName: Record<string, number> = {};
+		// ⚡ Bolt Performance Optimization: Single-pass map aggregation for tournament completion results
+		const statsMap = new Map<string, { wins: number; losses: number }>();
 
-		for (const record of matchHistory) {
+		for (let i = 0; i < matchHistory.length; i++) {
+			const record = matchHistory[i];
 			if (!record?.match) {
 				continue;
 			}
@@ -1260,29 +1261,45 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 			const left = normalizeParticipant(record.match.left);
 			const right = normalizeParticipant(record.match.right);
 
-			const isLeftWinner =
-				left.memberIds.includes(String(record.winner)) || left.id === String(record.winner);
+			const winnerStr = String(record.winner);
+			const isLeftWinner = left.id === winnerStr || left.memberIds.includes(winnerStr);
 			const winnerIds = isLeftWinner ? left.memberIds : right.memberIds;
 			const loserIds = isLeftWinner ? right.memberIds : left.memberIds;
 
-			for (const id of winnerIds) {
+			for (let j = 0; j < winnerIds.length; j++) {
+				const id = winnerIds[j];
 				if (id) {
-					winsByName[id] = (winsByName[id] ?? 0) + 1;
+					let stat = statsMap.get(id);
+					if (!stat) {
+						stat = { wins: 0, losses: 0 };
+						statsMap.set(id, stat);
+					}
+					stat.wins++;
 				}
 			}
-			for (const id of loserIds) {
+			for (let j = 0; j < loserIds.length; j++) {
+				const id = loserIds[j];
 				if (id) {
-					lossesByName[id] = (lossesByName[id] ?? 0) + 1;
+					let stat = statsMap.get(id);
+					if (!stat) {
+						stat = { wins: 0, losses: 0 };
+						statsMap.set(id, stat);
+					}
+					stat.losses++;
 				}
 			}
 		}
 
 		const results: Record<string, { rating: number; wins: number; losses: number }> = {};
-		for (const [id, rating] of Object.entries(ratings)) {
+		const ratingKeys = Object.keys(ratings);
+		for (let i = 0; i < ratingKeys.length; i++) {
+			const id = ratingKeys[i];
+			const rating = ratings[id];
+			const stat = statsMap.get(id);
 			results[id] = {
 				rating,
-				wins: winsByName[id] ?? 0,
-				losses: lossesByName[id] ?? 0,
+				wins: stat ? stat.wins : 0,
+				losses: stat ? stat.losses : 0,
 			};
 		}
 		onComplete(results);
