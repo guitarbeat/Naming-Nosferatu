@@ -219,7 +219,13 @@ export function getMatchSideId(match: Match, side: "left" | "right"): string {
 	return getFastParticipantId(match[side]);
 }
 
-const streakCache = new WeakMap<MatchRecord[], Map<string, number>>();
+interface StreakCacheEntry {
+	len: number;
+	map: Map<string, number>;
+}
+
+// ⚡ Bolt Performance Optimization: Cache streak calculation per array instance and length to handle mutated history and avoid stale streak data
+const streakCache = new WeakMap<MatchRecord[], StreakCacheEntry>();
 
 export function getContestantStreak(
 	contestantId: string | number | null | undefined,
@@ -228,18 +234,18 @@ export function getContestantStreak(
 	if (!contestantId || !matchHistory || matchHistory.length === 0) {
 		return 0;
 	}
-	let map = streakCache.get(matchHistory);
-	if (!map) {
-		map = new Map<string, number>();
-		streakCache.set(matchHistory, map);
+	let entry = streakCache.get(matchHistory);
+	if (!entry || entry.len !== matchHistory.length) {
+		entry = { len: matchHistory.length, map: new Map<string, number>() };
+		streakCache.set(matchHistory, entry);
 	}
 	const targetId = String(contestantId);
-	const cached = map.get(targetId);
+	const cached = entry.map.get(targetId);
 	if (cached !== undefined) {
 		return cached;
 	}
 	const streak = calculateWinStreak(targetId, matchHistory);
-	map.set(targetId, streak);
+	entry.map.set(targetId, streak);
 	return streak;
 }
 
