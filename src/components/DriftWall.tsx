@@ -305,6 +305,7 @@ export const DriftWall = memo(function DriftWall({
 	const [containerHeight, setContainerHeight] = useState(600);
 	const activeIdRef = useRef<string | null>(null);
 	const activeTileElRef = useRef<HTMLElement | null>(null);
+	const tilesCacheRef = useRef<HTMLElement[] | null>(null);
 	const [reduced, setReduced] = useState(false);
 
 	useEffect(() => {
@@ -437,6 +438,8 @@ export const DriftWall = memo(function DriftWall({
 			return (meta.copyHeight * (c * 0.382)) % meta.copyHeight;
 		});
 		velocitiesRef.current = columnItems.map((_, c) => velocitiesRef.current[c] ?? 0);
+		// Invalidate cached tile elements when columns/items change
+		tilesCacheRef.current = null;
 	}, [columnMeta, columnItems]);
 
 	const applyPlaneTransform = useCallback(
@@ -725,14 +728,19 @@ export const DriftWall = memo(function DriftWall({
 				return;
 			}
 
-			const containerRect = container.getBoundingClientRect();
-			const allTiles = Array.from(container.querySelectorAll<HTMLElement>("[data-tile-id]")).filter(
-				(el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true",
-			);
+			// ⚡ Bolt Performance Optimization: Cache querySelectorAll tile DOM nodes to prevent layout thrashing and repeated DOM queries on high-frequency keyboard events
+			if (!tilesCacheRef.current || tilesCacheRef.current.length === 0) {
+				tilesCacheRef.current = Array.from(
+					container.querySelectorAll<HTMLElement>("[data-tile-id]"),
+				).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+			}
 
-			if (allTiles.length === 0) {
+			const allTiles = tilesCacheRef.current;
+			if (!allTiles || allTiles.length === 0) {
 				return;
 			}
+
+			const containerRect = container.getBoundingClientRect();
 
 			// Identify current active tile
 			let currentTile: HTMLElement | null = null;
