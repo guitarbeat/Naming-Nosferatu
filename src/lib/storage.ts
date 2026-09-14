@@ -52,17 +52,26 @@ function evictTransientCache(): void {
 }
 
 function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
+	if (typeof window !== "undefined") {
+		// Remove any legacy cleartext device key stored in persistent localStorage
+		try {
+			window.localStorage.removeItem(DEVICE_KEY_STORAGE_KEY);
+		} catch {
+			// Ignore errors when cleaning up legacy localStorage key
+		}
+	}
+
 	if (cachedDeviceKeyHex) {
 		return cachedDeviceKeyHex;
 	}
 
 	try {
 		if (typeof window !== "undefined") {
-			let keyHexStr = window.localStorage.getItem(DEVICE_KEY_STORAGE_KEY);
+			let keyHexStr = window.sessionStorage.getItem(DEVICE_KEY_STORAGE_KEY);
 			if (!keyHexStr) {
 				const newKey = CryptoJS.lib.WordArray.random(32) /* key generation */;
 				keyHexStr = CryptoJS.enc.Hex.stringify(newKey);
-				window.localStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
+				window.sessionStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
 			}
 			cachedDeviceKeyHex = CryptoJS.enc.Hex.parse(keyHexStr);
 			return cachedDeviceKeyHex;
@@ -71,7 +80,7 @@ function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
 		// Ignore storage errors, will fall through to temporary session key
 	}
 
-	// Fallback to a temporary random key for this session if localStorage is unavailable
+	// Fallback to a temporary random key for this session if sessionStorage is unavailable
 	cachedDeviceKeyHex = CryptoJS.lib.WordArray.random(32) /* key generation */;
 	return cachedDeviceKeyHex;
 }
