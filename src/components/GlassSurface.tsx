@@ -28,26 +28,19 @@ export interface GlassSurfaceProps {
 }
 
 // Global scroll state tracker to defer expensive SVG filter updates during active scrolling
-let isGlobalScrolling = false;
 let scrollEndTimer: ReturnType<typeof setTimeout> | null = null;
 const scrollEndCallbacks = new Set<() => void>();
 
 export function triggerGlobalScroll() {
-	isGlobalScrolling = true;
 	if (scrollEndTimer !== null) {
 		clearTimeout(scrollEndTimer);
 	}
 	scrollEndTimer = setTimeout(() => {
-		isGlobalScrolling = false;
 		scrollEndTimer = null;
 		for (const cb of scrollEndCallbacks) {
 			cb();
 		}
 	}, 120);
-}
-
-export function getIsGlobalScrolling(): boolean {
-	return isGlobalScrolling;
 }
 
 function handleGlobalScroll() {
