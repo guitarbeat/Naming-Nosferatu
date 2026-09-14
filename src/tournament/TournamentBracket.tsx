@@ -477,15 +477,21 @@ function ContenderDetailModal({
 		matchHistory,
 	});
 
-	// Compute tournament stats for this contestant
-	const matchesInvolved = matchHistory.filter((m) => {
+	// ⚡ Bolt Performance Optimization: Single-pass iteration over matchHistory to compute wins and losses without intermediate array allocations
+	let wins = 0;
+	let losses = 0;
+	for (let i = 0; i < matchHistory.length; i++) {
+		const m = matchHistory[i];
 		const leftId = getMatchSideId(m.match, "left");
 		const rightId = getMatchSideId(m.match, "right");
-		return leftId === contenderId || rightId === contenderId;
-	});
-
-	const wins = matchesInvolved.filter((m) => String(m.winner) === contenderId).length;
-	const losses = matchesInvolved.length - wins;
+		if (leftId === contenderId || rightId === contenderId) {
+			if (String(m.winner) === contenderId) {
+				wins++;
+			} else {
+				losses++;
+			}
+		}
+	}
 
 	return (
 		<motion.div
