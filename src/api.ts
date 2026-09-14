@@ -1,5 +1,6 @@
 import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { DEFAULT_SAMPLE_NAMES } from "@/lib/names";
+import { getStorageString, parseJsonValue, writeStorageJson } from "@/lib/storage";
 import type { NameItem } from "@/types";
 
 export const queryClient = new QueryClient({
@@ -57,9 +58,9 @@ function getStoredNames(): NameItem[] {
 		return DEFAULT_CANDIDATE_NAMES;
 	}
 	try {
-		const raw = window.localStorage.getItem(CANDIDATE_STORAGE_KEY);
+		const raw = getStorageString(CANDIDATE_STORAGE_KEY);
 		if (raw) {
-			const parsed = JSON.parse(raw);
+			const parsed = parseJsonValue<NameItem[] | null>(raw, null);
 			if (Array.isArray(parsed) && parsed.length > 0) {
 				// Seamlessly merge new default candidate names if the stored list is from the legacy 12-item set
 				const existingNames = new Set(
@@ -87,7 +88,7 @@ function saveStoredNames(names: NameItem[]): void {
 		return;
 	}
 	try {
-		window.localStorage.setItem(CANDIDATE_STORAGE_KEY, JSON.stringify(names));
+		writeStorageJson(CANDIDATE_STORAGE_KEY, names);
 	} catch (e) {
 		console.warn("Failed to persist candidates:", e);
 	}
@@ -138,7 +139,7 @@ export const ratingsAPI = {
 			return;
 		}
 		try {
-			window.localStorage.setItem(`nosferatu-ratings-${userId}`, JSON.stringify(ratings));
+			writeStorageJson(`nosferatu-ratings-${userId}`, ratings);
 			const all = getStoredNames();
 			const updated = all.map((item) => {
 				const r = ratings[item.id] || ratings[item.name];
