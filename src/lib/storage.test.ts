@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { logger } from "./logger";
 import {
+	decryptValue,
 	getStorageString,
 	parseJsonValue,
 	removeStorageItem,
@@ -42,5 +43,12 @@ describe("storage", () => {
 		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe("fallback");
 		expect(spy).toHaveBeenCalled();
 		spy.mockRestore();
+	});
+
+	it("decrypts raw encrypted values via decryptValue", () => {
+		setStorageString("key1", "value1");
+		const encryptedValue = localStorage.getItem("key1");
+		expect(encryptedValue).not.toBeNull();
+		expect(decryptValue(encryptedValue)).toBe("value1");
 	});
 });
