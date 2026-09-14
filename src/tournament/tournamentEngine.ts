@@ -441,7 +441,7 @@ export function isBye(id: string | null | undefined): boolean {
 	return Boolean(id?.startsWith(BYE_PREFIX));
 }
 
-export function createBye(round: number, index: number): string {
+function createBye(round: number, index: number): string {
 	return `${BYE_PREFIX}${round}_${index}`;
 }
 
