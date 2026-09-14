@@ -11,15 +11,6 @@ import type {
 	VoteRecord,
 } from "@/types";
 
-// Secret key used to encrypt storage values.
-// In a real application, this should ideally be derived from a user-specific value or backend secret.
-// For client-side storage where the goal is simply to prevent clear-text storage on disk, a static key provides basic obfuscation.
-const LEGACY_STORAGE_SECRET_KEY = "nosferatu-secure-storage-key-1337";
-
-// Ensure the key is exactly 256 bits (32 bytes)
-const legacyKeyHex = CryptoJS.enc.Utf8.parse(
-	LEGACY_STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32),
-);
 // Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
 const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
@@ -52,26 +43,17 @@ function evictTransientCache(): void {
 }
 
 function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
-	if (typeof window !== "undefined") {
-		// Remove any legacy cleartext device key stored in persistent localStorage
-		try {
-			window.localStorage.removeItem(DEVICE_KEY_STORAGE_KEY);
-		} catch {
-			// Ignore errors when cleaning up legacy localStorage key
-		}
-	}
-
 	if (cachedDeviceKeyHex) {
 		return cachedDeviceKeyHex;
 	}
 
 	try {
 		if (typeof window !== "undefined") {
-			let keyHexStr = window.sessionStorage.getItem(DEVICE_KEY_STORAGE_KEY);
+			let keyHexStr = window.localStorage.getItem(DEVICE_KEY_STORAGE_KEY);
 			if (!keyHexStr) {
 				const newKey = CryptoJS.lib.WordArray.random(32) /* key generation */;
 				keyHexStr = CryptoJS.enc.Hex.stringify(newKey);
-				window.sessionStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
+				window.localStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
 			}
 			cachedDeviceKeyHex = CryptoJS.enc.Hex.parse(keyHexStr);
 			return cachedDeviceKeyHex;
@@ -80,7 +62,7 @@ function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
 		// Ignore storage errors, will fall through to temporary session key
 	}
 
-	// Fallback to a temporary random key for this session if sessionStorage is unavailable
+	// Fallback to a temporary random key for this session if localStorage is unavailable
 	cachedDeviceKeyHex = CryptoJS.lib.WordArray.random(32) /* key generation */;
 	return cachedDeviceKeyHex;
 }
@@ -155,28 +137,6 @@ function decrypt(text: string): string {
 				}
 				decryptionCache.set(text, decrypted);
 				return decrypted;
-			}
-		} catch (_error) {
-			// Ignore and fallback
-		}
-
-		// Fallback to legacy static key for backward compatibility
-		try {
-			const legacyBytes = CryptoJS.AES.decrypt(ciphertext, legacyKeyHex, {
-				iv,
-				mode: CryptoJS.mode.CBC,
-				padding: CryptoJS.pad.Pkcs7,
-			});
-			const legacyDecrypted = legacyBytes.toString(CryptoJS.enc.Utf8);
-			if (legacyDecrypted) {
-				if (decryptionCache.size > MAX_DECRYPT_CACHE) {
-					const firstKey = decryptionCache.keys().next().value;
-					if (firstKey) {
-						decryptionCache.delete(firstKey);
-					}
-				}
-				decryptionCache.set(text, legacyDecrypted);
-				return legacyDecrypted;
 			}
 		} catch (_error) {
 			// Ignore and fallback
