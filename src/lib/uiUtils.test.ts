@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { isMobileOrLowPowerDevice } from "./uiUtils";
+import { isMobileOrLowPowerDevice, getRandomCatImage } from "./uiUtils";
 
 describe("isMobileOrLowPowerDevice", () => {
 	const originalWindow = globalThis.window;
@@ -93,3 +93,54 @@ describe("isMobileOrLowPowerDevice", () => {
 		expect(isMobileOrLowPowerDevice()).toBe(false);
 	});
 });
+
+describe("getRandomCatImage", () => {
+	it("returns empty string when images array is empty or falsy", () => {
+		expect(getRandomCatImage("test-id", [])).toBe("");
+		expect(getRandomCatImage("test-id", null as unknown as string[])).toBe("");
+	});
+
+	it("returns a image deterministically based on id and fallbackName", () => {
+		const sampleImages = ["img1.jpg", "img2.jpg", "img3.jpg"];
+		const imgA1 = getRandomCatImage("cat-1", sampleImages, "Fluffy");
+		const imgA2 = getRandomCatImage("cat-1", sampleImages, "Fluffy");
+		expect(imgA1).toBe(imgA2);
+
+		// Number id vs string id consistency handling
+		const imgNum = getRandomCatImage(42, sampleImages);
+		const imgStr = getRandomCatImage("42", sampleImages);
+		expect(imgNum).toBe(imgStr);
+	});
+
+	it("uses default CAT_IMAGES when images parameter is not provided", () => {
+		const result = getRandomCatImage("default-test-id");
+		expect(CAT_IMAGES).toContain(result);
+	});
+
+	it("caches results and returns cached entry on subsequent calls", () => {
+		const customImages = ["cached1.png", "cached2.png"];
+		const uniqueId = "cache-key-test-id";
+		const firstCall = getRandomCatImage(uniqueId, customImages, "Mittens");
+		// Subsequent call with different images array still returns cached result for same cacheKey
+		const secondCall = getRandomCatImage(uniqueId, ["other.png"], "Mittens");
+		expect(secondCall).toBe(firstCall);
+	});
+
+	it("evicts oldest entry when cache size exceeds limit", () => {
+		const customImages = ["evict1.png", "evict2.png"];
+
+		// Populate cache up to max size + 1 (257 entries)
+		const firstId = "evict-id-0";
+		const firstResult = getRandomCatImage(firstId, customImages);
+
+		for (let i = 1; i <= 256; i++) {
+			getRandomCatImage(`evict-id-${i}`, customImages);
+		}
+
+		// Since firstId was evicted from cache, calling it with a different image array will calculate new result
+		const reCalculated = getRandomCatImage(firstId, ["new-image.png"]);
+		expect(reCalculated).toBe("new-image.png");
+		expect(reCalculated).not.toBe(firstResult);
+	});
+});
+

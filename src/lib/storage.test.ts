@@ -7,6 +7,7 @@ import {
 	removeStorageItem,
 	setStorageString,
 	writeStorageJson,
+	decryptValue,
 } from "./storage";
 
 describe("storage", () => {
@@ -82,4 +83,12 @@ describe("storage", () => {
 		expect(rawStoredCandidates).not.toContain("description");
 		expect(rawStoredCandidates).toContain(":");
 	});
+
+	it("decrypts raw encrypted values via decryptValue", () => {
+		setStorageString("key1", "value1");
+		const encryptedValue = localStorage.getItem("key1");
+		expect(encryptedValue).not.toBeNull();
+		expect(decryptValue(encryptedValue!)).toBe("value1");
+	});
+
 });
