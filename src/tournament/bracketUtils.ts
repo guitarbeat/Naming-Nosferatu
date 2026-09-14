@@ -1,7 +1,6 @@
 import { getRandomCatImage } from "@/lib/uiUtils";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
 import {
-	BYE_PREFIX,
 	createIdToNameMap,
 	createTeamsById,
 	getBracketStageLabel,
@@ -14,7 +13,7 @@ import {
 export const isByeId = isBye;
 export const padEntrantsForRound = padForRound;
 
-export { BYE_PREFIX, nextPowerOfTwo };
+export { nextPowerOfTwo };
 
 export interface VisualContender {
 	id: string;
