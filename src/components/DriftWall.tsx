@@ -824,48 +824,27 @@ export const DriftWall = memo(function DriftWall({
 			} else if (key === "End") {
 				nextTile =
 					visibleTiles[visibleTiles.length - 1]?.el || tilePositions[tilePositions.length - 1]?.el;
-			} else if (key === "ArrowRight") {
-				const allCols = Array.from(new Set(allTiles.map((t) => Number(t.dataset.col)))).sort(
-					(a, b) => a - b,
-				);
-				const colIdx = allCols.indexOf(currentCol);
-				const nextColNum = allCols[(colIdx + 1) % allCols.length];
-				const nextColTiles = allTiles
-					.filter((t) => Number(t.dataset.col) === nextColNum)
-					.map((el) => ({ el, rect: el.getBoundingClientRect() }));
+			} else if (key === "ArrowRight" || key === "ArrowLeft") {
+				// ⚡ Bolt Performance Optimization: Direct column arithmetic and single pass over tiles to eliminate redundant Set instantiations and array mappings on ArrowLeft and ArrowRight keydown.
+				const numCols = columnMeta.length;
+				const targetColNum =
+					key === "ArrowRight" ? (currentCol + 1) % numCols : (currentCol - 1 + numCols) % numCols;
 
 				const currentCenterY = currentTile.getBoundingClientRect().top;
-				let closest = nextColTiles[0];
+				let closest: HTMLElement | null = null;
 				let minDiff = Infinity;
-				for (const item of nextColTiles) {
-					const diff = Math.abs(item.rect.top - currentCenterY);
-					if (diff < minDiff) {
-						minDiff = diff;
-						closest = item;
-					}
-				}
-				nextTile = closest?.el || null;
-			} else if (key === "ArrowLeft") {
-				const allCols = Array.from(new Set(allTiles.map((t) => Number(t.dataset.col)))).sort(
-					(a, b) => a - b,
-				);
-				const colIdx = allCols.indexOf(currentCol);
-				const prevColNum = allCols[(colIdx - 1 + allCols.length) % allCols.length];
-				const prevColTiles = allTiles
-					.filter((t) => Number(t.dataset.col) === prevColNum)
-					.map((el) => ({ el, rect: el.getBoundingClientRect() }));
 
-				const currentCenterY = currentTile.getBoundingClientRect().top;
-				let closest = prevColTiles[0];
-				let minDiff = Infinity;
-				for (const item of prevColTiles) {
-					const diff = Math.abs(item.rect.top - currentCenterY);
-					if (diff < minDiff) {
-						minDiff = diff;
-						closest = item;
+				for (let i = 0; i < allTiles.length; i++) {
+					const tile = allTiles[i];
+					if (Number(tile.dataset.col) === targetColNum) {
+						const diff = Math.abs(tile.getBoundingClientRect().top - currentCenterY);
+						if (diff < minDiff) {
+							minDiff = diff;
+							closest = tile;
+						}
 					}
 				}
-				nextTile = closest?.el || null;
+				nextTile = closest;
 			}
 
 			if (nextTile) {
