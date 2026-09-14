@@ -2,7 +2,7 @@ import React, { memo, useMemo } from "react";
 import { GlassSurface } from "@/components/GlassSurface";
 import { handleImgError } from "@/lib/utils";
 
-export interface DriftWallTileProps {
+interface DriftWallTileProps {
 	tileId: string;
 	col: number;
 	name: string;
