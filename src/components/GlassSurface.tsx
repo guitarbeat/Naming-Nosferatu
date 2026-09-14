@@ -23,7 +23,6 @@ export interface GlassSurfaceProps {
 	yChannel?: "R" | "G" | "B";
 	mixBlendMode?: string;
 	checkVisibility?: boolean;
-	throttleSvgUpdates?: boolean;
 	className?: string;
 	style?: React.CSSProperties;
 }
@@ -341,26 +340,7 @@ function areGlassSurfacePropsEqual(
 	if (prevProps.checkVisibility !== nextProps.checkVisibility) {
 		return false;
 	}
-	if (prevProps.throttleSvgUpdates !== nextProps.throttleSvgUpdates) {
-		return false;
-	}
 	return areStylesEqual(prevProps.style, nextProps.style);
-}
-
-/**
- * Higher-Order Component / Throttle decorator that wraps a Glass component
- * to ensure SVG filter and displacement map DOM calculations pause during scroll events.
- */
-export function withScrollThrottledFilter<P extends GlassSurfaceProps>(
-	WrappedComponent: React.ComponentType<P>,
-): React.FC<P> {
-	const ThrottledComponent: React.FC<P> = (props) => {
-		return <WrappedComponent {...props} throttleSvgUpdates={true} />;
-	};
-	ThrottledComponent.displayName = `withScrollThrottledFilter(${WrappedComponent.displayName || WrappedComponent.name || "Component"})`;
-	return React.memo(ThrottledComponent, (prev, next) =>
-		areGlassSurfacePropsEqual(prev as GlassSurfaceProps, next as GlassSurfaceProps),
-	);
 }
 
 /**
