@@ -43,4 +43,15 @@ describe("storage", () => {
 		expect(spy).toHaveBeenCalled();
 		spy.mockRestore();
 	});
+
+	it("decrypts legacy values encrypted with static IV and legacy secret key", () => {
+		// Value "secret_legacy_data" encrypted using legacy key "nosferatu-secure-storage-key-1337" and legacy static IV "nosferatu-iv-123\0\0\0"
+		const legacyEncryptedString = "ETi3ExivLZJn3fwuoGtvoU8m0zk2uzMXuQFq94LYAv4=";
+		// Set in localStorage without prepended IV prefix (no colon delimiter)
+		localStorage.setItem("legacy_key", legacyEncryptedString);
+
+		// getStorageString should attempt device key, fail, and fallback to legacy static key & IV
+		const decrypted = getStorageString("legacy_key");
+		expect(decrypted).toBe("secret_legacy_data");
+	});
 });

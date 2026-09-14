@@ -21,6 +21,7 @@ const legacyKeyHex = CryptoJS.enc.Utf8.parse(
 	LEGACY_STORAGE_SECRET_KEY.padEnd(32, "0").substring(0, 32),
 );
 // Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
+// lgtm[js/hardcoded-iv] Fallback static IV required for backward compatibility with legacy encrypted storage
 const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
 const DEVICE_KEY_STORAGE_KEY = "__device_key__";
