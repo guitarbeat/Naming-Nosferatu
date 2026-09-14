@@ -11,6 +11,19 @@ import {
 describe("storage", () => {
 	beforeEach(() => {
 		localStorage.clear();
+		sessionStorage.clear();
+	});
+
+	it("stores encryption key in sessionStorage and not localStorage", () => {
+		setStorageString("secure_test_key", "secret_value");
+		expect(sessionStorage.getItem("__device_key__")).not.toBeNull();
+		expect(localStorage.getItem("__device_key__")).toBeNull();
+	});
+
+	it("purges legacy device key from localStorage", () => {
+		localStorage.setItem("__device_key__", "legacy_cleartext_key_hex");
+		setStorageString("secure_test_key", "secret_value");
+		expect(localStorage.getItem("__device_key__")).toBeNull();
 	});
 
 	it("reads and writes string values", () => {
