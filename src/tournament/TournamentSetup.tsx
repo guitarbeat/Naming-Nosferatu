@@ -266,30 +266,37 @@ export function TournamentSetup() {
 						nextTile = colTiles[0];
 					} else if (key === "End") {
 						nextTile = colTiles[colTiles.length - 1];
-					} else if (key === "ArrowRight") {
-						const allCols = Array.from(
-							new Set(tiles.map((t) => Number(t.getAttribute("data-col")))),
-						).sort((a, b) => a - b);
-						const colNum = Number(currentCol);
-						const colIdx = allCols.indexOf(colNum);
-						const nextColNum = allCols[(colIdx + 1) % allCols.length];
-						const nextColTiles = tiles.filter(
-							(t) => Number(t.getAttribute("data-col")) === nextColNum,
-						);
-						const targetIdx = Math.min(indexInCol, nextColTiles.length - 1);
-						nextTile = nextColTiles[targetIdx] || nextColTiles[0];
-					} else if (key === "ArrowLeft") {
-						const allCols = Array.from(
-							new Set(tiles.map((t) => Number(t.getAttribute("data-col")))),
-						).sort((a, b) => a - b);
-						const colNum = Number(currentCol);
-						const colIdx = allCols.indexOf(colNum);
-						const prevColNum = allCols[(colIdx - 1 + allCols.length) % allCols.length];
-						const prevColTiles = tiles.filter(
-							(t) => Number(t.getAttribute("data-col")) === prevColNum,
-						);
-						const targetIdx = Math.min(indexInCol, prevColTiles.length - 1);
-						nextTile = prevColTiles[targetIdx] || prevColTiles[0];
+					} else if (key === "ArrowRight" || key === "ArrowLeft") {
+						// ⚡ Bolt Performance Optimization: Group tiles by column in a single linear pass to avoid redundant Set instantiation, array allocations, and filtering
+						const colMap = new Map<number, HTMLElement[]>();
+						for (let i = 0; i < tiles.length; i++) {
+							const tile = tiles[i];
+							const colAttr = tile.getAttribute("data-col");
+							if (colAttr !== null) {
+								const col = Number(colAttr);
+								let list = colMap.get(col);
+								if (!list) {
+									list = [];
+									colMap.set(col, list);
+								}
+								list.push(tile);
+							}
+						}
+
+						const allCols = Array.from(colMap.keys()).sort((a, b) => a - b);
+						if (allCols.length > 0) {
+							const colNum = Number(currentCol);
+							const colIdx = allCols.indexOf(colNum);
+							if (colIdx !== -1) {
+								const targetColNum =
+									key === "ArrowRight"
+										? allCols[(colIdx + 1) % allCols.length]
+										: allCols[(colIdx - 1 + allCols.length) % allCols.length];
+								const targetColTiles = colMap.get(targetColNum) || [];
+								const targetIdx = Math.min(indexInCol, targetColTiles.length - 1);
+								nextTile = targetColTiles[targetIdx] || targetColTiles[0] || null;
+							}
+						}
 					}
 				}
 			}
