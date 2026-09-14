@@ -825,11 +825,9 @@ export const DriftWall = memo(function DriftWall({
 				nextTile =
 					visibleTiles[visibleTiles.length - 1]?.el || tilePositions[tilePositions.length - 1]?.el;
 			} else if (key === "ArrowRight") {
-				const allCols = Array.from(new Set(allTiles.map((t) => Number(t.dataset.col)))).sort(
-					(a, b) => a - b,
-				);
-				const colIdx = allCols.indexOf(currentCol);
-				const nextColNum = allCols[(colIdx + 1) % allCols.length];
+				// ⚡ Bolt Performance Optimization: Avoid redundant Set instantiation and array mapping on every ArrowRight/ArrowLeft keypress
+				const numCols = effectiveColumns;
+				const nextColNum = (currentCol + 1) % numCols;
 				const nextColTiles = allTiles
 					.filter((t) => Number(t.dataset.col) === nextColNum)
 					.map((el) => ({ el, rect: el.getBoundingClientRect() }));
@@ -846,11 +844,8 @@ export const DriftWall = memo(function DriftWall({
 				}
 				nextTile = closest?.el || null;
 			} else if (key === "ArrowLeft") {
-				const allCols = Array.from(new Set(allTiles.map((t) => Number(t.dataset.col)))).sort(
-					(a, b) => a - b,
-				);
-				const colIdx = allCols.indexOf(currentCol);
-				const prevColNum = allCols[(colIdx - 1 + allCols.length) % allCols.length];
+				const numCols = effectiveColumns;
+				const prevColNum = (currentCol - 1 + numCols) % numCols;
 				const prevColTiles = allTiles
 					.filter((t) => Number(t.dataset.col) === prevColNum)
 					.map((el) => ({ el, rect: el.getBoundingClientRect() }));
@@ -879,7 +874,7 @@ export const DriftWall = memo(function DriftWall({
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
-	}, [activate, columnMeta]);
+	}, [activate, columnMeta, effectiveColumns]);
 
 	const cssVars = useMemo(
 		() =>
