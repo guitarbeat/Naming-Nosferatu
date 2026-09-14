@@ -68,7 +68,7 @@ export interface VisualBracketTree {
 	activeMatch: VisualMatch | null;
 }
 
-export function createSeedMap(bracketEntrants: string[]): Map<string, number> {
+function createSeedMap(bracketEntrants: string[]): Map<string, number> {
 	const seedMap = new Map<string, number>();
 	let seedCounter = 1;
 	for (let i = 0; i < bracketEntrants.length; i++) {
