@@ -2,18 +2,20 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ratingsAPI } from "../api";
 import { logger } from "./logger";
 import {
+	decryptValue,
 	getStorageString,
 	parseJsonValue,
 	removeStorageItem,
+	resetStorageModuleCache,
 	setStorageString,
 	writeStorageJson,
-	decryptValue,
 } from "./storage";
 
 describe("storage", () => {
 	beforeEach(() => {
 		localStorage.clear();
 		sessionStorage.clear();
+		resetStorageModuleCache();
 	});
 
 	it("stores encryption key in sessionStorage and not localStorage", () => {
@@ -88,7 +90,6 @@ describe("storage", () => {
 		setStorageString("key1", "value1");
 		const encryptedValue = localStorage.getItem("key1");
 		expect(encryptedValue).not.toBeNull();
-		expect(decryptValue(encryptedValue!)).toBe("value1");
+		expect(decryptValue(encryptedValue as string)).toBe("value1");
 	});
-
 });

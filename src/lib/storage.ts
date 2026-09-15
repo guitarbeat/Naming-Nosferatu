@@ -49,11 +49,18 @@ function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
 
 	try {
 		if (typeof window !== "undefined") {
-			let keyHexStr = window.localStorage.getItem(DEVICE_KEY_STORAGE_KEY);
+			// Migrate legacy cleartext key if present in localStorage
+			const legacyKey = window.localStorage.getItem(DEVICE_KEY_STORAGE_KEY);
+			if (legacyKey && !window.sessionStorage.getItem(DEVICE_KEY_STORAGE_KEY)) {
+				window.sessionStorage.setItem(DEVICE_KEY_STORAGE_KEY, legacyKey);
+				window.localStorage.removeItem(DEVICE_KEY_STORAGE_KEY);
+			}
+
+			let keyHexStr = window.sessionStorage.getItem(DEVICE_KEY_STORAGE_KEY);
 			if (!keyHexStr) {
 				const newKey = CryptoJS.lib.WordArray.random(32) /* key generation */;
 				keyHexStr = CryptoJS.enc.Hex.stringify(newKey);
-				window.localStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
+				window.sessionStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
 			}
 			cachedDeviceKeyHex = CryptoJS.enc.Hex.parse(keyHexStr);
 			return cachedDeviceKeyHex;
@@ -148,6 +155,11 @@ function decrypt(text: string): string {
 		// Fallback to returning original text if decryption errors (e.g., not encrypted)
 		return text;
 	}
+}
+
+// Export internal cachedDeviceKeyHex for testing purposes so tests can reset module state
+export function resetStorageModuleCache(): void {
+	cachedDeviceKeyHex = null;
 }
 
 export function getStorageString(key: string, fallback: string | null = null): string | null {

@@ -12,6 +12,7 @@ const ALLOWED_TOP_LEVEL = [
 	"api.ts",
 	"App.tsx",
 	"hooks.ts",
+	"hooks.test.ts",
 	"index.css",
 	"main.tsx",
 	"Providers.tsx",

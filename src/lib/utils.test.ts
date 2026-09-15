@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createSortedKey, shuffleArray } from "./utils";
 
 describe("createSortedKey", () => {
