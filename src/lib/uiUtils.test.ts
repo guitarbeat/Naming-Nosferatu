@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { isMobileOrLowPowerDevice, getRandomCatImage } from "./uiUtils";
+import { CAT_IMAGES } from "./constants";
+import { getRandomCatImage, isMobileOrLowPowerDevice } from "./uiUtils";
 
 describe("isMobileOrLowPowerDevice", () => {
 	const originalWindow = globalThis.window;
@@ -143,4 +144,3 @@ describe("getRandomCatImage", () => {
 		expect(reCalculated).not.toBe(firstResult);
 	});
 });
-

@@ -97,16 +97,19 @@ export function applyEloMatchUpdate({
 	const updatedRatings = { ...ratings };
 	const defaultRating = config?.defaultRating ?? 1200;
 
-	const sumLeft = leftParticipantIds.reduce<number>(
-		(acc, id) => acc + (Number(ratings[String(id)]) || defaultRating),
-		0,
-	);
+	// ⚡ Bolt Performance Optimization:
+	// Replaced declarative .reduce() array methods with imperative for-loops to eliminate
+	// callback allocation and invocation overhead on the hot path of tournament batch updates.
+	let sumLeft = 0;
+	for (let i = 0; i < leftParticipantIds.length; i++) {
+		sumLeft += Number(ratings[String(leftParticipantIds[i])]) || defaultRating;
+	}
 	const avgLeftRating = sumLeft / (leftParticipantIds.length || 1);
 
-	const sumRight = rightParticipantIds.reduce<number>(
-		(acc, id) => acc + (Number(ratings[String(id)]) || defaultRating),
-		0,
-	);
+	let sumRight = 0;
+	for (let i = 0; i < rightParticipantIds.length; i++) {
+		sumRight += Number(ratings[String(rightParticipantIds[i])]) || defaultRating;
+	}
 	const avgRightRating = sumRight / (rightParticipantIds.length || 1);
 
 	const { newRatingA, newRatingB } = calculatePairEloUpdate({
