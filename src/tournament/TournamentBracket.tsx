@@ -1,19 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-	ArrowRight,
-	Check,
-	Eye,
-	Flame,
-	Gamepad2,
-	Layers,
-	Search,
-	Trophy,
-	X,
-	ZoomIn,
-	ZoomOut,
-} from "lucide-react";
+import { ArrowRight, Check, Eye, Flame, Layers, Trophy, X, ZoomIn, ZoomOut } from "lucide-react";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
-import { Button, CatImage } from "@/components/LayoutBlocks";
+import { Button, CatImage, MagicSearch, MagicToggle } from "@/components";
 import { useDebounce } from "@/hooks";
 import { MOTION_DURATIONS } from "@/lib/uiUtils";
 import { hapticVoteTap } from "@/lib/utils";
@@ -781,38 +769,7 @@ export function TournamentBracket({
 					{/* Right Side Controls */}
 					<div className="flex items-center gap-2">
 						{/* View Switcher Tabs */}
-						<div
-							className="inline-flex rounded-xl border border-white/20 dark:border-white/10 bg-white/25 dark:bg-white/5 backdrop-blur-md p-0.5 text-xs"
-							role="group"
-							aria-label="View mode"
-						>
-							<button
-								type="button"
-								onClick={() => setViewMode("tree")}
-								aria-pressed={viewMode === "tree"}
-								className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-all ${
-									viewMode === "tree"
-										? "bg-card text-foreground shadow-xs font-semibold"
-										: "text-muted-foreground hover:text-foreground"
-								}`}
-							>
-								<Layers className="size-3.5" />
-								<span>Tree Flow</span>
-							</button>
-							<button
-								type="button"
-								onClick={() => setViewMode("cards")}
-								aria-pressed={viewMode === "cards"}
-								className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-all ${
-									viewMode === "cards"
-										? "bg-card text-foreground shadow-xs font-semibold"
-										: "text-muted-foreground hover:text-foreground"
-								}`}
-							>
-								<Gamepad2 className="size-3.5" />
-								<span>Rounds List</span>
-							</button>
-						</div>
+						<MagicToggle viewMode={viewMode} setViewMode={setViewMode} />
 
 						{/* Close button if in modal mode */}
 						{onClose && (
@@ -852,27 +809,7 @@ export function TournamentBracket({
 					{/* Search & Zoom Actions */}
 					<div className="flex items-center gap-2">
 						{/* Search Input */}
-						<div className="relative">
-							<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
-							<input
-								type="text"
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								placeholder="Find cat in bracket..."
-								aria-label="Search bracket"
-								className="h-8 w-36 sm:w-48 rounded-xl border border-white/25 dark:border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-md pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]"
-							/>
-							{searchQuery && (
-								<button
-									type="button"
-									onClick={() => setSearchQuery("")}
-									aria-label="Clear search"
-									className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-								>
-									<X className="size-3" />
-								</button>
-							)}
-						</div>
+						<MagicSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
 						{/* Zoom Buttons (Tree Mode only) */}
 						{viewMode === "tree" && (
