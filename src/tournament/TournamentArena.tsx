@@ -1468,9 +1468,15 @@ function TournamentContent({ onComplete, names = EMPTY_NAMES, onVote }: Tourname
 	};
 
 	const quitTournament = useCallback(() => {
-		handleQuit();
-		tournamentActions.resetTournament();
-		navigate("/");
+		if (
+			window.confirm(
+				"Are you sure you want to exit the tournament? Your current progress will be lost.",
+			)
+		) {
+			handleQuit();
+			tournamentActions.resetTournament();
+			navigate("/");
+		}
 	}, [handleQuit, tournamentActions, navigate]);
 
 	useEffect(() => {
