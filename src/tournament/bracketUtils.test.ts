@@ -2,11 +2,13 @@ import { describe, expect, it } from "vitest";
 import type { NameItem } from "@/types";
 import {
 	areContendersEqual,
+	areMatchNodePropsEqual,
 	buildVisualContender,
 	deriveVisualBracketTree,
 	isByeId,
 	nextPowerOfTwo,
 	padEntrantsForRound,
+	type VisualMatch,
 } from "./bracketUtils";
 
 describe("bracketUtils", () => {
@@ -45,6 +47,62 @@ describe("bracketUtils", () => {
 		const c2 = { ...c1 };
 		expect(areContendersEqual(c1, c2)).toBe(true);
 		expect(areContendersEqual(c1, { ...c1, isWinner: true })).toBe(false);
+	});
+
+	it("evaluates match node props equality correctly", () => {
+		const match1: VisualMatch = {
+			id: "r1-m0",
+			roundNumber: 1,
+			roundName: "Round 1",
+			matchIndex: 0,
+			contender1: {
+				id: "1",
+				name: "Luna",
+				isBye: false,
+				isWinner: false,
+				isLoser: false,
+			},
+			contender2: {
+				id: "2",
+				name: "Felix",
+				isBye: false,
+				isWinner: false,
+				isLoser: false,
+			},
+			winnerId: null,
+			loserId: null,
+			status: "active",
+			isCurrentMatch: true,
+		};
+
+		const props1 = {
+			match: match1,
+			highlightedContenderId: null as string | null,
+			onSelectMatch: (_match: VisualMatch) => {},
+			onSelectContender: (_id: string) => {},
+			onVoteForSide: (_side: "left" | "right") => {},
+		};
+
+		const props2 = { ...props1 };
+
+		expect(areMatchNodePropsEqual(props1, props2)).toBe(true);
+
+		const propsDifferentMatch = {
+			...props1,
+			match: {
+				...match1,
+				status: "completed" as const,
+			},
+		};
+
+		expect(areMatchNodePropsEqual(props1, propsDifferentMatch)).toBe(false);
+
+		const propsDifferentHandler = {
+			...props1,
+			onSelectMatch: (_match: VisualMatch) => {},
+		};
+
+		expect(areMatchNodePropsEqual(props1, propsDifferentHandler)).toBe(false);
 	});
 
 	it("builds visual contender accurately", () => {

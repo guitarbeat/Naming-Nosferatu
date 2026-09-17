@@ -105,7 +105,7 @@ export function areMatchNodePropsEqual<
 	T extends {
 		match: VisualMatch;
 		highlightedContenderId?: string | null;
-		onSelectMatch?: (match: any) => void;
+		onSelectMatch?: (match: VisualMatch) => void;
 		onSelectContender?: (id: string) => void;
 		onVoteForSide?: (side: "left" | "right") => void;
 	},
