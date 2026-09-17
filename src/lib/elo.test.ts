@@ -290,5 +290,62 @@ describe("elo utility", () => {
 			expect(result.ratings).toBeDefined();
 			expect(result.ratings.p1).toBeDefined();
 		});
+
+		it("does not mutate the original ratings input object", () => {
+			const initialRatings = Object.freeze({ p1: 1200, p2: 1200 });
+			const result = applyEloMatchUpdate({
+				ratings: initialRatings,
+				leftParticipantIds: ["p1"],
+				rightParticipantIds: ["p2"],
+				winnerSide: "left",
+			});
+
+			expect(initialRatings.p1).toBe(1200);
+			expect(initialRatings.p2).toBe(1200);
+			expect(result.ratings.p1).not.toBe(initialRatings.p1);
+		});
+
+		it("preserves ratings of participants not involved in the match", () => {
+			const initialRatings = { p1: 1200, p2: 1200, bystander: 1500 };
+			const result = applyEloMatchUpdate({
+				ratings: initialRatings,
+				leftParticipantIds: ["p1"],
+				rightParticipantIds: ["p2"],
+				winnerSide: "left",
+			});
+
+			expect(result.ratings.bystander).toBe(1500);
+		});
+
+		it("uses custom defaultRating for unrated participants when configured", () => {
+			const initialRatings = { p1: 1500 };
+			const result = applyEloMatchUpdate({
+				ratings: initialRatings,
+				leftParticipantIds: ["p1"],
+				rightParticipantIds: ["p2"],
+				winnerSide: "right",
+				config: { defaultRating: 1500, newPlayerGameThreshold: 0 },
+			});
+
+			// Since p1 is 1500 and p2 defaults to 1500, with K=32 right win gives p2 +16 and p1 -16
+			expect(result.ratings.p2).toBe(1516);
+			expect(result.ratings.p1).toBe(1484);
+		});
+
+		it("handles asymmetric team matches (2v1)", () => {
+			const initialRatings = { p1: 1200, p2: 1200, solo: 1200 };
+			const result = applyEloMatchUpdate({
+				ratings: initialRatings,
+				leftParticipantIds: ["p1", "p2"],
+				rightParticipantIds: ["solo"],
+				winnerSide: "left",
+				config: { newPlayerGameThreshold: 0 },
+			});
+
+			// Left average: 1200, Right average: 1200. Left win delta = +16, Right delta = -16
+			expect(result.ratings.p1).toBe(1216);
+			expect(result.ratings.p2).toBe(1216);
+			expect(result.ratings.solo).toBe(1184);
+		});
 	});
 });
