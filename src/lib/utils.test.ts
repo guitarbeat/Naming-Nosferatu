@@ -34,6 +34,27 @@ describe("createSortedKey", () => {
 		expect(createSortedKey(items)).toBe("cat,dog");
 	});
 
+	it("handles duplicate values and retains duplicates in sorted order", () => {
+		const items = ["cat", "dog", "cat", { id: "dog" }, { id: "apple" }];
+		expect(createSortedKey(items)).toBe("apple,cat,cat,dog,dog");
+	});
+
+	it("handles objects missing an id property or having falsy id values", () => {
+		const items = [
+			{ id: "cat" },
+			{ name: "no-id" } as unknown as { id: string },
+			{ id: "" },
+			{ id: 0 as unknown as string },
+			{ id: null as unknown as string },
+		];
+		expect(createSortedKey(items)).toBe("cat");
+	});
+
+	it("handles boolean values and filters out falsy booleans while keeping truthy ones if cast", () => {
+		const items = ["alpha", false, true] as unknown as Array<string>;
+		expect(createSortedKey(items)).toBe("alpha,true");
+	});
+
 	it("produces deterministic output regardless of input order", () => {
 		const arr1 = ["b", "a", { id: "c" }];
 		const arr2 = [{ id: "c" }, "a", "b"];
