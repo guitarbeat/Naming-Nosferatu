@@ -140,6 +140,102 @@ describe("elo utility", () => {
 			expect(result.lossesB).toBe(1);
 		});
 
+		it("handles partial stats objects with only wins or losses defined", () => {
+			const resultLeftWinsOnly = calculatePairEloUpdate({
+				leftRating: 1200,
+				rightRating: 1200,
+				outcome: "left",
+				leftStats: { wins: 4 }, // losses undefined
+				rightStats: { losses: 2 }, // wins undefined
+			});
+
+			expect(resultLeftWinsOnly.winsA).toBe(5);
+			expect(resultLeftWinsOnly.lossesA).toBe(0);
+			expect(resultLeftWinsOnly.winsB).toBe(0);
+			expect(resultLeftWinsOnly.lossesB).toBe(3);
+
+			const resultRightWinsOnly = calculatePairEloUpdate({
+				leftRating: 1200,
+				rightRating: 1200,
+				outcome: "right",
+				leftStats: { losses: 3 }, // wins undefined
+				rightStats: { wins: 7 }, // losses undefined
+			});
+
+			expect(resultRightWinsOnly.winsA).toBe(0);
+			expect(resultRightWinsOnly.lossesA).toBe(4);
+			expect(resultRightWinsOnly.winsB).toBe(8);
+			expect(resultRightWinsOnly.lossesB).toBe(0);
+		});
+
+		it("does not increment wins or losses on tie outcome", () => {
+			const result = calculatePairEloUpdate({
+				leftRating: 1200,
+				rightRating: 1200,
+				outcome: "tie",
+				leftStats: { wins: 5, losses: 5 },
+				rightStats: { wins: 3, losses: 3 },
+			});
+
+			expect(result.winsA).toBe(5);
+			expect(result.lossesA).toBe(5);
+			expect(result.winsB).toBe(3);
+			expect(result.lossesB).toBe(3);
+		});
+
+		it("tests exact boundary for newPlayerGameThreshold", () => {
+			// Threshold is 10.
+			// Prior games = 8 (+ 1 current = 9 games < 10) => K multiplier applied (32 * 1.5 = 48)
+			const resultUnderThreshold = calculatePairEloUpdate({
+				leftRating: 1200,
+				rightRating: 1200,
+				outcome: "left",
+				leftStats: { wins: 5, losses: 3 }, // 8 prior games + 1 = 9 total games
+				rightStats: { wins: 10, losses: 0 }, // 10 prior games + 0 = 10 total games
+			});
+
+			expect(resultUnderThreshold.newRatingA).toBe(1224); // K = 48 -> +24
+			expect(resultUnderThreshold.newRatingB).toBe(1184); // K = 32 -> -16
+
+			// Prior games = 9 (+ 1 current = 10 games >= 10) => Standard K factor (32)
+			const resultAtThreshold = calculatePairEloUpdate({
+				leftRating: 1200,
+				rightRating: 1200,
+				outcome: "left",
+				leftStats: { wins: 5, losses: 4 }, // 9 prior games + 1 = 10 total games
+				rightStats: { wins: 10, losses: 0 }, // 10 prior games + 0 = 10 total games
+			});
+
+			expect(resultAtThreshold.newRatingA).toBe(1216); // K = 32 -> +16
+			expect(resultAtThreshold.newRatingB).toBe(1184); // K = 32 -> -16
+		});
+
+		it("uses custom ratingDivisor from config when calculating expected score", () => {
+			const resultStandardDivisor = calculatePairEloUpdate({
+				leftRating: 1600,
+				rightRating: 1200,
+				outcome: "left",
+				leftStats: { wins: 10, losses: 10 },
+				rightStats: { wins: 10, losses: 10 },
+				config: { ratingDivisor: 400 },
+			});
+
+			const resultCustomDivisor = calculatePairEloUpdate({
+				leftRating: 1600,
+				rightRating: 1200,
+				outcome: "left",
+				leftStats: { wins: 10, losses: 10 },
+				rightStats: { wins: 10, losses: 10 },
+				config: { ratingDivisor: 200 },
+			});
+
+			// Smaller divisor exaggerates the rating gap, making expected win probability closer to 1.0,
+			// which yields a smaller rating gain for the winner.
+			const gainStandard = resultStandardDivisor.newRatingA - 1600;
+			const gainCustom = resultCustomDivisor.newRatingA - 1600;
+			expect(gainCustom).toBeLessThan(gainStandard);
+		});
+
 		it("applies new player K-factor multiplier when games < newPlayerGameThreshold", () => {
 			const resultNewPlayer = calculatePairEloUpdate({
 				leftRating: 1200,
