@@ -220,4 +220,147 @@ describe("useIntersectionObserver", () => {
 		expect(observer.disconnected).toBe(true);
 		expect(observer.observedElements.size).toBe(0);
 	});
+
+	it("supports array thresholds and generates correct pool keys", () => {
+		renderTestComponent({ threshold: [0, 0.5, 1] });
+
+		expect(MockIntersectionObserver.instances.length).toBe(1);
+		const observer = MockIntersectionObserver.instances[0];
+		expect(observer.thresholds).toEqual([0, 0.5, 1]);
+	});
+
+	it("supports custom root element", () => {
+		const customRoot = document.createElement("div");
+		document.body.appendChild(customRoot);
+
+		renderTestComponent({ root: customRoot });
+
+		expect(MockIntersectionObserver.instances.length).toBe(1);
+		const observer = MockIntersectionObserver.instances[0];
+		expect(observer.root).toBe(customRoot);
+
+		customRoot.remove();
+	});
+
+	it("handles dynamic toggling of enabled option", () => {
+		let setEnabledFn: (val: boolean) => void;
+
+		function DynamicEnabledComponent() {
+			const ref = React.useRef<HTMLDivElement>(null);
+			const [enabled, setEnabled] = React.useState(false);
+			setEnabledFn = setEnabled;
+			const isVisible = useIntersectionObserver(ref, { enabled, initialIsVisible: false });
+			return React.createElement("div", { ref }, isVisible ? "Visible" : "Hidden");
+		}
+
+		act(() => {
+			root?.render(React.createElement(DynamicEnabledComponent));
+		});
+
+		// Disabled initially -> defaults isVisible to true
+		expect(container?.textContent).toBe("Visible");
+		expect(MockIntersectionObserver.instances.length).toBe(0);
+
+		// Enable observation
+		act(() => {
+			setEnabledFn(true);
+		});
+
+		expect(MockIntersectionObserver.instances.length).toBe(1);
+		const observer = MockIntersectionObserver.instances[0];
+		const targetElement = container?.querySelector("div");
+		expect(targetElement).not.toBeNull();
+
+		// Trigger intersection as false
+		act(() => {
+			observer.triggerIntersection(targetElement as Element, false);
+		});
+		expect(container?.textContent).toBe("Hidden");
+
+		// Disable observation again
+		act(() => {
+			setEnabledFn(false);
+		});
+		expect(container?.textContent).toBe("Visible");
+	});
+
+	it("re-subscribes when options change", () => {
+		let setRootMarginFn: (margin: string) => void;
+
+		function DynamicOptionsComponent() {
+			const ref = React.useRef<HTMLDivElement>(null);
+			const [rootMargin, setRootMargin] = React.useState("10px");
+			setRootMarginFn = setRootMargin;
+			useIntersectionObserver(ref, { rootMargin });
+			return React.createElement("div", { ref }, "Content");
+		}
+
+		act(() => {
+			root?.render(React.createElement(DynamicOptionsComponent));
+		});
+
+		expect(MockIntersectionObserver.instances.length).toBe(1);
+		expect(MockIntersectionObserver.instances[0].rootMargin).toBe("10px");
+
+		// Change option
+		act(() => {
+			setRootMarginFn("50px");
+		});
+
+		expect(MockIntersectionObserver.instances.length).toBe(2);
+		expect(MockIntersectionObserver.instances[1].rootMargin).toBe("50px");
+		// Old observer instance should be disconnected
+		expect(MockIntersectionObserver.instances[0].disconnected).toBe(true);
+	});
+
+	it("handles partial unmounting of elements sharing a pooled observer", () => {
+		let setShowSecondFn: (show: boolean) => void;
+		const options = { rootMargin: "20px" };
+
+		function ObserverChild({ label }: { label: string }) {
+			const ref = React.useRef<HTMLDivElement>(null);
+			useIntersectionObserver(ref, options);
+			return React.createElement("div", { ref }, label);
+		}
+
+		function SharedObserverComponent() {
+			const [showSecond, setShowSecond] = React.useState(true);
+			setShowSecondFn = setShowSecond;
+
+			return React.createElement(
+				"div",
+				null,
+				React.createElement(ObserverChild, { label: "First" }),
+				showSecond ? React.createElement(ObserverChild, { label: "Second" }) : null,
+			);
+		}
+
+		act(() => {
+			root?.render(React.createElement(SharedObserverComponent));
+		});
+
+		expect(MockIntersectionObserver.instances.length).toBe(1);
+		const observer = MockIntersectionObserver.instances[0];
+		expect(observer.observedElements.size).toBe(2);
+		expect(observer.disconnected).toBe(false);
+
+		// Hide second element (unmounts second ObserverChild component)
+		act(() => {
+			setShowSecondFn(false);
+		});
+
+		// Observer should still be active for element 1, not disconnected
+		expect(observer.observedElements.size).toBe(1);
+		expect(observer.disconnected).toBe(false);
+
+		// Unmount root completely
+		act(() => {
+			root?.unmount();
+			root = null;
+		});
+
+		// Now observer disconnects
+		expect(observer.disconnected).toBe(true);
+		expect(observer.observedElements.size).toBe(0);
+	});
 });
