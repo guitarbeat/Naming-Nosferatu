@@ -27,7 +27,8 @@ export const MagicSearch = memo(function MagicSearch({
 					type="button"
 					onClick={() => setSearchQuery("")}
 					aria-label="Clear search"
-					className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full p-0.5 transition-colors"
+					title="Clear search"
+					className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full p-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 				>
 					<X className="size-3" />
 				</button>

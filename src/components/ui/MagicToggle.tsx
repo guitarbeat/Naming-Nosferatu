@@ -21,7 +21,7 @@ export const MagicToggle = memo(function MagicToggle({ viewMode, setViewMode }: 
 				type="button"
 				onClick={() => setViewMode("tree")}
 				aria-pressed={viewMode === "tree"}
-				className={`relative z-10 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-colors ${
+				className={`relative z-10 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background ${
 					viewMode === "tree"
 						? "text-foreground font-semibold"
 						: "text-muted-foreground hover:text-foreground"
@@ -34,7 +34,7 @@ export const MagicToggle = memo(function MagicToggle({ viewMode, setViewMode }: 
 				type="button"
 				onClick={() => setViewMode("cards")}
 				aria-pressed={viewMode === "cards"}
-				className={`relative z-10 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-colors ${
+				className={`relative z-10 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background ${
 					viewMode === "cards"
 						? "text-foreground font-semibold"
 						: "text-muted-foreground hover:text-foreground"
