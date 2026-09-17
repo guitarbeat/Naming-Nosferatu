@@ -7,18 +7,60 @@ describe("elo utility", () => {
 			expect(getExpectedEloScore(1200, 1200)).toBeCloseTo(0.5);
 		});
 
-		it("calculates expected score for higher rated player A", () => {
+		it("calculates exact expected score for standard 400 rating difference", () => {
+			// With 400 rating difference and default divisor 400:
+			// Expected score = 1 / (1 + 10^(-1)) = 1 / 1.1 ≈ 0.9090909
 			const scoreA = getExpectedEloScore(1600, 1200);
 			const scoreB = getExpectedEloScore(1200, 1600);
-			expect(scoreA).toBeGreaterThan(0.5);
-			expect(scoreB).toBeLessThan(0.5);
-			expect(scoreA + scoreB).toBeCloseTo(1.0);
+			expect(scoreA).toBeCloseTo(1 / 1.1, 5);
+			expect(scoreB).toBeCloseTo(1 / 11, 5);
+		});
+
+		it("maintains probability symmetry where scoreA + scoreB equals 1", () => {
+			const ratings = [
+				[1500, 1200],
+				[2000, 800],
+				[100, 2500],
+				[1234.5, 567.8],
+			];
+
+			for (const [ra, rb] of ratings) {
+				const scoreA = getExpectedEloScore(ra, rb);
+				const scoreB = getExpectedEloScore(rb, ra);
+				expect(scoreA + scoreB).toBeCloseTo(1.0, 10);
+			}
+		});
+
+		it("defaults ratingDivisor to 400 when options is undefined or empty", () => {
+			const scoreDefault = getExpectedEloScore(1600, 1200);
+			const scoreEmptyObj = getExpectedEloScore(1600, 1200, {});
+			const scoreExplicit400 = getExpectedEloScore(1600, 1200, { ratingDivisor: 400 });
+
+			expect(scoreDefault).toBe(scoreExplicit400);
+			expect(scoreEmptyObj).toBe(scoreExplicit400);
 		});
 
 		it("supports custom ratingDivisor option", () => {
 			const standardScore = getExpectedEloScore(1400, 1200, { ratingDivisor: 400 });
-			const customScore = getExpectedEloScore(1400, 1200, { ratingDivisor: 200 });
-			expect(customScore).toBeGreaterThan(standardScore);
+			const customScoreSmallDivisor = getExpectedEloScore(1400, 1200, { ratingDivisor: 200 });
+			const customScoreLargeDivisor = getExpectedEloScore(1400, 1200, { ratingDivisor: 800 });
+
+			expect(customScoreSmallDivisor).toBeGreaterThan(standardScore);
+			expect(customScoreLargeDivisor).toBeLessThan(standardScore);
+		});
+
+		it("handles extreme rating differences correctly", () => {
+			const dominantScore = getExpectedEloScore(3000, 100);
+			const underdogScore = getExpectedEloScore(100, 3000);
+
+			expect(dominantScore).toBeCloseTo(1.0, 5);
+			expect(underdogScore).toBeCloseTo(0.0, 5);
+		});
+
+		it("handles negative and non-integer rating inputs", () => {
+			const score = getExpectedEloScore(-100.5, -500.5);
+			expect(score).toBeGreaterThan(0.5);
+			expect(score).toBeCloseTo(getExpectedEloScore(400, 0), 5);
 		});
 	});
 
