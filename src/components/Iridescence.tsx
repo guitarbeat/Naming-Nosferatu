@@ -58,6 +58,42 @@ void main() {
 `;
 }
 
+function areIridescencePropsEqual(prevProps: IridescenceProps, nextProps: IridescenceProps) {
+	if (prevProps.speed !== nextProps.speed) {
+		return false;
+	}
+	if (prevProps.amplitude !== nextProps.amplitude) {
+		return false;
+	}
+	if (prevProps.mouseReact !== nextProps.mouseReact) {
+		return false;
+	}
+	if (prevProps.className !== nextProps.className) {
+		return false;
+	}
+
+	const prevColor = prevProps.color;
+	const nextColor = nextProps.color;
+
+	if (prevColor === nextColor) {
+		return true;
+	}
+	if (!prevColor || !nextColor) {
+		return false;
+	}
+	if (prevColor[0] !== nextColor[0]) {
+		return false;
+	}
+	if (prevColor[1] !== nextColor[1]) {
+		return false;
+	}
+	if (prevColor[2] !== nextColor[2]) {
+		return false;
+	}
+
+	return true;
+}
+
 // ⚡ Bolt Performance Optimization: Wrapped expensive WebGL Iridescence component in React.memo()
 export const Iridescence = memo(function Iridescence({
 	color = [1, 1, 1],
@@ -252,7 +288,9 @@ export const Iridescence = memo(function Iridescence({
 			};
 
 			if (mouseReact && !isLowPower) {
-				window.addEventListener("mousemove", handleMouseMove, { passive: true });
+				window.addEventListener("mousemove", handleMouseMove, {
+					passive: true,
+				});
 			}
 		} catch (err) {
 			console.warn("Iridescence WebGL init failed or unsupported", err);
@@ -280,4 +318,4 @@ export const Iridescence = memo(function Iridescence({
 	}, [mouseReact]);
 
 	return <div ref={ctnDom} className={`iridescence-container ${className}`} aria-hidden="true" />;
-});
+}, areIridescencePropsEqual);
