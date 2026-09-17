@@ -4,8 +4,8 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { type UseIntersectionObserverOptions, useIntersectionObserver } from "./hooks";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { type UseIntersectionObserverOptions, useDebounce, useIntersectionObserver } from "./hooks";
 
 type ObserverCallback = (
 	entries: IntersectionObserverEntry[],
@@ -219,5 +219,127 @@ describe("useIntersectionObserver", () => {
 
 		expect(observer.disconnected).toBe(true);
 		expect(observer.observedElements.size).toBe(0);
+	});
+});
+
+describe("useDebounce", () => {
+	let container: HTMLDivElement | null = null;
+	let root: Root | null = null;
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+	});
+
+	afterEach(() => {
+		if (root) {
+			act(() => {
+				root?.unmount();
+			});
+			root = null;
+		}
+		if (container) {
+			container.remove();
+			container = null;
+		}
+		vi.useRealTimers();
+	});
+
+	function renderDebounceHook<T>(initialValue: T, delay: number) {
+		let latestDebouncedValue: T;
+
+		function TestComponent({ val, del }: { val: T; del: number }) {
+			const debounced = useDebounce(val, del);
+			latestDebouncedValue = debounced;
+			return React.createElement("div", null, String(debounced));
+		}
+
+		act(() => {
+			root?.render(React.createElement(TestComponent, { val: initialValue, del: delay }));
+		});
+
+		return {
+			getValue: () => latestDebouncedValue,
+			update: (newValue: T, newDelay: number = delay) => {
+				act(() => {
+					root?.render(React.createElement(TestComponent, { val: newValue, del: newDelay }));
+				});
+			},
+		};
+	}
+
+	it("returns initial value immediately on mount", () => {
+		const { getValue } = renderDebounceHook("hello", 500);
+		expect(getValue()).toBe("hello");
+	});
+
+	it("delays updating the value until delay has elapsed", () => {
+		const { getValue, update } = renderDebounceHook("initial", 500);
+
+		update("updated");
+		expect(getValue()).toBe("initial");
+
+		act(() => {
+			vi.advanceTimersByTime(499);
+		});
+		expect(getValue()).toBe("initial");
+
+		act(() => {
+			vi.advanceTimersByTime(1);
+		});
+		expect(getValue()).toBe("updated");
+	});
+
+	it("resets timer when value changes rapidly", () => {
+		const { getValue, update } = renderDebounceHook("first", 500);
+
+		update("second");
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(getValue()).toBe("first");
+
+		update("third");
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(getValue()).toBe("first");
+
+		act(() => {
+			vi.advanceTimersByTime(200);
+		});
+		expect(getValue()).toBe("third");
+	});
+
+	it("handles delay parameter updates", () => {
+		const { getValue, update } = renderDebounceHook("initial", 500);
+
+		update("updated", 1000);
+		act(() => {
+			vi.advanceTimersByTime(500);
+		});
+		expect(getValue()).toBe("initial");
+
+		act(() => {
+			vi.advanceTimersByTime(500);
+		});
+		expect(getValue()).toBe("updated");
+	});
+
+	it("clears timeout on unmount", () => {
+		const { getValue, update } = renderDebounceHook("initial", 500);
+		update("updated");
+
+		act(() => {
+			root?.unmount();
+			root = null;
+		});
+
+		act(() => {
+			vi.advanceTimersByTime(500);
+		});
+		expect(getValue()).toBe("initial");
 	});
 });
