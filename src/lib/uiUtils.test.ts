@@ -25,6 +25,15 @@ describe("isMobileOrLowPowerDevice", () => {
 		expect(isMobileOrLowPowerDevice()).toBe(true);
 	});
 
+	it("returns true when innerWidth is exactly 768px (boundary check)", () => {
+		vi.stubGlobal("window", {
+			...originalWindow,
+			innerWidth: 768,
+			matchMedia: vi.fn().mockReturnValue({ matches: false }),
+		});
+		expect(isMobileOrLowPowerDevice()).toBe(true);
+	});
+
 	it("returns false when innerWidth > 768px, non-coarse pointer, and high concurrency", () => {
 		vi.stubGlobal("window", {
 			...originalWindow,
