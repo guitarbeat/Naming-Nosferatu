@@ -114,4 +114,21 @@ describe("storage", () => {
 		// Verify decryptValue correctly decrypts data using static LEGACY_IV fallback
 		expect(decryptValue(legacyCiphertext)).toBe(plaintext);
 	});
+
+	it("uses dynamic random device key per session without static hardcoded key fallback", () => {
+		setStorageString("sec_test", "confidential_data");
+		const key1 = sessionStorage.getItem("__device_key__");
+		expect(key1).not.toBeNull();
+		expect(key1).not.toBe("nosferatu-secure-storage-key-1337");
+
+		// Reset session state and verify a new unique key is generated
+		sessionStorage.clear();
+		resetStorageModuleCache();
+
+		setStorageString("sec_test_2", "confidential_data_2");
+		const key2 = sessionStorage.getItem("__device_key__");
+		expect(key2).not.toBeNull();
+		expect(key2).not.toEqual(key1);
+	});
+
 });
