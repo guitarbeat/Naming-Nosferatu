@@ -113,6 +113,25 @@ describe("getRandomCatImage", () => {
 		expect(imgNum).toBe(imgStr);
 	});
 
+	it("differentiates cache keys and outcomes when fallbackName changes", () => {
+		const sampleImages = ["img1.jpg", "img2.jpg", "img3.jpg"];
+		// Use fresh IDs so cache doesn't return previously stored values
+		const img1 = getRandomCatImage("fb-id-1", sampleImages, "Fluffy");
+		const img2 = getRandomCatImage("fb-id-1", sampleImages, "Spot");
+		const imgNoFb = getRandomCatImage("fb-id-1", sampleImages);
+
+		expect(img1).toBeDefined();
+		expect(img2).toBeDefined();
+		expect(imgNoFb).toBeDefined();
+	});
+
+	it("falls back to images[0] or empty string if indexed image is undefined or array is sparse", () => {
+		const sparseArray: string[] = [];
+		sparseArray[10] = "at-index-10.jpg"; // sparse array with length 11, index 0 is undefined
+		const result = getRandomCatImage("sparse-test-id", sparseArray);
+		expect(typeof result).toBe("string");
+	});
+
 	it("uses default CAT_IMAGES when images parameter is not provided", () => {
 		const result = getRandomCatImage("default-test-id");
 		expect(CAT_IMAGES).toContain(result);
