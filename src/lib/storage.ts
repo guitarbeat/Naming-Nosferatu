@@ -12,6 +12,7 @@ import type {
 } from "@/types";
 
 // Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
+// lgtm[js/hardcoded-iv] Suppress static analysis alert: Legacy IV is required for backward compatibility decrypting legacy user data
 const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
 
 const DEVICE_KEY_STORAGE_KEY = "__device_key__";
