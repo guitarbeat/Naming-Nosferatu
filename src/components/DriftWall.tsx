@@ -180,7 +180,7 @@ const DRIFT_WALL_DATA: DriftWallItem[] = [
 	},
 ];
 
-interface DriftWallProps {
+export interface DriftWallProps {
 	items?: DriftWallItem[];
 	columns?: number;
 	tileWidth?: number;
