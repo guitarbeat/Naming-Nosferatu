@@ -286,7 +286,7 @@ const MatchNodeCard = memo(function MatchNodeCard({
 				<button
 					type="button"
 					onClick={() => onSelectMatch?.(match)}
-					className="text-muted-foreground/60 hover:text-foreground transition-colors"
+					className="text-muted-foreground/60 hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 					title="View match details"
 					aria-label="View match details"
 				>
@@ -500,7 +500,7 @@ function ContenderDetailModal({
 				<button
 					type="button"
 					onClick={onClose}
-					className="absolute top-5 right-5 rounded-full p-2 text-muted-foreground hover:bg-white/20 dark:hover:bg-white/10 hover:text-foreground transition-colors"
+					className="absolute top-5 right-5 rounded-full p-2 text-muted-foreground hover:bg-white/20 dark:hover:bg-white/10 hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 					aria-label="Close contender details"
 				>
 					<X className="size-4" />
@@ -776,7 +776,7 @@ export function TournamentBracket({
 							<button
 								type="button"
 								onClick={onClose}
-								className="rounded-xl border border-border/50 bg-muted/30 p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+								className="rounded-xl border border-border/50 bg-muted/30 p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 								aria-label="Close bracket view"
 							>
 								<X className="size-4" />
@@ -817,7 +817,7 @@ export function TournamentBracket({
 								<button
 									type="button"
 									onClick={handleZoomOut}
-									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors"
+									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 									title="Zoom out"
 									aria-label="Zoom out"
 								>
@@ -826,7 +826,7 @@ export function TournamentBracket({
 								<button
 									type="button"
 									onClick={handleResetZoom}
-									className="px-2 text-[11px] font-mono text-muted-foreground hover:text-foreground"
+									className="px-2 text-[11px] font-mono text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 									title="Reset zoom"
 									aria-label="Reset zoom"
 								>
@@ -835,7 +835,7 @@ export function TournamentBracket({
 								<button
 									type="button"
 									onClick={handleZoomIn}
-									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors"
+									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
 									title="Zoom in"
 									aria-label="Zoom in"
 								>
