@@ -954,7 +954,7 @@ export function TournamentBracket({
 										aria-selected={isActive}
 										aria-controls={`panel-round-${round.roundNumber}`}
 										onClick={() => setActiveRoundTab(round.roundNumber)}
-										className={`shrink-0 flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${
+										className={`shrink-0 flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background ${
 											isActive
 												? "border-primary bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-105"
 												: round.isCompleted
@@ -977,7 +977,7 @@ export function TournamentBracket({
 								aria-selected={activeRoundTab === rounds.length + 1}
 								aria-controls="panel-champion-podium"
 								onClick={() => setActiveRoundTab(rounds.length + 1)}
-								className={`shrink-0 flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-bold transition-all ${
+								className={`shrink-0 flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background ${
 									activeRoundTab === rounds.length + 1
 										? "border-amber-400 bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/20 scale-105"
 										: "border-amber-400/40 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
