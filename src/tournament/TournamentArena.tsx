@@ -539,7 +539,7 @@ function HeaderControls({
 				<button
 					type="button"
 					onClick={onOpenBracket}
-					className="inline-flex h-9 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-xs font-semibold text-primary transition-all duration-[300ms] ease-spring hover:bg-primary/20 hover:-translate-y-0.5 active:scale-[0.93] shadow-xs cursor-pointer"
+					className="inline-flex h-9 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-xs font-semibold text-primary transition-all duration-[300ms] ease-spring hover:bg-primary/20 hover:-translate-y-0.5 active:scale-[0.93] shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 					aria-label="View tournament bracket tree"
 					title="View tournament bracket (Press B)"
 				>
@@ -552,7 +552,7 @@ function HeaderControls({
 				type="button"
 				onClick={() => handleUndo()}
 				disabled={!canUndo}
-				className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-xs font-medium transition-all duration-[300ms] ease-spring active:scale-[0.93] ${
+				className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-xs font-medium transition-all duration-[300ms] ease-spring active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
 					canUndo
 						? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:-translate-y-0.5 cursor-pointer"
 						: "cursor-not-allowed border-border/30 bg-secondary/10 text-muted-foreground opacity-60"

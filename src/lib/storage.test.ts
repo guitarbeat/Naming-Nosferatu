@@ -130,5 +130,4 @@ describe("storage", () => {
 		expect(key2).not.toBeNull();
 		expect(key2).not.toEqual(key1);
 	});
-
 });
