@@ -766,17 +766,27 @@ export const DriftWall = memo(function DriftWall({
 			}
 
 			const currentCol = Number(currentTile.dataset.col);
-			const colTiles = allTiles.filter((t) => Number(t.dataset.col) === currentCol);
 
-			// Measure visual on-screen positions
-			const tilePositions = colTiles
-				.map((el) => ({ el, rect: el.getBoundingClientRect() }))
-				.sort((a, b) => a.rect.top - b.rect.top);
+			// ⚡ Bolt Performance Optimization: Single-pass iteration to avoid multiple array allocations, mapping, and filtering
+			const tilePositions: { el: HTMLElement; rect: DOMRect }[] = [];
+			const visibleTiles: { el: HTMLElement; rect: DOMRect }[] = [];
+
+			for (let i = 0; i < allTiles.length; i++) {
+				const el = allTiles[i];
+				if (Number(el.dataset.col) === currentCol) {
+					const rect = el.getBoundingClientRect();
+					const tilePos = { el, rect };
+					tilePositions.push(tilePos);
+					if (rect.bottom > containerRect.top && rect.top < containerRect.bottom) {
+						visibleTiles.push(tilePos);
+					}
+				}
+			}
+
+			tilePositions.sort((a, b) => a.rect.top - b.rect.top);
+			visibleTiles.sort((a, b) => a.rect.top - b.rect.top);
 
 			const currentIndex = tilePositions.findIndex((t) => t.el === currentTile);
-			const visibleTiles = tilePositions.filter(
-				(t) => t.rect.bottom > containerRect.top && t.rect.top < containerRect.bottom,
-			);
 
 			let nextTile: HTMLElement | null = null;
 
