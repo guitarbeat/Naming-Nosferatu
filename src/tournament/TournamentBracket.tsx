@@ -384,7 +384,7 @@ const ChampionPodium = memo(function ChampionPodium({
 			<button
 				type="button"
 				onClick={() => onSelectContender?.(champion.id)}
-				className="group mt-3 flex flex-col items-center gap-2 focus-visible:outline-none"
+				className="group mt-3 flex flex-col items-center gap-2 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 			>
 				{champion.avatarUrl ? (
 					<div className="relative size-20 sm:size-24 rounded-full p-1 border-2 border-amber-400/80 shadow-[0_0_24px_rgba(245,158,11,0.35)]">
