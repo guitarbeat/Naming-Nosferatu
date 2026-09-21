@@ -113,7 +113,11 @@ function patch<K extends keyof AppState>(set: AppSet, key: K, updates: Partial<A
 		const current = state[key];
 		let hasChanged = false;
 		for (const uKey in updates) {
-			if (updates[uKey] !== current[uKey as unknown as keyof typeof current]) {
+			// ⚡ Bolt Performance Optimization: Ensure property belongs directly to updates object before comparison
+			if (
+				Object.hasOwn(updates, uKey) &&
+				updates[uKey] !== current[uKey as unknown as keyof typeof current]
+			) {
 				hasChanged = true;
 				break;
 			}
