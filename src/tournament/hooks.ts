@@ -829,6 +829,7 @@ export function useInertiaScroll(
 	const isAutoScrollPausedRef = useRef(false);
 	const autoScrollRafRef = useRef<number | null>(null);
 	const lastAutoScrollTimeRef = useRef<number>(0);
+	const tilesCacheRef = useRef<HTMLElement[] | null>(null);
 
 	// Synchronize scrollY motion value with the DOM scroll position and seamless loop boundaries
 	useEffect(() => {
@@ -998,13 +999,18 @@ export function useInertiaScroll(
 				return;
 			}
 
-			const tiles = Array.from(
-				container.querySelectorAll<HTMLElement>(
-					'[data-tile-id], .drift-wall__tile, [role="button"]',
-				),
-			).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+			// ⚡ Bolt Performance Optimization: Cache querySelectorAll tile DOM nodes to prevent layout thrashing and repeated DOM queries on high-frequency keyboard events
+			if (!tilesCacheRef.current || tilesCacheRef.current.length === 0) {
+				tilesCacheRef.current = Array.from(
+					container.querySelectorAll<HTMLElement>(
+						'[data-tile-id], .drift-wall__tile, [role="button"]',
+					),
+				).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+			}
 
-			if (tiles.length === 0) {
+			const tiles = tilesCacheRef.current;
+
+			if (!tiles || tiles.length === 0) {
 				return;
 			}
 
@@ -1154,6 +1160,17 @@ export function useInertiaScroll(
 
 		document.addEventListener("visibilitychange", handleVisibilityChange);
 
+		// Invalidate tiles cache if children change (basic approach - ideally handled by ResizeObserver/MutationObserver if dynamic)
+		const observer = new MutationObserver(() => {
+			tilesCacheRef.current = null;
+		});
+		observer.observe(targetEl, {
+			childList: true,
+			subtree: true,
+			attributes: true,
+			attributeFilter: ["disabled", "aria-hidden", "data-tile-id", "class"],
+		});
+
 		targetEl.addEventListener("mouseenter", handleMouseEnter);
 		targetEl.addEventListener("mouseleave", handleMouseLeave);
 		targetEl.addEventListener("wheel", handleWheel, { passive: true });
@@ -1163,6 +1180,7 @@ export function useInertiaScroll(
 		window.addEventListener("keydown", handleKeyDown);
 
 		return () => {
+			observer.disconnect();
 			document.removeEventListener("visibilitychange", handleVisibilityChange);
 			targetEl.removeEventListener("mouseenter", handleMouseEnter);
 			targetEl.removeEventListener("mouseleave", handleMouseLeave);
