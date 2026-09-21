@@ -539,7 +539,7 @@ const createUserAndSettingsSlice: AppSliceCreator<
 		},
 
 		login: (userName, onContext) => {
-			const id = `user_${Math.random().toString(36).substring(2, 9)}`;
+			const id = `user_${crypto.randomUUID()}`;
 			const avatarUrl = getRandomCatImage(id, undefined, userName);
 			const nextUser = {
 				...get().user,
