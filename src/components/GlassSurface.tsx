@@ -338,7 +338,7 @@ function areGlassSurfacePropsEqual(
 
 /**
  * Base physical refractive glass surface with chromatic aberration displacement mapping.
- * Uses React.memo, ref-based prop caching, and scroll-aware throttling to prevent unneeded SVG filter calculations.
+ * Uses React.memo and ref-based prop caching to prevent unneeded SVG filter calculations.
  */
 const BaseGlassSurface = function BaseGlassSurface({
 	children,
