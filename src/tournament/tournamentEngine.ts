@@ -447,6 +447,7 @@ export function isBye(id: string | null | undefined): boolean {
 	return Boolean(id?.startsWith(BYE_PREFIX));
 }
 
+/** Internal helper to generate bye entrant identifier for a given round and index */
 function createBye(round: number, index: number): string {
 	return `${BYE_PREFIX}${round}_${index}`;
 }
