@@ -1,88 +1,23 @@
-import { MotionConfig, motion } from "framer-motion";
-import { RotateCcw, Trophy } from "lucide-react";
+import { MotionConfig } from "framer-motion";
 import React, { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
-	Button,
+	AppBootScreen,
 	ErrorBoundary,
 	ErrorComponent,
 	Iridescence,
 	Loading,
 	OfflineIndicator,
+	PwaInstallPrompt,
 	RouteFallback,
+	TournamentStatusWidget,
 } from "@/components";
 import { usePreloadImages, useSectionScroll } from "@/hooks";
-import { scaleFadeMotionPreset } from "@/lib/uiUtils";
 import { ErrorManager } from "@/lib/utils";
 import useAppStore, { useActiveTournamentStatus, useAppStoreInitialization } from "@/store";
 import { TournamentSetup } from "@/tournament/TournamentSetup";
 
-const INSTALL_DESCRIPTION =
-	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";
-const PWA_TINT = "hsl(152, 26%, 42%)";
 const IRIDESCENCE_COLOR: [number, number, number] = [1, 1, 1];
-
-function AppBootScreen({
-	message = "Preparing the tournament...",
-	visible = true,
-}: {
-	message?: string;
-	visible?: boolean;
-}) {
-	if (!visible) {
-		return null;
-	}
-
-	return (
-		<div
-			data-testid="boot-screen"
-			className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background text-foreground"
-		>
-			<motion.div
-				{...scaleFadeMotionPreset}
-				className="flex flex-col items-center space-y-6 px-4 text-center max-w-md"
-			>
-				<div className="relative flex h-16 w-16 items-center justify-center">
-					<div className="absolute h-16 w-16 rounded-full border-4 border-primary/20" />
-					<div className="absolute h-16 w-16 rounded-full border-4 border-t-primary animate-spin" />
-				</div>
-
-				<div className="space-y-2">
-					<h2 className="text-xl font-bold tracking-tight text-foreground">{message}</h2>
-					<p className="text-sm text-muted-foreground animate-pulse">
-						Please wait a moment while we load the application context...
-					</p>
-				</div>
-			</motion.div>
-		</div>
-	);
-}
-
-/**
- * Cross-browser PWA install dialog (Chromium prompt + Apple share instructions).
- */
-function PwaInstallPrompt() {
-	const installRef = React.useRef<PWAInstallElement | null>(null);
-
-	useEffect(() => {
-		const element = installRef.current;
-		if (!element) {
-			return;
-		}
-
-		element.manifestUrl = "/manifest.json";
-		element.useLocalStorage = true;
-		element.installDescription = INSTALL_DESCRIPTION;
-		element.styles = { "--tint-color": PWA_TINT };
-
-		const deferred = window.__deferredPwaPrompt;
-		if (deferred) {
-			element.externalPromptEvent = deferred;
-		}
-	}, []);
-
-	return <pwa-install ref={installRef} />;
-}
 
 function AppLayout({ children }: { children: React.ReactNode }) {
 	const isLoading = useAppStore((s) => s.tournament.isLoading);
@@ -186,28 +121,10 @@ function HomeRoute() {
 					<section id="pick" className="w-full scroll-mt-20 sm:scroll-mt-24">
 						<div id="tournament" className="scroll-mt-20 sm:scroll-mt-24" />
 						<div id="contenders" className="scroll-mt-20 sm:scroll-mt-24" />
-						<div className="mx-auto mb-6 flex w-full max-w-4xl flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-border/70 bg-card/80 p-3.5 sm:p-4 shadow-sm">
-							<div className="flex items-center gap-3 text-left w-full sm:w-auto">
-								<div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-									<Trophy size={18} />
-								</div>
-								<div>
-									<h4 className="text-sm font-semibold text-foreground">Tournament in Progress</h4>
-									<p className="text-xs text-muted-foreground">{namesCount} contenders seeded</p>
-								</div>
-							</div>
-							<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-								<Button
-									variant="ghost"
-									size="small"
-									onClick={handleStartNewTournament}
-									className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1.5"
-								>
-									<RotateCcw size={13} />
-									Restart Tournament
-								</Button>
-							</div>
-						</div>
+						<TournamentStatusWidget
+							namesCount={namesCount}
+							onRestart={handleStartNewTournament}
+						/>
 						<div className="w-full min-h-[480px] flex flex-col flex-1">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 								<TournamentSetup />
