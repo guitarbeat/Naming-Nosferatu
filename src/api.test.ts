@@ -256,6 +256,27 @@ describe("api module", () => {
 			}
 		});
 
+		it("handles errors thrown when writing ratings storage fails in saveRatings", async () => {
+			const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const testError = new Error("Ratings storage write failure");
+
+			vi.spyOn(storageModule, "writeStorageJson").mockImplementation((key) => {
+				if (key.startsWith("nosferatu-ratings-")) {
+					throw testError;
+				}
+				return true;
+			});
+
+			const userId = "ratings-error-user";
+			const sampleRatings = {
+				cat1: { rating: 1500, wins: 1, losses: 0 },
+			};
+
+			await ratingsAPI.saveRatings(userId, sampleRatings);
+
+			expect(warnSpy).toHaveBeenCalledWith("Failed to persist ratings:", testError);
+		});
+
 		// Preserved from main (Jules #1610 area): do not wipe newer candidates-persistence coverage
 		it("handles errors thrown by writeStorageJson when persisting candidate names in saveStoredNames", async () => {
 			const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
