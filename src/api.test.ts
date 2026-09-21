@@ -256,7 +256,6 @@ describe("api module", () => {
 			}
 		});
 
-		// Preserved from main (Jules #1610 area): do not wipe newer candidates-persistence coverage
 		it("handles errors thrown by writeStorageJson when persisting candidate names in saveStoredNames", async () => {
 			const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 			const testError = new Error("Storage write failure");
@@ -275,6 +274,47 @@ describe("api module", () => {
 
 			await ratingsAPI.saveRatings(userId, sampleRatings);
 
+			expect(warnSpy).toHaveBeenCalledWith("Failed to persist candidates:", testError);
+		});
+
+		it("triggers saveStoredNames catch block when missing candidates are merged in getStoredNames and writeStorageJson throws", async () => {
+			const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const testError = new Error("Storage write error during candidate auto-merge");
+
+			const partialCandidate: NameItem = {
+				id: "legacy-1",
+				name: "Legacy Cat",
+				description: "A legacy candidate",
+				avgRating: 1400,
+				avg_rating: 1400,
+				isHidden: false,
+				is_hidden: false,
+				isActive: true,
+				is_active: true,
+				lockedIn: false,
+				locked_in: false,
+				wins: 0,
+				losses: 0,
+				status: "candidate",
+			};
+
+			writeStorageJson("nosferatu-candidates", [partialCandidate]);
+
+			vi.spyOn(storageModule, "writeStorageJson").mockImplementation((key) => {
+				if (key === "nosferatu-candidates") {
+					throw testError;
+				}
+				return true;
+			});
+
+			const result = await namesQueryOptions(true).queryFn?.({
+				client: queryClient,
+				queryKey: ["names", "list", { includeHidden: true }],
+				meta: {},
+				signal: new AbortController().signal,
+			});
+
+			expect(result?.names.length).toBeGreaterThan(1);
 			expect(warnSpy).toHaveBeenCalledWith("Failed to persist candidates:", testError);
 		});
 	});
