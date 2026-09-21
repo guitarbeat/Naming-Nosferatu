@@ -11,10 +11,6 @@ import type {
 	VoteRecord,
 } from "@/types";
 
-// Legacy static IV used only as a fallback for decrypting data encrypted before the random-IV migration
-// lgtm[js/hardcoded-iv] Suppress static analysis alert: Legacy IV is required for backward compatibility decrypting legacy user data
-const LEGACY_IV = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
-
 const DEVICE_KEY_STORAGE_KEY = "__device_key__";
 
 let cachedDeviceKeyHex: CryptoJS.lib.WordArray | null = null;
@@ -105,55 +101,46 @@ function decrypt(text: string): string {
 	}
 
 	try {
-		let iv: CryptoJS.lib.WordArray = LEGACY_IV; // Default static IV for legacy data
-		let ciphertext = text;
-
-		// Check for new format with prepended IV (16 bytes = 32 hex chars)
+		// Check for prepended IV (16 bytes = 32 hex chars)
 		const colonIndex = text.indexOf(":");
 		if (colonIndex === 32) {
 			const ivStr = text.slice(0, 32);
-			iv = CryptoJS.enc.Hex.parse(ivStr);
-			ciphertext = text.slice(33);
-		} else {
-			// If it's plain text without IV separator and doesn't look like cipher data, return as-is
-			if (!text.includes("=") && /^[a-zA-Z0-9_\s-]+$/.test(text) && text !== "plain_text_data") {
-				if (decryptionCache.size > MAX_DECRYPT_CACHE) {
-					const firstKey = decryptionCache.keys().next().value;
-					if (firstKey) {
-						decryptionCache.delete(firstKey);
+			const iv = CryptoJS.enc.Hex.parse(ivStr);
+			const ciphertext = text.slice(33);
+
+			try {
+				const bytes = CryptoJS.AES.decrypt(ciphertext, getDeviceEncryptionKey(), {
+					iv,
+					mode: CryptoJS.mode.CBC,
+					padding: CryptoJS.pad.Pkcs7,
+				});
+				const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+				if (decrypted) {
+					if (decryptionCache.size > MAX_DECRYPT_CACHE) {
+						const firstKey = decryptionCache.keys().next().value;
+						if (firstKey) {
+							decryptionCache.delete(firstKey);
+						}
 					}
+					decryptionCache.set(text, decrypted);
+					return decrypted;
 				}
-				decryptionCache.set(text, text);
-				return text;
+			} catch (_error) {
+				// Ignore and fallback
 			}
 		}
 
-		// First try with the device-specific key
-		try {
-			const bytes = CryptoJS.AES.decrypt(ciphertext, getDeviceEncryptionKey(), {
-				iv,
-				mode: CryptoJS.mode.CBC,
-				padding: CryptoJS.pad.Pkcs7,
-			});
-			const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-			if (decrypted) {
-				if (decryptionCache.size > MAX_DECRYPT_CACHE) {
-					const firstKey = decryptionCache.keys().next().value;
-					if (firstKey) {
-						decryptionCache.delete(firstKey);
-					}
-				}
-				decryptionCache.set(text, decrypted);
-				return decrypted;
+		// If missing prepended IV or decryption failed, treat as unencrypted plaintext
+		if (decryptionCache.size > MAX_DECRYPT_CACHE) {
+			const firstKey = decryptionCache.keys().next().value;
+			if (firstKey) {
+				decryptionCache.delete(firstKey);
 			}
-		} catch (_error) {
-			// Ignore and fallback
 		}
-
-		// If all decryption fails or text wasn't encrypted, it might return empty string
-		return text; // Fallback to clear text if decryption fails (e.g., legacy unencrypted data)
+		decryptionCache.set(text, text);
+		return text;
 	} catch (_error) {
-		// Fallback to returning original text if decryption errors (e.g., not encrypted)
+		// Fallback to returning original text if decryption errors
 		return text;
 	}
 }

@@ -1,4 +1,3 @@
-import CryptoJS from "crypto-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ratingsAPI } from "../api";
 import { logger } from "./logger";
@@ -94,25 +93,9 @@ describe("storage", () => {
 		expect(decryptValue(encryptedValue as string)).toBe("value1");
 	});
 
-	it("decrypts legacy ciphertext encrypted with static fallback IV", () => {
-		// Initialize session encryption key
-		setStorageString("init", "key_setup");
-		const keyHex = sessionStorage.getItem("__device_key__");
-		expect(keyHex).not.toBeNull();
-
-		const deviceKey = CryptoJS.enc.Hex.parse(keyHex as string);
-		const legacyIv = CryptoJS.enc.Utf8.parse("nosferatu-iv-123".padEnd(16, "0"));
-		const plaintext = "legacy_secret_data";
-
-		// Encrypt using CBC mode with legacy static IV and without prepended IV hex prefix
-		const legacyCiphertext = CryptoJS.AES.encrypt(plaintext, deviceKey, {
-			iv: legacyIv,
-			mode: CryptoJS.mode.CBC,
-			padding: CryptoJS.pad.Pkcs7,
-		}).toString();
-
-		// Verify decryptValue correctly decrypts data using static LEGACY_IV fallback
-		expect(decryptValue(legacyCiphertext)).toBe(plaintext);
+	it("handles legacy unencrypted plaintext data safely", () => {
+		const unencryptedData = "legacy_unencrypted_data";
+		expect(decryptValue(unencryptedData)).toBe(unencryptedData);
 	});
 
 	it("uses dynamic random device key per session without static hardcoded key fallback", () => {
