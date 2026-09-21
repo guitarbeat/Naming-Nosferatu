@@ -3,5 +3,8 @@ export * from "./DriftWallTile";
 export * from "./GlassSurface";
 export * from "./Iridescence";
 export * from "./LayoutBlocks";
+export * from "./ui/TournamentStatusWidget";
+export * from "./ui/PwaInstallPrompt";
+export * from "./ui/AppBootScreen";
 export * from "./ui/MagicSearch";
 export * from "./ui/MagicToggle";
