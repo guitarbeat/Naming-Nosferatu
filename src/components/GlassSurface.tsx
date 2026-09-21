@@ -209,7 +209,8 @@ function registerSharedFilter(signature: string, params: FilterParams): string {
 	const blueScale = (params.distortionScale + params.blueOffset).toString();
 	const blurDev = params.displace.toString();
 
-	const filterEl = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+	const SVG_NS = "http://www.w3.org/2000/svg";
+	const filterEl = document.createElementNS(SVG_NS, "filter");
 	filterEl.id = filterId;
 	filterEl.setAttribute("color-interpolation-filters", "sRGB");
 	filterEl.setAttribute("x", "-20%");
@@ -217,18 +218,85 @@ function registerSharedFilter(signature: string, params: FilterParams): string {
 	filterEl.setAttribute("width", "140%");
 	filterEl.setAttribute("height", "140%");
 
-	filterEl.innerHTML = `
-		<feImage href="${dataUri}" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
-		<feDisplacementMap in="SourceGraphic" in2="map" id="redchannel" result="dispRed" scale="${redScale}" xChannelSelector="${params.xChannel}" yChannelSelector="${params.yChannel}" />
-		<feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red" />
-		<feDisplacementMap in="SourceGraphic" in2="map" id="greenchannel" result="dispGreen" scale="${greenScale}" xChannelSelector="${params.xChannel}" yChannelSelector="${params.yChannel}" />
-		<feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green" />
-		<feDisplacementMap in="SourceGraphic" in2="map" id="bluechannel" result="dispBlue" scale="${blueScale}" xChannelSelector="${params.xChannel}" yChannelSelector="${params.yChannel}" />
-		<feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue" />
-		<feBlend in="red" in2="green" mode="screen" result="rg" />
-		<feBlend in="rg" in2="blue" mode="screen" result="output" />
-		<feGaussianBlur in="output" stdDeviation="${blurDev}" />
-	`;
+	const feImage = document.createElementNS(SVG_NS, "feImage");
+	feImage.setAttribute("href", dataUri);
+	feImage.setAttribute("x", "0");
+	feImage.setAttribute("y", "0");
+	feImage.setAttribute("width", "100%");
+	feImage.setAttribute("height", "100%");
+	feImage.setAttribute("preserveAspectRatio", "none");
+	feImage.setAttribute("result", "map");
+	filterEl.appendChild(feImage);
+
+	const redDisplacement = document.createElementNS(SVG_NS, "feDisplacementMap");
+	redDisplacement.setAttribute("in", "SourceGraphic");
+	redDisplacement.setAttribute("in2", "map");
+	redDisplacement.id = "redchannel";
+	redDisplacement.setAttribute("result", "dispRed");
+	redDisplacement.setAttribute("scale", redScale);
+	redDisplacement.setAttribute("xChannelSelector", params.xChannel);
+	redDisplacement.setAttribute("yChannelSelector", params.yChannel);
+	filterEl.appendChild(redDisplacement);
+
+	const redMatrix = document.createElementNS(SVG_NS, "feColorMatrix");
+	redMatrix.setAttribute("in", "dispRed");
+	redMatrix.setAttribute("type", "matrix");
+	redMatrix.setAttribute("values", "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0");
+	redMatrix.setAttribute("result", "red");
+	filterEl.appendChild(redMatrix);
+
+	const greenDisplacement = document.createElementNS(SVG_NS, "feDisplacementMap");
+	greenDisplacement.setAttribute("in", "SourceGraphic");
+	greenDisplacement.setAttribute("in2", "map");
+	greenDisplacement.id = "greenchannel";
+	greenDisplacement.setAttribute("result", "dispGreen");
+	greenDisplacement.setAttribute("scale", greenScale);
+	greenDisplacement.setAttribute("xChannelSelector", params.xChannel);
+	greenDisplacement.setAttribute("yChannelSelector", params.yChannel);
+	filterEl.appendChild(greenDisplacement);
+
+	const greenMatrix = document.createElementNS(SVG_NS, "feColorMatrix");
+	greenMatrix.setAttribute("in", "dispGreen");
+	greenMatrix.setAttribute("type", "matrix");
+	greenMatrix.setAttribute("values", "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0");
+	greenMatrix.setAttribute("result", "green");
+	filterEl.appendChild(greenMatrix);
+
+	const blueDisplacement = document.createElementNS(SVG_NS, "feDisplacementMap");
+	blueDisplacement.setAttribute("in", "SourceGraphic");
+	blueDisplacement.setAttribute("in2", "map");
+	blueDisplacement.id = "bluechannel";
+	blueDisplacement.setAttribute("result", "dispBlue");
+	blueDisplacement.setAttribute("scale", blueScale);
+	blueDisplacement.setAttribute("xChannelSelector", params.xChannel);
+	blueDisplacement.setAttribute("yChannelSelector", params.yChannel);
+	filterEl.appendChild(blueDisplacement);
+
+	const blueMatrix = document.createElementNS(SVG_NS, "feColorMatrix");
+	blueMatrix.setAttribute("in", "dispBlue");
+	blueMatrix.setAttribute("type", "matrix");
+	blueMatrix.setAttribute("values", "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0");
+	blueMatrix.setAttribute("result", "blue");
+	filterEl.appendChild(blueMatrix);
+
+	const blendRG = document.createElementNS(SVG_NS, "feBlend");
+	blendRG.setAttribute("in", "red");
+	blendRG.setAttribute("in2", "green");
+	blendRG.setAttribute("mode", "screen");
+	blendRG.setAttribute("result", "rg");
+	filterEl.appendChild(blendRG);
+
+	const blendOutput = document.createElementNS(SVG_NS, "feBlend");
+	blendOutput.setAttribute("in", "rg");
+	blendOutput.setAttribute("in2", "blue");
+	blendOutput.setAttribute("mode", "screen");
+	blendOutput.setAttribute("result", "output");
+	filterEl.appendChild(blendOutput);
+
+	const blurFilter = document.createElementNS(SVG_NS, "feGaussianBlur");
+	blurFilter.setAttribute("in", "output");
+	blurFilter.setAttribute("stdDeviation", blurDev);
+	filterEl.appendChild(blurFilter);
 
 	defs.appendChild(filterEl);
 	sharedFilterRegistry.set(filterId, { refCount: 1, filterEl });
