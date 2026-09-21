@@ -444,7 +444,10 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 
 			const ratings = state.ratings;
 			const ratingsData: Record<string, RatingData> = {};
-			for (const id in ratings) {
+			// ⚡ Bolt: Object.keys indexed iteration (avoid for...in prototype walk)
+			const ratingIds = Object.keys(ratings);
+			for (let i = 0; i < ratingIds.length; i++) {
+				const id = ratingIds[i];
 				ratingsData[id] = {
 					rating: ratings[id],
 					wins: 0,
