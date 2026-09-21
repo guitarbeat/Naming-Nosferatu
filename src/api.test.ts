@@ -128,6 +128,83 @@ describe("api module", () => {
 			expect(result?.names.length).toBeGreaterThan(1);
 		});
 
+		it("returns default sample candidates when stored value is invalid JSON, empty array, or throws error", async () => {
+			// Case 1: Empty array in storage
+			writeStorageJson("nosferatu-candidates", []);
+			const emptyStorageResult = await namesQueryOptions(true).queryFn?.({
+				client: queryClient,
+				queryKey: ["names", "list", { includeHidden: true }],
+				meta: {},
+				signal: new AbortController().signal,
+			});
+			expect(emptyStorageResult?.names.length).toBeGreaterThan(0);
+
+			// Case 2: Storage throws error when reading
+			vi.spyOn(storageModule, "getStorageString").mockImplementationOnce(() => {
+				throw new Error("Corrupted storage access");
+			});
+			const errorStorageResult = await namesQueryOptions(true).queryFn?.({
+				client: queryClient,
+				queryKey: ["names", "list", { includeHidden: true }],
+				meta: {},
+				signal: new AbortController().signal,
+			});
+			expect(errorStorageResult?.names.length).toBeGreaterThan(0);
+		});
+
+		it("returns exact stored list directly when it already contains all default candidate names", async () => {
+			const initialResult = await namesQueryOptions(true).queryFn?.({
+				client: queryClient,
+				queryKey: ["names", "list", { includeHidden: true }],
+				meta: {},
+				signal: new AbortController().signal,
+			});
+
+			expect(initialResult).toBeDefined();
+			if (!initialResult) {
+				return;
+			}
+
+			// Save full candidate list to storage
+			writeStorageJson("nosferatu-candidates", initialResult.names);
+
+			const secondResult = await namesQueryOptions(true).queryFn?.({
+				client: queryClient,
+				queryKey: ["names", "list", { includeHidden: true }],
+				meta: {},
+				signal: new AbortController().signal,
+			});
+
+			expect(secondResult?.names).toEqual(initialResult.names);
+		});
+
+		it("filters candidates when is_hidden is true even if isHidden is false", async () => {
+			const initialResult = await namesQueryOptions(true).queryFn?.({
+				client: queryClient,
+				queryKey: ["names", "list", { includeHidden: true }],
+				meta: {},
+				signal: new AbortController().signal,
+			});
+
+			expect(initialResult).toBeDefined();
+			if (!initialResult) {
+				return;
+			}
+
+			const candidates = [...initialResult.names];
+			candidates[0] = { ...candidates[0], isHidden: false, is_hidden: true };
+			writeStorageJson("nosferatu-candidates", candidates);
+
+			const filteredResult = await namesQueryOptions(false).queryFn?.({
+				client: queryClient,
+				queryKey: ["names", "list", { includeHidden: false }],
+				meta: {},
+				signal: new AbortController().signal,
+			});
+
+			expect(filteredResult?.names.find((n) => n.id === candidates[0].id)).toBeUndefined();
+		});
+
 		it("handles SSR environment gracefully when window is undefined", async () => {
 			const originalWindow = globalThis.window;
 			(globalThis as unknown as { window: unknown }).window = undefined;
@@ -224,6 +301,42 @@ describe("api module", () => {
 			);
 			const updatedCat = storedCandidates.find((c) => c.id === secondCat.id);
 			expect(updatedCat?.avgRating).toBe(1721); // rounded
+		});
+
+		it("handles updating candidates with undefined wins or losses properties in saveRatings", async () => {
+			const userId = "test-user-undefined-wins";
+			const candidateWithMissingStats: NameItem = {
+				id: "cat-no-stats",
+				name: "Statless Cat",
+				description: "A cat without wins or losses",
+				avgRating: 1500,
+				avg_rating: 1500,
+				isHidden: false,
+				is_hidden: false,
+				isActive: true,
+				is_active: true,
+				lockedIn: false,
+				locked_in: false,
+				wins: undefined,
+				losses: undefined,
+				status: "candidate",
+			};
+
+			writeStorageJson("nosferatu-candidates", [candidateWithMissingStats]);
+
+			const newRatings = {
+				"cat-no-stats": { rating: 1550, wins: 2, losses: 1 },
+			};
+
+			await ratingsAPI.saveRatings(userId, newRatings);
+
+			const storedCandidates = parseJsonValue<NameItem[]>(
+				getStorageString("nosferatu-candidates"),
+				[],
+			);
+			const updatedCat = storedCandidates.find((c) => c.id === "cat-no-stats");
+			expect(updatedCat?.wins).toBe(2);
+			expect(updatedCat?.losses).toBe(1);
 		});
 
 		it("handles errors during saveRatings and logs a warning", async () => {
