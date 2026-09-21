@@ -1,5 +1,6 @@
 import { MotionConfig } from "framer-motion";
-import React, { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import type React from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
 	AppBootScreen,
@@ -121,10 +122,7 @@ function HomeRoute() {
 					<section id="pick" className="w-full scroll-mt-20 sm:scroll-mt-24">
 						<div id="tournament" className="scroll-mt-20 sm:scroll-mt-24" />
 						<div id="contenders" className="scroll-mt-20 sm:scroll-mt-24" />
-						<TournamentStatusWidget
-							namesCount={namesCount}
-							onRestart={handleStartNewTournament}
-						/>
+						<TournamentStatusWidget namesCount={namesCount} onRestart={handleStartNewTournament} />
 						<div className="w-full min-h-[480px] flex flex-col flex-1">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 								<TournamentSetup />
