@@ -10,6 +10,7 @@ const ALLOWED_TOP_LEVEL = [
 	"tournament",
 	"assets",
 	"api.ts",
+	"api.test.ts",
 	"App.tsx",
 	"hooks.ts",
 	"hooks.test.ts",
