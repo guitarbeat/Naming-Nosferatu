@@ -5,7 +5,11 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type UseIntersectionObserverOptions, useDebounce, useIntersectionObserver } from "./hooks";
+import {
+	type UseIntersectionObserverOptions,
+	useDebounce,
+	useIntersectionObserver,
+} from "./hooks";
 
 type ObserverCallback = (
 	entries: IntersectionObserverEntry[],
@@ -90,7 +94,10 @@ describe("useIntersectionObserver", () => {
 		window.IntersectionObserver = originalIntersectionObserver;
 	});
 
-	function renderTestComponent(options?: UseIntersectionObserverOptions, attachRef = true) {
+	function renderTestComponent(
+		options?: UseIntersectionObserverOptions,
+		attachRef = true,
+	) {
 		let currentVisibility: boolean | undefined;
 		let divRefElement: HTMLDivElement | null = null;
 
@@ -105,7 +112,11 @@ describe("useIntersectionObserver", () => {
 			});
 
 			currentVisibility = isVisible;
-			return React.createElement("div", { ref: attachRef ? ref : null }, "Test Content");
+			return React.createElement(
+				"div",
+				{ ref: attachRef ? ref : null },
+				"Test Content",
+			);
 		}
 
 		act(() => {
@@ -119,7 +130,10 @@ describe("useIntersectionObserver", () => {
 	}
 
 	it("returns true when enabled is false", () => {
-		const { getVisibility } = renderTestComponent({ enabled: false, initialIsVisible: false });
+		const { getVisibility } = renderTestComponent({
+			enabled: false,
+			initialIsVisible: false,
+		});
 		expect(getVisibility()).toBe(true);
 		expect(MockIntersectionObserver.instances.length).toBe(0);
 	});
@@ -138,7 +152,10 @@ describe("useIntersectionObserver", () => {
 	});
 
 	it("respects initialIsVisible when enabled is true", () => {
-		const { getVisibility } = renderTestComponent({ enabled: true, initialIsVisible: false });
+		const { getVisibility } = renderTestComponent({
+			enabled: true,
+			initialIsVisible: false,
+		});
 		expect(getVisibility()).toBe(false);
 	});
 
@@ -249,8 +266,15 @@ describe("useIntersectionObserver", () => {
 			const ref = React.useRef<HTMLDivElement>(null);
 			const [enabled, setEnabled] = React.useState(false);
 			setEnabledFn = setEnabled;
-			const isVisible = useIntersectionObserver(ref, { enabled, initialIsVisible: false });
-			return React.createElement("div", { ref }, isVisible ? "Visible" : "Hidden");
+			const isVisible = useIntersectionObserver(ref, {
+				enabled,
+				initialIsVisible: false,
+			});
+			return React.createElement(
+				"div",
+				{ ref },
+				isVisible ? "Visible" : "Hidden",
+			);
 		}
 
 		act(() => {
@@ -331,7 +355,9 @@ describe("useIntersectionObserver", () => {
 				"div",
 				null,
 				React.createElement(ObserverChild, { label: "First" }),
-				showSecond ? React.createElement(ObserverChild, { label: "Second" }) : null,
+				showSecond
+					? React.createElement(ObserverChild, { label: "Second" })
+					: null,
 			);
 		}
 
@@ -400,14 +426,21 @@ describe("useDebounce", () => {
 		}
 
 		act(() => {
-			root?.render(React.createElement(TestComponent, { val: initialValue, del: delay }));
+			root?.render(
+				React.createElement(TestComponent, { val: initialValue, del: delay }),
+			);
 		});
 
 		return {
 			getValue: () => latestDebouncedValue,
 			update: (newValue: T, newDelay: number = delay) => {
 				act(() => {
-					root?.render(React.createElement(TestComponent, { val: newValue, del: newDelay }));
+					root?.render(
+						React.createElement(TestComponent, {
+							val: newValue,
+							del: newDelay,
+						}),
+					);
 				});
 			},
 		};

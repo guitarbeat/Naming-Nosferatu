@@ -6,7 +6,10 @@ interface MagicToggleProps {
 	setViewMode: (mode: "tree" | "cards") => void;
 }
 
-export const MagicToggle = memo(function MagicToggle({ viewMode, setViewMode }: MagicToggleProps) {
+export const MagicToggle = memo(function MagicToggle({
+	viewMode,
+	setViewMode,
+}: MagicToggleProps) {
 	return (
 		<div
 			className="inline-flex rounded-xl border border-white/20 dark:border-white/10 bg-white/25 dark:bg-white/5 backdrop-blur-md p-0.5 text-xs relative overflow-hidden"
@@ -15,7 +18,9 @@ export const MagicToggle = memo(function MagicToggle({ viewMode, setViewMode }: 
 		>
 			<div
 				className="absolute top-0.5 bottom-0.5 w-[50%] rounded-lg bg-card text-foreground shadow-xs font-semibold transition-transform duration-300 ease-spring"
-				style={{ transform: `translateX(${viewMode === "tree" ? "2px" : "calc(100% - 2px)"})` }}
+				style={{
+					transform: `translateX(${viewMode === "tree" ? "2px" : "calc(100% - 2px)"})`,
+				}}
 			/>
 			<button
 				type="button"

@@ -1,0 +1,31 @@
+import React, { useEffect } from "react";
+
+const INSTALL_DESCRIPTION =
+	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";
+const PWA_TINT = "hsl(152, 26%, 42%)";
+
+/**
+ * Cross-browser PWA install dialog (Chromium prompt + Apple share instructions).
+ */
+export function PwaInstallPrompt() {
+	const installRef = React.useRef<PWAInstallElement | null>(null);
+
+	useEffect(() => {
+		const element = installRef.current;
+		if (!element) {
+			return;
+		}
+
+		element.manifestUrl = "/manifest.json";
+		element.useLocalStorage = true;
+		element.installDescription = INSTALL_DESCRIPTION;
+		element.styles = { "--tint-color": PWA_TINT };
+
+		const deferred = window.__deferredPwaPrompt;
+		if (deferred) {
+			element.externalPromptEvent = deferred;
+		}
+	}, []);
+
+	return <pwa-install ref={installRef} />;
+}

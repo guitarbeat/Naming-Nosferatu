@@ -163,7 +163,13 @@ const DRIFT_WALL_DATA: DriftWallItem[] = [
 		subtitle: "Steamed Bun",
 		orbitText: "Steamed Bun",
 	},
-	{ id: "suki", title: "Suki", name: "Suki", subtitle: "Golden Heart", orbitText: "Golden Heart" },
+	{
+		id: "suki",
+		title: "Suki",
+		name: "Suki",
+		subtitle: "Golden Heart",
+		orbitText: "Golden Heart",
+	},
 	{
 		id: "casper",
 		title: "Casper",
@@ -310,7 +316,10 @@ export const DriftWall = memo(function DriftWall({
 
 	useEffect(() => {
 		setReduced(prefersReducedMotion());
-		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+		if (
+			typeof window === "undefined" ||
+			typeof window.matchMedia !== "function"
+		) {
 			return;
 		}
 		try {
@@ -358,7 +367,9 @@ export const DriftWall = memo(function DriftWall({
 			Math.ceil((containerWidth + gap) / unit) + (isMobile ? 0 : 1),
 		);
 		if (columns) {
-			return isMobile && containerWidth < 480 ? Math.min(columns, 3) : Math.max(columns, fitting);
+			return isMobile && containerWidth < 480
+				? Math.min(columns, 3)
+				: Math.max(columns, fitting);
 		}
 		return fitting;
 	}, [containerWidth, effectiveTileWidth, gap, columns, isMobile]);
@@ -392,7 +403,10 @@ export const DriftWall = memo(function DriftWall({
 		}
 
 		// 2. Distribute contenders across columns round-robin deterministically.
-		const cols: DriftWallItem[][] = Array.from({ length: effectiveColumns }, () => []);
+		const cols: DriftWallItem[][] = Array.from(
+			{ length: effectiveColumns },
+			() => [],
+		);
 		for (let i = 0; i < totalUnique; i++) {
 			cols[i % effectiveColumns].push(uniquePool[i]);
 		}
@@ -433,11 +447,15 @@ export const DriftWall = memo(function DriftWall({
 		offsetsRef.current = columnMeta.map((meta, c) => {
 			const existing = offsetsRef.current[c];
 			if (typeof existing === "number" && !Number.isNaN(existing)) {
-				return ((existing % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
+				return (
+					((existing % meta.copyHeight) + meta.copyHeight) % meta.copyHeight
+				);
 			}
 			return (meta.copyHeight * (c * 0.382)) % meta.copyHeight;
 		});
-		velocitiesRef.current = columnItems.map((_, c) => velocitiesRef.current[c] ?? 0);
+		velocitiesRef.current = columnItems.map(
+			(_, c) => velocitiesRef.current[c] ?? 0,
+		);
 		// Invalidate cached tile elements when columns/items change
 		tilesCacheRef.current = null;
 	}, [columnMeta, columnItems]);
@@ -494,9 +512,14 @@ export const DriftWall = memo(function DriftWall({
 			const targetX = pointerRef.current.x * maxTilt;
 			const targetY = -pointerRef.current.y * maxTilt;
 			const damp = 1 - Math.exp(-dt / 0.12);
-			pointerDampedRef.current.x += (targetX - pointerDampedRef.current.x) * damp;
-			pointerDampedRef.current.y += (targetY - pointerDampedRef.current.y) * damp;
-			applyPlaneTransform(pointerDampedRef.current.x, pointerDampedRef.current.y);
+			pointerDampedRef.current.x +=
+				(targetX - pointerDampedRef.current.x) * damp;
+			pointerDampedRef.current.y +=
+				(targetY - pointerDampedRef.current.y) * damp;
+			applyPlaneTransform(
+				pointerDampedRef.current.x,
+				pointerDampedRef.current.y,
+			);
 
 			// Ingest accumulated wheel delta with smooth decay into RAF loop
 			const pendingWheel = wheelDeltaRef.current;
@@ -519,8 +542,11 @@ export const DriftWall = memo(function DriftWall({
 					if (el && meta) {
 						if (Math.abs(wheelImpulse) > 0.05) {
 							const colDir = c % 2 === 0 ? 1 : -1;
-							let next = (offsetsRef.current[c] ?? 0) + wheelImpulse * dt * 0.45 * colDir;
-							next = ((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
+							let next =
+								(offsetsRef.current[c] ?? 0) +
+								wheelImpulse * dt * 0.45 * colDir;
+							next =
+								((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
 							offsetsRef.current[c] = next;
 						}
 						el.style.transform = `translate3d(0, ${-(offsetsRef.current[c] ?? 0)}px, 0)`;
@@ -535,8 +561,11 @@ export const DriftWall = memo(function DriftWall({
 				return;
 			}
 
-			const isAnyTileActive = activeIdRef.current !== null || hoveredColRef.current !== -1;
-			const isFocusedInWall = containerRef.current?.contains(document.activeElement);
+			const isAnyTileActive =
+				activeIdRef.current !== null || hoveredColRef.current !== -1;
+			const isFocusedInWall = containerRef.current?.contains(
+				document.activeElement,
+			);
 
 			for (let c = 0; c < trackRefs.current.length; c++) {
 				const meta = columnMeta[c];
@@ -547,7 +576,10 @@ export const DriftWall = memo(function DriftWall({
 				// Pause scrolling when hovering directly over a name/tile or navigating with keyboard
 				let factor = 1;
 				if (pauseOnHover) {
-					if (hoveredColRef.current === c || (isFocusedInWall && activeIdRef.current !== null)) {
+					if (
+						hoveredColRef.current === c ||
+						(isFocusedInWall && activeIdRef.current !== null)
+					) {
 						// Complete pause on the hovered or active name column to assist selection
 						factor = 0;
 					} else if (isAnyTileActive) {
@@ -566,7 +598,10 @@ export const DriftWall = memo(function DriftWall({
 				velocitiesRef.current[c] = nextVel;
 
 				const colDir = c % 2 === 0 ? 1 : -1;
-				let next = (offsetsRef.current[c] ?? 0) + nextVel * dt + wheelImpulse * dt * 0.45 * colDir;
+				let next =
+					(offsetsRef.current[c] ?? 0) +
+					nextVel * dt +
+					wheelImpulse * dt * 0.45 * colDir;
 				next = ((next % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
 				offsetsRef.current[c] = next;
 
@@ -619,7 +654,14 @@ export const DriftWall = memo(function DriftWall({
 			}
 			document.removeEventListener("visibilitychange", handleVisibilityChange);
 		};
-	}, [baseVelocities, columnMeta, pauseOnHover, parallax, reduced, applyPlaneTransform]);
+	}, [
+		baseVelocities,
+		columnMeta,
+		pauseOnHover,
+		parallax,
+		reduced,
+		applyPlaneTransform,
+	]);
 
 	const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
 		// Accumulate wheel delta to be processed in the next RAF frame to eliminate stutter and layout thrashing
@@ -630,17 +672,20 @@ export const DriftWall = memo(function DriftWall({
 		}
 	}, []);
 
-	const activate = useCallback((id: string, index: number, el?: HTMLElement | null) => {
-		activeIdRef.current = id;
-		hoveredColRef.current = index;
-		if (activeTileElRef.current && activeTileElRef.current !== el) {
-			activeTileElRef.current.classList.remove("is-active");
-		}
-		if (el) {
-			el.classList.add("is-active");
-			activeTileElRef.current = el;
-		}
-	}, []);
+	const activate = useCallback(
+		(id: string, index: number, el?: HTMLElement | null) => {
+			activeIdRef.current = id;
+			hoveredColRef.current = index;
+			if (activeTileElRef.current && activeTileElRef.current !== el) {
+				activeTileElRef.current.classList.remove("is-active");
+			}
+			if (el) {
+				el.classList.add("is-active");
+				activeTileElRef.current = el;
+			}
+		},
+		[],
+	);
 
 	const release = useCallback(() => {
 		activeIdRef.current = null;
@@ -658,7 +703,13 @@ export const DriftWall = memo(function DriftWall({
 				rect = e.currentTarget.getBoundingClientRect();
 				containerRectRef.current = rect;
 			}
-			if (parallax > 0 && !reduced && rect && rect.width > 0 && rect.height > 0) {
+			if (
+				parallax > 0 &&
+				!reduced &&
+				rect &&
+				rect.width > 0 &&
+				rect.height > 0
+			) {
 				pointerRef.current = {
 					x: (e.clientX - rect.left) / rect.width - 0.5,
 					y: (e.clientY - rect.top) / rect.height - 0.5,
@@ -686,10 +737,13 @@ export const DriftWall = memo(function DriftWall({
 		[parallax, reduced, activate, release],
 	);
 
-	const handlePointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-		wallHoveredRef.current = true;
-		containerRectRef.current = e.currentTarget.getBoundingClientRect();
-	}, []);
+	const handlePointerEnter = useCallback(
+		(e: React.PointerEvent<HTMLDivElement>) => {
+			wallHoveredRef.current = true;
+			containerRectRef.current = e.currentTarget.getBoundingClientRect();
+		},
+		[],
+	);
 
 	const handlePointerLeaveWall = useCallback(() => {
 		wallHoveredRef.current = false;
@@ -704,7 +758,9 @@ export const DriftWall = memo(function DriftWall({
 			const active = document.activeElement as HTMLElement | null;
 			if (
 				active &&
-				(active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)
+				(active.tagName === "INPUT" ||
+					active.tagName === "TEXTAREA" ||
+					active.isContentEditable)
 			) {
 				return;
 			}
@@ -732,7 +788,11 @@ export const DriftWall = memo(function DriftWall({
 			if (!tilesCacheRef.current || tilesCacheRef.current.length === 0) {
 				tilesCacheRef.current = Array.from(
 					container.querySelectorAll<HTMLElement>("[data-tile-id]"),
-				).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+				).filter(
+					(el) =>
+						!el.hasAttribute("disabled") &&
+						el.getAttribute("aria-hidden") !== "true",
+				);
 			}
 
 			const allTiles = tilesCacheRef.current;
@@ -747,7 +807,9 @@ export const DriftWall = memo(function DriftWall({
 			if (active && allTiles.includes(active)) {
 				currentTile = active;
 			} else if (activeIdRef.current) {
-				currentTile = allTiles.find((t) => t.dataset.tileId === activeIdRef.current) || null;
+				currentTile =
+					allTiles.find((t) => t.dataset.tileId === activeIdRef.current) ||
+					null;
 			}
 
 			// If no tile currently active, pick the middle-most visible tile
@@ -755,13 +817,21 @@ export const DriftWall = memo(function DriftWall({
 				const visible = allTiles
 					.map((el) => ({ el, rect: el.getBoundingClientRect() }))
 					.filter(
-						(t) => t.rect.bottom > containerRect.top + 40 && t.rect.top < containerRect.bottom - 40,
+						(t) =>
+							t.rect.bottom > containerRect.top + 40 &&
+							t.rect.top < containerRect.bottom - 40,
 					);
 				const target =
-					visible.length > 0 ? visible[Math.floor(visible.length / 2)].el : allTiles[0];
+					visible.length > 0
+						? visible[Math.floor(visible.length / 2)].el
+						: allTiles[0];
 				e.preventDefault();
 				target.focus({ preventScroll: true });
-				activate(target.dataset.tileId || "", Number(target.dataset.col), target);
+				activate(
+					target.dataset.tileId || "",
+					Number(target.dataset.col),
+					target,
+				);
 				return;
 			}
 
@@ -777,7 +847,10 @@ export const DriftWall = memo(function DriftWall({
 					const rect = el.getBoundingClientRect();
 					const tilePos = { el, rect };
 					tilePositions.push(tilePos);
-					if (rect.bottom > containerRect.top && rect.top < containerRect.bottom) {
+					if (
+						rect.bottom > containerRect.top &&
+						rect.top < containerRect.bottom
+					) {
 						visibleTiles.push(tilePos);
 					}
 				}
@@ -794,7 +867,8 @@ export const DriftWall = memo(function DriftWall({
 				// If currently on or near the bottom visible boundary, wrap to top to reappear from top
 				const isAtBottomEdge =
 					currentIndex >= tilePositions.length - 1 ||
-					(visibleTiles.length > 0 && currentTile === visibleTiles[visibleTiles.length - 1].el) ||
+					(visibleTiles.length > 0 &&
+						currentTile === visibleTiles[visibleTiles.length - 1].el) ||
 					tilePositions[currentIndex]?.rect.bottom >= containerRect.bottom - 60;
 
 				if (isAtBottomEdge) {
@@ -810,10 +884,14 @@ export const DriftWall = memo(function DriftWall({
 						if (rect.top < containerRect.top + 20) {
 							const diff = containerRect.top + 30 - rect.top;
 							offsetsRef.current[currentCol] =
-								(((currentOffset - diff) % meta.copyHeight) + meta.copyHeight) % meta.copyHeight;
+								(((currentOffset - diff) % meta.copyHeight) + meta.copyHeight) %
+								meta.copyHeight;
 						}
 					}
-				} else if (currentIndex !== -1 && currentIndex + 1 < tilePositions.length) {
+				} else if (
+					currentIndex !== -1 &&
+					currentIndex + 1 < tilePositions.length
+				) {
 					nextTile = tilePositions[currentIndex + 1].el;
 				} else {
 					nextTile = visibleTiles[0]?.el || tilePositions[0]?.el;
@@ -828,7 +906,8 @@ export const DriftWall = memo(function DriftWall({
 				if (isAtTopEdge) {
 					// Wrap to bottom-most visible tile
 					const bottomTarget =
-						visibleTiles[visibleTiles.length - 1] || tilePositions[tilePositions.length - 1];
+						visibleTiles[visibleTiles.length - 1] ||
+						tilePositions[tilePositions.length - 1];
 					nextTile = bottomTarget.el;
 				} else if (currentIndex > 0) {
 					nextTile = tilePositions[currentIndex - 1].el;
@@ -841,12 +920,15 @@ export const DriftWall = memo(function DriftWall({
 				nextTile = visibleTiles[0]?.el || tilePositions[0]?.el;
 			} else if (key === "End") {
 				nextTile =
-					visibleTiles[visibleTiles.length - 1]?.el || tilePositions[tilePositions.length - 1]?.el;
+					visibleTiles[visibleTiles.length - 1]?.el ||
+					tilePositions[tilePositions.length - 1]?.el;
 			} else if (key === "ArrowRight" || key === "ArrowLeft") {
 				// ⚡ Bolt Performance Optimization: Direct column arithmetic and single pass over tiles to eliminate redundant Set instantiations and array mappings on ArrowLeft and ArrowRight keydown.
 				const numCols = columnMeta.length;
 				const targetColNum =
-					key === "ArrowRight" ? (currentCol + 1) % numCols : (currentCol - 1 + numCols) % numCols;
+					key === "ArrowRight"
+						? (currentCol + 1) % numCols
+						: (currentCol - 1 + numCols) % numCols;
 
 				const currentCenterY = currentTile.getBoundingClientRect().top;
 				let closest: HTMLElement | null = null;
@@ -855,7 +937,9 @@ export const DriftWall = memo(function DriftWall({
 				for (let i = 0; i < allTiles.length; i++) {
 					const tile = allTiles[i];
 					if (Number(tile.dataset.col) === targetColNum) {
-						const diff = Math.abs(tile.getBoundingClientRect().top - currentCenterY);
+						const diff = Math.abs(
+							tile.getBoundingClientRect().top - currentCenterY,
+						);
 						if (diff < minDiff) {
 							minDiff = diff;
 							closest = tile;
@@ -868,7 +952,11 @@ export const DriftWall = memo(function DriftWall({
 			if (nextTile) {
 				e.preventDefault();
 				nextTile.focus({ preventScroll: true });
-				activate(nextTile.dataset.tileId || "", Number(nextTile.dataset.col), nextTile);
+				activate(
+					nextTile.dataset.tileId || "",
+					Number(nextTile.dataset.col),
+					nextTile,
+				);
 			}
 		};
 
@@ -970,7 +1058,11 @@ export const DriftWall = memo(function DriftWall({
 		[release],
 	);
 
-	const rootClass = ["drift-wall", reduced ? "drift-wall--reduced" : "", className]
+	const rootClass = [
+		"drift-wall",
+		reduced ? "drift-wall--reduced" : "",
+		className,
+	]
 		.filter(Boolean)
 		.join(" ");
 
@@ -1025,7 +1117,9 @@ export const DriftWall = memo(function DriftWall({
 												copyIndex={copyIndex}
 												reduced={reduced}
 												displace={item.displace ?? displace}
-												distortionScale={item.distortionScale ?? distortionScale}
+												distortionScale={
+													item.distortionScale ?? distortionScale
+												}
 												redOffset={item.redOffset ?? redOffset}
 												greenOffset={item.greenOffset ?? greenOffset}
 												blueOffset={item.blueOffset ?? blueOffset}
