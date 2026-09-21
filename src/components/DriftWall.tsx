@@ -752,13 +752,21 @@ export const DriftWall = memo(function DriftWall({
 
 			// If no tile currently active, pick the middle-most visible tile
 			if (!currentTile) {
-				const visible = allTiles
-					.map((el) => ({ el, rect: el.getBoundingClientRect() }))
-					.filter(
-						(t) => t.rect.bottom > containerRect.top + 40 && t.rect.top < containerRect.bottom - 40,
-					);
+				// ⚡ Bolt Performance Optimization: Single-pass loop to avoid array allocations during tile visibility calculation
+				const visibleTilesList: HTMLElement[] = [];
+				const topThreshold = containerRect.top + 40;
+				const bottomThreshold = containerRect.bottom - 40;
+				for (let i = 0; i < allTiles.length; i++) {
+					const el = allTiles[i];
+					const rect = el.getBoundingClientRect();
+					if (rect.bottom > topThreshold && rect.top < bottomThreshold) {
+						visibleTilesList.push(el);
+					}
+				}
 				const target =
-					visible.length > 0 ? visible[Math.floor(visible.length / 2)].el : allTiles[0];
+					visibleTilesList.length > 0
+						? visibleTilesList[Math.floor(visibleTilesList.length / 2)]
+						: allTiles[0];
 				e.preventDefault();
 				target.focus({ preventScroll: true });
 				activate(target.dataset.tileId || "", Number(target.dataset.col), target);
