@@ -113,4 +113,25 @@ describe("storage", () => {
 		expect(key2).not.toBeNull();
 		expect(key2).not.toEqual(key1);
 	});
+
+	it("generates distinct random IVs for each encrypted item and handles edge cases in decryptValue", () => {
+		setStorageString("item1", "test_content_1");
+		setStorageString("item2", "test_content_2");
+
+		const raw1 = localStorage.getItem("item1") || "";
+		const raw2 = localStorage.getItem("item2") || "";
+
+		// Ciphertexts formatted as "<32 hex chars IV>:<ciphertext>"
+		const iv1 = raw1.split(":")[0];
+		const iv2 = raw2.split(":")[0];
+
+		expect(iv1).toHaveLength(32);
+		expect(iv2).toHaveLength(32);
+		expect(iv1).not.toEqual(iv2);
+
+		// Verify edge cases for decryptValue
+		expect(decryptValue(null)).toBe("");
+		expect(decryptValue(undefined)).toBe("");
+		expect(decryptValue("")).toBe("");
+	});
 });
