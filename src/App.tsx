@@ -1,5 +1,6 @@
 import { MotionConfig } from "framer-motion";
-import React, { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import type React from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
 	AppBootScreen,
