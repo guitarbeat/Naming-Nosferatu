@@ -1,4 +1,5 @@
-import React, { memo, useMemo } from "react";
+import type React from "react";
+import { memo, useMemo } from "react";
 import { GlassSurface } from "@/components/GlassSurface";
 import { handleImgError } from "@/lib/utils";
 
@@ -119,7 +120,11 @@ export const DriftWallTile = memo(function DriftWallTile({
 		const duration = 22 + (seed % 14); // 22s - 35s
 		const delay = -(((seed % 1000) / 1000) * duration);
 		const direction = seed % 3 === 0 ? "reverse" : "normal";
-		return { orbitDuration: duration, orbitDelay: delay, orbitDirection: direction };
+		return {
+			orbitDuration: duration,
+			orbitDelay: delay,
+			orbitDirection: direction,
+		};
 	}, [sanitizedId, title]);
 
 	const arcGroupStyle: React.CSSProperties = {
@@ -176,7 +181,11 @@ export const DriftWallTile = memo(function DriftWallTile({
 									letterSpacing: `${descStyle.letterSpacing}px`,
 								}}
 							>
-								<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+								<textPath
+									href={`#${arcPathId}`}
+									startOffset="50%"
+									textAnchor="middle"
+								>
 									{desc}
 								</textPath>
 							</text>
@@ -194,7 +203,9 @@ export const DriftWallTile = memo(function DriftWallTile({
 					</text>
 				</svg>
 			)}
-			{Boolean(image) && <span className="drift-wall__overlay" aria-hidden="true" />}
+			{Boolean(image) && (
+				<span className="drift-wall__overlay" aria-hidden="true" />
+			)}
 		</GlassSurface>
 	);
 
