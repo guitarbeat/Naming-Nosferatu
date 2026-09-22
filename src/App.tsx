@@ -105,9 +105,11 @@ function HomeRoute() {
 	}, [scrollToSection]);
 
 	const handleStartNewTournament = useCallback(() => {
-		clearPendingScroll();
-		tournamentActions.resetTournament();
-		scheduleSectionScroll("pick");
+		if (window.confirm("Are you sure you want to restart the tournament? Your current progress will be lost.")) {
+			clearPendingScroll();
+			tournamentActions.resetTournament();
+			scheduleSectionScroll("pick");
+		}
 	}, [clearPendingScroll, tournamentActions, scheduleSectionScroll]);
 
 	useEffect(() => clearPendingScroll, [clearPendingScroll]);
