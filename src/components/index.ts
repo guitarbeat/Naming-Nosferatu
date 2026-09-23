@@ -7,4 +7,5 @@ export * from "./ui/AppBootScreen";
 export * from "./ui/MagicSearch";
 export * from "./ui/MagicToggle";
 export * from "./ui/PwaInstallPrompt";
+export * from "./ui/SkipToMainButton";
 export * from "./ui/TournamentStatusWidget";
