@@ -11,6 +11,7 @@ import {
 	OfflineIndicator,
 	PwaInstallPrompt,
 	RouteFallback,
+	SkipToMainButton,
 	TournamentStatusWidget,
 } from "@/components";
 import { usePreloadImages, useSectionScroll } from "@/hooks";
@@ -24,15 +25,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 	const isLoading = useAppStore((s) => s.tournament.isLoading);
 	const currentError = useAppStore((s) => s.errors.current);
 	const errorActions = useAppStore((s) => s.errorActions);
-
-	const handleSkipToMain = () => {
-		const main = document.getElementById("main-content");
-		if (!main) {
-			return;
-		}
-		main.focus();
-		main.scrollIntoView({ behavior: "smooth" });
-	};
 
 	const handleDismissError = () => {
 		errorActions.clearError();
@@ -52,13 +44,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 				<OfflineIndicator />
 
-				<button
-					type="button"
-					className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-background focus:text-foreground focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
-					onClick={handleSkipToMain}
-				>
-					Skip to main content
-				</button>
+				<SkipToMainButton />
 				<main
 					id="main-content"
 					className="app-main relative z-10 flex w-full flex-col pt-0"
