@@ -1,3 +1,6 @@
 ## 2024-05-14 - Custom Component Focus States
 **Learning:** Custom interactive components (like inline toggles or overlaid search inputs) often miss the `focus-visible` ring styles that native elements get, leading to poor keyboard navigation visibility.
 **Action:** Always ensure that `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background` is applied to custom focusable elements like the buttons in `MagicToggle` and the clear button in `MagicSearch`.
+## 2024-09-24 - Restoring Focus from Unmounting Conditional UI
+**Learning:** When a user interacts with a conditional interactive element (like a clear search "X" button) that subsequently causes itself to unmount from the DOM (e.g. `searchQuery` becomes empty), keyboard and screen reader focus is lost and resets to the start of the document (or `body`), which is a frustrating accessibility violation.
+**Action:** Always provide explicit focus restoration for conditional UI interactions. In React components with clear buttons, use a `useRef` to capture the related primary input, and explicitly call `.focus()` on that input inside the click handler before or immediately after triggering the state change that unmounts the button.
