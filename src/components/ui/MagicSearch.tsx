@@ -1,5 +1,5 @@
 import { Search, X } from "lucide-react";
-import { memo } from "react";
+import { memo, useRef } from "react";
 
 interface MagicSearchProps {
 	searchQuery: string;
@@ -10,11 +10,19 @@ export const MagicSearch = memo(function MagicSearch({
 	searchQuery,
 	setSearchQuery,
 }: MagicSearchProps) {
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	const handleClear = () => {
+		setSearchQuery("");
+		inputRef.current?.focus();
+	};
+
 	return (
 		<div className="relative group flex-1 sm:flex-none">
 			<div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 blur-md pointer-events-none" />
 			<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none transition-colors group-focus-within:text-primary z-10" />
 			<input
+				ref={inputRef}
 				type="text"
 				value={searchQuery}
 				onChange={(e) => setSearchQuery(e.target.value)}
@@ -25,7 +33,7 @@ export const MagicSearch = memo(function MagicSearch({
 			{searchQuery && (
 				<button
 					type="button"
-					onClick={() => setSearchQuery("")}
+					onClick={handleClear}
 					aria-label="Clear search"
 					title="Clear search"
 					className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full p-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
