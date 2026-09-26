@@ -5,39 +5,27 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
 	AppBootScreen,
 	ErrorBoundary,
-	ErrorComponent,
+	GlobalErrorDisplay,
+	GlobalLoadingOverlay,
 	Iridescence,
 	Loading,
 	OfflineIndicator,
 	PwaInstallPrompt,
 	RouteFallback,
+	SkipToMainButton,
 	TournamentStatusWidget,
 } from "@/components";
 import { usePreloadImages, useSectionScroll } from "@/hooks";
 import { ErrorManager } from "@/lib/utils";
-import useAppStore, { useActiveTournamentStatus, useAppStoreInitialization } from "@/store";
+import useAppStore, {
+	useActiveTournamentStatus,
+	useAppStoreInitialization,
+} from "@/store";
 import { TournamentSetup } from "@/tournament/TournamentSetup";
 
 const IRIDESCENCE_COLOR: [number, number, number] = [1, 1, 1];
 
 function AppLayout({ children }: { children: React.ReactNode }) {
-	const isLoading = useAppStore((s) => s.tournament.isLoading);
-	const currentError = useAppStore((s) => s.errors.current);
-	const errorActions = useAppStore((s) => s.errorActions);
-
-	const handleSkipToMain = () => {
-		const main = document.getElementById("main-content");
-		if (!main) {
-			return;
-		}
-		main.focus();
-		main.scrollIntoView({ behavior: "smooth" });
-	};
-
-	const handleDismissError = () => {
-		errorActions.clearError();
-	};
-
 	return (
 		<ErrorBoundary context="Main Application Layout">
 			<div className="app relative min-h-dvh w-full bg-background text-foreground overflow-x-hidden">
@@ -49,39 +37,19 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 					className="fixed inset-0 z-0 opacity-100 pointer-events-none"
 				/>
 				<PwaInstallPrompt />
-
 				<OfflineIndicator />
+				<SkipToMainButton />
 
-				<button
-					type="button"
-					className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-background focus:text-foreground focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
-					onClick={handleSkipToMain}
-				>
-					Skip to main content
-				</button>
 				<main
 					id="main-content"
 					className="app-main relative z-10 flex w-full flex-col pt-0"
 					tabIndex={-1}
 				>
-					{Boolean(currentError) && (
-						<div className="mx-auto mb-4 w-full max-w-4xl px-3 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
-							<ErrorComponent error={String(currentError)} onDismiss={handleDismissError} />
-						</div>
-					)}
+					<GlobalErrorDisplay />
 					<div className="app-main__content flex w-full flex-1 flex-col items-stretch">
 						{children}
 					</div>
-					{isLoading && (
-						<div
-							className="global-loading-overlay"
-							role="status"
-							aria-live="polite"
-							aria-busy="true"
-						>
-							<Loading variant="spinner" text="Initializing Tournament..." />
-						</div>
-					)}
+					<GlobalLoadingOverlay />
 				</main>
 			</div>
 		</ErrorBoundary>
@@ -91,7 +59,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 function HomeRoute() {
 	const { hasActiveTournament, namesCount } = useActiveTournamentStatus();
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
-	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } =
+		useSectionScroll();
 
 	useEffect(() => {
 		const handleTabChange = (e: Event) => {
@@ -122,7 +91,10 @@ function HomeRoute() {
 					<section id="pick" className="w-full scroll-mt-20 sm:scroll-mt-24">
 						<div id="tournament" className="scroll-mt-20 sm:scroll-mt-24" />
 						<div id="contenders" className="scroll-mt-20 sm:scroll-mt-24" />
-						<TournamentStatusWidget namesCount={namesCount} onRestart={handleStartNewTournament} />
+						<TournamentStatusWidget
+							namesCount={namesCount}
+							onRestart={handleStartNewTournament}
+						/>
 						<div className="w-full min-h-[480px] flex flex-col flex-1">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 								<TournamentSetup />
@@ -166,8 +138,14 @@ function AppShell() {
 							</Suspense>
 						}
 					/>
-					<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
-					<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
+					<Route
+						path="/tournament"
+						element={<Navigate to="/" replace={true} />}
+					/>
+					<Route
+						path="/analysis"
+						element={<Navigate to="/" replace={true} />}
+					/>
 					<Route path="/admin" element={<Navigate to="/" replace={true} />} />
 					<Route path="*" element={<Navigate to="/" replace={true} />} />
 				</Routes>

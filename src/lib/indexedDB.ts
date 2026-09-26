@@ -59,7 +59,9 @@ export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnap
 	});
 }
 
-export async function saveStoredTournamentToIDB(snapshot: StoredTournamentSnapshot): Promise<void> {
+export async function saveStoredTournamentToIDB(
+	snapshot: StoredTournamentSnapshot,
+): Promise<void> {
 	const db = await openDB();
 	if (!db) {
 		return;

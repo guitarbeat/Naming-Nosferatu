@@ -1,4 +1,10 @@
-import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import {
+	type SetStateAction,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { CRITICAL_SHELL_IMAGES } from "@/lib/constants";
 import {
 	decryptValue,
@@ -12,7 +18,10 @@ const IS_BROWSER = typeof window !== "undefined";
 const IS_DEV = import.meta.env?.DEV ?? false;
 
 // Helper debounce for useLocalStorage
-function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number): T {
+function debounce<T extends (...args: unknown[]) => void>(
+	func: T,
+	wait: number,
+): T {
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
 	return function (this: unknown, ...args: Parameters<T>) {
@@ -33,7 +42,10 @@ function usePrefersReducedMotion() {
 	const [matches, setMatches] = useState(false);
 
 	useEffect(() => {
-		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+		if (
+			typeof window === "undefined" ||
+			typeof window.matchMedia !== "function"
+		) {
 			return;
 		}
 
@@ -80,7 +92,9 @@ export function useLocalStorage<T>(
 		}
 
 		const raw = getStorageString(key, null);
-		return raw === null ? initialRef.current : parseJsonValue(raw, initialRef.current);
+		return raw === null
+			? initialRef.current
+			: parseJsonValue(raw, initialRef.current);
 	}, [key]);
 
 	const [stored, setStored] = useState<T>(readValue);
@@ -106,7 +120,9 @@ export function useLocalStorage<T>(
 
 					const success = writeStorageJson(key, value);
 					if (!success) {
-						onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
+						onErrorRef.current?.(
+							new Error(`localStorage write failed for key "${key}"`),
+						);
 					}
 				}) as (...args: unknown[]) => void,
 				options.debounceWait,
@@ -147,7 +163,9 @@ export function useLocalStorage<T>(
 		(next: SetStateAction<T>) => {
 			try {
 				const resolved =
-					typeof next === "function" ? (next as (previous: T) => T)(valueRef.current) : next;
+					typeof next === "function"
+						? (next as (previous: T) => T)(valueRef.current)
+						: next;
 
 				setStored(resolved);
 				valueRef.current = resolved;
@@ -163,11 +181,16 @@ export function useLocalStorage<T>(
 
 				const success = writeStorageJson(key, resolved);
 				if (!success) {
-					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
+					onErrorRef.current?.(
+						new Error(`localStorage write failed for key "${key}"`),
+					);
 				}
 			} catch (error) {
 				if (IS_DEV) {
-					console.error(`[useLocalStorage] Unexpected error for key "${key}":`, error);
+					console.error(
+						`[useLocalStorage] Unexpected error for key "${key}":`,
+						error,
+					);
 				}
 				onErrorRef.current?.(error);
 			}
@@ -247,7 +270,8 @@ export function useSectionScroll() {
 								id === "contenders"
 							? "pick"
 							: id;
-				const element = document.getElementById(targetId) || document.getElementById(id);
+				const element =
+					document.getElementById(targetId) || document.getElementById(id);
 				if (element) {
 					element.scrollIntoView?.({
 						behavior: prefersReducedMotion ? "auto" : "smooth",
@@ -349,7 +373,9 @@ export function usePreloadImages(
 			return;
 		}
 
-		const alreadyLoaded = activeImages.filter((src) => globalPreloadedImageCache.has(src));
+		const alreadyLoaded = activeImages.filter((src) =>
+			globalPreloadedImageCache.has(src),
+		);
 		if (alreadyLoaded.length === total) {
 			setLoadedUrls(alreadyLoaded);
 			setIsLoading(false);
@@ -416,9 +442,12 @@ export function usePreloadImages(
 	const totalCount = images.length;
 	const loadedCount = loadedUrls.length;
 	const isLoaded =
-		!isLoading && (totalCount === 0 || loadedCount + failedUrls.length >= totalCount);
+		!isLoading &&
+		(totalCount === 0 || loadedCount + failedUrls.length >= totalCount);
 	const progress =
-		totalCount === 0 ? 1 : Math.min(1, (loadedCount + failedUrls.length) / totalCount);
+		totalCount === 0
+			? 1
+			: Math.min(1, (loadedCount + failedUrls.length) / totalCount);
 
 	return {
 		isLoading,
@@ -473,20 +502,33 @@ function getObserverPoolKey(
 	rootMargin: string,
 	threshold: number | number[],
 ): string {
-	const threshStr = Array.isArray(threshold) ? threshold.join(",") : String(threshold);
+	const threshStr = Array.isArray(threshold)
+		? threshold.join(",")
+		: String(threshold);
 	return `${root ? "custom" : "viewport"}_${rootMargin}_${threshStr}`;
 }
 
 function observeWithPool(
 	element: Element,
 	callback: (entry: IntersectionObserverEntry) => void,
-	options: { root: Element | Document | null; rootMargin: string; threshold: number | number[] },
+	options: {
+		root: Element | Document | null;
+		rootMargin: string;
+		threshold: number | number[];
+	},
 ): () => void {
-	const key = getObserverPoolKey(options.root, options.rootMargin, options.threshold);
+	const key = getObserverPoolKey(
+		options.root,
+		options.rootMargin,
+		options.threshold,
+	);
 	let record = observerPool.get(key);
 
 	if (!record) {
-		const callbacks = new Map<Element, (entry: IntersectionObserverEntry) => void>();
+		const callbacks = new Map<
+			Element,
+			(entry: IntersectionObserverEntry) => void
+		>();
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
@@ -496,7 +538,11 @@ function observeWithPool(
 					}
 				}
 			},
-			{ root: options.root, rootMargin: options.rootMargin, threshold: options.threshold },
+			{
+				root: options.root,
+				rootMargin: options.rootMargin,
+				threshold: options.threshold,
+			},
 		);
 		record = { observer, callbacks };
 		observerPool.set(key, record);
@@ -541,7 +587,11 @@ export function useIntersectionObserver(
 		}
 
 		const element = targetRef.current;
-		if (!element || typeof window === "undefined" || !("IntersectionObserver" in window)) {
+		if (
+			!element ||
+			typeof window === "undefined" ||
+			!("IntersectionObserver" in window)
+		) {
 			setIsVisible(true);
 			return;
 		}

@@ -7,7 +7,9 @@ describe("createSortedKey", () => {
 	});
 
 	it("sorts array of strings lexicographically", () => {
-		expect(createSortedKey(["banana", "apple", "cherry"])).toBe("apple,banana,cherry");
+		expect(createSortedKey(["banana", "apple", "cherry"])).toBe(
+			"apple,banana,cherry",
+		);
 	});
 
 	it("converts numbers to strings and sorts them lexicographically", () => {
