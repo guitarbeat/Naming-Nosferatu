@@ -48,13 +48,19 @@ function handleGlobalScroll() {
 }
 
 if (typeof window !== "undefined") {
-	window.addEventListener("scroll", handleGlobalScroll, { passive: true, capture: true });
+	window.addEventListener("scroll", handleGlobalScroll, {
+		passive: true,
+		capture: true,
+	});
 }
 
 // ============================================================================
 // Pooled ResizeObserver
 // ============================================================================
-const resizeCallbacks = new Map<Element, (entry: ResizeObserverEntry) => void>();
+const resizeCallbacks = new Map<
+	Element,
+	(entry: ResizeObserverEntry) => void
+>();
 let pooledResizeObserver: ResizeObserver | null = null;
 
 function observeResizeWithPool(
@@ -120,7 +126,10 @@ function ensureSharedSvgDefs(): SVGDefsElement | null {
 			container.style.height = "0";
 			container.style.overflow = "hidden";
 			container.style.pointerEvents = "none";
-			const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+			const defs = document.createElementNS(
+				"http://www.w3.org/2000/svg",
+				"defs",
+			);
 			container.appendChild(defs);
 			document.body.appendChild(container);
 			sharedDefs = defs;
@@ -241,11 +250,17 @@ function registerSharedFilter(signature: string, params: FilterParams): string {
 	const redMatrix = document.createElementNS(SVG_NS, "feColorMatrix");
 	redMatrix.setAttribute("in", "dispRed");
 	redMatrix.setAttribute("type", "matrix");
-	redMatrix.setAttribute("values", "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0");
+	redMatrix.setAttribute(
+		"values",
+		"1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0",
+	);
 	redMatrix.setAttribute("result", "red");
 	filterEl.appendChild(redMatrix);
 
-	const greenDisplacement = document.createElementNS(SVG_NS, "feDisplacementMap");
+	const greenDisplacement = document.createElementNS(
+		SVG_NS,
+		"feDisplacementMap",
+	);
 	greenDisplacement.setAttribute("in", "SourceGraphic");
 	greenDisplacement.setAttribute("in2", "map");
 	greenDisplacement.id = "greenchannel";
@@ -258,11 +273,17 @@ function registerSharedFilter(signature: string, params: FilterParams): string {
 	const greenMatrix = document.createElementNS(SVG_NS, "feColorMatrix");
 	greenMatrix.setAttribute("in", "dispGreen");
 	greenMatrix.setAttribute("type", "matrix");
-	greenMatrix.setAttribute("values", "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0");
+	greenMatrix.setAttribute(
+		"values",
+		"0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0",
+	);
 	greenMatrix.setAttribute("result", "green");
 	filterEl.appendChild(greenMatrix);
 
-	const blueDisplacement = document.createElementNS(SVG_NS, "feDisplacementMap");
+	const blueDisplacement = document.createElementNS(
+		SVG_NS,
+		"feDisplacementMap",
+	);
 	blueDisplacement.setAttribute("in", "SourceGraphic");
 	blueDisplacement.setAttribute("in2", "map");
 	blueDisplacement.id = "bluechannel";
@@ -275,7 +296,10 @@ function registerSharedFilter(signature: string, params: FilterParams): string {
 	const blueMatrix = document.createElementNS(SVG_NS, "feColorMatrix");
 	blueMatrix.setAttribute("in", "dispBlue");
 	blueMatrix.setAttribute("type", "matrix");
-	blueMatrix.setAttribute("values", "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0");
+	blueMatrix.setAttribute(
+		"values",
+		"0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0",
+	);
 	blueMatrix.setAttribute("result", "blue");
 	filterEl.appendChild(blueMatrix);
 
@@ -315,7 +339,10 @@ function releaseSharedFilter(filterId: string) {
 	}
 }
 
-function areStylesEqual(prevStyle?: React.CSSProperties, nextStyle?: React.CSSProperties): boolean {
+function areStylesEqual(
+	prevStyle?: React.CSSProperties,
+	nextStyle?: React.CSSProperties,
+): boolean {
 	if (prevStyle === nextStyle) {
 		return true;
 	}
@@ -329,7 +356,8 @@ function areStylesEqual(prevStyle?: React.CSSProperties, nextStyle?: React.CSSPr
 	}
 	for (const key of prevKeys) {
 		if (
-			(prevStyle as Record<string, unknown>)[key] !== (nextStyle as Record<string, unknown>)[key]
+			(prevStyle as Record<string, unknown>)[key] !==
+			(nextStyle as Record<string, unknown>)[key]
 		) {
 			return false;
 		}
@@ -451,7 +479,10 @@ const BaseGlassSurface = function BaseGlassSurface({
 		initialIsVisible: true,
 	});
 
-	const [measuredSize, setMeasuredSize] = useState<{ width: number; height: number }>(() => {
+	const [measuredSize, setMeasuredSize] = useState<{
+		width: number;
+		height: number;
+	}>(() => {
 		const initW = typeof width === "number" ? width : 200;
 		const initH = typeof height === "number" ? height : 80;
 		return { width: initW, height: initH };
@@ -514,10 +545,16 @@ const BaseGlassSurface = function BaseGlassSurface({
 
 		const actualWidth = measuredSize.width;
 		const actualHeight = measuredSize.height;
-		const effectiveRadius = Math.min(borderRadius, Math.min(actualWidth, actualHeight) / 2);
-		const isCircular = effectiveRadius >= Math.min(actualWidth, actualHeight) / 2 - 2;
+		const effectiveRadius = Math.min(
+			borderRadius,
+			Math.min(actualWidth, actualHeight) / 2,
+		);
+		const isCircular =
+			effectiveRadius >= Math.min(actualWidth, actualHeight) / 2 - 2;
 		const edgeSize =
-			Math.round(Math.min(actualWidth, actualHeight) * (borderWidth * 0.5) * 10) / 10;
+			Math.round(
+				Math.min(actualWidth, actualHeight) * (borderWidth * 0.5) * 10,
+			) / 10;
 
 		const signature = `${actualWidth}_${actualHeight}_${effectiveRadius}_${edgeSize}_${isCircular ? 1 : 0}_${brightness}_${opacity}_${blur}_${distortionScale}_${redOffset}_${greenOffset}_${blueOffset}_${xChannel}_${yChannel}_${displace}_${mixBlendMode}`;
 
@@ -540,7 +577,10 @@ const BaseGlassSurface = function BaseGlassSurface({
 			mixBlendMode,
 		});
 
-		if (currentFilterIdRef.current && currentFilterIdRef.current !== newFilterId) {
+		if (
+			currentFilterIdRef.current &&
+			currentFilterIdRef.current !== newFilterId
+		) {
 			releaseSharedFilter(currentFilterIdRef.current);
 		}
 		currentFilterIdRef.current = newFilterId;
@@ -601,4 +641,7 @@ const BaseGlassSurface = function BaseGlassSurface({
 	);
 };
 
-export const GlassSurface = React.memo(BaseGlassSurface, areGlassSurfacePropsEqual);
+export const GlassSurface = React.memo(
+	BaseGlassSurface,
+	areGlassSurfacePropsEqual,
+);

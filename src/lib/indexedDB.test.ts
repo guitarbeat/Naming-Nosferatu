@@ -59,7 +59,9 @@ describe("indexedDB utilities", () => {
 			const getResult = await getStoredTournamentFromIDB();
 			expect(getResult).toBeNull();
 
-			await expect(saveStoredTournamentToIDB(dummySnapshot)).resolves.toBeUndefined();
+			await expect(
+				saveStoredTournamentToIDB(dummySnapshot),
+			).resolves.toBeUndefined();
 			await expect(clearStoredTournamentFromIDB()).resolves.toBeUndefined();
 		});
 	});
@@ -315,7 +317,9 @@ describe("indexedDB utilities", () => {
 				},
 			});
 
-			await expect(saveStoredTournamentToIDB(dummySnapshot)).resolves.toBeUndefined();
+			await expect(
+				saveStoredTournamentToIDB(dummySnapshot),
+			).resolves.toBeUndefined();
 		});
 
 		it("resolves cleanly on transaction exception", async () => {
@@ -340,7 +344,9 @@ describe("indexedDB utilities", () => {
 				},
 			});
 
-			await expect(saveStoredTournamentToIDB(dummySnapshot)).resolves.toBeUndefined();
+			await expect(
+				saveStoredTournamentToIDB(dummySnapshot),
+			).resolves.toBeUndefined();
 		});
 	});
 

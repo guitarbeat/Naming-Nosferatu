@@ -12,6 +12,8 @@ describe("User Store Actions", () => {
 
 		expect(user.isLoggedIn).toBe(true);
 		expect(user.name).toBe("TestUser");
-		expect(user.id).toMatch(/^user_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+		expect(user.id).toMatch(
+			/^user_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+		);
 	});
 });

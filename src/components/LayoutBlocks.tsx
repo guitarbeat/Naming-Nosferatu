@@ -1,10 +1,20 @@
 import { Loader2, X } from "lucide-react";
 import type { ReactNode } from "react";
 import React, { Component, memo, useEffect, useState } from "react";
-import { CAT_IMAGES, FALLBACK_CAT_IMAGE, FALLBACK_CAT_SVG } from "@/lib/constants";
+import {
+	CAT_IMAGES,
+	FALLBACK_CAT_IMAGE,
+	FALLBACK_CAT_SVG,
+} from "@/lib/constants";
 import { cn, ErrorManager, handleImgError } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "danger" | "ghost" | "outline" | "flat" | "glass";
+type ButtonVariant =
+	| "primary"
+	| "danger"
+	| "ghost"
+	| "outline"
+	| "flat"
+	| "glass";
 type ButtonSize = "small" | "medium" | "large" | "icon";
 
 const baseButtonClass =
@@ -15,7 +25,8 @@ const variantClasses: Record<ButtonVariant, string> = {
 		"bg-primary text-primary-foreground shadow-sm hover:brightness-110 motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 motion-safe:active:scale-[0.93] border-b-4 border-primary/20",
 	danger:
 		"bg-destructive text-destructive-foreground shadow-sm hover:brightness-110 motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 active:brightness-95 motion-safe:active:scale-[0.93] border-b-4 border-destructive/30",
-	ghost: "text-foreground/80 hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
+	ghost:
+		"text-foreground/80 hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
 	outline:
 		"border-2 border-border/80 bg-white/40 text-foreground shadow-sm hover:bg-accent/20 hover:border-accent hover:text-accent-foreground motion-safe:hover:-translate-y-1 motion-safe:active:translate-y-0.5 active:bg-accent/40 motion-safe:active:scale-[0.93] backdrop-blur-sm",
 	flat: "text-foreground/80 hover:bg-accent/30 active:bg-accent/50",
@@ -30,7 +41,8 @@ const sizeClasses: Record<ButtonSize, string> = {
 	icon: "h-11 w-11 p-0 [&_svg]:size-4 min-h-[44px] min-w-[44px]",
 };
 
-interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+interface ButtonProps
+	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	variant?: ButtonVariant;
 	size?: ButtonSize;
 	loading?: boolean;
@@ -66,7 +78,12 @@ const ButtonComponent = ({
 		<button
 			type={type}
 			disabled={disabled || loading}
-			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
+			className={cn(
+				baseButtonClass,
+				variantClasses[variant],
+				sizeClasses[finalSize],
+				className,
+			)}
 			onClick={handleClick}
 			title={iconOnly && !title && ariaLabel ? ariaLabel : title}
 			aria-label={ariaLabel}
@@ -155,10 +172,16 @@ function CatImage({
 	const [svgFallback, setSvgFallback] = useState(false);
 	const fallbackUrl = CAT_IMAGES[0] ?? FALLBACK_CAT_IMAGE;
 
-	const currentSrc = svgFallback ? FALLBACK_CAT_SVG : hasError || !src ? fallbackUrl : src;
+	const currentSrc = svgFallback
+		? FALLBACK_CAT_SVG
+		: hasError || !src
+			? fallbackUrl
+			: src;
 	const isLocalAsset = currentSrc.startsWith("/");
 
-	const handleError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+	const handleError = (
+		event: React.SyntheticEvent<HTMLImageElement, Event>,
+	) => {
 		if (!hasError && src !== fallbackUrl) {
 			setHasError(true);
 		} else if (!svgFallback) {
@@ -228,13 +251,19 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	return (
 		<div className="mx-auto my-8 flex min-h-[40vh] w-full max-w-xl items-center justify-center px-4">
 			<div className="w-full rounded-lg border border-destructive/30 bg-background/80 p-6 text-center shadow-xl backdrop-blur">
-				<h2 className="text-2xl font-bold text-foreground">Something went wrong</h2>
-				<p className="mt-2 text-sm text-muted-foreground">{context} could not finish loading.</p>
+				<h2 className="text-2xl font-bold text-foreground">
+					Something went wrong
+				</h2>
+				<p className="mt-2 text-sm text-muted-foreground">
+					{context} could not finish loading.
+				</p>
 				<p className="mt-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
 					{error?.message || "An unexpected error occurred."}
 				</p>
 				{errorId ? (
-					<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
+					<p className="mt-2 font-mono text-xs text-muted-foreground">
+						ID: {errorId}
+					</p>
 				) : null}
 				<div className="mt-5 flex flex-wrap justify-center gap-3">
 					<button
@@ -257,7 +286,10 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	);
 };
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+	ErrorBoundaryProps,
+	ErrorBoundaryState
+> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -330,11 +362,16 @@ interface ErrorInlineProps {
 	className?: string;
 }
 
-const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className = "" }) => {
+const ErrorInline: React.FC<ErrorInlineProps> = ({
+	error,
+	onDismiss,
+	className = "",
+}) => {
 	if (!error) {
 		return null;
 	}
-	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
+	const msg =
+		typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
 		<div
 			className={cn(
@@ -369,9 +406,15 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 	children,
 }) => {
 	if (variant === "boundary") {
-		return <ErrorBoundary context={context || "Component Boundary"}>{children}</ErrorBoundary>;
+		return (
+			<ErrorBoundary context={context || "Component Boundary"}>
+				{children}
+			</ErrorBoundary>
+		);
 	}
-	return <ErrorInline error={error} onDismiss={onDismiss} className={className} />;
+	return (
+		<ErrorInline error={error} onDismiss={onDismiss} className={className} />
+	);
 };
 
 ErrorComponent.displayName = "ErrorComponent";
@@ -406,7 +449,13 @@ function SpinnerCircle({
 	);
 }
 
-function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
+function SkeletonBlock({
+	className,
+	style,
+}: {
+	className?: string;
+	style?: React.CSSProperties;
+}) {
 	return (
 		<div
 			className={cn(
@@ -421,7 +470,10 @@ function SkeletonBlock({ className, style }: { className?: string; style?: React
 
 export const Loading: React.FC<LoadingProps> = memo(
 	({ variant = "spinner", text, className = "", height = 20 }) => {
-		const containerClasses = cn("flex flex-col items-center justify-center gap-3 p-4", className);
+		const containerClasses = cn(
+			"flex flex-col items-center justify-center gap-3 p-4",
+			className,
+		);
 
 		if (variant === "skeleton") {
 			return (
@@ -459,7 +511,9 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<SkeletonBlock className="h-8 w-20" />
 					</div>
-					{text ? <div className="pt-2 text-center text-xs text-white/50">{text}</div> : null}
+					{text ? (
+						<div className="pt-2 text-center text-xs text-white/50">{text}</div>
+					) : null}
 				</div>
 			);
 		}
@@ -474,7 +528,11 @@ export const Loading: React.FC<LoadingProps> = memo(
 						className="h-44 w-auto select-none object-contain opacity-95 animate-bounce"
 						onError={handleImgError}
 					/>
-					{text && <p className="text-[12px] font-bold tracking-wide text-foreground/50">{text}</p>}
+					{text && (
+						<p className="text-[12px] font-bold tracking-wide text-foreground/50">
+							{text}
+						</p>
+					)}
 				</div>
 			);
 		}
