@@ -4,6 +4,8 @@ export * from "./GlassSurface";
 export * from "./Iridescence";
 export * from "./LayoutBlocks";
 export * from "./ui/AppBootScreen";
+export * from "./ui/AppLayout";
+export * from "./ui/HomeView";
 export * from "./ui/MagicSearch";
 export * from "./ui/MagicToggle";
 export * from "./ui/PwaInstallPrompt";
