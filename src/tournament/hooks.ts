@@ -833,6 +833,7 @@ export function useInertiaScroll(
 	const autoScrollRafRef = useRef<number | null>(null);
 	const lastAutoScrollTimeRef = useRef<number>(0);
 	const tilesCacheRef = useRef<HTMLElement[] | null>(null);
+	const tileColMapRef = useRef<Map<number, HTMLElement[]> | null>(null);
 
 	// Synchronize scrollY motion value with the DOM scroll position and seamless loop boundaries
 	useEffect(() => {
@@ -1004,14 +1005,33 @@ export function useInertiaScroll(
 
 			// ⚡ Bolt Performance Optimization: Cache querySelectorAll tile DOM nodes to prevent layout thrashing and repeated DOM queries on high-frequency keyboard events
 			if (!tilesCacheRef.current || tilesCacheRef.current.length === 0) {
-				tilesCacheRef.current = Array.from(
+				const cached = Array.from(
 					container.querySelectorAll<HTMLElement>(
 						'[data-tile-id], .drift-wall__tile, [role="button"]',
 					),
 				).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+				tilesCacheRef.current = cached;
+
+				// ⚡ Bolt Performance Optimization: Pre-group tiles by column on cache build to avoid array filtering on keydown
+				const colMap = new Map<number, HTMLElement[]>();
+				for (let i = 0; i < cached.length; i++) {
+					const tile = cached[i];
+					const colAttr = tile.getAttribute("data-col");
+					if (colAttr !== null) {
+						const colNum = Number(colAttr);
+						let list = colMap.get(colNum);
+						if (!list) {
+							list = [];
+							colMap.set(colNum, list);
+						}
+						list.push(tile);
+					}
+				}
+				tileColMapRef.current = colMap;
 			}
 
 			const tiles = tilesCacheRef.current;
+			const colMap = tileColMapRef.current;
 
 			if (!tiles || tiles.length === 0) {
 				return;
@@ -1045,7 +1065,8 @@ export function useInertiaScroll(
 						nextTile = tiles[tiles.length - 1];
 					}
 				} else {
-					const colTiles = tiles.filter((t) => t.getAttribute("data-col") === currentCol);
+					const currentColNum = Number(currentCol);
+					const colTiles = colMap?.get(currentColNum) || [];
 					const indexInCol = colTiles.indexOf(currentTile);
 
 					if (key === "ArrowDown") {
@@ -1066,27 +1087,10 @@ export function useInertiaScroll(
 						nextTile = colTiles[0];
 					} else if (key === "End") {
 						nextTile = colTiles[colTiles.length - 1];
-					} else if (key === "ArrowRight" || key === "ArrowLeft") {
-						// ⚡ Bolt Performance Optimization: Group tiles by column in a single linear pass to avoid redundant Set instantiation, array allocations, and filtering
-						const colMap = new Map<number, HTMLElement[]>();
-						for (let i = 0; i < tiles.length; i++) {
-							const tile = tiles[i];
-							const colAttr = tile.getAttribute("data-col");
-							if (colAttr !== null) {
-								const col = Number(colAttr);
-								let list = colMap.get(col);
-								if (!list) {
-									list = [];
-									colMap.set(col, list);
-								}
-								list.push(tile);
-							}
-						}
-
+					} else if ((key === "ArrowRight" || key === "ArrowLeft") && colMap) {
 						const allCols = Array.from(colMap.keys()).sort((a, b) => a - b);
 						if (allCols.length > 0) {
-							const colNum = Number(currentCol);
-							const colIdx = allCols.indexOf(colNum);
+							const colIdx = allCols.indexOf(currentColNum);
 							if (colIdx !== -1) {
 								const targetColNum =
 									key === "ArrowRight"
@@ -1166,6 +1170,7 @@ export function useInertiaScroll(
 		// Invalidate tiles cache if children change (basic approach - ideally handled by ResizeObserver/MutationObserver if dynamic)
 		const observer = new MutationObserver(() => {
 			tilesCacheRef.current = null;
+			tileColMapRef.current = null;
 		});
 		observer.observe(targetEl, {
 			childList: true,
