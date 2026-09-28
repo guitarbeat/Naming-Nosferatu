@@ -63,9 +63,11 @@ function getStoredNames(): NameItem[] {
 			const parsed = parseJsonValue<NameItem[] | null>(raw, null);
 			if (Array.isArray(parsed) && parsed.length > 0) {
 				// Seamlessly merge new default candidate names if the stored list is from the legacy 12-item set
-				const existingNames = new Set(
-					parsed.map((item: NameItem) => item.name?.trim().toLowerCase()),
-				);
+				// ⚡ Bolt Performance Optimization: Direct loop avoids intermediate array allocation from .map()
+				const existingNames = new Set<string | undefined>();
+				for (let i = 0; i < parsed.length; i++) {
+					existingNames.add(parsed[i].name?.trim().toLowerCase());
+				}
 				const missing = DEFAULT_CANDIDATE_NAMES.filter(
 					(def) => !existingNames.has(def.name?.trim().toLowerCase()),
 				);
