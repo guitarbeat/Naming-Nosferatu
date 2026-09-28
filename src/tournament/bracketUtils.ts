@@ -57,7 +57,7 @@ export interface VisualRound {
 	isCompleted: boolean;
 }
 
-export interface VisualBracketTree {
+interface VisualBracketTree {
 	rounds: VisualRound[];
 	champion: VisualContender | null;
 	totalEntrants: number;
