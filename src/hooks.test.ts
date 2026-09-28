@@ -5,7 +5,12 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type UseIntersectionObserverOptions, useDebounce, useIntersectionObserver } from "./hooks";
+import {
+	type UseIntersectionObserverOptions,
+	useDebounce,
+	useIntersectionObserver,
+	useSectionScroll,
+} from "./hooks";
 
 type ObserverCallback = (
 	entries: IntersectionObserverEntry[],
@@ -484,5 +489,234 @@ describe("useDebounce", () => {
 			vi.advanceTimersByTime(500);
 		});
 		expect(getValue()).toBe("initial");
+	});
+});
+
+describe("useSectionScroll", () => {
+	let container: HTMLDivElement | null = null;
+	let root: Root | null = null;
+	let mockMatchMedia: (query: string) => MediaQueryList;
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+
+		// Default matchMedia mock (prefers-reduced-motion: false)
+		mockMatchMedia = vi.fn().mockImplementation((query) => ({
+			matches: false,
+			media: query,
+			onchange: null,
+			addListener: vi.fn(),
+			removeListener: vi.fn(),
+			addEventListener: vi.fn(),
+			removeEventListener: vi.fn(),
+			dispatchEvent: vi.fn(),
+		}));
+		window.matchMedia = mockMatchMedia as unknown as typeof window.matchMedia;
+
+		// Mock scrollTo on window
+		window.scrollTo = vi.fn();
+	});
+
+	afterEach(() => {
+		if (root) {
+			act(() => {
+				root?.unmount();
+			});
+			root = null;
+		}
+		if (container) {
+			container.remove();
+			container = null;
+		}
+		vi.useRealTimers();
+		vi.restoreAllMocks();
+	});
+
+	function renderSectionScrollHook() {
+		let result: ReturnType<typeof useSectionScroll> | undefined;
+
+		function TestComponent() {
+			result = useSectionScroll();
+			return React.createElement("div", null, "Scroll Test");
+		}
+
+		act(() => {
+			root?.render(React.createElement(TestComponent));
+		});
+
+		if (!result) {
+			throw new Error("Hook result was not initialized");
+		}
+
+		return result;
+	}
+
+	it("scrolls to section by element ID with smooth behavior by default", () => {
+		const hook = renderSectionScrollHook();
+		const sectionEl = document.createElement("section");
+		sectionEl.id = "about";
+		const scrollIntoViewMock = vi.fn();
+		sectionEl.scrollIntoView = scrollIntoViewMock;
+		document.body.appendChild(sectionEl);
+
+		act(() => {
+			hook.scrollToSection("about");
+			vi.advanceTimersByTime(16);
+		});
+
+		expect(scrollIntoViewMock).toHaveBeenCalledWith({
+			behavior: "smooth",
+			block: "start",
+		});
+
+		sectionEl.remove();
+	});
+
+	it("maps target section aliases correctly (stats -> analysis, tournament -> pick)", () => {
+		const hook = renderSectionScrollHook();
+
+		const analysisEl = document.createElement("section");
+		analysisEl.id = "analysis";
+		const analysisScrollMock = vi.fn();
+		analysisEl.scrollIntoView = analysisScrollMock;
+		document.body.appendChild(analysisEl);
+
+		const pickEl = document.createElement("section");
+		pickEl.id = "pick";
+		const pickScrollMock = vi.fn();
+		pickEl.scrollIntoView = pickScrollMock;
+		document.body.appendChild(pickEl);
+
+		act(() => {
+			hook.scrollToSection("stats");
+			vi.advanceTimersByTime(16);
+		});
+		expect(analysisScrollMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+
+		act(() => {
+			hook.scrollToSection("tournament");
+			vi.advanceTimersByTime(16);
+		});
+		expect(pickScrollMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+
+		analysisEl.remove();
+		pickEl.remove();
+	});
+
+	it("scrolls window to top when element is not found and ID is landing or top", () => {
+		const hook = renderSectionScrollHook();
+
+		act(() => {
+			hook.scrollToSection("landing");
+			vi.advanceTimersByTime(16);
+		});
+
+		expect(window.scrollTo).toHaveBeenCalledWith({
+			top: 0,
+			behavior: "smooth",
+		});
+
+		act(() => {
+			hook.scrollToSection("top");
+			vi.advanceTimersByTime(16);
+		});
+
+		expect(window.scrollTo).toHaveBeenLastCalledWith({
+			top: 0,
+			behavior: "smooth",
+		});
+	});
+
+	it("uses auto behavior when prefersReducedMotion is true", () => {
+		window.matchMedia = vi.fn().mockImplementation((query) => ({
+			matches: query.includes("prefers-reduced-motion"),
+			media: query,
+			onchange: null,
+			addListener: vi.fn(),
+			removeListener: vi.fn(),
+			addEventListener: vi.fn(),
+			removeEventListener: vi.fn(),
+			dispatchEvent: vi.fn(),
+		})) as unknown as typeof window.matchMedia;
+
+		const hook = renderSectionScrollHook();
+		const sectionEl = document.createElement("section");
+		sectionEl.id = "about";
+		const scrollIntoViewMock = vi.fn();
+		sectionEl.scrollIntoView = scrollIntoViewMock;
+		document.body.appendChild(sectionEl);
+
+		act(() => {
+			hook.scrollToSection("about");
+			vi.advanceTimersByTime(16);
+		});
+
+		expect(scrollIntoViewMock).toHaveBeenCalledWith({
+			behavior: "auto",
+			block: "start",
+		});
+
+		sectionEl.remove();
+	});
+
+	it("schedules section scroll with delay and triggers scroll", () => {
+		const hook = renderSectionScrollHook();
+		const sectionEl = document.createElement("section");
+		sectionEl.id = "custom";
+		const scrollIntoViewMock = vi.fn();
+		sectionEl.scrollIntoView = scrollIntoViewMock;
+		document.body.appendChild(sectionEl);
+
+		act(() => {
+			hook.scheduleSectionScroll("custom", 500);
+		});
+
+		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+		act(() => {
+			vi.advanceTimersByTime(499);
+		});
+		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+		act(() => {
+			vi.advanceTimersByTime(1);
+			vi.advanceTimersByTime(16);
+		});
+		expect(scrollIntoViewMock).toHaveBeenCalledWith({
+			behavior: "smooth",
+			block: "start",
+		});
+
+		sectionEl.remove();
+	});
+
+	it("clears pending scheduled scroll and animation frames when clearPendingScroll is called", () => {
+		const hook = renderSectionScrollHook();
+		const sectionEl = document.createElement("section");
+		sectionEl.id = "cancelable";
+		const scrollIntoViewMock = vi.fn();
+		sectionEl.scrollIntoView = scrollIntoViewMock;
+		document.body.appendChild(sectionEl);
+
+		act(() => {
+			hook.scheduleSectionScroll("cancelable", 500);
+			hook.clearPendingScroll();
+			vi.advanceTimersByTime(1000);
+		});
+
+		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+		act(() => {
+			hook.scrollToSection("cancelable");
+			hook.clearPendingScroll();
+			vi.advanceTimersByTime(1000);
+		});
+
+		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+		sectionEl.remove();
 	});
 });
