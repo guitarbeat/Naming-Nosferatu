@@ -524,13 +524,18 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 				tournamentMode === "2v2"
 					? teams.map((team) => team.id)
 					: names.map((name) => String(name.id));
+			// ⚡ Bolt Performance Optimization: Replace filter callback and array allocation with a direct for loop
+			const nonByeEntrants: string[] = [];
+			for (let i = 0; i < effectivePersistentState.bracketEntrants.length; i++) {
+				const id = effectivePersistentState.bracketEntrants[i];
+				if (!isBye(id)) {
+					nonByeEntrants.push(id);
+				}
+			}
 			const shouldResetBracket =
 				!hasValidPersistence ||
 				effectivePersistentState.bracketEntrants.length === 0 ||
-				!haveSameIds(
-					effectivePersistentState.bracketEntrants.filter((id) => !isBye(id)),
-					participantIds,
-				);
+				!haveSameIds(nonByeEntrants, participantIds);
 			const bracketEntrants = shouldResetBracket
 				? createBracketEntrants(participantIds)
 				: effectivePersistentState.bracketEntrants;
