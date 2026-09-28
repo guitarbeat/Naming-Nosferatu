@@ -5,7 +5,12 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type UseIntersectionObserverOptions, useDebounce, useIntersectionObserver } from "./hooks";
+import {
+	type UseIntersectionObserverOptions,
+	useDebounce,
+	useIntersectionObserver,
+	usePreloadImages,
+} from "./hooks";
 
 type ObserverCallback = (
 	entries: IntersectionObserverEntry[],
@@ -484,5 +489,227 @@ describe("useDebounce", () => {
 			vi.advanceTimersByTime(500);
 		});
 		expect(getValue()).toBe("initial");
+	});
+});
+
+describe("usePreloadImages", () => {
+	let container: HTMLDivElement | null = null;
+	let root: Root | null = null;
+	const originalImage = window.Image;
+
+	class MockImage {
+		private _src = "";
+		crossOrigin: string | null = null;
+		onload: (() => void) | null = null;
+		onerror: (() => void) | null = null;
+
+		static instances: MockImage[] = [];
+
+		constructor() {
+			MockImage.instances.push(this);
+		}
+
+		get src(): string {
+			return this._src;
+		}
+
+		set src(value: string) {
+			this._src = value;
+		}
+
+		triggerLoad() {
+			if (this.onload) {
+				this.onload();
+			}
+		}
+
+		triggerError() {
+			if (this.onerror) {
+				this.onerror();
+			}
+		}
+	}
+
+	beforeEach(() => {
+		MockImage.instances = [];
+		// @ts-expect-error Mocking global Image
+		window.Image = MockImage;
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+	});
+
+	afterEach(() => {
+		if (root) {
+			act(() => {
+				root?.unmount();
+			});
+			root = null;
+		}
+		if (container) {
+			container.remove();
+			container = null;
+		}
+		window.Image = originalImage;
+	});
+
+	function renderPreloadHook(
+		images?: readonly string[],
+		options?: Parameters<typeof usePreloadImages>[1],
+	) {
+		let result: ReturnType<typeof usePreloadImages>;
+
+		function TestComponent() {
+			result = usePreloadImages(images, options);
+			return React.createElement("div", null, result.isLoading ? "Loading" : "Done");
+		}
+
+		act(() => {
+			root?.render(React.createElement(TestComponent));
+		});
+
+		return {
+			// biome-ignore lint/style/noNonNullAssertion: result is assigned synchronously in render
+			getResult: () => result!,
+		};
+	}
+
+	it("returns isLoaded true and isLoading false when images array is empty", () => {
+		const { getResult } = renderPreloadHook([]);
+		const res = getResult();
+
+		expect(res.isLoading).toBe(false);
+		expect(res.isLoaded).toBe(true);
+		expect(res.progress).toBe(1);
+		expect(res.loadedCount).toBe(0);
+		expect(res.totalCount).toBe(0);
+		expect(res.loadedUrls).toEqual([]);
+		expect(res.failedUrls).toEqual([]);
+	});
+
+	it("returns isLoading false when enabled is false", () => {
+		const { getResult } = renderPreloadHook(["/image1.jpg"], { enabled: false });
+		const res = getResult();
+
+		expect(res.isLoading).toBe(false);
+		expect(MockImage.instances.length).toBe(0);
+	});
+
+	it("preloads images successfully and calls onComplete", () => {
+		const onComplete = vi.fn();
+		const { getResult } = renderPreloadHook(["/img1.png", "/img2.png"], { onComplete });
+
+		expect(getResult().isLoading).toBe(true);
+		expect(MockImage.instances.length).toBe(2);
+
+		// Trigger load for first image
+		act(() => {
+			MockImage.instances[0].triggerLoad();
+		});
+
+		expect(getResult().loadedCount).toBe(1);
+		expect(getResult().progress).toBe(0.5);
+		expect(getResult().isLoading).toBe(true);
+		expect(onComplete).not.toHaveBeenCalled();
+
+		// Trigger load for second image
+		act(() => {
+			MockImage.instances[1].triggerLoad();
+		});
+
+		expect(getResult().loadedCount).toBe(2);
+		expect(getResult().progress).toBe(1);
+		expect(getResult().isLoading).toBe(false);
+		expect(getResult().isLoaded).toBe(true);
+		expect(onComplete).toHaveBeenCalledWith(["/img1.png", "/img2.png"], []);
+	});
+
+	it("handles image load failure and invokes onError", () => {
+		const onError = vi.fn();
+		const onComplete = vi.fn();
+		const { getResult } = renderPreloadHook(["/ok.png", "/fail.png"], { onError, onComplete });
+
+		act(() => {
+			MockImage.instances[0].triggerLoad();
+		});
+
+		act(() => {
+			MockImage.instances[1].triggerError();
+		});
+
+		expect(onError).toHaveBeenCalledWith("/fail.png");
+		expect(getResult().failedUrls).toEqual(["/fail.png"]);
+		expect(getResult().loadedUrls).toEqual(["/ok.png"]);
+		expect(getResult().isLoaded).toBe(true);
+		expect(getResult().isLoading).toBe(false);
+		expect(onComplete).toHaveBeenCalledWith(["/ok.png"], ["/fail.png"]);
+	});
+
+	it("sets crossOrigin on images unless data or blob URL", () => {
+		renderPreloadHook(["/remote.png", "data:image/png;base64,xxx", "blob:http://localhost/xxx"], {
+			crossOrigin: "anonymous",
+		});
+
+		expect(MockImage.instances.length).toBe(3);
+		expect(MockImage.instances[0].crossOrigin).toBe("anonymous");
+		expect(MockImage.instances[1].crossOrigin).toBeNull();
+		expect(MockImage.instances[2].crossOrigin).toBeNull();
+	});
+
+	it("deduplicates images array and handles empty string/falsy elements", () => {
+		const { getResult } = renderPreloadHook(["/dupe.jpg", "", "/dupe.jpg", "/unique.jpg"]);
+
+		// Deduplicated valid images: ["/dupe.jpg", "/unique.jpg"]
+		expect(MockImage.instances.length).toBe(2);
+
+		act(() => {
+			MockImage.instances[0].triggerLoad();
+			MockImage.instances[1].triggerLoad();
+		});
+
+		expect(getResult().loadedUrls.length).toBe(2);
+	});
+
+	it("uses global cache for previously preloaded images across renders", () => {
+		// First mount loads /cached.png
+		renderPreloadHook(["/cached.png"]);
+		act(() => {
+			MockImage.instances[0].triggerLoad();
+		});
+
+		MockImage.instances = [];
+
+		// Second mount with same image
+		const { getResult } = renderPreloadHook(["/cached.png"]);
+
+		// Should immediately recognize as loaded from global cache without creating new Image
+		expect(getResult().isLoading).toBe(false);
+		expect(getResult().loadedUrls).toContain("/cached.png");
+		expect(MockImage.instances.length).toBe(0);
+	});
+
+	it("prevents state updates and callbacks if component unmounts before loading completes", () => {
+		const onComplete = vi.fn();
+		const onError = vi.fn();
+
+		renderPreloadHook(["/pending.png"], { onComplete, onError });
+
+		expect(MockImage.instances.length).toBe(1);
+		const imageInstance = MockImage.instances[0];
+
+		// Unmount
+		act(() => {
+			root?.unmount();
+			root = null;
+		});
+
+		// Trigger load & error after unmount
+		act(() => {
+			imageInstance.triggerLoad();
+			imageInstance.triggerError();
+		});
+
+		expect(onComplete).not.toHaveBeenCalled();
+		expect(onError).not.toHaveBeenCalled();
 	});
 });
