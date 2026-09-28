@@ -10,12 +10,37 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
- * Shuffles an array using the Fisher-Yates algorithm.
+ * Generates an unbiased random integer in [0, max) using CSPRNG when available.
+ */
+export function getSecureRandomInt(max: number): number {
+	if (max <= 1) {
+		return 0;
+	}
+
+	if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+		const array = new Uint32Array(1);
+		const maxUint32 = 0xffffffff;
+		const limit = maxUint32 - (maxUint32 % max);
+
+		let randomVal: number;
+		do {
+			crypto.getRandomValues(array);
+			randomVal = array[0] as number;
+		} while (randomVal >= limit);
+
+		return randomVal % max;
+	}
+
+	return Math.floor(Math.random() * max);
+}
+
+/**
+ * Shuffles an array using the Fisher-Yates algorithm with CSPRNG.
  */
 export function shuffleArray<T>(array: T[]): T[] {
 	const next = [...array];
 	for (let i = next.length - 1; i > 0; i -= 1) {
-		const j = Math.floor(Math.random() * (i + 1));
+		const j = getSecureRandomInt(i + 1);
 		const temp = next[i] as T;
 		next[i] = next[j] as T;
 		next[j] = temp;

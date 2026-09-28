@@ -142,31 +142,44 @@ describe("shuffleArray", () => {
 		expect(result).not.toBe(input);
 	});
 
-	it("produces deterministic output when Math.random is mocked", () => {
-		// Mock Math.random to return predictable values
+	it("produces deterministic output when crypto.getRandomValues is mocked", () => {
 		// Fisher-Yates loop runs for i = 4 down to 1:
-		// i = 4: Math.floor(0.1 * 5) = 0 -> swap index 4 and 0
-		// i = 3: Math.floor(0.2 * 4) = 0 -> swap index 3 and 0
-		// i = 2: Math.floor(0.3 * 3) = 0 -> swap index 2 and 0
-		// i = 1: Math.floor(0.4 * 2) = 0 -> swap index 1 and 0
-		const mockRandom = vi
-			.spyOn(Math, "random")
-			.mockReturnValueOnce(0.1)
-			.mockReturnValueOnce(0.2)
-			.mockReturnValueOnce(0.3)
-			.mockReturnValueOnce(0.4);
+		// i = 4 (max = 5): getRandomValues returns 0 -> j = 0 -> swap index 4 and 0
+		// i = 3 (max = 4): getRandomValues returns 0 -> j = 0 -> swap index 3 and 0
+		// i = 2 (max = 3): getRandomValues returns 0 -> j = 0 -> swap index 2 and 0
+		// i = 1 (max = 2): getRandomValues returns 0 -> j = 0 -> swap index 1 and 0
+		const mockGetRandomValues = vi
+			.spyOn(crypto, "getRandomValues")
+			.mockImplementation((array: ArrayBufferView) => {
+				const uint32Arr = array as Uint32Array;
+				uint32Arr[0] = 0;
+				return array;
+			});
 
 		const input = [1, 2, 3, 4, 5];
 		const result = shuffleArray(input);
 
-		expect(mockRandom).toHaveBeenCalledTimes(4);
-		// Let's trace the swaps:
-		// start: [1, 2, 3, 4, 5]
-		// i=4, j=0: swap index 4 (5) and 0 (1) => [5, 2, 3, 4, 1]
-		// i=3, j=0: swap index 3 (4) and 0 (5) => [4, 2, 3, 5, 1]
-		// i=2, j=0: swap index 2 (3) and 0 (4) => [3, 2, 4, 5, 1]
-		// i=1, j=0: swap index 1 (2) and 0 (3) => [2, 3, 4, 5, 1]
+		expect(mockGetRandomValues).toHaveBeenCalledTimes(4);
 		expect(result).toEqual([2, 3, 4, 5, 1]);
+	});
+
+	it("falls back to Math.random when crypto is unavailable or getRandomValues is missing", () => {
+		vi.stubGlobal("crypto", undefined);
+
+		const mockMathRandom = vi
+			.spyOn(Math, "random")
+			.mockReturnValueOnce(0)
+			.mockReturnValueOnce(0)
+			.mockReturnValueOnce(0)
+			.mockReturnValueOnce(0);
+
+		const input = [1, 2, 3, 4, 5];
+		const result = shuffleArray(input);
+
+		expect(mockMathRandom).toHaveBeenCalledTimes(4);
+		expect(result).toEqual([2, 3, 4, 5, 1]);
+
+		vi.unstubAllGlobals();
 	});
 
 	it("works correctly with arrays of objects", () => {
