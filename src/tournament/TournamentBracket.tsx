@@ -592,7 +592,8 @@ function ContenderDetailModal({
 // MAIN VISUAL TOURNAMENT BRACKET COMPONENT
 // ============================================================================
 
-export function TournamentBracket({
+// ⚡ Bolt Performance Optimization: Wrapped TournamentBracket component in React.memo()
+export const TournamentBracket = memo(function TournamentBracket({
 	bracketEntrants = [],
 	matchHistory = [],
 	currentMatch = null,
@@ -1128,7 +1129,7 @@ export function TournamentBracket({
 			</AnimatePresence>
 		</div>
 	);
-}
+});
 
 // ============================================================================
 // MODAL WRAPPER FOR POPUP BRACKET VIEWER
