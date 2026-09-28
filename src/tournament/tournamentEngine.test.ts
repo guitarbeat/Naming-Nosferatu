@@ -4,6 +4,7 @@ import {
 	calculateWinStreak,
 	createMatchRecord,
 	EloRating,
+	generateRandomTeams,
 	getBracketStageLabel,
 	getFlameCount,
 	getHeatLevel,
@@ -120,5 +121,55 @@ describe("tournamentEngine", () => {
 		expect(metrics.progress).toBe(50);
 		expect(metrics.totalMatches).toBe(4);
 		expect(metrics.completedMatches).toBe(2);
+	});
+
+	describe("generateRandomTeams", () => {
+		it("returns empty array when participants is empty", () => {
+			expect(generateRandomTeams([])).toEqual([]);
+		});
+
+		it("returns empty array when given only one participant", () => {
+			const participants = [{ id: "p1", name: "Alice" }];
+			expect(generateRandomTeams(participants)).toEqual([]);
+		});
+
+		it("pairs participants into teams with even count", () => {
+			const participants = [
+				{ id: "p1", name: "Alice" },
+				{ id: "p2", name: "Bob" },
+				{ id: "p3", name: "Charlie" },
+				{ id: "p4", name: "Diana" },
+			];
+
+			const teams = generateRandomTeams(participants);
+
+			expect(teams).toHaveLength(2);
+			expect(teams[0].id).toBe("team-1");
+			expect(teams[1].id).toBe("team-2");
+
+			const allMemberIds = teams.flatMap((t) => t.memberIds);
+			expect(allMemberIds).toHaveLength(4);
+			expect(new Set(allMemberIds)).toEqual(new Set(["p1", "p2", "p3", "p4"]));
+
+			for (const team of teams) {
+				expect(team.memberIds).toHaveLength(2);
+				expect(team.memberNames).toHaveLength(2);
+			}
+		});
+
+		it("pairs participants into teams with odd count, ignoring leftover participant", () => {
+			const participants = [
+				{ id: "p1", name: "Alice" },
+				{ id: "p2", name: "Bob" },
+				{ id: "p3", name: "Charlie" },
+			];
+
+			const teams = generateRandomTeams(participants);
+
+			expect(teams).toHaveLength(1);
+			expect(teams[0].id).toBe("team-1");
+			expect(teams[0].memberIds).toHaveLength(2);
+			expect(teams[0].memberNames).toHaveLength(2);
+		});
 	});
 });
