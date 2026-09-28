@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createSortedKey, shuffleArray } from "./utils";
+import { createSortedKey, hapticNavTap, hapticVoteTap, shuffleArray } from "./utils";
 
 describe("createSortedKey", () => {
 	it("returns an empty string when given an empty array", () => {
@@ -139,5 +139,89 @@ describe("shuffleArray", () => {
 		expect(result).toContain(obj1);
 		expect(result).toContain(obj2);
 		expect(result).toContain(obj3);
+	});
+});
+
+describe("hapticNavTap", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("calls navigator.vibrate with 10ms when vibrate function exists", () => {
+		const vibrateSpy = vi.fn().mockReturnValue(true);
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		hapticNavTap();
+
+		expect(vibrateSpy).toHaveBeenCalledTimes(1);
+		expect(vibrateSpy).toHaveBeenCalledWith(10);
+	});
+
+	it("does not throw when navigator.vibrate is undefined", () => {
+		vi.stubGlobal("navigator", {});
+
+		expect(() => hapticNavTap()).not.toThrow();
+	});
+
+	it("does not throw when navigator object is undefined", () => {
+		vi.stubGlobal("navigator", undefined);
+
+		expect(() => hapticNavTap()).not.toThrow();
+	});
+});
+
+describe("hapticVoteTap", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("calls navigator.vibrate with default 15ms duration and returns boolean result", () => {
+		const vibrateSpy = vi.fn().mockReturnValue(true);
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		const result = hapticVoteTap();
+
+		expect(vibrateSpy).toHaveBeenCalledTimes(1);
+		expect(vibrateSpy).toHaveBeenCalledWith(15);
+		expect(result).toBe(true);
+	});
+
+	it("calls navigator.vibrate with custom duration when provided", () => {
+		const vibrateSpy = vi.fn().mockReturnValue(true);
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		const result = hapticVoteTap(25);
+
+		expect(vibrateSpy).toHaveBeenCalledTimes(1);
+		expect(vibrateSpy).toHaveBeenCalledWith(25);
+		expect(result).toBe(true);
+	});
+
+	it("returns false when navigator.vibrate is missing or not a function", () => {
+		vi.stubGlobal("navigator", { vibrate: undefined });
+
+		const result = hapticVoteTap();
+
+		expect(result).toBe(false);
+	});
+
+	it("returns false when navigator is undefined", () => {
+		vi.stubGlobal("navigator", undefined);
+
+		const result = hapticVoteTap();
+
+		expect(result).toBe(false);
+	});
+
+	it("catches errors and returns false when navigator.vibrate throws an exception", () => {
+		const vibrateSpy = vi.fn().mockImplementation(() => {
+			throw new Error("Vibration blocked by user agent or iframe permissions");
+		});
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		const result = hapticVoteTap();
+
+		expect(vibrateSpy).toHaveBeenCalledWith(15);
+		expect(result).toBe(false);
 	});
 });
