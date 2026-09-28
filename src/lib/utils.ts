@@ -121,6 +121,18 @@ export function setupGlobalImageErrorHandler(
 	};
 }
 
+function getSecureRandomId(): string {
+	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+		return crypto.randomUUID();
+	}
+	if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+		const bytes = new Uint8Array(16);
+		crypto.getRandomValues(bytes);
+		return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+	}
+	return Math.random().toString(36).slice(2, 7);
+}
+
 export const ErrorManager = {
 	setupGlobalErrorHandling() {
 		const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -155,7 +167,7 @@ export const ErrorManager = {
 				: typeof error === "string"
 					? error
 					: "An unexpected error occurred.";
-		const id = `err_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+		const id = `err_${Date.now()}_${getSecureRandomId()}`;
 		if (context) {
 			console.error(`[${context}] Error:`, error, options);
 		} else {

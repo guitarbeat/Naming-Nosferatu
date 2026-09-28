@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createSortedKey, shuffleArray } from "./utils";
+import { createSortedKey, ErrorManager, shuffleArray } from "./utils";
 
 describe("createSortedKey", () => {
 	it("returns an empty string when given an empty array", () => {
@@ -139,5 +139,37 @@ describe("shuffleArray", () => {
 		expect(result).toContain(obj1);
 		expect(result).toContain(obj2);
 		expect(result).toContain(obj3);
+	});
+});
+
+describe("ErrorManager", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("generates a unique secure error ID and dispatches app-error event", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		const eventListener = vi.fn();
+		window.addEventListener("app-error", eventListener);
+
+		const result1 = ErrorManager.handleError("Failed to fetch data", "TestContext");
+		const result2 = ErrorManager.handleError(new Error("Another error"));
+
+		expect(result1.id).toBeDefined();
+		expect(result1.id).toMatch(/^err_\d+_[a-zA-Z0-9-]+$/);
+		expect(result2.id).toBeDefined();
+		expect(result1.id).not.toEqual(result2.id);
+
+		expect(consoleSpy).toHaveBeenCalled();
+		expect(eventListener).toHaveBeenCalledTimes(2);
+
+		const eventDetail = (eventListener.mock.calls[0][0] as CustomEvent).detail;
+		expect(eventDetail).toEqual({
+			id: result1.id,
+			message: "Failed to fetch data",
+			isCritical: undefined,
+		});
+
+		window.removeEventListener("app-error", eventListener);
 	});
 });
