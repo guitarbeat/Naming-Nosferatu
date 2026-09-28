@@ -1,5 +1,47 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createSortedKey, shuffleArray } from "./utils";
+import { cn, createSortedKey, shuffleArray } from "./utils";
+
+describe("cn", () => {
+	it("merges single and multiple string class names", () => {
+		expect(cn("px-2")).toBe("px-2");
+		expect(cn("px-2", "py-2")).toBe("px-2 py-2");
+	});
+
+	it("handles conditional class names with boolean expressions", () => {
+		const isTrue = true;
+		const isFalse = false;
+		expect(cn("px-2", isTrue && "bg-red-500", isFalse && "text-white")).toBe("px-2 bg-red-500");
+	});
+
+	it("handles object syntax for class names", () => {
+		expect(cn({ "bg-blue-500": true, "text-black": false, "p-4": true })).toBe("bg-blue-500 p-4");
+	});
+
+	it("handles array syntax for class names", () => {
+		expect(cn(["px-2", "py-2"], ["text-sm"])).toBe("px-2 py-2 text-sm");
+	});
+
+	it("filters out falsy values like null, undefined, empty strings, false, and 0", () => {
+		expect(cn("px-2", null, undefined, false, "", 0)).toBe("px-2");
+	});
+
+	it("resolves conflicting Tailwind CSS classes via tailwind-merge", () => {
+		expect(cn("px-2", "px-4")).toBe("px-4");
+		expect(cn("bg-red-500", "bg-blue-500")).toBe("bg-blue-500");
+		expect(cn("text-red-500 text-sm", "text-blue-500 text-lg")).toBe("text-blue-500 text-lg");
+	});
+
+	it("handles complex mixed inputs with strings, arrays, objects, and conflicting classes", () => {
+		const result = cn(
+			"p-4",
+			["text-red-500", { "bg-green-500": true, hidden: false }],
+			"p-2",
+			null,
+			undefined,
+		);
+		expect(result).toBe("text-red-500 bg-green-500 p-2");
+	});
+});
 
 describe("createSortedKey", () => {
 	it("returns an empty string when given an empty array", () => {
