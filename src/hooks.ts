@@ -341,7 +341,23 @@ export function usePreloadImages(
 		}
 
 		let isCancelled = false;
-		const activeImages = Array.from(new Set(images.filter(Boolean)));
+
+		// ⚡ Bolt Performance Optimization: Single-pass iteration to filter, deduplicate, and check cached images simultaneously
+		const activeImages: string[] = [];
+		const alreadyLoaded: string[] = [];
+		const seen = new Set<string>();
+
+		for (let i = 0; i < images.length; i++) {
+			const src = images[i];
+			if (src && !seen.has(src)) {
+				seen.add(src);
+				activeImages.push(src);
+				if (globalPreloadedImageCache.has(src)) {
+					alreadyLoaded.push(src);
+				}
+			}
+		}
+
 		const total = activeImages.length;
 
 		if (total === 0) {
@@ -349,7 +365,6 @@ export function usePreloadImages(
 			return;
 		}
 
-		const alreadyLoaded = activeImages.filter((src) => globalPreloadedImageCache.has(src));
 		if (alreadyLoaded.length === total) {
 			setLoadedUrls(alreadyLoaded);
 			setIsLoading(false);
