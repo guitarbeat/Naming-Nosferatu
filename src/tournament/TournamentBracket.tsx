@@ -660,24 +660,47 @@ export function TournamentBracket({
 	// ⚡ Bolt Performance Optimization: Added debouncing for name search/filter
 	const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
+	// ⚡ Bolt Performance Optimization: Pre-compute lowercased name and team search entries to eliminate repeated toLowerCase() calls during search
+	const nameSearchEntries = useMemo(() => {
+		const entries: { id: string; lowerName: string }[] = [];
+		for (const [id, item] of namesMap) {
+			entries.push({ id, lowerName: item.name.toLowerCase() });
+		}
+		return entries;
+	}, [namesMap]);
+
+	const teamSearchEntries = useMemo(() => {
+		const entries: { id: string; lowerMemberNames: string[] }[] = [];
+		for (const [id, team] of teamsMap) {
+			entries.push({
+				id,
+				lowerMemberNames: team.memberNames.map((m) => m.toLowerCase()),
+			});
+		}
+		return entries;
+	}, [teamsMap]);
+
 	// Highlight match / contestant based on search query
 	const highlightedContenderId = useMemo(() => {
 		if (!debouncedSearchQuery.trim()) {
 			return null;
 		}
 		const query = debouncedSearchQuery.toLowerCase().trim();
-		for (const [id, item] of namesMap) {
-			if (item.name.toLowerCase().includes(query)) {
-				return id;
+		for (let i = 0; i < nameSearchEntries.length; i++) {
+			if (nameSearchEntries[i].lowerName.includes(query)) {
+				return nameSearchEntries[i].id;
 			}
 		}
-		for (const [id, team] of teamsMap) {
-			if (team.memberNames.some((m) => m.toLowerCase().includes(query))) {
-				return id;
+		for (let i = 0; i < teamSearchEntries.length; i++) {
+			const members = teamSearchEntries[i].lowerMemberNames;
+			for (let j = 0; j < members.length; j++) {
+				if (members[j].includes(query)) {
+					return teamSearchEntries[i].id;
+				}
 			}
 		}
 		return null;
-	}, [debouncedSearchQuery, namesMap, teamsMap]);
+	}, [debouncedSearchQuery, nameSearchEntries, teamSearchEntries]);
 
 	// Zoom handlers
 	const handleZoomIn = useCallback(() => {
