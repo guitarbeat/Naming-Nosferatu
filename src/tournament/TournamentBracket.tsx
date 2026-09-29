@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Check, Eye, Flame, Layers, Trophy, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ArrowRight, Check, Eye, Flame, Layers, Trophy, X } from "lucide-react";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
-import { Button, CatImage, MagicSearch, MagicToggle } from "@/components";
+import { Button, CatImage, MagicSearch, MagicToggle, MagicZoom } from "@/components";
 import { useDebounce } from "@/hooks";
 import { MOTION_DURATIONS } from "@/lib/uiUtils";
 import { hapticVoteTap } from "@/lib/utils";
@@ -836,35 +836,12 @@ export function TournamentBracket({
 
 						{/* Zoom Buttons (Tree Mode only) */}
 						{viewMode === "tree" && (
-							<div className="hidden sm:flex items-center rounded-xl border border-border/50 bg-muted/30 p-0.5 text-xs">
-								<button
-									type="button"
-									onClick={handleZoomOut}
-									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-									title="Zoom out"
-									aria-label="Zoom out"
-								>
-									<ZoomOut className="size-3.5" />
-								</button>
-								<button
-									type="button"
-									onClick={handleResetZoom}
-									className="px-2 text-[11px] font-mono text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-									title="Reset zoom"
-									aria-label="Reset zoom"
-								>
-									{Math.round(zoomLevel * 100)}%
-								</button>
-								<button
-									type="button"
-									onClick={handleZoomIn}
-									className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-card transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-									title="Zoom in"
-									aria-label="Zoom in"
-								>
-									<ZoomIn className="size-3.5" />
-								</button>
-							</div>
+							<MagicZoom
+								zoomLevel={zoomLevel}
+								handleZoomIn={handleZoomIn}
+								handleZoomOut={handleZoomOut}
+								handleResetZoom={handleResetZoom}
+							/>
 						)}
 					</div>
 				</div>
