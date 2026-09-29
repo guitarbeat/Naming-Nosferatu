@@ -51,6 +51,23 @@ describe("Tournament Store Actions", () => {
 		expect(useAppStore.getState().tournament.names).toBeNull();
 	});
 
+	it("processes ratings correctly when matched by id or name as object or number in setNames", () => {
+		const actions = useAppStore.getState().tournamentActions;
+		actions.setRatings({
+			cat1: { rating: 1650, wins: 2, losses: 0 },
+			Milo: 1420 as any,
+		});
+
+		actions.setNames([
+			{ id: "cat1", name: "Luna" },
+			{ id: "cat2", name: "Milo" },
+		]);
+
+		const tournament = useAppStore.getState().tournament;
+		expect(tournament.names?.[0].rating).toBe(1650);
+		expect(tournament.names?.[1].rating).toBe(1420);
+	});
+
 	it("sets ratings using direct value or updater function", () => {
 		const actions = useAppStore.getState().tournamentActions;
 
@@ -132,6 +149,31 @@ describe("Tournament Store Actions", () => {
 		expect(state.voteHistory[0].winnerId).toBe("cat1");
 	});
 
+	it("popping matchHistory alongside voteHistory in undoVote when matchHistory exists", () => {
+		const actions = useAppStore.getState().tournamentActions;
+		actions.syncTournamentProgress({
+			matchHistory: [
+				{ round: 1, match: 1, winnerId: "cat1", loserId: "cat2" } as any,
+				{ round: 1, match: 2, winnerId: "cat2", loserId: "cat3" } as any,
+			],
+			voteHistory: [
+				{ winnerId: "cat1", loserId: "cat2", timestamp: 100 },
+				{ winnerId: "cat2", loserId: "cat3", timestamp: 200 },
+			],
+		});
+
+		actions.undoVote();
+		const state = useAppStore.getState().tournament;
+		expect(state.voteHistory).toHaveLength(1);
+		expect(state.matchHistory).toHaveLength(1);
+		expect(state.matchHistory?.[0]).toEqual({
+			round: 1,
+			match: 1,
+			winnerId: "cat1",
+			loserId: "cat2",
+		});
+	});
+
 	it("syncs tournament progress and merges ratings", () => {
 		const actions = useAppStore.getState().tournamentActions;
 
@@ -150,6 +192,16 @@ describe("Tournament Store Actions", () => {
 			cat2: { rating: 1550, wins: 1, losses: 0 },
 		});
 		expect(state.lastUpdated).toBeDefined();
+	});
+
+	it("preserves existing ratings in syncTournamentProgress when ratings update is omitted", () => {
+		const actions = useAppStore.getState().tournamentActions;
+		actions.setRatings({ cat1: { rating: 1500, wins: 1, losses: 0 } });
+		actions.syncTournamentProgress({ currentRound: 3 });
+
+		const state = useAppStore.getState().tournament;
+		expect(state.currentRound).toBe(3);
+		expect(state.ratings).toEqual({ cat1: { rating: 1500, wins: 1, losses: 0 } });
 	});
 
 	it("clears vote history", () => {
