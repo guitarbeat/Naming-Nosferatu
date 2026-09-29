@@ -41,6 +41,26 @@ describe("cn", () => {
 		);
 		expect(result).toBe("text-red-500 bg-green-500 p-2");
 	});
+
+	it("returns empty string when called with no arguments", () => {
+		expect(cn()).toBe("");
+	});
+
+	it("deduplicates identical class names", () => {
+		expect(cn("flex flex", "items-center items-center")).toBe("flex items-center");
+	});
+
+	it("handles deeply nested arrays and conditional objects", () => {
+		expect(cn(["p-2", ["mt-4", [{ "text-center": true, "text-left": false }]]])).toBe(
+			"p-2 mt-4 text-center",
+		);
+	});
+
+	it("handles responsive and pseudo-class variant overrides correctly", () => {
+		expect(cn("hover:bg-red-500", "hover:bg-blue-500")).toBe("hover:bg-blue-500");
+		expect(cn("md:p-4", "md:p-8")).toBe("md:p-8");
+		expect(cn("p-4 md:p-4", "p-2")).toBe("md:p-4 p-2");
+	});
 });
 
 describe("createSortedKey", () => {
