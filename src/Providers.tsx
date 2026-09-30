@@ -91,9 +91,10 @@ function ToastMessage({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: 
 				{style.icon}
 			</span>
 			<span className="flex-1">{toast.message}</span>
+			{/* 🎨 Palette: Added focus visible styles for keyboard accessibility */}
 			<button
 				onClick={() => onDismiss(toast.id)}
-				className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
+				className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 				aria-label="Dismiss"
 				title="Dismiss"
 				type="button"
