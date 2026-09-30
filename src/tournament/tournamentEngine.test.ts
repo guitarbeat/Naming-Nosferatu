@@ -124,6 +124,18 @@ describe("tournamentEngine", () => {
 	});
 
 	describe("generateRandomTeams", () => {
+		it("handles null, undefined, or invalid inputs gracefully", () => {
+			expect(generateRandomTeams(null as unknown as Array<{ id: string; name: string }>)).toEqual(
+				[],
+			);
+			expect(
+				generateRandomTeams(undefined as unknown as Array<{ id: string; name: string }>),
+			).toEqual([]);
+			expect(
+				generateRandomTeams("invalid" as unknown as Array<{ id: string; name: string }>),
+			).toEqual([]);
+		});
+
 		it("returns empty array when participants is empty", () => {
 			expect(generateRandomTeams([])).toEqual([]);
 		});
@@ -133,7 +145,7 @@ describe("tournamentEngine", () => {
 			expect(generateRandomTeams(participants)).toEqual([]);
 		});
 
-		it("pairs participants into teams with even count", () => {
+		it("pairs participants into teams with even count and formats member IDs and names correctly", () => {
 			const participants = [
 				{ id: "p1", name: "Alice" },
 				{ id: "p2", name: "Bob" },
@@ -151,9 +163,14 @@ describe("tournamentEngine", () => {
 			expect(allMemberIds).toHaveLength(4);
 			expect(new Set(allMemberIds)).toEqual(new Set(["p1", "p2", "p3", "p4"]));
 
+			const participantMap = new Map(participants.map((p) => [p.id, p.name]));
+
 			for (const team of teams) {
 				expect(team.memberIds).toHaveLength(2);
 				expect(team.memberNames).toHaveLength(2);
+				// Verify matching corresponding names for member IDs
+				expect(participantMap.get(team.memberIds[0])).toBe(team.memberNames[0]);
+				expect(participantMap.get(team.memberIds[1])).toBe(team.memberNames[1]);
 			}
 		});
 
@@ -170,6 +187,24 @@ describe("tournamentEngine", () => {
 			expect(teams[0].id).toBe("team-1");
 			expect(teams[0].memberIds).toHaveLength(2);
 			expect(teams[0].memberNames).toHaveLength(2);
+
+			const participantMap = new Map(participants.map((p) => [p.id, p.name]));
+			expect(participantMap.get(teams[0].memberIds[0])).toBe(teams[0].memberNames[0]);
+			expect(participantMap.get(teams[0].memberIds[1])).toBe(teams[0].memberNames[1]);
+		});
+
+		it("does not mutate the original participants array", () => {
+			const participants = [
+				{ id: "p1", name: "Alice" },
+				{ id: "p2", name: "Bob" },
+				{ id: "p3", name: "Charlie" },
+				{ id: "p4", name: "Diana" },
+			];
+			const copy = [...participants];
+
+			generateRandomTeams(participants);
+
+			expect(participants).toEqual(copy);
 		});
 	});
 });

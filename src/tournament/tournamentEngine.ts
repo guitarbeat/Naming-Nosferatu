@@ -62,6 +62,10 @@ export function resolveTournamentMode(selectedCount: number): TournamentMode {
 }
 
 export function generateRandomTeams(participants: Array<{ id: string; name: string }>): Team[] {
+	if (!participants || !Array.isArray(participants) || participants.length === 0) {
+		return [];
+	}
+
 	const shuffled = shuffleArray(participants);
 	const teams: Team[] = [];
 
