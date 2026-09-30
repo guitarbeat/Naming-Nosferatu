@@ -575,7 +575,7 @@ describe("useSectionScroll", () => {
 		sectionEl.remove();
 	});
 
-	it("maps target section aliases correctly (stats -> analysis, tournament -> pick)", () => {
+	it("maps target section aliases correctly (stats, stats-section, results -> analysis, pick-names-section, tournament, tournament-section, contenders -> pick)", () => {
 		const hook = renderSectionScrollHook();
 
 		const analysisEl = document.createElement("section");
@@ -590,20 +590,57 @@ describe("useSectionScroll", () => {
 		pickEl.scrollIntoView = pickScrollMock;
 		document.body.appendChild(pickEl);
 
-		act(() => {
-			hook.scrollToSection("stats");
-			vi.advanceTimersByTime(16);
-		});
-		expect(analysisScrollMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+		// Test analysis aliases
+		for (const alias of ["stats", "stats-section", "results"]) {
+			act(() => {
+				hook.scrollToSection(alias);
+				vi.advanceTimersByTime(16);
+			});
+			expect(analysisScrollMock).toHaveBeenLastCalledWith({ behavior: "smooth", block: "start" });
+		}
 
-		act(() => {
-			hook.scrollToSection("tournament");
-			vi.advanceTimersByTime(16);
-		});
-		expect(pickScrollMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+		// Test pick aliases
+		for (const alias of ["pick-names-section", "tournament", "tournament-section", "contenders"]) {
+			act(() => {
+				hook.scrollToSection(alias);
+				vi.advanceTimersByTime(16);
+			});
+			expect(pickScrollMock).toHaveBeenLastCalledWith({ behavior: "smooth", block: "start" });
+		}
 
 		analysisEl.remove();
 		pickEl.remove();
+	});
+
+	it("falls back to target element by original ID if target alias element is not found", () => {
+		const hook = renderSectionScrollHook();
+
+		// Element with original id "stats-section" exists, but "analysis" does NOT exist
+		const statsSectionEl = document.createElement("section");
+		statsSectionEl.id = "stats-section";
+		const fallbackScrollMock = vi.fn();
+		statsSectionEl.scrollIntoView = fallbackScrollMock;
+		document.body.appendChild(statsSectionEl);
+
+		act(() => {
+			hook.scrollToSection("stats-section");
+			vi.advanceTimersByTime(16);
+		});
+
+		expect(fallbackScrollMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+
+		statsSectionEl.remove();
+	});
+
+	it("does not throw or scroll when section ID is not found and is not landing/top", () => {
+		const hook = renderSectionScrollHook();
+
+		act(() => {
+			hook.scrollToSection("non-existent-section");
+			vi.advanceTimersByTime(16);
+		});
+
+		expect(window.scrollTo).not.toHaveBeenCalled();
 	});
 
 	it("scrolls window to top when element is not found and ID is landing or top", () => {
@@ -662,6 +699,37 @@ describe("useSectionScroll", () => {
 		sectionEl.remove();
 	});
 
+	it("schedules section scroll with default delay of 800ms when delay is omitted", () => {
+		const hook = renderSectionScrollHook();
+		const sectionEl = document.createElement("section");
+		sectionEl.id = "default-delay";
+		const scrollIntoViewMock = vi.fn();
+		sectionEl.scrollIntoView = scrollIntoViewMock;
+		document.body.appendChild(sectionEl);
+
+		act(() => {
+			hook.scheduleSectionScroll("default-delay");
+		});
+
+		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+		act(() => {
+			vi.advanceTimersByTime(799);
+		});
+		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+		act(() => {
+			vi.advanceTimersByTime(1);
+			vi.advanceTimersByTime(16);
+		});
+		expect(scrollIntoViewMock).toHaveBeenCalledWith({
+			behavior: "smooth",
+			block: "start",
+		});
+
+		sectionEl.remove();
+	});
+
 	it("schedules section scroll with delay and triggers scroll", () => {
 		const hook = renderSectionScrollHook();
 		const sectionEl = document.createElement("section");
@@ -691,6 +759,46 @@ describe("useSectionScroll", () => {
 		});
 
 		sectionEl.remove();
+	});
+
+	it("cancels previous scheduled scroll when a new scheduleSectionScroll is called", () => {
+		const hook = renderSectionScrollHook();
+		const sectionEl1 = document.createElement("section");
+		sectionEl1.id = "first-section";
+		const mock1 = vi.fn();
+		sectionEl1.scrollIntoView = mock1;
+		document.body.appendChild(sectionEl1);
+
+		const sectionEl2 = document.createElement("section");
+		sectionEl2.id = "second-section";
+		const mock2 = vi.fn();
+		sectionEl2.scrollIntoView = mock2;
+		document.body.appendChild(sectionEl2);
+
+		act(() => {
+			hook.scheduleSectionScroll("first-section", 500);
+		});
+
+		act(() => {
+			vi.advanceTimersByTime(250);
+			// Schedule new scroll, cancelling the first one
+			hook.scheduleSectionScroll("second-section", 500);
+		});
+
+		act(() => {
+			vi.advanceTimersByTime(300);
+		});
+		expect(mock1).not.toHaveBeenCalled();
+
+		act(() => {
+			vi.advanceTimersByTime(200);
+			vi.advanceTimersByTime(16);
+		});
+		expect(mock1).not.toHaveBeenCalled();
+		expect(mock2).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+
+		sectionEl1.remove();
+		sectionEl2.remove();
 	});
 
 	it("clears pending scheduled scroll and animation frames when clearPendingScroll is called", () => {
