@@ -108,7 +108,8 @@ export function applyEloMatchUpdate({
 
 	let sumRight = 0;
 	for (let i = 0; i < rightParticipantIds.length; i++) {
-		sumRight += Number(ratings[String(rightParticipantIds[i])]) || defaultRating;
+		sumRight +=
+			Number(ratings[String(rightParticipantIds[i])]) || defaultRating;
 	}
 	const avgRightRating = sumRight / (rightParticipantIds.length || 1);
 

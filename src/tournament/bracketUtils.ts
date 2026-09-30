@@ -1,5 +1,11 @@
 import { getRandomCatImage } from "@/lib/uiUtils";
-import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	Team,
+	TournamentMode,
+} from "@/types";
 import {
 	createIdToNameMap,
 	createTeamsById,
@@ -49,7 +55,7 @@ export interface VisualMatch {
 	targetSlot?: 0 | 1;
 }
 
-interface VisualRound {
+export interface VisualRound {
 	roundNumber: number;
 	roundName: string;
 	matches: VisualMatch[];
@@ -57,7 +63,7 @@ interface VisualRound {
 	isCompleted: boolean;
 }
 
-interface VisualBracketTree {
+export interface VisualBracketTree {
 	rounds: VisualRound[];
 	champion: VisualContender | null;
 	totalEntrants: number;
@@ -277,7 +283,8 @@ export function deriveVisualBracketTree({
 
 	const seedMap = createSeedMap(bracketEntrants);
 
-	let currentRoundEntrants: (string | null)[] = padEntrantsForRound(bracketEntrants);
+	let currentRoundEntrants: (string | null)[] =
+		padEntrantsForRound(bracketEntrants);
 	let historyCursor = 0;
 	let matchSequenceCounter = 1;
 	let activeMatchNode: VisualMatch | null = null;
@@ -294,7 +301,8 @@ export function deriveVisualBracketTree({
 			const leftId = currentRoundEntrants[2 * m] ?? null;
 			const rightId = currentRoundEntrants[2 * m + 1] ?? null;
 			const matchId = `r${r}-m${m}`;
-			const targetMatchId = r < totalRounds ? `r${r + 1}-m${Math.floor(m / 2)}` : undefined;
+			const targetMatchId =
+				r < totalRounds ? `r${r + 1}-m${Math.floor(m / 2)}` : undefined;
 			const targetSlot = (m % 2) as 0 | 1;
 
 			const leftIsBye = isByeId(leftId);

@@ -1,12 +1,14 @@
-export function SkipToMainButton() {
-	const handleSkipToMain = () => {
+import { memo, useCallback } from "react";
+
+export const SkipToMainButton = memo(function SkipToMainButton() {
+	const handleSkipToMain = useCallback(() => {
 		const main = document.getElementById("main-content");
 		if (!main) {
 			return;
 		}
 		main.focus();
 		main.scrollIntoView({ behavior: "smooth" });
-	};
+	}, []);
 
 	return (
 		<button
@@ -17,4 +19,4 @@ export function SkipToMainButton() {
 			Skip to main content
 		</button>
 	);
-}
+});

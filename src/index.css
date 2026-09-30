@@ -15,11 +15,11 @@
 	--app-hero-preview-min-height: 400px;
 	/* Typography */
 	--font-sans:
-		"Quicksand", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI", roboto,
-		"Helvetica Neue", arial, "Noto Sans", sans-serif;
+		"Quicksand", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont,
+		"Segoe UI", roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
 	--font-display:
-		"Fredoka", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI", roboto,
-		"Helvetica Neue", arial, "Noto Sans", sans-serif;
+		"Fredoka", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont,
+		"Segoe UI", roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
 
 	/* Spacing base */
 	--spacing: 0.25rem;
@@ -239,7 +239,11 @@ blockquote {
 /* Scrollbar Theming */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: color-mix(in srgb, var(--color-neutral-200, #e5e7eb) 35%, transparent)
+	scrollbar-color: color-mix(
+			in srgb,
+			var(--color-neutral-200, #e5e7eb) 35%,
+			transparent
+		)
 		transparent;
 }
 
@@ -253,12 +257,20 @@ blockquote {
 }
 
 *::-webkit-scrollbar-thumb {
-	background: color-mix(in srgb, var(--color-neutral-200, #e5e7eb) 35%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-neutral-200, #e5e7eb) 35%,
+		transparent
+	);
 	border-radius: 9999px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-	background: color-mix(in srgb, var(--color-neutral-200, #e5e7eb) 55%, transparent);
+	background: color-mix(
+		in srgb,
+		var(--color-neutral-200, #e5e7eb) 55%,
+		transparent
+	);
 }
 
 /* View Transitions */
@@ -350,7 +362,12 @@ h3 {
 .gradient-heading {
 	font-weight: 700;
 	text-wrap: balance;
-	background: linear-gradient(115deg, var(--primary), var(--accent) 55%, var(--foreground));
+	background: linear-gradient(
+		115deg,
+		var(--primary),
+		var(--accent) 55%,
+		var(--foreground)
+	);
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
@@ -961,7 +978,8 @@ a,
 		hsl(0 0% 100% / var(--glass-frost, 0.15)),
 		hsl(0 0% 0% / var(--glass-frost, 0.25))
 	);
-	backdrop-filter: var(--filter-id, none) blur(14px) saturate(var(--glass-saturation, 1.6));
+	backdrop-filter: var(--filter-id, none) blur(14px)
+		saturate(var(--glass-saturation, 1.6));
 	-webkit-backdrop-filter: blur(14px) saturate(var(--glass-saturation, 1.6));
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	box-shadow:
@@ -1079,7 +1097,13 @@ a,
 		#000 94%,
 		transparent 100%
 	);
-	mask-image: linear-gradient(to bottom, transparent 0%, #000 6%, #000 94%, transparent 100%);
+	mask-image: linear-gradient(
+		to bottom,
+		transparent 0%,
+		#000 6%,
+		#000 94%,
+		transparent 100%
+	);
 }
 
 .drift-wall__plane {

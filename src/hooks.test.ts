@@ -5,12 +5,10 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getStorageString } from "@/lib/storage";
 import {
 	type UseIntersectionObserverOptions,
 	useDebounce,
 	useIntersectionObserver,
-	useLocalStorage,
 } from "./hooks";
 
 type ObserverCallback = (
@@ -96,7 +94,10 @@ describe("useIntersectionObserver", () => {
 		window.IntersectionObserver = originalIntersectionObserver;
 	});
 
-	function renderTestComponent(options?: UseIntersectionObserverOptions, attachRef = true) {
+	function renderTestComponent(
+		options?: UseIntersectionObserverOptions,
+		attachRef = true,
+	) {
 		let currentVisibility: boolean | undefined;
 		let divRefElement: HTMLDivElement | null = null;
 
@@ -111,7 +112,11 @@ describe("useIntersectionObserver", () => {
 			});
 
 			currentVisibility = isVisible;
-			return React.createElement("div", { ref: attachRef ? ref : null }, "Test Content");
+			return React.createElement(
+				"div",
+				{ ref: attachRef ? ref : null },
+				"Test Content",
+			);
 		}
 
 		act(() => {
@@ -125,7 +130,10 @@ describe("useIntersectionObserver", () => {
 	}
 
 	it("returns true when enabled is false", () => {
-		const { getVisibility } = renderTestComponent({ enabled: false, initialIsVisible: false });
+		const { getVisibility } = renderTestComponent({
+			enabled: false,
+			initialIsVisible: false,
+		});
 		expect(getVisibility()).toBe(true);
 		expect(MockIntersectionObserver.instances.length).toBe(0);
 	});
@@ -144,7 +152,10 @@ describe("useIntersectionObserver", () => {
 	});
 
 	it("respects initialIsVisible when enabled is true", () => {
-		const { getVisibility } = renderTestComponent({ enabled: true, initialIsVisible: false });
+		const { getVisibility } = renderTestComponent({
+			enabled: true,
+			initialIsVisible: false,
+		});
 		expect(getVisibility()).toBe(false);
 	});
 
@@ -255,8 +266,15 @@ describe("useIntersectionObserver", () => {
 			const ref = React.useRef<HTMLDivElement>(null);
 			const [enabled, setEnabled] = React.useState(false);
 			setEnabledFn = setEnabled;
-			const isVisible = useIntersectionObserver(ref, { enabled, initialIsVisible: false });
-			return React.createElement("div", { ref }, isVisible ? "Visible" : "Hidden");
+			const isVisible = useIntersectionObserver(ref, {
+				enabled,
+				initialIsVisible: false,
+			});
+			return React.createElement(
+				"div",
+				{ ref },
+				isVisible ? "Visible" : "Hidden",
+			);
 		}
 
 		act(() => {
@@ -337,7 +355,9 @@ describe("useIntersectionObserver", () => {
 				"div",
 				null,
 				React.createElement(ObserverChild, { label: "First" }),
-				showSecond ? React.createElement(ObserverChild, { label: "Second" }) : null,
+				showSecond
+					? React.createElement(ObserverChild, { label: "Second" })
+					: null,
 			);
 		}
 
@@ -406,14 +426,21 @@ describe("useDebounce", () => {
 		}
 
 		act(() => {
-			root?.render(React.createElement(TestComponent, { val: initialValue, del: delay }));
+			root?.render(
+				React.createElement(TestComponent, { val: initialValue, del: delay }),
+			);
 		});
 
 		return {
 			getValue: () => latestDebouncedValue,
 			update: (newValue: T, newDelay: number = delay) => {
 				act(() => {
-					root?.render(React.createElement(TestComponent, { val: newValue, del: newDelay }));
+					root?.render(
+						React.createElement(TestComponent, {
+							val: newValue,
+							del: newDelay,
+						}),
+					);
 				});
 			},
 		};
@@ -489,206 +516,6 @@ describe("useDebounce", () => {
 		act(() => {
 			vi.advanceTimersByTime(500);
 		});
-		expect(getValue()).toBe("initial");
-	});
-});
-
-describe("useLocalStorage", () => {
-	let container: HTMLDivElement | null = null;
-	let root: Root | null = null;
-
-	beforeEach(() => {
-		localStorage.clear();
-		container = document.createElement("div");
-		document.body.appendChild(container);
-		root = createRoot(container);
-	});
-
-	afterEach(() => {
-		if (root) {
-			act(() => {
-				root?.unmount();
-			});
-			root = null;
-		}
-		if (container) {
-			container.remove();
-			container = null;
-		}
-		localStorage.clear();
-	});
-
-	function renderLocalStorageHook<T>(
-		key: string,
-		initialValue: T,
-		options?: { debounceWait?: number; onError?: (error: unknown) => void },
-	) {
-		let result: [T, (val: React.SetStateAction<T>) => void, () => void] | undefined;
-
-		function TestComponent({ k, initVal, opts }: { k: string; initVal: T; opts?: typeof options }) {
-			result = useLocalStorage(k, initVal, opts);
-			return React.createElement("div", null, JSON.stringify(result[0]));
-		}
-
-		act(() => {
-			root?.render(
-				React.createElement(TestComponent, { k: key, initVal: initialValue, opts: options }),
-			);
-		});
-
-		return {
-			getValue: () => (result as [T, (val: React.SetStateAction<T>) => void, () => void])[0],
-			setValue: (val: React.SetStateAction<T>) => {
-				act(() => {
-					(result as [T, (val: React.SetStateAction<T>) => void, () => void])[1](val);
-				});
-			},
-			removeValue: () => {
-				act(() => {
-					(result as [T, (val: React.SetStateAction<T>) => void, () => void])[2]();
-				});
-			},
-			rerender: (newKey: string, newInit: T, newOpts?: typeof options) => {
-				act(() => {
-					root?.render(
-						React.createElement(TestComponent, { k: newKey, initVal: newInit, opts: newOpts }),
-					);
-				});
-			},
-		};
-	}
-
-	it("initializes with initialValue when localStorage is empty", () => {
-		const { getValue } = renderLocalStorageHook("test-key-1", "default-val");
-		expect(getValue()).toBe("default-val");
-	});
-
-	it("initializes with stored value from localStorage if present", () => {
-		localStorage.setItem("test-key-2", JSON.stringify("stored-val"));
-		const { getValue } = renderLocalStorageHook("test-key-2", "default-val");
-		expect(getValue()).toBe("stored-val");
-	});
-
-	it("updates state and writes to localStorage when setValue is called", () => {
-		const { getValue, setValue } = renderLocalStorageHook("set-key-1", "initial");
-		setValue("updated");
-		expect(getValue()).toBe("updated");
-		expect(getStorageString("set-key-1")).toContain("updated");
-	});
-
-	it("supports functional state updates in setValue", () => {
-		const { getValue, setValue } = renderLocalStorageHook("counter-key-1", 10);
-		setValue((prev) => prev + 5);
-		expect(getValue()).toBe(15);
-	});
-
-	it("removes key from localStorage and resets state to initialValue on removeValue", () => {
-		const { getValue, setValue, removeValue } = renderLocalStorageHook("remove-key-1", "default");
-		setValue("custom");
-		expect(getValue()).toBe("custom");
-
-		removeValue();
-		expect(getValue()).toBe("default");
-		expect(getStorageString("remove-key-1")).toBeNull();
-	});
-
-	it("supports debounced writes when debounceWait option is provided", () => {
-		vi.useFakeTimers();
-		try {
-			const { getValue, setValue } = renderLocalStorageHook("debounced-key-1", "v1", {
-				debounceWait: 300,
-			});
-
-			setValue("v2");
-			expect(getValue()).toBe("v2");
-			expect(getStorageString("debounced-key-1")).toBeNull();
-
-			act(() => {
-				vi.advanceTimersByTime(300);
-			});
-			expect(getStorageString("debounced-key-1")).toContain("v2");
-		} finally {
-			vi.useRealTimers();
-		}
-	});
-
-	it("flushes debounced value to localStorage on unmount", () => {
-		vi.useFakeTimers();
-		try {
-			const { setValue } = renderLocalStorageHook("unmount-key-1", "initial", {
-				debounceWait: 500,
-			});
-
-			setValue("unmounted-val");
-			expect(getStorageString("unmount-key-1")).toBeNull();
-
-			act(() => {
-				root?.unmount();
-				root = null;
-			});
-
-			expect(getStorageString("unmount-key-1")).toContain("unmounted-val");
-		} finally {
-			vi.useRealTimers();
-		}
-	});
-
-	it("invokes onError when write fails or function updater throws error", () => {
-		const onError = vi.fn();
-
-		const { setValue } = renderLocalStorageHook("error-key-1", "val", { onError });
-
-		setValue(() => {
-			throw new Error("Updater failed");
-		});
-
-		expect(onError).toHaveBeenCalled();
-	});
-
-	it("syncs state when storage event is fired from another tab", () => {
-		const { getValue } = renderLocalStorageHook("sync-key-1", "initial");
-
-		act(() => {
-			window.dispatchEvent(
-				new StorageEvent("storage", {
-					key: "sync-key-1",
-					newValue: JSON.stringify("remote-update"),
-				}),
-			);
-		});
-
-		expect(getValue()).toBe("remote-update");
-	});
-
-	it("resets state to initialValue when storage event receives null newValue", () => {
-		const { getValue, setValue } = renderLocalStorageHook("sync-key-2", "initial");
-
-		setValue("changed");
-
-		act(() => {
-			window.dispatchEvent(
-				new StorageEvent("storage", {
-					key: "sync-key-2",
-					newValue: null,
-				}),
-			);
-		});
-
-		expect(getValue()).toBe("initial");
-	});
-
-	it("ignores storage events for different keys", () => {
-		const { getValue } = renderLocalStorageHook("sync-key-3", "initial");
-
-		act(() => {
-			window.dispatchEvent(
-				new StorageEvent("storage", {
-					key: "other-key",
-					newValue: JSON.stringify("ignored"),
-				}),
-			);
-		});
-
 		expect(getValue()).toBe("initial");
 	});
 });

@@ -93,7 +93,8 @@ export const DEFAULT_SAMPLE_NAMES: NameItem[] = [
 	{
 		id: "19",
 		name: "Salem",
-		description: "Snarky, articulate familiar with an exquisite taste for drama",
+		description:
+			"Snarky, articulate familiar with an exquisite taste for drama",
 	},
 	{
 		id: "20",
@@ -188,7 +189,8 @@ export const DEFAULT_SAMPLE_NAMES: NameItem[] = [
 	{
 		id: "38",
 		name: "Dumpling",
-		description: "Chonky delight specialized in world-class competitive loafing",
+		description:
+			"Chonky delight specialized in world-class competitive loafing",
 	},
 	{
 		id: "39",
@@ -334,7 +336,9 @@ export function isNameActive(name: NameItem | null | undefined): boolean {
 /**
  * Filters a list of names to only those that are not hidden.
  */
-export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getVisibleNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -352,7 +356,9 @@ export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[
 /**
  * Filters a list of names to only those that are active (neither hidden nor locked).
  */
-export function getActiveNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getActiveNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -370,7 +376,9 @@ export function getActiveNames(names: NameItem[] | null | undefined): NameItem[]
 /**
  * Filters a list of names to only those that are hidden.
  */
-export function getHiddenNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getHiddenNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
@@ -388,7 +396,9 @@ export function getHiddenNames(names: NameItem[] | null | undefined): NameItem[]
 /**
  * Filters a list of names to only those that are locked in.
  */
-export function getLockedNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getLockedNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	if (!Array.isArray(names)) {
 		return [];
 	}
