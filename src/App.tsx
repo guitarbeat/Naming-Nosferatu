@@ -1,6 +1,5 @@
 import { MotionConfig } from "framer-motion";
-import type React from "react";
-import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import React, { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
 	AppBootScreen,
@@ -17,7 +16,11 @@ import {
 import { usePreloadImages, useSectionScroll } from "@/hooks";
 import { ErrorManager } from "@/lib/utils";
 import useAppStore, { useActiveTournamentStatus, useAppStoreInitialization } from "@/store";
-import { TournamentSetup } from "@/tournament/TournamentSetup";
+
+// ⚡ Bolt Performance Optimization: Lazy load heavy Tournament components for faster initial page load
+const TournamentSetup = React.lazy(() =>
+	import("@/tournament/TournamentSetup").then((m) => ({ default: m.TournamentSetup })),
+);
 
 const IRIDESCENCE_COLOR: [number, number, number] = [1, 1, 1];
 
@@ -91,7 +94,11 @@ function HomeRoute() {
 	}, [scrollToSection]);
 
 	const handleStartNewTournament = useCallback(() => {
-		if (window.confirm("Are you sure you want to restart the tournament? Your current progress will be lost.")) {
+		if (
+			window.confirm(
+				"Are you sure you want to restart the tournament? Your current progress will be lost.",
+			)
+		) {
 			clearPendingScroll();
 			tournamentActions.resetTournament();
 			scheduleSectionScroll("pick");
