@@ -12,6 +12,12 @@ export const MagicSearch = memo(function MagicSearch({
 }: MagicSearchProps) {
 	const inputRef = useRef<HTMLInputElement>(null);
 
+	const handleClear = () => {
+		setSearchQuery("");
+		// 🎨 Palette: Restored focus to input on clear to prevent focus loss for screen readers and keyboard users
+		inputRef.current?.focus();
+	};
+
 	return (
 		<div className="relative group flex-1 sm:flex-none">
 			<div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 blur-md pointer-events-none" />
@@ -28,10 +34,7 @@ export const MagicSearch = memo(function MagicSearch({
 			{searchQuery && (
 				<button
 					type="button"
-					onClick={() => {
-						setSearchQuery("");
-						inputRef.current?.focus();
-					}}
+					onClick={handleClear}
 					aria-label="Clear search"
 					title="Clear search"
 					className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full p-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 focus-visible:ring-offset-background"
