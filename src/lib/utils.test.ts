@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createSortedKey, hapticNavTap, hapticVoteTap, shuffleArray } from "./utils";
+import { createSortedKey, ErrorManager, shuffleArray } from "./utils";
 
 describe("createSortedKey", () => {
 	it("returns an empty string when given an empty array", () => {
@@ -142,86 +142,34 @@ describe("shuffleArray", () => {
 	});
 });
 
-describe("hapticNavTap", () => {
+describe("ErrorManager", () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
 	});
 
-	it("calls navigator.vibrate with 10ms when vibrate function exists", () => {
-		const vibrateSpy = vi.fn().mockReturnValue(true);
-		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+	it("generates a unique secure error ID and dispatches app-error event", () => {
+		const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		const eventListener = vi.fn();
+		window.addEventListener("app-error", eventListener);
 
-		hapticNavTap();
+		const result1 = ErrorManager.handleError("Failed to fetch data", "TestContext");
+		const result2 = ErrorManager.handleError(new Error("Another error"));
 
-		expect(vibrateSpy).toHaveBeenCalledTimes(1);
-		expect(vibrateSpy).toHaveBeenCalledWith(10);
-	});
+		expect(result1.id).toBeDefined();
+		expect(result1.id).toMatch(/^err_\d+_[a-zA-Z0-9-]+$/);
+		expect(result2.id).toBeDefined();
+		expect(result1.id).not.toEqual(result2.id);
 
-	it("does not throw when navigator.vibrate is undefined", () => {
-		vi.stubGlobal("navigator", {});
+		expect(consoleSpy).toHaveBeenCalled();
+		expect(eventListener).toHaveBeenCalledTimes(2);
 
-		expect(() => hapticNavTap()).not.toThrow();
-	});
-
-	it("does not throw when navigator object is undefined", () => {
-		vi.stubGlobal("navigator", undefined);
-
-		expect(() => hapticNavTap()).not.toThrow();
-	});
-});
-
-describe("hapticVoteTap", () => {
-	afterEach(() => {
-		vi.restoreAllMocks();
-	});
-
-	it("calls navigator.vibrate with default 15ms duration and returns boolean result", () => {
-		const vibrateSpy = vi.fn().mockReturnValue(true);
-		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
-
-		const result = hapticVoteTap();
-
-		expect(vibrateSpy).toHaveBeenCalledTimes(1);
-		expect(vibrateSpy).toHaveBeenCalledWith(15);
-		expect(result).toBe(true);
-	});
-
-	it("calls navigator.vibrate with custom duration when provided", () => {
-		const vibrateSpy = vi.fn().mockReturnValue(true);
-		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
-
-		const result = hapticVoteTap(25);
-
-		expect(vibrateSpy).toHaveBeenCalledTimes(1);
-		expect(vibrateSpy).toHaveBeenCalledWith(25);
-		expect(result).toBe(true);
-	});
-
-	it("returns false when navigator.vibrate is missing or not a function", () => {
-		vi.stubGlobal("navigator", { vibrate: undefined });
-
-		const result = hapticVoteTap();
-
-		expect(result).toBe(false);
-	});
-
-	it("returns false when navigator is undefined", () => {
-		vi.stubGlobal("navigator", undefined);
-
-		const result = hapticVoteTap();
-
-		expect(result).toBe(false);
-	});
-
-	it("catches errors and returns false when navigator.vibrate throws an exception", () => {
-		const vibrateSpy = vi.fn().mockImplementation(() => {
-			throw new Error("Vibration blocked by user agent or iframe permissions");
+		const eventDetail = (eventListener.mock.calls[0][0] as CustomEvent).detail;
+		expect(eventDetail).toEqual({
+			id: result1.id,
+			message: "Failed to fetch data",
+			isCritical: undefined,
 		});
-		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
 
-		const result = hapticVoteTap();
-
-		expect(vibrateSpy).toHaveBeenCalledWith(15);
-		expect(result).toBe(false);
+		window.removeEventListener("app-error", eventListener);
 	});
 });

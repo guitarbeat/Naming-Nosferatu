@@ -10,37 +10,12 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
- * Generates an unbiased random integer in [0, max) using CSPRNG when available.
- */
-export function getSecureRandomInt(max: number): number {
-	if (max <= 1) {
-		return 0;
-	}
-
-	if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
-		const array = new Uint32Array(1);
-		const maxUint32 = 0xffffffff;
-		const limit = maxUint32 - (maxUint32 % max);
-
-		let randomVal: number;
-		do {
-			crypto.getRandomValues(array);
-			randomVal = array[0] as number;
-		} while (randomVal >= limit);
-
-		return randomVal % max;
-	}
-
-	return Math.floor(Math.random() * max);
-}
-
-/**
- * Shuffles an array using the Fisher-Yates algorithm with CSPRNG.
+ * Shuffles an array using the Fisher-Yates algorithm.
  */
 export function shuffleArray<T>(array: T[]): T[] {
 	const next = [...array];
 	for (let i = next.length - 1; i > 0; i -= 1) {
-		const j = getSecureRandomInt(i + 1);
+		const j = Math.floor(Math.random() * (i + 1));
 		const temp = next[i] as T;
 		next[i] = next[j] as T;
 		next[j] = temp;
@@ -146,6 +121,18 @@ export function setupGlobalImageErrorHandler(
 	};
 }
 
+function getSecureRandomId(): string {
+	if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+		return crypto.randomUUID();
+	}
+	if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+		const bytes = new Uint8Array(16);
+		crypto.getRandomValues(bytes);
+		return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+	}
+	return Math.random().toString(36).slice(2, 7);
+}
+
 export const ErrorManager = {
 	setupGlobalErrorHandling() {
 		const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -180,7 +167,7 @@ export const ErrorManager = {
 				: typeof error === "string"
 					? error
 					: "An unexpected error occurred.";
-		const id = `err_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+		const id = `err_${Date.now()}_${getSecureRandomId()}`;
 		if (context) {
 			console.error(`[${context}] Error:`, error, options);
 		} else {
