@@ -9,7 +9,7 @@ import {
 	type UseIntersectionObserverOptions,
 	useDebounce,
 	useIntersectionObserver,
-	useSectionScroll,
+	usePreloadImages,
 } from "./hooks";
 
 type ObserverCallback = (
@@ -492,32 +492,51 @@ describe("useDebounce", () => {
 	});
 });
 
-describe("useSectionScroll", () => {
+describe("usePreloadImages", () => {
 	let container: HTMLDivElement | null = null;
 	let root: Root | null = null;
-	let mockMatchMedia: (query: string) => MediaQueryList;
+	const originalImage = window.Image;
+
+	class MockImage {
+		private _src = "";
+		crossOrigin: string | null = null;
+		onload: (() => void) | null = null;
+		onerror: (() => void) | null = null;
+
+		static instances: MockImage[] = [];
+
+		constructor() {
+			MockImage.instances.push(this);
+		}
+
+		get src(): string {
+			return this._src;
+		}
+
+		set src(value: string) {
+			this._src = value;
+		}
+
+		triggerLoad() {
+			if (this.onload) {
+				this.onload();
+			}
+		}
+
+		triggerError() {
+			if (this.onerror) {
+				this.onerror();
+			}
+		}
+	}
 
 	beforeEach(() => {
-		vi.useFakeTimers();
+		MockImage.instances = [];
+		// @ts-expect-error Mocking global Image
+		window.Image = MockImage;
 		container = document.createElement("div");
 		document.body.appendChild(container);
 		root = createRoot(container);
-
-		// Default matchMedia mock (prefers-reduced-motion: false)
-		mockMatchMedia = vi.fn().mockImplementation((query) => ({
-			matches: false,
-			media: query,
-			onchange: null,
-			addListener: vi.fn(),
-			removeListener: vi.fn(),
-			addEventListener: vi.fn(),
-			removeEventListener: vi.fn(),
-			dispatchEvent: vi.fn(),
-		}));
-		window.matchMedia = mockMatchMedia as unknown as typeof window.matchMedia;
-
-		// Mock scrollTo on window
-		window.scrollTo = vi.fn();
 	});
 
 	afterEach(() => {
@@ -531,300 +550,166 @@ describe("useSectionScroll", () => {
 			container.remove();
 			container = null;
 		}
-		vi.useRealTimers();
-		vi.restoreAllMocks();
+		window.Image = originalImage;
 	});
 
-	function renderSectionScrollHook() {
-		let result: ReturnType<typeof useSectionScroll> | undefined;
+	function renderPreloadHook(
+		images?: readonly string[],
+		options?: Parameters<typeof usePreloadImages>[1],
+	) {
+		let result: ReturnType<typeof usePreloadImages>;
 
 		function TestComponent() {
-			result = useSectionScroll();
-			return React.createElement("div", null, "Scroll Test");
+			result = usePreloadImages(images, options);
+			return React.createElement("div", null, result.isLoading ? "Loading" : "Done");
 		}
 
 		act(() => {
 			root?.render(React.createElement(TestComponent));
 		});
 
-		if (!result) {
-			throw new Error("Hook result was not initialized");
-		}
-
-		return result;
+		return {
+			// biome-ignore lint/style/noNonNullAssertion: result is assigned synchronously in render
+			getResult: () => result!,
+		};
 	}
 
-	it("scrolls to section by element ID with smooth behavior by default", () => {
-		const hook = renderSectionScrollHook();
-		const sectionEl = document.createElement("section");
-		sectionEl.id = "about";
-		const scrollIntoViewMock = vi.fn();
-		sectionEl.scrollIntoView = scrollIntoViewMock;
-		document.body.appendChild(sectionEl);
+	it("returns isLoaded true and isLoading false when images array is empty", () => {
+		const { getResult } = renderPreloadHook([]);
+		const res = getResult();
 
-		act(() => {
-			hook.scrollToSection("about");
-			vi.advanceTimersByTime(16);
-		});
-
-		expect(scrollIntoViewMock).toHaveBeenCalledWith({
-			behavior: "smooth",
-			block: "start",
-		});
-
-		sectionEl.remove();
+		expect(res.isLoading).toBe(false);
+		expect(res.isLoaded).toBe(true);
+		expect(res.progress).toBe(1);
+		expect(res.loadedCount).toBe(0);
+		expect(res.totalCount).toBe(0);
+		expect(res.loadedUrls).toEqual([]);
+		expect(res.failedUrls).toEqual([]);
 	});
 
-	it("maps target section aliases correctly (stats, stats-section, results -> analysis, pick-names-section, tournament, tournament-section, contenders -> pick)", () => {
-		const hook = renderSectionScrollHook();
+	it("returns isLoading false when enabled is false", () => {
+		const { getResult } = renderPreloadHook(["/image1.jpg"], { enabled: false });
+		const res = getResult();
 
-		const analysisEl = document.createElement("section");
-		analysisEl.id = "analysis";
-		const analysisScrollMock = vi.fn();
-		analysisEl.scrollIntoView = analysisScrollMock;
-		document.body.appendChild(analysisEl);
-
-		const pickEl = document.createElement("section");
-		pickEl.id = "pick";
-		const pickScrollMock = vi.fn();
-		pickEl.scrollIntoView = pickScrollMock;
-		document.body.appendChild(pickEl);
-
-		// Test analysis aliases
-		for (const alias of ["stats", "stats-section", "results"]) {
-			act(() => {
-				hook.scrollToSection(alias);
-				vi.advanceTimersByTime(16);
-			});
-			expect(analysisScrollMock).toHaveBeenLastCalledWith({ behavior: "smooth", block: "start" });
-		}
-
-		// Test pick aliases
-		for (const alias of ["pick-names-section", "tournament", "tournament-section", "contenders"]) {
-			act(() => {
-				hook.scrollToSection(alias);
-				vi.advanceTimersByTime(16);
-			});
-			expect(pickScrollMock).toHaveBeenLastCalledWith({ behavior: "smooth", block: "start" });
-		}
-
-		analysisEl.remove();
-		pickEl.remove();
+		expect(res.isLoading).toBe(false);
+		expect(MockImage.instances.length).toBe(0);
 	});
 
-	it("falls back to target element by original ID if target alias element is not found", () => {
-		const hook = renderSectionScrollHook();
+	it("preloads images successfully and calls onComplete", () => {
+		const onComplete = vi.fn();
+		const { getResult } = renderPreloadHook(["/img1.png", "/img2.png"], { onComplete });
 
-		// Element with original id "stats-section" exists, but "analysis" does NOT exist
-		const statsSectionEl = document.createElement("section");
-		statsSectionEl.id = "stats-section";
-		const fallbackScrollMock = vi.fn();
-		statsSectionEl.scrollIntoView = fallbackScrollMock;
-		document.body.appendChild(statsSectionEl);
+		expect(getResult().isLoading).toBe(true);
+		expect(MockImage.instances.length).toBe(2);
 
+		// Trigger load for first image
 		act(() => {
-			hook.scrollToSection("stats-section");
-			vi.advanceTimersByTime(16);
+			MockImage.instances[0].triggerLoad();
 		});
 
-		expect(fallbackScrollMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+		expect(getResult().loadedCount).toBe(1);
+		expect(getResult().progress).toBe(0.5);
+		expect(getResult().isLoading).toBe(true);
+		expect(onComplete).not.toHaveBeenCalled();
 
-		statsSectionEl.remove();
+		// Trigger load for second image
+		act(() => {
+			MockImage.instances[1].triggerLoad();
+		});
+
+		expect(getResult().loadedCount).toBe(2);
+		expect(getResult().progress).toBe(1);
+		expect(getResult().isLoading).toBe(false);
+		expect(getResult().isLoaded).toBe(true);
+		expect(onComplete).toHaveBeenCalledWith(["/img1.png", "/img2.png"], []);
 	});
 
-	it("does not throw or scroll when section ID is not found and is not landing/top", () => {
-		const hook = renderSectionScrollHook();
+	it("handles image load failure and invokes onError", () => {
+		const onError = vi.fn();
+		const onComplete = vi.fn();
+		const { getResult } = renderPreloadHook(["/ok.png", "/fail.png"], { onError, onComplete });
 
 		act(() => {
-			hook.scrollToSection("non-existent-section");
-			vi.advanceTimersByTime(16);
+			MockImage.instances[0].triggerLoad();
 		});
 
-		expect(window.scrollTo).not.toHaveBeenCalled();
+		act(() => {
+			MockImage.instances[1].triggerError();
+		});
+
+		expect(onError).toHaveBeenCalledWith("/fail.png");
+		expect(getResult().failedUrls).toEqual(["/fail.png"]);
+		expect(getResult().loadedUrls).toEqual(["/ok.png"]);
+		expect(getResult().isLoaded).toBe(true);
+		expect(getResult().isLoading).toBe(false);
+		expect(onComplete).toHaveBeenCalledWith(["/ok.png"], ["/fail.png"]);
 	});
 
-	it("scrolls window to top when element is not found and ID is landing or top", () => {
-		const hook = renderSectionScrollHook();
-
-		act(() => {
-			hook.scrollToSection("landing");
-			vi.advanceTimersByTime(16);
+	it("sets crossOrigin on images unless data or blob URL", () => {
+		renderPreloadHook(["/remote.png", "data:image/png;base64,xxx", "blob:http://localhost/xxx"], {
+			crossOrigin: "anonymous",
 		});
 
-		expect(window.scrollTo).toHaveBeenCalledWith({
-			top: 0,
-			behavior: "smooth",
-		});
-
-		act(() => {
-			hook.scrollToSection("top");
-			vi.advanceTimersByTime(16);
-		});
-
-		expect(window.scrollTo).toHaveBeenLastCalledWith({
-			top: 0,
-			behavior: "smooth",
-		});
+		expect(MockImage.instances.length).toBe(3);
+		expect(MockImage.instances[0].crossOrigin).toBe("anonymous");
+		expect(MockImage.instances[1].crossOrigin).toBeNull();
+		expect(MockImage.instances[2].crossOrigin).toBeNull();
 	});
 
-	it("uses auto behavior when prefersReducedMotion is true", () => {
-		window.matchMedia = vi.fn().mockImplementation((query) => ({
-			matches: query.includes("prefers-reduced-motion"),
-			media: query,
-			onchange: null,
-			addListener: vi.fn(),
-			removeListener: vi.fn(),
-			addEventListener: vi.fn(),
-			removeEventListener: vi.fn(),
-			dispatchEvent: vi.fn(),
-		})) as unknown as typeof window.matchMedia;
+	it("deduplicates images array and handles empty string/falsy elements", () => {
+		const { getResult } = renderPreloadHook(["/dupe.jpg", "", "/dupe.jpg", "/unique.jpg"]);
 
-		const hook = renderSectionScrollHook();
-		const sectionEl = document.createElement("section");
-		sectionEl.id = "about";
-		const scrollIntoViewMock = vi.fn();
-		sectionEl.scrollIntoView = scrollIntoViewMock;
-		document.body.appendChild(sectionEl);
+		// Deduplicated valid images: ["/dupe.jpg", "/unique.jpg"]
+		expect(MockImage.instances.length).toBe(2);
 
 		act(() => {
-			hook.scrollToSection("about");
-			vi.advanceTimersByTime(16);
+			MockImage.instances[0].triggerLoad();
+			MockImage.instances[1].triggerLoad();
 		});
 
-		expect(scrollIntoViewMock).toHaveBeenCalledWith({
-			behavior: "auto",
-			block: "start",
-		});
-
-		sectionEl.remove();
+		expect(getResult().loadedUrls.length).toBe(2);
 	});
 
-	it("schedules section scroll with default delay of 800ms when delay is omitted", () => {
-		const hook = renderSectionScrollHook();
-		const sectionEl = document.createElement("section");
-		sectionEl.id = "default-delay";
-		const scrollIntoViewMock = vi.fn();
-		sectionEl.scrollIntoView = scrollIntoViewMock;
-		document.body.appendChild(sectionEl);
-
+	it("uses global cache for previously preloaded images across renders", () => {
+		// First mount loads /cached.png
+		renderPreloadHook(["/cached.png"]);
 		act(() => {
-			hook.scheduleSectionScroll("default-delay");
+			MockImage.instances[0].triggerLoad();
 		});
 
-		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+		MockImage.instances = [];
 
-		act(() => {
-			vi.advanceTimersByTime(799);
-		});
-		expect(scrollIntoViewMock).not.toHaveBeenCalled();
+		// Second mount with same image
+		const { getResult } = renderPreloadHook(["/cached.png"]);
 
-		act(() => {
-			vi.advanceTimersByTime(1);
-			vi.advanceTimersByTime(16);
-		});
-		expect(scrollIntoViewMock).toHaveBeenCalledWith({
-			behavior: "smooth",
-			block: "start",
-		});
-
-		sectionEl.remove();
+		// Should immediately recognize as loaded from global cache without creating new Image
+		expect(getResult().isLoading).toBe(false);
+		expect(getResult().loadedUrls).toContain("/cached.png");
+		expect(MockImage.instances.length).toBe(0);
 	});
 
-	it("schedules section scroll with delay and triggers scroll", () => {
-		const hook = renderSectionScrollHook();
-		const sectionEl = document.createElement("section");
-		sectionEl.id = "custom";
-		const scrollIntoViewMock = vi.fn();
-		sectionEl.scrollIntoView = scrollIntoViewMock;
-		document.body.appendChild(sectionEl);
+	it("prevents state updates and callbacks if component unmounts before loading completes", () => {
+		const onComplete = vi.fn();
+		const onError = vi.fn();
 
+		renderPreloadHook(["/pending.png"], { onComplete, onError });
+
+		expect(MockImage.instances.length).toBe(1);
+		const imageInstance = MockImage.instances[0];
+
+		// Unmount
 		act(() => {
-			hook.scheduleSectionScroll("custom", 500);
+			root?.unmount();
+			root = null;
 		});
 
-		expect(scrollIntoViewMock).not.toHaveBeenCalled();
-
+		// Trigger load & error after unmount
 		act(() => {
-			vi.advanceTimersByTime(499);
-		});
-		expect(scrollIntoViewMock).not.toHaveBeenCalled();
-
-		act(() => {
-			vi.advanceTimersByTime(1);
-			vi.advanceTimersByTime(16);
-		});
-		expect(scrollIntoViewMock).toHaveBeenCalledWith({
-			behavior: "smooth",
-			block: "start",
+			imageInstance.triggerLoad();
+			imageInstance.triggerError();
 		});
 
-		sectionEl.remove();
-	});
-
-	it("cancels previous scheduled scroll when a new scheduleSectionScroll is called", () => {
-		const hook = renderSectionScrollHook();
-		const sectionEl1 = document.createElement("section");
-		sectionEl1.id = "first-section";
-		const mock1 = vi.fn();
-		sectionEl1.scrollIntoView = mock1;
-		document.body.appendChild(sectionEl1);
-
-		const sectionEl2 = document.createElement("section");
-		sectionEl2.id = "second-section";
-		const mock2 = vi.fn();
-		sectionEl2.scrollIntoView = mock2;
-		document.body.appendChild(sectionEl2);
-
-		act(() => {
-			hook.scheduleSectionScroll("first-section", 500);
-		});
-
-		act(() => {
-			vi.advanceTimersByTime(250);
-			// Schedule new scroll, cancelling the first one
-			hook.scheduleSectionScroll("second-section", 500);
-		});
-
-		act(() => {
-			vi.advanceTimersByTime(300);
-		});
-		expect(mock1).not.toHaveBeenCalled();
-
-		act(() => {
-			vi.advanceTimersByTime(200);
-			vi.advanceTimersByTime(16);
-		});
-		expect(mock1).not.toHaveBeenCalled();
-		expect(mock2).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
-
-		sectionEl1.remove();
-		sectionEl2.remove();
-	});
-
-	it("clears pending scheduled scroll and animation frames when clearPendingScroll is called", () => {
-		const hook = renderSectionScrollHook();
-		const sectionEl = document.createElement("section");
-		sectionEl.id = "cancelable";
-		const scrollIntoViewMock = vi.fn();
-		sectionEl.scrollIntoView = scrollIntoViewMock;
-		document.body.appendChild(sectionEl);
-
-		act(() => {
-			hook.scheduleSectionScroll("cancelable", 500);
-			hook.clearPendingScroll();
-			vi.advanceTimersByTime(1000);
-		});
-
-		expect(scrollIntoViewMock).not.toHaveBeenCalled();
-
-		act(() => {
-			hook.scrollToSection("cancelable");
-			hook.clearPendingScroll();
-			vi.advanceTimersByTime(1000);
-		});
-
-		expect(scrollIntoViewMock).not.toHaveBeenCalled();
-
-		sectionEl.remove();
+		expect(onComplete).not.toHaveBeenCalled();
+		expect(onError).not.toHaveBeenCalled();
 	});
 });
