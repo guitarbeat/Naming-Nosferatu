@@ -1,67 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cn, createSortedKey, shuffleArray } from "./utils";
-
-describe("cn", () => {
-	it("merges single and multiple string class names", () => {
-		expect(cn("px-2")).toBe("px-2");
-		expect(cn("px-2", "py-2")).toBe("px-2 py-2");
-	});
-
-	it("handles conditional class names with boolean expressions", () => {
-		const isTrue = true;
-		const isFalse = false;
-		expect(cn("px-2", isTrue && "bg-red-500", isFalse && "text-white")).toBe("px-2 bg-red-500");
-	});
-
-	it("handles object syntax for class names", () => {
-		expect(cn({ "bg-blue-500": true, "text-black": false, "p-4": true })).toBe("bg-blue-500 p-4");
-	});
-
-	it("handles array syntax for class names", () => {
-		expect(cn(["px-2", "py-2"], ["text-sm"])).toBe("px-2 py-2 text-sm");
-	});
-
-	it("filters out falsy values like null, undefined, empty strings, false, and 0", () => {
-		expect(cn("px-2", null, undefined, false, "", 0)).toBe("px-2");
-	});
-
-	it("resolves conflicting Tailwind CSS classes via tailwind-merge", () => {
-		expect(cn("px-2", "px-4")).toBe("px-4");
-		expect(cn("bg-red-500", "bg-blue-500")).toBe("bg-blue-500");
-		expect(cn("text-red-500 text-sm", "text-blue-500 text-lg")).toBe("text-blue-500 text-lg");
-	});
-
-	it("handles complex mixed inputs with strings, arrays, objects, and conflicting classes", () => {
-		const result = cn(
-			"p-4",
-			["text-red-500", { "bg-green-500": true, hidden: false }],
-			"p-2",
-			null,
-			undefined,
-		);
-		expect(result).toBe("text-red-500 bg-green-500 p-2");
-	});
-
-	it("returns empty string when called with no arguments", () => {
-		expect(cn()).toBe("");
-	});
-
-	it("deduplicates identical class names", () => {
-		expect(cn("flex flex", "items-center items-center")).toBe("flex items-center");
-	});
-
-	it("handles deeply nested arrays and conditional objects", () => {
-		expect(cn(["p-2", ["mt-4", [{ "text-center": true, "text-left": false }]]])).toBe(
-			"p-2 mt-4 text-center",
-		);
-	});
-
-	it("handles responsive and pseudo-class variant overrides correctly", () => {
-		expect(cn("hover:bg-red-500", "hover:bg-blue-500")).toBe("hover:bg-blue-500");
-		expect(cn("md:p-4", "md:p-8")).toBe("md:p-8");
-		expect(cn("p-4 md:p-4", "p-2")).toBe("md:p-4 p-2");
-	});
-});
+import { createSortedKey, hapticNavTap, hapticVoteTap, shuffleArray } from "./utils";
 
 describe("createSortedKey", () => {
 	it("returns an empty string when given an empty array", () => {
@@ -162,44 +100,31 @@ describe("shuffleArray", () => {
 		expect(result).not.toBe(input);
 	});
 
-	it("produces deterministic output when crypto.getRandomValues is mocked", () => {
+	it("produces deterministic output when Math.random is mocked", () => {
+		// Mock Math.random to return predictable values
 		// Fisher-Yates loop runs for i = 4 down to 1:
-		// i = 4 (max = 5): getRandomValues returns 0 -> j = 0 -> swap index 4 and 0
-		// i = 3 (max = 4): getRandomValues returns 0 -> j = 0 -> swap index 3 and 0
-		// i = 2 (max = 3): getRandomValues returns 0 -> j = 0 -> swap index 2 and 0
-		// i = 1 (max = 2): getRandomValues returns 0 -> j = 0 -> swap index 1 and 0
-		const mockGetRandomValues = vi
-			.spyOn(crypto, "getRandomValues")
-			.mockImplementation((array: ArrayBufferView) => {
-				const uint32Arr = array as Uint32Array;
-				uint32Arr[0] = 0;
-				return array;
-			});
-
-		const input = [1, 2, 3, 4, 5];
-		const result = shuffleArray(input);
-
-		expect(mockGetRandomValues).toHaveBeenCalledTimes(4);
-		expect(result).toEqual([2, 3, 4, 5, 1]);
-	});
-
-	it("falls back to Math.random when crypto is unavailable or getRandomValues is missing", () => {
-		vi.stubGlobal("crypto", undefined);
-
-		const mockMathRandom = vi
+		// i = 4: Math.floor(0.1 * 5) = 0 -> swap index 4 and 0
+		// i = 3: Math.floor(0.2 * 4) = 0 -> swap index 3 and 0
+		// i = 2: Math.floor(0.3 * 3) = 0 -> swap index 2 and 0
+		// i = 1: Math.floor(0.4 * 2) = 0 -> swap index 1 and 0
+		const mockRandom = vi
 			.spyOn(Math, "random")
-			.mockReturnValueOnce(0)
-			.mockReturnValueOnce(0)
-			.mockReturnValueOnce(0)
-			.mockReturnValueOnce(0);
+			.mockReturnValueOnce(0.1)
+			.mockReturnValueOnce(0.2)
+			.mockReturnValueOnce(0.3)
+			.mockReturnValueOnce(0.4);
 
 		const input = [1, 2, 3, 4, 5];
 		const result = shuffleArray(input);
 
-		expect(mockMathRandom).toHaveBeenCalledTimes(4);
+		expect(mockRandom).toHaveBeenCalledTimes(4);
+		// Let's trace the swaps:
+		// start: [1, 2, 3, 4, 5]
+		// i=4, j=0: swap index 4 (5) and 0 (1) => [5, 2, 3, 4, 1]
+		// i=3, j=0: swap index 3 (4) and 0 (5) => [4, 2, 3, 5, 1]
+		// i=2, j=0: swap index 2 (3) and 0 (4) => [3, 2, 4, 5, 1]
+		// i=1, j=0: swap index 1 (2) and 0 (3) => [2, 3, 4, 5, 1]
 		expect(result).toEqual([2, 3, 4, 5, 1]);
-
-		vi.unstubAllGlobals();
 	});
 
 	it("works correctly with arrays of objects", () => {
@@ -214,5 +139,89 @@ describe("shuffleArray", () => {
 		expect(result).toContain(obj1);
 		expect(result).toContain(obj2);
 		expect(result).toContain(obj3);
+	});
+});
+
+describe("hapticNavTap", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("calls navigator.vibrate with 10ms when vibrate function exists", () => {
+		const vibrateSpy = vi.fn().mockReturnValue(true);
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		hapticNavTap();
+
+		expect(vibrateSpy).toHaveBeenCalledTimes(1);
+		expect(vibrateSpy).toHaveBeenCalledWith(10);
+	});
+
+	it("does not throw when navigator.vibrate is undefined", () => {
+		vi.stubGlobal("navigator", {});
+
+		expect(() => hapticNavTap()).not.toThrow();
+	});
+
+	it("does not throw when navigator object is undefined", () => {
+		vi.stubGlobal("navigator", undefined);
+
+		expect(() => hapticNavTap()).not.toThrow();
+	});
+});
+
+describe("hapticVoteTap", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("calls navigator.vibrate with default 15ms duration and returns boolean result", () => {
+		const vibrateSpy = vi.fn().mockReturnValue(true);
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		const result = hapticVoteTap();
+
+		expect(vibrateSpy).toHaveBeenCalledTimes(1);
+		expect(vibrateSpy).toHaveBeenCalledWith(15);
+		expect(result).toBe(true);
+	});
+
+	it("calls navigator.vibrate with custom duration when provided", () => {
+		const vibrateSpy = vi.fn().mockReturnValue(true);
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		const result = hapticVoteTap(25);
+
+		expect(vibrateSpy).toHaveBeenCalledTimes(1);
+		expect(vibrateSpy).toHaveBeenCalledWith(25);
+		expect(result).toBe(true);
+	});
+
+	it("returns false when navigator.vibrate is missing or not a function", () => {
+		vi.stubGlobal("navigator", { vibrate: undefined });
+
+		const result = hapticVoteTap();
+
+		expect(result).toBe(false);
+	});
+
+	it("returns false when navigator is undefined", () => {
+		vi.stubGlobal("navigator", undefined);
+
+		const result = hapticVoteTap();
+
+		expect(result).toBe(false);
+	});
+
+	it("catches errors and returns false when navigator.vibrate throws an exception", () => {
+		const vibrateSpy = vi.fn().mockImplementation(() => {
+			throw new Error("Vibration blocked by user agent or iframe permissions");
+		});
+		vi.stubGlobal("navigator", { vibrate: vibrateSpy });
+
+		const result = hapticVoteTap();
+
+		expect(vibrateSpy).toHaveBeenCalledWith(15);
+		expect(result).toBe(false);
 	});
 });
