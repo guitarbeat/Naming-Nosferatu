@@ -1,6 +1,10 @@
 import { QueryClient, queryOptions } from "@tanstack/react-query";
 import { DEFAULT_SAMPLE_NAMES } from "@/lib/names";
-import { getStorageString, parseJsonValue, writeStorageJson } from "@/lib/storage";
+import {
+	getStorageString,
+	parseJsonValue,
+	writeStorageJson,
+} from "@/lib/storage";
 import type { NameItem } from "@/types";
 
 export const queryClient = new QueryClient({
@@ -17,7 +21,8 @@ export const queryClient = new QueryClient({
 /* ==========================================================================
    Constants & Error Utilities
    ========================================================================== */
-export const SUPABASE_UNAVAILABLE_MSG = "Database is unavailable. Running in local mode.";
+export const SUPABASE_UNAVAILABLE_MSG =
+	"Database is unavailable. Running in local mode.";
 
 /* ==========================================================================
    Names API Types & Queries
@@ -29,27 +34,29 @@ interface NamesQueryResult {
 	source: NamesDataSource;
 }
 
-const DEFAULT_CANDIDATE_NAMES: NameItem[] = DEFAULT_SAMPLE_NAMES.map((sample, idx) => {
-	const initialWins = Math.max(0, 14 - Math.floor(idx * 0.25));
-	const initialLosses = Math.max(1, 2 + Math.floor(idx * 0.2));
-	const rating = Math.max(1300, 1650 - idx * 6);
-	return {
-		id: sample.id,
-		name: sample.name,
-		description: sample.description,
-		avgRating: rating,
-		avg_rating: rating,
-		isHidden: false,
-		is_hidden: false,
-		isActive: true,
-		is_active: true,
-		lockedIn: false,
-		locked_in: false,
-		wins: initialWins,
-		losses: initialLosses,
-		status: "candidate" as const,
-	};
-});
+const DEFAULT_CANDIDATE_NAMES: NameItem[] = DEFAULT_SAMPLE_NAMES.map(
+	(sample, idx) => {
+		const initialWins = Math.max(0, 14 - Math.floor(idx * 0.25));
+		const initialLosses = Math.max(1, 2 + Math.floor(idx * 0.2));
+		const rating = Math.max(1300, 1650 - idx * 6);
+		return {
+			id: sample.id,
+			name: sample.name,
+			description: sample.description,
+			avgRating: rating,
+			avg_rating: rating,
+			isHidden: false,
+			is_hidden: false,
+			isActive: true,
+			is_active: true,
+			lockedIn: false,
+			locked_in: false,
+			wins: initialWins,
+			losses: initialLosses,
+			status: "candidate" as const,
+		};
+	},
+);
 
 const CANDIDATE_STORAGE_KEY = "nosferatu-candidates";
 
@@ -63,11 +70,9 @@ function getStoredNames(): NameItem[] {
 			const parsed = parseJsonValue<NameItem[] | null>(raw, null);
 			if (Array.isArray(parsed) && parsed.length > 0) {
 				// Seamlessly merge new default candidate names if the stored list is from the legacy 12-item set
-				// ⚡ Bolt Performance Optimization: Direct loop avoids intermediate array allocation from .map()
-				const existingNames = new Set<string | undefined>();
-				for (let i = 0; i < parsed.length; i++) {
-					existingNames.add(parsed[i].name?.trim().toLowerCase());
-				}
+				const existingNames = new Set(
+					parsed.map((item: NameItem) => item.name?.trim().toLowerCase()),
+				);
 				const missing = DEFAULT_CANDIDATE_NAMES.filter(
 					(def) => !existingNames.has(def.name?.trim().toLowerCase()),
 				);
@@ -99,12 +104,15 @@ function saveStoredNames(names: NameItem[]): void {
 const namesQueryKeys = {
 	all: ["names"] as const,
 	lists: () => [...namesQueryKeys.all, "list"] as const,
-	list: (includeHidden: boolean) => [...namesQueryKeys.lists(), { includeHidden }] as const,
+	list: (includeHidden: boolean) =>
+		[...namesQueryKeys.lists(), { includeHidden }] as const,
 } as const;
 
 async function fetchNames(includeHidden: boolean): Promise<NamesQueryResult> {
 	const all = getStoredNames();
-	const names = includeHidden ? all : all.filter((n) => !n.isHidden && !n.is_hidden);
+	const names = includeHidden
+		? all
+		: all.filter((n) => !n.isHidden && !n.is_hidden);
 	return { names, source: "local" };
 }
 
@@ -132,7 +140,8 @@ interface TournamentMatchRatingParams {
 }
 
 export const ratingsAPI = {
-	applyTournamentMatch: async (_params: TournamentMatchRatingParams) => Promise.resolve(),
+	applyTournamentMatch: async (_params: TournamentMatchRatingParams) =>
+		Promise.resolve(),
 	saveRatings: async (
 		userId: string,
 		ratings: Record<string, { rating: number; wins: number; losses: number }>,

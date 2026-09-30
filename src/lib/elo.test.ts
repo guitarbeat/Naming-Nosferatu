@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { applyEloMatchUpdate, calculatePairEloUpdate, getExpectedEloScore } from "./elo";
+import {
+	applyEloMatchUpdate,
+	calculatePairEloUpdate,
+	getExpectedEloScore,
+} from "./elo";
 
 describe("elo utility", () => {
 	describe("getExpectedEloScore", () => {
@@ -34,16 +38,24 @@ describe("elo utility", () => {
 		it("defaults ratingDivisor to 400 when options is undefined or empty", () => {
 			const scoreDefault = getExpectedEloScore(1600, 1200);
 			const scoreEmptyObj = getExpectedEloScore(1600, 1200, {});
-			const scoreExplicit400 = getExpectedEloScore(1600, 1200, { ratingDivisor: 400 });
+			const scoreExplicit400 = getExpectedEloScore(1600, 1200, {
+				ratingDivisor: 400,
+			});
 
 			expect(scoreDefault).toBe(scoreExplicit400);
 			expect(scoreEmptyObj).toBe(scoreExplicit400);
 		});
 
 		it("supports custom ratingDivisor option", () => {
-			const standardScore = getExpectedEloScore(1400, 1200, { ratingDivisor: 400 });
-			const customScoreSmallDivisor = getExpectedEloScore(1400, 1200, { ratingDivisor: 200 });
-			const customScoreLargeDivisor = getExpectedEloScore(1400, 1200, { ratingDivisor: 800 });
+			const standardScore = getExpectedEloScore(1400, 1200, {
+				ratingDivisor: 400,
+			});
+			const customScoreSmallDivisor = getExpectedEloScore(1400, 1200, {
+				ratingDivisor: 200,
+			});
+			const customScoreLargeDivisor = getExpectedEloScore(1400, 1200, {
+				ratingDivisor: 800,
+			});
 
 			expect(customScoreSmallDivisor).toBeGreaterThan(standardScore);
 			expect(customScoreLargeDivisor).toBeLessThan(standardScore);

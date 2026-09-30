@@ -27,7 +27,9 @@ export function AppBootScreen({
 				</div>
 
 				<div className="space-y-2">
-					<h2 className="text-xl font-bold tracking-tight text-foreground">{message}</h2>
+					<h2 className="text-xl font-bold tracking-tight text-foreground">
+						{message}
+					</h2>
 					<p className="text-sm text-muted-foreground animate-pulse">
 						Please wait a moment while we load the application context...
 					</p>

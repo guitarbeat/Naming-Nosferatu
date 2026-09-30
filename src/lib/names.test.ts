@@ -43,10 +43,26 @@ describe("names utility", () => {
 
 	describe("visibility and status helpers", () => {
 		const activeItem: NameItem = { id: "1", name: "Active Cat" };
-		const hiddenCamel: NameItem = { id: "2", name: "Hidden Cat 1", isHidden: true };
-		const hiddenSnake: NameItem = { id: "3", name: "Hidden Cat 2", is_hidden: true };
-		const lockedCamel: NameItem = { id: "4", name: "Locked Cat 1", lockedIn: true };
-		const lockedSnake: NameItem = { id: "5", name: "Locked Cat 2", locked_in: true };
+		const hiddenCamel: NameItem = {
+			id: "2",
+			name: "Hidden Cat 1",
+			isHidden: true,
+		};
+		const hiddenSnake: NameItem = {
+			id: "3",
+			name: "Hidden Cat 2",
+			is_hidden: true,
+		};
+		const lockedCamel: NameItem = {
+			id: "4",
+			name: "Locked Cat 1",
+			lockedIn: true,
+		};
+		const lockedSnake: NameItem = {
+			id: "5",
+			name: "Locked Cat 2",
+			locked_in: true,
+		};
 
 		it("correctly identifies hidden names", () => {
 			expect(isNameHidden(activeItem)).toBe(false);
@@ -72,8 +88,18 @@ describe("names utility", () => {
 		});
 
 		it("filters lists of names correctly", () => {
-			const list = [activeItem, hiddenCamel, hiddenSnake, lockedCamel, lockedSnake];
-			expect(getVisibleNames(list)).toEqual([activeItem, lockedCamel, lockedSnake]);
+			const list = [
+				activeItem,
+				hiddenCamel,
+				hiddenSnake,
+				lockedCamel,
+				lockedSnake,
+			];
+			expect(getVisibleNames(list)).toEqual([
+				activeItem,
+				lockedCamel,
+				lockedSnake,
+			]);
 			expect(getActiveNames(list)).toEqual([activeItem]);
 			expect(getHiddenNames(list)).toEqual([hiddenCamel, hiddenSnake]);
 			expect(getLockedNames(list)).toEqual([lockedCamel, lockedSnake]);
