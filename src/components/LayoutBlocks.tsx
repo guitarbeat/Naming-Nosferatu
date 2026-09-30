@@ -406,7 +406,21 @@ function SpinnerCircle({
 	);
 }
 
-function SkeletonBlock({ className, style }: { className?: string; style?: React.CSSProperties }) {
+function SkeletonBlock({
+	className,
+	style,
+	role,
+	"aria-label": ariaLabel,
+	"aria-busy": ariaBusy,
+	"aria-live": ariaLive,
+}: {
+	className?: string;
+	style?: React.CSSProperties;
+	role?: string;
+	"aria-label"?: string;
+	"aria-busy"?: "true" | "false" | boolean;
+	"aria-live"?: "polite" | "assertive" | "off";
+}) {
 	return (
 		<div
 			className={cn(
@@ -414,7 +428,11 @@ function SkeletonBlock({ className, style }: { className?: string; style?: React
 				className,
 			)}
 			style={style}
-			aria-hidden={true}
+			role={role}
+			aria-label={ariaLabel}
+			aria-busy={ariaBusy}
+			aria-live={ariaLive}
+			aria-hidden={role ? undefined : true}
 		/>
 	);
 }
@@ -426,6 +444,10 @@ export const Loading: React.FC<LoadingProps> = memo(
 		if (variant === "skeleton") {
 			return (
 				<SkeletonBlock
+					role="status"
+					aria-label="Loading"
+					aria-busy="true"
+					aria-live="polite"
 					className={cn("rounded-lg", className)}
 					style={{
 						width: "100%",
@@ -438,6 +460,10 @@ export const Loading: React.FC<LoadingProps> = memo(
 		if (variant === "card-skeleton") {
 			return (
 				<div
+					role="status"
+					aria-label="Loading"
+					aria-busy="true"
+					aria-live="polite"
 					className={cn(
 						"flex flex-col gap-3 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-sm",
 						className,
@@ -466,7 +492,13 @@ export const Loading: React.FC<LoadingProps> = memo(
 
 		if (variant === "cat-gif") {
 			return (
-				<div className={containerClasses} role="status" aria-label="Loading">
+				<div
+					className={containerClasses}
+					role="status"
+					aria-label="Loading"
+					aria-busy="true"
+					aria-live="polite"
+				>
 					<img
 						src={LOADING_ASSET}
 						alt=""
@@ -480,7 +512,13 @@ export const Loading: React.FC<LoadingProps> = memo(
 		}
 
 		return (
-			<div className={containerClasses} role="status" aria-label="Loading">
+			<div
+				className={containerClasses}
+				role="status"
+				aria-label="Loading"
+				aria-busy="true"
+				aria-live="polite"
+			>
 				<SpinnerCircle />
 				{text ? (
 					<p className="mt-2 text-sm font-medium text-white/80">{text}</p>
