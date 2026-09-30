@@ -5,11 +5,12 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getStorageString } from "@/lib/storage";
 import {
 	type UseIntersectionObserverOptions,
 	useDebounce,
 	useIntersectionObserver,
-	usePreloadImages,
+	useLocalStorage,
 } from "./hooks";
 
 type ObserverCallback = (
@@ -492,48 +493,12 @@ describe("useDebounce", () => {
 	});
 });
 
-describe("usePreloadImages", () => {
+describe("useLocalStorage", () => {
 	let container: HTMLDivElement | null = null;
 	let root: Root | null = null;
-	const originalImage = window.Image;
-
-	class MockImage {
-		private _src = "";
-		crossOrigin: string | null = null;
-		onload: (() => void) | null = null;
-		onerror: (() => void) | null = null;
-
-		static instances: MockImage[] = [];
-
-		constructor() {
-			MockImage.instances.push(this);
-		}
-
-		get src(): string {
-			return this._src;
-		}
-
-		set src(value: string) {
-			this._src = value;
-		}
-
-		triggerLoad() {
-			if (this.onload) {
-				this.onload();
-			}
-		}
-
-		triggerError() {
-			if (this.onerror) {
-				this.onerror();
-			}
-		}
-	}
 
 	beforeEach(() => {
-		MockImage.instances = [];
-		// @ts-expect-error Mocking global Image
-		window.Image = MockImage;
+		localStorage.clear();
 		container = document.createElement("div");
 		document.body.appendChild(container);
 		root = createRoot(container);
@@ -550,166 +515,180 @@ describe("usePreloadImages", () => {
 			container.remove();
 			container = null;
 		}
-		window.Image = originalImage;
+		localStorage.clear();
 	});
 
-	function renderPreloadHook(
-		images?: readonly string[],
-		options?: Parameters<typeof usePreloadImages>[1],
+	function renderLocalStorageHook<T>(
+		key: string,
+		initialValue: T,
+		options?: { debounceWait?: number; onError?: (error: unknown) => void },
 	) {
-		let result: ReturnType<typeof usePreloadImages>;
+		let result: [T, (val: React.SetStateAction<T>) => void, () => void] | undefined;
 
-		function TestComponent() {
-			result = usePreloadImages(images, options);
-			return React.createElement("div", null, result.isLoading ? "Loading" : "Done");
+		function TestComponent({ k, initVal, opts }: { k: string; initVal: T; opts?: typeof options }) {
+			result = useLocalStorage(k, initVal, opts);
+			return React.createElement("div", null, JSON.stringify(result[0]));
 		}
 
 		act(() => {
-			root?.render(React.createElement(TestComponent));
+			root?.render(
+				React.createElement(TestComponent, { k: key, initVal: initialValue, opts: options }),
+			);
 		});
 
 		return {
-			// biome-ignore lint/style/noNonNullAssertion: result is assigned synchronously in render
-			getResult: () => result!,
+			getValue: () => (result as [T, (val: React.SetStateAction<T>) => void, () => void])[0],
+			setValue: (val: React.SetStateAction<T>) => {
+				act(() => {
+					(result as [T, (val: React.SetStateAction<T>) => void, () => void])[1](val);
+				});
+			},
+			removeValue: () => {
+				act(() => {
+					(result as [T, (val: React.SetStateAction<T>) => void, () => void])[2]();
+				});
+			},
+			rerender: (newKey: string, newInit: T, newOpts?: typeof options) => {
+				act(() => {
+					root?.render(
+						React.createElement(TestComponent, { k: newKey, initVal: newInit, opts: newOpts }),
+					);
+				});
+			},
 		};
 	}
 
-	it("returns isLoaded true and isLoading false when images array is empty", () => {
-		const { getResult } = renderPreloadHook([]);
-		const res = getResult();
-
-		expect(res.isLoading).toBe(false);
-		expect(res.isLoaded).toBe(true);
-		expect(res.progress).toBe(1);
-		expect(res.loadedCount).toBe(0);
-		expect(res.totalCount).toBe(0);
-		expect(res.loadedUrls).toEqual([]);
-		expect(res.failedUrls).toEqual([]);
+	it("initializes with initialValue when localStorage is empty", () => {
+		const { getValue } = renderLocalStorageHook("test-key-1", "default-val");
+		expect(getValue()).toBe("default-val");
 	});
 
-	it("returns isLoading false when enabled is false", () => {
-		const { getResult } = renderPreloadHook(["/image1.jpg"], { enabled: false });
-		const res = getResult();
-
-		expect(res.isLoading).toBe(false);
-		expect(MockImage.instances.length).toBe(0);
+	it("initializes with stored value from localStorage if present", () => {
+		localStorage.setItem("test-key-2", JSON.stringify("stored-val"));
+		const { getValue } = renderLocalStorageHook("test-key-2", "default-val");
+		expect(getValue()).toBe("stored-val");
 	});
 
-	it("preloads images successfully and calls onComplete", () => {
-		const onComplete = vi.fn();
-		const { getResult } = renderPreloadHook(["/img1.png", "/img2.png"], { onComplete });
-
-		expect(getResult().isLoading).toBe(true);
-		expect(MockImage.instances.length).toBe(2);
-
-		// Trigger load for first image
-		act(() => {
-			MockImage.instances[0].triggerLoad();
-		});
-
-		expect(getResult().loadedCount).toBe(1);
-		expect(getResult().progress).toBe(0.5);
-		expect(getResult().isLoading).toBe(true);
-		expect(onComplete).not.toHaveBeenCalled();
-
-		// Trigger load for second image
-		act(() => {
-			MockImage.instances[1].triggerLoad();
-		});
-
-		expect(getResult().loadedCount).toBe(2);
-		expect(getResult().progress).toBe(1);
-		expect(getResult().isLoading).toBe(false);
-		expect(getResult().isLoaded).toBe(true);
-		expect(onComplete).toHaveBeenCalledWith(["/img1.png", "/img2.png"], []);
+	it("updates state and writes to localStorage when setValue is called", () => {
+		const { getValue, setValue } = renderLocalStorageHook("set-key-1", "initial");
+		setValue("updated");
+		expect(getValue()).toBe("updated");
+		expect(getStorageString("set-key-1")).toContain("updated");
 	});
 
-	it("handles image load failure and invokes onError", () => {
-		const onError = vi.fn();
-		const onComplete = vi.fn();
-		const { getResult } = renderPreloadHook(["/ok.png", "/fail.png"], { onError, onComplete });
-
-		act(() => {
-			MockImage.instances[0].triggerLoad();
-		});
-
-		act(() => {
-			MockImage.instances[1].triggerError();
-		});
-
-		expect(onError).toHaveBeenCalledWith("/fail.png");
-		expect(getResult().failedUrls).toEqual(["/fail.png"]);
-		expect(getResult().loadedUrls).toEqual(["/ok.png"]);
-		expect(getResult().isLoaded).toBe(true);
-		expect(getResult().isLoading).toBe(false);
-		expect(onComplete).toHaveBeenCalledWith(["/ok.png"], ["/fail.png"]);
+	it("supports functional state updates in setValue", () => {
+		const { getValue, setValue } = renderLocalStorageHook("counter-key-1", 10);
+		setValue((prev) => prev + 5);
+		expect(getValue()).toBe(15);
 	});
 
-	it("sets crossOrigin on images unless data or blob URL", () => {
-		renderPreloadHook(["/remote.png", "data:image/png;base64,xxx", "blob:http://localhost/xxx"], {
-			crossOrigin: "anonymous",
-		});
+	it("removes key from localStorage and resets state to initialValue on removeValue", () => {
+		const { getValue, setValue, removeValue } = renderLocalStorageHook("remove-key-1", "default");
+		setValue("custom");
+		expect(getValue()).toBe("custom");
 
-		expect(MockImage.instances.length).toBe(3);
-		expect(MockImage.instances[0].crossOrigin).toBe("anonymous");
-		expect(MockImage.instances[1].crossOrigin).toBeNull();
-		expect(MockImage.instances[2].crossOrigin).toBeNull();
+		removeValue();
+		expect(getValue()).toBe("default");
+		expect(getStorageString("remove-key-1")).toBeNull();
 	});
 
-	it("deduplicates images array and handles empty string/falsy elements", () => {
-		const { getResult } = renderPreloadHook(["/dupe.jpg", "", "/dupe.jpg", "/unique.jpg"]);
+	it("supports debounced writes when debounceWait option is provided", () => {
+		vi.useFakeTimers();
+		try {
+			const { getValue, setValue } = renderLocalStorageHook("debounced-key-1", "v1", {
+				debounceWait: 300,
+			});
 
-		// Deduplicated valid images: ["/dupe.jpg", "/unique.jpg"]
-		expect(MockImage.instances.length).toBe(2);
+			setValue("v2");
+			expect(getValue()).toBe("v2");
+			expect(getStorageString("debounced-key-1")).toBeNull();
 
-		act(() => {
-			MockImage.instances[0].triggerLoad();
-			MockImage.instances[1].triggerLoad();
-		});
-
-		expect(getResult().loadedUrls.length).toBe(2);
+			act(() => {
+				vi.advanceTimersByTime(300);
+			});
+			expect(getStorageString("debounced-key-1")).toContain("v2");
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 
-	it("uses global cache for previously preloaded images across renders", () => {
-		// First mount loads /cached.png
-		renderPreloadHook(["/cached.png"]);
-		act(() => {
-			MockImage.instances[0].triggerLoad();
-		});
+	it("flushes debounced value to localStorage on unmount", () => {
+		vi.useFakeTimers();
+		try {
+			const { setValue } = renderLocalStorageHook("unmount-key-1", "initial", {
+				debounceWait: 500,
+			});
 
-		MockImage.instances = [];
+			setValue("unmounted-val");
+			expect(getStorageString("unmount-key-1")).toBeNull();
 
-		// Second mount with same image
-		const { getResult } = renderPreloadHook(["/cached.png"]);
+			act(() => {
+				root?.unmount();
+				root = null;
+			});
 
-		// Should immediately recognize as loaded from global cache without creating new Image
-		expect(getResult().isLoading).toBe(false);
-		expect(getResult().loadedUrls).toContain("/cached.png");
-		expect(MockImage.instances.length).toBe(0);
+			expect(getStorageString("unmount-key-1")).toContain("unmounted-val");
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 
-	it("prevents state updates and callbacks if component unmounts before loading completes", () => {
-		const onComplete = vi.fn();
+	it("invokes onError when write fails or function updater throws error", () => {
 		const onError = vi.fn();
 
-		renderPreloadHook(["/pending.png"], { onComplete, onError });
+		const { setValue } = renderLocalStorageHook("error-key-1", "val", { onError });
 
-		expect(MockImage.instances.length).toBe(1);
-		const imageInstance = MockImage.instances[0];
-
-		// Unmount
-		act(() => {
-			root?.unmount();
-			root = null;
+		setValue(() => {
+			throw new Error("Updater failed");
 		});
 
-		// Trigger load & error after unmount
+		expect(onError).toHaveBeenCalled();
+	});
+
+	it("syncs state when storage event is fired from another tab", () => {
+		const { getValue } = renderLocalStorageHook("sync-key-1", "initial");
+
 		act(() => {
-			imageInstance.triggerLoad();
-			imageInstance.triggerError();
+			window.dispatchEvent(
+				new StorageEvent("storage", {
+					key: "sync-key-1",
+					newValue: JSON.stringify("remote-update"),
+				}),
+			);
 		});
 
-		expect(onComplete).not.toHaveBeenCalled();
-		expect(onError).not.toHaveBeenCalled();
+		expect(getValue()).toBe("remote-update");
+	});
+
+	it("resets state to initialValue when storage event receives null newValue", () => {
+		const { getValue, setValue } = renderLocalStorageHook("sync-key-2", "initial");
+
+		setValue("changed");
+
+		act(() => {
+			window.dispatchEvent(
+				new StorageEvent("storage", {
+					key: "sync-key-2",
+					newValue: null,
+				}),
+			);
+		});
+
+		expect(getValue()).toBe("initial");
+	});
+
+	it("ignores storage events for different keys", () => {
+		const { getValue } = renderLocalStorageHook("sync-key-3", "initial");
+
+		act(() => {
+			window.dispatchEvent(
+				new StorageEvent("storage", {
+					key: "other-key",
+					newValue: JSON.stringify("ignored"),
+				}),
+			);
+		});
+
+		expect(getValue()).toBe("initial");
 	});
 });
