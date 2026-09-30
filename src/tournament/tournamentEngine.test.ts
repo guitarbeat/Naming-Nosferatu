@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
+import type { MatchRecord } from "@/types";
 import {
 	calculateTournamentMetrics,
 	calculateWinStreak,
 	createMatchRecord,
+	deriveBracketState,
 	EloRating,
-	generateRandomTeams,
 	getBracketStageLabel,
 	getFlameCount,
 	getHeatLevel,
@@ -123,88 +124,219 @@ describe("tournamentEngine", () => {
 		expect(metrics.completedMatches).toBe(2);
 	});
 
-	describe("generateRandomTeams", () => {
-		it("handles null, undefined, or invalid inputs gracefully", () => {
-			expect(generateRandomTeams(null as unknown as Array<{ id: string; name: string }>)).toEqual(
-				[],
-			);
-			expect(
-				generateRandomTeams(undefined as unknown as Array<{ id: string; name: string }>),
-			).toEqual([]);
-			expect(
-				generateRandomTeams("invalid" as unknown as Array<{ id: string; name: string }>),
-			).toEqual([]);
+	describe("deriveBracketState", () => {
+		it("handles brackets with fewer than 2 active entrants", () => {
+			const emptyState = deriveBracketState([], []);
+			expect(emptyState).toEqual({
+				isComplete: true,
+				totalMatches: 0,
+				completedMatches: 0,
+				round: 1,
+				totalRounds: 1,
+				stageLabel: "Final",
+				roundSize: 0,
+				pendingMatchIds: null,
+			});
+
+			const singleState = deriveBracketState(["cat-1"], []);
+			expect(singleState).toEqual({
+				isComplete: true,
+				totalMatches: 0,
+				completedMatches: 0,
+				round: 1,
+				totalRounds: 1,
+				stageLabel: "Final",
+				roundSize: 1,
+				pendingMatchIds: null,
+			});
+
+			const onlyByesState = deriveBracketState(["__BYE__1_0", "__BYE__1_1"], []);
+			expect(onlyByesState).toEqual({
+				isComplete: true,
+				totalMatches: 0,
+				completedMatches: 0,
+				round: 1,
+				totalRounds: 1,
+				stageLabel: "Final",
+				roundSize: 0,
+				pendingMatchIds: null,
+			});
 		});
 
-		it("returns empty array when participants is empty", () => {
-			expect(generateRandomTeams([])).toEqual([]);
+		it("derives state for a 2-entrant bracket before and after completion", () => {
+			const entrants = ["cat-1", "cat-2"];
+
+			const pendingState = deriveBracketState(entrants, []);
+			expect(pendingState).toEqual({
+				isComplete: false,
+				totalMatches: 1,
+				completedMatches: 0,
+				round: 1,
+				totalRounds: 1,
+				stageLabel: "Final",
+				roundSize: 2,
+				pendingMatchIds: { leftId: "cat-1", rightId: "cat-2" },
+			});
+
+			const matchRecord: MatchRecord = {
+				match: { mode: "1v1", left: "cat-1", right: "cat-2" },
+				winner: "cat-1",
+				loser: "cat-2",
+				voteType: "normal",
+				matchNumber: 1,
+				roundNumber: 1,
+				timestamp: Date.now(),
+			};
+
+			const completedState = deriveBracketState(entrants, [matchRecord]);
+			expect(completedState).toEqual({
+				isComplete: true,
+				totalMatches: 1,
+				completedMatches: 1,
+				round: 1,
+				totalRounds: 1,
+				stageLabel: "Final",
+				roundSize: 1,
+				pendingMatchIds: null,
+			});
 		});
 
-		it("returns empty array when given only one participant", () => {
-			const participants = [{ id: "p1", name: "Alice" }];
-			expect(generateRandomTeams(participants)).toEqual([]);
+		it("progresses through a multi-round 4-entrant tournament", () => {
+			const entrants = ["cat-1", "cat-2", "cat-3", "cat-4"];
+
+			// Step 1: Initial state (Round 1, Match 1 pending: cat-1 vs cat-2)
+			const state1 = deriveBracketState(entrants, []);
+			expect(state1.isComplete).toBe(false);
+			expect(state1.totalMatches).toBe(3);
+			expect(state1.completedMatches).toBe(0);
+			expect(state1.round).toBe(1);
+			expect(state1.totalRounds).toBe(2);
+			expect(state1.stageLabel).toBe("Semifinal");
+			expect(state1.pendingMatchIds).toEqual({
+				leftId: "cat-1",
+				rightId: "cat-2",
+			});
+
+			const match1: MatchRecord = {
+				match: { mode: "1v1", left: "cat-1", right: "cat-2" },
+				winner: "cat-1",
+				loser: "cat-2",
+				voteType: "normal",
+				matchNumber: 1,
+				roundNumber: 1,
+				timestamp: Date.now(),
+			};
+
+			// Step 2: Match 1 finished (Round 1, Match 2 pending: cat-3 vs cat-4)
+			const state2 = deriveBracketState(entrants, [match1]);
+			expect(state2.isComplete).toBe(false);
+			expect(state2.completedMatches).toBe(1);
+			expect(state2.round).toBe(1);
+			expect(state2.pendingMatchIds).toEqual({
+				leftId: "cat-3",
+				rightId: "cat-4",
+			});
+
+			const match2: MatchRecord = {
+				match: { mode: "1v1", left: "cat-3", right: "cat-4" },
+				winner: "cat-3",
+				loser: "cat-4",
+				voteType: "normal",
+				matchNumber: 2,
+				roundNumber: 1,
+				timestamp: Date.now(),
+			};
+
+			// Step 3: Round 1 finished (Round 2 Final pending: cat-1 vs cat-3)
+			const state3 = deriveBracketState(entrants, [match1, match2]);
+			expect(state3.isComplete).toBe(false);
+			expect(state3.completedMatches).toBe(2);
+			expect(state3.round).toBe(2);
+			expect(state3.stageLabel).toBe("Final");
+			expect(state3.pendingMatchIds).toEqual({
+				leftId: "cat-1",
+				rightId: "cat-3",
+			});
+
+			const finalMatch: MatchRecord = {
+				match: { mode: "1v1", left: "cat-1", right: "cat-3" },
+				winner: "cat-3",
+				loser: "cat-1",
+				voteType: "normal",
+				matchNumber: 3,
+				roundNumber: 2,
+				timestamp: Date.now(),
+			};
+
+			// Step 4: Final match finished (Tournament complete)
+			const state4 = deriveBracketState(entrants, [match1, match2, finalMatch]);
+			expect(state4.isComplete).toBe(true);
+			expect(state4.completedMatches).toBe(3);
+			expect(state4.round).toBe(2);
+			expect(state4.stageLabel).toBe("Final");
+			expect(state4.pendingMatchIds).toBeNull();
 		});
 
-		it("pairs participants into teams with even count and formats member IDs and names correctly", () => {
-			const participants = [
-				{ id: "p1", name: "Alice" },
-				{ id: "p2", name: "Bob" },
-				{ id: "p3", name: "Charlie" },
-				{ id: "p4", name: "Diana" },
-			];
+		it("handles non-power-of-two entrants with automatic Byes", () => {
+			const entrants = ["cat-1", "cat-2", "cat-3"];
 
-			const teams = generateRandomTeams(participants);
+			const initial = deriveBracketState(entrants, []);
+			expect(initial.isComplete).toBe(false);
+			expect(initial.totalMatches).toBe(2);
+			expect(initial.totalRounds).toBe(2);
+			expect(initial.pendingMatchIds).toEqual({
+				leftId: "cat-1",
+				rightId: "cat-2",
+			});
 
-			expect(teams).toHaveLength(2);
-			expect(teams[0].id).toBe("team-1");
-			expect(teams[1].id).toBe("team-2");
+			const match1: MatchRecord = {
+				match: { mode: "1v1", left: "cat-1", right: "cat-2" },
+				winner: "cat-1",
+				loser: "cat-2",
+				voteType: "normal",
+				matchNumber: 1,
+				roundNumber: 1,
+				timestamp: Date.now(),
+			};
 
-			const allMemberIds = teams.flatMap((t) => t.memberIds);
-			expect(allMemberIds).toHaveLength(4);
-			expect(new Set(allMemberIds)).toEqual(new Set(["p1", "p2", "p3", "p4"]));
-
-			const participantMap = new Map(participants.map((p) => [p.id, p.name]));
-
-			for (const team of teams) {
-				expect(team.memberIds).toHaveLength(2);
-				expect(team.memberNames).toHaveLength(2);
-				// Verify matching corresponding names for member IDs
-				expect(participantMap.get(team.memberIds[0])).toBe(team.memberNames[0]);
-				expect(participantMap.get(team.memberIds[1])).toBe(team.memberNames[1]);
-			}
+			const afterMatch1 = deriveBracketState(entrants, [match1]);
+			expect(afterMatch1.isComplete).toBe(false);
+			expect(afterMatch1.completedMatches).toBe(1);
+			expect(afterMatch1.round).toBe(2);
+			expect(afterMatch1.stageLabel).toBe("Final");
+			expect(afterMatch1.pendingMatchIds).toEqual({
+				leftId: "cat-1",
+				rightId: "cat-3",
+			});
 		});
 
-		it("pairs participants into teams with odd count, ignoring leftover participant", () => {
-			const participants = [
-				{ id: "p1", name: "Alice" },
-				{ id: "p2", name: "Bob" },
-				{ id: "p3", name: "Charlie" },
-			];
+		it("handles invalid match history record with unexpected winner ID", () => {
+			const entrants = ["cat-1", "cat-2"];
+			const invalidRecord: MatchRecord = {
+				match: { mode: "1v1", left: "cat-1", right: "cat-2" },
+				winner: "unknown-cat",
+				loser: "cat-2",
+				voteType: "normal",
+				matchNumber: 1,
+				roundNumber: 1,
+				timestamp: Date.now(),
+			};
 
-			const teams = generateRandomTeams(participants);
-
-			expect(teams).toHaveLength(1);
-			expect(teams[0].id).toBe("team-1");
-			expect(teams[0].memberIds).toHaveLength(2);
-			expect(teams[0].memberNames).toHaveLength(2);
-
-			const participantMap = new Map(participants.map((p) => [p.id, p.name]));
-			expect(participantMap.get(teams[0].memberIds[0])).toBe(teams[0].memberNames[0]);
-			expect(participantMap.get(teams[0].memberIds[1])).toBe(teams[0].memberNames[1]);
+			const state = deriveBracketState(entrants, [invalidRecord]);
+			expect(state.isComplete).toBe(false);
+			expect(state.completedMatches).toBe(0);
+			expect(state.pendingMatchIds).toEqual({
+				leftId: "cat-1",
+				rightId: "cat-2",
+			});
 		});
 
-		it("does not mutate the original participants array", () => {
-			const participants = [
-				{ id: "p1", name: "Alice" },
-				{ id: "p2", name: "Bob" },
-				{ id: "p3", name: "Charlie" },
-				{ id: "p4", name: "Diana" },
-			];
-			const copy = [...participants];
+		it("caches derivation result and returns cached instance", () => {
+			const entrants = ["cat-1", "cat-2"];
+			const res1 = deriveBracketState(entrants, []);
+			const res2 = deriveBracketState(entrants, []);
 
-			generateRandomTeams(participants);
-
-			expect(participants).toEqual(copy);
+			expect(res1).toBe(res2);
 		});
 	});
 });
