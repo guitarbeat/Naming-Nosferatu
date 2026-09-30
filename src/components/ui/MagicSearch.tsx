@@ -14,7 +14,6 @@ export const MagicSearch = memo(function MagicSearch({
 
 	const handleClear = () => {
 		setSearchQuery("");
-		// 🎨 Palette: Restored focus to input on clear to prevent focus loss for screen readers and keyboard users
 		inputRef.current?.focus();
 	};
 
