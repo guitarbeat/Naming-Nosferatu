@@ -95,10 +95,9 @@ export const NameSelector = memo(function NameSelector() {
 						: undefined,
 				selected: isSelected,
 				locked,
-				onClick: () => handleToggleName(nameItem.id),
 			};
 		});
-	}, [availableNames, selectedIds, handleToggleName]);
+	}, [availableNames, selectedIds]);
 
 	if (isLoading) {
 		return (
@@ -142,6 +141,8 @@ export const NameSelector = memo(function NameSelector() {
 				<div className="absolute inset-0 w-full h-full overflow-hidden">
 					<DriftWall
 						items={driftWallItems}
+						// ⚡ Bolt Performance Optimization: Removed inline function allocations inside loop by using onItemClick delegation
+						onItemClick={(item) => handleToggleName(item.id as IdType)}
 						columns={7}
 						tileWidth={150}
 						tileHeight={150}
