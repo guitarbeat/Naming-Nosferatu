@@ -6,6 +6,7 @@ export * from "./LayoutBlocks";
 export * from "./ui/AppBootScreen";
 export * from "./ui/GlobalErrorDisplay";
 export * from "./ui/GlobalLoadingOverlay";
+export * from "./ui/HomeView";
 export * from "./ui/MagicSearch";
 export * from "./ui/MagicToggle";
 export * from "./ui/PwaInstallPrompt";

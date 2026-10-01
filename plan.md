@@ -1,6 +1,11 @@
-1. Add `React.memo` to `Iridescence` component.
-   - The `Iridescence` component is an expensive WebGL component. Re-renders will cause it to re-initialize or do unnecessary work. Wrapping it in `React.memo` will prevent re-renders when its props (which are usually constants like `IRIDESCENCE_COLOR`) haven't changed.
-2. Complete pre commit steps
-   - Complete pre commit steps to make sure proper testing, verifications, reviews and reflections are done.
-3. Submit the change.
-   - Once all tests pass, I will submit the change with a descriptive commit message formatting as required by Bolt.
+<strict_log>
+- Momentum: Followed Caveman UI Pruner mandate to keep main file light and rip out sub-components to `components/ui/`.
+- Smash: Extracted `HomeRoute` from `src/App.tsx` into a separate `src/components/ui/HomeView.tsx` component.
+- Clean: Updated `src/App.tsx` to use the new `HomeView` and removed unused imports. Registered `HomeView` in `src/components/index.ts`.
+- Memory Update: Remember `HomeRoute` is now `HomeView` in `components/ui/`. Strike next: micro-clean CSS or fast render.
+</strict_log>
+
+1. Ensure the code is properly formatted and linted (`pnpm format`, `pnpm lint`).
+2. Run the test suite (`pnpm test`) to ensure everything is working correctly.
+3. Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
+4. Submit the changes.
