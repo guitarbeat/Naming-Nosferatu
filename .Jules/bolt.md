@@ -1,0 +1,3 @@
+## 2024-05-18 - Optimizing usePreloadImages state initialization
+**Learning:** When refactoring multiple array operations (`.filter`, `.every`) into a single-pass `for` loop for `useState` initializations, do not inadvertently introduce React rendering regressions by pulling the calculation out of a lazy initializer function. Creating a new state just to act as an initializer for other state hooks is an anti-pattern; instead, compute the tuple in a single lazy `useState` block and map the values to individual hook calls below.
+**Action:** Always ensure that expensive or iterative state initializations remain wrapped in `useState(() => { ... })` to prevent allocations on every re-render, and use tuples to initialize multiple related states efficiently.

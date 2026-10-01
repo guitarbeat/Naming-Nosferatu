@@ -312,19 +312,30 @@ export function usePreloadImages(
 ): UsePreloadImagesResult {
 	const { enabled = true, crossOrigin, onComplete, onError } = options;
 
-	const [loadedUrls, setLoadedUrls] = useState<string[]>(() => {
+	// ⚡ Bolt Performance Optimization: Initialize related state variables efficiently without multiple array iterations
+	const [{ initialLoadedUrls, initialIsLoading }] = useState(() => {
 		if (!IS_BROWSER) {
-			return [];
+			return { initialLoadedUrls: [], initialIsLoading: false };
 		}
-		return images.filter((img) => globalPreloadedImageCache.has(img));
+		const loaded: string[] = [];
+		let allCached = true;
+		for (let i = 0; i < images.length; i++) {
+			const img = images[i];
+			if (globalPreloadedImageCache.has(img)) {
+				loaded.push(img);
+			} else {
+				allCached = false;
+			}
+		}
+		return {
+			initialLoadedUrls: loaded,
+			initialIsLoading: enabled && images.length > 0 ? !allCached : false,
+		};
 	});
+
+	const [loadedUrls, setLoadedUrls] = useState<string[]>(initialLoadedUrls);
 	const [failedUrls, setFailedUrls] = useState<string[]>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(() => {
-		if (!enabled || !IS_BROWSER || images.length === 0) {
-			return false;
-		}
-		return !images.every((img) => globalPreloadedImageCache.has(img));
-	});
+	const [isLoading, setIsLoading] = useState<boolean>(initialIsLoading);
 
 	const onCompleteRef = useRef(onComplete);
 	const onErrorRef = useRef(onError);
