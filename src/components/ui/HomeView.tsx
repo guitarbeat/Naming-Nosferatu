@@ -1,9 +1,13 @@
-import { Suspense, useCallback, useEffect } from "react";
+import React, { Suspense, useCallback, useEffect } from "react";
 import { Loading } from "@/components/LayoutBlocks";
 import { TournamentStatusWidget } from "@/components/ui/TournamentStatusWidget";
 import { useSectionScroll } from "@/hooks";
 import useAppStore, { useActiveTournamentStatus } from "@/store";
-import { TournamentSetup } from "@/tournament/TournamentSetup";
+
+// ⚡ Bolt: lazy-load heavy TournamentSetup (WebGL/framer children) out of initial bundle
+const TournamentSetup = React.lazy(() =>
+	import("@/tournament/TournamentSetup").then((m) => ({ default: m.TournamentSetup })),
+);
 
 export function HomeView() {
 	const { hasActiveTournament, namesCount } = useActiveTournamentStatus();
