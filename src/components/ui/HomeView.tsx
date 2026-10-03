@@ -12,8 +12,7 @@ const TournamentSetup = React.lazy(() =>
 export function HomeView() {
 	const { hasActiveTournament, namesCount } = useActiveTournamentStatus();
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
-	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } =
-		useSectionScroll();
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
 
 	useEffect(() => {
 		const handleTabChange = (e: Event) => {
@@ -50,10 +49,7 @@ export function HomeView() {
 					<section id="pick" className="w-full scroll-mt-20 sm:scroll-mt-24">
 						<div id="tournament" className="scroll-mt-20 sm:scroll-mt-24" />
 						<div id="contenders" className="scroll-mt-20 sm:scroll-mt-24" />
-						<TournamentStatusWidget
-							namesCount={namesCount}
-							onRestart={handleStartNewTournament}
-						/>
+						<TournamentStatusWidget namesCount={namesCount} onRestart={handleStartNewTournament} />
 						<div className="w-full min-h-[480px] flex flex-col flex-1">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 								<TournamentSetup />
