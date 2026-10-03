@@ -3,12 +3,7 @@ import { memo, useCallback, useEffect, useMemo } from "react";
 import { namesQueryOptions, SUPABASE_UNAVAILABLE_MSG } from "@/api";
 import { DriftWall, type DriftWallItem } from "@/components/DriftWall";
 import { Button, Loading } from "@/components/LayoutBlocks";
-import {
-	DEFAULT_SAMPLE_NAMES,
-	getLockedNames,
-	getVisibleNames,
-	isNameLocked,
-} from "@/lib/names";
+import { DEFAULT_SAMPLE_NAMES, getLockedNames, getVisibleNames, isNameLocked } from "@/lib/names";
 import { hapticNavTap } from "@/lib/utils";
 import useAppStore from "@/store";
 import { createIdToNameMap } from "@/tournament/tournamentEngine";
@@ -19,9 +14,7 @@ import type { IdType } from "@/types";
  */
 export const NameSelector = memo(function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
-	const storeSelectedNames = useAppStore(
-		(state) => state.tournament.selectedNames,
-	);
+	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesQuery = useQuery({
@@ -119,15 +112,9 @@ export const NameSelector = memo(function NameSelector() {
 						<h3 className="font-display text-xl font-bold text-foreground">
 							Could not load shortlist
 						</h3>
-						<p className="text-xs text-muted-foreground leading-relaxed">
-							{error}
-						</p>
+						<p className="text-xs text-muted-foreground leading-relaxed">{error}</p>
 					</div>
-					<Button
-						onClick={() => void namesQuery.refetch()}
-						variant="outline"
-						size="small"
-					>
+					<Button onClick={() => void namesQuery.refetch()} variant="outline" size="small">
 						Try Again
 					</Button>
 				</div>
