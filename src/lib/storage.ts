@@ -46,27 +46,15 @@ function getDeviceEncryptionKey(): CryptoJS.lib.WordArray {
 
 	try {
 		if (typeof window !== "undefined") {
-			// Migrate legacy cleartext key if present in localStorage
-			const legacyKey = window.localStorage.getItem(DEVICE_KEY_STORAGE_KEY);
-			if (legacyKey && !window.sessionStorage.getItem(DEVICE_KEY_STORAGE_KEY)) {
-				window.sessionStorage.setItem(DEVICE_KEY_STORAGE_KEY, legacyKey);
-				window.localStorage.removeItem(DEVICE_KEY_STORAGE_KEY);
-			}
-
-			let keyHexStr = window.sessionStorage.getItem(DEVICE_KEY_STORAGE_KEY);
-			if (!keyHexStr) {
-				const newKey = CryptoJS.lib.WordArray.random(32) /* key generation */;
-				keyHexStr = CryptoJS.enc.Hex.stringify(newKey);
-				window.sessionStorage.setItem(DEVICE_KEY_STORAGE_KEY, keyHexStr);
-			}
-			cachedDeviceKeyHex = CryptoJS.enc.Hex.parse(keyHexStr);
-			return cachedDeviceKeyHex;
+			// Clean up any legacy cleartext device key stored in Web Storage
+			window.localStorage.removeItem(DEVICE_KEY_STORAGE_KEY);
+			window.sessionStorage.removeItem(DEVICE_KEY_STORAGE_KEY);
 		}
 	} catch {
-		// Ignore storage errors, will fall through to temporary session key
+		// Ignore storage errors
 	}
 
-	// Fallback to a temporary random key for this session if localStorage is unavailable
+	// Retain encryption key purely in-memory for the current runtime session
 	cachedDeviceKeyHex = CryptoJS.lib.WordArray.random(32) /* key generation */;
 	return cachedDeviceKeyHex;
 }
