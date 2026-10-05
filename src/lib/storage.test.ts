@@ -1,3 +1,4 @@
+import CryptoJS from "crypto-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ratingsAPI } from "../api";
 import { logger } from "./logger";
@@ -48,9 +49,7 @@ describe("storage", () => {
 	});
 
 	it("returns fallback for missing JSON keys", () => {
-		expect(
-			parseJsonValue(getStorageString("missing_key"), { fallback: true }),
-		).toEqual({
+		expect(parseJsonValue(getStorageString("missing_key"), { fallback: true })).toEqual({
 			fallback: true,
 		});
 	});
@@ -58,9 +57,7 @@ describe("storage", () => {
 	it("returns fallback for invalid JSON values", () => {
 		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
 		localStorage.setItem("corrupted", "{invalid_json");
-		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe(
-			"fallback",
-		);
+		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe("fallback");
 		expect(spy).toHaveBeenCalled();
 		spy.mockRestore();
 	});
@@ -74,18 +71,13 @@ describe("storage", () => {
 		await ratingsAPI.saveRatings(userId, sampleRatings);
 
 		// Verify raw localStorage contains encrypted string (contains IV colon delimiter and not plaintext JSON)
-		const rawStoredRatings = localStorage.getItem(
-			`nosferatu-ratings-${userId}`,
-		);
+		const rawStoredRatings = localStorage.getItem(`nosferatu-ratings-${userId}`);
 		expect(rawStoredRatings).not.toBeNull();
 		expect(rawStoredRatings).not.toContain('"rating":1500');
 		expect(rawStoredRatings).toContain(":");
 
 		// Verify decrypting via getStorageString restores original ratings object
-		const decryptedRatings = parseJsonValue(
-			getStorageString(`nosferatu-ratings-${userId}`),
-			null,
-		);
+		const decryptedRatings = parseJsonValue(getStorageString(`nosferatu-ratings-${userId}`), null);
 		expect(decryptedRatings).toEqual(sampleRatings);
 
 		// Verify candidate storage is also stored encrypted in localStorage
@@ -142,5 +134,19 @@ describe("storage", () => {
 		expect(decryptValue(null)).toBe("");
 		expect(decryptValue(undefined)).toBe("");
 		expect(decryptValue("")).toBe("");
+	});
+
+	it("falls back gracefully to returning original text when CryptoJS.AES.decrypt throws an error", () => {
+		const mockTextWithIv = "0123456789abcdef0123456789abcdef:corrupted_ciphertext";
+		const decryptSpy = vi.spyOn(CryptoJS.AES, "decrypt").mockImplementation(() => {
+			throw new Error("Simulated decryption failure");
+		});
+
+		const result = decryptValue(mockTextWithIv);
+
+		expect(decryptSpy).toHaveBeenCalled();
+		expect(result).toBe(mockTextWithIv);
+
+		decryptSpy.mockRestore();
 	});
 });
