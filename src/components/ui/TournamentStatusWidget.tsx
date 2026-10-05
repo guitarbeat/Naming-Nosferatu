@@ -6,10 +6,7 @@ interface TournamentStatusWidgetProps {
 	onRestart: () => void;
 }
 
-export function TournamentStatusWidget({
-	namesCount,
-	onRestart,
-}: TournamentStatusWidgetProps) {
+export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStatusWidgetProps) {
 	return (
 		<div className="mx-auto mb-6 flex w-full max-w-4xl flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-border/70 bg-card/80 p-3.5 sm:p-4 shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-300 group cursor-default">
 			<div className="flex items-center gap-3 text-left w-full sm:w-auto">
@@ -17,24 +14,30 @@ export function TournamentStatusWidget({
 					<Trophy size={18} />
 				</div>
 				<div>
-					<h4 className="text-sm font-semibold text-foreground">
-						Tournament in Progress
-					</h4>
-					<p className="text-xs text-muted-foreground">
-						{namesCount} contenders seeded
-					</p>
+					<h4 className="text-sm font-semibold text-foreground">Tournament in Progress</h4>
+					<p className="text-xs text-muted-foreground">{namesCount} contenders seeded</p>
 				</div>
 			</div>
 			<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
 				<Button
 					variant="ghost"
 					size="small"
-					onClick={onRestart}
+					onClick={() => {
+						if (
+							window.confirm(
+								"Are you sure you want to restart the tournament? Your progress will be lost.",
+							)
+						) {
+							onRestart();
+						}
+					}}
+					title="Restart tournament"
 					className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1.5"
 				>
 					<RotateCcw
 						size={13}
 						className="group-hover/btn:-rotate-90 transition-transform duration-500"
+						aria-hidden="true"
 					/>
 					Restart Tournament
 				</Button>
