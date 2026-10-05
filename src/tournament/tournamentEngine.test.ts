@@ -53,10 +53,43 @@ describe("tournamentEngine", () => {
 		expect(result.lossesB).toBe(1);
 	});
 
-	it("labels bracket stages properly", () => {
-		expect(getBracketStageLabel(3, 3)).toBe("Final");
-		expect(getBracketStageLabel(2, 3)).toBe("Semifinal");
-		expect(getBracketStageLabel(1, 3)).toBe("Quarterfinal");
+	describe("getBracketStageLabel", () => {
+		it("returns 'Final' when round equals totalRounds", () => {
+			expect(getBracketStageLabel(1, 1)).toBe("Final");
+			expect(getBracketStageLabel(2, 2)).toBe("Final");
+			expect(getBracketStageLabel(3, 3)).toBe("Final");
+			expect(getBracketStageLabel(5, 5)).toBe("Final");
+		});
+
+		it("returns 'Final' when round exceeds totalRounds", () => {
+			expect(getBracketStageLabel(4, 3)).toBe("Final");
+			expect(getBracketStageLabel(10, 5)).toBe("Final");
+		});
+
+		it("returns 'Semifinal' when remaining rounds equal 1", () => {
+			expect(getBracketStageLabel(2, 3)).toBe("Semifinal");
+			expect(getBracketStageLabel(4, 5)).toBe("Semifinal");
+		});
+
+		it("returns 'Quarterfinal' when remaining rounds equal 2", () => {
+			expect(getBracketStageLabel(1, 3)).toBe("Quarterfinal");
+			expect(getBracketStageLabel(3, 5)).toBe("Quarterfinal");
+		});
+
+		it("returns 'Round X' when remaining rounds are 3 or more", () => {
+			expect(getBracketStageLabel(1, 4)).toBe("Round 1");
+			expect(getBracketStageLabel(1, 5)).toBe("Round 1");
+			expect(getBracketStageLabel(2, 5)).toBe("Round 2");
+			expect(getBracketStageLabel(1, 10)).toBe("Round 1");
+			expect(getBracketStageLabel(7, 10)).toBe("Round 7");
+		});
+
+		it("handles zero or negative rounds and totalRounds safely", () => {
+			expect(getBracketStageLabel(0, 0)).toBe("Final");
+			expect(getBracketStageLabel(-1, 3)).toBe("Quarterfinal");
+			expect(getBracketStageLabel(1, -2)).toBe("Final");
+			expect(getBracketStageLabel(-5, -5)).toBe("Final");
+		});
 	});
 
 	it("evaluates heat level from streak thresholds", () => {
@@ -167,7 +200,10 @@ describe("tournamentEngine", () => {
 				pendingMatchIds: null,
 			});
 
-			const onlyByesState = deriveBracketState(["__BYE__1_0", "__BYE__1_1"], []);
+			const onlyByesState = deriveBracketState(
+				["__BYE__1_0", "__BYE__1_1"],
+				[],
+			);
 			expect(onlyByesState).toEqual({
 				isComplete: true,
 				totalMatches: 0,
