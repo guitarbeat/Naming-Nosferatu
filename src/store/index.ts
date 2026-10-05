@@ -106,7 +106,6 @@ type AppSet = Parameters<StateCreator<AppState>>[0];
 type AppSliceCreator<TSlice> = StateCreator<AppState, [], [], TSlice>;
 
 const IS_BROWSER = typeof window !== "undefined";
-const _IS_DEV = import.meta.env?.DEV ?? false;
 
 function patch<K extends keyof AppState>(set: AppSet, key: K, updates: Partial<AppState[K]>): void {
 	set((state) => {
