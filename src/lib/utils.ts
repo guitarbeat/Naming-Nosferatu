@@ -10,12 +10,15 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
- * Shuffles an array using the Fisher-Yates algorithm.
+ * Shuffles an array using the Fisher-Yates algorithm with cryptographically secure random values.
  */
 export function shuffleArray<T>(array: T[]): T[] {
 	const next = [...array];
+	const randomBuffer = new Uint32Array(1);
 	for (let i = next.length - 1; i > 0; i -= 1) {
-		const j = Math.floor(Math.random() * (i + 1));
+		crypto.getRandomValues(randomBuffer);
+		const randomFloat = (randomBuffer[0] as number) / (0xffffffff + 1);
+		const j = Math.floor(randomFloat * (i + 1));
 		const temp = next[i] as T;
 		next[i] = next[j] as T;
 		next[j] = temp;
