@@ -6,10 +6,7 @@ interface TournamentStatusWidgetProps {
 	onRestart: () => void;
 }
 
-export function TournamentStatusWidget({
-	namesCount,
-	onRestart,
-}: TournamentStatusWidgetProps) {
+export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStatusWidgetProps) {
 	return (
 		<div className="mx-auto mb-6 flex w-full max-w-4xl flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-border/70 bg-card/80 p-3.5 sm:p-4 shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-300 group cursor-default">
 			<div className="flex items-center gap-3 text-left w-full sm:w-auto">
@@ -17,12 +14,8 @@ export function TournamentStatusWidget({
 					<Trophy size={18} />
 				</div>
 				<div>
-					<h4 className="text-sm font-semibold text-foreground">
-						Tournament in Progress
-					</h4>
-					<p className="text-xs text-muted-foreground">
-						{namesCount} contenders seeded
-					</p>
+					<h4 className="text-sm font-semibold text-foreground">Tournament in Progress</h4>
+					<p className="text-xs text-muted-foreground">{namesCount} contenders seeded</p>
 				</div>
 			</div>
 			<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
