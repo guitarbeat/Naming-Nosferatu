@@ -42,11 +42,29 @@ describe("tournamentEngine", () => {
 		expect(getBracketStageLabel(1, 3)).toBe("Quarterfinal");
 	});
 
-	it("evaluates heat level from streak thresholds", () => {
-		expect(getHeatLevel(1)).toBeNull();
-		expect(getHeatLevel(3)).toBe("warm");
-		expect(getHeatLevel(5)).toBe("hot");
-		expect(getHeatLevel(8)).toBe("blazing");
+	describe("getHeatLevel", () => {
+		it("returns null for streaks below warm threshold (3)", () => {
+			expect(getHeatLevel(-1)).toBeNull();
+			expect(getHeatLevel(0)).toBeNull();
+			expect(getHeatLevel(1)).toBeNull();
+			expect(getHeatLevel(2)).toBeNull();
+		});
+
+		it("returns 'warm' for streaks from warm threshold (3) up to hot threshold (5)", () => {
+			expect(getHeatLevel(3)).toBe("warm");
+			expect(getHeatLevel(4)).toBe("warm");
+		});
+
+		it("returns 'hot' for streaks from hot threshold (5) up to blazing threshold (7)", () => {
+			expect(getHeatLevel(5)).toBe("hot");
+			expect(getHeatLevel(6)).toBe("hot");
+		});
+
+		it("returns 'blazing' for streaks at or above blazing threshold (7)", () => {
+			expect(getHeatLevel(7)).toBe("blazing");
+			expect(getHeatLevel(8)).toBe("blazing");
+			expect(getHeatLevel(15)).toBe("blazing");
+		});
 	});
 
 	it("calculates flame counts", () => {
@@ -150,7 +168,10 @@ describe("tournamentEngine", () => {
 				pendingMatchIds: null,
 			});
 
-			const onlyByesState = deriveBracketState(["__BYE__1_0", "__BYE__1_1"], []);
+			const onlyByesState = deriveBracketState(
+				["__BYE__1_0", "__BYE__1_1"],
+				[],
+			);
 			expect(onlyByesState).toEqual({
 				isComplete: true,
 				totalMatches: 0,
