@@ -18,15 +18,14 @@ describe("storage", () => {
 		resetStorageModuleCache();
 	});
 
-	it("stores encryption key in sessionStorage and not localStorage", () => {
-		setStorageString("secure_test_key", "secret_value");
-		expect(sessionStorage.getItem("__device_key__")).not.toBeNull();
-		expect(localStorage.getItem("__device_key__")).toBeNull();
-	});
-
-	it("purges legacy device key from localStorage", () => {
+	it("retains encryption key in memory and purges legacy device key from Web Storage", () => {
 		localStorage.setItem("__device_key__", "legacy_cleartext_key_hex");
+		sessionStorage.setItem("__device_key__", "legacy_cleartext_session_key");
+
 		setStorageString("secure_test_key", "secret_value");
+
+		// Encryption key should not be exposed in Web Storage
+		expect(sessionStorage.getItem("__device_key__")).toBeNull();
 		expect(localStorage.getItem("__device_key__")).toBeNull();
 	});
 
@@ -48,9 +47,7 @@ describe("storage", () => {
 	});
 
 	it("returns fallback for missing JSON keys", () => {
-		expect(
-			parseJsonValue(getStorageString("missing_key"), { fallback: true }),
-		).toEqual({
+		expect(parseJsonValue(getStorageString("missing_key"), { fallback: true })).toEqual({
 			fallback: true,
 		});
 	});
@@ -58,9 +55,7 @@ describe("storage", () => {
 	it("returns fallback for invalid JSON values", () => {
 		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
 		localStorage.setItem("corrupted", "{invalid_json");
-		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe(
-			"fallback",
-		);
+		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe("fallback");
 		expect(spy).toHaveBeenCalled();
 		spy.mockRestore();
 	});
@@ -74,18 +69,13 @@ describe("storage", () => {
 		await ratingsAPI.saveRatings(userId, sampleRatings);
 
 		// Verify raw localStorage contains encrypted string (contains IV colon delimiter and not plaintext JSON)
-		const rawStoredRatings = localStorage.getItem(
-			`nosferatu-ratings-${userId}`,
-		);
+		const rawStoredRatings = localStorage.getItem(`nosferatu-ratings-${userId}`);
 		expect(rawStoredRatings).not.toBeNull();
 		expect(rawStoredRatings).not.toContain('"rating":1500');
 		expect(rawStoredRatings).toContain(":");
 
 		// Verify decrypting via getStorageString restores original ratings object
-		const decryptedRatings = parseJsonValue(
-			getStorageString(`nosferatu-ratings-${userId}`),
-			null,
-		);
+		const decryptedRatings = parseJsonValue(getStorageString(`nosferatu-ratings-${userId}`), null);
 		expect(decryptedRatings).toEqual(sampleRatings);
 
 		// Verify candidate storage is also stored encrypted in localStorage
@@ -107,20 +97,21 @@ describe("storage", () => {
 		expect(decryptValue(unencryptedData)).toBe(unencryptedData);
 	});
 
-	it("uses dynamic random device key per session without static hardcoded key fallback", () => {
+	it("uses in-memory device key per runtime session without persisting key to Web Storage", () => {
 		setStorageString("sec_test", "confidential_data");
-		const key1 = sessionStorage.getItem("__device_key__");
-		expect(key1).not.toBeNull();
-		expect(key1).not.toBe("nosferatu-secure-storage-key-1337");
+		expect(sessionStorage.getItem("__device_key__")).toBeNull();
+		expect(localStorage.getItem("__device_key__")).toBeNull();
 
-		// Reset session state and verify a new unique key is generated
-		sessionStorage.clear();
+		const encryptedVal1 = localStorage.getItem("sec_test");
+		expect(encryptedVal1).not.toBeNull();
+
+		// Reset module cache (simulating runtime restart)
 		resetStorageModuleCache();
 
 		setStorageString("sec_test_2", "confidential_data_2");
-		const key2 = sessionStorage.getItem("__device_key__");
-		expect(key2).not.toBeNull();
-		expect(key2).not.toEqual(key1);
+		const encryptedVal2 = localStorage.getItem("sec_test_2");
+		expect(encryptedVal2).not.toBeNull();
+		expect(sessionStorage.getItem("__device_key__")).toBeNull();
 	});
 
 	it("generates distinct random IVs for each encrypted item and handles edge cases in decryptValue", () => {
