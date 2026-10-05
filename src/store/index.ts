@@ -748,8 +748,6 @@ export function useAppStoreInitialization(onUserContext?: (name: string) => void
 	}, [initializeTheme, initializeUser, onUserContext]);
 }
 
-export { useShallow };
-
 /**
  * Selector for checking if an active tournament is currently running,
  * preventing re-renders on per-vote tournament progress mutations.
