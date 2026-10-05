@@ -11,8 +11,7 @@ import { NameSelector } from "./NameSelector";
 import { TournamentArena } from "./TournamentArena";
 
 export function TournamentSetup() {
-	const { names, isComplete, ratings, userId, userName } =
-		useTournamentSetupState();
+	const { names, isComplete, ratings, userId, userName } = useTournamentSetupState();
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
 	const hasSavedRef = useRef(false);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -21,18 +20,10 @@ export function TournamentSetup() {
 	useInertiaScroll(containerRef, prefersReducedMotion);
 
 	const saveRatingsMutation = useMutation({
-		mutationFn: ({
-			userId,
-			ratings,
-		}: {
-			userId: string;
-			ratings: Record<string, RatingData>;
-		}) => ratingsAPI.saveRatings(userId, ratings),
+		mutationFn: ({ userId, ratings }: { userId: string; ratings: Record<string, RatingData> }) =>
+			ratingsAPI.saveRatings(userId, ratings),
 		onError: (error) => {
-			console.error(
-				"Tournament ratings save failed — ratings were not persisted",
-				error,
-			);
+			console.error("Tournament ratings save failed — ratings were not persisted", error);
 		},
 	});
 
@@ -56,10 +47,7 @@ export function TournamentSetup() {
 	}, [isComplete, ratings, userId, userName, saveRatingsMutation.mutate]);
 
 	return (
-		<div
-			ref={containerRef}
-			className="w-full flex flex-col flex-1 min-h-[520px] gap-2"
-		>
+		<div ref={containerRef} className="w-full flex flex-col flex-1 min-h-[520px] gap-2">
 			<AnimatePresence mode="wait">
 				{names && names.length >= 2 ? (
 					<motion.div

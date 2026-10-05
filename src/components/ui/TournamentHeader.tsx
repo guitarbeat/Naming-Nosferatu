@@ -43,10 +43,7 @@ export function BracketTree({
 		() => Array.from({ length: Math.max(1, totalRounds) }, (_, i) => i + 1),
 		[totalRounds],
 	);
-	const stageFlavor = useMemo(
-		() => getStageFlavor(round, totalRounds),
-		[round, totalRounds],
-	);
+	const stageFlavor = useMemo(() => getStageFlavor(round, totalRounds), [round, totalRounds]);
 
 	if (onOpenBracket) {
 		return (
@@ -77,10 +74,7 @@ export function BracketTree({
 								: "border-border/20 bg-foreground/5 text-muted-foreground";
 
 						return (
-							<div
-								key={`bracket-round-${stageRound}`}
-								className="flex items-center gap-1"
-							>
+							<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
 								<div
 									className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${tone}`}
 								>
@@ -90,11 +84,7 @@ export function BracketTree({
 								{index < rounds.length - 1 && (
 									<div
 										className={`h-[1px] w-4 sm:w-6 ${
-											isDone
-												? "bg-chart-2/70"
-												: isActive
-													? "bg-primary/70"
-													: "bg-border/20"
+											isDone ? "bg-chart-2/70" : isActive ? "bg-primary/70" : "bg-border/20"
 										}`}
 									/>
 								)}
@@ -126,10 +116,7 @@ export function BracketTree({
 							: "border-border/20 bg-foreground/5 text-muted-foreground";
 
 					return (
-						<div
-							key={`bracket-round-${stageRound}`}
-							className="flex items-center gap-1"
-						>
+						<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
 							<div
 								className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${tone}`}
 							>
@@ -139,11 +126,7 @@ export function BracketTree({
 							{index < rounds.length - 1 && (
 								<div
 									className={`h-[1px] w-4 sm:w-6 ${
-										isDone
-											? "bg-chart-2/70"
-											: isActive
-												? "bg-primary/70"
-												: "bg-border/20"
+										isDone ? "bg-chart-2/70" : isActive ? "bg-primary/70" : "bg-border/20"
 									}`}
 								/>
 							)}
@@ -211,16 +194,11 @@ function HeaderTitle({
 					<span className="text-muted-foreground" aria-hidden="true">
 						&middot;
 					</span>
-					<span>
-						{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}
-					</span>
+					<span>{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}</span>
 				</div>
 				<div className="flex items-baseline gap-2">
 					<h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
-						Match{" "}
-						<span className="font-mono tabular-nums text-primary">
-							{currentMatchNumber}
-						</span>{" "}
+						Match <span className="font-mono tabular-nums text-primary">{currentMatchNumber}</span>{" "}
 						of <span className="font-mono tabular-nums">{totalMatches}</span>
 					</h2>
 					{etaMinutes > 0 && (
@@ -243,10 +221,7 @@ function HeaderControls({
 	handleUndo,
 	quitTournament,
 	onOpenBracket,
-}: Pick<
-	TournamentHeaderProps,
-	"canUndo" | "handleUndo" | "quitTournament" | "onOpenBracket"
->) {
+}: Pick<TournamentHeaderProps, "canUndo" | "handleUndo" | "quitTournament" | "onOpenBracket">) {
 	return (
 		<div className="flex items-center gap-1.5 sm:gap-2">
 			{onOpenBracket && (
@@ -295,9 +270,7 @@ function HeaderControls({
 /**
  * Fluid progress bar indicating tournament progress.
  */
-function ProgressBar({
-	progressWidth,
-}: Pick<TournamentHeaderProps, "progressWidth">) {
+function ProgressBar({ progressWidth }: Pick<TournamentHeaderProps, "progressWidth">) {
 	return (
 		<div
 			className="h-1.5 w-full overflow-hidden rounded-full bg-secondary/50"
@@ -333,9 +306,7 @@ function ContextRibbon({
 					{matchupTone}
 				</span>
 				<span className="hidden md:inline text-muted-foreground">&middot;</span>
-				<span className="hidden md:inline text-muted-foreground">
-					{pressureCopy}
-				</span>
+				<span className="hidden md:inline text-muted-foreground">{pressureCopy}</span>
 			</div>
 
 			{dominantStreak && (
@@ -344,9 +315,7 @@ function ContextRibbon({
 						dominantStreak.heatLevel,
 					)}`}
 				>
-					<span className="rounded-full bg-foreground/10 px-1 py-0.2 text-[9px]">
-						HOT
-					</span>
+					<span className="rounded-full bg-foreground/10 px-1 py-0.2 text-[9px]">HOT</span>
 					<span>
 						{dominantStreak.name} &times;{dominantStreak.streak}
 					</span>
