@@ -1,8 +1,4 @@
-import {
-	type AnimationPlaybackControls,
-	animate,
-	useMotionValue,
-} from "framer-motion";
+import { type AnimationPlaybackControls, animate, useMotionValue } from "framer-motion";
 import {
 	type RefObject,
 	useCallback,
@@ -83,9 +79,7 @@ export function useTimedState<T>(defaultValue: T) {
 // 4. Tournament State persistence helpers (Consolidated from tournamentPersistence.ts)
 // ============================================================================
 
-function createDefaultPersistentState(
-	userName: string,
-): PersistentTournamentState {
+function createDefaultPersistentState(userName: string): PersistentTournamentState {
 	return {
 		matchHistory: [],
 		currentRound: 1,
@@ -151,10 +145,7 @@ function isValidTeamMatch(value: unknown): value is TeamMatch {
 		return false;
 	}
 	const candidate = value as TeamMatch;
-	return (
-		typeof candidate.leftTeamId === "string" &&
-		typeof candidate.rightTeamId === "string"
-	);
+	return typeof candidate.leftTeamId === "string" && typeof candidate.rightTeamId === "string";
 }
 
 function sanitizePersistentState(
@@ -201,10 +192,7 @@ function sanitizePersistentState(
 		...merged,
 		mode,
 		matchHistory: Array.isArray(merged.matchHistory) ? merged.matchHistory : [],
-		ratings:
-			merged.ratings && typeof merged.ratings === "object"
-				? merged.ratings
-				: {},
+		ratings: merged.ratings && typeof merged.ratings === "object" ? merged.ratings : {},
 		namesKey: typeof merged.namesKey === "string" ? merged.namesKey : "",
 		teams,
 		teamMatches,
@@ -276,14 +264,7 @@ function tournamentReducer(
 			};
 		}
 		case "VOTE": {
-			const {
-				currentMatch,
-				winnerId,
-				loserId,
-				matchNumber,
-				round,
-				voteTimestamp,
-			} = action.payload;
+			const { currentMatch, winnerId, loserId, matchNumber, round, voteTimestamp } = action.payload;
 
 			const newRatings = computeUpdatedRatings({
 				currentMatch,
@@ -312,10 +293,7 @@ function tournamentReducer(
 				history: [...state.history, newHistoryEntry],
 				persistentState: {
 					...state.persistentState,
-					matchHistory: [
-						...(state.persistentState.matchHistory || []),
-						matchRecord,
-					],
+					matchHistory: [...(state.persistentState.matchHistory || []), matchRecord],
 					currentMatch: matchNumber + 1,
 					currentRound: round,
 					ratings: newRatings,
@@ -327,10 +305,7 @@ function tournamentReducer(
 		case "UNDO": {
 			const { lastEntry } = action.payload;
 			const newHistory = state.history.slice(0, -1);
-			const newMatchHistory = (state.persistentState.matchHistory || []).slice(
-				0,
-				-1,
-			);
+			const newMatchHistory = (state.persistentState.matchHistory || []).slice(0, -1);
 
 			return {
 				...state,
@@ -418,42 +393,32 @@ function haveSameIds(a: string[], b: string[]): boolean {
 	return true;
 }
 
-export function useTournamentState(
-	names: NameItem[],
-	userName?: string,
-): UseTournamentStateResult {
+export function useTournamentState(names: NameItem[], userName?: string): UseTournamentStateResult {
 	const toast = useToast();
 	const [isVoting, setIsVoting] = useState(false);
 
-	const tournamentMode = useMemo(
-		() => resolveTournamentMode(names.length),
-		[names.length],
-	);
+	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
-	const tournamentId = useMemo(
-		() => createTournamentId(names, userName),
-		[names, userName],
-	);
+	const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
 
 	const defaultPersistentState = useMemo(
 		() => createDefaultPersistentState(userName || "anonymous"),
 		[userName],
 	);
 
-	const [persistentStateRaw, setPersistentState] =
-		useLocalStorage<PersistentTournamentState>(
-			tournamentId,
-			defaultPersistentState,
-			{
-				onError: () => {
-					toast.showWarning(
-						"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
-					);
-				},
+	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
+		tournamentId,
+		defaultPersistentState,
+		{
+			onError: () => {
+				toast.showWarning(
+					"Your progress could not be saved locally. Voting will continue but may not persist after a page refresh.",
+				);
 			},
-		);
+		},
+	);
 
 	const persistentState = useMemo(
 		(): PersistentTournamentState =>
@@ -501,12 +466,7 @@ export function useTournamentState(
 				lastUpdated: state.persistentState.lastUpdated,
 			});
 		}
-	}, [
-		state.persistentState,
-		state.ratings,
-		setPersistentState,
-		tournamentActions,
-	]);
+	}, [state.persistentState, state.ratings, setPersistentState, tournamentActions]);
 
 	useEffect(() => {
 		ratingsRef.current = state.ratings;
@@ -531,29 +491,21 @@ export function useTournamentState(
 		const initializeTournament = () => {
 			const storeTournament = useAppStore.getState().tournament;
 			const effectivePersistentState: PersistentTournamentState =
-				persistentState.bracketEntrants &&
-				persistentState.bracketEntrants.length > 0
+				persistentState.bracketEntrants && persistentState.bracketEntrants.length > 0
 					? persistentState
 					: {
 							...persistentState,
-							matchHistory:
-								storeTournament.matchHistory ?? persistentState.matchHistory,
-							currentRound:
-								storeTournament.currentRound ?? persistentState.currentRound,
-							currentMatch:
-								storeTournament.currentMatch ?? persistentState.currentMatch,
-							totalMatches:
-								storeTournament.totalMatches ?? persistentState.totalMatches,
+							matchHistory: storeTournament.matchHistory ?? persistentState.matchHistory,
+							currentRound: storeTournament.currentRound ?? persistentState.currentRound,
+							currentMatch: storeTournament.currentMatch ?? persistentState.currentMatch,
+							totalMatches: storeTournament.totalMatches ?? persistentState.totalMatches,
 							teams: storeTournament.teams ?? persistentState.teams,
-							bracketEntrants:
-								storeTournament.bracketEntrants ??
-								persistentState.bracketEntrants,
+							bracketEntrants: storeTournament.bracketEntrants ?? persistentState.bracketEntrants,
 							mode: (storeTournament.mode ?? tournamentMode) as TournamentMode,
 						};
 
 			const hasValidPersistence =
-				(persistentState.namesKey === namesKey &&
-					persistentState.mode === tournamentMode) ||
+				(persistentState.namesKey === namesKey && persistentState.mode === tournamentMode) ||
 				(Boolean(
 					effectivePersistentState.bracketEntrants &&
 						effectivePersistentState.bracketEntrants.length > 0,
@@ -584,15 +536,9 @@ export function useTournamentState(
 				: effectivePersistentState.bracketEntrants;
 
 			const stateUpdates: Partial<PersistentTournamentState> = {
-				matchHistory: shouldResetBracket
-					? []
-					: effectivePersistentState.matchHistory,
-				currentRound: shouldResetBracket
-					? 1
-					: effectivePersistentState.currentRound,
-				currentMatch: shouldResetBracket
-					? 1
-					: effectivePersistentState.currentMatch,
+				matchHistory: shouldResetBracket ? [] : effectivePersistentState.matchHistory,
+				currentRound: shouldResetBracket ? 1 : effectivePersistentState.currentRound,
+				currentMatch: shouldResetBracket ? 1 : effectivePersistentState.currentMatch,
 				totalMatches: Math.max(0, participantIds.length - 1),
 				teams,
 				bracketEntrants,
@@ -616,8 +562,7 @@ export function useTournamentState(
 			}
 
 			const storedRatingsAreFresh =
-				(effectivePersistentState.lastUpdated ?? 0) >=
-				lastRatingsUpdateRef.current;
+				(effectivePersistentState.lastUpdated ?? 0) >= lastRatingsUpdateRef.current;
 
 			let activeRatings = initialRatings;
 			if (
@@ -663,10 +608,7 @@ export function useTournamentState(
 	);
 	const bracketDerived = useMemo(
 		() =>
-			deriveBracketState(
-				state.persistentState.bracketEntrants,
-				state.persistentState.matchHistory,
-			),
+			deriveBracketState(state.persistentState.bracketEntrants, state.persistentState.matchHistory),
 		[state.persistentState.bracketEntrants, state.persistentState.matchHistory],
 	);
 
@@ -678,13 +620,7 @@ export function useTournamentState(
 			teamsById,
 			idToNameMap,
 		});
-	}, [
-		state.refreshKey,
-		idToNameMap,
-		tournamentMode,
-		bracketDerived.pendingMatchIds,
-		teamsById,
-	]);
+	}, [state.refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
 
 	const openingEntrants = useMemo(() => {
 		// ⚡ Bolt Performance Optimization: Replaced reduce with a for loop to avoid allocations
@@ -709,12 +645,7 @@ export function useTournamentState(
 			}
 		}
 		return acc;
-	}, [
-		state.persistentState.bracketEntrants,
-		tournamentMode,
-		teamsById,
-		idToNameMap,
-	]);
+	}, [state.persistentState.bracketEntrants, tournamentMode, teamsById, idToNameMap]);
 
 	const isComplete = bracketDerived.isComplete;
 	const metrics = useMemo(
@@ -724,15 +655,8 @@ export function useTournamentState(
 			}),
 		[bracketDerived],
 	);
-	const {
-		totalMatches,
-		matchNumber,
-		round,
-		totalRounds,
-		stageLabel,
-		progress,
-		etaMinutes,
-	} = metrics;
+	const { totalMatches, matchNumber, round, totalRounds, stageLabel, progress, etaMinutes } =
+		metrics;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -748,9 +672,7 @@ export function useTournamentState(
 					? currentMatch.left.memberIds
 					: [
 							String(
-								typeof currentMatch.left === "string"
-									? currentMatch.left
-									: currentMatch.left.id,
+								typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id,
 							),
 						];
 			const rightIds =
@@ -758,9 +680,7 @@ export function useTournamentState(
 					? currentMatch.right.memberIds
 					: [
 							String(
-								typeof currentMatch.right === "string"
-									? currentMatch.right
-									: currentMatch.right.id,
+								typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
 							),
 						];
 
@@ -787,10 +707,7 @@ export function useTournamentState(
 					winnerSide,
 				})
 				.catch((err: unknown) => {
-					console.warn(
-						"[tournament] apply_tournament_match_elo failed (non-fatal):",
-						err,
-					);
+					console.warn("[tournament] apply_tournament_match_elo failed (non-fatal):", err);
 				});
 
 			dispatch({
@@ -915,7 +832,11 @@ export function useInertiaScroll(
 	const isAutoScrollPausedRef = useRef(false);
 	const autoScrollRafRef = useRef<number | null>(null);
 	const lastAutoScrollTimeRef = useRef<number>(0);
-	const tilesCacheRef = useRef<HTMLElement[] | null>(null);
+	const tilesCacheRef = useRef<{
+		tiles: HTMLElement[];
+		colMap: Map<number, HTMLElement[]>;
+		allCols: number[];
+	} | null>(null);
 
 	// Synchronize scrollY motion value with the DOM scroll position and seamless loop boundaries
 	useEffect(() => {
@@ -936,8 +857,7 @@ export function useInertiaScroll(
 					return;
 				}
 				if (latest <= threshold) {
-					const wrapped =
-						scrollHeight - (clientHeight + threshold * 2) + latest;
+					const wrapped = scrollHeight - (clientHeight + threshold * 2) + latest;
 					el.scrollTop = wrapped;
 					scrollY.set(wrapped);
 					return;
@@ -958,8 +878,7 @@ export function useInertiaScroll(
 						return;
 					}
 					if (latest <= threshold && latest > 0) {
-						const wrapped =
-							scrollHeight - (clientHeight + threshold * 2) + latest;
+						const wrapped = scrollHeight - (clientHeight + threshold * 2) + latest;
 						window.scrollTo({ top: wrapped, behavior: "instant" });
 						scrollY.set(wrapped);
 						return;
@@ -997,10 +916,7 @@ export function useInertiaScroll(
 			// Capture current position and calculate velocity for momentum
 			const currentY = scrollY.get();
 			const now = performance.now();
-			const dt = Math.max(
-				1,
-				Math.min(100, now - (lastWheelTsRef.current || now)),
-			);
+			const dt = Math.max(1, Math.min(100, now - (lastWheelTsRef.current || now)));
 			lastWheelTsRef.current = now;
 
 			// Stop any ongoing inertia motion
@@ -1059,9 +975,7 @@ export function useInertiaScroll(
 			const active = document.activeElement as HTMLElement | null;
 			if (
 				active &&
-				(active.tagName === "INPUT" ||
-					active.tagName === "TEXTAREA" ||
-					active.isContentEditable)
+				(active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)
 			) {
 				return;
 			}
@@ -1092,28 +1006,46 @@ export function useInertiaScroll(
 				return;
 			}
 
-			// ⚡ Bolt Performance Optimization: Cache querySelectorAll tile DOM nodes to prevent layout thrashing and repeated DOM queries on high-frequency keyboard events
-			if (!tilesCacheRef.current || tilesCacheRef.current.length === 0) {
-				tilesCacheRef.current = Array.from(
+			// ⚡ Bolt Performance Optimization: Cache querySelectorAll tile DOM nodes, column map, and sorted column numbers to prevent layout thrashing and repeated DOM queries / sorting on high-frequency keyboard events
+			if (!tilesCacheRef.current || tilesCacheRef.current.tiles.length === 0) {
+				const tileElements = Array.from(
 					container.querySelectorAll<HTMLElement>(
 						'[data-tile-id], .drift-wall__tile, [role="button"]',
 					),
-				).filter(
-					(el) =>
-						!el.hasAttribute("disabled") &&
-						el.getAttribute("aria-hidden") !== "true",
-				);
+				).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+
+				const colMap = new Map<number, HTMLElement[]>();
+				for (let i = 0; i < tileElements.length; i++) {
+					const tile = tileElements[i];
+					const colAttr = tile.getAttribute("data-col");
+					if (colAttr !== null) {
+						const col = Number(colAttr);
+						let list = colMap.get(col);
+						if (!list) {
+							list = [];
+							colMap.set(col, list);
+						}
+						list.push(tile);
+					}
+				}
+
+				const allCols = Array.from(colMap.keys()).sort((a, b) => a - b);
+
+				tilesCacheRef.current = {
+					tiles: tileElements,
+					colMap,
+					allCols,
+				};
 			}
 
-			const tiles = tilesCacheRef.current;
+			const tileCache = tilesCacheRef.current;
+			const tiles = tileCache ? tileCache.tiles : [];
 
 			if (!tiles || tiles.length === 0) {
 				return;
 			}
 
-			const activeTileIndex = tiles.findIndex(
-				(el) => el === active || el.contains(active),
-			);
+			const activeTileIndex = tiles.findIndex((el) => el === active || el.contains(active));
 			let nextTile: HTMLElement | null = null;
 
 			if (activeTileIndex === -1) {
@@ -1134,18 +1066,14 @@ export function useInertiaScroll(
 					} else if (key === "ArrowUp") {
 						// When at top of list, wrap circularly to the bottom
 						const isAtTop = activeTileIndex <= 0;
-						nextTile = isAtTop
-							? tiles[tiles.length - 1]
-							: tiles[activeTileIndex - 1];
+						nextTile = isAtTop ? tiles[tiles.length - 1] : tiles[activeTileIndex - 1];
 					} else if (key === "Home") {
 						nextTile = tiles[0];
 					} else if (key === "End") {
 						nextTile = tiles[tiles.length - 1];
 					}
 				} else {
-					const colTiles = tiles.filter(
-						(t) => t.getAttribute("data-col") === currentCol,
-					);
+					const colTiles = tiles.filter((t) => t.getAttribute("data-col") === currentCol);
 					const indexInCol = colTiles.indexOf(currentTile);
 
 					if (key === "ArrowDown") {
@@ -1155,38 +1083,20 @@ export function useInertiaScroll(
 					} else if (key === "ArrowUp") {
 						// When hitting the top of the column list, shift focus to bottom
 						const isAtTop = indexInCol <= 0;
-						nextTile = isAtTop
-							? colTiles[colTiles.length - 1]
-							: colTiles[indexInCol - 1];
+						nextTile = isAtTop ? colTiles[colTiles.length - 1] : colTiles[indexInCol - 1];
 					} else if (key === "PageDown") {
 						const stepIndex = (indexInCol + 4) % colTiles.length;
 						nextTile = colTiles[stepIndex];
 					} else if (key === "PageUp") {
-						const stepIndex =
-							(indexInCol - 4 + colTiles.length) % colTiles.length;
+						const stepIndex = (indexInCol - 4 + colTiles.length) % colTiles.length;
 						nextTile = colTiles[stepIndex];
 					} else if (key === "Home") {
 						nextTile = colTiles[0];
 					} else if (key === "End") {
 						nextTile = colTiles[colTiles.length - 1];
 					} else if (key === "ArrowRight" || key === "ArrowLeft") {
-						// ⚡ Bolt Performance Optimization: Group tiles by column in a single linear pass to avoid redundant Set instantiation, array allocations, and filtering
-						const colMap = new Map<number, HTMLElement[]>();
-						for (let i = 0; i < tiles.length; i++) {
-							const tile = tiles[i];
-							const colAttr = tile.getAttribute("data-col");
-							if (colAttr !== null) {
-								const col = Number(colAttr);
-								let list = colMap.get(col);
-								if (!list) {
-									list = [];
-									colMap.set(col, list);
-								}
-								list.push(tile);
-							}
-						}
-
-						const allCols = Array.from(colMap.keys()).sort((a, b) => a - b);
+						// ⚡ Bolt Performance Optimization: Cache column grouping and sorted column list to eliminate redundant O(N) column grouping and O(C log C) sorting on every horizontal arrow keypress
+						const { colMap, allCols } = tileCache;
 						if (allCols.length > 0) {
 							const colNum = Number(currentCol);
 							const colIdx = allCols.indexOf(colNum);
@@ -1196,12 +1106,8 @@ export function useInertiaScroll(
 										? allCols[(colIdx + 1) % allCols.length]
 										: allCols[(colIdx - 1 + allCols.length) % allCols.length];
 								const targetColTiles = colMap.get(targetColNum) || [];
-								const targetIdx = Math.min(
-									indexInCol,
-									targetColTiles.length - 1,
-								);
-								nextTile =
-									targetColTiles[targetIdx] || targetColTiles[0] || null;
+								const targetIdx = Math.min(indexInCol, targetColTiles.length - 1);
+								nextTile = targetColTiles[targetIdx] || targetColTiles[0] || null;
 							}
 						}
 					}

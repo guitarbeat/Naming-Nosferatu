@@ -1,10 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	namesQueryOptions,
-	queryClient,
-	ratingsAPI,
-	SUPABASE_UNAVAILABLE_MSG,
-} from "./api";
+import { namesQueryOptions, queryClient, ratingsAPI, SUPABASE_UNAVAILABLE_MSG } from "./api";
 import * as storageModule from "./lib/storage";
 import {
 	getStorageString,
@@ -27,9 +22,7 @@ describe("api module", () => {
 
 	describe("constants & queryClient", () => {
 		it("exports correct SUPABASE_UNAVAILABLE_MSG", () => {
-			expect(SUPABASE_UNAVAILABLE_MSG).toBe(
-				"Database is unavailable. Running in local mode.",
-			);
+			expect(SUPABASE_UNAVAILABLE_MSG).toBe("Database is unavailable. Running in local mode.");
 		});
 
 		it("configures queryClient with correct default options", () => {
@@ -44,19 +37,11 @@ describe("api module", () => {
 	describe("namesQueryOptions and fetchNames", () => {
 		it("creates query options with expected queryKey and staleTime", () => {
 			const optionsIncludeHidden = namesQueryOptions(true);
-			expect(optionsIncludeHidden.queryKey).toEqual([
-				"names",
-				"list",
-				{ includeHidden: true },
-			]);
+			expect(optionsIncludeHidden.queryKey).toEqual(["names", "list", { includeHidden: true }]);
 			expect(optionsIncludeHidden.staleTime).toBe(30_000);
 
 			const optionsExcludeHidden = namesQueryOptions(false);
-			expect(optionsExcludeHidden.queryKey).toEqual([
-				"names",
-				"list",
-				{ includeHidden: false },
-			]);
+			expect(optionsExcludeHidden.queryKey).toEqual(["names", "list", { includeHidden: false }]);
 		});
 
 		it("fetches names excluding hidden items when includeHidden is false", async () => {
@@ -74,9 +59,7 @@ describe("api module", () => {
 				expect(result.source).toBe("local");
 				expect(Array.isArray(result.names)).toBe(true);
 				expect(result.names.length).toBeGreaterThan(0);
-				expect(result.names.every((n) => !n.isHidden && !n.is_hidden)).toBe(
-					true,
-				);
+				expect(result.names.every((n) => !n.isHidden && !n.is_hidden)).toBe(true);
 			}
 		});
 
@@ -103,9 +86,7 @@ describe("api module", () => {
 				meta: {},
 				signal: new AbortController().signal,
 			});
-			expect(
-				filteredResult?.names.find((n) => n.id === candidates[0].id),
-			).toBeUndefined();
+			expect(filteredResult?.names.find((n) => n.id === candidates[0].id)).toBeUndefined();
 
 			const allResult = await namesQueryOptions(true).queryFn?.({
 				client: queryClient,
@@ -113,9 +94,7 @@ describe("api module", () => {
 				meta: {},
 				signal: new AbortController().signal,
 			});
-			expect(
-				allResult?.names.find((n) => n.id === candidates[0].id),
-			).toBeDefined();
+			expect(allResult?.names.find((n) => n.id === candidates[0].id)).toBeDefined();
 		});
 
 		it("seamlessly merges new default candidates if stored candidates are missing items", async () => {
@@ -223,9 +202,7 @@ describe("api module", () => {
 				signal: new AbortController().signal,
 			});
 
-			expect(
-				filteredResult?.names.find((n) => n.id === candidates[0].id),
-			).toBeUndefined();
+			expect(filteredResult?.names.find((n) => n.id === candidates[0].id)).toBeUndefined();
 		});
 
 		it("handles SSR environment gracefully when window is undefined", async () => {
@@ -281,10 +258,7 @@ describe("api module", () => {
 
 			await ratingsAPI.saveRatings(userId, newRatings);
 
-			const savedRatings = parseJsonValue(
-				getStorageString(`nosferatu-ratings-${userId}`),
-				null,
-			);
+			const savedRatings = parseJsonValue(getStorageString(`nosferatu-ratings-${userId}`), null);
 			expect(savedRatings).toEqual(newRatings);
 
 			const storedCandidates = parseJsonValue<NameItem[]>(
@@ -366,9 +340,7 @@ describe("api module", () => {
 		});
 
 		it("handles errors during saveRatings and logs a warning", async () => {
-			const consoleWarnSpy = vi
-				.spyOn(console, "warn")
-				.mockImplementation(() => {});
+			const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
 			const faultyRatings = new Proxy(
 				{},
@@ -381,10 +353,7 @@ describe("api module", () => {
 
 			await ratingsAPI.saveRatings("user-error", faultyRatings as any);
 
-			expect(consoleWarnSpy).toHaveBeenCalledWith(
-				"Failed to persist ratings:",
-				expect.any(Error),
-			);
+			expect(consoleWarnSpy).toHaveBeenCalledWith("Failed to persist ratings:", expect.any(Error));
 		});
 
 		it("returns early when saveRatings runs in SSR environment (window undefined)", async () => {
@@ -420,17 +389,12 @@ describe("api module", () => {
 
 			await ratingsAPI.saveRatings(userId, sampleRatings);
 
-			expect(warnSpy).toHaveBeenCalledWith(
-				"Failed to persist candidates:",
-				testError,
-			);
+			expect(warnSpy).toHaveBeenCalledWith("Failed to persist candidates:", testError);
 		});
 
 		it("triggers saveStoredNames catch block when missing candidates are merged in getStoredNames and writeStorageJson throws", async () => {
 			const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-			const testError = new Error(
-				"Storage write error during candidate auto-merge",
-			);
+			const testError = new Error("Storage write error during candidate auto-merge");
 
 			const partialCandidate: NameItem = {
 				id: "legacy-1",
@@ -466,10 +430,7 @@ describe("api module", () => {
 			});
 
 			expect(result?.names.length).toBeGreaterThan(1);
-			expect(warnSpy).toHaveBeenCalledWith(
-				"Failed to persist candidates:",
-				testError,
-			);
+			expect(warnSpy).toHaveBeenCalledWith("Failed to persist candidates:", testError);
 		});
 	});
 });
