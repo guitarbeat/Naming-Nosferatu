@@ -9,10 +9,33 @@ import {
 	getBracketStageLabel,
 	getFlameCount,
 	getHeatLevel,
+	nextPowerOfTwo,
 	resolveTournamentMode,
 } from "./tournamentEngine";
 
 describe("tournamentEngine", () => {
+	describe("nextPowerOfTwo", () => {
+		it.each([
+			{ input: -10, expected: 1 },
+			{ input: 0, expected: 1 },
+			{ input: 1, expected: 1 },
+			{ input: 2, expected: 2 },
+			{ input: 3, expected: 4 },
+			{ input: 4, expected: 4 },
+			{ input: 5, expected: 8 },
+			{ input: 7, expected: 8 },
+			{ input: 8, expected: 8 },
+			{ input: 9, expected: 16 },
+			{ input: 15, expected: 16 },
+			{ input: 16, expected: 16 },
+			{ input: 31, expected: 32 },
+			{ input: 33, expected: 64 },
+			{ input: 100, expected: 128 },
+		])("returns $expected for input $input", ({ input, expected }) => {
+			expect(nextPowerOfTwo(input)).toBe(expected);
+		});
+	});
+
 	it("resolves tournament mode correctly based on entrant count", () => {
 		expect(resolveTournamentMode(4)).toBe("2v2");
 		expect(resolveTournamentMode(8)).toBe("2v2");
