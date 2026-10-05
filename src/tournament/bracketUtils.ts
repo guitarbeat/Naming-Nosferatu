@@ -55,7 +55,7 @@ export interface VisualMatch {
 	targetSlot?: 0 | 1;
 }
 
-export interface VisualRound {
+interface VisualRound {
 	roundNumber: number;
 	roundName: string;
 	matches: VisualMatch[];
