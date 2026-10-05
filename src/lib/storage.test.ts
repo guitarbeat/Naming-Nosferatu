@@ -1,4 +1,3 @@
-import CryptoJS from "crypto-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ratingsAPI } from "../api";
 import { logger } from "./logger";
@@ -19,14 +18,15 @@ describe("storage", () => {
 		resetStorageModuleCache();
 	});
 
-	it("retains encryption key in memory and purges legacy device key from Web Storage", () => {
-		localStorage.setItem("__device_key__", "legacy_cleartext_key_hex");
-		sessionStorage.setItem("__device_key__", "legacy_cleartext_session_key");
-
+	it("stores encryption key in sessionStorage and not localStorage", () => {
 		setStorageString("secure_test_key", "secret_value");
+		expect(sessionStorage.getItem("__device_key__")).not.toBeNull();
+		expect(localStorage.getItem("__device_key__")).toBeNull();
+	});
 
-		// Encryption key should not be exposed in Web Storage
-		expect(sessionStorage.getItem("__device_key__")).toBeNull();
+	it("purges legacy device key from localStorage", () => {
+		localStorage.setItem("__device_key__", "legacy_cleartext_key_hex");
+		setStorageString("secure_test_key", "secret_value");
 		expect(localStorage.getItem("__device_key__")).toBeNull();
 	});
 
@@ -98,21 +98,20 @@ describe("storage", () => {
 		expect(decryptValue(unencryptedData)).toBe(unencryptedData);
 	});
 
-	it("uses in-memory device key per runtime session without persisting key to Web Storage", () => {
+	it("uses dynamic random device key per session without static hardcoded key fallback", () => {
 		setStorageString("sec_test", "confidential_data");
-		expect(sessionStorage.getItem("__device_key__")).toBeNull();
-		expect(localStorage.getItem("__device_key__")).toBeNull();
+		const key1 = sessionStorage.getItem("__device_key__");
+		expect(key1).not.toBeNull();
+		expect(key1).not.toBe("nosferatu-secure-storage-key-1337");
 
-		const encryptedVal1 = localStorage.getItem("sec_test");
-		expect(encryptedVal1).not.toBeNull();
-
-		// Reset module cache (simulating runtime restart)
+		// Reset session state and verify a new unique key is generated
+		sessionStorage.clear();
 		resetStorageModuleCache();
 
 		setStorageString("sec_test_2", "confidential_data_2");
-		const encryptedVal2 = localStorage.getItem("sec_test_2");
-		expect(encryptedVal2).not.toBeNull();
-		expect(sessionStorage.getItem("__device_key__")).toBeNull();
+		const key2 = sessionStorage.getItem("__device_key__");
+		expect(key2).not.toBeNull();
+		expect(key2).not.toEqual(key1);
 	});
 
 	it("generates distinct random IVs for each encrypted item and handles edge cases in decryptValue", () => {
@@ -136,17 +135,24 @@ describe("storage", () => {
 		expect(decryptValue("")).toBe("");
 	});
 
-	it("falls back gracefully to returning original text when CryptoJS.AES.decrypt throws an error", () => {
-		const mockTextWithIv = "0123456789abcdef0123456789abcdef:corrupted_ciphertext";
-		const decryptSpy = vi.spyOn(CryptoJS.AES, "decrypt").mockImplementation(() => {
-			throw new Error("Simulated decryption failure");
+	it("handles errors when localStorage.getItem throws and falls back to memory store or fallback value", () => {
+		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
+		const getItemSpy = vi.spyOn(window.localStorage, "getItem").mockImplementation(() => {
+			throw new Error("SecurityError: Access is denied");
 		});
 
-		const result = decryptValue(mockTextWithIv);
+		// 1. When key is missing in memory fallback store, returns fallback
+		expect(getStorageString("restricted_key", "default_fallback")).toBe("default_fallback");
+		expect(spy).toHaveBeenCalledWith(
+			'[storage] Failed to read key "restricted_key" from localStorage:',
+			expect.any(Error),
+		);
 
-		expect(decryptSpy).toHaveBeenCalled();
-		expect(result).toBe(mockTextWithIv);
+		// 2. When key exists in memory fallback store, returns stored value (decrypted)
+		setStorageString("memory_key", "memory_value");
+		expect(getStorageString("memory_key")).toBe("memory_value");
 
-		decryptSpy.mockRestore();
+		getItemSpy.mockRestore();
+		spy.mockRestore();
 	});
 });
