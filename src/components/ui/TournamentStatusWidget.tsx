@@ -22,12 +22,22 @@ export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStat
 				<Button
 					variant="ghost"
 					size="small"
-					onClick={onRestart}
+					onClick={() => {
+						if (
+							window.confirm(
+								"Are you sure you want to restart the tournament? Your progress will be lost.",
+							)
+						) {
+							onRestart();
+						}
+					}}
+					title="Restart tournament"
 					className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1.5"
 				>
 					<RotateCcw
 						size={13}
 						className="group-hover/btn:-rotate-90 transition-transform duration-500"
+						aria-hidden="true"
 					/>
 					Restart Tournament
 				</Button>

@@ -5,3 +5,7 @@
 ## 2026-10-01 - Added ARIA attributes to Loading/Skeleton blocks
 **Learning:** Found multiple loading states (spinner, skeletons, cat-gif) using `div` elements visually representing a status, but lacking semantic ARIA roles for screen readers. Added `role="status"`, `aria-label="Loading"`, `aria-busy="true"`, and `aria-live="polite"`.
 **Action:** Always ensure that visual loading indicators are semantically exposed to assistive technologies so users know the system is working and not frozen.
+
+## 2025-05-18 - Destructive Actions Without Confirmation
+**Learning:** Found a "Restart Tournament" button in `TournamentStatusWidget` that lacked a confirmation prompt, potentially leading to accidental data loss. Also, the button icon lacked `aria-hidden="true"`, causing screen readers to potentially announce decorative icons.
+**Action:** Always add a confirmation dialog (e.g., `window.confirm`) to destructive or reset actions to prevent accidental data loss. Additionally, ensure decorative icons within buttons are explicitly hidden from screen readers using `aria-hidden="true"`, and the button itself has a descriptive `title` and/or `aria-label`.
