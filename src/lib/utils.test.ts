@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createSortedKey, shuffleArray } from "./utils";
+import { createSortedKey, ErrorManager, shuffleArray } from "./utils";
 
 describe("createSortedKey", () => {
 	it("returns an empty string when given an empty array", () => {
@@ -142,5 +142,41 @@ describe("shuffleArray", () => {
 		expect(result).toContain(obj1);
 		expect(result).toContain(obj2);
 		expect(result).toContain(obj3);
+	});
+});
+
+describe("ErrorManager.handleError", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("returns an error object with a securely generated ID starting with err_", () => {
+		const result = ErrorManager.handleError(new Error("Test error"));
+		expect(result.id).toMatch(/^err_\d+_[a-f0-9-]+$/i);
+	});
+
+	it("generates unique error IDs across multiple calls", () => {
+		const res1 = ErrorManager.handleError(new Error("Error 1"));
+		const res2 = ErrorManager.handleError(new Error("Error 2"));
+		expect(res1.id).not.toBe(res2.id);
+	});
+
+	it("dispatches app-error CustomEvent when window is defined", () => {
+		const listener = vi.fn();
+		window.addEventListener("app-error", listener);
+
+		const result = ErrorManager.handleError("Custom string error", "TestContext", {
+			isCritical: true,
+		});
+
+		expect(listener).toHaveBeenCalledTimes(1);
+		const event = listener.mock.calls[0][0] as CustomEvent;
+		expect(event.detail).toEqual({
+			id: result.id,
+			message: "Custom string error",
+			isCritical: true,
+		});
+
+		window.removeEventListener("app-error", listener);
 	});
 });

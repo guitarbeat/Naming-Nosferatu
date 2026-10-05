@@ -158,7 +158,17 @@ export const ErrorManager = {
 				: typeof error === "string"
 					? error
 					: "An unexpected error occurred.";
-		const id = `err_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+		let randomString: string;
+		if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+			randomString = crypto.randomUUID();
+		} else if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+			const array = new Uint8Array(8);
+			crypto.getRandomValues(array);
+			randomString = Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+		} else {
+			randomString = Math.random().toString(36).slice(2, 10);
+		}
+		const id = `err_${Date.now()}_${randomString}`;
 		if (context) {
 			console.error(`[${context}] Error:`, error, options);
 		} else {
