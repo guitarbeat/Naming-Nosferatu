@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { MatchRecord } from "@/types";
 import {
+	BYE_PREFIX,
 	calculateTournamentMetrics,
 	calculateWinStreak,
 	createMatchRecord,
@@ -9,10 +10,30 @@ import {
 	getBracketStageLabel,
 	getFlameCount,
 	getHeatLevel,
+	isBye,
 	resolveTournamentMode,
 } from "./tournamentEngine";
 
 describe("tournamentEngine", () => {
+	describe("isBye", () => {
+		it("returns true for strings starting with BYE_PREFIX", () => {
+			expect(isBye(`${BYE_PREFIX}1_0`)).toBe(true);
+			expect(isBye(BYE_PREFIX)).toBe(true);
+		});
+
+		it("returns false for null, undefined, or empty string", () => {
+			expect(isBye(null)).toBe(false);
+			expect(isBye(undefined)).toBe(false);
+			expect(isBye("")).toBe(false);
+		});
+
+		it("returns false for normal entrant IDs and strings containing BYE_PREFIX not at the start", () => {
+			expect(isBye("cat-123")).toBe(false);
+			expect(isBye("regular_user")).toBe(false);
+			expect(isBye(`user_${BYE_PREFIX}`)).toBe(false);
+		});
+	});
+
 	it("resolves tournament mode correctly based on entrant count", () => {
 		expect(resolveTournamentMode(4)).toBe("2v2");
 		expect(resolveTournamentMode(8)).toBe("2v2");
@@ -150,7 +171,10 @@ describe("tournamentEngine", () => {
 				pendingMatchIds: null,
 			});
 
-			const onlyByesState = deriveBracketState(["__BYE__1_0", "__BYE__1_1"], []);
+			const onlyByesState = deriveBracketState(
+				["__BYE__1_0", "__BYE__1_1"],
+				[],
+			);
 			expect(onlyByesState).toEqual({
 				isComplete: true,
 				totalMatches: 0,
