@@ -1,0 +1,3 @@
+## 2025-05-24 - Avoiding Array Iteration Micro-Optimizations
+**Learning:** Re-writing built-in `.map()` or `.reduce()` calls to `for` loops in React functional components (like `hooks.ts` or `DriftWall.tsx`) constitutes a speculative micro-optimization that degrades readability and offers no measurable performance benefit in modern V8 environments. Adding custom equality checks to `React.memo` that simply replicate its default shallow equality is similarly futile.
+**Action:** Strictly skip proposing standard array iteration conversions (`for...of` to `for`, `.map` to `for`, etc) as performance optimizations. If no architectural or algorithmic optimization is found, abort and finish the session rather than creating a PR with micro-optimizations.
