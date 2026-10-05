@@ -312,6 +312,7 @@ export const DriftWall = memo(function DriftWall({
 	const activeIdRef = useRef<string | null>(null);
 	const activeTileElRef = useRef<HTMLElement | null>(null);
 	const tilesCacheRef = useRef<HTMLElement[] | null>(null);
+	const tilesMapRef = useRef<Map<string, HTMLElement> | null>(null);
 	const [reduced, setReduced] = useState(false);
 
 	useEffect(() => {
@@ -458,6 +459,7 @@ export const DriftWall = memo(function DriftWall({
 		);
 		// Invalidate cached tile elements when columns/items change
 		tilesCacheRef.current = null;
+		tilesMapRef.current = null;
 	}, [columnMeta, columnItems]);
 
 	const applyPlaneTransform = useCallback(
@@ -784,15 +786,24 @@ export const DriftWall = memo(function DriftWall({
 				return;
 			}
 
-			// ⚡ Bolt Performance Optimization: Cache querySelectorAll tile DOM nodes to prevent layout thrashing and repeated DOM queries on high-frequency keyboard events
+			// ⚡ Bolt Performance Optimization: Cache querySelectorAll tile DOM nodes and construct an O(1) tile Map index to eliminate repeated O(N) array scans and dataset reads during high-frequency keyboard navigation
 			if (!tilesCacheRef.current || tilesCacheRef.current.length === 0) {
-				tilesCacheRef.current = Array.from(
+				const tiles = Array.from(
 					container.querySelectorAll<HTMLElement>("[data-tile-id]"),
 				).filter(
 					(el) =>
 						!el.hasAttribute("disabled") &&
 						el.getAttribute("aria-hidden") !== "true",
 				);
+				tilesCacheRef.current = tiles;
+				const map = new Map<string, HTMLElement>();
+				for (let i = 0; i < tiles.length; i++) {
+					const tileId = tiles[i].dataset.tileId;
+					if (tileId) {
+						map.set(tileId, tiles[i]);
+					}
+				}
+				tilesMapRef.current = map;
 			}
 
 			const allTiles = tilesCacheRef.current;
@@ -802,14 +813,13 @@ export const DriftWall = memo(function DriftWall({
 
 			const containerRect = container.getBoundingClientRect();
 
-			// Identify current active tile
+			// Identify current active tile using O(1) Map lookup
 			let currentTile: HTMLElement | null = null;
-			if (active && allTiles.includes(active)) {
+			const activeTileId = active?.dataset?.tileId;
+			if (activeTileId && tilesMapRef.current?.has(activeTileId)) {
 				currentTile = active;
 			} else if (activeIdRef.current) {
-				currentTile =
-					allTiles.find((t) => t.dataset.tileId === activeIdRef.current) ||
-					null;
+				currentTile = tilesMapRef.current?.get(activeIdRef.current) || null;
 			}
 
 			// If no tile currently active, pick the middle-most visible tile
