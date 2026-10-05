@@ -434,7 +434,7 @@ function getCachedRound(entrantsCount: number): number {
 	return round;
 }
 
-export const BYE_PREFIX = "__BYE__";
+const BYE_PREFIX = "__BYE__";
 
 export function nextPowerOfTwo(value: number): number {
 	if (value <= 1) {
