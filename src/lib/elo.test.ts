@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-	applyEloMatchUpdate,
-	calculatePairEloUpdate,
-	getExpectedEloScore,
-} from "./elo";
+import { applyEloMatchUpdate, calculatePairEloUpdate, getExpectedEloScore } from "./elo";
 
 describe("elo utility", () => {
 	describe("getExpectedEloScore", () => {
