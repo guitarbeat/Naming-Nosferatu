@@ -16,12 +16,18 @@ export function AppBootScreen({
 		<div
 			data-testid="boot-screen"
 			className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background text-foreground"
+			role="status"
+			aria-live="polite"
+			aria-busy="true"
 		>
 			<motion.div
 				{...scaleFadeMotionPreset}
 				className="flex flex-col items-center space-y-6 px-4 text-center max-w-md"
 			>
-				<div className="relative flex h-16 w-16 items-center justify-center">
+				<div
+					className="relative flex h-16 w-16 items-center justify-center"
+					aria-hidden="true"
+				>
 					<div className="absolute h-16 w-16 rounded-full border-4 border-primary/20" />
 					<div className="absolute h-16 w-16 rounded-full border-4 border-t-primary animate-spin" />
 				</div>
