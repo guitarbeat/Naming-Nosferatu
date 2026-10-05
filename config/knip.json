@@ -2,5 +2,6 @@
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"project": ["src/**/*.{js,jsx,ts,tsx}"],
 	"ignoreDependencies": ["ogl"],
+	"ignore": ["src/components/ui/AppLayout.tsx", "src/components/ui/MagicZoom.tsx"],
 	"typescript": true
 }

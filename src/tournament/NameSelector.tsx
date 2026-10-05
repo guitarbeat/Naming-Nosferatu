@@ -81,6 +81,15 @@ export const NameSelector = memo(function NameSelector() {
 		[namesById, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
+	const handleTileClickDelegated = useCallback(
+		(item: DriftWallItem) => {
+			if (item.id != null) {
+				handleToggleName(item.id as IdType);
+			}
+		},
+		[handleToggleName],
+	);
+
 	const driftWallItems = useMemo<DriftWallItem[]>(() => {
 		return availableNames.map((nameItem) => {
 			const isSelected = selectedIds.has(nameItem.id);
@@ -95,10 +104,9 @@ export const NameSelector = memo(function NameSelector() {
 						: undefined,
 				selected: isSelected,
 				locked,
-				onClick: () => handleToggleName(nameItem.id),
 			};
 		});
-	}, [availableNames, selectedIds, handleToggleName]);
+	}, [availableNames, selectedIds]);
 
 	if (isLoading) {
 		return (
@@ -141,6 +149,8 @@ export const NameSelector = memo(function NameSelector() {
 			{availableNames.length > 0 && (
 				<div className="absolute inset-0 w-full h-full overflow-hidden">
 					<DriftWall
+						// ⚡ Bolt Performance Optimization: Use delegated event handler to prevent O(N) inline function allocations in driftWallItems on every state change
+						onItemClick={handleTileClickDelegated}
 						items={driftWallItems}
 						columns={7}
 						tileWidth={150}
