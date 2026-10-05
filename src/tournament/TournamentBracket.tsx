@@ -704,24 +704,38 @@ export function TournamentBracket({
 	// ⚡ Bolt Performance Optimization: Added debouncing for name search/filter
 	const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
+	// ⚡ Bolt Performance Optimization: Pre-compute a flattened, pre-lowercased search index to avoid re-lowercasing strings and allocating Map iterators on every search query evaluation.
+	const searchableEntries = useMemo(() => {
+		const entries: Array<{ id: string; terms: string[] }> = [];
+		for (const [id, item] of namesMap) {
+			entries.push({ id, terms: [item.name.toLowerCase()] });
+		}
+		for (const [id, team] of teamsMap) {
+			entries.push({
+				id,
+				terms: team.memberNames.map((m) => m.toLowerCase()),
+			});
+		}
+		return entries;
+	}, [namesMap, teamsMap]);
+
 	// Highlight match / contestant based on search query
 	const highlightedContenderId = useMemo(() => {
 		if (!debouncedSearchQuery.trim()) {
 			return null;
 		}
 		const query = debouncedSearchQuery.toLowerCase().trim();
-		for (const [id, item] of namesMap) {
-			if (item.name.toLowerCase().includes(query)) {
-				return id;
-			}
-		}
-		for (const [id, team] of teamsMap) {
-			if (team.memberNames.some((m) => m.toLowerCase().includes(query))) {
-				return id;
+		for (let i = 0; i < searchableEntries.length; i++) {
+			const entry = searchableEntries[i];
+			const terms = entry.terms;
+			for (let j = 0; j < terms.length; j++) {
+				if (terms[j].includes(query)) {
+					return entry.id;
+				}
 			}
 		}
 		return null;
-	}, [debouncedSearchQuery, namesMap, teamsMap]);
+	}, [debouncedSearchQuery, searchableEntries]);
 
 	// Zoom handlers
 	const handleZoomIn = useCallback(() => {
