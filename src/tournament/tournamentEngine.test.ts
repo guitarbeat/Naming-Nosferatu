@@ -13,11 +13,28 @@ import {
 } from "./tournamentEngine";
 
 describe("tournamentEngine", () => {
-	it("resolves tournament mode correctly based on entrant count", () => {
-		expect(resolveTournamentMode(4)).toBe("2v2");
-		expect(resolveTournamentMode(8)).toBe("2v2");
-		expect(resolveTournamentMode(5)).toBe("1v1");
-		expect(resolveTournamentMode(3)).toBe("1v1");
+	describe("resolveTournamentMode", () => {
+		it("resolves to '2v2' for valid team sizes (multiples of 4 >= 4)", () => {
+			expect(resolveTournamentMode(4)).toBe("2v2");
+			expect(resolveTournamentMode(8)).toBe("2v2");
+			expect(resolveTournamentMode(12)).toBe("2v2");
+			expect(resolveTournamentMode(16)).toBe("2v2");
+		});
+
+		it("resolves to '1v1' for entrant counts not divisible by 4 or less than 4", () => {
+			expect(resolveTournamentMode(1)).toBe("1v1");
+			expect(resolveTournamentMode(2)).toBe("1v1");
+			expect(resolveTournamentMode(3)).toBe("1v1");
+			expect(resolveTournamentMode(5)).toBe("1v1");
+			expect(resolveTournamentMode(6)).toBe("1v1");
+			expect(resolveTournamentMode(7)).toBe("1v1");
+			expect(resolveTournamentMode(9)).toBe("1v1");
+		});
+
+		it("resolves to '1v1' for edge cases like zero or negative counts", () => {
+			expect(resolveTournamentMode(0)).toBe("1v1");
+			expect(resolveTournamentMode(-4)).toBe("1v1");
+		});
 	});
 
 	it("calculates expected Elo score", () => {
