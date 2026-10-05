@@ -3,7 +3,7 @@ import { useIntersectionObserver } from "@/hooks";
 import { isMobileOrLowPowerDevice } from "@/lib/uiUtils";
 import "./GlassSurface.css";
 
-export interface GlassSurfaceProps {
+interface GlassSurfaceProps {
 	children?: React.ReactNode;
 	width?: number | string;
 	height?: number | string;
