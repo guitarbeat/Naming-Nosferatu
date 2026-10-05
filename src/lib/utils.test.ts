@@ -7,9 +7,7 @@ describe("createSortedKey", () => {
 	});
 
 	it("sorts array of strings lexicographically", () => {
-		expect(createSortedKey(["banana", "apple", "cherry"])).toBe(
-			"apple,banana,cherry",
-		);
+		expect(createSortedKey(["banana", "apple", "cherry"])).toBe("apple,banana,cherry");
 	});
 
 	it("converts numbers to strings and sorts them lexicographically", () => {
@@ -102,25 +100,28 @@ describe("shuffleArray", () => {
 		expect(result).not.toBe(input);
 	});
 
-	it("produces deterministic output when Math.random is mocked", () => {
-		// Mock Math.random to return predictable values
+	it("produces deterministic output when crypto.getRandomValues is mocked", () => {
+		// Mock crypto.getRandomValues to return predictable values
 		// Fisher-Yates loop runs for i = 4 down to 1:
-		// i = 4: Math.floor(0.1 * 5) = 0 -> swap index 4 and 0
-		// i = 3: Math.floor(0.2 * 4) = 0 -> swap index 3 and 0
-		// i = 2: Math.floor(0.3 * 3) = 0 -> swap index 2 and 0
-		// i = 1: Math.floor(0.4 * 2) = 0 -> swap index 1 and 0
-		const mockRandom = vi
-			.spyOn(Math, "random")
-			.mockReturnValueOnce(0.1)
-			.mockReturnValueOnce(0.2)
-			.mockReturnValueOnce(0.3)
-			.mockReturnValueOnce(0.4);
+		// Uint32 values map to float = val / (0xffffffff + 1)
+		// 0.1 * 2^32 = 429496729.6 -> Uint32: 429496730 => float ~ 0.1 -> i=4: Math.floor(0.1 * 5) = 0
+		// 0.2 * 2^32 = 858993459.2 -> Uint32: 858993459 => float ~ 0.2 -> i=3: Math.floor(0.2 * 4) = 0
+		// 0.3 * 2^32 = 1288490188.8 -> Uint32: 1288490189 => float ~ 0.3 -> i=2: Math.floor(0.3 * 3) = 0
+		// 0.4 * 2^32 = 1717986918.4 -> Uint32: 1717986918 => float ~ 0.4 -> i=1: Math.floor(0.4 * 2) = 0
+		const values = [429496730, 858993459, 1288490189, 1717986918];
+		let index = 0;
+		const mockGetRandomValues = vi.spyOn(crypto, "getRandomValues").mockImplementation((buffer) => {
+			if (buffer instanceof Uint32Array) {
+				buffer[0] = values[index++] ?? 0;
+			}
+			return buffer;
+		});
 
 		const input = [1, 2, 3, 4, 5];
 		const result = shuffleArray(input);
 
-		expect(mockRandom).toHaveBeenCalledTimes(4);
-		// Let's trace the swaps:
+		expect(mockGetRandomValues).toHaveBeenCalledTimes(4);
+		// Trace the swaps:
 		// start: [1, 2, 3, 4, 5]
 		// i=4, j=0: swap index 4 (5) and 0 (1) => [5, 2, 3, 4, 1]
 		// i=3, j=0: swap index 3 (4) and 0 (5) => [4, 2, 3, 5, 1]
