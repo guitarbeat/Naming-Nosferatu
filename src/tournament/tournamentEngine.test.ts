@@ -218,10 +218,7 @@ describe("tournamentEngine", () => {
 				pendingMatchIds: null,
 			});
 
-			const onlyByesState = deriveBracketState(
-				["__BYE__1_0", "__BYE__1_1"],
-				[],
-			);
+			const onlyByesState = deriveBracketState(["__BYE__1_0", "__BYE__1_1"], []);
 			expect(onlyByesState).toEqual({
 				isComplete: true,
 				totalMatches: 0,
