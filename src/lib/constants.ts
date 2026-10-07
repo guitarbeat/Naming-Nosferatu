@@ -15,7 +15,8 @@ export const CAT_IMAGES: readonly string[] = [
 	"/assets/images/cats/cat_14.webp",
 ] as const;
 
-export const FALLBACK_CAT_IMAGE = "/assets/images/ui/cat_avatar_placeholder.png";
+export const FALLBACK_CAT_IMAGE =
+	"/assets/images/ui/cat_avatar_placeholder.png";
 
 export const FALLBACK_CAT_SVG =
 	"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%236366f1'><circle cx='50' cy='50' r='45'/><text x='50' y='65' font-size='40' text-anchor='middle' fill='white'>🐱</text></svg>";
