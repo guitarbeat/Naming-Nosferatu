@@ -1,6 +1,6 @@
 import { MotionConfig } from "framer-motion";
 import type React from "react";
-import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
 	AppBootScreen,
@@ -17,7 +17,13 @@ import {
 import { usePreloadImages, useSectionScroll } from "@/hooks";
 import { ErrorManager } from "@/lib/utils";
 import useAppStore, { useActiveTournamentStatus, useAppStoreInitialization } from "@/store";
-import { TournamentSetup } from "@/tournament/TournamentSetup";
+
+// ⚡ Bolt Performance Optimization: Lazy load TournamentSetup to reduce initial bundle size
+const TournamentSetup = lazy(() =>
+	import("@/tournament/TournamentSetup").then((module) => ({
+		default: module.TournamentSetup,
+	})),
+);
 
 const IRIDESCENCE_COLOR: [number, number, number] = [1, 1, 1];
 
