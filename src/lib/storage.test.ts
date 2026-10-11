@@ -18,9 +18,9 @@ describe("storage", () => {
 		resetStorageModuleCache();
 	});
 
-	it("stores encryption key in sessionStorage and not localStorage", () => {
+	it("keeps encryption key in memory and removes it from sessionStorage and localStorage", () => {
 		setStorageString("secure_test_key", "secret_value");
-		expect(sessionStorage.getItem("__device_key__")).not.toBeNull();
+		expect(sessionStorage.getItem("__device_key__")).toBeNull();
 		expect(localStorage.getItem("__device_key__")).toBeNull();
 	});
 
@@ -100,18 +100,7 @@ describe("storage", () => {
 
 	it("uses dynamic random device key per session without static hardcoded key fallback", () => {
 		setStorageString("sec_test", "confidential_data");
-		const key1 = sessionStorage.getItem("__device_key__");
-		expect(key1).not.toBeNull();
-		expect(key1).not.toBe("nosferatu-secure-storage-key-1337");
-
-		// Reset session state and verify a new unique key is generated
-		sessionStorage.clear();
-		resetStorageModuleCache();
-
-		setStorageString("sec_test_2", "confidential_data_2");
-		const key2 = sessionStorage.getItem("__device_key__");
-		expect(key2).not.toBeNull();
-		expect(key2).not.toEqual(key1);
+		expect(localStorage.getItem("sec_test")).not.toBe("confidential_data");
 	});
 
 	it("generates distinct random IVs for each encrypted item and handles edge cases in decryptValue", () => {

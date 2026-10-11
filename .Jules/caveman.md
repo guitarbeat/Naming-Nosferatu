@@ -1,6 +1,3 @@
-<strict_log>
-- Momentum: Extracted TournamentHeader component to shrink TournamentArena file size and simplify it.
-- Smash: Ripped BracketTree, TournamentHeader, ContextRibbon, ProgressBar, HeaderControls, HeaderTitle out of TournamentArena.
-- Clean: Dropped them in `components/ui/TournamentHeader.tsx`. Cleaned up imports and formatting.
-- Memory Update: Arena header is now in components/ui.
-</strict_log>
+## 2024-10-11 - Caveman UI Pruner Smash
+**Learning:** Main App.tsx file was cluttered with routing, loading overlays, global errors, and other top-level layout responsibilities.
+**Action:** Extracted AppLayout to src/components/ui/AppLayout.tsx and HomeRoute to src/components/ui/HomeView.tsx. Kept App.tsx light and focused on shell setup, error handling, and routing structure. Fixed test regressions from storage security logic changes.
