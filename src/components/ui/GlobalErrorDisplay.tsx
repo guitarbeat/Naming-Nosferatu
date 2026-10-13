@@ -16,7 +16,10 @@ export const GlobalErrorDisplay = memo(function GlobalErrorDisplay() {
 
 	return (
 		<div className="mx-auto mb-4 w-full max-w-4xl px-3 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
-			<ErrorComponent error={String(currentError)} onDismiss={handleDismissError} />
+			<ErrorComponent
+				error={String(currentError)}
+				onDismiss={handleDismissError}
+			/>
 		</div>
 	);
 });

@@ -10,7 +10,12 @@ export const GlobalLoadingOverlay = memo(function GlobalLoadingOverlay() {
 	}
 
 	return (
-		<div className="global-loading-overlay" role="status" aria-live="polite" aria-busy="true">
+		<div
+			className="global-loading-overlay"
+			role="status"
+			aria-live="polite"
+			aria-busy="true"
+		>
 			<Loading variant="spinner" text="Initializing Tournament..." />
 		</div>
 	);

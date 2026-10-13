@@ -7,7 +7,9 @@ describe("createSortedKey", () => {
 	});
 
 	it("sorts array of strings lexicographically", () => {
-		expect(createSortedKey(["banana", "apple", "cherry"])).toBe("apple,banana,cherry");
+		expect(createSortedKey(["banana", "apple", "cherry"])).toBe(
+			"apple,banana,cherry",
+		);
 	});
 
 	it("converts numbers to strings and sorts them lexicographically", () => {
@@ -110,12 +112,14 @@ describe("shuffleArray", () => {
 		// 0.4 * 2^32 = 1717986918.4 -> Uint32: 1717986918 => float ~ 0.4 -> i=1: Math.floor(0.4 * 2) = 0
 		const values = [429496730, 858993459, 1288490189, 1717986918];
 		let index = 0;
-		const mockGetRandomValues = vi.spyOn(crypto, "getRandomValues").mockImplementation((buffer) => {
-			if (buffer instanceof Uint32Array) {
-				buffer[0] = values[index++] ?? 0;
-			}
-			return buffer;
-		});
+		const mockGetRandomValues = vi
+			.spyOn(crypto, "getRandomValues")
+			.mockImplementation((buffer) => {
+				if (buffer instanceof Uint32Array) {
+					buffer[0] = values[index++] ?? 0;
+				}
+				return buffer;
+			});
 
 		const input = [1, 2, 3, 4, 5];
 		const result = shuffleArray(input);
@@ -165,9 +169,13 @@ describe("ErrorManager.handleError", () => {
 		const listener = vi.fn();
 		window.addEventListener("app-error", listener);
 
-		const result = ErrorManager.handleError("Custom string error", "TestContext", {
-			isCritical: true,
-		});
+		const result = ErrorManager.handleError(
+			"Custom string error",
+			"TestContext",
+			{
+				isCritical: true,
+			},
+		);
 
 		expect(listener).toHaveBeenCalledTimes(1);
 		const event = listener.mock.calls[0][0] as CustomEvent;

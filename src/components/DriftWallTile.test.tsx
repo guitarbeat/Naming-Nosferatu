@@ -37,7 +37,12 @@ describe("DriftWallTile component", () => {
 		const root = createRoot(container);
 		await act(async () => {
 			root.render(
-				<DriftWallTile tileId="tile-2" col={1} name="Count" orbitText="The Vampire Cat" />,
+				<DriftWallTile
+					tileId="tile-2"
+					col={1}
+					name="Count"
+					orbitText="The Vampire Cat"
+				/>,
 			);
 		});
 
@@ -57,7 +62,12 @@ describe("DriftWallTile component", () => {
 		const root = createRoot(container);
 		await act(async () => {
 			root.render(
-				<DriftWallTile tileId="tile-link" col={0} name="Link Tile" href="https://example.com" />,
+				<DriftWallTile
+					tileId="tile-link"
+					col={0}
+					name="Link Tile"
+					href="https://example.com"
+				/>,
 			);
 		});
 
@@ -76,7 +86,12 @@ describe("DriftWallTile component", () => {
 		const root = createRoot(container);
 		await act(async () => {
 			root.render(
-				<DriftWallTile tileId="tile-selected" col={2} name="Selected Tile" isSelected={true} />,
+				<DriftWallTile
+					tileId="tile-selected"
+					col={2}
+					name="Selected Tile"
+					isSelected={true}
+				/>,
 			);
 		});
 
@@ -93,7 +108,12 @@ describe("DriftWallTile component", () => {
 		const root = createRoot(container);
 		await act(async () => {
 			root.render(
-				<DriftWallTile tileId="tile-img" col={0} name="Image Tile" image="/test-image.jpg" />,
+				<DriftWallTile
+					tileId="tile-img"
+					col={0}
+					name="Image Tile"
+					image="/test-image.jpg"
+				/>,
 			);
 		});
 
@@ -112,11 +132,18 @@ describe("DriftWallTile component", () => {
 		const root = createRoot(container);
 		await act(async () => {
 			root.render(
-				<DriftWallTile tileId="tile-click" col={0} name="Clickable" onClick={handleClick} />,
+				<DriftWallTile
+					tileId="tile-click"
+					col={0}
+					name="Clickable"
+					onClick={handleClick}
+				/>,
 			);
 		});
 
-		const tileEl = container.querySelector('[data-tile-id="tile-click"]') as HTMLDivElement;
+		const tileEl = container.querySelector(
+			'[data-tile-id="tile-click"]',
+		) as HTMLDivElement;
 
 		await act(async () => {
 			tileEl.click();
@@ -149,10 +176,14 @@ describe("DriftWallTile component", () => {
 	it("triggers default click when Enter key pressed without explicit onClick handler", async () => {
 		const root = createRoot(container);
 		await act(async () => {
-			root.render(<DriftWallTile tileId="tile-noclick" col={0} name="Keyboard Tile" />);
+			root.render(
+				<DriftWallTile tileId="tile-noclick" col={0} name="Keyboard Tile" />,
+			);
 		});
 
-		const tileEl = container.querySelector('[data-tile-id="tile-noclick"]') as HTMLDivElement;
+		const tileEl = container.querySelector(
+			'[data-tile-id="tile-noclick"]',
+		) as HTMLDivElement;
 		const clickSpy = vi.spyOn(tileEl, "click");
 
 		await act(async () => {
@@ -186,7 +217,9 @@ describe("DriftWallTile component", () => {
 			);
 		});
 
-		const tileEl = container.querySelector('[data-tile-id="tile-focus"]') as HTMLDivElement;
+		const tileEl = container.querySelector(
+			'[data-tile-id="tile-focus"]',
+		) as HTMLDivElement;
 
 		await act(async () => {
 			tileEl.focus();
@@ -210,7 +243,14 @@ describe("DriftWallTile component", () => {
 
 		// Short name (<= 5)
 		await act(async () => {
-			root.render(<DriftWallTile tileId="t1" col={0} name="Short" orbitText="Short desc" />);
+			root.render(
+				<DriftWallTile
+					tileId="t1"
+					col={0}
+					name="Short"
+					orbitText="Short desc"
+				/>,
+			);
 		});
 		let centerText = container.querySelector(".drift-wall__center-name");
 		expect(centerText?.getAttribute("style")).toContain("font-size: 24.5px");
@@ -245,7 +285,14 @@ describe("DriftWallTile component", () => {
 
 		// Very long name (> 11)
 		await act(async () => {
-			root.render(<DriftWallTile tileId="t4" col={0} name="VeryVeryLongName" orbitText="Short" />);
+			root.render(
+				<DriftWallTile
+					tileId="t4"
+					col={0}
+					name="VeryVeryLongName"
+					orbitText="Short"
+				/>,
+			);
 		});
 		centerText = container.querySelector(".drift-wall__center-name");
 		expect(centerText?.getAttribute("style")).toContain("font-size: 16px");

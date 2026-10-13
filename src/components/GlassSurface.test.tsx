@@ -34,7 +34,8 @@ describe("GlassSurface component", () => {
 
 	it("safely generates SVG filter elements in shared SVG defs", async () => {
 		// Mock SVG filter element constructors to simulate SVG support
-		const originalSVGFEDisplacementMapElement = globalThis.SVGFEDisplacementMapElement;
+		const originalSVGFEDisplacementMapElement =
+			globalThis.SVGFEDisplacementMapElement;
 		const originalSVGFEColorMatrixElement = globalThis.SVGFEColorMatrixElement;
 
 		class MockSVGFEDisplacementMapElement extends HTMLElement {}
@@ -65,7 +66,9 @@ describe("GlassSurface component", () => {
 		expect(feImage).not.toBeNull();
 		expect(feImage?.getAttribute("preserveAspectRatio")).toBe("none");
 
-		const redDisplacement = filter?.querySelector("feDisplacementMap#redchannel");
+		const redDisplacement = filter?.querySelector(
+			"feDisplacementMap#redchannel",
+		);
 		expect(redDisplacement).not.toBeNull();
 
 		const blurFilter = filter?.querySelector("feGaussianBlur");
@@ -76,7 +79,8 @@ describe("GlassSurface component", () => {
 		});
 
 		// Restore globals
-		globalThis.SVGFEDisplacementMapElement = originalSVGFEDisplacementMapElement;
+		globalThis.SVGFEDisplacementMapElement =
+			originalSVGFEDisplacementMapElement;
 		globalThis.SVGFEColorMatrixElement = originalSVGFEColorMatrixElement;
 	});
 });

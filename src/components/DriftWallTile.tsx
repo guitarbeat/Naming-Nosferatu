@@ -181,7 +181,11 @@ export const DriftWallTile = memo(function DriftWallTile({
 									letterSpacing: `${descStyle.letterSpacing}px`,
 								}}
 							>
-								<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+								<textPath
+									href={`#${arcPathId}`}
+									startOffset="50%"
+									textAnchor="middle"
+								>
 									{desc}
 								</textPath>
 							</text>
@@ -199,7 +203,9 @@ export const DriftWallTile = memo(function DriftWallTile({
 					</text>
 				</svg>
 			)}
-			{Boolean(image) && <span className="drift-wall__overlay" aria-hidden="true" />}
+			{Boolean(image) && (
+				<span className="drift-wall__overlay" aria-hidden="true" />
+			)}
 		</GlassSurface>
 	);
 

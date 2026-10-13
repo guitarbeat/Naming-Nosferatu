@@ -65,7 +65,9 @@ describe("GlobalErrorDisplay component", () => {
 
 		expect(container.textContent).toContain("Dismissable error");
 
-		const dismissButton = container.querySelector('button[aria-label="Dismiss error"]');
+		const dismissButton = container.querySelector(
+			'button[aria-label="Dismiss error"]',
+		);
 		expect(dismissButton).not.toBeNull();
 
 		await act(async () => {

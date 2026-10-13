@@ -48,7 +48,9 @@ describe("storage", () => {
 	});
 
 	it("returns fallback for missing JSON keys", () => {
-		expect(parseJsonValue(getStorageString("missing_key"), { fallback: true })).toEqual({
+		expect(
+			parseJsonValue(getStorageString("missing_key"), { fallback: true }),
+		).toEqual({
 			fallback: true,
 		});
 	});
@@ -56,7 +58,9 @@ describe("storage", () => {
 	it("returns fallback for invalid JSON values", () => {
 		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
 		localStorage.setItem("corrupted", "{invalid_json");
-		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe("fallback");
+		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe(
+			"fallback",
+		);
 		expect(spy).toHaveBeenCalled();
 		spy.mockRestore();
 	});
@@ -70,13 +74,18 @@ describe("storage", () => {
 		await ratingsAPI.saveRatings(userId, sampleRatings);
 
 		// Verify raw localStorage contains encrypted string (contains IV colon delimiter and not plaintext JSON)
-		const rawStoredRatings = localStorage.getItem(`nosferatu-ratings-${userId}`);
+		const rawStoredRatings = localStorage.getItem(
+			`nosferatu-ratings-${userId}`,
+		);
 		expect(rawStoredRatings).not.toBeNull();
 		expect(rawStoredRatings).not.toContain('"rating":1500');
 		expect(rawStoredRatings).toContain(":");
 
 		// Verify decrypting via getStorageString restores original ratings object
-		const decryptedRatings = parseJsonValue(getStorageString(`nosferatu-ratings-${userId}`), null);
+		const decryptedRatings = parseJsonValue(
+			getStorageString(`nosferatu-ratings-${userId}`),
+			null,
+		);
 		expect(decryptedRatings).toEqual(sampleRatings);
 
 		// Verify candidate storage is also stored encrypted in localStorage
@@ -137,12 +146,16 @@ describe("storage", () => {
 
 	it("handles errors when localStorage.getItem throws and falls back to memory store or fallback value", () => {
 		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
-		const getItemSpy = vi.spyOn(window.localStorage, "getItem").mockImplementation(() => {
-			throw new Error("SecurityError: Access is denied");
-		});
+		const getItemSpy = vi
+			.spyOn(window.localStorage, "getItem")
+			.mockImplementation(() => {
+				throw new Error("SecurityError: Access is denied");
+			});
 
 		// 1. When key is missing in memory fallback store, returns fallback
-		expect(getStorageString("restricted_key", "default_fallback")).toBe("default_fallback");
+		expect(getStorageString("restricted_key", "default_fallback")).toBe(
+			"default_fallback",
+		);
 		expect(spy).toHaveBeenCalledWith(
 			'[storage] Failed to read key "restricted_key" from localStorage:',
 			expect.any(Error),
