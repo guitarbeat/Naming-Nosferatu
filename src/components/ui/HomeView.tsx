@@ -6,7 +6,9 @@ import useAppStore, { useActiveTournamentStatus } from "@/store";
 
 // ⚡ Bolt: lazy-load heavy TournamentSetup (WebGL/framer children) out of initial bundle
 const TournamentSetup = React.lazy(() =>
-	import("@/tournament/TournamentSetup").then((m) => ({ default: m.TournamentSetup })),
+	import("@/tournament/TournamentSetup").then((m) => ({
+		default: m.TournamentSetup,
+	})),
 );
 
 export function HomeView() {
@@ -26,9 +28,15 @@ export function HomeView() {
 	}, [scrollToSection]);
 
 	const handleStartNewTournament = useCallback(() => {
-		clearPendingScroll();
-		tournamentActions.resetTournament();
-		scheduleSectionScroll("pick");
+		if (
+			window.confirm(
+				"Are you sure you want to restart the tournament? Your current progress will be lost.",
+			)
+		) {
+			clearPendingScroll();
+			tournamentActions.resetTournament();
+			scheduleSectionScroll("pick");
+		}
 	}, [clearPendingScroll, tournamentActions, scheduleSectionScroll]);
 
 	useEffect(() => clearPendingScroll, [clearPendingScroll]);
