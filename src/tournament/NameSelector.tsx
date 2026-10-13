@@ -3,12 +3,7 @@ import { memo, useCallback, useEffect, useMemo } from "react";
 import { namesQueryOptions, SUPABASE_UNAVAILABLE_MSG } from "@/api";
 import { DriftWall, type DriftWallItem } from "@/components/DriftWall";
 import { Button, Loading } from "@/components/LayoutBlocks";
-import {
-	DEFAULT_SAMPLE_NAMES,
-	getLockedNames,
-	getVisibleNames,
-	isNameLocked,
-} from "@/lib/names";
+import { DEFAULT_SAMPLE_NAMES, getLockedNames, getVisibleNames, isNameLocked } from "@/lib/names";
 import { hapticNavTap } from "@/lib/utils";
 import useAppStore from "@/store";
 import { createIdToNameMap } from "@/tournament/tournamentEngine";
@@ -19,9 +14,7 @@ import type { IdType } from "@/types";
  */
 export const NameSelector = memo(function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
-	const storeSelectedNames = useAppStore(
-		(state) => state.tournament.selectedNames,
-	);
+	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesQuery = useQuery({
@@ -81,6 +74,15 @@ export const NameSelector = memo(function NameSelector() {
 		[namesById, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
+	const handleTileClickDelegated = useCallback(
+		(item: DriftWallItem) => {
+			if (item.id != null) {
+				handleToggleName(item.id as IdType);
+			}
+		},
+		[handleToggleName],
+	);
+
 	const driftWallItems = useMemo<DriftWallItem[]>(() => {
 		return availableNames.map((nameItem) => {
 			const isSelected = selectedIds.has(nameItem.id);
@@ -95,10 +97,9 @@ export const NameSelector = memo(function NameSelector() {
 						: undefined,
 				selected: isSelected,
 				locked,
-				onClick: () => handleToggleName(nameItem.id),
 			};
 		});
-	}, [availableNames, selectedIds, handleToggleName]);
+	}, [availableNames, selectedIds]);
 
 	if (isLoading) {
 		return (
@@ -119,15 +120,9 @@ export const NameSelector = memo(function NameSelector() {
 						<h3 className="font-display text-xl font-bold text-foreground">
 							Could not load shortlist
 						</h3>
-						<p className="text-xs text-muted-foreground leading-relaxed">
-							{error}
-						</p>
+						<p className="text-xs text-muted-foreground leading-relaxed">{error}</p>
 					</div>
-					<Button
-						onClick={() => void namesQuery.refetch()}
-						variant="outline"
-						size="small"
-					>
+					<Button onClick={() => void namesQuery.refetch()} variant="outline" size="small">
 						Try Again
 					</Button>
 				</div>
@@ -141,6 +136,8 @@ export const NameSelector = memo(function NameSelector() {
 			{availableNames.length > 0 && (
 				<div className="absolute inset-0 w-full h-full overflow-hidden">
 					<DriftWall
+						// ⚡ Bolt Performance Optimization: Use delegated event handler to prevent O(N) inline function allocations in driftWallItems on every state change
+						onItemClick={handleTileClickDelegated}
 						items={driftWallItems}
 						columns={7}
 						tileWidth={150}

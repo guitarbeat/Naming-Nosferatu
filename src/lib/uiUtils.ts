@@ -34,8 +34,7 @@ export function isMobileOrLowPowerDevice(): boolean {
 		typeof window.matchMedia === "function" &&
 		Boolean(window.matchMedia("(pointer: coarse)").matches);
 	const hasLowConcurrency =
-		typeof navigator !== "undefined" &&
-		(navigator.hardwareConcurrency ?? 8) <= 4;
+		typeof navigator !== "undefined" && (navigator.hardwareConcurrency ?? 8) <= 4;
 	return Boolean(isSmallScreen || (isCoarsePointer && hasLowConcurrency));
 }
 

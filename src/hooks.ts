@@ -1,10 +1,4 @@
-import {
-	type SetStateAction,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { CRITICAL_SHELL_IMAGES } from "@/lib/constants";
 import {
 	decryptValue,
@@ -18,10 +12,7 @@ const IS_BROWSER = typeof window !== "undefined";
 const IS_DEV = import.meta.env?.DEV ?? false;
 
 // Helper debounce for useLocalStorage
-function debounce<T extends (...args: unknown[]) => void>(
-	func: T,
-	wait: number,
-): T {
+function debounce<T extends (...args: unknown[]) => void>(func: T, wait: number): T {
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
 	return function (this: unknown, ...args: Parameters<T>) {
@@ -42,10 +33,7 @@ function usePrefersReducedMotion() {
 	const [matches, setMatches] = useState(false);
 
 	useEffect(() => {
-		if (
-			typeof window === "undefined" ||
-			typeof window.matchMedia !== "function"
-		) {
+		if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
 			return;
 		}
 
@@ -92,9 +80,7 @@ export function useLocalStorage<T>(
 		}
 
 		const raw = getStorageString(key, null);
-		return raw === null
-			? initialRef.current
-			: parseJsonValue(raw, initialRef.current);
+		return raw === null ? initialRef.current : parseJsonValue(raw, initialRef.current);
 	}, [key]);
 
 	const [stored, setStored] = useState<T>(readValue);
@@ -120,9 +106,7 @@ export function useLocalStorage<T>(
 
 					const success = writeStorageJson(key, value);
 					if (!success) {
-						onErrorRef.current?.(
-							new Error(`localStorage write failed for key "${key}"`),
-						);
+						onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
 					}
 				}) as (...args: unknown[]) => void,
 				options.debounceWait,
@@ -163,9 +147,7 @@ export function useLocalStorage<T>(
 		(next: SetStateAction<T>) => {
 			try {
 				const resolved =
-					typeof next === "function"
-						? (next as (previous: T) => T)(valueRef.current)
-						: next;
+					typeof next === "function" ? (next as (previous: T) => T)(valueRef.current) : next;
 
 				setStored(resolved);
 				valueRef.current = resolved;
@@ -181,16 +163,11 @@ export function useLocalStorage<T>(
 
 				const success = writeStorageJson(key, resolved);
 				if (!success) {
-					onErrorRef.current?.(
-						new Error(`localStorage write failed for key "${key}"`),
-					);
+					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
 				}
 			} catch (error) {
 				if (IS_DEV) {
-					console.error(
-						`[useLocalStorage] Unexpected error for key "${key}":`,
-						error,
-					);
+					console.error(`[useLocalStorage] Unexpected error for key "${key}":`, error);
 				}
 				onErrorRef.current?.(error);
 			}
@@ -270,8 +247,7 @@ export function useSectionScroll() {
 								id === "contenders"
 							? "pick"
 							: id;
-				const element =
-					document.getElementById(targetId) || document.getElementById(id);
+				const element = document.getElementById(targetId) || document.getElementById(id);
 				if (element) {
 					element.scrollIntoView?.({
 						behavior: prefersReducedMotion ? "auto" : "smooth",
@@ -336,19 +312,30 @@ export function usePreloadImages(
 ): UsePreloadImagesResult {
 	const { enabled = true, crossOrigin, onComplete, onError } = options;
 
-	const [loadedUrls, setLoadedUrls] = useState<string[]>(() => {
+	// ⚡ Bolt Performance Optimization: Initialize related state variables efficiently without multiple array iterations
+	const [{ initialLoadedUrls, initialIsLoading }] = useState(() => {
 		if (!IS_BROWSER) {
-			return [];
+			return { initialLoadedUrls: [], initialIsLoading: false };
 		}
-		return images.filter((img) => globalPreloadedImageCache.has(img));
+		const loaded: string[] = [];
+		let allCached = true;
+		for (let i = 0; i < images.length; i++) {
+			const img = images[i];
+			if (globalPreloadedImageCache.has(img)) {
+				loaded.push(img);
+			} else {
+				allCached = false;
+			}
+		}
+		return {
+			initialLoadedUrls: loaded,
+			initialIsLoading: enabled && images.length > 0 ? !allCached : false,
+		};
 	});
+
+	const [loadedUrls, setLoadedUrls] = useState<string[]>(initialLoadedUrls);
 	const [failedUrls, setFailedUrls] = useState<string[]>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(() => {
-		if (!enabled || !IS_BROWSER || images.length === 0) {
-			return false;
-		}
-		return !images.every((img) => globalPreloadedImageCache.has(img));
-	});
+	const [isLoading, setIsLoading] = useState<boolean>(initialIsLoading);
 
 	const onCompleteRef = useRef(onComplete);
 	const onErrorRef = useRef(onError);
@@ -365,7 +352,23 @@ export function usePreloadImages(
 		}
 
 		let isCancelled = false;
-		const activeImages = Array.from(new Set(images.filter(Boolean)));
+
+		// ⚡ Bolt Performance Optimization: Single-pass iteration to filter, deduplicate, and check cached images simultaneously
+		const activeImages: string[] = [];
+		const alreadyLoaded: string[] = [];
+		const seen = new Set<string>();
+
+		for (let i = 0; i < images.length; i++) {
+			const src = images[i];
+			if (src && !seen.has(src)) {
+				seen.add(src);
+				activeImages.push(src);
+				if (globalPreloadedImageCache.has(src)) {
+					alreadyLoaded.push(src);
+				}
+			}
+		}
+
 		const total = activeImages.length;
 
 		if (total === 0) {
@@ -373,9 +376,6 @@ export function usePreloadImages(
 			return;
 		}
 
-		const alreadyLoaded = activeImages.filter((src) =>
-			globalPreloadedImageCache.has(src),
-		);
 		if (alreadyLoaded.length === total) {
 			setLoadedUrls(alreadyLoaded);
 			setIsLoading(false);
@@ -442,12 +442,9 @@ export function usePreloadImages(
 	const totalCount = images.length;
 	const loadedCount = loadedUrls.length;
 	const isLoaded =
-		!isLoading &&
-		(totalCount === 0 || loadedCount + failedUrls.length >= totalCount);
+		!isLoading && (totalCount === 0 || loadedCount + failedUrls.length >= totalCount);
 	const progress =
-		totalCount === 0
-			? 1
-			: Math.min(1, (loadedCount + failedUrls.length) / totalCount);
+		totalCount === 0 ? 1 : Math.min(1, (loadedCount + failedUrls.length) / totalCount);
 
 	return {
 		isLoading,
@@ -502,33 +499,20 @@ function getObserverPoolKey(
 	rootMargin: string,
 	threshold: number | number[],
 ): string {
-	const threshStr = Array.isArray(threshold)
-		? threshold.join(",")
-		: String(threshold);
+	const threshStr = Array.isArray(threshold) ? threshold.join(",") : String(threshold);
 	return `${root ? "custom" : "viewport"}_${rootMargin}_${threshStr}`;
 }
 
 function observeWithPool(
 	element: Element,
 	callback: (entry: IntersectionObserverEntry) => void,
-	options: {
-		root: Element | Document | null;
-		rootMargin: string;
-		threshold: number | number[];
-	},
+	options: { root: Element | Document | null; rootMargin: string; threshold: number | number[] },
 ): () => void {
-	const key = getObserverPoolKey(
-		options.root,
-		options.rootMargin,
-		options.threshold,
-	);
+	const key = getObserverPoolKey(options.root, options.rootMargin, options.threshold);
 	let record = observerPool.get(key);
 
 	if (!record) {
-		const callbacks = new Map<
-			Element,
-			(entry: IntersectionObserverEntry) => void
-		>();
+		const callbacks = new Map<Element, (entry: IntersectionObserverEntry) => void>();
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
@@ -538,11 +522,7 @@ function observeWithPool(
 					}
 				}
 			},
-			{
-				root: options.root,
-				rootMargin: options.rootMargin,
-				threshold: options.threshold,
-			},
+			{ root: options.root, rootMargin: options.rootMargin, threshold: options.threshold },
 		);
 		record = { observer, callbacks };
 		observerPool.set(key, record);
@@ -587,11 +567,7 @@ export function useIntersectionObserver(
 		}
 
 		const element = targetRef.current;
-		if (
-			!element ||
-			typeof window === "undefined" ||
-			!("IntersectionObserver" in window)
-		) {
+		if (!element || typeof window === "undefined" || !("IntersectionObserver" in window)) {
 			setIsVisible(true);
 			return;
 		}

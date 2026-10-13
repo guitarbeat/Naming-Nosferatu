@@ -88,18 +88,8 @@ describe("names utility", () => {
 		});
 
 		it("filters lists of names correctly", () => {
-			const list = [
-				activeItem,
-				hiddenCamel,
-				hiddenSnake,
-				lockedCamel,
-				lockedSnake,
-			];
-			expect(getVisibleNames(list)).toEqual([
-				activeItem,
-				lockedCamel,
-				lockedSnake,
-			]);
+			const list = [activeItem, hiddenCamel, hiddenSnake, lockedCamel, lockedSnake];
+			expect(getVisibleNames(list)).toEqual([activeItem, lockedCamel, lockedSnake]);
 			expect(getActiveNames(list)).toEqual([activeItem]);
 			expect(getHiddenNames(list)).toEqual([hiddenCamel, hiddenSnake]);
 			expect(getLockedNames(list)).toEqual([lockedCamel, lockedSnake]);

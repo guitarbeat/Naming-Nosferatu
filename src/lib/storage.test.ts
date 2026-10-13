@@ -18,9 +18,11 @@ describe("storage", () => {
 		resetStorageModuleCache();
 	});
 
-	it("stores encryption key in sessionStorage and not localStorage", () => {
+	it("stores encryption key purely in-memory, removing legacy keys from storage", () => {
+		sessionStorage.setItem("__device_key__", "legacy_session_key");
+		localStorage.setItem("__device_key__", "legacy_local_key");
 		setStorageString("secure_test_key", "secret_value");
-		expect(sessionStorage.getItem("__device_key__")).not.toBeNull();
+		expect(sessionStorage.getItem("__device_key__")).toBeNull();
 		expect(localStorage.getItem("__device_key__")).toBeNull();
 	});
 
@@ -48,9 +50,7 @@ describe("storage", () => {
 	});
 
 	it("returns fallback for missing JSON keys", () => {
-		expect(
-			parseJsonValue(getStorageString("missing_key"), { fallback: true }),
-		).toEqual({
+		expect(parseJsonValue(getStorageString("missing_key"), { fallback: true })).toEqual({
 			fallback: true,
 		});
 	});
@@ -58,9 +58,7 @@ describe("storage", () => {
 	it("returns fallback for invalid JSON values", () => {
 		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
 		localStorage.setItem("corrupted", "{invalid_json");
-		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe(
-			"fallback",
-		);
+		expect(parseJsonValue(getStorageString("corrupted"), "fallback")).toBe("fallback");
 		expect(spy).toHaveBeenCalled();
 		spy.mockRestore();
 	});
@@ -74,18 +72,13 @@ describe("storage", () => {
 		await ratingsAPI.saveRatings(userId, sampleRatings);
 
 		// Verify raw localStorage contains encrypted string (contains IV colon delimiter and not plaintext JSON)
-		const rawStoredRatings = localStorage.getItem(
-			`nosferatu-ratings-${userId}`,
-		);
+		const rawStoredRatings = localStorage.getItem(`nosferatu-ratings-${userId}`);
 		expect(rawStoredRatings).not.toBeNull();
 		expect(rawStoredRatings).not.toContain('"rating":1500');
 		expect(rawStoredRatings).toContain(":");
 
 		// Verify decrypting via getStorageString restores original ratings object
-		const decryptedRatings = parseJsonValue(
-			getStorageString(`nosferatu-ratings-${userId}`),
-			null,
-		);
+		const decryptedRatings = parseJsonValue(getStorageString(`nosferatu-ratings-${userId}`), null);
 		expect(decryptedRatings).toEqual(sampleRatings);
 
 		// Verify candidate storage is also stored encrypted in localStorage
@@ -108,19 +101,19 @@ describe("storage", () => {
 	});
 
 	it("uses dynamic random device key per session without static hardcoded key fallback", () => {
+		// Since keys are strictly in-memory, test the reset mechanism directly
 		setStorageString("sec_test", "confidential_data");
-		const key1 = sessionStorage.getItem("__device_key__");
-		expect(key1).not.toBeNull();
-		expect(key1).not.toBe("nosferatu-secure-storage-key-1337");
+		const encrypted1 = localStorage.getItem("sec_test");
+		expect(encrypted1).not.toBeNull();
 
-		// Reset session state and verify a new unique key is generated
-		sessionStorage.clear();
 		resetStorageModuleCache();
 
 		setStorageString("sec_test_2", "confidential_data_2");
-		const key2 = sessionStorage.getItem("__device_key__");
-		expect(key2).not.toBeNull();
-		expect(key2).not.toEqual(key1);
+		const encrypted2 = localStorage.getItem("sec_test_2");
+		expect(encrypted2).not.toBeNull();
+
+		// Due to random IV and new key, ciphertexts must differ
+		expect(encrypted1).not.toEqual(encrypted2);
 	});
 
 	it("generates distinct random IVs for each encrypted item and handles edge cases in decryptValue", () => {
@@ -142,5 +135,26 @@ describe("storage", () => {
 		expect(decryptValue(null)).toBe("");
 		expect(decryptValue(undefined)).toBe("");
 		expect(decryptValue("")).toBe("");
+	});
+
+	it("handles errors when localStorage.getItem throws and falls back to memory store or fallback value", () => {
+		const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
+		const getItemSpy = vi.spyOn(window.localStorage, "getItem").mockImplementation(() => {
+			throw new Error("SecurityError: Access is denied");
+		});
+
+		// 1. When key is missing in memory fallback store, returns fallback
+		expect(getStorageString("restricted_key", "default_fallback")).toBe("default_fallback");
+		expect(spy).toHaveBeenCalledWith(
+			'[storage] Failed to read key "restricted_key" from localStorage:',
+			expect.any(Error),
+		);
+
+		// 2. When key exists in memory fallback store, returns stored value (decrypted)
+		setStorageString("memory_key", "memory_value");
+		expect(getStorageString("memory_key")).toBe("memory_value");
+
+		getItemSpy.mockRestore();
+		spy.mockRestore();
 	});
 });

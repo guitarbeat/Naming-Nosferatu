@@ -13,11 +13,28 @@ import {
 } from "./tournamentEngine";
 
 describe("tournamentEngine", () => {
-	it("resolves tournament mode correctly based on entrant count", () => {
-		expect(resolveTournamentMode(4)).toBe("2v2");
-		expect(resolveTournamentMode(8)).toBe("2v2");
-		expect(resolveTournamentMode(5)).toBe("1v1");
-		expect(resolveTournamentMode(3)).toBe("1v1");
+	describe("resolveTournamentMode", () => {
+		it("resolves to '2v2' for valid team sizes (multiples of 4 >= 4)", () => {
+			expect(resolveTournamentMode(4)).toBe("2v2");
+			expect(resolveTournamentMode(8)).toBe("2v2");
+			expect(resolveTournamentMode(12)).toBe("2v2");
+			expect(resolveTournamentMode(16)).toBe("2v2");
+		});
+
+		it("resolves to '1v1' for entrant counts not divisible by 4 or less than 4", () => {
+			expect(resolveTournamentMode(1)).toBe("1v1");
+			expect(resolveTournamentMode(2)).toBe("1v1");
+			expect(resolveTournamentMode(3)).toBe("1v1");
+			expect(resolveTournamentMode(5)).toBe("1v1");
+			expect(resolveTournamentMode(6)).toBe("1v1");
+			expect(resolveTournamentMode(7)).toBe("1v1");
+			expect(resolveTournamentMode(9)).toBe("1v1");
+		});
+
+		it("resolves to '1v1' for edge cases like zero or negative counts", () => {
+			expect(resolveTournamentMode(0)).toBe("1v1");
+			expect(resolveTournamentMode(-4)).toBe("1v1");
+		});
 	});
 
 	it("calculates expected Elo score", () => {
@@ -36,17 +53,68 @@ describe("tournamentEngine", () => {
 		expect(result.lossesB).toBe(1);
 	});
 
-	it("labels bracket stages properly", () => {
-		expect(getBracketStageLabel(3, 3)).toBe("Final");
-		expect(getBracketStageLabel(2, 3)).toBe("Semifinal");
-		expect(getBracketStageLabel(1, 3)).toBe("Quarterfinal");
+	describe("getBracketStageLabel", () => {
+		it("returns 'Final' when round equals totalRounds", () => {
+			expect(getBracketStageLabel(1, 1)).toBe("Final");
+			expect(getBracketStageLabel(2, 2)).toBe("Final");
+			expect(getBracketStageLabel(3, 3)).toBe("Final");
+			expect(getBracketStageLabel(5, 5)).toBe("Final");
+		});
+
+		it("returns 'Final' when round exceeds totalRounds", () => {
+			expect(getBracketStageLabel(4, 3)).toBe("Final");
+			expect(getBracketStageLabel(10, 5)).toBe("Final");
+		});
+
+		it("returns 'Semifinal' when remaining rounds equal 1", () => {
+			expect(getBracketStageLabel(2, 3)).toBe("Semifinal");
+			expect(getBracketStageLabel(4, 5)).toBe("Semifinal");
+		});
+
+		it("returns 'Quarterfinal' when remaining rounds equal 2", () => {
+			expect(getBracketStageLabel(1, 3)).toBe("Quarterfinal");
+			expect(getBracketStageLabel(3, 5)).toBe("Quarterfinal");
+		});
+
+		it("returns 'Round X' when remaining rounds are 3 or more", () => {
+			expect(getBracketStageLabel(1, 4)).toBe("Round 1");
+			expect(getBracketStageLabel(1, 5)).toBe("Round 1");
+			expect(getBracketStageLabel(2, 5)).toBe("Round 2");
+			expect(getBracketStageLabel(1, 10)).toBe("Round 1");
+			expect(getBracketStageLabel(7, 10)).toBe("Round 7");
+		});
+
+		it("handles zero or negative rounds and totalRounds safely", () => {
+			expect(getBracketStageLabel(0, 0)).toBe("Final");
+			expect(getBracketStageLabel(-1, 3)).toBe("Quarterfinal");
+			expect(getBracketStageLabel(1, -2)).toBe("Final");
+			expect(getBracketStageLabel(-5, -5)).toBe("Final");
+		});
 	});
 
-	it("evaluates heat level from streak thresholds", () => {
-		expect(getHeatLevel(1)).toBeNull();
-		expect(getHeatLevel(3)).toBe("warm");
-		expect(getHeatLevel(5)).toBe("hot");
-		expect(getHeatLevel(8)).toBe("blazing");
+	describe("getHeatLevel", () => {
+		it("returns null for streaks below warm threshold (3)", () => {
+			expect(getHeatLevel(-1)).toBeNull();
+			expect(getHeatLevel(0)).toBeNull();
+			expect(getHeatLevel(1)).toBeNull();
+			expect(getHeatLevel(2)).toBeNull();
+		});
+
+		it("returns 'warm' for streaks from warm threshold (3) up to hot threshold (5)", () => {
+			expect(getHeatLevel(3)).toBe("warm");
+			expect(getHeatLevel(4)).toBe("warm");
+		});
+
+		it("returns 'hot' for streaks from hot threshold (5) up to blazing threshold (7)", () => {
+			expect(getHeatLevel(5)).toBe("hot");
+			expect(getHeatLevel(6)).toBe("hot");
+		});
+
+		it("returns 'blazing' for streaks at or above blazing threshold (7)", () => {
+			expect(getHeatLevel(7)).toBe("blazing");
+			expect(getHeatLevel(8)).toBe("blazing");
+			expect(getHeatLevel(15)).toBe("blazing");
+		});
 	});
 
 	it("calculates flame counts", () => {

@@ -6,14 +6,15 @@ import useAppStore, { useActiveTournamentStatus } from "@/store";
 
 // ⚡ Bolt: lazy-load heavy TournamentSetup (WebGL/framer children) out of initial bundle
 const TournamentSetup = React.lazy(() =>
-	import("@/tournament/TournamentSetup").then((m) => ({ default: m.TournamentSetup })),
+	import("@/tournament/TournamentSetup").then((m) => ({
+		default: m.TournamentSetup,
+	})),
 );
 
 export function HomeView() {
 	const { hasActiveTournament, namesCount } = useActiveTournamentStatus();
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
-	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } =
-		useSectionScroll();
+	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
 
 	useEffect(() => {
 		const handleTabChange = (e: Event) => {
@@ -27,9 +28,15 @@ export function HomeView() {
 	}, [scrollToSection]);
 
 	const handleStartNewTournament = useCallback(() => {
-		clearPendingScroll();
-		tournamentActions.resetTournament();
-		scheduleSectionScroll("pick");
+		if (
+			window.confirm(
+				"Are you sure you want to restart the tournament? Your current progress will be lost.",
+			)
+		) {
+			clearPendingScroll();
+			tournamentActions.resetTournament();
+			scheduleSectionScroll("pick");
+		}
 	}, [clearPendingScroll, tournamentActions, scheduleSectionScroll]);
 
 	useEffect(() => clearPendingScroll, [clearPendingScroll]);
@@ -50,10 +57,7 @@ export function HomeView() {
 					<section id="pick" className="w-full scroll-mt-20 sm:scroll-mt-24">
 						<div id="tournament" className="scroll-mt-20 sm:scroll-mt-24" />
 						<div id="contenders" className="scroll-mt-20 sm:scroll-mt-24" />
-						<TournamentStatusWidget
-							namesCount={namesCount}
-							onRestart={handleStartNewTournament}
-						/>
+						<TournamentStatusWidget namesCount={namesCount} onRestart={handleStartNewTournament} />
 						<div className="w-full min-h-[480px] flex flex-col flex-1">
 							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 								<TournamentSetup />

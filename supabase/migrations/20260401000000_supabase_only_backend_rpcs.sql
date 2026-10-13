@@ -12,7 +12,7 @@ BEGIN
     c.name AS cat_name,
     AVG(r.rating)::FLOAT AS rating
   FROM cat_names c
-  JOIN user_cat_name_ratings r ON c.id = r.name_id
+  JOIN user_cat_name_ratings r ON c.id = r.cat_id
   GROUP BY c.id, c.name
   ORDER BY rating DESC;
 END;

@@ -58,10 +58,7 @@ void main() {
 `;
 }
 
-function areIridescencePropsEqual(
-	prevProps: IridescenceProps,
-	nextProps: IridescenceProps,
-) {
+function areIridescencePropsEqual(prevProps: IridescenceProps, nextProps: IridescenceProps) {
 	if (prevProps.speed !== nextProps.speed) {
 		return false;
 	}
@@ -176,8 +173,7 @@ export const Iridescence = memo(function Iridescence({
 				}
 				const rect = ctn.getBoundingClientRect();
 				cachedWidth = rect.width || ctn.clientWidth || window.innerWidth || 1;
-				cachedHeight =
-					rect.height || ctn.clientHeight || window.innerHeight || 1;
+				cachedHeight = rect.height || ctn.clientHeight || window.innerHeight || 1;
 				cachedLeft = rect.left;
 				cachedTop = rect.top;
 
@@ -256,12 +252,7 @@ export const Iridescence = memo(function Iridescence({
 					? null
 					: new IntersectionObserver(([entry]) => {
 							isElementVisible = entry.isIntersecting;
-							if (
-								isElementVisible &&
-								!animateId &&
-								!prefersReduced &&
-								!document.hidden
-							) {
+							if (isElementVisible && !animateId && !prefersReduced && !document.hidden) {
 								animateId = requestAnimationFrame(update);
 							}
 						});
@@ -271,12 +262,7 @@ export const Iridescence = memo(function Iridescence({
 			}
 
 			handleVisibilityChange = () => {
-				if (
-					!document.hidden &&
-					!animateId &&
-					!prefersReduced &&
-					isElementVisible
-				) {
+				if (!document.hidden && !animateId && !prefersReduced && isElementVisible) {
 					animateId = requestAnimationFrame(update);
 				}
 			};
@@ -319,10 +305,7 @@ export const Iridescence = memo(function Iridescence({
 				window.removeEventListener("resize", resize);
 			}
 			if (handleVisibilityChange) {
-				document.removeEventListener(
-					"visibilitychange",
-					handleVisibilityChange,
-				);
+				document.removeEventListener("visibilitychange", handleVisibilityChange);
 			}
 			if (mouseReact && handleMouseMove) {
 				window.removeEventListener("mousemove", handleMouseMove);
@@ -334,11 +317,5 @@ export const Iridescence = memo(function Iridescence({
 		};
 	}, [mouseReact]);
 
-	return (
-		<div
-			ref={ctnDom}
-			className={`iridescence-container ${className}`}
-			aria-hidden="true"
-		/>
-	);
+	return <div ref={ctnDom} className={`iridescence-container ${className}`} aria-hidden="true" />;
 }, areIridescencePropsEqual);

@@ -10,12 +10,15 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
- * Shuffles an array using the Fisher-Yates algorithm.
+ * Shuffles an array using the Fisher-Yates algorithm with cryptographically secure random values.
  */
 export function shuffleArray<T>(array: T[]): T[] {
 	const next = [...array];
+	const randomBuffer = new Uint32Array(1);
 	for (let i = next.length - 1; i > 0; i -= 1) {
-		const j = Math.floor(Math.random() * (i + 1));
+		crypto.getRandomValues(randomBuffer);
+		const randomFloat = (randomBuffer[0] as number) / (0xffffffff + 1);
+		const j = Math.floor(randomFloat * (i + 1));
 		const temp = next[i] as T;
 		next[i] = next[j] as T;
 		next[j] = temp;
@@ -54,10 +57,7 @@ export function hapticNavTap(): void {
  * Emits a crisp, subtle 15ms vibration pulse using the Vibration API.
  */
 export function hapticVoteTap(durationMs = 15): boolean {
-	if (
-		typeof navigator !== "undefined" &&
-		typeof navigator.vibrate === "function"
-	) {
+	if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
 		try {
 			return navigator.vibrate(durationMs);
 		} catch {
@@ -141,10 +141,7 @@ export const ErrorManager = {
 		const cleanupImageErrorHandler = setupGlobalImageErrorHandler();
 
 		return () => {
-			window.removeEventListener(
-				"unhandledrejection",
-				handleUnhandledRejection,
-			);
+			window.removeEventListener("unhandledrejection", handleUnhandledRejection);
 			window.removeEventListener("error", handleErrorEvent);
 			cleanupImageErrorHandler();
 		};
@@ -161,7 +158,17 @@ export const ErrorManager = {
 				: typeof error === "string"
 					? error
 					: "An unexpected error occurred.";
-		const id = `err_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+		let randomString: string;
+		if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+			randomString = crypto.randomUUID();
+		} else if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+			const array = new Uint8Array(8);
+			crypto.getRandomValues(array);
+			randomString = Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
+		} else {
+			randomString = Math.random().toString(36).slice(2, 10);
+		}
+		const id = `err_${Date.now()}_${randomString}`;
 		if (context) {
 			console.error(`[${context}] Error:`, error, options);
 		} else {
