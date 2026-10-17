@@ -587,34 +587,12 @@ function TournamentComplete({
 	const winningRecord = matchHistory.length > 0 ? matchHistory[matchHistory.length - 1] : null;
 	const winnerId = winningRecord?.winner;
 
-	// ⚡ Bolt Performance Optimization: O(1) map lookups for winning team and name in TournamentComplete
-	const teamsById = useMemo(() => {
-		const map = new Map<string, Team>();
-		for (let i = 0; i < teams.length; i++) {
-			const team = teams[i];
-			if (team) {
-				map.set(team.id, team);
-			}
-		}
-		return map;
-	}, [teams]);
+	// ⚡ Bolt Performance Optimization: Replace expensive Map creation with direct array find for single conditional lookups
+	const winningTeam = winnerId ? teams.find((t) => t?.id === winnerId) : undefined;
+	const winningNameItem = winnerId
+		? names.find((n) => n && (String(n.id) === String(winnerId) || n.name === String(winnerId)))
+		: undefined;
 
-	const namesByIdOrName = useMemo(() => {
-		const map = new Map<string, NameItem>();
-		for (let i = 0; i < names.length; i++) {
-			const item = names[i];
-			if (item) {
-				map.set(String(item.id), item);
-				if (item.name) {
-					map.set(item.name, item);
-				}
-			}
-		}
-		return map;
-	}, [names]);
-
-	const winningTeam = winnerId ? teamsById.get(winnerId) : undefined;
-	const winningNameItem = winnerId ? namesByIdOrName.get(String(winnerId)) : undefined;
 	const winnerDisplayName = winningTeam
 		? winningTeam.memberNames.join(" & ")
 		: winningNameItem?.name || (winnerId ? String(winnerId) : null);
