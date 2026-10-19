@@ -22,7 +22,16 @@ export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStat
 				<Button
 					variant="ghost"
 					size="small"
-					onClick={onRestart}
+					onClick={() => {
+						if (
+							window.confirm(
+								"Are you sure you want to restart the tournament? Your current progress will be lost.",
+							)
+						) {
+							onRestart();
+						}
+					}}
+					aria-label="Restart Tournament"
 					className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1.5"
 				>
 					<RotateCcw
