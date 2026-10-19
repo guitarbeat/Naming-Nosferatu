@@ -5,3 +5,7 @@
 ## 2026-10-01 - Added ARIA attributes to Loading/Skeleton blocks
 **Learning:** Found multiple loading states (spinner, skeletons, cat-gif) using `div` elements visually representing a status, but lacking semantic ARIA roles for screen readers. Added `role="status"`, `aria-label="Loading"`, `aria-busy="true"`, and `aria-live="polite"`.
 **Action:** Always ensure that visual loading indicators are semantically exposed to assistive technologies so users know the system is working and not frozen.
+
+## 2023-10-24 - Keyboard Shortcuts for Text Inputs
+**Learning:** Adding global keyboard shortcuts (like `/` for search) is extremely helpful for power users and keyboard navigators, but it can cause frustrating UX if the shortcut triggers while the user is already typing in another text field. Moreover, keyboard shortcuts aren't discoverable unless visually indicated.
+**Action:** When implementing global keyboard shortcuts for inputs, strictly ensure the event listener ignores triggers if `document.activeElement?.tagName` is 'INPUT' or 'TEXTAREA'. Always accompany these shortcuts with an `aria-keyshortcuts` attribute on the element and a visual `<kbd>` hint for accessibility and discoverability.
