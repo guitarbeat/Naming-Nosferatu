@@ -46,7 +46,7 @@ export function HomeView() {
 			className={
 				hasActiveTournament
 					? "w-full flex flex-col items-center"
-					: "w-full h-[100dvh] min-h-[100dvh] flex flex-col relative overflow-hidden"
+					: "w-full min-h-[100vh] flex flex-col relative overflow-hidden"
 			}
 		>
 			{hasActiveTournament ? (

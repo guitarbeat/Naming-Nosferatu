@@ -14,7 +14,7 @@ const IRIDESCENCE_COLOR: [number, number, number] = [1, 1, 1];
 export function AppLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<ErrorBoundary context="Main Application Layout">
-			<div className="app relative min-h-dvh w-full bg-background text-foreground overflow-x-hidden">
+			<div className="app relative min-h-screen w-full bg-background text-foreground overflow-x-hidden">
 				<Iridescence
 					color={IRIDESCENCE_COLOR}
 					speed={0.8}

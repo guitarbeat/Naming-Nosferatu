@@ -68,7 +68,7 @@ export function App() {
 	return (
 		<Suspense
 			fallback={
-				<div className="flex min-h-[100dvh] items-center justify-center bg-background text-foreground">
+				<div className="flex min-h-screen items-center justify-center bg-background text-foreground">
 					Loading...
 				</div>
 			}
