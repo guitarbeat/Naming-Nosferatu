@@ -109,17 +109,18 @@ function createNamesKey(names: NameItem[]): string {
 	return createSortedKey(names.map((n) => n?.id || ""));
 }
 
-function createTournamentId(names: NameItem[], userName?: string): string {
-	const sortedIds = names
-		.map((n) => String(n.id))
-		.sort()
-		.join(",");
+// ⚡ Bolt Performance Optimization: reused pre-computed namesKey instead of sorting IDs to avoid O(N log N) work
+function createTournamentId(
+	namesKey: string,
+	userName: string | undefined,
+	namesLength: number,
+): string {
 	const prefix = userName || "anonymous";
 	let hash = 0;
-	for (let i = 0; i < sortedIds.length; i++) {
-		hash = ((hash << 5) - hash + sortedIds.charCodeAt(i)) | 0;
+	for (let i = 0; i < namesKey.length; i++) {
+		hash = ((hash << 5) - hash + namesKey.charCodeAt(i)) | 0;
 	}
-	return `tournament-${prefix}-${Math.abs(hash).toString(36)}-${names.length}`;
+	return `tournament-${prefix}-${Math.abs(hash).toString(36)}-${namesLength}`;
 }
 
 function createBracketEntrants(participantIds: string[]): string[] {
@@ -407,7 +408,10 @@ export function useTournamentState(names: NameItem[], userName?: string): UseTou
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
 	const namesKey = useMemo(() => createNamesKey(names), [names]);
-	const tournamentId = useMemo(() => createTournamentId(names, userName), [names, userName]);
+	const tournamentId = useMemo(
+		() => createTournamentId(namesKey, userName, names.length),
+		[namesKey, userName, names.length],
+	);
 
 	const defaultPersistentState = useMemo(
 		() => createDefaultPersistentState(userName || "anonymous"),
