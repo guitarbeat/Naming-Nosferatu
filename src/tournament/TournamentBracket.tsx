@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, Eye, Flame, Layers, Trophy, X, ZoomIn, ZoomOut } from "lucide-react";
 import { memo, useCallback, useMemo, useRef, useState } from "react";
-import { Button, CatImage, MagicSearch, MagicToggle } from "@/components";
+import { Button, CatImage, MagicToolbar } from "@/components";
 import { useDebounce } from "@/hooks";
 import { MOTION_DURATIONS } from "@/lib/uiUtils";
 import { hapticVoteTap } from "@/lib/utils";
@@ -782,8 +782,13 @@ export function TournamentBracket({
 
 					{/* Right Side Controls */}
 					<div className="flex items-center gap-2">
-						{/* View Switcher Tabs */}
-						<MagicToggle viewMode={viewMode} setViewMode={setViewMode} />
+						{/* View Switcher Tabs & Search Toolbar */}
+						<MagicToolbar
+							searchQuery={searchQuery}
+							setSearchQuery={setSearchQuery}
+							viewMode={viewMode}
+							setViewMode={setViewMode}
+						/>
 
 						{/* Close button if in modal mode */}
 						{onClose && (
@@ -799,7 +804,7 @@ export function TournamentBracket({
 					</div>
 				</div>
 
-				{/* Progress & Search Ribbon */}
+				{/* Progress Ribbon */}
 				<div className="flex flex-wrap items-center justify-between gap-3 pt-1">
 					{/* Progress Pill */}
 					<div className="flex items-center gap-3">
@@ -820,11 +825,8 @@ export function TournamentBracket({
 						</div>
 					</div>
 
-					{/* Search & Zoom Actions */}
+					{/* Zoom Actions */}
 					<div className="flex items-center gap-2">
-						{/* Search Input */}
-						<MagicSearch searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-
 						{/* Zoom Buttons (Tree Mode only) */}
 						{viewMode === "tree" && (
 							<div className="hidden sm:flex items-center rounded-xl border border-border/50 bg-muted/30 p-0.5 text-xs">
