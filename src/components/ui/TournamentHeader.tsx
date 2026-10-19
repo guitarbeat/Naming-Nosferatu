@@ -52,6 +52,8 @@ export function BracketTree({
 				onClick={onOpenBracket}
 				className="w-full text-left rounded-xl border border-border/15 bg-foreground/[0.03] px-3 py-2 transition-all cursor-pointer hover:border-primary/40 hover:bg-foreground/[0.06] group/bracket focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
 				title="Click to view full interactive tournament bracket"
+				aria-label="Open full interactive tournament bracket"
+				aria-haspopup="dialog"
 			>
 				<div className="mb-2 flex items-center justify-between text-[10px] tracking-wide text-muted-foreground">
 					<span className="flex items-center gap-1">
