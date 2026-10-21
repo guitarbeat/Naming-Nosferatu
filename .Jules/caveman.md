@@ -10,3 +10,6 @@
 ## 2023-10-19 - Group MagicSearch and MagicToggle in TournamentBracket
 **Learning:** Found scattered UI components (`MagicSearch` and `MagicToggle`) in `TournamentBracket`.
 **Action:** Grouped them together into a new `MagicToolbar` component in `src/components/ui/MagicToolbar.tsx` to clean up the front page and make logical sense.
+## 2023-10-20 - Extracted TournamentComplete from TournamentArena
+**Learning:** `TournamentArena.tsx` was getting very heavy due to having the `TournamentComplete` component in it.
+**Action:** Created `src/components/ui/TournamentComplete.tsx` containing `TournamentComplete` component and extracted it from `TournamentArena.tsx` to lighten up the main file.
