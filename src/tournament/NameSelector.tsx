@@ -94,7 +94,7 @@ export const NameSelector = memo(function NameSelector() {
 
 	if (isLoading) {
 		return (
-			<div className="w-full h-screen min-h-[100dvh] flex items-center justify-center">
+			<div className="w-full min-h-screen flex items-center justify-center">
 				<Loading variant="spinner" text="Loading contenders..." />
 			</div>
 		);
@@ -102,7 +102,7 @@ export const NameSelector = memo(function NameSelector() {
 
 	if (error && !isSupabaseUnavailable && availableNames.length === 0) {
 		return (
-			<div className="w-full h-screen min-h-[100dvh] flex flex-col items-center justify-center text-center px-4">
+			<div className="w-full min-h-screen flex flex-col items-center justify-center text-center px-4">
 				<div className="p-6 rounded-3xl bg-destructive/10 border border-destructive/20 max-w-md space-y-4">
 					<p className="size-10 rounded-2xl bg-destructive/20 text-destructive flex items-center justify-center mx-auto text-lg font-bold">
 						!
@@ -122,7 +122,7 @@ export const NameSelector = memo(function NameSelector() {
 	}
 
 	return (
-		<div className="relative w-full h-[100dvh] min-h-[100dvh] overflow-hidden select-none">
+		<div className="relative w-full min-h-screen overflow-hidden select-none">
 			{/* Full-Screen Drift Wall */}
 			{availableNames.length > 0 && (
 				<div className="absolute inset-0 w-full h-full overflow-hidden">
