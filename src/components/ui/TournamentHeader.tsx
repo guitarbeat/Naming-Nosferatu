@@ -230,12 +230,16 @@ function HeaderControls({
 				<button
 					type="button"
 					onClick={onOpenBracket}
-					className="inline-flex h-9 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-xs font-semibold text-primary transition-all duration-[300ms] ease-spring hover:bg-primary/20 hover:-translate-y-0.5 active:scale-[0.93] shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+					className="inline-flex h-9 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 pl-3 pr-2 text-xs font-semibold text-primary transition-all duration-[300ms] ease-spring hover:bg-primary/20 hover:-translate-y-0.5 active:scale-[0.93] shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 					aria-label="View tournament bracket tree"
+					aria-keyshortcuts="b"
 					title="View tournament bracket (Press B)"
 				>
 					<Layers className="size-3.5" />
-					<span>Bracket</span>
+					<span className="mr-0.5">Bracket</span>
+					<kbd className="hidden sm:flex items-center justify-center min-w-[1.25rem] h-[1.25rem] font-sans text-[10px] bg-primary/20 px-1.5 py-0 rounded border border-primary/30 text-primary opacity-80 shadow-sm leading-none">
+						B
+					</kbd>
 				</button>
 			)}
 
@@ -243,16 +247,26 @@ function HeaderControls({
 				type="button"
 				onClick={() => handleUndo()}
 				disabled={!canUndo}
-				className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-xs font-medium transition-all duration-[300ms] ease-spring active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+				className={`inline-flex h-9 items-center gap-1.5 rounded-full border pl-3 pr-2 text-xs font-medium transition-all duration-[300ms] ease-spring active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
 					canUndo
 						? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 hover:-translate-y-0.5 cursor-pointer"
 						: "cursor-not-allowed border-border/30 bg-secondary/10 text-muted-foreground opacity-60"
 				}`}
 				aria-label="Undo last vote"
+				aria-keyshortcuts="u"
 				title={canUndo ? "Undo last vote (Press U)" : "No votes to undo"}
 			>
 				<Undo2 className="size-3.5" />
-				<span className="hidden sm:inline">Undo</span>
+				<span className="hidden sm:inline mr-0.5">Undo</span>
+				<kbd
+					className={`hidden sm:flex items-center justify-center min-w-[1.25rem] h-[1.25rem] font-sans text-[10px] px-1.5 py-0 rounded border opacity-80 shadow-sm leading-none ${
+						canUndo
+							? "bg-primary/20 border-primary/30 text-primary"
+							: "bg-secondary/20 border-border/30 text-muted-foreground"
+					}`}
+				>
+					U
+				</kbd>
 			</button>
 
 			<button
