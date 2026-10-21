@@ -11,6 +11,7 @@ export * from "./ui/HomeView";
 export * from "./ui/MagicSearch";
 export * from "./ui/MagicToggle";
 export * from "./ui/MagicToolbar";
+export * from "./ui/MatchSideCard";
 export * from "./ui/PwaInstallPrompt";
 export * from "./ui/SkipToMainButton";
 export * from "./ui/TournamentHeader";
