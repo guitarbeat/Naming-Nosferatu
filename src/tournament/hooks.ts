@@ -382,19 +382,19 @@ function haveSameIds(a: string[], b: string[]): boolean {
 		return true;
 	}
 
-	const counts = new Map<string, number>();
+	const counts: Record<string, number> = Object.create(null);
 	for (let i = 0; i < a.length; i++) {
 		const val = a[i];
-		counts.set(val, (counts.get(val) || 0) + 1);
+		counts[val] = (counts[val] || 0) + 1;
 	}
 
 	for (let i = 0; i < b.length; i++) {
 		const val = b[i];
-		const count = counts.get(val);
+		const count = counts[val];
 		if (!count) {
 			return false;
 		}
-		counts.set(val, count - 1);
+		counts[val] = count - 1;
 	}
 
 	return true;
@@ -1078,31 +1078,36 @@ export function useInertiaScroll(
 						nextTile = colTiles[colTiles.length - 1];
 					} else if (key === "ArrowRight" || key === "ArrowLeft") {
 						// ⚡ Bolt Performance Optimization: Group tiles by column in a single linear pass to avoid redundant Set instantiation, array allocations, and filtering
-						const colMap = new Map<number, HTMLElement[]>();
+						const allCols: number[] = [];
 						for (let i = 0; i < tiles.length; i++) {
-							const tile = tiles[i];
-							const colAttr = tile.getAttribute("data-col");
+							const colAttr = tiles[i].getAttribute("data-col");
 							if (colAttr !== null) {
 								const col = Number(colAttr);
-								let list = colMap.get(col);
-								if (!list) {
-									list = [];
-									colMap.set(col, list);
+								if (allCols.indexOf(col) === -1) {
+									allCols.push(col);
 								}
-								list.push(tile);
 							}
 						}
 
-						const allCols = Array.from(colMap.keys()).sort((a, b) => a - b);
+						allCols.sort((a, b) => a - b);
+
 						if (allCols.length > 0) {
-							const colNum = Number(currentCol);
-							const colIdx = allCols.indexOf(colNum);
+							const currentNum = Number(currentCol);
+							const colIdx = allCols.indexOf(currentNum);
 							if (colIdx !== -1) {
 								const targetColNum =
 									key === "ArrowRight"
 										? allCols[(colIdx + 1) % allCols.length]
 										: allCols[(colIdx - 1 + allCols.length) % allCols.length];
-								const targetColTiles = colMap.get(targetColNum) || [];
+
+								const targetColTiles: HTMLElement[] = [];
+								for (let i = 0; i < tiles.length; i++) {
+									const t = tiles[i];
+									if (Number(t.getAttribute("data-col")) === targetColNum) {
+										targetColTiles.push(t);
+									}
+								}
+
 								const targetIdx = Math.min(indexInCol, targetColTiles.length - 1);
 								nextTile = targetColTiles[targetIdx] || targetColTiles[0] || null;
 							}

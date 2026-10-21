@@ -9,3 +9,7 @@
 ## 2024-05-19 - Unnecessary Map creations for single lookups
 **Learning:** Found useMemo blocks creating Maps (O(N) time and memory overhead) from arrays just to perform a single lookup for a specific item (e.g., finding a winner). When the lookup is infrequent or conditional, standard `find` (O(N) worst-case time with no memory allocation) is significantly faster than building an entire Map.
 **Action:** Replace Map-building with direct `Array.prototype.find()` when doing infrequent lookups on arrays.
+
+## 2024-05-18 - [Optimization of Set and Map allocations on keydown]
+**Learning:** Found an O(N log N) sorting bottleneck and several redundant array allocations on keyboard arrow navigation within the tournament view hooks. Grouping DOM elements by dataset property on each ArrowRight and ArrowLeft keydown was inefficient due to repeated map instantiations and Array.from mapping.
+**Action:** Replaced redundant Map instantiations with a single-pass extraction of unique column numbers directly into a sorted array. Replaced `haveSameIds` Map usage with faster prototype-safe POJO (`Object.create(null)`) caching.
