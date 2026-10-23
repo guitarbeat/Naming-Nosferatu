@@ -232,10 +232,14 @@ function HeaderControls({
 					onClick={onOpenBracket}
 					className="inline-flex h-9 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-xs font-semibold text-primary transition-all duration-[300ms] ease-spring hover:bg-primary/20 hover:-translate-y-0.5 active:scale-[0.93] shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 					aria-label="View tournament bracket tree"
+					aria-keyshortcuts="b"
 					title="View tournament bracket (Press B)"
 				>
 					<Layers className="size-3.5" />
 					<span>Bracket</span>
+					<kbd className="hidden sm:inline-flex ml-1.5 font-sans text-[10px] bg-primary/20 px-1.5 py-0.5 rounded border border-primary/20 text-primary opacity-70">
+						B
+					</kbd>
 				</button>
 			)}
 
@@ -249,10 +253,14 @@ function HeaderControls({
 						: "cursor-not-allowed border-border/30 bg-secondary/10 text-muted-foreground opacity-60"
 				}`}
 				aria-label="Undo last vote"
+				aria-keyshortcuts="u"
 				title={canUndo ? "Undo last vote (Press U)" : "No votes to undo"}
 			>
 				<Undo2 className="size-3.5" />
 				<span className="hidden sm:inline">Undo</span>
+				<kbd className="hidden sm:inline-flex ml-1.5 font-sans text-[10px] bg-secondary/50 px-1.5 py-0.5 rounded border border-border/50 text-muted-foreground opacity-70">
+					U
+				</kbd>
 			</button>
 
 			<button
