@@ -13,5 +13,6 @@ export * from "./ui/MagicToggle";
 export * from "./ui/MagicToolbar";
 export * from "./ui/PwaInstallPrompt";
 export * from "./ui/SkipToMainButton";
+export * from "./ui/TournamentAnnouncements";
 export * from "./ui/TournamentHeader";
 export * from "./ui/TournamentStatusWidget";
