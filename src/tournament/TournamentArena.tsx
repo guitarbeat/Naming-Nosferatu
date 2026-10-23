@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
-import { Flame } from "lucide-react";
+import { Flame, Sparkles } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CatImage, Loading } from "@/components/UiPrimitives";
+import { NameOrb } from "@/components/GlassEffects";
+import { Loading } from "@/components/UiPrimitives";
 import { useTimedState } from "@/hooks/useCommonHooks";
 import { useTournamentState } from "@/hooks/useTournamentState";
 import {
-	getRandomCatImage,
 	getVisibleNames,
 	hapticVoteTap,
 	MOTION_DURATIONS,
 	normalizeRatingsWithStats,
 } from "@/lib/utils";
-import type { TournamentProps } from "@/types";
+import type { NameItem, TournamentProps } from "@/types";
 import { TournamentBracketModal } from "./TournamentBracket";
 import { TournamentComplete, TournamentHeader } from "./TournamentComplete";
 import {
@@ -25,10 +25,17 @@ import {
 	STREAK_THRESHOLDS,
 } from "./tournamentEngine";
 
+interface OrbMemberInfo {
+	id: string;
+	name: string;
+	description?: string;
+	pronunciation?: string;
+}
+
 interface MatchSideCardProps {
 	side: "left" | "right";
 	name: string;
-	img: string | null;
+	orbMembers: OrbMemberInfo[];
 	heatLevel: HeatLevel | null;
 	streak: number;
 	rating: number;
@@ -36,7 +43,6 @@ interface MatchSideCardProps {
 	isSelected: boolean;
 	hasSelectionFeedback: boolean;
 	isTeam: boolean;
-	members: string[];
 	description?: string;
 	pronunciation?: string;
 	onVote: () => void;
@@ -45,7 +51,7 @@ interface MatchSideCardProps {
 const MatchSideCard = memo(function MatchSideCard({
 	side,
 	name,
-	img,
+	orbMembers,
 	heatLevel,
 	streak,
 	rating,
@@ -53,7 +59,6 @@ const MatchSideCard = memo(function MatchSideCard({
 	isSelected,
 	hasSelectionFeedback,
 	isTeam,
-	members,
 	description,
 	pronunciation,
 	onVote,
@@ -83,7 +88,14 @@ const MatchSideCard = memo(function MatchSideCard({
 					/>
 				)}
 				<div className="relative z-10 w-full flex items-center justify-between text-xs text-muted-foreground font-mono tabular-nums">
-					<span>ELO {Math.round(rating)}</span>
+					<span className="inline-flex items-center gap-1.5">
+						<span>ELO {Math.round(rating)}</span>
+						{isTeam && (
+							<span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 font-sans text-[10px] font-bold text-primary">
+								Duo Group
+							</span>
+						)}
+					</span>
 					{streak >= STREAK_THRESHOLDS.warm && (
 						<span className="flex items-center gap-1 text-orange-400 font-bold">
 							<Flame className="size-3.5 fill-orange-400" />
@@ -91,38 +103,120 @@ const MatchSideCard = memo(function MatchSideCard({
 						</span>
 					)}
 				</div>
-				<div className="relative z-10 my-4 flex flex-col items-center gap-3">
-					{img && (
-						<div className="relative size-32 sm:size-40 rounded-full overflow-hidden border-4 border-card shadow-md group-hover:scale-105 transition-transform duration-200">
-							<CatImage src={img} alt={name} imageClassName="size-full object-cover" />
+
+				<div className="relative z-10 my-5 flex flex-col items-center gap-4 w-full">
+					{orbMembers.length > 1 ? (
+						<div className="relative flex items-center justify-center -space-x-3 sm:-space-x-2 py-1 group-hover:scale-[1.03] transition-transform duration-200">
+							{orbMembers.map((member, idx) => (
+								<div
+									key={`${member.id}-${idx}`}
+									className={`relative transition-transform duration-200 ${
+										idx === 0
+											? "-rotate-3 group-hover:-translate-x-1"
+											: "rotate-3 group-hover:translate-x-1"
+									}`}
+								>
+									<NameOrb
+										orbId={`${side}-${member.id}-${idx}`}
+										name={member.name}
+										orbitText={
+											member.description ||
+											(member.pronunciation ? `/${member.pronunciation}/` : "")
+										}
+										size={136}
+									/>
+								</div>
+							))}
+							<div className="absolute z-20 flex size-8 items-center justify-center rounded-full border border-primary/40 bg-card text-primary shadow-md font-display font-black text-sm">
+								+
+							</div>
+						</div>
+					) : (
+						<div className="relative py-1 group-hover:scale-105 transition-transform duration-200">
+							<NameOrb
+								orbId={`${side}-${orbMembers[0]?.id ?? name}`}
+								name={orbMembers[0]?.name ?? name}
+								orbitText={
+									orbMembers[0]?.description ||
+									description ||
+									(pronunciation ? `/${pronunciation}/` : "")
+								}
+								size={162}
+							/>
 						</div>
 					)}
-					<div className="space-y-1">
+
+					<div className="space-y-1.5 max-w-sm">
 						<h3 className="font-display font-black text-2xl sm:text-3xl text-foreground tracking-tight group-hover:text-primary transition-colors">
 							{name}
 						</h3>
-						{pronunciation && (
+						{pronunciation && !isTeam && (
 							<p className="text-xs text-muted-foreground/80 font-mono">/{pronunciation}/</p>
 						)}
-						{description && (
-							<p className="text-xs sm:text-sm text-muted-foreground max-w-xs line-clamp-2">
-								{description}
-							</p>
+						{isTeam && orbMembers.length > 1 ? (
+							<div className="flex flex-col gap-1 pt-1">
+								{orbMembers.map((member) =>
+									member.description ? (
+										<p
+											key={member.id}
+											className="text-xs text-muted-foreground line-clamp-1 leading-relaxed"
+										>
+											<span className="font-bold text-foreground/90">{member.name}:</span>{" "}
+											{member.description}
+										</p>
+									) : null,
+								)}
+							</div>
+						) : (
+							description && (
+								<p className="text-xs sm:text-sm text-muted-foreground max-w-xs mx-auto line-clamp-2">
+									{description}
+								</p>
+							)
 						)}
 					</div>
-					{isTeam && members.length > 0 && (
-						<p className="text-xs font-medium text-muted-foreground mt-1">{members.join(" · ")}</p>
-					)}
 				</div>
+
 				<div className="relative z-10 w-full pt-2">
-					<div className="w-full py-2.5 rounded-2xl bg-primary/10 border border-primary/20 text-primary font-bold text-sm tracking-wide group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200">
-						Vote {isRight ? "Right" : "Left"}
+					<div className="w-full py-2.5 rounded-2xl bg-primary/15 border border-primary/30 text-primary font-bold text-sm tracking-wide group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200 flex items-center justify-center gap-1.5">
+						<Sparkles className="size-3.5" />
+						<span>Vote {isRight ? "Right" : "Left"}</span>
 					</div>
 				</div>
 			</button>
 		</motion.div>
 	);
 });
+
+function resolveSideOrbMembers(
+	namesLookup: Map<string, NameItem>,
+	sideId: string,
+	sideName: string,
+	memberNames: string[],
+	sideDescription?: string,
+	sidePronunciation?: string,
+): OrbMemberInfo[] {
+	if (memberNames.length > 1) {
+		return memberNames.map((memberName, idx) => {
+			const matched = namesLookup.get(memberName.toLowerCase());
+			return {
+				id: matched ? String(matched.id) : `${sideId}-${idx}`,
+				name: matched?.name ?? memberName,
+				description: matched?.description,
+				pronunciation: matched?.pronunciation,
+			};
+		});
+	}
+	const single = namesLookup.get(sideId.toLowerCase()) ?? namesLookup.get(sideName.toLowerCase());
+	return [
+		{
+			id: single ? String(single.id) : sideId,
+			name: single?.name ?? sideName,
+			description: single?.description ?? sideDescription,
+			pronunciation: single?.pronunciation ?? sidePronunciation,
+		},
+	];
+}
 
 export const TournamentArena = memo(function TournamentArena({
 	names,
@@ -131,6 +225,15 @@ export const TournamentArena = memo(function TournamentArena({
 }: TournamentProps) {
 	const [bracketModalOpen, setBracketModalOpen] = useState(false);
 	const activeNames = useMemo(() => getVisibleNames(names), [names]);
+	const namesLookup = useMemo(() => {
+		const map = new Map<string, NameItem>();
+		for (const item of activeNames) {
+			map.set(String(item.id).toLowerCase(), item);
+			map.set(item.name.trim().toLowerCase(), item);
+		}
+		return map;
+	}, [activeNames]);
+
 	const ts = useTournamentState(activeNames, userName);
 	const { value: selectedSide, setTimed: setSelectedSide } = useTimedState<"left" | "right" | null>(
 		null,
@@ -212,6 +315,22 @@ export const TournamentArena = memo(function TournamentArena({
 	}
 
 	const m = extractMatchData(ts.currentMatch);
+	const leftOrbMembers = resolveSideOrbMembers(
+		namesLookup,
+		m.leftId,
+		m.leftName,
+		m.leftMembers,
+		m.leftDescription,
+		m.leftPronunciation,
+	);
+	const rightOrbMembers = resolveSideOrbMembers(
+		namesLookup,
+		m.rightId,
+		m.rightName,
+		m.rightMembers,
+		m.rightDescription,
+		m.rightPronunciation,
+	);
 	const leftStreak = getContestantStreak(m.leftId, ts.matchHistory);
 	const rightStreak = getContestantStreak(m.rightId, ts.matchHistory);
 	const leftHeat = getHeatLevel(leftStreak);
@@ -247,7 +366,7 @@ export const TournamentArena = memo(function TournamentArena({
 				<MatchSideCard
 					side="left"
 					name={m.leftName}
-					img={getRandomCatImage(m.leftId, undefined, m.leftName)}
+					orbMembers={leftOrbMembers}
 					heatLevel={leftHeat}
 					streak={leftStreak}
 					rating={ts.ratings[m.leftId] ?? 1200}
@@ -255,7 +374,6 @@ export const TournamentArena = memo(function TournamentArena({
 					isSelected={selectedSide === "left"}
 					hasSelectionFeedback={Boolean(selectedSide)}
 					isTeam={m.leftIsTeam}
-					members={m.leftMembers}
 					description={m.leftDescription}
 					pronunciation={m.leftPronunciation}
 					onVote={() => onVoteSide("left")}
@@ -268,7 +386,7 @@ export const TournamentArena = memo(function TournamentArena({
 				<MatchSideCard
 					side="right"
 					name={m.rightName}
-					img={getRandomCatImage(m.rightId, undefined, m.rightName)}
+					orbMembers={rightOrbMembers}
 					heatLevel={rightHeat}
 					streak={rightStreak}
 					rating={ts.ratings[m.rightId] ?? 1200}
@@ -276,7 +394,6 @@ export const TournamentArena = memo(function TournamentArena({
 					isSelected={selectedSide === "right"}
 					hasSelectionFeedback={Boolean(selectedSide)}
 					isTeam={m.rightIsTeam}
-					members={m.rightMembers}
 					description={m.rightDescription}
 					pronunciation={m.rightPronunciation}
 					onVote={() => onVoteSide("right")}

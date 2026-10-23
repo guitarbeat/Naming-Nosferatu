@@ -336,3 +336,99 @@ export const DriftWallTile = memo(function DriftWallTile({
 		</div>
 	);
 });
+
+export interface NameOrbProps {
+	orbId: string;
+	name: string;
+	orbitText?: string;
+	size?: number;
+	className?: string;
+}
+
+export const NameOrb = memo(function NameOrb({
+	orbId,
+	name,
+	orbitText,
+	size = 152,
+	className = "",
+}: NameOrbProps) {
+	const sanitizedId = `orb-${orbId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+	const arcPathId = `textpath-orb-${sanitizedId}`;
+	const desc = orbitText ? String(orbitText).trim() : "";
+	const title = name ? String(name).trim() : "";
+	const descStyle = getDescTypography(desc.length);
+	const titleFontSize = getTitleFontSize(title.length);
+
+	const arcGroupStyle = useMemo(() => {
+		let h = 0;
+		const str = `${sanitizedId}-${title}`;
+		for (let i = 0; i < str.length; i++) {
+			h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+		}
+		const seed = Math.abs(h);
+		const duration = 22 + (seed % 14);
+		return {
+			"--orbit-duration": `${duration}s`,
+			"--orbit-delay": `${-(((seed % 1000) / 1000) * duration)}s`,
+			"--orbit-direction": seed % 3 === 0 ? "reverse" : "normal",
+		} as React.CSSProperties;
+	}, [sanitizedId, title]);
+
+	return (
+		<div
+			className={`relative shrink-0 select-none pointer-events-none ${className}`}
+			style={{ width: `${size}px`, height: `${size}px` }}
+			aria-hidden="true"
+		>
+			<GlassSurface
+				className="w-full h-full rounded-full"
+				width={size}
+				height={size}
+				borderRadius={9999}
+				blur={12}
+			>
+				<svg
+					className="drift-wall__svg-face"
+					viewBox="0 0 200 200"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<defs>
+						<path
+							id={arcPathId}
+							d="M 100, 176 a 76,76 0 1,1 0,-152 a 76,76 0 1,1 0,152"
+							fill="none"
+						/>
+					</defs>
+					{Boolean(desc) && (
+						<g className="drift-wall__arc-group" style={arcGroupStyle}>
+							<text
+								className="drift-wall__arc-text"
+								dominantBaseline="central"
+								textAnchor="middle"
+								style={{
+									fontSize: `${descStyle.fontSize}px`,
+									letterSpacing: `${descStyle.letterSpacing}px`,
+								}}
+							>
+								<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+									{desc}
+								</textPath>
+							</text>
+						</g>
+					)}
+					<text
+						x="100"
+						y={desc ? 104 : 100}
+						className="drift-wall__center-name"
+						dominantBaseline="central"
+						textAnchor="middle"
+						style={{ fontSize: `${titleFontSize}px` }}
+					>
+						{title}
+					</text>
+				</svg>
+			</GlassSurface>
+		</div>
+	);
+});

@@ -1,4 +1,3 @@
-import { getRandomCatImage } from "@/lib/utils";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
 import {
 	createIdToNameMap,
@@ -187,7 +186,7 @@ export function buildVisualContender({
 		isTeam: false,
 		description: nameItem?.description,
 		pronunciation: nameItem?.pronunciation,
-		avatarUrl: getRandomCatImage(id, undefined, catName),
+		avatarUrl: null,
 		streak,
 	};
 }

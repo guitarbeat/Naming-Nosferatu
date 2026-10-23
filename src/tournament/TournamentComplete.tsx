@@ -1,5 +1,6 @@
 import { Clock, Flame, Gamepad2, Layers, LogOut, Trophy, Undo2, X } from "lucide-react";
 import { memo, useMemo } from "react";
+import { NameOrb } from "@/components/GlassEffects";
 import { Button, Card } from "@/components/UiPrimitives";
 import type { MatchRecord, NameItem, Team, TournamentMode } from "@/types";
 import { TournamentBracket } from "./TournamentBracket";
@@ -318,13 +319,45 @@ export function TournamentComplete({
 				</h1>
 
 				{winnerDisplayName && (
-					<div className="mt-5 flex flex-col items-center rounded-2xl border border-primary/30 bg-primary/10 px-6 py-4 shadow-md backdrop-blur-md">
+					<div className="mt-6 flex flex-col items-center gap-4 rounded-3xl border border-primary/30 bg-primary/10 px-8 py-6 shadow-md backdrop-blur-md">
 						<span className="text-xs font-bold tracking-wider text-primary">Crowned Champion</span>
-						<span className="mt-1 font-display text-2xl sm:text-3xl font-black text-foreground">
+						{winningTeam && winningTeam.memberNames.length > 1 ? (
+							<div className="relative flex items-center justify-center -space-x-2 py-1">
+								{winningTeam.memberNames.map((memberName, idx) => {
+									const memberItem = names.find(
+										(n) => n && n.name.toLowerCase() === memberName.toLowerCase(),
+									);
+									return (
+										<div
+											key={`${memberName}-${idx}`}
+											className={idx === 0 ? "-rotate-3" : "rotate-3"}
+										>
+											<NameOrb
+												orbId={`champ-${memberName}-${idx}`}
+												name={memberName}
+												orbitText={memberItem?.description || ""}
+												size={132}
+											/>
+										</div>
+									);
+								})}
+								<div className="absolute z-20 flex size-8 items-center justify-center rounded-full border border-primary/40 bg-card text-primary shadow-md font-display font-black text-sm">
+									+
+								</div>
+							</div>
+						) : (
+							<NameOrb
+								orbId={`champ-${winnerId ?? winnerDisplayName}`}
+								name={winnerDisplayName}
+								orbitText={winningNameItem?.description || ""}
+								size={152}
+							/>
+						)}
+						<span className="font-display text-2xl sm:text-3xl font-black text-foreground">
 							{winnerDisplayName}
 						</span>
 						{winningNameItem?.description && (
-							<p className="mt-1 text-xs text-muted-foreground italic max-w-md">
+							<p className="text-xs text-muted-foreground italic max-w-md">
 								{winningNameItem.description}
 							</p>
 						)}
