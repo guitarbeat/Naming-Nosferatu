@@ -1,7 +1,8 @@
 import { MotionConfig } from "framer-motion";
 import { Suspense, useCallback, useEffect, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { AppBootScreen, AppLayout, HomeView, RouteFallback } from "@/components";
+import { AppBootScreen, AppLayout, RouteFallback } from "@/components/AppChrome";
+import { HomeView } from "@/components/MagicControls";
 import { usePreloadImages } from "@/hooks";
 import { ErrorManager } from "@/lib/utils";
 import useAppStore, { useAppStoreInitialization } from "@/store";

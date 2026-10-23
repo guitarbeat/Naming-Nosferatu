@@ -1,8 +1,32 @@
-import { Loader2, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { AlertTriangle, CheckCircle, Info, Loader2, X, XCircle } from "lucide-react";
 import type { ReactNode } from "react";
-import React, { Component, memo, useEffect, useState } from "react";
-import { CAT_IMAGES, FALLBACK_CAT_IMAGE, FALLBACK_CAT_SVG } from "@/lib/constants";
-import { cn, ErrorManager, handleImgError } from "@/lib/utils";
+import React, {
+	Component,
+	createContext,
+	memo,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
+import { Iridescence } from "@/components/VisualEffects";
+import {
+	CAT_IMAGES,
+	cn,
+	ErrorManager,
+	FALLBACK_CAT_IMAGE,
+	FALLBACK_CAT_SVG,
+	handleImgError,
+	scaleFadeMotionPreset,
+} from "@/lib/utils";
+import useAppStore from "@/store";
+
+/* ==========================================================================
+   BUTTON COMPONENT
+   ========================================================================== */
 
 type ButtonVariant = "primary" | "danger" | "ghost" | "outline" | "flat" | "glass";
 type ButtonSize = "small" | "medium" | "large" | "icon";
@@ -30,7 +54,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 	icon: "h-11 w-11 p-0 [&_svg]:size-4 min-h-[44px] min-w-[44px]",
 };
 
-interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	variant?: ButtonVariant;
 	size?: ButtonSize;
 	loading?: boolean;
@@ -80,10 +104,13 @@ const ButtonComponent = ({
 };
 
 ButtonComponent.displayName = "Button";
-
 export const Button = memo(ButtonComponent);
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+/* ==========================================================================
+   CARD COMPONENT
+   ========================================================================== */
+
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	children?: React.ReactNode;
 	variant?: "default" | "filled" | "glass";
 	padding?: "none" | "medium";
@@ -125,10 +152,13 @@ const CardBase = memo(
 );
 
 CardBase.displayName = "Card";
-
 export const Card = CardBase;
 
-interface CatImageProps {
+/* ==========================================================================
+   CAT IMAGE COMPONENT
+   ========================================================================== */
+
+export interface CatImageProps {
 	src?: string;
 	alt?: string;
 	containerClassName?: string;
@@ -140,7 +170,7 @@ interface CatImageProps {
 	onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 }
 
-function CatImage({
+export function CatImage({
 	src,
 	alt = "Cat picture",
 	containerClassName = "",
@@ -188,7 +218,9 @@ function CatImage({
 	);
 }
 
-export { CatImage };
+/* ==========================================================================
+   ERROR BOUNDARY & INLINE ERROR COMPONENTS
+   ========================================================================== */
 
 interface ErrorBoundaryProps {
 	children: ReactNode;
@@ -302,16 +334,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
 interface AppError {
 	message?: string;
-	severity?: string;
-	isRetryable?: boolean;
-	timestamp?: number | string;
-	details?: string;
-	suggestion?: string;
-	errorType?: string;
-	attempts?: number;
-	originalError?: unknown;
-	stack?: string;
-	context?: string;
 	[key: string]: unknown;
 }
 
@@ -324,13 +346,11 @@ interface ErrorProps {
 	children?: React.ReactNode;
 }
 
-interface ErrorInlineProps {
+const ErrorInline: React.FC<{
 	error: AppError | string | unknown;
 	onDismiss?: () => void;
 	className?: string;
-}
-
-const ErrorInline: React.FC<ErrorInlineProps> = ({ error, onDismiss, className = "" }) => {
+}> = ({ error, onDismiss, className = "" }) => {
 	if (!error) {
 		return null;
 	}
@@ -376,7 +396,9 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 
 ErrorComponent.displayName = "ErrorComponent";
 
-const LOADING_ASSET = FALLBACK_CAT_IMAGE;
+/* ==========================================================================
+   LOADING & ROUTE FALLBACK COMPONENTS
+   ========================================================================== */
 
 interface LoadingProps {
 	variant?: "spinner" | "skeleton" | "card-skeleton" | "cat-gif";
@@ -393,7 +415,6 @@ function SpinnerCircle({
 	className?: string;
 }) {
 	const dimensions = size === "small" ? "h-6 w-6 border-2" : "h-8 w-8 border-4";
-
 	return (
 		<div
 			className={cn(
@@ -500,7 +521,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 					aria-live="polite"
 				>
 					<img
-						src={LOADING_ASSET}
+						src={FALLBACK_CAT_IMAGE}
 						alt=""
 						aria-hidden="true"
 						className="h-28 w-auto select-none object-contain opacity-90 motion-safe:animate-pulse"
@@ -564,4 +585,431 @@ export function OfflineIndicator() {
 
 export function RouteFallback({ text }: { text: string }) {
 	return <Loading variant="spinner" text={text} className="min-h-[82dvh]" />;
+}
+
+/* ==========================================================================
+   TOAST PROVIDER & HOOK
+   ========================================================================== */
+
+const DEFAULT_TOAST_DURATION_MS = 5000;
+const DEFAULT_MAX_TOASTS = 5;
+
+type ToastType = "success" | "error" | "info" | "warning";
+
+interface ToastOptions {
+	duration?: number;
+	autoDismiss?: boolean;
+}
+
+interface ToastItem {
+	id: string;
+	message: string;
+	type: ToastType;
+	duration: number;
+	autoDismiss: boolean;
+	createdAt: number;
+}
+
+export interface ToastContextValue {
+	toasts: ToastItem[];
+	showToast: (message: string, type?: ToastType, options?: ToastOptions) => string;
+	hideToast: (id: string) => void;
+	clearToasts: () => void;
+	showSuccess: (message: string, options?: ToastOptions) => string;
+	showError: (message: string, options?: ToastOptions) => string;
+	showInfo: (message: string, options?: ToastOptions) => string;
+	showWarning: (message: string, options?: ToastOptions) => string;
+}
+
+type ToastPosition =
+	| "top-left"
+	| "top-center"
+	| "top-right"
+	| "bottom-left"
+	| "bottom-center"
+	| "bottom-right";
+
+const POSITION_CLASSES: Record<ToastPosition, string> = {
+	"top-left": "top-4 left-4 items-start",
+	"top-center": "top-4 left-1/2 -translate-x-1/2 items-center",
+	"top-right": "top-16 right-4 sm:top-18 sm:right-6 items-end",
+	"bottom-left": "bottom-4 left-4 items-start",
+	"bottom-center": "bottom-4 left-1/2 -translate-x-1/2 items-center",
+	"bottom-right": "bottom-4 right-4 items-end",
+};
+
+const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
+	success: { bg: "bg-chart-2", icon: <CheckCircle className="size-5" /> },
+	error: { bg: "bg-destructive", icon: <XCircle className="size-5" /> },
+	warning: {
+		bg: "bg-chart-4 text-foreground",
+		icon: <AlertTriangle className="size-5" />,
+	},
+	info: { bg: "bg-primary", icon: <Info className="size-5" /> },
+};
+
+const ToastContext = createContext<ToastContextValue | null>(null);
+
+export function useToast(): ToastContextValue {
+	const context = useContext(ToastContext);
+	if (!context) {
+		throw new Error(
+			"useToast must be used within <Providers>. Wrap your component tree with <Providers> in main.tsx.",
+		);
+	}
+	return context;
+}
+
+function ToastMessage({ toast, onDismiss }: { toast: ToastItem; onDismiss: (id: string) => void }) {
+	const style = TYPE_STYLES[toast.type];
+	return (
+		<div
+			className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-top-2 ${style.bg}`}
+			role="alert"
+		>
+			<span className="text-base leading-none" aria-hidden={true}>
+				{style.icon}
+			</span>
+			<span className="flex-1">{toast.message}</span>
+			<button
+				onClick={() => onDismiss(toast.id)}
+				className="ml-2 -mr-2 rounded-md p-1.5 opacity-70 transition-all hover:opacity-100 hover:bg-black/10 active:scale-95"
+				aria-label="Dismiss"
+				title="Dismiss"
+				type="button"
+			>
+				<X className="size-4" />
+			</button>
+		</div>
+	);
+}
+
+function ToastContainer({
+	toasts,
+	onDismiss,
+	position,
+}: {
+	toasts: ToastItem[];
+	onDismiss: (id: string) => void;
+	position: ToastPosition;
+}) {
+	if (toasts.length === 0) {
+		return null;
+	}
+
+	return (
+		<section
+			className={`fixed z-[9999] flex flex-col gap-2 ${POSITION_CLASSES[position]}`}
+			aria-live="polite"
+			aria-label="Notifications"
+		>
+			{toasts.map((toast) => (
+				<ToastMessage key={toast.id} toast={toast} onDismiss={onDismiss} />
+			))}
+		</section>
+	);
+}
+
+function useToastProvider(
+	maxToasts: number,
+	defaultDuration: number,
+): ToastContextValue & {
+	toastList: ToastItem[];
+	dismiss: (id: string) => void;
+} {
+	const [toasts, setToasts] = useState<ToastItem[]>([]);
+	const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+	const toastCounter = useRef(0);
+
+	const scheduleAutoDismiss = useCallback((id: string, duration: number) => {
+		const timer = setTimeout(() => {
+			setToasts((previous) => previous.filter((toast) => toast.id !== id));
+			timers.current.delete(id);
+		}, duration);
+		timers.current.set(id, timer);
+	}, []);
+
+	useEffect(() => {
+		return () => {
+			for (const timer of timers.current.values()) {
+				clearTimeout(timer);
+			}
+			timers.current.clear();
+		};
+	}, []);
+
+	const showToast = useCallback(
+		(message: string, type: ToastType = "info", options: ToastOptions = {}): string => {
+			const id = `toast-${++toastCounter.current}`;
+			const duration = options.duration ?? defaultDuration;
+			const autoDismiss = options.autoDismiss ?? true;
+
+			const item: ToastItem = {
+				id,
+				message,
+				type,
+				duration,
+				autoDismiss,
+				createdAt: Date.now(),
+			};
+
+			setToasts((previous) => [item, ...previous].slice(0, maxToasts));
+
+			if (autoDismiss) {
+				scheduleAutoDismiss(id, duration);
+			}
+
+			return id;
+		},
+		[defaultDuration, maxToasts, scheduleAutoDismiss],
+	);
+
+	const hideToast = useCallback((id: string) => {
+		setToasts((previous) => previous.filter((toast) => toast.id !== id));
+		const timer = timers.current.get(id);
+		if (timer) {
+			clearTimeout(timer);
+			timers.current.delete(id);
+		}
+	}, []);
+
+	const clearToasts = useCallback(() => {
+		setToasts([]);
+		for (const timer of timers.current.values()) {
+			clearTimeout(timer);
+		}
+		timers.current.clear();
+	}, []);
+
+	const showSuccess = useCallback(
+		(message: string, options?: ToastOptions) => showToast(message, "success", options),
+		[showToast],
+	);
+	const showError = useCallback(
+		(message: string, options?: ToastOptions) => showToast(message, "error", options),
+		[showToast],
+	);
+	const showInfo = useCallback(
+		(message: string, options?: ToastOptions) => showToast(message, "info", options),
+		[showToast],
+	);
+	const showWarning = useCallback(
+		(message: string, options?: ToastOptions) => showToast(message, "warning", options),
+		[showToast],
+	);
+
+	return useMemo(
+		() => ({
+			toasts,
+			showToast,
+			hideToast,
+			clearToasts,
+			showSuccess,
+			showError,
+			showInfo,
+			showWarning,
+			toastList: toasts,
+			dismiss: hideToast,
+		}),
+		[toasts, showToast, hideToast, clearToasts, showSuccess, showError, showInfo, showWarning],
+	);
+}
+
+export interface ProvidersProps {
+	children: ReactNode;
+	toastMaxToasts?: number;
+	toastDefaultDuration?: number;
+	toastPosition?: ToastPosition;
+}
+
+export function Providers({
+	children,
+	toastMaxToasts = DEFAULT_MAX_TOASTS,
+	toastDefaultDuration = DEFAULT_TOAST_DURATION_MS,
+	toastPosition = "top-right",
+}: ProvidersProps) {
+	const { toastList, dismiss, ...value } = useToastProvider(toastMaxToasts, toastDefaultDuration);
+
+	return (
+		<ToastContext.Provider value={value}>
+			{children}
+			<ToastContainer toasts={toastList} onDismiss={dismiss} position={toastPosition} />
+		</ToastContext.Provider>
+	);
+}
+
+/* ==========================================================================
+   APP BOOT SCREEN
+   ========================================================================== */
+
+export function AppBootScreen({
+	message = "Preparing the tournament...",
+	visible = true,
+}: {
+	message?: string;
+	visible?: boolean;
+}) {
+	if (!visible) {
+		return null;
+	}
+
+	return (
+		<div
+			data-testid="boot-screen"
+			className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background text-foreground"
+			role="status"
+			aria-live="polite"
+			aria-busy="true"
+		>
+			<motion.div
+				{...scaleFadeMotionPreset}
+				className="flex flex-col items-center space-y-6 px-4 text-center max-w-md"
+			>
+				<div className="relative flex h-16 w-16 items-center justify-center" aria-hidden="true">
+					<div className="absolute h-16 w-16 rounded-full border-4 border-primary/20" />
+					<div className="absolute h-16 w-16 rounded-full border-4 border-t-primary animate-spin" />
+				</div>
+
+				<div className="space-y-2">
+					<h2 className="text-xl font-bold tracking-tight text-foreground">{message}</h2>
+					<p className="text-sm text-muted-foreground animate-pulse">
+						Please wait a moment while we load the application context...
+					</p>
+				</div>
+			</motion.div>
+		</div>
+	);
+}
+
+/* ==========================================================================
+   GLOBAL ERROR DISPLAY
+   ========================================================================== */
+
+export const GlobalErrorDisplay = memo(function GlobalErrorDisplay() {
+	const currentError = useAppStore((s) => s.errors.current);
+	const errorActions = useAppStore((s) => s.errorActions);
+
+	const handleDismissError = useCallback(() => {
+		errorActions.clearError();
+	}, [errorActions]);
+
+	if (!currentError) {
+		return null;
+	}
+
+	return (
+		<div className="mx-auto mb-4 w-full max-w-4xl px-3 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
+			<ErrorComponent error={String(currentError)} onDismiss={handleDismissError} />
+		</div>
+	);
+});
+
+/* ==========================================================================
+   GLOBAL LOADING OVERLAY
+   ========================================================================== */
+
+export const GlobalLoadingOverlay = memo(function GlobalLoadingOverlay() {
+	const isLoading = useAppStore((s) => s.tournament.isLoading);
+
+	if (!isLoading) {
+		return null;
+	}
+
+	return (
+		<div className="global-loading-overlay" role="status" aria-live="polite" aria-busy="true">
+			<Loading variant="spinner" text="Initializing Tournament..." />
+		</div>
+	);
+});
+
+/* ==========================================================================
+   SKIP TO MAIN BUTTON
+   ========================================================================== */
+
+export const SkipToMainButton = memo(function SkipToMainButton() {
+	const handleSkipToMain = useCallback(() => {
+		const main = document.getElementById("main-content");
+		if (!main) {
+			return;
+		}
+		main.focus();
+		main.scrollIntoView({ behavior: "smooth" });
+	}, []);
+
+	return (
+		<button
+			type="button"
+			className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-background focus:text-foreground focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:ring-offset-background cursor-pointer disabled:cursor-not-allowed"
+			onClick={handleSkipToMain}
+		>
+			Skip to main content
+		</button>
+	);
+});
+
+/* ==========================================================================
+   PWA INSTALL PROMPT
+   ========================================================================== */
+
+const INSTALL_DESCRIPTION =
+	"Add Name Nosferatu to your home screen for quick access to cat name tournaments and your rankings.";
+const PWA_TINT = "hsl(152, 26%, 42%)";
+
+export function PwaInstallPrompt() {
+	const installRef = React.useRef<PWAInstallElement | null>(null);
+
+	useEffect(() => {
+		const element = installRef.current;
+		if (!element) {
+			return;
+		}
+
+		element.manifestUrl = "/manifest.json";
+		element.useLocalStorage = true;
+		element.installDescription = INSTALL_DESCRIPTION;
+		element.styles = { "--tint-color": PWA_TINT };
+
+		const deferred = window.__deferredPwaPrompt;
+		if (deferred) {
+			element.externalPromptEvent = deferred;
+		}
+	}, []);
+
+	return <pwa-install ref={installRef} />;
+}
+
+/* ==========================================================================
+   APP LAYOUT SHELL
+   ========================================================================== */
+
+const IRIDESCENCE_COLOR: [number, number, number] = [1, 1, 1];
+
+export function AppLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<ErrorBoundary context="Main Application Layout">
+			<div className="app relative min-h-screen w-full bg-background text-foreground overflow-x-hidden">
+				<Iridescence
+					color={IRIDESCENCE_COLOR}
+					speed={0.8}
+					amplitude={0.08}
+					mouseReact={true}
+					className="fixed inset-0 z-0 opacity-100 pointer-events-none"
+				/>
+				<PwaInstallPrompt />
+				<OfflineIndicator />
+				<SkipToMainButton />
+				<main
+					id="main-content"
+					className="app-main relative z-10 flex w-full flex-col pt-0"
+					tabIndex={-1}
+				>
+					<GlobalErrorDisplay />
+					<div className="app-main__content flex w-full flex-1 flex-col items-stretch">
+						{children}
+					</div>
+					<GlobalLoadingOverlay />
+				</main>
+			</div>
+		</ErrorBoundary>
+	);
 }

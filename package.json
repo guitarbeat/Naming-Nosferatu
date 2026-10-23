@@ -36,7 +36,7 @@
     "lint": "biome check --config-path config/biome.json src && tsc --project config/tsconfig.json --noEmit && knip --config config/knip.json --dependencies --include files,duplicates --no-config-hints",
     "lint:fix": "biome check --config-path config/biome.json --write src",
     "format": "biome format --write --config-path config/biome.json src",
-    "test": "vitest run --config config/vite.config.ts",
+    "test": "vitest run --config config/vite.config.ts --passWithNoTests",
     "clean": "rm -rf build dist node_modules/.vite"
   },
   "dependencies": {

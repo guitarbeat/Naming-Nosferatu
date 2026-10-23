@@ -1,6 +1,5 @@
 import CryptoJS from "crypto-js";
-import { STORAGE_KEYS } from "@/lib/constants";
-import { logger } from "@/lib/logger";
+import { logger, STORAGE_KEYS } from "@/lib/utils";
 import type {
 	MatchRecord,
 	NameItem,

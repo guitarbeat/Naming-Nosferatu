@@ -1,77 +1,140 @@
-# Name Nosferatu: Backend Simplification & Storage Error Fix
+# File Count Reduction Plan: Sub-50 Architecture
 
-Eliminate the storage JSON parsing syntax errors caused by legacy transient AES encryption, streamline data persistence, and remove redundant duplicate modules while strictly preserving the visual design and UI components.
+Consolidate the application codebase from 94 files down to **47 files** (a 50% reduction, well below the requested 50-file ceiling) while preserving all 22 local cat images, maintaining 100% of the tournament gameplay and visual styling, and simplifying code maintenance.
 
-## User Review & Critical Decisions
+### User Review & Critical Decisions
 
 > [!IMPORTANT]
-> **Priority Error Resolution**: The runtime error (`SyntaxError: Unexpected non-whitespace character after JSON at position 5`) is directly caused by `storage.ts` attempting to `JSON.parse` legacy encrypted strings (`[32-hex-iv]:[ciphertext]`) that failed AES decryption due to an in-memory session key changing across reloads.
-> Our revised plan adds an immediate safe legacy-sanitization layer that catches and purges corrupted/encrypted strings on startup without logging unhandled exceptions or breaking the initial tournament state.
+> Based on your responses, the following architectural decisions are locked:
+> - **Preserve Local Media**: All 15 local cat contestant photos, GIF animations, and public UI assets (22 files total) are kept intact.
+> - **Remove Standalone Test Suites**: The 15 individual test files (`*.test.ts`, `*.test.tsx`) are removed to drastically cut file overhead.
+> - **Consolidate Code into High-Cohesion Modules**: Atomic UI primitives, small utility scripts, and tournament sub-views are merged into clean, self-contained multi-export modules in `src/`.
+> - **Prune Unused Backend Artifacts**: Delete the 4 unused Supabase SQL migration files and unreferenced validation script, as the app operates on client-side and localStorage persistence.
 
-- **Confirmed Decision 1**: Keep the existing visual design and user interface 100% intact (gothic aesthetic, iridescence effects, drift wall, tournament arena, bracket modals).
-- **Confirmed Decision 2**: Fix localStorage JSON parsing errors immediately by removing the volatile random AES layer, adding defensive checks for legacy encrypted strings, and simplifying to clean, typed JSON storage.
-- **Confirmed Decision 3**: Eliminate duplicate parallel modules (`src/Providers.tsx`, duplicate `api.ts`, duplicate `hooks.ts`) and streamline the Zustand store.
-
----
-
-## 1. Root Cause & Error Fix Strategy
-
-### Root Cause
-1. `src/lib/storage.ts` previously encrypted strings with `CryptoJS.AES` using `CryptoJS.lib.WordArray.random(32)`, a key generated fresh in memory during each session.
-2. When the user reloads the app, the key in memory is brand new. Decryption of previously persisted localStorage strings fails.
-3. The fallback in `decrypt()` returned the raw ciphertext (e.g. `7a1e0...:U2FsdGVkX1...`).
-4. `readStorageJson()` passed this raw ciphertext directly into `JSON.parse()`, triggering:
-   `SyntaxError: Unexpected non-whitespace character after JSON at position 5 (line 1 column 6)`.
-
-### Fix Implementation
-1. **Defensive Legacy Purge**: In `getStorageString` and `readStorageJson`, detect legacy ciphertext strings (matching the `[32-char hex]:[base64]` signature) or invalid non-JSON strings; automatically purge them from localStorage and return the fallback value gracefully without noisy console errors.
-2. **Plain Typed JSON Storage**: Store data directly as plain, robust JSON with standard `try/catch` quota management and memory fallback.
-3. **Graceful Store Booting**: Ensure `getInitialTournamentState()` in `src/store/index.ts` safely handles null/fallback snapshots so the app boots smoothly every time.
+- **Target File Count**: **47 files** (down from 94).
+- **Functionality Impact**: Zero regression. Full tournament bracket generation, Elo rating calculation, voting arena, audio feedback, glassmorphism UI, and offline caching remain operational.
 
 ---
 
-## 2. Codebase Simplification & Slop Removal
+### 1. Overview & Core Concept
 
-### Consolidate Duplicate Files
-- Remove root `src/Providers.tsx` (preserving `src/components/Providers.tsx` which is already wired into `src/components/index.ts`).
-- Unify `src/api.ts` and `src/lib/api.ts` into a single authoritative module with clean backward-compatible exports.
-- Unify `src/lib/hooks.ts` and `src/hooks.ts` into a single authoritative module.
-
-### Clean Storage & Zustand Store
-- Streamline `src/lib/storage.ts` to ~120 lines of clean, reliable, typed localStorage and IndexedDB helpers.
-- Remove `crypto-js` and `@types/crypto-js` from `package.json`.
-- Simplify `src/store/index.ts` to clean, idiomatic Zustand slices without manual diffing loops or redundant abstraction layers.
+- **What It Does**: Names Nosferatu is a tournament-style cat name ranking and voting platform. Users pit cat contestants against each other in bracket-style matchups, compute real-time Elo rating adjustments, browse leaderboards, and experience fluid web animations and glass-surface visual effects.
+- **Goal of This Change**: Streamline the repository architecture to eliminate file sprawl, redundant layers, and excessive fragmentation without altering the user-facing design or functionality.
+- **Target Count Breakdown**:
+  - `public/`: 22 files (15 cat media assets, 4 UI icons, manifest, service worker, cat catalog)
+  - `config/`: 4 files (`biome.json`, `knip.json`, `tsconfig.json`, `vite.config.ts`)
+  - Root: 6 files (`package.json`, `bun.lock`, `metadata.json`, `index.html`, `components.json`, `LICENSE`)
+  - `src/`: **15 files** (consolidated application architecture)
+  - **Total**: **47 files**
 
 ---
 
-## 3. Technical Architecture & System Flow
+### 2. User Experience & Visual Design
+
+- **Visual Continuity**: The app maintains its exact aesthetic posture—dark mode atmosphere (`#12100d`), glassmorphism cards, GPU-accelerated iridescence background effects, and animated tournament matchups with Framer Motion.
+- **Key User Flows Preserved**:
+  1. **Boot & Catalog Browsing**: Users land on the cat grid with live search, tag filtering, and quick sound/theme toggles.
+  2. **Tournament Configuration**: Users configure bracket size (8, 16, or 32 contestants), select seeding mode (Random or Elo-ranked), and initiate the bracket.
+  3. **Voting Arena**: Side-by-side voting matchups with keyboard controls (`ArrowLeft`/`ArrowRight`), animated votes, and immediate score recalculations.
+  4. **Bracket Inspection & Podium**: Interactive bracket view visualizing the tree of matchups leading to the championship crown.
+
+---
+
+### 3. Key Product Decisions & Trade-Offs
+
+- **Consolidating Atomic UI Components into `AppChrome.tsx` & `MagicControls.tsx`**:
+  - *Chosen Approach*: Group closely related presentation components (`AppBootScreen`, `GlobalErrorDisplay`, `GlobalLoadingOverlay`, `SkipToMainButton`, `PwaInstallPrompt`, and `Providers`) into `src/components/AppChrome.tsx`, and toolbar controls (`MagicToolbar`, `MagicSearch`, `MagicToggle`) into `src/components/MagicControls.tsx`.
+  - *Why*: Eliminates 9 micro-files while preserving clear component exports and reducing import friction.
+- **Unifying Tournament Views into `TournamentViews.tsx`**:
+  - *Chosen Approach*: Merge `TournamentSetup`, `TournamentArena`, `TournamentBracket`, `TournamentComplete`, and `NameSelector` into `src/tournament/TournamentViews.tsx`, with tournament logic residing in `src/tournament/tournamentEngine.ts`.
+  - *Why*: Keeps tournament presentation and algorithm logic tightly coupled and easier to follow, saving 5 files.
+- **Consolidating Library Utilities into `src/lib/utils.ts`**:
+  - *Chosen Approach*: Merge `constants.ts`, `elo.ts`, `logger.ts`, `names.ts`, and `uiUtils.ts` into `src/lib/utils.ts`. Keep `src/lib/storage.ts` and `src/lib/api.ts` dedicated.
+  - *Why*: Eliminates 5 tiny helper files while ensuring all helper functions remain exported with zero breaking changes.
+- **CSS Inlining**:
+  - *Chosen Approach*: Move `src/components/GlassSurface.css` directly into `src/index.css`.
+  - *Why*: Eliminates a dedicated CSS file while centralizing all custom styling in the main stylesheet.
+
+---
+
+### 4. Technical Architecture & Data Strategy
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                       UI Layer                              │
-│   HomeView  ·  TournamentArena  ·  TournamentBracket       │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────┐
-│                 Simplified Zustand Store                    │
-│   TournamentSlice  ·  UserSlice  ·  UISlice  ·  ErrorSlice  │
-└──────────────┬───────────────────────────────┬──────────────┘
-               │                               │
-               ▼                               ▼
-┌──────────────────────────────┐ ┌────────────────────────────┐
-│   Safe Clean Storage Layer   │ │     Query / API Layer      │
-│  · Quota-safe JSON Storage   │ │  · Candidate Names Query   │
-│  · Legacy String Sanitizer   │ │  · Ratings Sync API        │
-│  · IndexedDB Tournament DB   │ │                            │
-└──────────────────────────────┘ └────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│                      index.html                        │
+└──────────────────────────┬─────────────────────────────┘
+                           │
+┌──────────────────────────▼─────────────────────────────┐
+│                      src/main.tsx                      │
+│                           │                            │
+│                 src/components/AppChrome               │
+│         (Providers, BootScreen, Overlays, Layout)      │
+└──────────────────────────┬─────────────────────────────┘
+                           │
+┌──────────────────────────▼─────────────────────────────┐
+│                      src/App.tsx                       │
+│                           │                            │
+│     ┌─────────────────────┼──────────────────────┐     │
+│     ▼                     ▼                      ▼     │
+│ src/components/     src/components/       src/tournament/│
+│  MagicControls       VisualEffects       TournamentViews│
+│ (Toolbar, Search,   (Glass, DriftWall,   (Setup, Arena, │
+│    Filter Tags)        Iridescence)      Bracket, Podium│
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│                    State & Logic Layer                 │
+│  src/store/index.ts         src/tournament/engine.ts   │
+│  src/lib/storage.ts         src/lib/api.ts             │
+│  src/lib/utils.ts           src/hooks.ts               │
+└────────────────────────────────────────────────────────┘
 ```
 
----
+#### Complete Consolidated File Tree (47 files):
 
-## 4. Verification & Testing
+```
+.
+├── config/
+│   ├── biome.json
+│   ├── knip.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── public/
+│   ├── assets/
+│   │   ├── cats/ (15 cat photos & animated GIFs)
+│   │   └── images/ (4 UI icons & favicons)
+│   ├── data/cats.json
+│   ├── manifest.json
+│   └── sw.js
+├── src/
+│   ├── components/
+│   │   ├── AppChrome.tsx
+│   │   ├── MagicControls.tsx
+│   │   └── VisualEffects.tsx
+│   ├── lib/
+│   │   ├── api.ts
+│   │   ├── storage.ts
+│   │   └── utils.ts
+│   ├── store/
+│   │   └── index.ts
+│   ├── tournament/
+│   │   ├── tournamentEngine.ts
+│   │   └── TournamentViews.tsx
+│   ├── App.tsx
+│   ├── hooks.ts
+│   ├── index.css
+│   ├── main.tsx
+│   ├── types.ts
+│   └── vite-env.d.ts
+├── bun.lock
+├── components.json
+├── index.html
+├── LICENSE
+├── metadata.json
+└── package.json
+```
 
-1. Verify `compile_applet` builds successfully with zero errors.
-2. Verify `lint_applet` passes Biome, TypeScript (`tsc --noEmit`), and Knip checks.
-3. Verify `npm test` passes all unit tests, updating any tests targeting storage to verify the clean JSON and legacy sanitation behavior.
-4. Verify the dev server loads without the `SyntaxError: Unexpected non-whitespace character after JSON` error in console.
+#### Verification & Quality Gates
+1. Run `npm run lint` (Biome + TypeScript + Knip checks) to ensure 0 lint errors, 0 unused imports, and 0 missing types.
+2. Run `npm run build` to verify clean Vite production bundle compilation.
+3. Validate total file count with `find . -not -path '*/.*' -not -path './node_modules*' -not -path './dist*' -type f | wc -l` to confirm count is ≤ 47.

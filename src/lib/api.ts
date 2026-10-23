@@ -1,6 +1,6 @@
 import { QueryClient, queryOptions } from "@tanstack/react-query";
-import { DEFAULT_SAMPLE_NAMES } from "@/lib/names";
 import { getStorageString, parseJsonValue, writeStorageJson } from "@/lib/storage";
+import { DEFAULT_SAMPLE_NAMES } from "@/lib/utils";
 import type { NameItem } from "@/types";
 
 export const queryClient = new QueryClient({

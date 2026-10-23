@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import type { StateCreator } from "zustand";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
-import { STORAGE_KEYS } from "@/lib/constants";
 import {
 	clearStoredTournamentFromIDB,
 	clearStoredTournamentSnapshot,
@@ -18,7 +17,7 @@ import {
 	writeStoredTournamentSnapshot,
 	writeStoredUserSnapshot,
 } from "@/lib/storage";
-import { ErrorManager, getRandomCatImage } from "@/lib/utils";
+import { ErrorManager, getRandomCatImage, STORAGE_KEYS } from "@/lib/utils";
 import type {
 	CatChosenName,
 	ErrorLog,
