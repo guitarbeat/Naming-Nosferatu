@@ -13,3 +13,9 @@
 ## 2023-10-20 - Extracted TournamentComplete from TournamentArena
 **Learning:** `TournamentArena.tsx` was getting very heavy due to having the `TournamentComplete` component in it.
 **Action:** Created `src/components/ui/TournamentComplete.tsx` containing `TournamentComplete` component and extracted it from `TournamentArena.tsx` to lighten up the main file.
+<strict_log>
+- Momentum: Extracted TournamentAnnouncements component to shrink TournamentArena file size and simplify it.
+- Smash: Ripped TournamentAnnouncements, StreakBurst interface, and TournamentAnnouncementsProps out of TournamentArena.
+- Clean: Dropped them in `components/ui/TournamentAnnouncements.tsx`. Cleaned up imports and formatting.
+- Memory Update: Arena announcements are now in components/ui.
+</strict_log>
