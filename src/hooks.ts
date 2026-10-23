@@ -1460,151 +1460,6 @@ export function useInertiaScroll(
 			}
 		};
 
-		const handleKeyDown = (e: KeyboardEvent) => {
-			const active = document.activeElement as HTMLElement | null;
-			if (
-				active &&
-				(active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)
-			) {
-				return;
-			}
-
-			if (inertiaControlsRef.current) {
-				inertiaControlsRef.current.stop();
-				inertiaControlsRef.current = null;
-				isIntertiaActiveRef.current = false;
-			}
-
-			const key = e.key;
-			if (
-				key !== "ArrowUp" &&
-				key !== "ArrowDown" &&
-				key !== "ArrowLeft" &&
-				key !== "ArrowRight" &&
-				key !== "Home" &&
-				key !== "End" &&
-				key !== "PageUp" &&
-				key !== "PageDown"
-			) {
-				return;
-			}
-
-			const container = containerRef.current;
-			if (!container) {
-				return;
-			}
-
-			if (!tilesCacheRef.current || tilesCacheRef.current.length === 0) {
-				tilesCacheRef.current = Array.from(
-					container.querySelectorAll<HTMLElement>(
-						'[data-tile-id], .drift-wall__tile, [role="button"]',
-					),
-				).filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
-			}
-
-			const tiles = tilesCacheRef.current;
-			if (!tiles || tiles.length === 0) {
-				return;
-			}
-
-			const activeTileIndex = tiles.findIndex((el) => el === active || el.contains(active));
-			let nextTile: HTMLElement | null = null;
-
-			if (activeTileIndex === -1) {
-				if (key === "ArrowUp" || key === "End") {
-					nextTile = tiles[tiles.length - 1];
-				} else {
-					nextTile = tiles[0];
-				}
-			} else {
-				const currentTile = tiles[activeTileIndex];
-				const currentCol = currentTile.getAttribute("data-col");
-
-				if (currentCol === null) {
-					if (key === "ArrowDown") {
-						const isAtBottom = activeTileIndex >= tiles.length - 1;
-						nextTile = isAtBottom ? tiles[0] : tiles[activeTileIndex + 1];
-					} else if (key === "ArrowUp") {
-						const isAtTop = activeTileIndex <= 0;
-						nextTile = isAtTop ? tiles[tiles.length - 1] : tiles[activeTileIndex - 1];
-					} else if (key === "Home") {
-						nextTile = tiles[0];
-					} else if (key === "End") {
-						nextTile = tiles[tiles.length - 1];
-					}
-				} else {
-					const colTiles = tiles.filter((t) => t.getAttribute("data-col") === currentCol);
-					const indexInCol = colTiles.indexOf(currentTile);
-
-					if (key === "ArrowDown") {
-						const isAtBottom = indexInCol >= colTiles.length - 1;
-						nextTile = isAtBottom ? colTiles[0] : colTiles[indexInCol + 1];
-					} else if (key === "ArrowUp") {
-						const isAtTop = indexInCol <= 0;
-						nextTile = isAtTop ? colTiles[colTiles.length - 1] : colTiles[indexInCol - 1];
-					} else if (key === "PageDown") {
-						const stepIndex = (indexInCol + 4) % colTiles.length;
-						nextTile = colTiles[stepIndex];
-					} else if (key === "PageUp") {
-						const stepIndex = (indexInCol - 4 + colTiles.length) % colTiles.length;
-						nextTile = colTiles[stepIndex];
-					} else if (key === "Home") {
-						nextTile = colTiles[0];
-					} else if (key === "End") {
-						nextTile = colTiles[colTiles.length - 1];
-					} else if (key === "ArrowRight" || key === "ArrowLeft") {
-						const allCols: number[] = [];
-						for (let i = 0; i < tiles.length; i++) {
-							const colAttr = tiles[i].getAttribute("data-col");
-							if (colAttr !== null) {
-								const col = Number(colAttr);
-								if (allCols.indexOf(col) === -1) {
-									allCols.push(col);
-								}
-							}
-						}
-						allCols.sort((a, b) => a - b);
-
-						if (allCols.length > 0) {
-							const currentNum = Number(currentCol);
-							const colIdx = allCols.indexOf(currentNum);
-							if (colIdx !== -1) {
-								const targetColNum =
-									key === "ArrowRight"
-										? allCols[(colIdx + 1) % allCols.length]
-										: allCols[(colIdx - 1 + allCols.length) % allCols.length];
-
-								const targetColTiles: HTMLElement[] = [];
-								for (let i = 0; i < tiles.length; i++) {
-									const t = tiles[i];
-									if (Number(t.getAttribute("data-col")) === targetColNum) {
-										targetColTiles.push(t);
-									}
-								}
-								const targetIdx = Math.min(indexInCol, targetColTiles.length - 1);
-								nextTile = targetColTiles[targetIdx] || targetColTiles[0] || null;
-							}
-						}
-					}
-				}
-			}
-
-			if (nextTile) {
-				e.preventDefault();
-				nextTile.focus({ preventScroll: true });
-
-				const rect = nextTile.getBoundingClientRect();
-				const containerRect = container.getBoundingClientRect();
-				if (rect.top < containerRect.top + 60) {
-					const diff = containerRect.top + 80 - rect.top;
-					scrollY.set(scrollY.get() - diff);
-				} else if (rect.bottom > containerRect.bottom - 60) {
-					const diff = rect.bottom - (containerRect.bottom - 80);
-					scrollY.set(scrollY.get() + diff);
-				}
-			}
-		};
-
 		const handleMouseEnter = () => {
 			isAutoScrollPausedRef.current = true;
 		};
@@ -1667,7 +1522,6 @@ export function useInertiaScroll(
 		targetEl.addEventListener("scroll", handleScroll, { passive: true });
 		targetEl.addEventListener("pointermove", handlePointerMove, { passive: true });
 		window.addEventListener("scroll", handleScroll, { passive: true });
-		window.addEventListener("keydown", handleKeyDown);
 
 		return () => {
 			observer.disconnect();
@@ -1678,7 +1532,6 @@ export function useInertiaScroll(
 			targetEl.removeEventListener("scroll", handleScroll);
 			targetEl.removeEventListener("pointermove", handlePointerMove);
 			window.removeEventListener("scroll", handleScroll);
-			window.removeEventListener("keydown", handleKeyDown);
 
 			if (autoScrollRafRef.current !== null) {
 				window.cancelAnimationFrame(autoScrollRafRef.current);

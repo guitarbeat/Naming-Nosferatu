@@ -15,7 +15,6 @@ import {
 	ZoomOut,
 } from "lucide-react";
 import {
-	type KeyboardEvent,
 	memo,
 	type SyntheticEvent,
 	useCallback,
@@ -270,7 +269,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 								onClick={onOpenBracket}
 								className="inline-flex h-9 items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 text-xs font-semibold text-primary transition-all duration-[300ms] ease-spring hover:bg-primary/20 hover:-translate-y-0.5 active:scale-[0.93] shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 								aria-label="View tournament bracket tree"
-								title="View tournament bracket (Press B)"
+								title="View tournament bracket"
 							>
 								<Layers className="size-3.5" />
 								<span>Bracket</span>
@@ -1130,8 +1129,6 @@ interface MatchSideCardProps {
 	description?: string;
 	pronunciation?: string;
 	onVote: () => void;
-	onKeyDown?: (event: KeyboardEvent<HTMLButtonElement>) => void;
-	shortcutHint?: string;
 }
 
 const MatchSideCard = memo(function MatchSideCard({
@@ -1149,8 +1146,6 @@ const MatchSideCard = memo(function MatchSideCard({
 	description,
 	pronunciation,
 	onVote,
-	onKeyDown,
-	shortcutHint,
 }: MatchSideCardProps) {
 	const isRight = side === "right";
 	const heatCardClasses = getHeatCardClasses(heatLevel);
@@ -1166,7 +1161,6 @@ const MatchSideCard = memo(function MatchSideCard({
 			<button
 				type="button"
 				onClick={onVote}
-				onKeyDown={onKeyDown}
 				disabled={isVoting}
 				className={`group relative flex-1 flex flex-col items-center justify-between p-4 sm:p-6 rounded-3xl border transition-all duration-300 w-full overflow-hidden text-center cursor-pointer select-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary ${
 					isSelected && hasSelectionFeedback
@@ -1193,11 +1187,6 @@ const MatchSideCard = memo(function MatchSideCard({
 							</span>
 						)}
 					</div>
-					{shortcutHint && (
-						<kbd className="hidden sm:inline-block bg-muted/60 px-2 py-0.5 rounded-md border border-border/30 text-[10px] font-sans font-bold text-foreground">
-							[{shortcutHint}]
-						</kbd>
-					)}
 				</div>
 
 				<div className="relative z-10 my-4 flex flex-col items-center gap-3">
@@ -1304,35 +1293,6 @@ export const TournamentArena = memo(function TournamentArena({
 		[currentMatch, isVoting, setSelectedSide, handleVoteWithAnimation],
 	);
 
-	useEffect(() => {
-		const handleKeyDown = (e: globalThis.KeyboardEvent) => {
-			if (
-				document.activeElement?.tagName === "INPUT" ||
-				document.activeElement?.tagName === "TEXTAREA"
-			) {
-				return;
-			}
-			if (e.key === "ArrowLeft" || e.key === "1") {
-				e.preventDefault();
-				onVoteSide("left");
-			} else if (e.key === "ArrowRight" || e.key === "2") {
-				e.preventDefault();
-				onVoteSide("right");
-			} else if (e.key === "u" || e.key === "U") {
-				if (canUndo) {
-					e.preventDefault();
-					handleUndo();
-				}
-			} else if (e.key === "b" || e.key === "B") {
-				e.preventDefault();
-				setBracketModalOpen((o) => !o);
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [onVoteSide, canUndo, handleUndo]);
-
 	if (isComplete) {
 		return (
 			<TournamentComplete
@@ -1418,7 +1378,6 @@ export const TournamentArena = memo(function TournamentArena({
 					description={matchData.leftDescription}
 					pronunciation={matchData.leftPronunciation}
 					onVote={() => onVoteSide("left")}
-					shortcutHint="Left / 1"
 				/>
 
 				<div className="flex items-center justify-center my-auto shrink-0 py-2">
@@ -1443,7 +1402,6 @@ export const TournamentArena = memo(function TournamentArena({
 					description={matchData.rightDescription}
 					pronunciation={matchData.rightPronunciation}
 					onVote={() => onVoteSide("right")}
-					shortcutHint="Right / 2"
 				/>
 			</div>
 
