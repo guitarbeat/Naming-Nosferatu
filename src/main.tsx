@@ -3,12 +3,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { App } from "@/App";
-import { ErrorBoundary, Providers } from "@/components/AppChrome";
+import { Providers } from "@/components/AppChrome";
+import { ErrorBoundary } from "@/components/UiPrimitives";
 import { queryClient } from "@/lib/api";
 import { setupGlobalImageErrorHandler } from "@/lib/utils";
 import "@/index.css";
 
-// Install global image fallback error handler immediately
 setupGlobalImageErrorHandler();
 
 function registerServiceWorker(): void {
@@ -28,35 +28,6 @@ function registerServiceWorker(): void {
 }
 
 registerServiceWorker();
-
-async function initSentry(): Promise<void> {
-	if (!import.meta.env.PROD || !import.meta.env.VITE_SENTRY_DSN) {
-		return;
-	}
-
-	try {
-		const Sentry = await import("@sentry/react");
-		Sentry.init({
-			dsn: import.meta.env.VITE_SENTRY_DSN,
-			integrations: [
-				Sentry.browserTracingIntegration(),
-				Sentry.replayIntegration({
-					maskAllText: false,
-					blockAllMedia: false,
-				}),
-			],
-			tracesSampleRate: 1.0,
-			replaysSessionSampleRate: 0.1,
-			replaysOnErrorSampleRate: 1.0,
-			environment: import.meta.env.MODE,
-			release: `name-nosferatu@${import.meta.env.VITE_APP_VERSION || "1.0.2"}`,
-		});
-	} catch (error) {
-		console.warn("Sentry not available, continuing without error tracking:", error);
-	}
-}
-
-initSentry();
 
 const rootElement = document.getElementById("root");
 if (rootElement) {

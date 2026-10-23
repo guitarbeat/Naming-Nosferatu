@@ -13,9 +13,7 @@ const memoryFallbackStore = new Map<string, string>();
 
 function isStorageAvailable(): boolean {
 	try {
-		if (typeof window === "undefined" || !window.localStorage) {
-			return false;
-		}
+		if (typeof window === "undefined" || !window.localStorage) return false;
 		const key = "__storage_test__";
 		window.localStorage.setItem(key, key);
 		window.localStorage.removeItem(key);
@@ -30,77 +28,53 @@ export function resetStorageModuleCache(): void {
 }
 
 export function getStorageString(key: string, fallback: string | null = null): string | null {
-	if (!isStorageAvailable()) {
-		const memVal = memoryFallbackStore.get(key);
-		return memVal === undefined ? fallback : memVal;
-	}
-
+	if (!isStorageAvailable()) return memoryFallbackStore.get(key) ?? fallback;
 	try {
-		const value = window.localStorage.getItem(key);
-		if (value === null) {
-			const memVal = memoryFallbackStore.get(key);
-			return memVal === undefined ? fallback : memVal;
-		}
-		return value;
+		return window.localStorage.getItem(key) ?? memoryFallbackStore.get(key) ?? fallback;
 	} catch (error) {
-		logger.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
-		const memVal = memoryFallbackStore.get(key);
-		return memVal === undefined ? fallback : memVal;
+		logger.error(`[storage] Failed to read key "${key}":`, error);
+		return memoryFallbackStore.get(key) ?? fallback;
 	}
 }
 
 export function setStorageString(key: string, value: string): boolean {
 	memoryFallbackStore.set(key, value);
-	if (!isStorageAvailable()) {
-		return true;
-	}
-
+	if (!isStorageAvailable()) return true;
 	try {
 		window.localStorage.setItem(key, value);
 		return true;
 	} catch (error) {
-		logger.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+		logger.error(`[storage] Failed to write key "${key}":`, error);
 		return false;
 	}
 }
 
 export function removeStorageItem(key: string): void {
 	memoryFallbackStore.delete(key);
-	if (!isStorageAvailable()) {
-		return;
-	}
-
+	if (!isStorageAvailable()) return;
 	try {
 		window.localStorage.removeItem(key);
 	} catch (error) {
-		logger.error(`[storage] Failed to remove key "${key}" from localStorage:`, error);
+		logger.error(`[storage] Failed to remove key "${key}":`, error);
 	}
 }
 
 export function parseJsonValue<T>(value: string | null | undefined, fallback: T): T {
-	if (!value) {
-		return fallback;
-	}
-
-	const trimmed = value.trim();
-	if (!trimmed) {
-		return fallback;
-	}
-
-	const firstChar = trimmed[0];
+	const trimmed = value?.trim();
+	if (!trimmed) return fallback;
+	const first = trimmed[0];
 	if (
-		firstChar !== "{" &&
-		firstChar !== "[" &&
-		firstChar !== '"' &&
-		firstChar !== "t" &&
-		firstChar !== "f" &&
-		firstChar !== "n" &&
-		firstChar !== "-" &&
-		(firstChar < "0" || firstChar > "9")
+		first !== "{" &&
+		first !== "[" &&
+		first !== '"' &&
+		first !== "t" &&
+		first !== "f" &&
+		first !== "n" &&
+		first !== "-" &&
+		(first < "0" || first > "9")
 	) {
 		return fallback;
 	}
-
 	try {
 		return JSON.parse(trimmed) as T;
 	} catch {
@@ -111,9 +85,7 @@ export function parseJsonValue<T>(value: string | null | undefined, fallback: T)
 function readStorageJson<T>(key: string, fallback: T): T {
 	const rawValue = getStorageString(key);
 	const parsed = parseJsonValue<T>(rawValue, fallback);
-	if (rawValue && parsed === fallback) {
-		removeStorageItem(key);
-	}
+	if (rawValue && parsed === fallback) removeStorageItem(key);
 	return parsed;
 }
 
@@ -121,7 +93,7 @@ export function writeStorageJson<T>(key: string, value: T): boolean {
 	try {
 		return setStorageString(key, JSON.stringify(value));
 	} catch (error) {
-		logger.error(`[storage] Failed to write key "${key}" to localStorage:`, error);
+		logger.error(`[storage] Failed to write JSON "${key}":`, error);
 		return false;
 	}
 }
@@ -130,7 +102,6 @@ export function decryptValue(text: string | null | undefined): string {
 	return text ?? "";
 }
 
-// Stored user storage snapshot helpers
 export interface StoredUserSnapshot {
 	id?: string | null;
 	name: string;
@@ -140,97 +111,63 @@ export interface StoredUserSnapshot {
 }
 
 function normalizeStoredUserSnapshot(value: unknown): StoredUserSnapshot | null {
-	if (!value || typeof value !== "object") {
-		return null;
-	}
-
-	const candidate = value as Record<string, unknown>;
-	const name = typeof candidate.name === "string" ? candidate.name.trim() : "";
-	if (!name) {
-		return null;
-	}
-
+	if (!value || typeof value !== "object") return null;
+	const c = value as Record<string, unknown>;
+	const name = typeof c.name === "string" ? c.name.trim() : "";
+	if (!name) return null;
 	return {
-		id: typeof candidate.id === "string" ? candidate.id : candidate.id === null ? null : undefined,
+		id: typeof c.id === "string" ? c.id : c.id === null ? null : undefined,
 		name,
-		isAdmin: typeof candidate.isAdmin === "boolean" ? candidate.isAdmin : undefined,
-		avatarUrl: typeof candidate.avatarUrl === "string" ? candidate.avatarUrl : undefined,
-		email: typeof candidate.email === "string" ? candidate.email : undefined,
+		isAdmin: typeof c.isAdmin === "boolean" ? c.isAdmin : undefined,
+		avatarUrl: typeof c.avatarUrl === "string" ? c.avatarUrl : undefined,
+		email: typeof c.email === "string" ? c.email : undefined,
 	};
 }
 
 export function readStoredUserSnapshot(): StoredUserSnapshot | null {
-	if (!isStorageAvailable()) {
-		return null;
-	}
-
-	const structuredSnapshot = normalizeStoredUserSnapshot(
+	if (!isStorageAvailable()) return null;
+	const snapshot = normalizeStoredUserSnapshot(
 		readStorageJson<unknown>(STORAGE_KEYS.USER_STORAGE, null),
 	);
-	if (structuredSnapshot) {
-		return structuredSnapshot;
-	}
+	if (snapshot) return snapshot;
 	clearStoredUserSnapshot();
 	return null;
 }
 
 export function writeStoredUserSnapshot(snapshot: StoredUserSnapshot | null): void {
-	if (!isStorageAvailable()) {
-		return;
-	}
-
-	const normalizedSnapshot = normalizeStoredUserSnapshot(snapshot);
-	if (!normalizedSnapshot) {
+	if (!isStorageAvailable()) return;
+	const normalized = normalizeStoredUserSnapshot(snapshot);
+	if (!normalized) {
 		clearStoredUserSnapshot();
 		return;
 	}
-
-	writeStorageJson(STORAGE_KEYS.USER_STORAGE, normalizedSnapshot);
-	setStorageString(STORAGE_KEYS.USER, normalizedSnapshot.name);
-
-	if (normalizedSnapshot.id) {
-		setStorageString(STORAGE_KEYS.USER_ID, normalizedSnapshot.id);
-	} else {
-		removeStorageItem(STORAGE_KEYS.USER_ID);
-	}
-
-	if (normalizedSnapshot.avatarUrl) {
-		setStorageString(STORAGE_KEYS.USER_AVATAR, normalizedSnapshot.avatarUrl);
-	} else {
-		removeStorageItem(STORAGE_KEYS.USER_AVATAR);
-	}
+	writeStorageJson(STORAGE_KEYS.USER_STORAGE, normalized);
+	setStorageString(STORAGE_KEYS.USER, normalized.name);
+	if (normalized.id) setStorageString(STORAGE_KEYS.USER_ID, normalized.id);
+	else removeStorageItem(STORAGE_KEYS.USER_ID);
+	if (normalized.avatarUrl) setStorageString(STORAGE_KEYS.USER_AVATAR, normalized.avatarUrl);
+	else removeStorageItem(STORAGE_KEYS.USER_AVATAR);
 }
 
 export function clearStoredUserSnapshot(): void {
-	if (!isStorageAvailable()) {
-		return;
-	}
-
+	if (!isStorageAvailable()) return;
 	removeStorageItem(STORAGE_KEYS.USER);
 	removeStorageItem(STORAGE_KEYS.USER_ID);
 	removeStorageItem(STORAGE_KEYS.USER_AVATAR);
 	removeStorageItem(STORAGE_KEYS.USER_STORAGE);
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Stored Tournament Snapshot
-// ═══════════════════════════════════════════════════════════════════════════════
-
 export type StoredTournamentSnapshot = Omit<TournamentState, "isLoading">;
 
 function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnapshot | null {
-	if (!value || typeof value !== "object") {
-		return null;
-	}
-
-	const candidate = value as Record<string, unknown>;
-	const names = Array.isArray(candidate.names) ? (candidate.names as NameItem[]) : null;
+	if (!value || typeof value !== "object") return null;
+	const c = value as Record<string, unknown>;
+	const names = Array.isArray(c.names) ? (c.names as NameItem[]) : null;
 	const ratings: Record<string, RatingData> = {};
-	if (candidate.ratings && typeof candidate.ratings === "object") {
-		for (const [key, val] of Object.entries(candidate.ratings as Record<string, unknown>)) {
-			if (typeof val === "number") {
-				ratings[key] = { rating: val, wins: 0, losses: 0 };
-			} else if (val && typeof val === "object" && typeof (val as RatingData).rating === "number") {
+	if (c.ratings && typeof c.ratings === "object") {
+		for (const [key, val] of Object.entries(c.ratings as Record<string, unknown>)) {
+			if (typeof val === "number") ratings[key] = { rating: val, wins: 0, losses: 0 };
+			else if (val && typeof val === "object" && typeof (val as RatingData).rating === "number") {
 				ratings[key] = {
 					rating: (val as RatingData).rating,
 					wins: typeof (val as RatingData).wins === "number" ? (val as RatingData).wins : 0,
@@ -239,32 +176,21 @@ function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnap
 			}
 		}
 	}
-	const isComplete = Boolean(candidate.isComplete);
-	const voteHistory = Array.isArray(candidate.voteHistory)
-		? (candidate.voteHistory as VoteRecord[])
-		: [];
-	const selectedNames = Array.isArray(candidate.selectedNames)
-		? (candidate.selectedNames as NameItem[])
-		: [];
-	const matchHistory = Array.isArray(candidate.matchHistory)
-		? (candidate.matchHistory as MatchRecord[])
+	const isComplete = Boolean(c.isComplete);
+	const voteHistory = Array.isArray(c.voteHistory) ? (c.voteHistory as VoteRecord[]) : [];
+	const selectedNames = Array.isArray(c.selectedNames) ? (c.selectedNames as NameItem[]) : [];
+	const matchHistory = Array.isArray(c.matchHistory)
+		? (c.matchHistory as MatchRecord[])
 		: undefined;
-	const currentRound =
-		typeof candidate.currentRound === "number" ? candidate.currentRound : undefined;
-	const currentMatch =
-		typeof candidate.currentMatch === "number" ? candidate.currentMatch : undefined;
-	const totalMatches =
-		typeof candidate.totalMatches === "number" ? candidate.totalMatches : undefined;
-	const mode =
-		candidate.mode === "1v1" || candidate.mode === "2v2"
-			? (candidate.mode as TournamentMode)
-			: undefined;
-	const teams = Array.isArray(candidate.teams) ? (candidate.teams as Team[]) : undefined;
-	const bracketEntrants = Array.isArray(candidate.bracketEntrants)
-		? (candidate.bracketEntrants as string[])
+	const currentRound = typeof c.currentRound === "number" ? c.currentRound : undefined;
+	const currentMatch = typeof c.currentMatch === "number" ? c.currentMatch : undefined;
+	const totalMatches = typeof c.totalMatches === "number" ? c.totalMatches : undefined;
+	const mode = c.mode === "1v1" || c.mode === "2v2" ? (c.mode as TournamentMode) : undefined;
+	const teams = Array.isArray(c.teams) ? (c.teams as Team[]) : undefined;
+	const bracketEntrants = Array.isArray(c.bracketEntrants)
+		? (c.bracketEntrants as string[])
 		: undefined;
-	const lastUpdated =
-		typeof candidate.lastUpdated === "number" ? candidate.lastUpdated : Date.now();
+	const lastUpdated = typeof c.lastUpdated === "number" ? c.lastUpdated : Date.now();
 
 	if (
 		!names &&
@@ -275,7 +201,6 @@ function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnap
 	) {
 		return null;
 	}
-
 	return {
 		names,
 		ratings,
@@ -294,66 +219,37 @@ function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnap
 }
 
 export function readStoredTournamentSnapshot(): StoredTournamentSnapshot | null {
-	if (!isStorageAvailable()) {
-		return null;
-	}
-
-	return normalizeStoredTournamentSnapshot(readStorageJson<unknown>(STORAGE_KEYS.TOURNAMENT, null));
+	return isStorageAvailable()
+		? normalizeStoredTournamentSnapshot(readStorageJson<unknown>(STORAGE_KEYS.TOURNAMENT, null))
+		: null;
 }
 
 export function writeStoredTournamentSnapshot(snapshot: StoredTournamentSnapshot | null): void {
-	if (!isStorageAvailable()) {
-		return;
-	}
-
-	const normalizedSnapshot = normalizeStoredTournamentSnapshot(snapshot);
-	if (!normalizedSnapshot) {
-		clearStoredTournamentSnapshot();
-		return;
-	}
-
-	writeStorageJson(STORAGE_KEYS.TOURNAMENT, normalizedSnapshot);
+	if (!isStorageAvailable()) return;
+	const normalized = normalizeStoredTournamentSnapshot(snapshot);
+	if (normalized) writeStorageJson(STORAGE_KEYS.TOURNAMENT, normalized);
+	else clearStoredTournamentSnapshot();
 }
 
 export function clearStoredTournamentSnapshot(): void {
-	if (!isStorageAvailable()) {
-		return;
-	}
-
-	removeStorageItem(STORAGE_KEYS.TOURNAMENT);
+	if (isStorageAvailable()) removeStorageItem(STORAGE_KEYS.TOURNAMENT);
 }
 
-/* ==========================================================================
-   IndexedDB Offline Persistence
-   ========================================================================== */
 const IDB_DB_NAME = "nn_offline_db";
 const IDB_STORE_NAME = "tournament";
-const IDB_DB_VERSION = 1;
 const IDB_KEY = "current_tournament";
 
 function openIDB(): Promise<IDBDatabase | null> {
-	if (typeof window === "undefined" || !("indexedDB" in window)) {
-		return Promise.resolve(null);
-	}
-
+	if (typeof window === "undefined" || !("indexedDB" in window)) return Promise.resolve(null);
 	return new Promise((resolve) => {
 		try {
-			const request = window.indexedDB.open(IDB_DB_NAME, IDB_DB_VERSION);
-
-			request.onupgradeneeded = () => {
-				const db = request.result;
-				if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
-					db.createObjectStore(IDB_STORE_NAME);
-				}
+			const req = window.indexedDB.open(IDB_DB_NAME, 1);
+			req.onupgradeneeded = () => {
+				if (!req.result.objectStoreNames.contains(IDB_STORE_NAME))
+					req.result.createObjectStore(IDB_STORE_NAME);
 			};
-
-			request.onsuccess = () => {
-				resolve(request.result);
-			};
-
-			request.onerror = () => {
-				resolve(null);
-			};
+			req.onsuccess = () => resolve(req.result);
+			req.onerror = () => resolve(null);
 		} catch {
 			resolve(null);
 		}
@@ -362,23 +258,15 @@ function openIDB(): Promise<IDBDatabase | null> {
 
 export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnapshot | null> {
 	const db = await openIDB();
-	if (!db) {
-		return null;
-	}
-
+	if (!db) return null;
 	return new Promise((resolve) => {
 		try {
-			const tx = db.transaction(IDB_STORE_NAME, "readonly");
-			const store = tx.objectStore(IDB_STORE_NAME);
-			const request = store.get(IDB_KEY);
-
-			request.onsuccess = () => {
-				resolve(request.result as StoredTournamentSnapshot | null);
-			};
-
-			request.onerror = () => {
-				resolve(null);
-			};
+			const req = db
+				.transaction(IDB_STORE_NAME, "readonly")
+				.objectStore(IDB_STORE_NAME)
+				.get(IDB_KEY);
+			req.onsuccess = () => resolve(req.result as StoredTournamentSnapshot | null);
+			req.onerror = () => resolve(null);
 		} catch {
 			resolve(null);
 		}
@@ -387,23 +275,13 @@ export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnap
 
 export async function saveStoredTournamentToIDB(snapshot: StoredTournamentSnapshot): Promise<void> {
 	const db = await openIDB();
-	if (!db) {
-		return;
-	}
-
+	if (!db) return;
 	return new Promise((resolve) => {
 		try {
 			const tx = db.transaction(IDB_STORE_NAME, "readwrite");
-			const store = tx.objectStore(IDB_STORE_NAME);
-			store.put(snapshot, IDB_KEY);
-
-			tx.oncomplete = () => {
-				resolve();
-			};
-
-			tx.onerror = () => {
-				resolve();
-			};
+			tx.objectStore(IDB_STORE_NAME).put(snapshot, IDB_KEY);
+			tx.oncomplete = () => resolve();
+			tx.onerror = () => resolve();
 		} catch {
 			resolve();
 		}
@@ -412,23 +290,13 @@ export async function saveStoredTournamentToIDB(snapshot: StoredTournamentSnapsh
 
 export async function clearStoredTournamentFromIDB(): Promise<void> {
 	const db = await openIDB();
-	if (!db) {
-		return;
-	}
-
+	if (!db) return;
 	return new Promise((resolve) => {
 		try {
 			const tx = db.transaction(IDB_STORE_NAME, "readwrite");
-			const store = tx.objectStore(IDB_STORE_NAME);
-			store.delete(IDB_KEY);
-
-			tx.oncomplete = () => {
-				resolve();
-			};
-
-			tx.onerror = () => {
-				resolve();
-			};
+			tx.objectStore(IDB_STORE_NAME).delete(IDB_KEY);
+			tx.oncomplete = () => resolve();
+			tx.onerror = () => resolve();
 		} catch {
 			resolve();
 		}

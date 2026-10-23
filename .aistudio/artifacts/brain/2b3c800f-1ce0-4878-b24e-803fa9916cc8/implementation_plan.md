@@ -1,140 +1,105 @@
-# File Count Reduction Plan: Sub-50 Architecture
+# Naming Nosferatu: UI Revamp & Balanced Modular Architecture
 
-Consolidate the application codebase from 94 files down to **47 files** (a 50% reduction, well below the requested 50-file ceiling) while preserving all 22 local cat images, maintaining 100% of the tournament gameplay and visual styling, and simplifying code maintenance.
+Streamline and elevate the **Naming Nosferatu** experience by refining the UI/UX within its signature palette and layout, replacing heavy custom WebGL/SVG/scroll plumbing with crisp CSS and Framer Motion implementations, and splitting all 1,000+ line mega-files into clean, maintainable **200–400 line modules** while keeping the entire repository comfortably under the **50-file ceiling** (~44 total files).
 
 ### User Review & Critical Decisions
 
 > [!IMPORTANT]
-> Based on your responses, the following architectural decisions are locked:
-> - **Preserve Local Media**: All 15 local cat contestant photos, GIF animations, and public UI assets (22 files total) are kept intact.
-> - **Remove Standalone Test Suites**: The 15 individual test files (`*.test.ts`, `*.test.tsx`) are removed to drastically cut file overhead.
-> - **Consolidate Code into High-Cohesion Modules**: Atomic UI primitives, small utility scripts, and tournament sub-views are merged into clean, self-contained multi-export modules in `src/`.
-> - **Prune Unused Backend Artifacts**: Delete the 4 unused Supabase SQL migration files and unreferenced validation script, as the app operates on client-side and localStorage persistence.
+> Based on your confirmed preferences, the revamp locks in the following core decisions:
+> - **Scope**: Revamp and polish UI interactions, visual clarity, and responsiveness while dramatically simplifying oversized code.
+> - **Mega-File Strategy**: Both simplify over-engineered effects (WebGL shaders, pooled SVG displacement filters, custom inertia scroll engines) **and** split the 5 oversized files (`VisualEffects.tsx`, `hooks.ts`, `TournamentViews.tsx`, `tournamentEngine.ts`, `AppChrome.tsx`) into balanced **200–400 line** focused modules.
+> - **Visual Identity**: Preserve the exact current color palette (`oklch` light/dark tokens, `#12100d` dark canvas, rose/magenta primary `--accent`, mint `--secondary-accent`, Fredoka & Quicksand typography) and spatial layout structure.
 
-- **Target File Count**: **47 files** (down from 94).
-- **Functionality Impact**: Zero regression. Full tournament bracket generation, Elo rating calculation, voting arena, audio feedback, glassmorphism UI, and offline caching remain operational.
+- **Confirmed Decision 1**: Eliminate the 5 mega-files (currently 1,015 to 1,838 lines each; ~7,080 lines combined) by stripping redundant boilerplate and distributing responsibilities across 10 focused modules averaging ~250 lines each.
+- **Confirmed Decision 2**: Keep total repository file count at **44 files** (22 in `public/`, 8 root/config files, and 20 in `src/`—well below the 50-file limit) with **zero source file exceeding 400 lines**.
 
 ---
 
 ### 1. Overview & Core Concept
 
-- **What It Does**: Names Nosferatu is a tournament-style cat name ranking and voting platform. Users pit cat contestants against each other in bracket-style matchups, compute real-time Elo rating adjustments, browse leaderboards, and experience fluid web animations and glass-surface visual effects.
-- **Goal of This Change**: Streamline the repository architecture to eliminate file sprawl, redundant layers, and excessive fragmentation without altering the user-facing design or functionality.
-- **Target Count Breakdown**:
-  - `public/`: 22 files (15 cat media assets, 4 UI icons, manifest, service worker, cat catalog)
-  - `config/`: 4 files (`biome.json`, `knip.json`, `tsconfig.json`, `vite.config.ts`)
-  - Root: 6 files (`package.json`, `bun.lock`, `metadata.json`, `index.html`, `components.json`, `LICENSE`)
-  - `src/`: **15 files** (consolidated application architecture)
-  - **Total**: **47 files**
+- **What It Does**: Naming Nosferatu is an interactive cat-naming tournament and Elo rating showcase where users browse candidate names in an orbital/grid showcase (`DriftWall`), configure 1v1 or 2v2 brackets, vote in head-to-head matchups (`TournamentArena`), inspect live bracket trees (`TournamentBracket`), and crown a champion (`TournamentComplete`).
+- **Target Audience**: Friends, cat lovers, and community voters looking for a tactile, joyful, zero-friction bracket voting experience on desktop or mobile.
+- **Key Value of This Revamp**:
+  1. **Zero Mega-Files**: Every TypeScript/React module in `src/` is scoped to a single clear domain (200–400 lines), making the codebase effortless to read and navigate.
+  2. **Lighter, Snappier Runtime**: Replacing 1,800+ lines of raw WebGL (`ogl`) shaders, manual SVG filter registries, and custom pointer-capture physics with hardware-accelerated CSS backdrop-blur, radial mesh gradients, and native smooth scrolling + Framer Motion springs removes jank and cuts bundle overhead.
+  3. **Refined UI Polish**: Cleaner card elevation, crisp typography hierarchy, tabular numerals for Elo ratings and streaks, and responsive touch targets ($\ge 44\text{px}$) while keeping the exact current palette and layout flow.
 
 ---
 
 ### 2. User Experience & Visual Design
 
-- **Visual Continuity**: The app maintains its exact aesthetic posture—dark mode atmosphere (`#12100d`), glassmorphism cards, GPU-accelerated iridescence background effects, and animated tournament matchups with Framer Motion.
-- **Key User Flows Preserved**:
-  1. **Boot & Catalog Browsing**: Users land on the cat grid with live search, tag filtering, and quick sound/theme toggles.
-  2. **Tournament Configuration**: Users configure bracket size (8, 16, or 32 contestants), select seeding mode (Random or Elo-ranked), and initiate the bracket.
-  3. **Voting Arena**: Side-by-side voting matchups with keyboard controls (`ArrowLeft`/`ArrowRight`), animated votes, and immediate score recalculations.
-  4. **Bracket Inspection & Podium**: Interactive bracket view visualizing the tree of matchups leading to the championship crown.
+- **Key User Flows**:
+  1. **Contender Showcase & Roster Setup (`DriftWall` & `NameSelector`)**: Users explore the interactive cat name showcase, filter or select contenders, and launch right into a bracket with one click.
+  2. **Head-to-Head Voting (`TournamentArena`)**: Two contenders (or 2v2 tag teams) face off side-by-side with keyboard support (`ArrowLeft` / `ArrowRight`), live Elo win-streak heat indicators (`warm`, `hot`, `blazing`), round progress, and instant undo.
+  3. **Interactive Bracket Inspection (`TournamentBracket`)**: Users toggle between the visual `Tree Flow` and `Rounds List` views, search contenders in real time with `MagicToolbar`, and zoom/pan smoothly.
+  4. **Championship Podium (`TournamentComplete`)**: Displays the crowned winner, podium finishers, final Elo standings with win/loss records, and quick-restart controls.
+- **Visual Identity & Theme**:
+  - *Aesthetic Direction*: Tactile liquid-glass editorial playful aesthetic—preserving the exact current `oklch` color tokens (`--bg`, `--surface`, `--fg`, `--accent: 0.75 0.15 350`, `--secondary-accent: 0.8 0.12 160`) and dark mode atmosphere.
+  - *Typography & Hierarchy*: `Fredoka` (`--font-display`) for expressive headers and contender titles; `Quicksand` (`--font-sans`) for body copy and controls; `tabular-nums` on all Elo ratings, round counters, and match percentages.
+  - *Component Styling & Layout*: Frosted glass surfaces (`backdrop-blur-xl`), subtle specular borders, and clean spacing hierarchy without nested card clutter.
+- **Interactive Feedback & Motion**:
+  - Snappy $\le 200\text{ms}$ button and card hover responses using compositor-only `transform` and `opacity` transitions.
+  - Native CSS smooth scrolling with momentum instead of a 450-line custom JS inertia loop.
 
 ---
 
 ### 3. Key Product Decisions & Trade-Offs
 
-- **Consolidating Atomic UI Components into `AppChrome.tsx` & `MagicControls.tsx`**:
-  - *Chosen Approach*: Group closely related presentation components (`AppBootScreen`, `GlobalErrorDisplay`, `GlobalLoadingOverlay`, `SkipToMainButton`, `PwaInstallPrompt`, and `Providers`) into `src/components/AppChrome.tsx`, and toolbar controls (`MagicToolbar`, `MagicSearch`, `MagicToggle`) into `src/components/MagicControls.tsx`.
-  - *Why*: Eliminates 9 micro-files while preserving clear component exports and reducing import friction.
-- **Unifying Tournament Views into `TournamentViews.tsx`**:
-  - *Chosen Approach*: Merge `TournamentSetup`, `TournamentArena`, `TournamentBracket`, `TournamentComplete`, and `NameSelector` into `src/tournament/TournamentViews.tsx`, with tournament logic residing in `src/tournament/tournamentEngine.ts`.
-  - *Why*: Keeps tournament presentation and algorithm logic tightly coupled and easier to follow, saving 5 files.
-- **Consolidating Library Utilities into `src/lib/utils.ts`**:
-  - *Chosen Approach*: Merge `constants.ts`, `elo.ts`, `logger.ts`, `names.ts`, and `uiUtils.ts` into `src/lib/utils.ts`. Keep `src/lib/storage.ts` and `src/lib/api.ts` dedicated.
-  - *Why*: Eliminates 5 tiny helper files while ensuring all helper functions remain exported with zero breaking changes.
-- **CSS Inlining**:
-  - *Chosen Approach*: Move `src/components/GlassSurface.css` directly into `src/index.css`.
-  - *Why*: Eliminates a dedicated CSS file while centralizing all custom styling in the main stylesheet.
+- **Decision 1: Replace Heavy WebGL & Custom SVG Filter Pools with CSS + Framer Motion**
+  - *Chosen Approach*: Streamline `GlassSurface`, `Iridescence`, and `DriftWall` by using modern CSS `backdrop-filter`, layered radial gradients, and hardware-accelerated CSS/Framer Motion transforms instead of raw `ogl` WebGL shaders and manual DOM SVG `<filter>` pools.
+  - *Why*: Cuts `VisualEffects` from 1,838 lines down to ~450 lines split across two clean files (`GlassEffects.tsx` and `DriftWall.tsx`), eliminates GPU context loss bugs on mobile, and preserves the exact liquid-glass visual look.
+- **Decision 2: Split the 5 Mega-Files into Balanced 200–400 Line Domain Modules**
+  - *Chosen Approach*:
+    - Split `VisualEffects.tsx` (1,838 LOC) $\rightarrow$ `GlassEffects.tsx` (~200 LOC) + `DriftWall.tsx` (~280 LOC).
+    - Split `hooks.ts` (1,552 LOC) $\rightarrow$ `hooks/useCommonHooks.ts` (~240 LOC) + `hooks/useTournamentState.ts` (~320 LOC).
+    - Split `TournamentViews.tsx` (1,494 LOC) $\rightarrow$ `TournamentSetup.tsx` (~280 LOC) + `TournamentArena.tsx` (~340 LOC) + `TournamentBracket.tsx` (~320 LOC) + `TournamentComplete.tsx` (~240 LOC).
+    - Split `tournamentEngine.ts` (1,182 LOC) $\rightarrow$ `tournamentEngine.ts` (~320 LOC) + `bracketTree.ts` (~280 LOC).
+    - Split `AppChrome.tsx` (1,015 LOC) $\rightarrow$ `UiPrimitives.tsx` (~260 LOC) + `AppChrome.tsx` (~300 LOC).
+  - *Why*: Every single file in `src/` lands in the sweet spot of **150–380 lines**, keeping total repository files at **44** (under the 50-file ceiling) while eliminating 1,000+ line monoliths.
+- **Decision 3: Simplify `index.css` & Store Persistence**
+  - *Chosen Approach*: Consolidate redundant CSS keyframes and unused legacy classes in `index.css` while keeping all theme variables and glass tokens intact; streamline `storage.ts` and `store/index.ts` to remove duplicate serialization wrappers.
+  - *Why*: Improves maintainability and page load performance with zero loss of state persistence or theme fidelity.
 
 ---
 
 ### 4. Technical Architecture & Data Strategy
 
 ```
-┌────────────────────────────────────────────────────────┐
-│                      index.html                        │
-└──────────────────────────┬─────────────────────────────┘
-                           │
-┌──────────────────────────▼─────────────────────────────┐
-│                      src/main.tsx                      │
-│                           │                            │
-│                 src/components/AppChrome               │
-│         (Providers, BootScreen, Overlays, Layout)      │
-└──────────────────────────┬─────────────────────────────┘
-                           │
-┌──────────────────────────▼─────────────────────────────┐
-│                      src/App.tsx                       │
-│                           │                            │
-│     ┌─────────────────────┼──────────────────────┐     │
-│     ▼                     ▼                      ▼     │
-│ src/components/     src/components/       src/tournament/│
-│  MagicControls       VisualEffects       TournamentViews│
-│ (Toolbar, Search,   (Glass, DriftWall,   (Setup, Arena, │
-│    Filter Tags)        Iridescence)      Bracket, Podium│
-└───────────────────────────┬────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────┐
-│                    State & Logic Layer                 │
-│  src/store/index.ts         src/tournament/engine.ts   │
-│  src/lib/storage.ts         src/lib/api.ts             │
-│  src/lib/utils.ts           src/hooks.ts               │
-└────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│                             index.html                               │
+└─────────────────────────────────┬────────────────────────────────────┘
+                                  │
+┌─────────────────────────────────▼────────────────────────────────────┐
+│                            src/main.tsx                              │
+│                                 │                                    │
+│                   src/components/AppChrome.tsx                       │
+│            (Providers, BootScreen, Layout, Error/Toast)              │
+└─────────────────────────────────┬────────────────────────────────────┘
+                                  │
+┌─────────────────────────────────▼────────────────────────────────────┐
+│                            src/App.tsx                               │
+│                                 │                                    │
+│        ┌────────────────────────┼────────────────────────┐           │
+│        ▼                        ▼                        ▼           │
+│  UI & Visual Layer       Controls & Setup        Tournament Flow     │
+│  ├─ UiPrimitives.tsx     ├─ MagicControls.tsx    ├─ TournamentSetup  │
+│  ├─ GlassEffects.tsx     └─ DriftWall.tsx        ├─ TournamentArena  │
+│  └─ AppChrome.tsx                                ├─ TournamentBracket│
+│                                                  └─ TournamentComplete│
+└─────────────────────────────────┬────────────────────────────────────┘
+                                  │
+┌─────────────────────────────────▼────────────────────────────────────┐
+│                      Engine, Hooks & State Layer                     │
+│  ├─ tournament/tournamentEngine.ts   ├─ hooks/useTournamentState.ts  │
+│  ├─ tournament/bracketTree.ts        ├─ hooks/useCommonHooks.ts      │
+│  ├─ store/index.ts                   └─ lib/{api,storage,utils}.ts   │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-#### Complete Consolidated File Tree (47 files):
-
-```
-.
-├── config/
-│   ├── biome.json
-│   ├── knip.json
-│   ├── tsconfig.json
-│   └── vite.config.ts
-├── public/
-│   ├── assets/
-│   │   ├── cats/ (15 cat photos & animated GIFs)
-│   │   └── images/ (4 UI icons & favicons)
-│   ├── data/cats.json
-│   ├── manifest.json
-│   └── sw.js
-├── src/
-│   ├── components/
-│   │   ├── AppChrome.tsx
-│   │   ├── MagicControls.tsx
-│   │   └── VisualEffects.tsx
-│   ├── lib/
-│   │   ├── api.ts
-│   │   ├── storage.ts
-│   │   └── utils.ts
-│   ├── store/
-│   │   └── index.ts
-│   ├── tournament/
-│   │   ├── tournamentEngine.ts
-│   │   └── TournamentViews.tsx
-│   ├── App.tsx
-│   ├── hooks.ts
-│   ├── index.css
-│   ├── main.tsx
-│   ├── types.ts
-│   └── vite-env.d.ts
-├── bun.lock
-├── components.json
-├── index.html
-├── LICENSE
-├── metadata.json
-└── package.json
-```
-
-#### Verification & Quality Gates
-1. Run `npm run lint` (Biome + TypeScript + Knip checks) to ensure 0 lint errors, 0 unused imports, and 0 missing types.
-2. Run `npm run build` to verify clean Vite production bundle compilation.
-3. Validate total file count with `find . -not -path '*/.*' -not -path './node_modules*' -not -path './dist*' -type f | wc -l` to confirm count is ≤ 47.
+#### Data Model & State Mapping
+- **Zustand Store (`src/store/index.ts`)**: Holds `tournament` state (active contenders, `ratings`, `voteHistory`, `matchHistory`, `currentRound`, `currentMatch`, `mode`), `user` profile, and `ui` theme (`light` / `dark` / `system`).
+- **Tournament State Hook (`useTournamentState`)**: Orchestrates bracket progression, auto-advances bye rounds, computes real-time Elo adjustments via `tournamentEngine`, supports single-click `handleUndo`, and syncs snapshots to `localStorage`.
+- **Interactive View Transitions**:
+  - **Setup State**: Renders `DriftWall` showcase and `NameSelector` roster picker; clicking *Start Tournament* initializes seeds/teams and transitions to `TournamentArena`.
+  - **Active Match State**: Renders `TournamentHeader` + `BracketTree` pill bar + 2-column contender cards (`TournamentArena`) with keyboard and click voting handlers; clicking *Bracket Path* opens the `TournamentBracket` modal (`tree` or `cards` view with live search and zoom).
+  - **Completed State**: Transitions to `TournamentComplete` podium with champion spotlight, Elo leaderboard table, and *Play Again* reset handler.

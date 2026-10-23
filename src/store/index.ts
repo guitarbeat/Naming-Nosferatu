@@ -84,118 +84,30 @@ interface ErrorActions {
 interface AppState {
 	tournament: TournamentState;
 	tournamentActions: TournamentActions;
-
 	user: UserState;
 	userActions: UserActions;
-
 	ui: UIState;
 	uiActions: UIActions;
-
 	siteSettings: SiteSettingsState;
 	siteSettingsActions: SiteSettingsActions;
-
 	errors: ErrorState;
 	errorActions: ErrorActions;
 }
 
 type AppSet = Parameters<StateCreator<AppState>>[0];
-type AppSliceCreator<TSlice> = StateCreator<AppState, [], [], TSlice>;
-
 const IS_BROWSER = typeof window !== "undefined";
 
 function patch<K extends keyof AppState>(set: AppSet, key: K, updates: Partial<AppState[K]>): void {
-	set((state) => {
-		const current = state[key];
-		let hasChanged = false;
-		for (const uKey in updates) {
-			// ⚡ Bolt Performance Optimization: Ensure property belongs directly to updates object before comparison
-			if (
-				Object.hasOwn(updates, uKey) &&
-				updates[uKey] !== current[uKey as unknown as keyof typeof current]
-			) {
-				hasChanged = true;
-				break;
-			}
-		}
-		if (!hasChanged) {
-			return state;
-		}
-		return {
-			...state,
-			[key]: { ...state[key], ...updates },
-		};
-	});
+	set((state) => ({ ...state, [key]: { ...state[key], ...updates } }));
 }
 
-const MAX_ERROR_HISTORY = 100;
-
-const createErrorSlice: AppSliceCreator<Pick<AppState, "errors" | "errorActions">> = (
-	set,
-	get,
-) => ({
-	errors: {
-		current: null,
-		history: [],
-	},
-
-	errorActions: {
-		setError: (error) => {
-			const log: ErrorLog | null = error
-				? {
-						error,
-						context: "setError",
-						metadata: {},
-						timestamp: new Date().toISOString(),
-					}
-				: null;
-
-			patch(set, "errors", {
-				current: error,
-				history: log
-					? [...get().errors.history, log].slice(-MAX_ERROR_HISTORY)
-					: get().errors.history,
-			});
-		},
-
-		clearError: () => patch(set, "errors", { current: null }),
-
-		logError: (error, context, metadata = {}) => {
-			const entry: ErrorLog = {
-				error,
-				context,
-				metadata,
-				timestamp: new Date().toISOString(),
-			};
-
-			patch(set, "errors", {
-				history: [...get().errors.history, entry].slice(-MAX_ERROR_HISTORY),
-			});
-
-			// Defer to ErrorManager for standardized logging
-			ErrorManager.handleError(error, context, metadata);
-		},
-	},
-});
-
-function getInitialTournamentState(): TournamentState {
-	const base: TournamentState = {
-		names: null,
-		ratings: {},
-		isComplete: false,
-		isLoading: false,
-		voteHistory: [],
-		selectedNames: [],
-	};
-
-	if (!IS_BROWSER) {
-		return base;
-	}
-
-	const stored = readStoredTournamentSnapshot();
+function hydrateStoredTournament(
+	base: TournamentState,
+	stored: StoredTournamentSnapshot | null,
+): TournamentState {
 	if (!stored) {
 		return base;
 	}
-
 	return {
 		...base,
 		names: stored.names ?? null,
@@ -214,49 +126,66 @@ function getInitialTournamentState(): TournamentState {
 	};
 }
 
-function persistTournamentState(tournament: TournamentState): void {
+function persistTournamentState(t: TournamentState): void {
 	if (!IS_BROWSER) {
 		return;
 	}
-
 	if (
-		!tournament.names &&
-		(!tournament.selectedNames || tournament.selectedNames.length === 0) &&
-		(!tournament.ratings || Object.keys(tournament.ratings).length === 0) &&
-		(!tournament.voteHistory || tournament.voteHistory.length === 0) &&
-		(!tournament.matchHistory || tournament.matchHistory.length === 0)
+		!t.names &&
+		(!t.selectedNames || t.selectedNames.length === 0) &&
+		(!t.ratings || Object.keys(t.ratings).length === 0) &&
+		(!t.voteHistory || t.voteHistory.length === 0) &&
+		(!t.matchHistory || t.matchHistory.length === 0)
 	) {
 		clearStoredTournamentSnapshot();
 		void clearStoredTournamentFromIDB();
 		return;
 	}
-
 	const snapshot: StoredTournamentSnapshot = {
-		names: tournament.names,
-		ratings: tournament.ratings,
-		isComplete: tournament.isComplete,
-		voteHistory: tournament.voteHistory,
-		selectedNames: tournament.selectedNames,
-		matchHistory: tournament.matchHistory,
-		currentRound: tournament.currentRound,
-		currentMatch: tournament.currentMatch,
-		totalMatches: tournament.totalMatches,
-		mode: tournament.mode,
-		teams: tournament.teams,
-		bracketEntrants: tournament.bracketEntrants,
+		names: t.names,
+		ratings: t.ratings,
+		isComplete: t.isComplete,
+		voteHistory: t.voteHistory,
+		selectedNames: t.selectedNames,
+		matchHistory: t.matchHistory,
+		currentRound: t.currentRound,
+		currentMatch: t.currentMatch,
+		totalMatches: t.totalMatches,
+		mode: t.mode,
+		teams: t.teams,
+		bracketEntrants: t.bracketEntrants,
 		lastUpdated: Date.now(),
 	};
-
 	writeStoredTournamentSnapshot(snapshot);
 	void saveStoredTournamentToIDB(snapshot);
 }
 
-const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tournamentActions">> = (
-	set,
-	get,
-) => ({
-	tournament: getInitialTournamentState(),
+function updateTournament(set: AppSet, get: () => AppState, updates: Partial<TournamentState>) {
+	patch(set, "tournament", updates);
+	persistTournamentState({ ...get().tournament, ...updates });
+}
 
+const useAppStore = create<AppState>()((set, get) => ({
+	tournament: IS_BROWSER
+		? hydrateStoredTournament(
+				{
+					names: null,
+					ratings: {},
+					isComplete: false,
+					isLoading: false,
+					voteHistory: [],
+					selectedNames: [],
+				},
+				readStoredTournamentSnapshot(),
+			)
+		: {
+				names: null,
+				ratings: {},
+				isComplete: false,
+				isLoading: false,
+				voteHistory: [],
+				selectedNames: [],
+			},
 	tournamentActions: {
 		setNames: (names) => {
 			const currentRatings = get().tournament.ratings;
@@ -269,24 +198,12 @@ const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tour
 							: typeof entry === "object" && entry !== null
 								? entry.rating
 								: undefined;
-
 					return {
 						...name,
 						rating: ratingVal ?? name.rating ?? name.avgRating ?? name.avg_rating ?? 1500,
 					};
 				}) ?? null;
-
-			const nextTournament: TournamentState = {
-				...get().tournament,
-				names: processedNames,
-				isComplete: false,
-				matchHistory: [],
-				currentRound: 1,
-				currentMatch: 1,
-				bracketEntrants: [],
-				voteHistory: [],
-			};
-			patch(set, "tournament", {
+			updateTournament(set, get, {
 				names: processedNames,
 				isComplete: false,
 				matchHistory: [],
@@ -295,48 +212,20 @@ const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tour
 				bracketEntrants: [],
 				voteHistory: [],
 			});
-			persistTournamentState(nextTournament);
 		},
-
 		setRatings: (ratingsOrFn) => {
 			const current = get().tournament.ratings;
 			const nextRatings = typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
-			const mergedRatings = { ...current, ...nextRatings };
-			const nextTournament = {
-				...get().tournament,
-				ratings: mergedRatings,
-			};
-			patch(set, "tournament", { ratings: mergedRatings });
-			persistTournamentState(nextTournament);
+			updateTournament(set, get, { ratings: { ...current, ...nextRatings } });
 		},
-
-		setComplete: (isComplete) => {
-			const nextTournament = {
-				...get().tournament,
-				isComplete,
-			};
-			patch(set, "tournament", { isComplete });
-			persistTournamentState(nextTournament);
-		},
-
-		completeTournament: (ratings) => {
-			const current = get().tournament.ratings;
-			const mergedRatings = { ...current, ...ratings };
-			const nextTournament = {
-				...get().tournament,
-				ratings: mergedRatings,
+		setComplete: (isComplete) => updateTournament(set, get, { isComplete }),
+		completeTournament: (ratings) =>
+			updateTournament(set, get, {
+				ratings: { ...get().tournament.ratings, ...ratings },
 				isComplete: true,
-			};
-			patch(set, "tournament", {
-				ratings: mergedRatings,
-				isComplete: true,
-			});
-			persistTournamentState(nextTournament);
-		},
-
-		resetTournament: () => {
-			const nextTournament: TournamentState = {
-				...get().tournament,
+			}),
+		resetTournament: () =>
+			updateTournament(set, get, {
 				names: null,
 				isComplete: false,
 				voteHistory: [],
@@ -345,214 +234,85 @@ const createTournamentSlice: AppSliceCreator<Pick<AppState, "tournament" | "tour
 				currentMatch: 1,
 				bracketEntrants: [],
 				ratings: {},
-			};
-			patch(set, "tournament", {
-				names: null,
-				isComplete: false,
-				voteHistory: [],
-				matchHistory: [],
-				currentRound: 1,
-				currentMatch: 1,
-				bracketEntrants: [],
-				ratings: {},
-			});
-			persistTournamentState(nextTournament);
-		},
-
-		setSelection: (selectedNames) => {
-			const nextTournament = {
-				...get().tournament,
-				selectedNames,
-			};
-			patch(set, "tournament", { selectedNames });
-			persistTournamentState(nextTournament);
-		},
-
+			}),
+		setSelection: (selectedNames) => updateTournament(set, get, { selectedNames }),
 		recordVote: (winnerId, loserId, winnerMemberIds, loserMemberIds) => {
-			const prev = get().tournament.voteHistory;
-			const newVote = {
-				winnerId,
-				loserId,
-				timestamp: Date.now(),
-				...(winnerMemberIds ? { winnerMemberIds } : {}),
-				...(loserMemberIds ? { loserMemberIds } : {}),
-			};
-			const nextHistory = [...prev, newVote];
-			const nextTournament = {
-				...get().tournament,
-				voteHistory: nextHistory,
-			};
-			patch(set, "tournament", {
-				voteHistory: nextHistory,
-			});
-			persistTournamentState(nextTournament);
+			const voteHistory = [
+				...get().tournament.voteHistory,
+				{
+					winnerId,
+					loserId,
+					timestamp: Date.now(),
+					...(winnerMemberIds ? { winnerMemberIds } : {}),
+					...(loserMemberIds ? { loserMemberIds } : {}),
+				},
+			];
+			updateTournament(set, get, { voteHistory });
 		},
-
 		undoVote: () => {
-			const prev = get().tournament.voteHistory;
-			const nextHistory = prev.slice(0, -1);
-			const prevMatchHistory = get().tournament.matchHistory;
-			const nextMatchHistory = prevMatchHistory ? prevMatchHistory.slice(0, -1) : undefined;
-			const nextTournament = {
-				...get().tournament,
-				voteHistory: nextHistory,
-				matchHistory: nextMatchHistory,
-			};
-			patch(set, "tournament", {
-				voteHistory: nextHistory,
-				matchHistory: nextMatchHistory,
+			const prevMatch = get().tournament.matchHistory;
+			updateTournament(set, get, {
+				voteHistory: get().tournament.voteHistory.slice(0, -1),
+				matchHistory: prevMatch ? prevMatch.slice(0, -1) : undefined,
 			});
-			persistTournamentState(nextTournament);
 		},
-
 		syncTournamentProgress: (progressUpdates) => {
 			const current = get().tournament;
-			const nextRatings = progressUpdates.ratings
+			const ratings = progressUpdates.ratings
 				? { ...current.ratings, ...progressUpdates.ratings }
 				: current.ratings;
-			const nextTournament: TournamentState = {
-				...current,
-				...progressUpdates,
-				ratings: nextRatings,
-				lastUpdated: Date.now(),
-			};
-			patch(set, "tournament", {
-				...progressUpdates,
-				ratings: nextRatings,
-				lastUpdated: nextTournament.lastUpdated,
-			});
-			persistTournamentState(nextTournament);
+			updateTournament(set, get, { ...progressUpdates, ratings, lastUpdated: Date.now() });
 		},
-
-		clearVoteHistory: () => {
-			const nextTournament = {
-				...get().tournament,
-				voteHistory: [],
-			};
-			patch(set, "tournament", { voteHistory: [] });
-			persistTournamentState(nextTournament);
-		},
-
+		clearVoteHistory: () => updateTournament(set, get, { voteHistory: [] }),
 		replaceTournamentState: (snapshot: TournamentState) => {
 			set({ tournament: { ...snapshot } });
 			persistTournamentState(snapshot);
 		},
 	},
-});
-
-let systemThemeCleanup: (() => void) | null = null;
-
-function getInitialUserState(): UserState {
-	const base: UserState = {
-		id: null,
-		name: "",
-		isLoggedIn: false,
-		isAdmin: false,
-		preferences: {},
-	};
-
-	if (!IS_BROWSER) {
-		return base;
-	}
-
-	const storedSnapshot = readStoredUserSnapshot();
-	if (!storedSnapshot) {
-		return base;
-	}
-
-	return {
-		...base,
-		id: storedSnapshot.id ?? null,
-		name: storedSnapshot.name,
-		isLoggedIn: true,
-		isAdmin: Boolean(storedSnapshot.isAdmin),
-		avatarUrl: storedSnapshot.avatarUrl,
-	};
-}
-
-function getInitialTheme(): Pick<UIState, "theme" | "themePreference"> {
-	if (!IS_BROWSER) {
-		return { theme: "dark", themePreference: "dark" };
-	}
-
-	const stored = getStorageString(STORAGE_KEYS.THEME);
-	if (stored === "light" || stored === "dark" || stored === "system") {
-		let prefersDark = true;
-		try {
-			if (typeof window.matchMedia === "function") {
-				prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-			}
-		} catch {
-			prefersDark = true;
-		}
-
-		const resolved: ThemeValue = stored === "system" ? (prefersDark ? "dark" : "light") : stored;
-
-		return { theme: resolved, themePreference: stored };
-	}
-
-	return { theme: "dark", themePreference: "dark" };
-}
-
-function persistOptionalString(key: string, value: string | undefined): void {
-	if (value) {
-		setStorageString(key, value);
-		return;
-	}
-
-	removeStorageItem(key);
-}
-
-function readThemePreferenceFromStorage(): ThemePreference {
-	const stored = getStorageString(STORAGE_KEYS.THEME) ?? "dark";
-	return ["light", "dark", "system"].includes(stored) ? (stored as ThemePreference) : "dark";
-}
-
-function persistUserState(user: UserState): void {
-	if (!user.name.trim()) {
-		clearStoredUserSnapshot();
-		return;
-	}
-
-	writeStoredUserSnapshot({
-		id: user.id,
-		name: user.name,
-		isAdmin: user.isAdmin,
-		avatarUrl: user.avatarUrl,
-	});
-}
-
-const createUserAndSettingsSlice: AppSliceCreator<
-	Pick<
-		AppState,
-		"user" | "userActions" | "ui" | "uiActions" | "siteSettings" | "siteSettingsActions"
-	>
-> = (set, get) => ({
-	user: getInitialUserState(),
-
+	user: (() => {
+		const base: UserState = {
+			id: null,
+			name: "",
+			isLoggedIn: false,
+			isAdmin: false,
+			preferences: {},
+		};
+		const stored = IS_BROWSER ? readStoredUserSnapshot() : null;
+		return stored
+			? {
+					...base,
+					id: stored.id ?? null,
+					name: stored.name,
+					isLoggedIn: true,
+					isAdmin: Boolean(stored.isAdmin),
+					avatarUrl: stored.avatarUrl,
+				}
+			: base;
+	})(),
 	userActions: {
 		setUser: (data) => {
 			const nextUser = { ...get().user, ...data };
 			patch(set, "user", data);
-			persistUserState(nextUser);
+			if (nextUser.name.trim()) {
+				writeStoredUserSnapshot(nextUser);
+			} else {
+				clearStoredUserSnapshot();
+			}
 		},
-
 		login: (userName, onContext) => {
 			const id = `user_${crypto.randomUUID()}`;
-			const avatarUrl = getRandomCatImage(id, undefined, userName);
 			const nextUser = {
 				...get().user,
 				id,
 				name: userName,
 				isLoggedIn: true,
 				isAdmin: false,
-				avatarUrl,
+				avatarUrl: getRandomCatImage(id, undefined, userName),
 			};
 			patch(set, "user", nextUser);
-			persistUserState(nextUser);
+			writeStoredUserSnapshot(nextUser);
 			onContext?.(userName);
 		},
-
 		logout: (onContext) => {
 			clearStoredUserSnapshot();
 			clearStoredTournamentSnapshot();
@@ -560,219 +320,136 @@ const createUserAndSettingsSlice: AppSliceCreator<
 			set((state) => ({
 				...state,
 				user: { ...state.user, name: "", isLoggedIn: false, isAdmin: false },
-				tournament: {
-					...state.tournament,
-					names: null,
-					isComplete: false,
-					voteHistory: [],
-				},
+				tournament: { ...state.tournament, names: null, isComplete: false, voteHistory: [] },
 			}));
 		},
-
 		setAdminStatus: (isAdmin) => {
 			const nextUser = { ...get().user, isAdmin };
 			patch(set, "user", { isAdmin });
-			persistUserState(nextUser);
+			writeStoredUserSnapshot(nextUser);
 		},
-
 		setAvatar: (avatarUrl) => {
 			const nextUser = { ...get().user, avatarUrl };
 			patch(set, "user", { avatarUrl });
-			persistOptionalString(STORAGE_KEYS.USER_AVATAR, avatarUrl);
-			persistUserState(nextUser);
+			if (avatarUrl) {
+				setStorageString(STORAGE_KEYS.USER_AVATAR, avatarUrl);
+			} else {
+				removeStorageItem(STORAGE_KEYS.USER_AVATAR);
+			}
+			writeStoredUserSnapshot(nextUser);
 		},
-
 		initializeFromStorage: (onContext) => {
-			const storedUser = readStoredUserSnapshot();
-			const updates: Partial<UserState> = {};
-
-			if (storedUser && get().user.name !== storedUser.name) {
-				onContext?.(storedUser.name);
-				updates.name = storedUser.name;
-				updates.isLoggedIn = true;
-			}
-
-			if (storedUser?.id && get().user.id !== storedUser.id) {
-				updates.id = storedUser.id;
-			}
-
-			if (storedUser && get().user.isAdmin !== Boolean(storedUser.isAdmin)) {
-				updates.isAdmin = Boolean(storedUser.isAdmin);
-			}
-
-			if (storedUser?.avatarUrl && get().user.avatarUrl !== storedUser.avatarUrl) {
-				updates.avatarUrl = storedUser.avatarUrl;
-			}
-
-			if (Object.keys(updates).length > 0) {
-				patch(set, "user", updates);
+			const stored = readStoredUserSnapshot();
+			if (stored && get().user.name !== stored.name) {
+				onContext?.(stored.name);
+				patch(set, "user", {
+					id: stored.id ?? null,
+					name: stored.name,
+					isLoggedIn: true,
+					isAdmin: Boolean(stored.isAdmin),
+					avatarUrl: stored.avatarUrl,
+				});
 			}
 		},
 	},
-
-	ui: {
-		...getInitialTheme(),
-		isBootLoading: true,
-	},
-
+	ui: { theme: "dark", themePreference: "dark", isBootLoading: true },
 	uiActions: {
 		setTheme: (preference) => {
-			systemThemeCleanup?.();
-			systemThemeCleanup = null;
-
-			if (preference !== "system" || !IS_BROWSER) {
-				const resolved = preference === "light" ? "light" : "dark";
-				patch(set, "ui", { theme: resolved, themePreference: preference });
-				setStorageString(STORAGE_KEYS.THEME, preference);
-				return;
-			}
-
-			let resolved: ThemeValue = "dark";
-			try {
-				if (typeof window.matchMedia === "function") {
-					const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-					resolved = mediaQuery.matches ? "dark" : "light";
-
-					const handleChange = (event: MediaQueryListEvent) => {
-						if (get().ui.themePreference === "system") {
-							patch(set, "ui", { theme: event.matches ? "dark" : "light" });
-						}
-					};
-
-					if (mediaQuery.addEventListener) {
-						mediaQuery.addEventListener("change", handleChange);
-						systemThemeCleanup = () => mediaQuery.removeEventListener("change", handleChange);
-					} else if (mediaQuery.addListener) {
-						mediaQuery.addListener(handleChange);
-						systemThemeCleanup = () => mediaQuery.removeListener(handleChange);
-					}
-				}
-			} catch {
-				resolved = "dark";
-			}
-
+			const resolved: ThemeValue = preference === "light" ? "light" : "dark";
 			patch(set, "ui", { theme: resolved, themePreference: preference });
-			setStorageString(STORAGE_KEYS.THEME, preference);
+			if (IS_BROWSER) {
+				setStorageString(STORAGE_KEYS.THEME, preference);
+			}
 		},
-
 		initializeTheme: () => {
 			if (!IS_BROWSER) {
 				return;
 			}
-
-			get().uiActions.setTheme(readThemePreferenceFromStorage());
+			const stored = getStorageString(STORAGE_KEYS.THEME) ?? "dark";
+			const pref: ThemePreference =
+				stored === "light" || stored === "dark" || stored === "system" ? stored : "dark";
+			get().uiActions.setTheme(pref);
 		},
-
 		setBootLoading: (loading) => patch(set, "ui", { isBootLoading: loading }),
 	},
-
-	siteSettings: {
-		catChosenName: null,
-		isLoaded: false,
-	},
-
+	siteSettings: { catChosenName: null, isLoaded: false },
 	siteSettingsActions: {
 		setCatChosenName: (data) => patch(set, "siteSettings", { catChosenName: data }),
 		markSettingsLoaded: () => patch(set, "siteSettings", { isLoaded: true }),
 	},
-});
-
-const useAppStore = create<AppState>()((...args) => ({
-	...createTournamentSlice(...args),
-	...createUserAndSettingsSlice(...args),
-	...createErrorSlice(...args),
+	errors: { current: null, history: [] },
+	errorActions: {
+		setError: (error) => {
+			const log: ErrorLog | null = error
+				? { error, context: "setError", metadata: {}, timestamp: new Date().toISOString() }
+				: null;
+			patch(set, "errors", {
+				current: error,
+				history: log ? [...get().errors.history, log].slice(-50) : get().errors.history,
+			});
+		},
+		clearError: () => patch(set, "errors", { current: null }),
+		logError: (error, context, metadata = {}) => {
+			const entry: ErrorLog = { error, context, metadata, timestamp: new Date().toISOString() };
+			patch(set, "errors", { history: [...get().errors.history, entry].slice(-50) });
+			ErrorManager.handleError(error, context);
+		},
+	},
 }));
 
 export default useAppStore;
 
-/**
- * Hydrates tournament state from IndexedDB if in-memory state is empty or IndexedDB snapshot is newer.
- */
-async function hydrateTournamentFromIndexedDB(): Promise<StoredTournamentSnapshot | null> {
-	if (!IS_BROWSER) {
-		return null;
-	}
-
-	try {
-		const stored = await getStoredTournamentFromIDB();
-		if (!stored) {
-			return null;
-		}
-
-		const current = useAppStore.getState().tournament;
-		const isCurrentEmpty =
-			!current.names &&
-			(!current.selectedNames || current.selectedNames.length === 0) &&
-			(!current.ratings || Object.keys(current.ratings).length === 0);
-
-		if (
-			isCurrentEmpty ||
-			(stored.lastUpdated && (!current.lastUpdated || stored.lastUpdated > current.lastUpdated))
-		) {
-			useAppStore.getState().tournamentActions.replaceTournamentState({
-				...current,
-				names: stored.names ?? null,
-				ratings: stored.ratings ?? {},
-				isComplete: Boolean(stored.isComplete),
-				voteHistory: Array.isArray(stored.voteHistory) ? stored.voteHistory : [],
-				selectedNames: Array.isArray(stored.selectedNames) ? stored.selectedNames : [],
-				matchHistory: Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined,
-				currentRound: typeof stored.currentRound === "number" ? stored.currentRound : undefined,
-				currentMatch: typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
-				totalMatches: typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
-				mode: stored.mode,
-				teams: stored.teams,
-				bracketEntrants: stored.bracketEntrants,
-				lastUpdated: stored.lastUpdated,
-			});
-		}
-		return stored;
-	} catch (err) {
-		ErrorManager.handleError(err, "hydrateTournamentFromIndexedDB");
-		return null;
-	}
-}
-
 export function useAppStoreInitialization(onUserContext?: (name: string) => void): void {
-	const initializeUser = useAppStore((state) => state.userActions.initializeFromStorage);
-	const initializeTheme = useAppStore((state) => state.uiActions.initializeTheme);
-
+	const initializeUser = useAppStore((s) => s.userActions.initializeFromStorage);
+	const initializeTheme = useAppStore((s) => s.uiActions.initializeTheme);
 	useEffect(() => {
 		initializeUser(onUserContext);
 		initializeTheme();
-		void hydrateTournamentFromIndexedDB();
+		if (!IS_BROWSER) {
+			return;
+		}
+		void getStoredTournamentFromIDB()
+			.then((stored) => {
+				if (!stored) {
+					return;
+				}
+				const current = useAppStore.getState().tournament;
+				const isEmpty =
+					!current.names &&
+					(!current.selectedNames || current.selectedNames.length === 0) &&
+					(!current.ratings || Object.keys(current.ratings).length === 0);
+				if (
+					isEmpty ||
+					(stored.lastUpdated && (!current.lastUpdated || stored.lastUpdated > current.lastUpdated))
+				) {
+					useAppStore
+						.getState()
+						.tournamentActions.replaceTournamentState(hydrateStoredTournament(current, stored));
+				}
+			})
+			.catch((err) => ErrorManager.handleError(err, "hydrateTournamentFromIndexedDB"));
 	}, [initializeTheme, initializeUser, onUserContext]);
 }
 
-/**
- * Selector for checking if an active tournament is currently running,
- * preventing re-renders on per-vote tournament progress mutations.
- */
 export function useActiveTournamentStatus() {
 	return useAppStore(
-		useShallow((state) => ({
+		useShallow((s) => ({
 			hasActiveTournament: Boolean(
-				state.tournament.names &&
-					state.tournament.names.length >= 2 &&
-					!state.tournament.isComplete,
+				s.tournament.names && s.tournament.names.length >= 2 && !s.tournament.isComplete,
 			),
-			namesCount: state.tournament.names?.length ?? 0,
+			namesCount: s.tournament.names?.length ?? 0,
 		})),
 	);
 }
 
-/**
- * Memoized selector for TournamentSetup container, isolating stable tournament
- * setup fields and user IDs from rapid vote/rating progress mutations.
- */
 export function useTournamentSetupState() {
 	return useAppStore(
-		useShallow((state) => ({
-			names: state.tournament.names,
-			isComplete: state.tournament.isComplete,
-			ratings: state.tournament.ratings,
-			userId: state.user.id,
-			userName: state.user.name,
+		useShallow((s) => ({
+			names: s.tournament.names,
+			isComplete: s.tournament.isComplete,
+			ratings: s.tournament.ratings,
+			userId: s.user.id,
+			userName: s.user.name,
 		})),
 	);
 }
