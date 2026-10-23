@@ -46,7 +46,7 @@ export default defineConfig(({ command }) => ({
 			registerType: "autoUpdate",
 			includeAssets: [
 				"assets/images/favicon.png",
-				"assets/images/ui/cat_graphic_hd.png",
+				"assets/images/ui/cat_avatar_placeholder.png",
 			],
 			manifest: {
 				id: "/",
@@ -84,8 +84,8 @@ export default defineConfig(({ command }) => ({
 				],
 			},
 			workbox: {
-				globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,gif,woff,woff2}"],
-				maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
+				globPatterns: ["**/*.{js,css,html,ico,svg,woff,woff2}"],
+				maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
 				runtimeCaching: [
 					{
 						urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -116,12 +116,12 @@ export default defineConfig(({ command }) => ({
 						},
 					},
 					{
-						urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+						urlPattern: /\.(?:png|jpg|jpeg|svg|webp)$/i,
 						handler: "StaleWhileRevalidate",
 						options: {
 							cacheName: "static-media-cache",
 							expiration: {
-								maxEntries: 100,
+								maxEntries: 40,
 								maxAgeSeconds: 60 * 60 * 24 * 30,
 							},
 							cacheableResponse: {

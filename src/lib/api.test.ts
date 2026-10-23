@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { NameItem } from "@/types";
 import { namesQueryOptions, queryClient, ratingsAPI, SUPABASE_UNAVAILABLE_MSG } from "./api";
-import * as storageModule from "./lib/storage";
+import * as storageModule from "./storage";
 import {
 	getStorageString,
 	parseJsonValue,
 	resetStorageModuleCache,
 	writeStorageJson,
-} from "./lib/storage";
-import type { NameItem } from "./types";
+} from "./storage";
 
 describe("api module", () => {
 	beforeEach(() => {

@@ -3,10 +3,10 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { App } from "@/App";
-import { queryClient } from "@/api";
+import { Providers } from "@/components";
 import { ErrorBoundary } from "@/components/LayoutBlocks";
+import { queryClient } from "@/lib/api";
 import { setupGlobalImageErrorHandler } from "@/lib/utils";
-import { Providers } from "@/Providers";
 import "@/index.css";
 
 // Install global image fallback error handler immediately

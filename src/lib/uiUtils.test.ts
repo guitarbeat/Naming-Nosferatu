@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CAT_IMAGES } from "./constants";
-import { getRandomCatImage, isMobileOrLowPowerDevice } from "./uiUtils";
+import { getRandomCatImage, isMobileOrLowPowerDevice } from "./utils";
 
 describe("isMobileOrLowPowerDevice", () => {
 	const originalWindow = globalThis.window;

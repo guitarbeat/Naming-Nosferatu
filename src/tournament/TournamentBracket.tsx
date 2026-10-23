@@ -3,8 +3,7 @@ import { ArrowRight, Check, Eye, Flame, Layers, Trophy, X, ZoomIn, ZoomOut } fro
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Button, CatImage, MagicToolbar } from "@/components";
 import { useDebounce } from "@/hooks";
-import { MOTION_DURATIONS } from "@/lib/uiUtils";
-import { hapticVoteTap } from "@/lib/utils";
+import { hapticVoteTap, MOTION_DURATIONS } from "@/lib/utils";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
 import {
 	areMatchNodePropsEqual,

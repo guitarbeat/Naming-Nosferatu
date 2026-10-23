@@ -2,9 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	clearStoredTournamentFromIDB,
 	getStoredTournamentFromIDB,
+	type StoredTournamentSnapshot,
 	saveStoredTournamentToIDB,
-} from "./indexedDB";
-import type { StoredTournamentSnapshot } from "./storage";
+} from "./storage";
 
 interface MockRequest {
 	result?: unknown;

@@ -1,4 +1,4 @@
-import { getRandomCatImage } from "@/lib/uiUtils";
+import { getRandomCatImage } from "@/lib/utils";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
 import {
 	createIdToNameMap,

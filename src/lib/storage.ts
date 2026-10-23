@@ -116,9 +116,13 @@ function decrypt(text: string): string {
 			} catch (_error) {
 				// Ignore and fallback
 			}
+
+			// If it has prepended IV but decryption failed (e.g. session key changed across reload),
+			// return empty string instead of corrupting JSON parsing with raw ciphertext
+			return "";
 		}
 
-		// If missing prepended IV or decryption failed, treat as unencrypted plaintext
+		// If missing prepended IV, treat as unencrypted plaintext
 		if (decryptionCache.size > MAX_DECRYPT_CACHE) {
 			const firstKey = decryptionCache.keys().next().value;
 			if (firstKey) {
@@ -150,7 +154,17 @@ export function getStorageString(key: string, fallback: string | null = null): s
 			const memVal = memoryFallbackStore.get(key);
 			return memVal === undefined ? fallback : decrypt(memVal);
 		}
-		return decrypt(value);
+		const decrypted = decrypt(value);
+		if (decrypted === "" && value !== "") {
+			// Decryption failed for existing item; safely purge unreadable key from previous session
+			try {
+				window.localStorage.removeItem(key);
+			} catch {
+				// Ignore
+			}
+			return fallback;
+		}
+		return decrypted;
 	} catch (error) {
 		logger.error(`[storage] Failed to read key "${key}" from localStorage:`, error);
 		const memVal = memoryFallbackStore.get(key);
@@ -205,8 +219,13 @@ export function removeStorageItem(key: string): void {
 	}
 }
 
-export function parseJsonValue<T>(value: string | null, fallback: T): T {
-	if (value === null) {
+export function parseJsonValue<T>(value: string | null | undefined, fallback: T): T {
+	if (!value) {
+		return fallback;
+	}
+
+	// Defensive check: if value is an undecrypted ciphertext string with IV delimiter, return fallback gracefully
+	if (value.length > 33 && value.indexOf(":") === 32) {
 		return fallback;
 	}
 
@@ -447,4 +466,116 @@ function isStorageAvailable() {
 	} catch (_e) {
 		return false;
 	}
+}
+
+/* ==========================================================================
+   IndexedDB Offline Persistence
+   ========================================================================== */
+const IDB_DB_NAME = "nn_offline_db";
+const IDB_STORE_NAME = "tournament";
+const IDB_DB_VERSION = 1;
+const IDB_KEY = "current_tournament";
+
+function openIDB(): Promise<IDBDatabase | null> {
+	if (typeof window === "undefined" || !("indexedDB" in window)) {
+		return Promise.resolve(null);
+	}
+
+	return new Promise((resolve) => {
+		try {
+			const request = window.indexedDB.open(IDB_DB_NAME, IDB_DB_VERSION);
+
+			request.onupgradeneeded = () => {
+				const db = request.result;
+				if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+					db.createObjectStore(IDB_STORE_NAME);
+				}
+			};
+
+			request.onsuccess = () => {
+				resolve(request.result);
+			};
+
+			request.onerror = () => {
+				resolve(null);
+			};
+		} catch {
+			resolve(null);
+		}
+	});
+}
+
+export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnapshot | null> {
+	const db = await openIDB();
+	if (!db) {
+		return null;
+	}
+
+	return new Promise((resolve) => {
+		try {
+			const tx = db.transaction(IDB_STORE_NAME, "readonly");
+			const store = tx.objectStore(IDB_STORE_NAME);
+			const request = store.get(IDB_KEY);
+
+			request.onsuccess = () => {
+				resolve(request.result as StoredTournamentSnapshot | null);
+			};
+
+			request.onerror = () => {
+				resolve(null);
+			};
+		} catch {
+			resolve(null);
+		}
+	});
+}
+
+export async function saveStoredTournamentToIDB(snapshot: StoredTournamentSnapshot): Promise<void> {
+	const db = await openIDB();
+	if (!db) {
+		return;
+	}
+
+	return new Promise((resolve) => {
+		try {
+			const tx = db.transaction(IDB_STORE_NAME, "readwrite");
+			const store = tx.objectStore(IDB_STORE_NAME);
+			store.put(snapshot, IDB_KEY);
+
+			tx.oncomplete = () => {
+				resolve();
+			};
+
+			tx.onerror = () => {
+				resolve();
+			};
+		} catch {
+			resolve();
+		}
+	});
+}
+
+export async function clearStoredTournamentFromIDB(): Promise<void> {
+	const db = await openIDB();
+	if (!db) {
+		return;
+	}
+
+	return new Promise((resolve) => {
+		try {
+			const tx = db.transaction(IDB_STORE_NAME, "readwrite");
+			const store = tx.objectStore(IDB_STORE_NAME);
+			store.delete(IDB_KEY);
+
+			tx.oncomplete = () => {
+				resolve();
+			};
+
+			tx.onerror = () => {
+				resolve();
+			};
+		} catch {
+			resolve();
+		}
+	});
 }

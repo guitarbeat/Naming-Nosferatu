@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { scaleFadeMotionPreset } from "@/lib/uiUtils";
+import { scaleFadeMotionPreset } from "@/lib/utils";
 
 export function AppBootScreen({
 	message = "Preparing the tournament...",

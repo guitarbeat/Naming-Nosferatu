@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { memo, useCallback, useEffect, useMemo } from "react";
-import { namesQueryOptions, SUPABASE_UNAVAILABLE_MSG } from "@/api";
 import { DriftWall, type DriftWallItem } from "@/components/DriftWall";
 import { Button, Loading } from "@/components/LayoutBlocks";
+import { namesQueryOptions, SUPABASE_UNAVAILABLE_MSG } from "@/lib/api";
 import { DEFAULT_SAMPLE_NAMES, getLockedNames, getVisibleNames, isNameLocked } from "@/lib/names";
 import { hapticNavTap } from "@/lib/utils";
 import useAppStore from "@/store";

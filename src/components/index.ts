@@ -3,6 +3,7 @@ export * from "./DriftWallTile";
 export * from "./GlassSurface";
 export * from "./Iridescence";
 export * from "./LayoutBlocks";
+export * from "./Providers";
 export * from "./ui/AppBootScreen";
 export * from "./ui/AppLayout";
 export * from "./ui/GlobalErrorDisplay";

@@ -20,12 +20,7 @@ export const FALLBACK_CAT_IMAGE = "/assets/images/ui/cat_avatar_placeholder.png"
 export const FALLBACK_CAT_SVG =
 	"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%236366f1'><circle cx='50' cy='50' r='45'/><text x='50' y='65' font-size='40' text-anchor='middle' fill='white'>🐱</text></svg>";
 
-export const CRITICAL_SHELL_IMAGES: readonly string[] = [
-	...CAT_IMAGES,
-	"/assets/images/ui/cat_graphic_hd.png",
-	"/assets/images/ui/cat_avatar_placeholder.png",
-	"/assets/images/ui/loading_preview.png",
-] as const;
+export const CRITICAL_SHELL_IMAGES: readonly string[] = [FALLBACK_CAT_IMAGE] as const;
 
 export const STORAGE_KEYS = {
 	USER: "nn_user",

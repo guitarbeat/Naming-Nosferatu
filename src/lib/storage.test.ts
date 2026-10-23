@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ratingsAPI } from "../api";
+import { ratingsAPI } from "./api";
 import { logger } from "./logger";
 import {
 	decryptValue,

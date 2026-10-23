@@ -1,6 +1,6 @@
 import { Color, Mesh, Program, Renderer, Triangle } from "ogl";
 import { memo, useEffect, useRef } from "react";
-import { isMobileOrLowPowerDevice } from "@/lib/uiUtils";
+import { isMobileOrLowPowerDevice } from "@/lib/utils";
 
 interface IridescenceProps {
 	color?: [number, number, number] | number[];

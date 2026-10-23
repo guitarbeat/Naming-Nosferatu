@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useIntersectionObserver } from "@/hooks";
-import { isMobileOrLowPowerDevice } from "@/lib/uiUtils";
+import { isMobileOrLowPowerDevice } from "@/lib/utils";
 import "./GlassSurface.css";
 
 interface GlassSurfaceProps {

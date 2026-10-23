@@ -376,7 +376,7 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 
 ErrorComponent.displayName = "ErrorComponent";
 
-const LOADING_ASSET = "/assets/images/cats/cat.gif";
+const LOADING_ASSET = FALLBACK_CAT_IMAGE;
 
 interface LoadingProps {
 	variant?: "spinner" | "skeleton" | "card-skeleton" | "cat-gif";
@@ -503,7 +503,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 						src={LOADING_ASSET}
 						alt=""
 						aria-hidden="true"
-						className="h-44 w-auto select-none object-contain opacity-95 animate-bounce"
+						className="h-28 w-auto select-none object-contain opacity-90 motion-safe:animate-pulse"
 						onError={handleImgError}
 					/>
 					{text && <p className="text-[12px] font-bold tracking-wide text-foreground/50">{text}</p>}
@@ -563,5 +563,5 @@ export function OfflineIndicator() {
 }
 
 export function RouteFallback({ text }: { text: string }) {
-	return <Loading variant="cat-gif" text={text} className="min-h-[82dvh]" />;
+	return <Loading variant="spinner" text={text} className="min-h-[82dvh]" />;
 }

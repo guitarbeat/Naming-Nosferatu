@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { ratingsAPI } from "@/api";
+import { ratingsAPI } from "@/lib/api";
 import { normalizeRatingsWithStats } from "@/lib/names";
-import { fadeMotionPreset } from "@/lib/uiUtils";
+import { fadeMotionPreset } from "@/lib/utils";
 import useAppStore, { useTournamentSetupState } from "@/store";
 import type { RatingData } from "@/types";
 import { useInertiaScroll } from "./hooks";

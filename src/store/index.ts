@@ -5,23 +5,20 @@ import { useShallow } from "zustand/react/shallow";
 import { STORAGE_KEYS } from "@/lib/constants";
 import {
 	clearStoredTournamentFromIDB,
-	getStoredTournamentFromIDB,
-	saveStoredTournamentToIDB,
-} from "@/lib/indexedDB";
-import {
 	clearStoredTournamentSnapshot,
 	clearStoredUserSnapshot,
 	getStorageString,
+	getStoredTournamentFromIDB,
 	readStoredTournamentSnapshot,
 	readStoredUserSnapshot,
 	removeStorageItem,
 	type StoredTournamentSnapshot,
+	saveStoredTournamentToIDB,
 	setStorageString,
 	writeStoredTournamentSnapshot,
 	writeStoredUserSnapshot,
 } from "@/lib/storage";
-import { getRandomCatImage } from "@/lib/uiUtils";
-import { ErrorManager } from "@/lib/utils";
+import { ErrorManager, getRandomCatImage } from "@/lib/utils";
 import type {
 	CatChosenName,
 	ErrorLog,

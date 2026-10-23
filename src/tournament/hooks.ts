@@ -8,11 +8,11 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { ratingsAPI } from "@/api";
+import { useToast } from "@/components";
 import { useLocalStorage } from "@/hooks";
+import { ratingsAPI } from "@/lib/api";
 import { ELO_RATING, TIMING } from "@/lib/constants";
 import { createSortedKey, shuffleArray } from "@/lib/utils";
-import { useToast } from "@/Providers";
 import useAppStore from "@/store";
 import type {
 	Match,
