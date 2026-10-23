@@ -245,6 +245,17 @@ export const DriftWallTile = memo(function DriftWallTile({
 							fill="none"
 						/>
 					</defs>
+					{isSelected && (
+						<circle
+							cx="100"
+							cy="100"
+							r="93"
+							className="drift-wall__selected-ring"
+							fill="none"
+							stroke="var(--primary)"
+							strokeWidth="5.5"
+						/>
+					)}
 					{Boolean(desc) && (
 						<g className="drift-wall__arc-group" style={arcGroupStyle}>
 							<text
@@ -264,7 +275,7 @@ export const DriftWallTile = memo(function DriftWallTile({
 					)}
 					<text
 						x="100"
-						y={desc ? 104 : 100}
+						y={isSelected ? 94 : desc ? 104 : 100}
 						className="drift-wall__center-name"
 						dominantBaseline="central"
 						textAnchor="middle"
@@ -272,6 +283,26 @@ export const DriftWallTile = memo(function DriftWallTile({
 					>
 						{title}
 					</text>
+					{isSelected && (
+						<g transform="translate(100, 130)">
+							<rect x="-34" y="-10" width="68" height="20" rx="10" fill="var(--primary)" />
+							<text
+								x="0"
+								y="0.5"
+								textAnchor="middle"
+								dominantBaseline="central"
+								fill="var(--primary-foreground)"
+								style={{
+									fontSize: "9.5px",
+									fontWeight: 800,
+									letterSpacing: "0.08em",
+									fontFamily: "var(--font-sans)",
+								}}
+							>
+								&#10003; SELECTED
+							</text>
+						</g>
+					)}
 				</svg>
 			)}
 			{Boolean(image) && <span className="drift-wall__overlay" aria-hidden="true" />}

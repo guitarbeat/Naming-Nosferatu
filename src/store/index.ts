@@ -108,14 +108,16 @@ function hydrateStoredTournament(
 	if (!stored) {
 		return base;
 	}
+	const matchHistory = Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined;
+	const hasCompletedMatches = Boolean(matchHistory && matchHistory.length > 0);
 	return {
 		...base,
 		names: stored.names ?? null,
 		ratings: stored.ratings ?? {},
-		isComplete: Boolean(stored.isComplete),
+		isComplete: Boolean(stored.isComplete) && hasCompletedMatches,
 		voteHistory: Array.isArray(stored.voteHistory) ? stored.voteHistory : [],
 		selectedNames: Array.isArray(stored.selectedNames) ? stored.selectedNames : [],
-		matchHistory: Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined,
+		matchHistory,
 		currentRound: typeof stored.currentRound === "number" ? stored.currentRound : undefined,
 		currentMatch: typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
 		totalMatches: typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
@@ -359,6 +361,8 @@ const useAppStore = create<AppState>()((set, get) => ({
 			patch(set, "ui", { theme: resolved, themePreference: preference });
 			if (IS_BROWSER) {
 				setStorageString(STORAGE_KEYS.THEME, preference);
+				document.documentElement.dataset.theme = resolved;
+				document.documentElement.classList.toggle("dark", resolved === "dark");
 			}
 		},
 		initializeTheme: () => {

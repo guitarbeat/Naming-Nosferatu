@@ -157,6 +157,86 @@ function tournamentReducer(
 	};
 }
 
+function buildInitialReducerState({
+	names,
+	namesKey,
+	tournamentMode,
+	persistentState,
+}: {
+	names: NameItem[];
+	namesKey: string;
+	tournamentMode: TournamentMode;
+	persistentState: PersistentTournamentState;
+}): TournamentReducerState {
+	if (!Array.isArray(names) || names.length < 2) {
+		return {
+			ratings: {},
+			history: [],
+			persistentState,
+			refreshKey: 0,
+		};
+	}
+
+	const storeT = useAppStore.getState().tournament;
+	const eff: PersistentTournamentState =
+		persistentState.bracketEntrants && persistentState.bracketEntrants.length > 0
+			? persistentState
+			: {
+					...persistentState,
+					matchHistory: storeT.matchHistory ?? persistentState.matchHistory,
+					currentRound: storeT.currentRound ?? persistentState.currentRound,
+					currentMatch: storeT.currentMatch ?? persistentState.currentMatch,
+					totalMatches: storeT.totalMatches ?? persistentState.totalMatches,
+					teams: storeT.teams ?? persistentState.teams,
+					bracketEntrants: storeT.bracketEntrants ?? persistentState.bracketEntrants,
+					mode: (storeT.mode ?? tournamentMode) as TournamentMode,
+				};
+
+	const hasValid =
+		(persistentState.namesKey === namesKey && persistentState.mode === tournamentMode) ||
+		(Boolean(eff.bracketEntrants?.length) && storeT.names?.length === names.length);
+
+	let teams = eff.teams;
+	if (tournamentMode === "2v2" && teams.length < 2) {
+		teams = generateRandomTeams(names.map((n) => ({ id: String(n.id), name: n.name })));
+	}
+
+	const participantIds =
+		tournamentMode === "2v2" ? teams.map((t) => t.id) : names.map((n) => String(n.id));
+	const nonByeIds = eff.bracketEntrants.filter((id) => !isBye(id));
+	const sameIds =
+		nonByeIds.length === participantIds.length &&
+		participantIds.every((id) => nonByeIds.includes(id));
+	const shouldReset = !hasValid || eff.bracketEntrants.length === 0 || !sameIds;
+
+	const initialRatings: Record<string, number> = {};
+	for (const n of names) {
+		initialRatings[String(n.id)] = n.rating || ELO_RATING.DEFAULT_RATING;
+	}
+	const activeRatings =
+		hasValid && Object.keys(eff.ratings || {}).length > 0 && !shouldReset
+			? eff.ratings
+			: initialRatings;
+
+	return {
+		ratings: activeRatings,
+		history: [],
+		persistentState: {
+			...eff,
+			matchHistory: shouldReset ? [] : eff.matchHistory,
+			currentRound: shouldReset ? 1 : eff.currentRound,
+			currentMatch: shouldReset ? 1 : eff.currentMatch,
+			totalMatches: Math.max(0, participantIds.length - 1),
+			teams,
+			bracketEntrants: shouldReset ? shuffleArray(participantIds) : eff.bracketEntrants,
+			namesKey,
+			mode: tournamentMode,
+			ratings: activeRatings,
+		},
+		refreshKey: 1,
+	};
+}
+
 export function useTournamentState(names: NameItem[], userName?: string) {
 	const toast = useToast();
 	const [isVoting, setIsVoting] = useState(false);
@@ -185,20 +265,40 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 		[persistentStateRaw, userKey],
 	);
 
-	const [state, dispatch] = useReducer(tournamentReducer, {
-		ratings: {},
-		history: [],
-		persistentState: defaultPersistentState,
-		refreshKey: 0,
-	});
+	const [state, dispatch] = useReducer(
+		tournamentReducer,
+		{ names, namesKey, tournamentMode, persistentState },
+		buildInitialReducerState,
+	);
 
-	const initializedRef = useRef(false);
-	const lastNamesKeyRef = useRef("");
+	const latestInitInputsRef = useRef({ names, namesKey, tournamentMode, persistentState });
+	useEffect(() => {
+		latestInitInputsRef.current = { names, namesKey, tournamentMode, persistentState };
+	}, [names, namesKey, tournamentMode, persistentState]);
+
+	const initializedNamesKeyRef = useRef(namesKey);
 
 	useEffect(() => {
-		if (!initializedRef.current) {
+		if (initializedNamesKeyRef.current === namesKey) {
 			return;
 		}
+		initializedNamesKeyRef.current = namesKey;
+		const next = buildInitialReducerState(latestInitInputsRef.current);
+		dispatch({
+			type: "INIT",
+			payload: {
+				ratings: next.ratings,
+				persistentState: next.persistentState,
+			},
+		});
+	}, [namesKey]);
+
+	const lastSyncedKeyRef = useRef(0);
+	useEffect(() => {
+		if (state.refreshKey === 0 || lastSyncedKeyRef.current === state.refreshKey) {
+			return;
+		}
+		lastSyncedKeyRef.current = state.refreshKey;
 		setPersistentState(state.persistentState);
 		const ratingsData: Record<string, RatingData> = {};
 		for (const id of Object.keys(state.ratings)) {
@@ -215,83 +315,13 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 			bracketEntrants: state.persistentState.bracketEntrants,
 			lastUpdated: state.persistentState.lastUpdated,
 		});
-	}, [state.persistentState, state.ratings, setPersistentState, tournamentActions]);
-
-	useEffect(() => {
-		if (lastNamesKeyRef.current !== namesKey) {
-			initializedRef.current = false;
-			lastNamesKeyRef.current = namesKey;
-		}
-	}, [namesKey]);
-
-	useEffect(() => {
-		if (initializedRef.current || !Array.isArray(names) || names.length < 2) {
-			return;
-		}
-		const frameId = requestAnimationFrame(() => {
-			const storeT = useAppStore.getState().tournament;
-			const eff: PersistentTournamentState =
-				persistentState.bracketEntrants && persistentState.bracketEntrants.length > 0
-					? persistentState
-					: {
-							...persistentState,
-							matchHistory: storeT.matchHistory ?? persistentState.matchHistory,
-							currentRound: storeT.currentRound ?? persistentState.currentRound,
-							currentMatch: storeT.currentMatch ?? persistentState.currentMatch,
-							totalMatches: storeT.totalMatches ?? persistentState.totalMatches,
-							teams: storeT.teams ?? persistentState.teams,
-							bracketEntrants: storeT.bracketEntrants ?? persistentState.bracketEntrants,
-							mode: (storeT.mode ?? tournamentMode) as TournamentMode,
-						};
-
-			const hasValid =
-				(persistentState.namesKey === namesKey && persistentState.mode === tournamentMode) ||
-				(Boolean(eff.bracketEntrants?.length) && storeT.names?.length === names.length);
-
-			let teams = eff.teams;
-			if (tournamentMode === "2v2" && teams.length < 2) {
-				teams = generateRandomTeams(names.map((n) => ({ id: String(n.id), name: n.name })));
-			}
-
-			const participantIds =
-				tournamentMode === "2v2" ? teams.map((t) => t.id) : names.map((n) => String(n.id));
-			const nonByeIds = eff.bracketEntrants.filter((id) => !isBye(id));
-			const sameIds =
-				nonByeIds.length === participantIds.length &&
-				participantIds.every((id) => nonByeIds.includes(id));
-			const shouldReset = !hasValid || eff.bracketEntrants.length === 0 || !sameIds;
-
-			const initialRatings: Record<string, number> = {};
-			for (const n of names) {
-				initialRatings[String(n.id)] = n.rating || ELO_RATING.DEFAULT_RATING;
-			}
-			const activeRatings =
-				hasValid && Object.keys(eff.ratings || {}).length > 0 && !shouldReset
-					? eff.ratings
-					: initialRatings;
-
-			dispatch({
-				type: "INIT",
-				payload: {
-					ratings: activeRatings,
-					persistentState: {
-						...eff,
-						matchHistory: shouldReset ? [] : eff.matchHistory,
-						currentRound: shouldReset ? 1 : eff.currentRound,
-						currentMatch: shouldReset ? 1 : eff.currentMatch,
-						totalMatches: Math.max(0, participantIds.length - 1),
-						teams,
-						bracketEntrants: shouldReset ? shuffleArray(participantIds) : eff.bracketEntrants,
-						namesKey,
-						mode: tournamentMode,
-						ratings: activeRatings,
-					},
-				},
-			});
-			initializedRef.current = true;
-		});
-		return () => cancelAnimationFrame(frameId);
-	}, [names, namesKey, tournamentMode, persistentState]);
+	}, [
+		state.refreshKey,
+		state.persistentState,
+		state.ratings,
+		setPersistentState,
+		tournamentActions,
+	]);
 
 	const idToNameMap = useMemo(() => createIdToNameMap(names), [names]);
 	const teamsById = useMemo(

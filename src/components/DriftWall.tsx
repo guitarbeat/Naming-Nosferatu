@@ -127,7 +127,9 @@ export const DriftWall = memo(function DriftWall({
 		}
 		const ro = new ResizeObserver(([entry]) => {
 			if (entry?.contentRect) {
-				setDims({ w: entry.contentRect.width || 1200, h: entry.contentRect.height || 600 });
+				const nextW = Math.round(entry.contentRect.width) || 1200;
+				const nextH = Math.round(entry.contentRect.height) || 600;
+				setDims((prev) => (prev.w === nextW && prev.h === nextH ? prev : { w: nextW, h: nextH }));
 			}
 		});
 		ro.observe(containerRef.current);

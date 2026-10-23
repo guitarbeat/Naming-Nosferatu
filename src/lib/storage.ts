@@ -13,7 +13,9 @@ const memoryFallbackStore = new Map<string, string>();
 
 function isStorageAvailable(): boolean {
 	try {
-		if (typeof window === "undefined" || !window.localStorage) return false;
+		if (typeof window === "undefined" || !window.localStorage) {
+			return false;
+		}
 		const key = "__storage_test__";
 		window.localStorage.setItem(key, key);
 		window.localStorage.removeItem(key);
@@ -28,7 +30,9 @@ export function resetStorageModuleCache(): void {
 }
 
 export function getStorageString(key: string, fallback: string | null = null): string | null {
-	if (!isStorageAvailable()) return memoryFallbackStore.get(key) ?? fallback;
+	if (!isStorageAvailable()) {
+		return memoryFallbackStore.get(key) ?? fallback;
+	}
 	try {
 		return window.localStorage.getItem(key) ?? memoryFallbackStore.get(key) ?? fallback;
 	} catch (error) {
@@ -39,7 +43,9 @@ export function getStorageString(key: string, fallback: string | null = null): s
 
 export function setStorageString(key: string, value: string): boolean {
 	memoryFallbackStore.set(key, value);
-	if (!isStorageAvailable()) return true;
+	if (!isStorageAvailable()) {
+		return true;
+	}
 	try {
 		window.localStorage.setItem(key, value);
 		return true;
@@ -51,7 +57,9 @@ export function setStorageString(key: string, value: string): boolean {
 
 export function removeStorageItem(key: string): void {
 	memoryFallbackStore.delete(key);
-	if (!isStorageAvailable()) return;
+	if (!isStorageAvailable()) {
+		return;
+	}
 	try {
 		window.localStorage.removeItem(key);
 	} catch (error) {
@@ -61,7 +69,9 @@ export function removeStorageItem(key: string): void {
 
 export function parseJsonValue<T>(value: string | null | undefined, fallback: T): T {
 	const trimmed = value?.trim();
-	if (!trimmed) return fallback;
+	if (!trimmed) {
+		return fallback;
+	}
 	const first = trimmed[0];
 	if (
 		first !== "{" &&
@@ -85,7 +95,9 @@ export function parseJsonValue<T>(value: string | null | undefined, fallback: T)
 function readStorageJson<T>(key: string, fallback: T): T {
 	const rawValue = getStorageString(key);
 	const parsed = parseJsonValue<T>(rawValue, fallback);
-	if (rawValue && parsed === fallback) removeStorageItem(key);
+	if (rawValue && parsed === fallback) {
+		removeStorageItem(key);
+	}
 	return parsed;
 }
 
@@ -111,10 +123,14 @@ export interface StoredUserSnapshot {
 }
 
 function normalizeStoredUserSnapshot(value: unknown): StoredUserSnapshot | null {
-	if (!value || typeof value !== "object") return null;
+	if (!value || typeof value !== "object") {
+		return null;
+	}
 	const c = value as Record<string, unknown>;
 	const name = typeof c.name === "string" ? c.name.trim() : "";
-	if (!name) return null;
+	if (!name) {
+		return null;
+	}
 	return {
 		id: typeof c.id === "string" ? c.id : c.id === null ? null : undefined,
 		name,
@@ -125,17 +141,23 @@ function normalizeStoredUserSnapshot(value: unknown): StoredUserSnapshot | null 
 }
 
 export function readStoredUserSnapshot(): StoredUserSnapshot | null {
-	if (!isStorageAvailable()) return null;
+	if (!isStorageAvailable()) {
+		return null;
+	}
 	const snapshot = normalizeStoredUserSnapshot(
 		readStorageJson<unknown>(STORAGE_KEYS.USER_STORAGE, null),
 	);
-	if (snapshot) return snapshot;
+	if (snapshot) {
+		return snapshot;
+	}
 	clearStoredUserSnapshot();
 	return null;
 }
 
 export function writeStoredUserSnapshot(snapshot: StoredUserSnapshot | null): void {
-	if (!isStorageAvailable()) return;
+	if (!isStorageAvailable()) {
+		return;
+	}
 	const normalized = normalizeStoredUserSnapshot(snapshot);
 	if (!normalized) {
 		clearStoredUserSnapshot();
@@ -143,14 +165,22 @@ export function writeStoredUserSnapshot(snapshot: StoredUserSnapshot | null): vo
 	}
 	writeStorageJson(STORAGE_KEYS.USER_STORAGE, normalized);
 	setStorageString(STORAGE_KEYS.USER, normalized.name);
-	if (normalized.id) setStorageString(STORAGE_KEYS.USER_ID, normalized.id);
-	else removeStorageItem(STORAGE_KEYS.USER_ID);
-	if (normalized.avatarUrl) setStorageString(STORAGE_KEYS.USER_AVATAR, normalized.avatarUrl);
-	else removeStorageItem(STORAGE_KEYS.USER_AVATAR);
+	if (normalized.id) {
+		setStorageString(STORAGE_KEYS.USER_ID, normalized.id);
+	} else {
+		removeStorageItem(STORAGE_KEYS.USER_ID);
+	}
+	if (normalized.avatarUrl) {
+		setStorageString(STORAGE_KEYS.USER_AVATAR, normalized.avatarUrl);
+	} else {
+		removeStorageItem(STORAGE_KEYS.USER_AVATAR);
+	}
 }
 
 export function clearStoredUserSnapshot(): void {
-	if (!isStorageAvailable()) return;
+	if (!isStorageAvailable()) {
+		return;
+	}
 	removeStorageItem(STORAGE_KEYS.USER);
 	removeStorageItem(STORAGE_KEYS.USER_ID);
 	removeStorageItem(STORAGE_KEYS.USER_AVATAR);
@@ -160,14 +190,17 @@ export function clearStoredUserSnapshot(): void {
 export type StoredTournamentSnapshot = Omit<TournamentState, "isLoading">;
 
 function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnapshot | null {
-	if (!value || typeof value !== "object") return null;
+	if (!value || typeof value !== "object") {
+		return null;
+	}
 	const c = value as Record<string, unknown>;
 	const names = Array.isArray(c.names) ? (c.names as NameItem[]) : null;
 	const ratings: Record<string, RatingData> = {};
 	if (c.ratings && typeof c.ratings === "object") {
 		for (const [key, val] of Object.entries(c.ratings as Record<string, unknown>)) {
-			if (typeof val === "number") ratings[key] = { rating: val, wins: 0, losses: 0 };
-			else if (val && typeof val === "object" && typeof (val as RatingData).rating === "number") {
+			if (typeof val === "number") {
+				ratings[key] = { rating: val, wins: 0, losses: 0 };
+			} else if (val && typeof val === "object" && typeof (val as RatingData).rating === "number") {
 				ratings[key] = {
 					rating: (val as RatingData).rating,
 					wins: typeof (val as RatingData).wins === "number" ? (val as RatingData).wins : 0,
@@ -176,12 +209,12 @@ function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnap
 			}
 		}
 	}
-	const isComplete = Boolean(c.isComplete);
 	const voteHistory = Array.isArray(c.voteHistory) ? (c.voteHistory as VoteRecord[]) : [];
 	const selectedNames = Array.isArray(c.selectedNames) ? (c.selectedNames as NameItem[]) : [];
 	const matchHistory = Array.isArray(c.matchHistory)
 		? (c.matchHistory as MatchRecord[])
 		: undefined;
+	const isComplete = Boolean(c.isComplete) && Boolean(matchHistory && matchHistory.length > 0);
 	const currentRound = typeof c.currentRound === "number" ? c.currentRound : undefined;
 	const currentMatch = typeof c.currentMatch === "number" ? c.currentMatch : undefined;
 	const totalMatches = typeof c.totalMatches === "number" ? c.totalMatches : undefined;
@@ -225,14 +258,21 @@ export function readStoredTournamentSnapshot(): StoredTournamentSnapshot | null 
 }
 
 export function writeStoredTournamentSnapshot(snapshot: StoredTournamentSnapshot | null): void {
-	if (!isStorageAvailable()) return;
+	if (!isStorageAvailable()) {
+		return;
+	}
 	const normalized = normalizeStoredTournamentSnapshot(snapshot);
-	if (normalized) writeStorageJson(STORAGE_KEYS.TOURNAMENT, normalized);
-	else clearStoredTournamentSnapshot();
+	if (normalized) {
+		writeStorageJson(STORAGE_KEYS.TOURNAMENT, normalized);
+	} else {
+		clearStoredTournamentSnapshot();
+	}
 }
 
 export function clearStoredTournamentSnapshot(): void {
-	if (isStorageAvailable()) removeStorageItem(STORAGE_KEYS.TOURNAMENT);
+	if (isStorageAvailable()) {
+		removeStorageItem(STORAGE_KEYS.TOURNAMENT);
+	}
 }
 
 const IDB_DB_NAME = "nn_offline_db";
@@ -240,13 +280,16 @@ const IDB_STORE_NAME = "tournament";
 const IDB_KEY = "current_tournament";
 
 function openIDB(): Promise<IDBDatabase | null> {
-	if (typeof window === "undefined" || !("indexedDB" in window)) return Promise.resolve(null);
+	if (typeof window === "undefined" || !("indexedDB" in window)) {
+		return Promise.resolve(null);
+	}
 	return new Promise((resolve) => {
 		try {
 			const req = window.indexedDB.open(IDB_DB_NAME, 1);
 			req.onupgradeneeded = () => {
-				if (!req.result.objectStoreNames.contains(IDB_STORE_NAME))
+				if (!req.result.objectStoreNames.contains(IDB_STORE_NAME)) {
 					req.result.createObjectStore(IDB_STORE_NAME);
+				}
 			};
 			req.onsuccess = () => resolve(req.result);
 			req.onerror = () => resolve(null);
@@ -258,7 +301,9 @@ function openIDB(): Promise<IDBDatabase | null> {
 
 export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnapshot | null> {
 	const db = await openIDB();
-	if (!db) return null;
+	if (!db) {
+		return null;
+	}
 	return new Promise((resolve) => {
 		try {
 			const req = db
@@ -275,7 +320,9 @@ export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnap
 
 export async function saveStoredTournamentToIDB(snapshot: StoredTournamentSnapshot): Promise<void> {
 	const db = await openIDB();
-	if (!db) return;
+	if (!db) {
+		return;
+	}
 	return new Promise((resolve) => {
 		try {
 			const tx = db.transaction(IDB_STORE_NAME, "readwrite");
@@ -290,7 +337,9 @@ export async function saveStoredTournamentToIDB(snapshot: StoredTournamentSnapsh
 
 export async function clearStoredTournamentFromIDB(): Promise<void> {
 	const db = await openIDB();
-	if (!db) return;
+	if (!db) {
+		return;
+	}
 	return new Promise((resolve) => {
 		try {
 			const tx = db.transaction(IDB_STORE_NAME, "readwrite");

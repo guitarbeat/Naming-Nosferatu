@@ -21,7 +21,7 @@ export const STORAGE_KEYS = {
 	USER_AVATAR: "nn_user_avatar",
 	USER_STORAGE: "nn_user_storage",
 	TOURNAMENT: "nn_tournament",
-	THEME: "nn_theme",
+	THEME: "nn_theme_v2",
 } as const;
 
 export const ELO_RATING = {
@@ -137,11 +137,15 @@ export function applyEloMatchUpdate({
 	const defaultRating = config?.defaultRating ?? 1200;
 
 	let sumLeft = 0;
-	for (const id of leftParticipantIds) sumLeft += Number(ratings[String(id)]) || defaultRating;
+	for (const id of leftParticipantIds) {
+		sumLeft += Number(ratings[String(id)]) || defaultRating;
+	}
 	const avgLeft = sumLeft / (leftParticipantIds.length || 1);
 
 	let sumRight = 0;
-	for (const id of rightParticipantIds) sumRight += Number(ratings[String(id)]) || defaultRating;
+	for (const id of rightParticipantIds) {
+		sumRight += Number(ratings[String(id)]) || defaultRating;
+	}
 	const avgRight = sumRight / (rightParticipantIds.length || 1);
 
 	const { newRatingA, newRatingB } = calculatePairEloUpdate({
@@ -211,11 +215,15 @@ export const DEFAULT_SAMPLE_NAMES: NameItem[] = SAMPLE_ENTRIES.map(([name, descr
 export function normalizeRatingsWithStats(
 	ratings: Record<string, RatingInput | undefined> | null | undefined,
 ): Record<string, RatingData> {
-	if (!ratings) return {};
+	if (!ratings) {
+		return {};
+	}
 	const result: Record<string, RatingData> = {};
 	for (const id of Object.keys(ratings)) {
 		const entry = ratings[id];
-		if (entry == null) continue;
+		if (entry == null) {
+			continue;
+		}
 		result[id] =
 			typeof entry === "number"
 				? { rating: entry, wins: 0, losses: 0 }
@@ -249,10 +257,14 @@ export function getRandomCatImage(
 	images: readonly string[] = CAT_IMAGES,
 	fallbackName?: string,
 ): string {
-	if (!images || images.length === 0) return "";
+	if (!images || images.length === 0) {
+		return "";
+	}
 	const key = `${id}-${fallbackName || ""}`;
 	let hash = 0;
-	for (let i = 0; i < key.length; i++) hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+	for (let i = 0; i < key.length; i++) {
+		hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+	}
 	return images[Math.abs(hash) % images.length] ?? images[0] ?? "";
 }
 
@@ -286,7 +298,9 @@ export function createSortedKey(
 }
 
 export function hapticNavTap(): void {
-	if (typeof navigator !== "undefined") navigator.vibrate?.(10);
+	if (typeof navigator !== "undefined") {
+		navigator.vibrate?.(10);
+	}
 }
 
 export function hapticVoteTap(durationMs = 15): boolean {
@@ -304,19 +318,27 @@ export function handleImgError(
 	e: React.SyntheticEvent<HTMLImageElement, Event>,
 	fallbackSrc: string = FALLBACK_CAT_SVG,
 ): void {
-	if (e.currentTarget.src !== fallbackSrc) e.currentTarget.src = fallbackSrc;
+	if (e.currentTarget.src !== fallbackSrc) {
+		e.currentTarget.src = fallbackSrc;
+	}
 }
 
 export function setupGlobalImageErrorHandler(
 	fallbackSrc: string = FALLBACK_CAT_SVG,
 	localFallback: string = FALLBACK_CAT_IMAGE,
 ): () => void {
-	if (typeof window === "undefined") return () => undefined;
+	if (typeof window === "undefined") {
+		return () => undefined;
+	}
 	const handleImageError = (event: Event) => {
 		const target = event.target;
-		if (!(target instanceof HTMLImageElement)) return;
+		if (!(target instanceof HTMLImageElement)) {
+			return;
+		}
 		if (target.dataset.fallbackApplied === "true") {
-			if (target.src !== fallbackSrc) target.src = fallbackSrc;
+			if (target.src !== fallbackSrc) {
+				target.src = fallbackSrc;
+			}
 			return;
 		}
 		target.dataset.fallbackApplied = "true";
@@ -347,8 +369,11 @@ export const ErrorManager = {
 		options?: { componentStack?: string | null; isCritical?: boolean },
 	): { id: string } {
 		const id = `err_${Date.now()}`;
-		if (context) console.error(`[${context}] Error:`, error, options);
-		else console.error("Error:", error);
+		if (context) {
+			console.error(`[${context}] Error:`, error, options);
+		} else {
+			console.error("Error:", error);
+		}
 		return { id };
 	},
 };

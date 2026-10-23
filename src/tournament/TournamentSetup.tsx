@@ -1,7 +1,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Play, RotateCcw, Sparkles, Trophy } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import {
+	ChevronDown,
+	ChevronUp,
+	Moon,
+	Play,
+	RotateCcw,
+	Shuffle,
+	Sun,
+	Trophy,
+	X,
+} from "lucide-react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DriftWall, type DriftWallItem } from "@/components/DriftWall";
 import { Button, Loading } from "@/components/UiPrimitives";
 import { useInertiaScroll } from "@/hooks/useCommonHooks";
@@ -61,13 +71,16 @@ export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStat
 }
 
 /* ==========================================================================
-   2. NAME SELECTOR & ROSTER LAUNCH BAR
+   2. NAME SELECTOR & FLOATING COMMAND DOCK
    ========================================================================== */
 
 export const NameSelector = memo(function NameSelector() {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
+	const theme = useAppStore((state) => state.ui.theme);
+	const setTheme = useAppStore((state) => state.uiActions.setTheme);
 	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
+	const [showSelectedTray, setShowSelectedTray] = useState(true);
 
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
@@ -177,6 +190,10 @@ export const NameSelector = memo(function NameSelector() {
 		);
 	}
 
+	const selectedCount = storeSelectedNames.length;
+	const canStartCustom = selectedCount >= 2;
+	const modeLabel = selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2 Teams" : "1v1 Bracket";
+
 	return (
 		<div className="relative w-full min-h-screen overflow-hidden select-none flex flex-col">
 			{availableNames.length > 0 && (
@@ -202,61 +219,143 @@ export const NameSelector = memo(function NameSelector() {
 			)}
 
 			<div className="floating-navbar-frame">
-				<div className="floating-navbar-shell flex flex-wrap items-center justify-between gap-3 rounded-full px-4 py-2.5 sm:px-6">
-					<div className="flex items-center gap-2.5">
-						<span className="font-display text-sm sm:text-base font-bold text-foreground whitespace-nowrap">
+				{selectedCount > 0 && showSelectedTray && (
+					<div
+						aria-label="Selected contender names"
+						className="floating-navbar-shell w-full max-w-[min(95vw,46rem)] rounded-2xl px-3.5 py-2.5 transition-all duration-200"
+					>
+						<div className="flex flex-wrap items-center gap-1.5 max-h-28 overflow-y-auto pr-1">
+							{storeSelectedNames.map((item, idx) => {
+								const locked = isNameLocked(item);
+								return (
+									<button
+										key={item.id}
+										type="button"
+										disabled={locked}
+										onClick={() => handleToggleName(item.id)}
+										title={locked ? `${item.name} is locked in` : `Remove ${item.name}`}
+										aria-label={locked ? `${item.name} (locked)` : `Remove ${item.name}`}
+										className="group inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-xs font-bold text-foreground shadow-xs transition-all duration-150 hover:border-destructive/50 hover:bg-destructive/15 active:scale-95 disabled:opacity-70"
+									>
+										<span className="font-mono text-[10px] font-extrabold text-primary tabular-nums">
+											#{idx + 1}
+										</span>
+										<span className="tracking-tight">{item.name}</span>
+										{!locked && (
+											<X className="size-3 text-foreground/65 transition-colors group-hover:text-destructive" />
+										)}
+									</button>
+								);
+							})}
+						</div>
+					</div>
+				)}
+
+				<nav
+					aria-label="Tournament launch controls"
+					className="floating-navbar-shell flex items-center justify-between gap-3 sm:gap-5 rounded-full pl-5 pr-2 py-2 sm:pl-6 sm:pr-2.5 sm:py-2"
+				>
+					<div className="flex items-center gap-3 min-w-0">
+						<span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-foreground whitespace-nowrap shrink-0">
 							Name Nosferatu
 						</span>
-						<span className="text-xs text-muted-foreground font-mono tabular-nums">
-							&middot; {storeSelectedNames.length} selected
-						</span>
+						<span className="h-4 w-px bg-foreground/20 shrink-0" aria-hidden="true" />
+						<div className="flex items-center gap-2 whitespace-nowrap truncate">
+							{selectedCount > 0 ? (
+								<button
+									type="button"
+									onClick={() => setShowSelectedTray((prev) => !prev)}
+									className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/15 px-3 py-1 text-xs sm:text-sm transition-colors hover:bg-primary/25"
+									title={showSelectedTray ? "Hide selected names list" : "Show selected names list"}
+									aria-expanded={showSelectedTray}
+								>
+									<span className="font-mono font-extrabold tabular-nums text-primary">
+										{selectedCount}
+									</span>
+									<span className="font-semibold text-foreground">selected</span>
+									{canStartCustom && (
+										<>
+											<span aria-hidden="true" className="hidden md:inline text-foreground/50">
+												&middot;
+											</span>
+											<span className="hidden md:inline text-xs font-bold text-secondary">
+												{modeLabel}
+											</span>
+										</>
+									)}
+									{showSelectedTray ? (
+										<ChevronDown className="size-3.5 text-foreground/75" />
+									) : (
+										<ChevronUp className="size-3.5 text-foreground/75" />
+									)}
+								</button>
+							) : (
+								<span className="text-xs sm:text-sm font-medium text-foreground/75">
+									Tap orbs or quick-start
+								</span>
+							)}
+						</div>
 					</div>
 
-					<div className="flex items-center gap-2">
-						{storeSelectedNames.length >= 2 ? (
-							<>
-								<Button
-									variant="ghost"
-									size="small"
-									onClick={() => tournamentActions.setSelection([])}
-									className="h-8 min-h-0 px-3 text-xs"
-								>
-									Clear
-								</Button>
-								<Button
-									variant="primary"
-									size="small"
-									onClick={handleStartSelected}
-									className="h-9 min-h-0 px-4 text-xs font-bold"
-								>
-									<Play className="size-3.5" />
-									<span>Start Bracket ({storeSelectedNames.length})</span>
-								</Button>
-							</>
+					<div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+						<button
+							type="button"
+							onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+							className="inline-flex size-10 items-center justify-center rounded-full border border-foreground/15 bg-foreground/8 text-foreground/80 transition-colors hover:bg-foreground/15 hover:text-foreground shrink-0"
+							title={
+								theme === "dark"
+									? "Switch to warm dusk light mode"
+									: "Switch to nocturnal dark mode"
+							}
+							aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+						>
+							{theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+						</button>
+
+						{selectedCount > 0 && (
+							<button
+								type="button"
+								onClick={() => tournamentActions.setSelection([])}
+								className="inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground whitespace-nowrap shrink-0"
+								aria-label="Clear selected names"
+							>
+								<X className="size-3.5" />
+								<span>Clear</span>
+							</button>
+						)}
+
+						{canStartCustom ? (
+							<button
+								type="button"
+								onClick={handleStartSelected}
+								className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-xs sm:text-sm font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:brightness-105 active:scale-[0.98] whitespace-nowrap shrink-0"
+							>
+								<Play className="size-3.5 fill-current" />
+								<span>Start Bracket</span>
+								<span className="font-mono tabular-nums opacity-90">&middot; {selectedCount}</span>
+							</button>
 						) : (
 							<>
-								<Button
-									variant="glass"
-									size="small"
+								<button
+									type="button"
 									onClick={() => handleQuickStart(8)}
-									className="h-9 min-h-0 px-3.5 text-xs font-semibold"
+									className="inline-flex h-10 items-center gap-1.5 rounded-full border border-foreground/15 bg-foreground/8 px-4 text-xs font-semibold text-foreground transition-colors hover:bg-foreground/15 whitespace-nowrap shrink-0"
 								>
-									<Sparkles className="size-3.5 text-primary" />
+									<Shuffle className="size-3.5 text-primary" />
 									<span>Quick 8</span>
-								</Button>
-								<Button
-									variant="primary"
-									size="small"
+								</button>
+								<button
+									type="button"
 									onClick={() => handleQuickStart(16)}
-									className="h-9 min-h-0 px-4 text-xs font-bold"
+									className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-xs sm:text-sm font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:brightness-105 active:scale-[0.98] whitespace-nowrap shrink-0"
 								>
-									<Play className="size-3.5" />
+									<Play className="size-3.5 fill-current" />
 									<span>Start Top 16</span>
-								</Button>
+								</button>
 							</>
 						)}
 					</div>
-				</div>
+				</nav>
 			</div>
 		</div>
 	);
@@ -301,6 +400,13 @@ export function TournamentSetup() {
 		}
 	}, [isComplete, ratings, userId, userName, saveRatingsMutation.mutate]);
 
+	const handleArenaComplete = useCallback(
+		(completedRatings: Record<string, RatingData>) => {
+			tournamentActions.completeTournament(completedRatings);
+		},
+		[tournamentActions],
+	);
+
 	return (
 		<div ref={containerRef} className="w-full flex flex-col flex-1 min-h-[520px] gap-2">
 			<AnimatePresence mode="wait">
@@ -312,9 +418,7 @@ export function TournamentSetup() {
 					>
 						<TournamentArena
 							names={names}
-							onComplete={(completedRatings) => {
-								tournamentActions.completeTournament(completedRatings);
-							}}
+							onComplete={handleArenaComplete}
 							userName={userName ?? undefined}
 						/>
 					</motion.div>

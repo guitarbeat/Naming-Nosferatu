@@ -65,8 +65,11 @@ export const Button = memo(function Button({
 			disabled={disabled || loading}
 			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
 			onClick={(e) => {
-				if (disabled || loading) e.preventDefault();
-				else onClick?.(e);
+				if (disabled || loading) {
+					e.preventDefault();
+				} else {
+					onClick?.(e);
+				}
 			}}
 			title={iconOnly && !title && ariaLabel ? ariaLabel : title}
 			aria-label={ariaLabel}
@@ -161,8 +164,11 @@ export function CatImage({
 				decoding={decoding}
 				onLoad={onLoad}
 				onError={(e) => {
-					if (!hasError && src !== fallbackUrl) setHasError(true);
-					else if (!svgFallback) setSvgFallback(true);
+					if (!hasError && src !== fallbackUrl) {
+						setHasError(true);
+					} else if (!svgFallback) {
+						setSvgFallback(true);
+					}
 					onError?.(e);
 				}}
 				{...(currentSrc.startsWith("/") ? {} : { crossOrigin: "anonymous" as const })}
@@ -259,7 +265,9 @@ export const ErrorInline: React.FC<{
 	onDismiss?: () => void;
 	className?: string;
 }> = ({ error, onDismiss, className = "" }) => {
-	if (!error) return null;
+	if (!error) {
+		return null;
+	}
 	const msg =
 		typeof error === "string"
 			? error

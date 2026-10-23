@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CatImage, Loading } from "@/components/UiPrimitives";
 import { useTimedState } from "@/hooks/useCommonHooks";
 import { useTournamentState } from "@/hooks/useTournamentState";
@@ -136,11 +136,18 @@ export const TournamentArena = memo(function TournamentArena({
 		null,
 	);
 
+	const hasNotifiedCompleteRef = useRef(false);
+
 	useEffect(() => {
-		if (ts.isComplete) {
+		if (!ts.isComplete || ts.totalMatches === 0) {
+			hasNotifiedCompleteRef.current = false;
+			return;
+		}
+		if (!hasNotifiedCompleteRef.current) {
+			hasNotifiedCompleteRef.current = true;
 			onComplete(normalizeRatingsWithStats(ts.ratings));
 		}
-	}, [ts.isComplete, onComplete, ts.ratings]);
+	}, [ts.isComplete, ts.totalMatches, onComplete, ts.ratings]);
 
 	const onVoteSide = useCallback(
 		(side: "left" | "right") => {

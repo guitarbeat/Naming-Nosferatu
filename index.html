@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" class="dark" data-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -17,8 +17,8 @@
   <!-- SEO -->
   <meta name="description"
     content="Cat name tournament voting and Elo rankings" />
-  <meta name="color-scheme" content="light" />
-  <meta name="theme-color" content="#FDFBF7" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#0f0c18" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="Name Nosferatu" />
@@ -37,7 +37,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="//fonts.googleapis.com" />
   <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-  <!-- * Load fonts asynchronously to prevent render blocking -->
   <link rel="preload"
     href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap"
     as="style" onload="
@@ -49,11 +48,9 @@
       href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap"
       rel="stylesheet" />
   </noscript>
-  <!-- Custom cat favicon -->
   <link rel="icon" href="/assets/images/favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/assets/images/favicon.png" />
 
-  <!-- Capture Chromium install prompt before the app bundle loads -->
   <script>
     window.__deferredPwaPrompt = null;
     window.addEventListener(
@@ -67,14 +64,10 @@
     );
   </script>
 
-  <!-- * Optimize painting performance with no-visible-paint directive -->
   <style>
-    html {
-      background-color: #FDFBF7;
-    }
-
-    body {
-      background-color: #FDFBF7;
+    html, body {
+      background-color: #0f0c18;
+      color: #ede9f6;
     }
   </style>
 </head>
@@ -83,29 +76,17 @@
   <script>
     (function applyInitialTheme() {
       try {
-        const { documentElement, body } = document;
-        if (!documentElement) {
-          return;
-        }
-
-        let storedTheme = "light";
-        try {
-          storedTheme = localStorage.getItem("theme") || "light";
-        } catch (_) {}
-
-        const resolvedTheme = "light";
-
-        documentElement.dataset.theme = resolvedTheme;
-        if (body) {
-          body.dataset.theme = resolvedTheme;
-        }
+        var root = document.documentElement;
+        var stored = localStorage.getItem("nn_theme_v2") || "dark";
+        var resolved = stored === "light" ? "light" : "dark";
+        root.dataset.theme = resolved;
+        root.classList.toggle("dark", resolved === "dark");
       } catch (err) {
         console.warn("Theme init error:", err);
       }
     })();
   </script>
   <div id="root"></div>
-  <!-- * Entry point - Vite transforms this path during build to point to bundled assets -->
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
