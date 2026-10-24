@@ -134,6 +134,8 @@ export interface DriftWallTileProps {
 	height?: number;
 	orbitText?: string;
 	isSelected?: boolean;
+	rank?: number;
+	rankLabel?: string;
 	duelSide?: "left" | "right" | null;
 	isChampion?: boolean;
 	isQueuedSurvivor?: boolean;
@@ -162,16 +164,22 @@ function getDescTypography(len: number) {
 }
 
 function getTitleFontSize(len: number) {
-	if (len > 11) {
-		return 16;
+	if (len > 13) {
+		return 8.5;
+	}
+	if (len > 10) {
+		return 9.8;
 	}
 	if (len > 8) {
-		return 18.5;
+		return 11;
 	}
-	if (len > 5) {
-		return 21.5;
+	if (len > 6) {
+		return 12.5;
 	}
-	return 24.5;
+	if (len > 4) {
+		return 14.2;
+	}
+	return 15.8;
 }
 
 export const DriftWallTile = memo(function DriftWallTile({
@@ -182,6 +190,8 @@ export const DriftWallTile = memo(function DriftWallTile({
 	height,
 	orbitText,
 	isSelected = false,
+	rank,
+	rankLabel,
 	duelSide = null,
 	isChampion = false,
 	isQueuedSurvivor = false,
@@ -219,14 +229,25 @@ export const DriftWallTile = memo(function DriftWallTile({
 	}, [sanitizedId, title]);
 
 	const badgeConfig = useMemo(() => {
-		if (isChampion) {
+		if (isChampion || rank === 1) {
 			return {
-				label: "\u265B CHAMPION",
+				label: rankLabel || "#1 \u265B",
 				bg: "var(--primary)",
 				fg: "var(--primary-foreground)",
 				ringStroke: "var(--primary)",
-				ringWidth: 6.5,
-				pillWidth: 82,
+				ringWidth: 6,
+				pillWidth: 54,
+			};
+		}
+		if (typeof rank === "number" && rank > 1) {
+			return {
+				label: rankLabel || `#${rank}`,
+				bg: rank <= 3 ? "oklch(var(--secondary-accent) / 0.28)" : "oklch(var(--surface) / 0.9)",
+				fg: rank <= 3 ? "oklch(var(--secondary-accent))" : "oklch(var(--fg) / 0.85)",
+				ringStroke:
+					rank <= 3 ? "oklch(var(--secondary-accent) / 0.75)" : "oklch(var(--border) / 0.65)",
+				ringWidth: rank <= 3 ? 4 : 2.5,
+				pillWidth: rank >= 10 ? 46 : 38,
 			};
 		}
 		if (isJustVotedWinner) {
@@ -280,7 +301,7 @@ export const DriftWallTile = memo(function DriftWallTile({
 			};
 		}
 		return null;
-	}, [isChampion, isJustVotedWinner, duelSide, isQueuedSurvivor, isSelected]);
+	}, [isChampion, rank, rankLabel, isJustVotedWinner, duelSide, isQueuedSurvivor, isSelected]);
 
 	const inner = (
 		<GlassSurface
@@ -329,25 +350,27 @@ export const DriftWallTile = memo(function DriftWallTile({
 						/>
 					)}
 					{Boolean(desc) && (
-						<g className="drift-wall__arc-group" style={arcGroupStyle}>
-							<text
-								className="drift-wall__arc-text"
-								dominantBaseline="central"
-								textAnchor="middle"
-								style={{
-									fontSize: `${descStyle.fontSize}px`,
-									letterSpacing: `${descStyle.letterSpacing}px`,
-								}}
-							>
-								<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
-									{desc}
-								</textPath>
-							</text>
+						<g className="drift-wall__arc-reveal-group">
+							<g className="drift-wall__arc-group" style={arcGroupStyle}>
+								<text
+									className="drift-wall__arc-text"
+									dominantBaseline="central"
+									textAnchor="middle"
+									style={{
+										fontSize: `${descStyle.fontSize}px`,
+										letterSpacing: `${descStyle.letterSpacing}px`,
+									}}
+								>
+									<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+										{desc}
+									</textPath>
+								</text>
+							</g>
 						</g>
 					)}
 					<text
 						x="100"
-						y={badgeConfig ? 93 : desc ? 104 : 100}
+						y={badgeConfig ? 93 : 100}
 						className="drift-wall__center-name"
 						dominantBaseline="central"
 						textAnchor="middle"
@@ -392,7 +415,8 @@ export const DriftWallTile = memo(function DriftWallTile({
 		"drift-wall__tile",
 		isSelected ? "is-selected" : "",
 		duelSide ? `is-dueling is-dueling-${duelSide}` : "",
-		isChampion ? "is-champion" : "",
+		isChampion || rank === 1 ? "is-champion" : "",
+		rank && rank > 1 ? `is-ranked is-ranked-${rank}` : "",
 		isQueuedSurvivor ? "is-queued-survivor" : "",
 		isJustVotedWinner ? "is-voted-winner" : "",
 	]
@@ -467,12 +491,12 @@ export const NameOrb = memo(function NameOrb({
 
 	return (
 		<div
-			className={`relative shrink-0 select-none pointer-events-none ${className}`}
+			className={`name-orb group relative shrink-0 select-none pointer-events-auto ${className}`}
 			style={{ width: `${size}px`, height: `${size}px` }}
 			aria-hidden="true"
 		>
 			<GlassSurface
-				className="w-full h-full rounded-full"
+				className="w-full h-full rounded-full transition-transform duration-200 group-hover:scale-105"
 				width={size}
 				height={size}
 				borderRadius={9999}
@@ -492,25 +516,27 @@ export const NameOrb = memo(function NameOrb({
 						/>
 					</defs>
 					{Boolean(desc) && (
-						<g className="drift-wall__arc-group" style={arcGroupStyle}>
-							<text
-								className="drift-wall__arc-text"
-								dominantBaseline="central"
-								textAnchor="middle"
-								style={{
-									fontSize: `${descStyle.fontSize}px`,
-									letterSpacing: `${descStyle.letterSpacing}px`,
-								}}
-							>
-								<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
-									{desc}
-								</textPath>
-							</text>
+						<g className="drift-wall__arc-reveal-group">
+							<g className="drift-wall__arc-group" style={arcGroupStyle}>
+								<text
+									className="drift-wall__arc-text"
+									dominantBaseline="central"
+									textAnchor="middle"
+									style={{
+										fontSize: `${descStyle.fontSize}px`,
+										letterSpacing: `${descStyle.letterSpacing}px`,
+									}}
+								>
+									<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+										{desc}
+									</textPath>
+								</text>
+							</g>
 						</g>
 					)}
 					<text
 						x="100"
-						y={desc ? 104 : 100}
+						y={100}
 						className="drift-wall__center-name"
 						dominantBaseline="central"
 						textAnchor="middle"

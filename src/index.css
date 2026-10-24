@@ -81,40 +81,6 @@
 	color-scheme: dark;
 }
 
-/* Soft Warm Dusk Light Theme (reduced glare when toggled to light) */
-:root[data-theme="light"] {
-	--bg: 0.91 0.018 85;
-	--surface: 0.94 0.012 85;
-	--fg: 0.24 0.03 280;
-	--muted: 0.84 0.02 85;
-	--border: 0.82 0.025 85;
-	--accent: 0.62 0.19 350;
-	--accent-fg: 0.99 0.005 350;
-	--secondary-accent: 0.72 0.12 165;
-
-	--dw-name-fill: #1b162a;
-	--dw-arc-fill: #473f5e;
-	--dw-hover-name-fill: #090612;
-	--dw-text-shadow: rgba(255, 255, 255, 0.65);
-
-	--glass-bg: rgba(244, 239, 232, 0.58);
-	--glass-border: rgba(255, 255, 255, 0.48);
-	--glass-shadow:
-		0 8px 28px -4px rgba(31, 24, 54, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.55);
-	--glass-dome-shadow:
-		0 10px 26px -4px rgba(31, 24, 54, 0.1),
-		0 0 0 1px rgba(255, 255, 255, 0.45),
-		inset 0 1.5px 3px 0 rgba(255, 255, 255, 0.65),
-		inset 0 -2px 4px 0 rgba(31, 24, 54, 0.06);
-
-	--nav-shell-bg: rgba(242, 237, 230, 0.84);
-	--nav-shell-border: rgba(255, 255, 255, 0.65);
-	--nav-shell-shadow:
-		0 16px 40px -8px rgba(31, 24, 54, 0.16), 0 4px 14px -2px rgba(31, 24, 54, 0.08),
-		inset 0 1px 1px 0 rgba(255, 255, 255, 0.75);
-	color-scheme: light;
-}
-
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
@@ -435,6 +401,28 @@
 	z-index: 2;
 }
 
+.drift-wall__arc-reveal-group {
+	transform-box: view-box;
+	transform-origin: 100px 100px;
+	opacity: 0;
+	transform: scale(0.68);
+	pointer-events: none;
+	transition:
+		opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+		transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+	will-change: opacity, transform;
+}
+
+.drift-wall__tile:hover .drift-wall__arc-reveal-group,
+.drift-wall__tile:focus-visible .drift-wall__arc-reveal-group,
+.drift-wall__tile.is-active .drift-wall__arc-reveal-group,
+.drift-wall__tile.is-targeted .drift-wall__arc-reveal-group,
+.name-orb:hover .drift-wall__arc-reveal-group,
+.group:hover .drift-wall__arc-reveal-group {
+	opacity: 1;
+	transform: scale(1);
+}
+
 .drift-wall__arc-group {
 	transform-box: view-box;
 	transform-origin: 100px 100px;
@@ -470,32 +458,45 @@
 .drift-wall__center-name {
 	fill: var(--dw-name-fill);
 	font-weight: 800;
+	letter-spacing: 0.025em;
 	text-transform: uppercase;
 	filter: drop-shadow(0 1px 3px var(--dw-text-shadow));
+	transition: fill 0.2s ease;
 }
 
 .drift-wall__tile:hover .drift-wall__arc-group,
-.drift-wall__tile.is-active .drift-wall__arc-group {
-	animation-play-state: paused;
+.drift-wall__tile.is-active .drift-wall__arc-group,
+.name-orb:hover .drift-wall__arc-group,
+.group:hover .drift-wall__arc-group {
+	animation-play-state: running;
 }
 
 .drift-wall__tile:hover .drift-wall__inner,
 .drift-wall__tile.is-active .drift-wall__inner {
 	opacity: 1;
-	transform: translateZ(8px) scale(1.03);
+	transform: translateZ(10px) scale(1.09);
+	box-shadow:
+		0 8px 24px -4px rgba(0, 0, 0, 0.45),
+		0 0 16px 2px oklch(var(--accent) / 0.22),
+		inset 0 1px 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.drift-wall__tile:hover .drift-wall__center-name,
+.drift-wall__tile.is-active .drift-wall__center-name {
+	fill: var(--dw-hover-name-fill);
 }
 
 .drift-wall__tile.is-selected .drift-wall__inner {
-	background: oklch(var(--accent) / 0.22);
+	background: oklch(var(--accent) / 0.1);
 	box-shadow:
-		0 0 30px -2px oklch(var(--accent) / 0.55),
-		inset 0 0 24px 0 oklch(var(--accent) / 0.28);
+		0 4px 14px 0 oklch(var(--accent) / 0.2),
+		inset 0 0 14px 0 oklch(var(--accent) / 0.12);
 	transform: translateZ(10px) scale(1.04);
 }
 
 .drift-wall__tile.is-selected .glass-surface__specular-dome {
 	box-shadow:
-		inset 0 0 0 2.5px var(--primary),
+		inset 0 0 0 1.5px var(--primary),
 		inset 0 2px 4px 0 rgba(255, 255, 255, 0.45);
 }
 
@@ -505,16 +506,16 @@
 
 .drift-wall__tile.is-targeted .drift-wall__inner {
 	opacity: 1;
-	background: oklch(var(--secondary-accent) / 0.26);
+	background: oklch(var(--secondary-accent) / 0.12);
 	box-shadow:
-		0 0 34px 0 oklch(var(--secondary-accent) / 0.65),
-		inset 0 0 24px 0 oklch(var(--accent) / 0.35);
+		0 4px 16px 0 oklch(var(--secondary-accent) / 0.22),
+		inset 0 0 14px 0 oklch(var(--accent) / 0.14);
 	transform: translateZ(12px) scale(1.07);
 }
 
 .drift-wall__tile.is-targeted .glass-surface__specular-dome {
 	box-shadow:
-		inset 0 0 0 2.5px var(--secondary),
+		inset 0 0 0 1.5px var(--secondary),
 		inset 0 2px 6px 0 rgba(255, 255, 255, 0.55);
 }
 
@@ -524,23 +525,29 @@
 
 .drift-wall__tile.is-dueling .drift-wall__inner {
 	opacity: 1;
-	background: oklch(var(--accent) / 0.28);
+	background: oklch(var(--accent) / 0.12);
 	box-shadow:
-		0 0 42px 0 oklch(var(--accent) / 0.68),
-		inset 0 0 28px 0 oklch(var(--accent) / 0.35);
+		0 4px 18px 0 oklch(var(--accent) / 0.22),
+		inset 0 0 16px 0 oklch(var(--accent) / 0.14);
 	transform: translateZ(16px) scale(1.06);
 }
 
-.drift-wall__tile.is-dueling-right .drift-wall__inner {
-	background: oklch(var(--secondary-accent) / 0.28);
+.drift-wall__tile.is-dueling .glass-surface__specular-dome {
 	box-shadow:
-		0 0 42px 0 oklch(var(--secondary-accent) / 0.68),
-		inset 0 0 28px 0 oklch(var(--secondary-accent) / 0.35);
+		inset 0 0 0 1.5px var(--primary),
+		inset 0 2px 6px 0 rgba(255, 255, 255, 0.55);
+}
+
+.drift-wall__tile.is-dueling-right .drift-wall__inner {
+	background: oklch(var(--secondary-accent) / 0.12);
+	box-shadow:
+		0 4px 18px 0 oklch(var(--secondary-accent) / 0.22),
+		inset 0 0 16px 0 oklch(var(--secondary-accent) / 0.14);
 }
 
 .drift-wall__tile.is-dueling-right .glass-surface__specular-dome {
 	box-shadow:
-		inset 0 0 0 2.5px var(--secondary),
+		inset 0 0 0 1.5px var(--secondary),
 		inset 0 2px 6px 0 rgba(255, 255, 255, 0.55);
 }
 
@@ -550,24 +557,24 @@
 
 .drift-wall__tile.is-dueling:hover .drift-wall__inner,
 .drift-wall__tile.is-dueling.is-active .drift-wall__inner {
-	transform: translateZ(22px) scale(1.11);
+	transform: translateZ(20px) scale(1.09);
 }
 
 .drift-wall__tile.is-voted-winner .drift-wall__inner {
-	background: oklch(var(--secondary-accent) / 0.36);
+	background: oklch(var(--secondary-accent) / 0.18);
 	box-shadow:
-		0 0 56px 6px oklch(var(--secondary-accent) / 0.85),
-		inset 0 0 32px 0 oklch(var(--accent) / 0.45);
+		0 4px 22px 0 oklch(var(--secondary-accent) / 0.28),
+		inset 0 0 18px 0 oklch(var(--accent) / 0.18);
 	transform: translateZ(24px) scale(1.14);
 }
 
 .drift-wall__tile.is-champion .drift-wall__inner {
 	opacity: 1;
-	background: oklch(var(--accent) / 0.34);
+	background: oklch(var(--accent) / 0.14);
 	box-shadow:
-		0 0 64px 8px oklch(var(--accent) / 0.8),
-		0 0 28px 2px oklch(var(--secondary-accent) / 0.55),
-		inset 0 0 32px 0 oklch(var(--accent) / 0.42);
+		0 6px 22px 0 oklch(var(--accent) / 0.24),
+		0 0 14px 0 oklch(var(--secondary-accent) / 0.16),
+		inset 0 0 16px 0 oklch(var(--accent) / 0.16);
 	transform: translateZ(24px) scale(1.1);
 }
 

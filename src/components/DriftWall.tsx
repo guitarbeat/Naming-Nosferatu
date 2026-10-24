@@ -22,6 +22,8 @@ export interface DriftWallItem {
 	id?: string | number;
 	selected?: boolean;
 	locked?: boolean;
+	rank?: number;
+	rankLabel?: string;
 	duelSide?: "left" | "right" | null;
 	duelPartnerIndex?: number;
 	isChampion?: boolean;
@@ -266,7 +268,7 @@ export const DriftWall = memo(function DriftWall({
 	const sanctuaryRect = useMemo(() => {
 		const selectedCount = uniqueEntries.filter((e) => e.item.selected).length;
 		const bottomMargin = isMobile ? 12 : 20;
-		const footerHeight = dockFooter ? (isMobile ? 54 : 58) : 0;
+		const footerHeight = dockFooter ? (isMobile ? 48 : 52) : 0;
 		const maxDockW = Math.max(280, Math.min(dims.w - (isMobile ? 16 : 48), 1120));
 		const orbSlotPitch = effSize + (isMobile ? 10 : 16);
 		const maxPerRow = Math.max(2, Math.floor((maxDockW - 48) / orbSlotPitch));
@@ -280,8 +282,8 @@ export const DriftWall = memo(function DriftWall({
 			const hasQueue = (tournamentStage.queuedCount ?? 0) > 0 && !tournamentStage.isComplete;
 			const desiredChamberH = tournamentStage.isComplete
 				? isMobile
-					? 268
-					: 298
+					? 296
+					: 336
 				: hasQueue
 					? isMobile
 						? 324
@@ -589,8 +591,8 @@ export const DriftWall = memo(function DriftWall({
 							const cPos = Math.max(0, championIndices.indexOf(idx));
 							const spread = champTotal > 1 ? (cPos === 0 ? -1 : 1) * (effSize * 0.52) : 0;
 							targetX = dims.w * 0.5 + spread + Math.cos(b.phase) * 3.5;
-							targetY = sRect.top + (isMobile ? 108 : 122) + Math.sin(b.phase * 1.2) * 3.5;
-							targetScale = champTotal > 1 ? (isMobile ? 1.08 : 1.22) : isMobile ? 1.22 : 1.38;
+							targetY = sRect.top + (isMobile ? 84 : 96) + Math.sin(b.phase * 1.2) * 3.5;
+							targetScale = champTotal > 1 ? (isMobile ? 1.04 : 1.18) : isMobile ? 1.16 : 1.28;
 						} else if (item.duelSide === "left" || item.duelSide === "right") {
 							const isLeft = item.duelSide === "left";
 							const pedestalCenterX =
@@ -604,11 +606,11 @@ export const DriftWall = memo(function DriftWall({
 							const voteLift = item.isJustVotedWinner ? -12 : 0;
 
 							targetX = pedestalCenterX + partnerOffset + Math.cos(b.phase) * 3;
-							targetY = sRect.top + (isMobile ? 104 : 118) + voteLift + Math.sin(b.phase * 1.2) * 3;
+							targetY = sRect.top + (isMobile ? 90 : 102) + voteLift + Math.sin(b.phase * 1.2) * 3;
 							targetScale = item.isJustVotedWinner
 								? isMobile
-									? 1.24
-									: 1.42
+									? 1.22
+									: 1.36
 								: isDuo
 									? isMobile
 										? 0.94
@@ -1208,21 +1210,21 @@ export const DriftWall = memo(function DriftWall({
 					style={{
 						maxWidth: "none",
 						borderColor: tournamentStage?.active
-							? "oklch(var(--accent) / 0.58)"
+							? "oklch(var(--accent) / 0.28)"
 							: isExpanded
-								? "oklch(var(--accent) / 0.42)"
+								? "oklch(var(--accent) / 0.22)"
 								: "var(--nav-shell-border)",
 						boxShadow: tournamentStage?.active
-							? "0 -18px 56px -6px oklch(var(--accent) / 0.42), 0 0 36px -8px oklch(var(--secondary-accent) / 0.28), var(--nav-shell-shadow), inset 0 1.5px 0 0 oklch(var(--accent) / 0.65)"
+							? "0 -6px 24px -4px oklch(var(--accent) / 0.14), var(--nav-shell-shadow), inset 0 1px 0 0 oklch(var(--accent) / 0.28)"
 							: isExpanded
-								? "0 -14px 42px -8px oklch(var(--accent) / 0.34), var(--nav-shell-shadow), inset 0 1px 0 0 oklch(var(--accent) / 0.55)"
+								? "0 -4px 18px -4px oklch(var(--accent) / 0.12), var(--nav-shell-shadow), inset 0 1px 0 0 oklch(var(--accent) / 0.22)"
 								: "var(--nav-shell-shadow)",
 					}}
 				>
 					{/* Glowing Forcefield Top Rim */}
 					<div
-						className={`pointer-events-none absolute top-0 left-6 right-6 h-[2.5px] bg-gradient-to-r from-transparent via-primary to-transparent transition-opacity duration-300 ${
-							isExpanded ? "opacity-95" : "opacity-35"
+						className={`pointer-events-none absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-primary to-transparent transition-opacity duration-300 ${
+							isExpanded ? "opacity-40" : "opacity-20"
 						}`}
 					/>
 
@@ -1231,14 +1233,14 @@ export const DriftWall = memo(function DriftWall({
 						{rippleKey > 0 && isExpanded && (
 							<motion.div
 								key={rippleKey}
-								initial={{ opacity: 0.9, scaleX: 0.35, scaleY: 0.2 }}
+								initial={{ opacity: 0.8, scaleX: 0.35, scaleY: 0.2 }}
 								animate={{ opacity: 0, scaleX: 1.3, scaleY: 1.45 }}
 								exit={{ opacity: 0 }}
 								transition={{ duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
 								className="pointer-events-none absolute inset-x-0 -top-6 h-32 rounded-full"
 								style={{
 									background:
-										"radial-gradient(ellipse at 50% 0%, oklch(var(--accent) / 0.52) 0%, oklch(var(--secondary-accent) / 0.24) 48%, transparent 78%)",
+										"radial-gradient(ellipse at 50% 0%, oklch(var(--accent) / 0.18) 0%, oklch(var(--secondary-accent) / 0.08) 48%, transparent 78%)",
 								}}
 							/>
 						)}
@@ -1256,8 +1258,8 @@ export const DriftWall = memo(function DriftWall({
 								className="pointer-events-none relative flex-1 w-full overflow-hidden"
 								style={{
 									background: tournamentStage.isComplete
-										? "radial-gradient(circle at 50% 38%, oklch(var(--accent) / 0.26) 0%, oklch(var(--secondary-accent) / 0.12) 48%, transparent 78%)"
-										: "radial-gradient(circle at 27% 38%, oklch(var(--accent) / 0.18) 0%, transparent 55%), radial-gradient(circle at 73% 38%, oklch(var(--secondary-accent) / 0.18) 0%, transparent 55%)",
+										? "radial-gradient(circle at 50% 32%, oklch(var(--accent) / 0.08) 0%, oklch(var(--secondary-accent) / 0.04) 50%, transparent 75%)"
+										: "radial-gradient(circle at 27% 38%, oklch(var(--accent) / 0.08) 0%, transparent 55%), radial-gradient(circle at 73% 38%, oklch(var(--secondary-accent) / 0.08) 0%, transparent 55%)",
 								}}
 							>
 								{/* Stage Top Header Bar */}
@@ -1299,7 +1301,7 @@ export const DriftWall = memo(function DriftWall({
 										{/* Center VS Medallion */}
 										<div
 											className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center"
-											style={{ top: `${isMobile ? 104 : 118}px` }}
+											style={{ top: `${isMobile ? 90 : 102}px` }}
 										>
 											<div className="flex size-10 sm:size-11 items-center justify-center rounded-full border border-foreground/20 bg-background/85 font-display text-xs sm:text-sm font-black tracking-wider text-foreground shadow-lg backdrop-blur-md">
 												VS
@@ -1399,26 +1401,6 @@ export const DriftWall = memo(function DriftWall({
 										)}
 									</>
 								)}
-
-								{/* Champion Finale Banner inside the Sanctuary Stage */}
-								{tournamentStage.isComplete && (
-									<div
-										className="pointer-events-none absolute inset-x-4 flex flex-col items-center text-center"
-										style={{ top: `${isMobile ? 176 : 196}px` }}
-									>
-										<span className="text-[10px] font-extrabold uppercase tracking-widest text-primary">
-											&#9819; Crowned Sanctuary Champion
-										</span>
-										<h3 className="mt-0.5 font-display text-xl sm:text-2xl font-black tracking-tight text-foreground">
-											{tournamentStage.championLabel}
-										</h3>
-										{tournamentStage.championSub && (
-											<p className="mt-0.5 max-w-md text-xs text-foreground/70 line-clamp-1">
-												{tournamentStage.championSub}
-											</p>
-										)}
-									</div>
-								)}
 							</motion.div>
 						) : (
 							isExpanded && (
@@ -1431,7 +1413,7 @@ export const DriftWall = memo(function DriftWall({
 									className="pointer-events-none relative flex-1 w-full"
 									style={{
 										background:
-											"radial-gradient(circle at 50% 25%, oklch(var(--accent) / 0.14) 0%, transparent 75%)",
+											"radial-gradient(circle at 50% 25%, oklch(var(--accent) / 0.06) 0%, transparent 75%)",
 									}}
 								>
 									<div className="flex items-center justify-between px-5 pt-2.5 text-[11px] font-medium tracking-wide text-foreground/75">
@@ -1491,6 +1473,8 @@ export const DriftWall = memo(function DriftWall({
 							name={item.title || item.name || "tile"}
 							orbitText={item.subtitle || item.orbitText || ""}
 							isSelected={Boolean(item.selected)}
+							rank={item.rank}
+							rankLabel={item.rankLabel}
 							duelSide={item.duelSide ?? null}
 							isChampion={Boolean(item.isChampion)}
 							isQueuedSurvivor={Boolean(item.isQueuedSurvivor)}

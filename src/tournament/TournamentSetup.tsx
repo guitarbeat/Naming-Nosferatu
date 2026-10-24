@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Layers, Moon, Play, RotateCcw, Sparkles, Sun, Trophy, Undo2, X } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MousePointerClick, Play, RotateCcw, Trophy, Undo2, X } from "lucide-react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import {
 	DriftWall,
 	type DriftWallItem,
@@ -22,8 +22,6 @@ import {
 import useAppStore, { useTournamentSetupState } from "@/store";
 import type { IdType, RatingData } from "@/types";
 import { TournamentArena } from "./TournamentArena";
-import { TournamentBracketModal } from "./TournamentBracket";
-import { TournamentComplete } from "./TournamentComplete";
 import {
 	createIdToNameMap,
 	extractMatchData,
@@ -152,14 +150,10 @@ export const NameSelector = memo(function NameSelector({
 }) {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
-	const theme = useAppStore((state) => state.ui.theme);
-	const setTheme = useAppStore((state) => state.uiActions.setTheme);
+
 	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
 	const storeTournamentNames = useAppStore((state) => state.tournament.names);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
-
-	const [bracketModalOpen, setBracketModalOpen] = useState(false);
-	const [breakdownModalOpen, setBreakdownModalOpen] = useState(false);
 
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
@@ -228,8 +222,11 @@ export const NameSelector = memo(function NameSelector({
 
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
-			if (isTournamentActive) {
+			if (isTournamentActive && !ts.isComplete) {
 				return;
+			}
+			if (ts.isComplete) {
+				ts.handleQuit();
 			}
 			const nameItem = namesById.get(String(nameId));
 			if (!nameItem || isNameLocked(nameItem)) {
@@ -243,13 +240,16 @@ export const NameSelector = memo(function NameSelector({
 				: [...storeSelectedNames, nameItem];
 			tournamentActions.setSelection(nextSelection);
 		},
-		[isTournamentActive, namesById, selectedIds, storeSelectedNames, tournamentActions],
+		[isTournamentActive, ts, namesById, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
 	const handleBatchSelectNames = useCallback(
 		(capturedItems: DriftWallItem[]) => {
-			if (isTournamentActive) {
+			if (isTournamentActive && !ts.isComplete) {
 				return;
+			}
+			if (ts.isComplete) {
+				ts.handleQuit();
 			}
 			const additions = [];
 			const seen = new Set(selectedIds);
@@ -269,7 +269,7 @@ export const NameSelector = memo(function NameSelector({
 				tournamentActions.setSelection([...storeSelectedNames, ...additions]);
 			}
 		},
-		[isTournamentActive, namesById, selectedIds, storeSelectedNames, tournamentActions],
+		[isTournamentActive, ts, namesById, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
 	const handleStartSelected = useCallback(() => {
@@ -309,8 +309,6 @@ export const NameSelector = memo(function NameSelector({
 
 	const handleExitTournament = useCallback(() => {
 		hapticNavTap();
-		setBracketModalOpen(false);
-		setBreakdownModalOpen(false);
 		ts.handleQuit();
 	}, [ts]);
 
@@ -320,7 +318,7 @@ export const NameSelector = memo(function NameSelector({
 			return;
 		}
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (bracketModalOpen || breakdownModalOpen || ts.isVoting) {
+			if (ts.isVoting) {
 				return;
 			}
 			if (e.key === "ArrowLeft" && ts.currentMatch && !ts.isComplete) {
@@ -338,8 +336,6 @@ export const NameSelector = memo(function NameSelector({
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [
 		isTournamentActive,
-		bracketModalOpen,
-		breakdownModalOpen,
 		ts.isVoting,
 		ts.currentMatch,
 		ts.isComplete,
@@ -394,6 +390,60 @@ export const NameSelector = memo(function NameSelector({
 		return map;
 	}, [isTournamentActive, ts.isComplete, ts.currentMatch]);
 
+	// Derive tournament winner / champion info
+	const championInfo = useMemo(() => {
+		if (ts.matchHistory.length === 0) {
+			return null;
+		}
+		const finalRecord = ts.matchHistory[ts.matchHistory.length - 1];
+		const winnerId = finalRecord?.winner ? String(finalRecord.winner) : null;
+		if (!winnerId) {
+			return null;
+		}
+		const winningTeam = ts.teams.find((t) => t?.id === winnerId);
+		const winningNameItem = winningTeam
+			? undefined
+			: activeTournamentNames.find((n) => String(n.id) === winnerId || n.name === winnerId);
+		const label = winningTeam
+			? winningTeam.memberNames.join(" & ")
+			: winningNameItem?.name || winnerId;
+		const memberIds = new Set<string>(winningTeam ? winningTeam.memberIds.map(String) : [winnerId]);
+		return { winnerId, label, memberIds };
+	}, [ts.matchHistory, ts.teams, activeTournamentNames]);
+
+	// Derive tournament ranking map (rank 1, 2, 3...)
+	const tournamentRankings = useMemo(() => {
+		const map = new Map<string, number>();
+		if (ts.matchHistory.length === 0 && Object.keys(ts.ratings).length === 0) {
+			return map;
+		}
+
+		// Collect tournament participants and sort by rating/results
+		const participants = activeTournamentNames.map((n) => ({
+			id: String(n.id),
+			name: n.name,
+			rating: ts.ratings[String(n.id)] ?? n.rating ?? 1500,
+			isChamp: Boolean(championInfo?.memberIds.has(String(n.id))),
+		}));
+
+		// Rank: Champion(s) first, then by rating descending
+		participants.sort((a, b) => {
+			if (a.isChamp && !b.isChamp) {
+				return -1;
+			}
+			if (!a.isChamp && b.isChamp) {
+				return 1;
+			}
+			return b.rating - a.rating;
+		});
+
+		participants.forEach((p, idx) => {
+			map.set(p.id, p.isChamp ? 1 : idx + 1);
+		});
+
+		return map;
+	}, [ts.matchHistory.length, ts.ratings, activeTournamentNames, championInfo]);
+
 	// Build DriftWall items with continuous selection & duel state
 	const driftWallItems = useMemo<DriftWallItem[]>(() => {
 		return availableNames.map((nameItem) => {
@@ -403,16 +453,19 @@ export const NameSelector = memo(function NameSelector({
 				: nameItem.pronunciation
 					? `/${nameItem.pronunciation}/`
 					: undefined;
+			const rank = tournamentRankings.get(idStr);
+			const isChamp = Boolean(championInfo?.memberIds.has(idStr));
 
-			if (!isTournamentActive) {
+			if (!isTournamentActive || ts.isComplete) {
 				return {
 					id: idStr,
 					title: nameItem.name,
 					subtitle,
 					selected: selectedIds.has(idStr),
 					locked: isNameLocked(nameItem),
+					rank,
+					isChampion: isChamp,
 					duelSide: null,
-					isChampion: false,
 					isQueuedSurvivor: false,
 					isJustVotedWinner: false,
 				};
@@ -420,8 +473,7 @@ export const NameSelector = memo(function NameSelector({
 
 			const isSurvivor = tournamentRosterIds.has(idStr) && !eliminatedNameIds.has(idStr);
 			const duelInfo = activeDuelOrbMap.get(idStr);
-			const isChamp = ts.isComplete && isSurvivor;
-			const isQueued = isSurvivor && !duelInfo && !isChamp;
+			const isQueued = isSurvivor && !duelInfo;
 			const isJustVotedWinner = Boolean(duelInfo && votingSide && duelInfo.side === votingSide);
 
 			return {
@@ -430,9 +482,10 @@ export const NameSelector = memo(function NameSelector({
 				subtitle,
 				selected: isSurvivor,
 				locked: isNameLocked(nameItem),
+				rank,
 				duelSide: duelInfo?.side ?? null,
 				duelPartnerIndex: duelInfo?.partnerIndex ?? 0,
-				isChampion: isChamp,
+				isChampion: false,
 				isQueuedSurvivor: isQueued,
 				isJustVotedWinner,
 			};
@@ -441,6 +494,8 @@ export const NameSelector = memo(function NameSelector({
 		availableNames,
 		isTournamentActive,
 		selectedIds,
+		tournamentRankings,
+		championInfo,
 		tournamentRosterIds,
 		eliminatedNameIds,
 		activeDuelOrbMap,
@@ -450,46 +505,13 @@ export const NameSelector = memo(function NameSelector({
 
 	// Build the tournamentStage configuration for DriftWall's expanding Sanctuary Arena Stage
 	const tournamentStageConfig = useMemo<DriftWallTournamentStage | null>(() => {
-		if (!isTournamentActive) {
+		if (!isTournamentActive || ts.isComplete) {
 			return null;
 		}
 		const survivorCount = Array.from(tournamentRosterIds).filter(
 			(id) => !eliminatedNameIds.has(id),
 		).length;
 		const queuedCount = Math.max(0, survivorCount - activeDuelOrbMap.size);
-
-		if (ts.isComplete) {
-			const winningRecord =
-				ts.matchHistory.length > 0 ? ts.matchHistory[ts.matchHistory.length - 1] : null;
-			const winnerId = winningRecord?.winner;
-			const winningTeam = winnerId ? ts.teams.find((t) => t?.id === winnerId) : undefined;
-			const winningNameItem = winnerId
-				? activeTournamentNames.find(
-						(n) => String(n.id) === String(winnerId) || n.name === String(winnerId),
-					)
-				: activeTournamentNames.find(
-						(n) => tournamentRosterIds.has(String(n.id)) && !eliminatedNameIds.has(String(n.id)),
-					);
-			const championLabel = winningTeam
-				? winningTeam.memberNames.join(" & ")
-				: winningNameItem?.name || (winnerId ? String(winnerId) : "Champion");
-
-			return {
-				active: true,
-				isComplete: true,
-				round: ts.round,
-				totalRounds: ts.totalRounds,
-				bracketStage: ts.bracketStage,
-				matchNumber: ts.matchNumber,
-				totalMatches: ts.totalMatches,
-				progress: 100,
-				tournamentMode: ts.tournamentMode,
-				championLabel,
-				championSub: winningNameItem?.description,
-				championElo: winnerId ? ts.ratings[String(winnerId)] : undefined,
-				queuedCount: 0,
-			};
-		}
 
 		const m = ts.currentMatch ? extractMatchData(ts.currentMatch) : null;
 		const leftStreak = m ? getContestantStreak(m.leftId, ts.matchHistory) : 0;
@@ -525,8 +547,6 @@ export const NameSelector = memo(function NameSelector({
 		activeDuelOrbMap.size,
 		ts.isComplete,
 		ts.matchHistory,
-		ts.teams,
-		activeTournamentNames,
 		ts.round,
 		ts.totalRounds,
 		ts.bracketStage,
@@ -567,159 +587,132 @@ export const NameSelector = memo(function NameSelector({
 
 	const selectedCount = storeSelectedNames.length;
 	const canStartCustom = selectedCount >= 2;
-	const modeLabel = selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2 Teams" : "1v1 Bracket";
-	const survivingCount = isTournamentActive
-		? Array.from(tournamentRosterIds).filter((id) => !eliminatedNameIds.has(id)).length
-		: selectedCount;
 
 	const dockFooterControls = isTournamentActive ? (
-		<div className="flex w-full items-center justify-between gap-2 sm:gap-4">
-			<div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-				<span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-foreground whitespace-nowrap shrink-0">
+		<div className="flex w-full items-center justify-between gap-3 sm:gap-4">
+			<div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+				<span className="font-display text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap shrink-0">
 					Name Nosferatu
 				</span>
-				<span className="h-4 w-px bg-foreground/20 shrink-0" aria-hidden="true" />
-				<div className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap truncate">
+				<span className="text-foreground/25 font-light" aria-hidden="true">
+					&middot;
+				</span>
+				<div className="flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap truncate">
 					{ts.isComplete ? (
 						<span className="inline-flex items-center gap-1.5 font-semibold text-primary">
 							<Trophy className="size-3.5" />
-							<span>Champion Crowned</span>
+							<span>Champion: {championInfo?.label || "Complete"}</span>
 						</span>
 					) : (
-						<>
-							<span className="font-mono font-bold tabular-nums text-primary">
-								{survivingCount}
-							</span>
-							<span className="font-medium text-foreground/80">
-								of {activeTournamentNames.length} surviving
-							</span>
-						</>
+						<span className="font-mono text-xs font-medium text-foreground/75 tabular-nums">
+							Round {ts.round} &middot; Match {ts.matchNumber}/{ts.totalMatches}
+						</span>
 					)}
 				</div>
 			</div>
 
 			<div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-				<button
-					type="button"
-					onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-					className="inline-flex size-9 sm:size-10 items-center justify-center rounded-full border border-foreground/15 bg-foreground/8 text-foreground/80 transition-colors hover:bg-foreground/15 hover:text-foreground shrink-0"
-					title={
-						theme === "dark" ? "Switch to warm dusk light mode" : "Switch to nocturnal dark mode"
-					}
-					aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-				>
-					{theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-				</button>
-
-				<button
-					type="button"
-					onClick={() => setBracketModalOpen(true)}
-					className="inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full border border-primary/35 bg-primary/12 px-3 sm:px-4 text-xs font-semibold text-primary transition-colors hover:bg-primary/22 whitespace-nowrap shrink-0"
-					aria-label="Open interactive tournament bracket"
-				>
-					<Layers className="size-3.5" />
-					<span>Bracket</span>
-				</button>
-
 				{ts.isComplete ? (
-					<button
-						type="button"
-						onClick={() => setBreakdownModalOpen(true)}
-						className="hidden sm:inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full border border-secondary/40 bg-secondary/15 px-3.5 text-xs font-semibold text-secondary transition-colors hover:bg-secondary/25 whitespace-nowrap shrink-0"
-						aria-label="View full tournament summary"
-					>
-						<Sparkles className="size-3.5" />
-						<span>Summary</span>
-					</button>
+					<>
+						{selectedCount > 0 && (
+							<button
+								type="button"
+								onClick={() => tournamentActions.setSelection([])}
+								className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-foreground/15 bg-foreground/6 px-2.5 sm:px-3 text-xs font-medium text-foreground/80 transition-colors hover:bg-foreground/12 hover:text-foreground active:scale-95 whitespace-nowrap shrink-0"
+								aria-label="Clear selected names"
+							>
+								<X className="size-3" />
+								<span>Clear</span>
+							</button>
+						)}
+						<button
+							type="button"
+							onClick={handleExitTournament}
+							className="inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full bg-primary px-3 sm:px-3.5 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:brightness-105 active:scale-95 whitespace-nowrap shrink-0"
+							aria-label="Start a new bracket"
+						>
+							<RotateCcw className="size-3" />
+							<span>New Bracket</span>
+						</button>
+					</>
 				) : (
-					<button
-						type="button"
-						onClick={handleUndoMove}
-						disabled={!ts.canUndo}
-						className={`inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full border px-3 sm:px-3.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
-							ts.canUndo
-								? "border-foreground/20 bg-foreground/8 text-foreground/85 hover:bg-foreground/15"
-								: "cursor-not-allowed border-foreground/10 bg-foreground/5 text-foreground/35"
-						}`}
-						aria-label="Undo last vote and recall orb"
-					>
-						<Undo2 className="size-3.5" />
-						<span className="hidden sm:inline">Undo</span>
-					</button>
-				)}
+					<>
+						<button
+							type="button"
+							onClick={handleUndoMove}
+							disabled={!ts.canUndo}
+							className={`inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full border px-2.5 sm:px-3 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+								ts.canUndo
+									? "border-foreground/15 bg-foreground/6 text-foreground/80 hover:bg-foreground/12 hover:text-foreground active:scale-95"
+									: "cursor-not-allowed border-foreground/5 bg-foreground/2 text-foreground/25"
+							}`}
+							aria-label="Undo last vote"
+						>
+							<Undo2 className="size-3" />
+							<span className="hidden sm:inline">Undo</span>
+						</button>
 
-				<button
-					type="button"
-					onClick={handleExitTournament}
-					className={`inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full px-3.5 sm:px-4 text-xs font-bold transition-colors whitespace-nowrap shrink-0 ${
-						ts.isComplete
-							? "bg-primary text-primary-foreground shadow-sm hover:brightness-105"
-							: "border border-destructive/30 bg-destructive/12 text-destructive hover:bg-destructive/22"
-					}`}
-					aria-label={ts.isComplete ? "Start a new bracket" : "End current bracket"}
-				>
-					{ts.isComplete ? <RotateCcw className="size-3.5" /> : <X className="size-3.5" />}
-					<span>{ts.isComplete ? "New Bracket" : "Exit"}</span>
-				</button>
+						<button
+							type="button"
+							onClick={handleExitTournament}
+							className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-destructive/25 bg-destructive/10 px-2.5 sm:px-3 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/20 active:scale-95 whitespace-nowrap shrink-0"
+							aria-label="Exit tournament"
+						>
+							<X className="size-3" />
+							<span>Exit</span>
+						</button>
+					</>
+				)}
 			</div>
 		</div>
 	) : (
-		<div className="flex w-full items-center justify-between gap-3 sm:gap-5">
-			<div className="flex items-center gap-3 min-w-0">
-				<span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-foreground whitespace-nowrap shrink-0">
-					Name Nosferatu
-				</span>
-				<span className="h-4 w-px bg-foreground/20 shrink-0" aria-hidden="true" />
-				<div className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap truncate">
-					{selectedCount > 0 ? (
-						<>
-							<span className="font-mono font-bold tabular-nums text-primary">{selectedCount}</span>
-							<span className="font-medium text-foreground/85">in sanctuary</span>
-							{canStartCustom ? (
-								<>
-									<span aria-hidden="true" className="hidden md:inline text-foreground/40">
-										&middot;
-									</span>
-									<span className="hidden md:inline font-semibold text-secondary">{modeLabel}</span>
-								</>
-							) : (
-								<>
-									<span aria-hidden="true" className="text-foreground/40">
-										&middot;
-									</span>
-									<span className="font-medium text-foreground/65">Choose 1 more to start</span>
-								</>
-							)}
-						</>
-					) : (
-						<span className="font-medium text-foreground/75">
-							Drag a box or tap orbs to choose names
+		<div className="flex w-full items-center justify-between gap-3 sm:gap-4">
+			<div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+				{selectedCount === 0 ? (
+					<div className="flex items-center gap-2 min-w-0">
+						<span className="hidden sm:inline font-display text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap shrink-0">
+							Name Nosferatu
 						</span>
-					)}
-				</div>
+						<span
+							className="hidden sm:inline text-foreground/25 font-light shrink-0"
+							aria-hidden="true"
+						>
+							&middot;
+						</span>
+						<span className="text-xs sm:text-sm text-foreground/80 font-medium truncate flex items-center gap-1.5">
+							<MousePointerClick className="size-3.5 text-primary shrink-0" />
+							<span>Click names or drag to select</span>
+						</span>
+					</div>
+				) : (
+					<>
+						<span className="font-display text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap shrink-0">
+							Name Nosferatu
+						</span>
+						<span className="text-foreground/25 font-light" aria-hidden="true">
+							&middot;
+						</span>
+						<span className="font-mono text-xs font-bold tabular-nums text-primary">
+							{selectedCount} selected
+						</span>
+						{selectedCount === 1 && (
+							<span className="hidden md:inline text-xs text-foreground/45 font-normal">
+								(pick 1 more to duel)
+							</span>
+						)}
+					</>
+				)}
 			</div>
 
 			<div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-				<button
-					type="button"
-					onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-					className="inline-flex size-9 sm:size-10 items-center justify-center rounded-full border border-foreground/15 bg-foreground/8 text-foreground/80 transition-colors hover:bg-foreground/15 hover:text-foreground shrink-0"
-					title={
-						theme === "dark" ? "Switch to warm dusk light mode" : "Switch to nocturnal dark mode"
-					}
-					aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-				>
-					{theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-				</button>
-
 				{selectedCount > 0 && (
 					<button
 						type="button"
 						onClick={() => tournamentActions.setSelection([])}
-						className="inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground whitespace-nowrap shrink-0"
+						className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-foreground/15 bg-foreground/6 px-2.5 sm:px-3 text-xs font-medium text-foreground/80 transition-colors hover:bg-foreground/12 hover:text-foreground active:scale-95 whitespace-nowrap shrink-0"
 						aria-label="Clear selected names"
 					>
-						<X className="size-3.5" />
+						<X className="size-3" />
 						<span>Clear</span>
 					</button>
 				)}
@@ -728,10 +721,10 @@ export const NameSelector = memo(function NameSelector({
 					<button
 						type="button"
 						onClick={handleStartSelected}
-						className="inline-flex h-9 sm:h-10 items-center gap-2 rounded-full bg-primary px-4 sm:px-5 text-xs sm:text-sm font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:brightness-105 active:scale-[0.98] whitespace-nowrap shrink-0"
+						className="inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full bg-primary px-3 sm:px-4 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:brightness-105 active:scale-95 whitespace-nowrap shrink-0"
 					>
-						<Play className="size-3.5 fill-current" />
-						<span>Start Bracket</span>
+						<Play className="size-3 fill-current" />
+						<span>Start</span>
 						<span className="font-mono tabular-nums opacity-90">&middot; {selectedCount}</span>
 					</button>
 				)}
@@ -763,56 +756,6 @@ export const NameSelector = memo(function NameSelector({
 						pauseOnHover={true}
 						className="w-full h-full"
 					/>
-				</div>
-			)}
-
-			{/* Interactive Bracket Tree Modal */}
-			{isTournamentActive && (
-				<TournamentBracketModal
-					isOpen={bracketModalOpen}
-					onClose={() => setBracketModalOpen(false)}
-					bracketEntrants={ts.bracketEntrants}
-					matchHistory={ts.matchHistory}
-					currentMatch={ts.currentMatch}
-					names={activeTournamentNames}
-					teams={ts.teams}
-					ratings={ts.ratings}
-					totalRounds={ts.totalRounds}
-					tournamentMode={ts.tournamentMode}
-					onVote={(w, l) => ts.handleVote(w, l)}
-				/>
-			)}
-
-			{/* Full Summary Breakdown Modal */}
-			{isTournamentActive && breakdownModalOpen && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md"
-					role="dialog"
-					aria-modal="true"
-					aria-label="Tournament Summary Modal"
-				>
-					<div className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl border border-border/80 bg-card p-4 sm:p-6 shadow-2xl">
-						<button
-							type="button"
-							onClick={() => setBreakdownModalOpen(false)}
-							className="sticky top-2 float-right z-20 inline-flex size-9 items-center justify-center rounded-full border border-border/50 bg-background/80 text-foreground hover:bg-muted"
-							aria-label="Close summary modal"
-						>
-							<X className="size-4" />
-						</button>
-						<TournamentComplete
-							totalMatches={ts.totalMatches}
-							participantCount={activeTournamentNames.length}
-							onNewTournament={handleExitTournament}
-							bracketEntrants={ts.bracketEntrants}
-							matchHistory={ts.matchHistory}
-							names={activeTournamentNames}
-							teams={ts.teams}
-							ratings={ts.ratings}
-							totalRounds={ts.totalRounds}
-							tournamentMode={ts.tournamentMode}
-						/>
-					</div>
 				</div>
 			)}
 		</div>

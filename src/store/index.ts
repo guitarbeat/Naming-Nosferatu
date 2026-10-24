@@ -6,7 +6,6 @@ import {
 	clearStoredTournamentFromIDB,
 	clearStoredTournamentSnapshot,
 	clearStoredUserSnapshot,
-	getStorageString,
 	getStoredTournamentFromIDB,
 	readStoredTournamentSnapshot,
 	readStoredUserSnapshot,
@@ -26,7 +25,6 @@ import type {
 	RatingData,
 	SiteSettingsState,
 	ThemePreference,
-	ThemeValue,
 	TournamentState,
 	UIState,
 	UserState,
@@ -356,23 +354,22 @@ const useAppStore = create<AppState>()((set, get) => ({
 	},
 	ui: { theme: "dark", themePreference: "dark", isBootLoading: true },
 	uiActions: {
-		setTheme: (preference) => {
-			const resolved: ThemeValue = preference === "light" ? "light" : "dark";
-			patch(set, "ui", { theme: resolved, themePreference: preference });
+		setTheme: () => {
+			patch(set, "ui", { theme: "dark", themePreference: "dark" });
 			if (IS_BROWSER) {
-				setStorageString(STORAGE_KEYS.THEME, preference);
-				document.documentElement.dataset.theme = resolved;
-				document.documentElement.classList.toggle("dark", resolved === "dark");
+				setStorageString(STORAGE_KEYS.THEME, "dark");
+				document.documentElement.dataset.theme = "dark";
+				document.documentElement.classList.add("dark");
 			}
 		},
 		initializeTheme: () => {
 			if (!IS_BROWSER) {
 				return;
 			}
-			const stored = getStorageString(STORAGE_KEYS.THEME) ?? "dark";
-			const pref: ThemePreference =
-				stored === "light" || stored === "dark" || stored === "system" ? stored : "dark";
-			get().uiActions.setTheme(pref);
+			setStorageString(STORAGE_KEYS.THEME, "dark");
+			document.documentElement.dataset.theme = "dark";
+			document.documentElement.classList.add("dark");
+			patch(set, "ui", { theme: "dark", themePreference: "dark" });
 		},
 		setBootLoading: (loading) => patch(set, "ui", { isBootLoading: loading }),
 	},
