@@ -134,6 +134,10 @@ export interface DriftWallTileProps {
 	height?: number;
 	orbitText?: string;
 	isSelected?: boolean;
+	duelSide?: "left" | "right" | null;
+	isChampion?: boolean;
+	isQueuedSurvivor?: boolean;
+	isJustVotedWinner?: boolean;
 	image?: string;
 	href?: string;
 	originalIndex?: number;
@@ -178,6 +182,10 @@ export const DriftWallTile = memo(function DriftWallTile({
 	height,
 	orbitText,
 	isSelected = false,
+	duelSide = null,
+	isChampion = false,
+	isQueuedSurvivor = false,
+	isJustVotedWinner = false,
 	image,
 	href,
 	originalIndex,
@@ -209,6 +217,70 @@ export const DriftWallTile = memo(function DriftWallTile({
 			"--orbit-direction": seed % 3 === 0 ? "reverse" : "normal",
 		} as React.CSSProperties;
 	}, [sanitizedId, title]);
+
+	const badgeConfig = useMemo(() => {
+		if (isChampion) {
+			return {
+				label: "\u265B CHAMPION",
+				bg: "var(--primary)",
+				fg: "var(--primary-foreground)",
+				ringStroke: "var(--primary)",
+				ringWidth: 6.5,
+				pillWidth: 82,
+			};
+		}
+		if (isJustVotedWinner) {
+			return {
+				label: "\u2605 WINNER!",
+				bg: "var(--secondary)",
+				fg: "var(--secondary-foreground)",
+				ringStroke: "var(--secondary)",
+				ringWidth: 6.5,
+				pillWidth: 74,
+			};
+		}
+		if (duelSide === "left") {
+			return {
+				label: "\u2190 VOTE LEFT",
+				bg: "var(--primary)",
+				fg: "var(--primary-foreground)",
+				ringStroke: "var(--primary)",
+				ringWidth: 6,
+				pillWidth: 84,
+			};
+		}
+		if (duelSide === "right") {
+			return {
+				label: "VOTE RIGHT \u2192",
+				bg: "var(--secondary)",
+				fg: "var(--secondary-foreground)",
+				ringStroke: "var(--secondary)",
+				ringWidth: 6,
+				pillWidth: 88,
+			};
+		}
+		if (isQueuedSurvivor) {
+			return {
+				label: "IN BRACKET",
+				bg: "var(--primary)",
+				fg: "var(--primary-foreground)",
+				ringStroke: "var(--primary)",
+				ringWidth: 4.5,
+				pillWidth: 74,
+			};
+		}
+		if (isSelected) {
+			return {
+				label: "\u2713 SELECTED",
+				bg: "var(--primary)",
+				fg: "var(--primary-foreground)",
+				ringStroke: "var(--primary)",
+				ringWidth: 5.5,
+				pillWidth: 68,
+			};
+		}
+		return null;
+	}, [isChampion, isJustVotedWinner, duelSide, isQueuedSurvivor, isSelected]);
 
 	const inner = (
 		<GlassSurface
@@ -245,15 +317,15 @@ export const DriftWallTile = memo(function DriftWallTile({
 							fill="none"
 						/>
 					</defs>
-					{isSelected && (
+					{badgeConfig && (
 						<circle
 							cx="100"
 							cy="100"
 							r="93"
 							className="drift-wall__selected-ring"
 							fill="none"
-							stroke="var(--primary)"
-							strokeWidth="5.5"
+							stroke={badgeConfig.ringStroke}
+							strokeWidth={badgeConfig.ringWidth}
 						/>
 					)}
 					{Boolean(desc) && (
@@ -275,7 +347,7 @@ export const DriftWallTile = memo(function DriftWallTile({
 					)}
 					<text
 						x="100"
-						y={isSelected ? 94 : desc ? 104 : 100}
+						y={badgeConfig ? 93 : desc ? 104 : 100}
 						className="drift-wall__center-name"
 						dominantBaseline="central"
 						textAnchor="middle"
@@ -283,23 +355,30 @@ export const DriftWallTile = memo(function DriftWallTile({
 					>
 						{title}
 					</text>
-					{isSelected && (
-						<g transform="translate(100, 130)">
-							<rect x="-34" y="-10" width="68" height="20" rx="10" fill="var(--primary)" />
+					{badgeConfig && (
+						<g transform="translate(100, 131)">
+							<rect
+								x={-badgeConfig.pillWidth / 2}
+								y="-10"
+								width={badgeConfig.pillWidth}
+								height="20"
+								rx="10"
+								fill={badgeConfig.bg}
+							/>
 							<text
 								x="0"
 								y="0.5"
 								textAnchor="middle"
 								dominantBaseline="central"
-								fill="var(--primary-foreground)"
+								fill={badgeConfig.fg}
 								style={{
-									fontSize: "9.5px",
+									fontSize: "9.2px",
 									fontWeight: 800,
-									letterSpacing: "0.08em",
+									letterSpacing: "0.07em",
 									fontFamily: "var(--font-sans)",
 								}}
 							>
-								&#10003; SELECTED
+								{badgeConfig.label}
 							</text>
 						</g>
 					)}
@@ -309,11 +388,23 @@ export const DriftWallTile = memo(function DriftWallTile({
 		</GlassSurface>
 	);
 
+	const stateClasses = [
+		"drift-wall__tile",
+		isSelected ? "is-selected" : "",
+		duelSide ? `is-dueling is-dueling-${duelSide}` : "",
+		isChampion ? "is-champion" : "",
+		isQueuedSurvivor ? "is-queued-survivor" : "",
+		isJustVotedWinner ? "is-voted-winner" : "",
+	]
+		.filter(Boolean)
+		.join(" ");
+
 	const commonProps = {
-		className: `drift-wall__tile${isSelected ? " is-selected" : ""}`,
+		className: stateClasses,
 		"data-tile-id": tileId,
 		"data-col": col,
 		"data-original-index": originalIndex,
+		"data-duel-side": duelSide ?? undefined,
 		"aria-pressed": isSelected,
 	};
 

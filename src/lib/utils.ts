@@ -204,13 +204,107 @@ const SAMPLE_ENTRIES: ReadonlyArray<readonly [string, string]> = [
 	["Cosmo", "Dreamy space cadet gazing thoughtfully at the stars"],
 	["Clover", "Lucky four-leaf feline spreading peace and good fortune"],
 	["Hazel", "Gentle observer with warm amber eyes and headbutts"],
+	[" Vlad", "Aristocratic night owl who prefers velvet cushions"],
+	["Nyx", "Goddess of the night wrapped in sleek obsidian fur"],
+	["Mochi", "Soft, squishy cloud who melts into every lap"],
+	["Bramble", "Wild-whiskered woodland scout with boundless curiosity"],
+	["Onyx", "Polished gemstone panther with hypnotic golden gaze"],
+	["Figaro", "Operatic tuxedo virtuoso who sings for breakfast"],
+	["Truffle", "Rare gourmet sweetheart with a nose for treats"],
+	["Phantom", "Elusive hallway sprinter vanishing in a blink"],
+	["chai", "Spiced and soothing cuddle bug for rainy afternoons"],
+	["Orion", "Celestial hunter of laser dots and feather wands"],
+	["Vesper", "Evening star who awakens just as dusk settles in"],
+	["Poe", "Brooding literary genius perched atop the bookshelf"],
+	["Kiki", "High-flying witch's apprentice with a chirpy meow"],
+	["Biscuit", "Tireless baker of the fluffiest blanket biscuits"],
+	["Zephyr", "Gentle west wind who races through open curtains"],
+	["Mortimer", "Old-world butler inspecting every cardboard box"],
+	["Juniper", "Crisp evergreen climber who rules the highest perch"],
+	["Gomez", "Hopeless romantic with a dapper pencil mustache"],
+	["Morticia", "Statuesque gothic beauty with an enchanting purr"],
+	["Waffles", "Golden-brown breakfast royalty drizzled in charm"],
+	["raven", "Glossy midnight watcher who collects shiny trinkets"],
+	["Taro", "Sweet violet daydreamer with velvety paws"],
+	["Oberon", "King of the fairy forest with majestic ear tufts"],
+	["Titania", "Enchanted twilight queen who dances after dark"],
+	["Wasabi", "Fiery little green-eyed spice ball with attitude"],
+	["Cinder", "Warm fireplace companion dusted in smoky gray"],
+	["linus", "Devoted blanket philosopher with a soothing purr"],
+	["Astrid", "Starlit Nordic shieldmaiden who fears no vacuum"],
+	["gargoyle", "Stoic windowsill guardian watching over the street"],
+	["Matcha", "Zen master of the afternoon catnap ritual"],
+	["Dracula", "Dramatic cape-wearing count of the laundry pile"],
+	["Persephone", "Springtime blossom who rules the underworld sofa"],
+	["Hades", "Misunderstood lord of the shadowy under-bed realm"],
+	["Sesame", "Tiny seed of chaos with irresistible toe beans"],
+	["Fable", "Storybook legend whispered about by neighborhood birds"],
+	["Tarot", "Mystic fortune teller who knows when dinner is near"],
+	["Rune", "Ancient symbol of cozy mystery and quiet wisdom"],
+	["Sylvester", "Classic tuxedo slapstick star with snow-white paws"],
+	["Bagheera", "Sleek jungle mentor who prowls the living room"],
+	["Calcifer", "Sparkling hearth fire demon with a warm heart"],
+	["Jiji", "Sarcastic black cat companion with oversized ears"],
+	["Totoro", "Round forest spirit who gives the best belly hugs"],
+	["Nori", "Crispy seaweed snack lover with a glossy coat"],
+	["Kimchi", "Tangy, spirited troublemaker full of probiotic pep"],
+	["Yuzu", "Bright citrus spark who brightens the gloomiest day"],
+	["Dante", "Fearless poet journeying through nine circles of yarn"],
+	["Virgil", "Loyal guide through the labyrinth of hallway boxes"],
+	["Lilith", "Fiercely independent nocturnal huntress"],
+	["Azrael", "Feathered-toy nemesis with an angelic purr"],
+	["Gatsby", "Lavish host of 3 AM living room zoomie parties"],
+	["Sherlock", "Master detective investigating every closed door"],
+	["Watson", "Steadfast sidekick who never misses second breakfast"],
+	["Puck", "Merry woodland sprite who hides beneath the rug"],
+	["Merlin", "Bearded wizard casting sleep spells on the couch"],
+	["Morgana", "Spellbinding sorceress with piercing green eyes"],
+	["fresco", "Artistic renaissance soul painted in tortoiseshell"],
+	["Tempo", "Rhythmic tail-thumper keeping beat on the floorboards"],
+	["Echo", "Chatty shadow who answers every single question"],
+	["Nimbus", "Floating raincloud of pure silver-tipped fluff"],
+	["Solstice", "Longest-napping champion of the winter season"],
+	["Eclipse", "Rare cosmic phenomenon blocking the computer screen"],
+	["specter", "Friendly poltergeist knocking pens off the desk"],
+	["Velvet", "Plush midnight aristocrat who demands chin scratches"],
+	["Obsidian", "Volcanic glass beauty with a razor-sharp pounce"],
+	["Alabaster", "Snow-white statue who comes alive at treat time"],
+	["Belladonna", "Enchanting nightshade blossom with a hypnotic purr"],
+	["Crowley", "Mischievous charmer who saunters into every room"],
+	["Aziraphale", "Angelically fluffy bookworm guarding the armchair"],
+	["abraxas", "Mystic guardian of the top kitchen cabinet"],
+	["coraline", "Button-eyed explorer of secret living room tunnels"],
+	["Lestat", "Theatrical vampire prince who sleeps until sunset"],
+	["Claudia", "Tiny fierce royal with an unstoppable pounce"],
+	["Barnabas", "Old-fashioned gentleman of the moonlit parlor"],
+	["Endora", "Dramatic spellcaster who judges from the bookshelf"],
+	["Tabitha", "Sweet little witch with a twitching nose"],
+	["Pyewacket", "Legendary familiar who summons snacks on command"],
+	["Grimalkin", "Ancient Scottish fireside sage with amber eyes"],
+	["Pangur", "White monastic scholar chasing words across the page"],
+	["Behemoth", "Larger-than-life literary black cat of the study"],
+	["Caligari", "Somnambulist dreamer curled inside the laundry basket"],
 ];
 
-export const DEFAULT_SAMPLE_NAMES: NameItem[] = SAMPLE_ENTRIES.map(([name, description], idx) => ({
-	id: String(idx + 1),
-	name,
-	description,
-}));
+export const DEFAULT_SAMPLE_NAMES: NameItem[] = (() => {
+	const seen = new Set<string>();
+	const list: NameItem[] = [];
+	for (const [rawName, description] of SAMPLE_ENTRIES) {
+		const trimmed = rawName.trim();
+		const formattedName = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+		const key = formattedName.toLowerCase();
+		if (seen.has(key)) {
+			continue;
+		}
+		seen.add(key);
+		list.push({
+			id: String(list.length + 1),
+			name: formattedName,
+			description,
+		});
+	}
+	return list;
+})();
 
 export function normalizeRatingsWithStats(
 	ratings: Record<string, RatingInput | undefined> | null | undefined,

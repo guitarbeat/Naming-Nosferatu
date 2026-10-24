@@ -1,9 +1,8 @@
 import { Gamepad2, Layers, Search, X } from "lucide-react";
-import { memo, Suspense, useCallback, useEffect, useRef } from "react";
+import { memo, Suspense, useEffect, useRef } from "react";
 import { Loading } from "@/components/UiPrimitives";
 import { useSectionScroll } from "@/hooks/useCommonHooks";
-import useAppStore, { useActiveTournamentStatus } from "@/store";
-import { TournamentSetup, TournamentStatusWidget } from "@/tournament/TournamentSetup";
+import { TournamentSetup } from "@/tournament/TournamentSetup";
 
 /* ==========================================================================
    MAGIC SEARCH
@@ -135,9 +134,7 @@ export const MagicToolbar = memo(function MagicToolbar({
    ========================================================================== */
 
 export function HomeView() {
-	const { hasActiveTournament, namesCount } = useActiveTournamentStatus();
-	const tournamentActions = useAppStore((s) => s.tournamentActions);
-	const { scrollToSection, scheduleSectionScroll, clearPendingScroll } = useSectionScroll();
+	const { scrollToSection, clearPendingScroll } = useSectionScroll();
 
 	useEffect(() => {
 		const handleTabChange = (e: Event) => {
@@ -150,43 +147,13 @@ export function HomeView() {
 		return () => window.removeEventListener("nav-tab-change", handleTabChange);
 	}, [scrollToSection]);
 
-	const handleStartNewTournament = useCallback(() => {
-		clearPendingScroll();
-		tournamentActions.resetTournament();
-		scheduleSectionScroll("pick");
-	}, [clearPendingScroll, tournamentActions, scheduleSectionScroll]);
-
 	useEffect(() => clearPendingScroll, [clearPendingScroll]);
 
 	return (
-		<div
-			className={
-				hasActiveTournament
-					? "w-full flex flex-col items-center"
-					: "w-full min-h-[100vh] flex flex-col relative overflow-hidden"
-			}
-		>
-			{hasActiveTournament ? (
-				<div
-					id="app-flow"
-					className="w-full flex flex-col items-center gap-8 sm:gap-12 py-4 sm:py-6 px-3 sm:px-6 md:px-8 max-w-7xl mx-auto"
-				>
-					<section id="pick" className="w-full scroll-mt-20 sm:scroll-mt-24">
-						<div id="tournament" className="scroll-mt-20 sm:scroll-mt-24" />
-						<div id="contenders" className="scroll-mt-20 sm:scroll-mt-24" />
-						<TournamentStatusWidget namesCount={namesCount} onRestart={handleStartNewTournament} />
-						<div className="w-full min-h-[480px] flex flex-col flex-1">
-							<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-								<TournamentSetup />
-							</Suspense>
-						</div>
-					</section>
-				</div>
-			) : (
-				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-					<TournamentSetup />
-				</Suspense>
-			)}
+		<div className="w-full min-h-[100vh] flex flex-col relative overflow-hidden">
+			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+				<TournamentSetup />
+			</Suspense>
 		</div>
 	);
 }

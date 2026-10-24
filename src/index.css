@@ -370,16 +370,6 @@
 	height: 100%;
 	min-height: clamp(520px, 72vh, 820px);
 	overflow: hidden;
-	perspective: var(--dw-perspective, 1200px);
-	perspective-origin: 50% 50%;
-	-webkit-mask-image: linear-gradient(
-		to bottom,
-		transparent 0%,
-		#000 6%,
-		#000 94%,
-		transparent 100%
-	);
-	mask-image: linear-gradient(to bottom, transparent 0%, #000 6%, #000 94%, transparent 100%);
 }
 
 .drift-wall__plane {
@@ -511,6 +501,85 @@
 
 .drift-wall__tile.is-selected .drift-wall__center-name {
 	fill: var(--primary);
+}
+
+.drift-wall__tile.is-targeted .drift-wall__inner {
+	opacity: 1;
+	background: oklch(var(--secondary-accent) / 0.26);
+	box-shadow:
+		0 0 34px 0 oklch(var(--secondary-accent) / 0.65),
+		inset 0 0 24px 0 oklch(var(--accent) / 0.35);
+	transform: translateZ(12px) scale(1.07);
+}
+
+.drift-wall__tile.is-targeted .glass-surface__specular-dome {
+	box-shadow:
+		inset 0 0 0 2.5px var(--secondary),
+		inset 0 2px 6px 0 rgba(255, 255, 255, 0.55);
+}
+
+.drift-wall__tile.is-targeted .drift-wall__center-name {
+	fill: var(--secondary);
+}
+
+.drift-wall__tile.is-dueling .drift-wall__inner {
+	opacity: 1;
+	background: oklch(var(--accent) / 0.28);
+	box-shadow:
+		0 0 42px 0 oklch(var(--accent) / 0.68),
+		inset 0 0 28px 0 oklch(var(--accent) / 0.35);
+	transform: translateZ(16px) scale(1.06);
+}
+
+.drift-wall__tile.is-dueling-right .drift-wall__inner {
+	background: oklch(var(--secondary-accent) / 0.28);
+	box-shadow:
+		0 0 42px 0 oklch(var(--secondary-accent) / 0.68),
+		inset 0 0 28px 0 oklch(var(--secondary-accent) / 0.35);
+}
+
+.drift-wall__tile.is-dueling-right .glass-surface__specular-dome {
+	box-shadow:
+		inset 0 0 0 2.5px var(--secondary),
+		inset 0 2px 6px 0 rgba(255, 255, 255, 0.55);
+}
+
+.drift-wall__tile.is-dueling-right .drift-wall__center-name {
+	fill: var(--secondary);
+}
+
+.drift-wall__tile.is-dueling:hover .drift-wall__inner,
+.drift-wall__tile.is-dueling.is-active .drift-wall__inner {
+	transform: translateZ(22px) scale(1.11);
+}
+
+.drift-wall__tile.is-voted-winner .drift-wall__inner {
+	background: oklch(var(--secondary-accent) / 0.36);
+	box-shadow:
+		0 0 56px 6px oklch(var(--secondary-accent) / 0.85),
+		inset 0 0 32px 0 oklch(var(--accent) / 0.45);
+	transform: translateZ(24px) scale(1.14);
+}
+
+.drift-wall__tile.is-champion .drift-wall__inner {
+	opacity: 1;
+	background: oklch(var(--accent) / 0.34);
+	box-shadow:
+		0 0 64px 8px oklch(var(--accent) / 0.8),
+		0 0 28px 2px oklch(var(--secondary-accent) / 0.55),
+		inset 0 0 32px 0 oklch(var(--accent) / 0.42);
+	transform: translateZ(24px) scale(1.1);
+}
+
+.drift-wall__tile.is-queued-survivor .drift-wall__inner {
+	opacity: 0.92;
+}
+
+@media (pointer: fine) {
+	.drift-wall--custom-cursor,
+	.drift-wall--custom-cursor .drift-wall__tile {
+		cursor: none;
+	}
 }
 
 img.img-fallback-applied {

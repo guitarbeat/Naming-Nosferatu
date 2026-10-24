@@ -53,6 +53,20 @@ const DEFAULT_CANDIDATE_NAMES: NameItem[] = DEFAULT_SAMPLE_NAMES.map((sample, id
 
 const CANDIDATE_STORAGE_KEY = "nosferatu-candidates";
 
+function deduplicateNamesList(items: NameItem[]): NameItem[] {
+	const seen = new Set<string>();
+	const unique: NameItem[] = [];
+	for (const item of items) {
+		const key = item.name?.trim().toLowerCase();
+		if (!key || seen.has(key)) {
+			continue;
+		}
+		seen.add(key);
+		unique.push(item);
+	}
+	return unique;
+}
+
 function getStoredNames(): NameItem[] {
 	if (typeof window === "undefined") {
 		return DEFAULT_CANDIDATE_NAMES;
@@ -62,19 +76,19 @@ function getStoredNames(): NameItem[] {
 		if (raw) {
 			const parsed = parseJsonValue<NameItem[] | null>(raw, null);
 			if (Array.isArray(parsed) && parsed.length > 0) {
-				// Seamlessly merge new default candidate names if the stored list is from the legacy 12-item set
+				const dedupedParsed = deduplicateNamesList(parsed);
 				const existingNames = new Set(
-					parsed.map((item: NameItem) => item.name?.trim().toLowerCase()),
+					dedupedParsed.map((item: NameItem) => item.name?.trim().toLowerCase()),
 				);
 				const missing = DEFAULT_CANDIDATE_NAMES.filter(
 					(def) => !existingNames.has(def.name?.trim().toLowerCase()),
 				);
-				if (missing.length > 0) {
-					const merged = [...parsed, ...missing];
+				if (missing.length > 0 || dedupedParsed.length !== parsed.length) {
+					const merged = deduplicateNamesList([...dedupedParsed, ...missing]);
 					saveStoredNames(merged);
 					return merged;
 				}
-				return parsed;
+				return dedupedParsed;
 			}
 		}
 	} catch {

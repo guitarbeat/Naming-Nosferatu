@@ -1,38 +1,109 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-	ChevronDown,
-	ChevronUp,
-	Moon,
-	Play,
-	RotateCcw,
-	Shuffle,
-	Sun,
-	Trophy,
-	X,
-} from "lucide-react";
+import { Layers, Moon, Play, RotateCcw, Sparkles, Sun, Trophy, Undo2, X } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DriftWall, type DriftWallItem } from "@/components/DriftWall";
+import {
+	DriftWall,
+	type DriftWallItem,
+	type DriftWallTournamentStage,
+} from "@/components/DriftWall";
 import { Button, Loading } from "@/components/UiPrimitives";
-import { useInertiaScroll } from "@/hooks/useCommonHooks";
+import { useTimedState } from "@/hooks/useCommonHooks";
+import { useTournamentState } from "@/hooks/useTournamentState";
 import { namesQueryOptions, ratingsAPI, SUPABASE_UNAVAILABLE_MSG } from "@/lib/api";
 import {
 	DEFAULT_SAMPLE_NAMES,
-	fadeMotionPreset,
 	getLockedNames,
 	getVisibleNames,
 	hapticNavTap,
+	hapticVoteTap,
 	isNameLocked,
 	normalizeRatingsWithStats,
-	shuffleArray,
 } from "@/lib/utils";
 import useAppStore, { useTournamentSetupState } from "@/store";
 import type { IdType, RatingData } from "@/types";
 import { TournamentArena } from "./TournamentArena";
-import { createIdToNameMap } from "./tournamentEngine";
+import { TournamentBracketModal } from "./TournamentBracket";
+import { TournamentComplete } from "./TournamentComplete";
+import {
+	createIdToNameMap,
+	extractMatchData,
+	getContestantStreak,
+	getMatchSideId,
+	normalizeParticipant,
+} from "./tournamentEngine";
 
 /* ==========================================================================
-   1. TOURNAMENT STATUS WIDGET
+   SYNTHESIZED WEB AUDIO FEEDBACK (ZERO-DEPENDENCY GAME CHIMES)
+   ========================================================================== */
+
+let sharedAudioCtx: AudioContext | null = null;
+
+function playSanctuaryTone(kind: "select" | "start" | "vote" | "undo" | "champion") {
+	if (typeof window === "undefined") {
+		return;
+	}
+	try {
+		const AudioCtor =
+			window.AudioContext ||
+			(window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+		if (!AudioCtor) {
+			return;
+		}
+		if (!sharedAudioCtx) {
+			sharedAudioCtx = new AudioCtor();
+		}
+		const ctx = sharedAudioCtx;
+		if (ctx.state === "suspended") {
+			void ctx.resume();
+		}
+		const now = ctx.currentTime;
+
+		const playNote = (
+			freq: number,
+			startOffset: number,
+			duration: number,
+			gainPeak = 0.045,
+			type: OscillatorType = "sine",
+		) => {
+			const osc = ctx.createOscillator();
+			const gain = ctx.createGain();
+			osc.type = type;
+			osc.frequency.setValueAtTime(freq, now + startOffset);
+			gain.gain.setValueAtTime(0.0001, now + startOffset);
+			gain.gain.exponentialRampToValueAtTime(gainPeak, now + startOffset + 0.018);
+			gain.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + duration);
+			osc.connect(gain);
+			gain.connect(ctx.destination);
+			osc.start(now + startOffset);
+			osc.stop(now + startOffset + duration + 0.02);
+		};
+
+		if (kind === "select") {
+			playNote(523.25, 0, 0.14, 0.035, "sine");
+			playNote(659.25, 0.045, 0.16, 0.03, "triangle");
+		} else if (kind === "start") {
+			playNote(440, 0, 0.18, 0.04, "triangle");
+			playNote(554.37, 0.06, 0.2, 0.04, "triangle");
+			playNote(659.25, 0.12, 0.28, 0.048, "sine");
+		} else if (kind === "vote") {
+			playNote(587.33, 0, 0.14, 0.045, "triangle");
+			playNote(880, 0.05, 0.22, 0.042, "sine");
+		} else if (kind === "undo") {
+			playNote(587.33, 0, 0.12, 0.035, "sine");
+			playNote(440, 0.05, 0.16, 0.035, "sine");
+		} else if (kind === "champion") {
+			playNote(523.25, 0, 0.22, 0.048, "triangle");
+			playNote(659.25, 0.08, 0.24, 0.048, "triangle");
+			playNote(783.99, 0.16, 0.28, 0.05, "triangle");
+			playNote(1046.5, 0.25, 0.45, 0.055, "sine");
+		}
+	} catch {
+		// Ignore audio context restrictions
+	}
+}
+
+/* ==========================================================================
+   1. TOURNAMENT STATUS WIDGET (RETAINED FOR EXTERNAL CONSUMERS)
    ========================================================================== */
 
 export interface TournamentStatusWidgetProps {
@@ -71,16 +142,24 @@ export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStat
 }
 
 /* ==========================================================================
-   2. NAME SELECTOR & FLOATING COMMAND DOCK
+   2. CONTINUOUS FLOATING ARENA & EXPANDING SANCTUARY STAGE
    ========================================================================== */
 
-export const NameSelector = memo(function NameSelector() {
+export const NameSelector = memo(function NameSelector({
+	onTournamentComplete,
+}: {
+	onTournamentComplete?: (ratings: Record<string, RatingData>) => void;
+}) {
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
+	const userName = useAppStore((state) => state.user.name);
 	const theme = useAppStore((state) => state.ui.theme);
 	const setTheme = useAppStore((state) => state.uiActions.setTheme);
 	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const storeTournamentNames = useAppStore((state) => state.tournament.names);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
-	const [showSelectedTray, setShowSelectedTray] = useState(true);
+
+	const [bracketModalOpen, setBracketModalOpen] = useState(false);
+	const [breakdownModalOpen, setBreakdownModalOpen] = useState(false);
 
 	const namesQuery = useQuery({
 		...namesQueryOptions(isAdmin),
@@ -101,7 +180,7 @@ export const NameSelector = memo(function NameSelector() {
 	const isLoading = namesQuery.isPending && !namesQuery.data;
 
 	const selectedIds = useMemo(
-		() => new Set(storeSelectedNames.map((item) => item.id)),
+		() => new Set(storeSelectedNames.map((item) => String(item.id))),
 		[storeSelectedNames],
 	);
 
@@ -109,11 +188,39 @@ export const NameSelector = memo(function NameSelector() {
 	const availableNames = useMemo(() => getVisibleNames(names), [names]);
 	const lockedInNames = useMemo(() => getLockedNames(names), [names]);
 
+	// Active tournament contenders when a bracket has been started
+	const activeTournamentNames = useMemo(
+		() =>
+			storeTournamentNames && storeTournamentNames.length >= 2
+				? getVisibleNames(storeTournamentNames)
+				: [],
+		[storeTournamentNames],
+	);
+	const isTournamentActive = activeTournamentNames.length >= 2;
+
+	const ts = useTournamentState(activeTournamentNames, userName || undefined);
+	const { value: votingSide, setTimed: setVotingSide } = useTimedState<"left" | "right" | null>(
+		null,
+	);
+
+	const hasNotifiedCompleteRef = useRef(false);
+	useEffect(() => {
+		if (!isTournamentActive || !ts.isComplete || ts.totalMatches === 0) {
+			hasNotifiedCompleteRef.current = false;
+			return;
+		}
+		if (!hasNotifiedCompleteRef.current) {
+			hasNotifiedCompleteRef.current = true;
+			playSanctuaryTone("champion");
+			onTournamentComplete?.(normalizeRatingsWithStats(ts.ratings));
+		}
+	}, [isTournamentActive, ts.isComplete, ts.totalMatches, ts.ratings, onTournamentComplete]);
+
 	useEffect(() => {
 		if (lockedInNames.length === 0) {
 			return;
 		}
-		const missingLocked = lockedInNames.filter((n) => !selectedIds.has(n.id));
+		const missingLocked = lockedInNames.filter((n) => !selectedIds.has(String(n.id)));
 		if (missingLocked.length > 0) {
 			tournamentActions.setSelection([...storeSelectedNames, ...missingLocked]);
 		}
@@ -121,50 +228,318 @@ export const NameSelector = memo(function NameSelector() {
 
 	const handleToggleName = useCallback(
 		(nameId: IdType) => {
-			const nameItem = namesById.get(nameId);
+			if (isTournamentActive) {
+				return;
+			}
+			const nameItem = namesById.get(String(nameId));
 			if (!nameItem || isNameLocked(nameItem)) {
 				return;
 			}
 			hapticNavTap();
-			const isCurrentlySelected = selectedIds.has(nameId);
+			playSanctuaryTone("select");
+			const isCurrentlySelected = selectedIds.has(String(nameId));
 			const nextSelection = isCurrentlySelected
-				? storeSelectedNames.filter((n) => n.id !== nameId)
+				? storeSelectedNames.filter((n) => String(n.id) !== String(nameId))
 				: [...storeSelectedNames, nameItem];
 			tournamentActions.setSelection(nextSelection);
 		},
-		[namesById, selectedIds, storeSelectedNames, tournamentActions],
+		[isTournamentActive, namesById, selectedIds, storeSelectedNames, tournamentActions],
+	);
+
+	const handleBatchSelectNames = useCallback(
+		(capturedItems: DriftWallItem[]) => {
+			if (isTournamentActive) {
+				return;
+			}
+			const additions = [];
+			const seen = new Set(selectedIds);
+			for (const item of capturedItems) {
+				if (item.id === undefined) {
+					continue;
+				}
+				const nameItem = namesById.get(String(item.id));
+				if (nameItem && !isNameLocked(nameItem) && !seen.has(String(nameItem.id))) {
+					seen.add(String(nameItem.id));
+					additions.push(nameItem);
+				}
+			}
+			if (additions.length > 0) {
+				hapticNavTap();
+				playSanctuaryTone("select");
+				tournamentActions.setSelection([...storeSelectedNames, ...additions]);
+			}
+		},
+		[isTournamentActive, namesById, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
 	const handleStartSelected = useCallback(() => {
 		if (storeSelectedNames.length >= 2) {
 			hapticNavTap();
+			playSanctuaryTone("start");
 			tournamentActions.setNames(storeSelectedNames);
 		}
 	}, [storeSelectedNames, tournamentActions]);
 
-	const handleQuickStart = useCallback(
-		(count: number) => {
-			hapticNavTap();
-			const picked = shuffleArray(availableNames).slice(0, Math.min(count, availableNames.length));
-			tournamentActions.setSelection(picked);
-			tournamentActions.setNames(picked);
+	const onVoteSide = useCallback(
+		(side: "left" | "right") => {
+			if (!isTournamentActive || !ts.currentMatch || ts.isVoting) {
+				return;
+			}
+			hapticVoteTap(15);
+			playSanctuaryTone("vote");
+			setVotingSide(side, 290);
+			const leftId = getMatchSideId(ts.currentMatch, "left");
+			const rightId = getMatchSideId(ts.currentMatch, "right");
+			ts.handleVoteWithAnimation(
+				side === "left" ? leftId : rightId,
+				side === "left" ? rightId : leftId,
+			);
 		},
-		[availableNames, tournamentActions],
+		[isTournamentActive, ts, setVotingSide],
 	);
 
+	const handleUndoMove = useCallback(() => {
+		if (!isTournamentActive || !ts.canUndo) {
+			return;
+		}
+		hapticNavTap();
+		playSanctuaryTone("undo");
+		ts.handleUndo();
+	}, [isTournamentActive, ts]);
+
+	const handleExitTournament = useCallback(() => {
+		hapticNavTap();
+		setBracketModalOpen(false);
+		setBreakdownModalOpen(false);
+		ts.handleQuit();
+	}, [ts]);
+
+	// Keyboard voting (Left / Right arrows + U for Undo) right inside the floating arena
+	useEffect(() => {
+		if (!isTournamentActive) {
+			return;
+		}
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (bracketModalOpen || breakdownModalOpen || ts.isVoting) {
+				return;
+			}
+			if (e.key === "ArrowLeft" && ts.currentMatch && !ts.isComplete) {
+				e.preventDefault();
+				onVoteSide("left");
+			} else if (e.key === "ArrowRight" && ts.currentMatch && !ts.isComplete) {
+				e.preventDefault();
+				onVoteSide("right");
+			} else if ((e.key === "u" || e.key === "U") && ts.canUndo && !ts.isComplete) {
+				e.preventDefault();
+				handleUndoMove();
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [
+		isTournamentActive,
+		bracketModalOpen,
+		breakdownModalOpen,
+		ts.isVoting,
+		ts.currentMatch,
+		ts.isComplete,
+		ts.canUndo,
+		onVoteSide,
+		handleUndoMove,
+	]);
+
+	// Compute tournament roster & eliminated name IDs
+	const tournamentRosterIds = useMemo(
+		() => new Set(activeTournamentNames.map((n) => String(n.id))),
+		[activeTournamentNames],
+	);
+
+	const eliminatedNameIds = useMemo(() => {
+		const set = new Set<string>();
+		if (!isTournamentActive) {
+			return set;
+		}
+		const teamsById = new Map(ts.teams.map((t) => [t.id, t]));
+		for (const rec of ts.matchHistory) {
+			if (!rec?.loser) {
+				continue;
+			}
+			const loserId = String(rec.loser);
+			const losingTeam = teamsById.get(loserId);
+			if (losingTeam) {
+				for (const memberId of losingTeam.memberIds) {
+					set.add(String(memberId));
+				}
+			} else {
+				set.add(loserId);
+			}
+		}
+		return set;
+	}, [isTournamentActive, ts.matchHistory, ts.teams]);
+
+	// Map active dueling orb IDs to their Left / Right Duel Pedestal
+	const activeDuelOrbMap = useMemo(() => {
+		const map = new Map<string, { side: "left" | "right"; partnerIndex: number }>();
+		if (!isTournamentActive || ts.isComplete || !ts.currentMatch) {
+			return map;
+		}
+		const leftNorm = normalizeParticipant(ts.currentMatch.left);
+		const rightNorm = normalizeParticipant(ts.currentMatch.right);
+		leftNorm.memberIds.forEach((id, idx) => {
+			map.set(String(id), { side: "left", partnerIndex: idx });
+		});
+		rightNorm.memberIds.forEach((id, idx) => {
+			map.set(String(id), { side: "right", partnerIndex: idx });
+		});
+		return map;
+	}, [isTournamentActive, ts.isComplete, ts.currentMatch]);
+
+	// Build DriftWall items with continuous selection & duel state
 	const driftWallItems = useMemo<DriftWallItem[]>(() => {
-		return availableNames.map((nameItem) => ({
-			id: String(nameItem.id),
-			title: nameItem.name,
-			subtitle: nameItem.description
+		return availableNames.map((nameItem) => {
+			const idStr = String(nameItem.id);
+			const subtitle = nameItem.description
 				? nameItem.description
 				: nameItem.pronunciation
 					? `/${nameItem.pronunciation}/`
-					: undefined,
-			selected: selectedIds.has(nameItem.id),
-			locked: isNameLocked(nameItem),
-		}));
-	}, [availableNames, selectedIds]);
+					: undefined;
+
+			if (!isTournamentActive) {
+				return {
+					id: idStr,
+					title: nameItem.name,
+					subtitle,
+					selected: selectedIds.has(idStr),
+					locked: isNameLocked(nameItem),
+					duelSide: null,
+					isChampion: false,
+					isQueuedSurvivor: false,
+					isJustVotedWinner: false,
+				};
+			}
+
+			const isSurvivor = tournamentRosterIds.has(idStr) && !eliminatedNameIds.has(idStr);
+			const duelInfo = activeDuelOrbMap.get(idStr);
+			const isChamp = ts.isComplete && isSurvivor;
+			const isQueued = isSurvivor && !duelInfo && !isChamp;
+			const isJustVotedWinner = Boolean(duelInfo && votingSide && duelInfo.side === votingSide);
+
+			return {
+				id: idStr,
+				title: nameItem.name,
+				subtitle,
+				selected: isSurvivor,
+				locked: isNameLocked(nameItem),
+				duelSide: duelInfo?.side ?? null,
+				duelPartnerIndex: duelInfo?.partnerIndex ?? 0,
+				isChampion: isChamp,
+				isQueuedSurvivor: isQueued,
+				isJustVotedWinner,
+			};
+		});
+	}, [
+		availableNames,
+		isTournamentActive,
+		selectedIds,
+		tournamentRosterIds,
+		eliminatedNameIds,
+		activeDuelOrbMap,
+		ts.isComplete,
+		votingSide,
+	]);
+
+	// Build the tournamentStage configuration for DriftWall's expanding Sanctuary Arena Stage
+	const tournamentStageConfig = useMemo<DriftWallTournamentStage | null>(() => {
+		if (!isTournamentActive) {
+			return null;
+		}
+		const survivorCount = Array.from(tournamentRosterIds).filter(
+			(id) => !eliminatedNameIds.has(id),
+		).length;
+		const queuedCount = Math.max(0, survivorCount - activeDuelOrbMap.size);
+
+		if (ts.isComplete) {
+			const winningRecord =
+				ts.matchHistory.length > 0 ? ts.matchHistory[ts.matchHistory.length - 1] : null;
+			const winnerId = winningRecord?.winner;
+			const winningTeam = winnerId ? ts.teams.find((t) => t?.id === winnerId) : undefined;
+			const winningNameItem = winnerId
+				? activeTournamentNames.find(
+						(n) => String(n.id) === String(winnerId) || n.name === String(winnerId),
+					)
+				: activeTournamentNames.find(
+						(n) => tournamentRosterIds.has(String(n.id)) && !eliminatedNameIds.has(String(n.id)),
+					);
+			const championLabel = winningTeam
+				? winningTeam.memberNames.join(" & ")
+				: winningNameItem?.name || (winnerId ? String(winnerId) : "Champion");
+
+			return {
+				active: true,
+				isComplete: true,
+				round: ts.round,
+				totalRounds: ts.totalRounds,
+				bracketStage: ts.bracketStage,
+				matchNumber: ts.matchNumber,
+				totalMatches: ts.totalMatches,
+				progress: 100,
+				tournamentMode: ts.tournamentMode,
+				championLabel,
+				championSub: winningNameItem?.description,
+				championElo: winnerId ? ts.ratings[String(winnerId)] : undefined,
+				queuedCount: 0,
+			};
+		}
+
+		const m = ts.currentMatch ? extractMatchData(ts.currentMatch) : null;
+		const leftStreak = m ? getContestantStreak(m.leftId, ts.matchHistory) : 0;
+		const rightStreak = m ? getContestantStreak(m.rightId, ts.matchHistory) : 0;
+
+		return {
+			active: true,
+			isComplete: false,
+			round: ts.round,
+			totalRounds: ts.totalRounds,
+			bracketStage: ts.bracketStage,
+			matchNumber: ts.matchNumber,
+			totalMatches: ts.totalMatches,
+			progress: ts.progress,
+			tournamentMode: ts.tournamentMode,
+			leftLabel: m?.leftName ?? "Left",
+			rightLabel: m?.rightName ?? "Right",
+			leftSub: m?.leftDescription,
+			rightSub: m?.rightDescription,
+			leftElo: m ? (ts.ratings[m.leftId] ?? 1500) : undefined,
+			rightElo: m ? (ts.ratings[m.rightId] ?? 1500) : undefined,
+			leftStreak,
+			rightStreak,
+			votingSide,
+			isVoting: ts.isVoting,
+			queuedCount,
+			onVoteSide,
+		};
+	}, [
+		isTournamentActive,
+		tournamentRosterIds,
+		eliminatedNameIds,
+		activeDuelOrbMap.size,
+		ts.isComplete,
+		ts.matchHistory,
+		ts.teams,
+		activeTournamentNames,
+		ts.round,
+		ts.totalRounds,
+		ts.bracketStage,
+		ts.matchNumber,
+		ts.totalMatches,
+		ts.progress,
+		ts.tournamentMode,
+		ts.currentMatch,
+		ts.ratings,
+		ts.isVoting,
+		votingSide,
+		onVoteSide,
+	]);
 
 	if (isLoading) {
 		return (
@@ -193,6 +568,176 @@ export const NameSelector = memo(function NameSelector() {
 	const selectedCount = storeSelectedNames.length;
 	const canStartCustom = selectedCount >= 2;
 	const modeLabel = selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2 Teams" : "1v1 Bracket";
+	const survivingCount = isTournamentActive
+		? Array.from(tournamentRosterIds).filter((id) => !eliminatedNameIds.has(id)).length
+		: selectedCount;
+
+	const dockFooterControls = isTournamentActive ? (
+		<div className="flex w-full items-center justify-between gap-2 sm:gap-4">
+			<div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+				<span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-foreground whitespace-nowrap shrink-0">
+					Name Nosferatu
+				</span>
+				<span className="h-4 w-px bg-foreground/20 shrink-0" aria-hidden="true" />
+				<div className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap truncate">
+					{ts.isComplete ? (
+						<span className="inline-flex items-center gap-1.5 font-semibold text-primary">
+							<Trophy className="size-3.5" />
+							<span>Champion Crowned</span>
+						</span>
+					) : (
+						<>
+							<span className="font-mono font-bold tabular-nums text-primary">
+								{survivingCount}
+							</span>
+							<span className="font-medium text-foreground/80">
+								of {activeTournamentNames.length} surviving
+							</span>
+						</>
+					)}
+				</div>
+			</div>
+
+			<div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+				<button
+					type="button"
+					onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+					className="inline-flex size-9 sm:size-10 items-center justify-center rounded-full border border-foreground/15 bg-foreground/8 text-foreground/80 transition-colors hover:bg-foreground/15 hover:text-foreground shrink-0"
+					title={
+						theme === "dark" ? "Switch to warm dusk light mode" : "Switch to nocturnal dark mode"
+					}
+					aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+				>
+					{theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+				</button>
+
+				<button
+					type="button"
+					onClick={() => setBracketModalOpen(true)}
+					className="inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full border border-primary/35 bg-primary/12 px-3 sm:px-4 text-xs font-semibold text-primary transition-colors hover:bg-primary/22 whitespace-nowrap shrink-0"
+					aria-label="Open interactive tournament bracket"
+				>
+					<Layers className="size-3.5" />
+					<span>Bracket</span>
+				</button>
+
+				{ts.isComplete ? (
+					<button
+						type="button"
+						onClick={() => setBreakdownModalOpen(true)}
+						className="hidden sm:inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full border border-secondary/40 bg-secondary/15 px-3.5 text-xs font-semibold text-secondary transition-colors hover:bg-secondary/25 whitespace-nowrap shrink-0"
+						aria-label="View full tournament summary"
+					>
+						<Sparkles className="size-3.5" />
+						<span>Summary</span>
+					</button>
+				) : (
+					<button
+						type="button"
+						onClick={handleUndoMove}
+						disabled={!ts.canUndo}
+						className={`inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full border px-3 sm:px-3.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
+							ts.canUndo
+								? "border-foreground/20 bg-foreground/8 text-foreground/85 hover:bg-foreground/15"
+								: "cursor-not-allowed border-foreground/10 bg-foreground/5 text-foreground/35"
+						}`}
+						aria-label="Undo last vote and recall orb"
+					>
+						<Undo2 className="size-3.5" />
+						<span className="hidden sm:inline">Undo</span>
+					</button>
+				)}
+
+				<button
+					type="button"
+					onClick={handleExitTournament}
+					className={`inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full px-3.5 sm:px-4 text-xs font-bold transition-colors whitespace-nowrap shrink-0 ${
+						ts.isComplete
+							? "bg-primary text-primary-foreground shadow-sm hover:brightness-105"
+							: "border border-destructive/30 bg-destructive/12 text-destructive hover:bg-destructive/22"
+					}`}
+					aria-label={ts.isComplete ? "Start a new bracket" : "End current bracket"}
+				>
+					{ts.isComplete ? <RotateCcw className="size-3.5" /> : <X className="size-3.5" />}
+					<span>{ts.isComplete ? "New Bracket" : "Exit"}</span>
+				</button>
+			</div>
+		</div>
+	) : (
+		<div className="flex w-full items-center justify-between gap-3 sm:gap-5">
+			<div className="flex items-center gap-3 min-w-0">
+				<span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-foreground whitespace-nowrap shrink-0">
+					Name Nosferatu
+				</span>
+				<span className="h-4 w-px bg-foreground/20 shrink-0" aria-hidden="true" />
+				<div className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap truncate">
+					{selectedCount > 0 ? (
+						<>
+							<span className="font-mono font-bold tabular-nums text-primary">{selectedCount}</span>
+							<span className="font-medium text-foreground/85">in sanctuary</span>
+							{canStartCustom ? (
+								<>
+									<span aria-hidden="true" className="hidden md:inline text-foreground/40">
+										&middot;
+									</span>
+									<span className="hidden md:inline font-semibold text-secondary">{modeLabel}</span>
+								</>
+							) : (
+								<>
+									<span aria-hidden="true" className="text-foreground/40">
+										&middot;
+									</span>
+									<span className="font-medium text-foreground/65">Choose 1 more to start</span>
+								</>
+							)}
+						</>
+					) : (
+						<span className="font-medium text-foreground/75">
+							Drag a box or tap orbs to choose names
+						</span>
+					)}
+				</div>
+			</div>
+
+			<div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+				<button
+					type="button"
+					onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+					className="inline-flex size-9 sm:size-10 items-center justify-center rounded-full border border-foreground/15 bg-foreground/8 text-foreground/80 transition-colors hover:bg-foreground/15 hover:text-foreground shrink-0"
+					title={
+						theme === "dark" ? "Switch to warm dusk light mode" : "Switch to nocturnal dark mode"
+					}
+					aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+				>
+					{theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+				</button>
+
+				{selectedCount > 0 && (
+					<button
+						type="button"
+						onClick={() => tournamentActions.setSelection([])}
+						className="inline-flex h-9 sm:h-10 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground whitespace-nowrap shrink-0"
+						aria-label="Clear selected names"
+					>
+						<X className="size-3.5" />
+						<span>Clear</span>
+					</button>
+				)}
+
+				{canStartCustom && (
+					<button
+						type="button"
+						onClick={handleStartSelected}
+						className="inline-flex h-9 sm:h-10 items-center gap-2 rounded-full bg-primary px-4 sm:px-5 text-xs sm:text-sm font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:brightness-105 active:scale-[0.98] whitespace-nowrap shrink-0"
+					>
+						<Play className="size-3.5 fill-current" />
+						<span>Start Bracket</span>
+						<span className="font-mono tabular-nums opacity-90">&middot; {selectedCount}</span>
+					</button>
+				)}
+			</div>
+		</div>
+	);
 
 	return (
 		<div className="relative w-full min-h-screen overflow-hidden select-none flex flex-col">
@@ -201,6 +746,9 @@ export const NameSelector = memo(function NameSelector() {
 					<DriftWall
 						items={driftWallItems}
 						onItemClick={(item) => handleToggleName(item.id as IdType)}
+						onItemsBatchSelect={handleBatchSelectNames}
+						dockFooter={dockFooterControls}
+						tournamentStage={tournamentStageConfig}
 						columns={7}
 						tileWidth={150}
 						tileHeight={150}
@@ -218,161 +766,69 @@ export const NameSelector = memo(function NameSelector() {
 				</div>
 			)}
 
-			<div className="floating-navbar-frame">
-				{selectedCount > 0 && showSelectedTray && (
-					<div
-						aria-label="Selected contender names"
-						className="floating-navbar-shell w-full max-w-[min(95vw,46rem)] rounded-2xl px-3.5 py-2.5 transition-all duration-200"
-					>
-						<div className="flex flex-wrap items-center gap-1.5 max-h-28 overflow-y-auto pr-1">
-							{storeSelectedNames.map((item, idx) => {
-								const locked = isNameLocked(item);
-								return (
-									<button
-										key={item.id}
-										type="button"
-										disabled={locked}
-										onClick={() => handleToggleName(item.id)}
-										title={locked ? `${item.name} is locked in` : `Remove ${item.name}`}
-										aria-label={locked ? `${item.name} (locked)` : `Remove ${item.name}`}
-										className="group inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-xs font-bold text-foreground shadow-xs transition-all duration-150 hover:border-destructive/50 hover:bg-destructive/15 active:scale-95 disabled:opacity-70"
-									>
-										<span className="font-mono text-[10px] font-extrabold text-primary tabular-nums">
-											#{idx + 1}
-										</span>
-										<span className="tracking-tight">{item.name}</span>
-										{!locked && (
-											<X className="size-3 text-foreground/65 transition-colors group-hover:text-destructive" />
-										)}
-									</button>
-								);
-							})}
-						</div>
-					</div>
-				)}
+			{/* Interactive Bracket Tree Modal */}
+			{isTournamentActive && (
+				<TournamentBracketModal
+					isOpen={bracketModalOpen}
+					onClose={() => setBracketModalOpen(false)}
+					bracketEntrants={ts.bracketEntrants}
+					matchHistory={ts.matchHistory}
+					currentMatch={ts.currentMatch}
+					names={activeTournamentNames}
+					teams={ts.teams}
+					ratings={ts.ratings}
+					totalRounds={ts.totalRounds}
+					tournamentMode={ts.tournamentMode}
+					onVote={(w, l) => ts.handleVote(w, l)}
+				/>
+			)}
 
-				<nav
-					aria-label="Tournament launch controls"
-					className="floating-navbar-shell flex items-center justify-between gap-3 sm:gap-5 rounded-full pl-5 pr-2 py-2 sm:pl-6 sm:pr-2.5 sm:py-2"
+			{/* Full Summary Breakdown Modal */}
+			{isTournamentActive && breakdownModalOpen && (
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-md"
+					role="dialog"
+					aria-modal="true"
+					aria-label="Tournament Summary Modal"
 				>
-					<div className="flex items-center gap-3 min-w-0">
-						<span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-foreground whitespace-nowrap shrink-0">
-							Name Nosferatu
-						</span>
-						<span className="h-4 w-px bg-foreground/20 shrink-0" aria-hidden="true" />
-						<div className="flex items-center gap-2 whitespace-nowrap truncate">
-							{selectedCount > 0 ? (
-								<button
-									type="button"
-									onClick={() => setShowSelectedTray((prev) => !prev)}
-									className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/15 px-3 py-1 text-xs sm:text-sm transition-colors hover:bg-primary/25"
-									title={showSelectedTray ? "Hide selected names list" : "Show selected names list"}
-									aria-expanded={showSelectedTray}
-								>
-									<span className="font-mono font-extrabold tabular-nums text-primary">
-										{selectedCount}
-									</span>
-									<span className="font-semibold text-foreground">selected</span>
-									{canStartCustom && (
-										<>
-											<span aria-hidden="true" className="hidden md:inline text-foreground/50">
-												&middot;
-											</span>
-											<span className="hidden md:inline text-xs font-bold text-secondary">
-												{modeLabel}
-											</span>
-										</>
-									)}
-									{showSelectedTray ? (
-										<ChevronDown className="size-3.5 text-foreground/75" />
-									) : (
-										<ChevronUp className="size-3.5 text-foreground/75" />
-									)}
-								</button>
-							) : (
-								<span className="text-xs sm:text-sm font-medium text-foreground/75">
-									Tap orbs or quick-start
-								</span>
-							)}
-						</div>
-					</div>
-
-					<div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+					<div className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl border border-border/80 bg-card p-4 sm:p-6 shadow-2xl">
 						<button
 							type="button"
-							onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-							className="inline-flex size-10 items-center justify-center rounded-full border border-foreground/15 bg-foreground/8 text-foreground/80 transition-colors hover:bg-foreground/15 hover:text-foreground shrink-0"
-							title={
-								theme === "dark"
-									? "Switch to warm dusk light mode"
-									: "Switch to nocturnal dark mode"
-							}
-							aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+							onClick={() => setBreakdownModalOpen(false)}
+							className="sticky top-2 float-right z-20 inline-flex size-9 items-center justify-center rounded-full border border-border/50 bg-background/80 text-foreground hover:bg-muted"
+							aria-label="Close summary modal"
 						>
-							{theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+							<X className="size-4" />
 						</button>
-
-						{selectedCount > 0 && (
-							<button
-								type="button"
-								onClick={() => tournamentActions.setSelection([])}
-								className="inline-flex h-10 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold text-foreground/80 transition-colors hover:bg-foreground/10 hover:text-foreground whitespace-nowrap shrink-0"
-								aria-label="Clear selected names"
-							>
-								<X className="size-3.5" />
-								<span>Clear</span>
-							</button>
-						)}
-
-						{canStartCustom ? (
-							<button
-								type="button"
-								onClick={handleStartSelected}
-								className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-xs sm:text-sm font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:brightness-105 active:scale-[0.98] whitespace-nowrap shrink-0"
-							>
-								<Play className="size-3.5 fill-current" />
-								<span>Start Bracket</span>
-								<span className="font-mono tabular-nums opacity-90">&middot; {selectedCount}</span>
-							</button>
-						) : (
-							<>
-								<button
-									type="button"
-									onClick={() => handleQuickStart(8)}
-									className="inline-flex h-10 items-center gap-1.5 rounded-full border border-foreground/15 bg-foreground/8 px-4 text-xs font-semibold text-foreground transition-colors hover:bg-foreground/15 whitespace-nowrap shrink-0"
-								>
-									<Shuffle className="size-3.5 text-primary" />
-									<span>Quick 8</span>
-								</button>
-								<button
-									type="button"
-									onClick={() => handleQuickStart(16)}
-									className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-xs sm:text-sm font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:brightness-105 active:scale-[0.98] whitespace-nowrap shrink-0"
-								>
-									<Play className="size-3.5 fill-current" />
-									<span>Start Top 16</span>
-								</button>
-							</>
-						)}
+						<TournamentComplete
+							totalMatches={ts.totalMatches}
+							participantCount={activeTournamentNames.length}
+							onNewTournament={handleExitTournament}
+							bracketEntrants={ts.bracketEntrants}
+							matchHistory={ts.matchHistory}
+							names={activeTournamentNames}
+							teams={ts.teams}
+							ratings={ts.ratings}
+							totalRounds={ts.totalRounds}
+							tournamentMode={ts.tournamentMode}
+						/>
 					</div>
-				</nav>
-			</div>
+				</div>
+			)}
 		</div>
 	);
 });
+
+export { TournamentArena };
 
 /* ==========================================================================
    3. TOURNAMENT SETUP CONTAINER
    ========================================================================== */
 
 export function TournamentSetup() {
-	const { names, isComplete, ratings, userId, userName } = useTournamentSetupState();
+	const { isComplete, ratings, userId, userName } = useTournamentSetupState();
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
 	const hasSavedRef = useRef(false);
-	const containerRef = useRef<HTMLDivElement>(null);
-	const prefersReducedMotion = useReducedMotion();
-
-	useInertiaScroll(containerRef, prefersReducedMotion);
 
 	const saveRatingsMutation = useMutation({
 		mutationFn: ({ userId, ratings }: { userId: string; ratings: Record<string, RatingData> }) =>
@@ -408,30 +864,8 @@ export function TournamentSetup() {
 	);
 
 	return (
-		<div ref={containerRef} className="w-full flex flex-col flex-1 min-h-[520px] gap-2">
-			<AnimatePresence mode="wait">
-				{names && names.length >= 2 ? (
-					<motion.div
-						key="arena"
-						{...fadeMotionPreset}
-						className="w-full flex flex-col flex-1 min-h-[520px] py-0"
-					>
-						<TournamentArena
-							names={names}
-							onComplete={handleArenaComplete}
-							userName={userName ?? undefined}
-						/>
-					</motion.div>
-				) : (
-					<motion.div
-						key="setup"
-						{...fadeMotionPreset}
-						className="w-full flex flex-col flex-1 min-h-[520px] py-0"
-					>
-						<NameSelector />
-					</motion.div>
-				)}
-			</AnimatePresence>
+		<div className="w-full flex flex-col flex-1 min-h-screen">
+			<NameSelector onTournamentComplete={handleArenaComplete} />
 		</div>
 	);
 }

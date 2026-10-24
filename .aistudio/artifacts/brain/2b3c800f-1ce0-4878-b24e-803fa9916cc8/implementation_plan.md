@@ -1,105 +1,57 @@
-# Naming Nosferatu: UI Revamp & Balanced Modular Architecture
+# Continuous Fluid Sanctuary Tournament Plan
 
-Streamline and elevate the **Naming Nosferatu** experience by refining the UI/UX within its signature palette and layout, replacing heavy custom WebGL/SVG/scroll plumbing with crisp CSS and Framer Motion implementations, and splitting all 1,000+ line mega-files into clean, maintainable **200–400 line modules** while keeping the entire repository comfortably under the **50-file ceiling** (~44 total files).
+## 1. Context & Goal
+We are eliminating the abrupt transition from the floating orb space into a separate static tournament page. Instead, when **Start Bracket** is clicked, the entire head-to-head tournament unfolds organically inside the same living floating arena: the **Selected Sanctuary Dock** liquid-morphs upward into an **Expanded Sanctuary Arena Stage**, the two active matchup orbs spring-fly into Left & Right Duel Pedestals inside the stage, unselected orbs continue drifting in the outer space around the forcefield, and voting launches eliminated orbs back into the outer drift while returning winners to the Sanctuary survivor pool.
 
-### User Review & Critical Decisions
+## 2. Confirmed Product & UX Decisions
+- **Sanctuary Stage Expansion**: Clicking **Start Bracket** keeps the floating orb canvas, physics bodies, and animated mouse cursor continuously active. The bottom Sanctuary Dock smoothly expands upward into an **Arena Stage** where the two active matchup contenders face off inside the forcefield while remaining tournament survivors wait in a docked Sanctuary queue row.
+- **Direct Orb Duel Voting**: Players vote by clicking or tapping directly on either of the two enlarged dueling orbs (or pressing `Left Arrow` / `Right Arrow`), with clear hover/focus rings, matchup prompts, and subtle Web Audio chime feedback.
+- **Fluid Post-Vote Resolution**:
+  - **Winning Orb(s)**: Pulse with a celebratory golden/rose halo and spring-glide back into the Sanctuary survivor row to await the next round.
+  - **Eliminated Orb(s)**: Eject upward across the Sanctuary forcefield boundary with a ripple and launch velocity back into the outer floating drift space.
+  - **Champion Finale**: When the final match concludes, the crowned Champion orb(s) take center stage inside the Sanctuary with a celebratory aura, full rankings drawer toggle, and an inline **New Bracket** reset that releases orbs smoothly without reloading.
 
-> [!IMPORTANT]
-> Based on your confirmed preferences, the revamp locks in the following core decisions:
-> - **Scope**: Revamp and polish UI interactions, visual clarity, and responsiveness while dramatically simplifying oversized code.
-> - **Mega-File Strategy**: Both simplify over-engineered effects (WebGL shaders, pooled SVG displacement filters, custom inertia scroll engines) **and** split the 5 oversized files (`VisualEffects.tsx`, `hooks.ts`, `TournamentViews.tsx`, `tournamentEngine.ts`, `AppChrome.tsx`) into balanced **200–400 line** focused modules.
-> - **Visual Identity**: Preserve the exact current color palette (`oklch` light/dark tokens, `#12100d` dark canvas, rose/magenta primary `--accent`, mint `--secondary-accent`, Fredoka & Quicksand typography) and spatial layout structure.
-
-- **Confirmed Decision 1**: Eliminate the 5 mega-files (currently 1,015 to 1,838 lines each; ~7,080 lines combined) by stripping redundant boilerplate and distributing responsibilities across 10 focused modules averaging ~250 lines each.
-- **Confirmed Decision 2**: Keep total repository file count at **44 files** (22 in `public/`, 8 root/config files, and 20 in `src/`—well below the 50-file limit) with **zero source file exceeding 400 lines**.
-
----
-
-### 1. Overview & Core Concept
-
-- **What It Does**: Naming Nosferatu is an interactive cat-naming tournament and Elo rating showcase where users browse candidate names in an orbital/grid showcase (`DriftWall`), configure 1v1 or 2v2 brackets, vote in head-to-head matchups (`TournamentArena`), inspect live bracket trees (`TournamentBracket`), and crown a champion (`TournamentComplete`).
-- **Target Audience**: Friends, cat lovers, and community voters looking for a tactile, joyful, zero-friction bracket voting experience on desktop or mobile.
-- **Key Value of This Revamp**:
-  1. **Zero Mega-Files**: Every TypeScript/React module in `src/` is scoped to a single clear domain (200–400 lines), making the codebase effortless to read and navigate.
-  2. **Lighter, Snappier Runtime**: Replacing 1,800+ lines of raw WebGL (`ogl`) shaders, manual SVG filter registries, and custom pointer-capture physics with hardware-accelerated CSS backdrop-blur, radial mesh gradients, and native smooth scrolling + Framer Motion springs removes jank and cuts bundle overhead.
-  3. **Refined UI Polish**: Cleaner card elevation, crisp typography hierarchy, tabular numerals for Elo ratings and streaks, and responsive touch targets ($\ge 44\text{px}$) while keeping the exact current palette and layout flow.
-
----
-
-### 2. User Experience & Visual Design
-
-- **Key User Flows**:
-  1. **Contender Showcase & Roster Setup (`DriftWall` & `NameSelector`)**: Users explore the interactive cat name showcase, filter or select contenders, and launch right into a bracket with one click.
-  2. **Head-to-Head Voting (`TournamentArena`)**: Two contenders (or 2v2 tag teams) face off side-by-side with keyboard support (`ArrowLeft` / `ArrowRight`), live Elo win-streak heat indicators (`warm`, `hot`, `blazing`), round progress, and instant undo.
-  3. **Interactive Bracket Inspection (`TournamentBracket`)**: Users toggle between the visual `Tree Flow` and `Rounds List` views, search contenders in real time with `MagicToolbar`, and zoom/pan smoothly.
-  4. **Championship Podium (`TournamentComplete`)**: Displays the crowned winner, podium finishers, final Elo standings with win/loss records, and quick-restart controls.
-- **Visual Identity & Theme**:
-  - *Aesthetic Direction*: Tactile liquid-glass editorial playful aesthetic—preserving the exact current `oklch` color tokens (`--bg`, `--surface`, `--fg`, `--accent: 0.75 0.15 350`, `--secondary-accent: 0.8 0.12 160`) and dark mode atmosphere.
-  - *Typography & Hierarchy*: `Fredoka` (`--font-display`) for expressive headers and contender titles; `Quicksand` (`--font-sans`) for body copy and controls; `tabular-nums` on all Elo ratings, round counters, and match percentages.
-  - *Component Styling & Layout*: Frosted glass surfaces (`backdrop-blur-xl`), subtle specular borders, and clean spacing hierarchy without nested card clutter.
-- **Interactive Feedback & Motion**:
-  - Snappy $\le 200\text{ms}$ button and card hover responses using compositor-only `transform` and `opacity` transitions.
-  - Native CSS smooth scrolling with momentum instead of a 450-line custom JS inertia loop.
-
----
-
-### 3. Key Product Decisions & Trade-Offs
-
-- **Decision 1: Replace Heavy WebGL & Custom SVG Filter Pools with CSS + Framer Motion**
-  - *Chosen Approach*: Streamline `GlassSurface`, `Iridescence`, and `DriftWall` by using modern CSS `backdrop-filter`, layered radial gradients, and hardware-accelerated CSS/Framer Motion transforms instead of raw `ogl` WebGL shaders and manual DOM SVG `<filter>` pools.
-  - *Why*: Cuts `VisualEffects` from 1,838 lines down to ~450 lines split across two clean files (`GlassEffects.tsx` and `DriftWall.tsx`), eliminates GPU context loss bugs on mobile, and preserves the exact liquid-glass visual look.
-- **Decision 2: Split the 5 Mega-Files into Balanced 200–400 Line Domain Modules**
-  - *Chosen Approach*:
-    - Split `VisualEffects.tsx` (1,838 LOC) $\rightarrow$ `GlassEffects.tsx` (~200 LOC) + `DriftWall.tsx` (~280 LOC).
-    - Split `hooks.ts` (1,552 LOC) $\rightarrow$ `hooks/useCommonHooks.ts` (~240 LOC) + `hooks/useTournamentState.ts` (~320 LOC).
-    - Split `TournamentViews.tsx` (1,494 LOC) $\rightarrow$ `TournamentSetup.tsx` (~280 LOC) + `TournamentArena.tsx` (~340 LOC) + `TournamentBracket.tsx` (~320 LOC) + `TournamentComplete.tsx` (~240 LOC).
-    - Split `tournamentEngine.ts` (1,182 LOC) $\rightarrow$ `tournamentEngine.ts` (~320 LOC) + `bracketTree.ts` (~280 LOC).
-    - Split `AppChrome.tsx` (1,015 LOC) $\rightarrow$ `UiPrimitives.tsx` (~260 LOC) + `AppChrome.tsx` (~300 LOC).
-  - *Why*: Every single file in `src/` lands in the sweet spot of **150–380 lines**, keeping total repository files at **44** (under the 50-file ceiling) while eliminating 1,000+ line monoliths.
-- **Decision 3: Simplify `index.css` & Store Persistence**
-  - *Chosen Approach*: Consolidate redundant CSS keyframes and unused legacy classes in `index.css` while keeping all theme variables and glass tokens intact; streamline `storage.ts` and `store/index.ts` to remove duplicate serialization wrappers.
-  - *Why*: Improves maintainability and page load performance with zero loss of state persistence or theme fidelity.
-
----
-
-### 4. Technical Architecture & Data Strategy
+## 3. Visual & Spatial Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                             index.html                               │
-└─────────────────────────────────┬────────────────────────────────────┘
-                                  │
-┌─────────────────────────────────▼────────────────────────────────────┐
-│                            src/main.tsx                              │
-│                                 │                                    │
-│                   src/components/AppChrome.tsx                       │
-│            (Providers, BootScreen, Layout, Error/Toast)              │
-└─────────────────────────────────┬────────────────────────────────────┘
-                                  │
-┌─────────────────────────────────▼────────────────────────────────────┐
-│                            src/App.tsx                               │
-│                                 │                                    │
-│        ┌────────────────────────┼────────────────────────┐           │
-│        ▼                        ▼                        ▼           │
-│  UI & Visual Layer       Controls & Setup        Tournament Flow     │
-│  ├─ UiPrimitives.tsx     ├─ MagicControls.tsx    ├─ TournamentSetup  │
-│  ├─ GlassEffects.tsx     └─ DriftWall.tsx        ├─ TournamentArena  │
-│  └─ AppChrome.tsx                                ├─ TournamentBracket│
-│                                                  └─ TournamentComplete│
-└─────────────────────────────────┬────────────────────────────────────┘
-                                  │
-┌─────────────────────────────────▼────────────────────────────────────┐
-│                      Engine, Hooks & State Layer                     │
-│  ├─ tournament/tournamentEngine.ts   ├─ hooks/useTournamentState.ts  │
-│  ├─ tournament/bracketTree.ts        ├─ hooks/useCommonHooks.ts      │
-│  ├─ store/index.ts                   └─ lib/{api,storage,utils}.ts   │
-└──────────────────────────────────────────────────────────────────────┘
++-----------------------------------------------------------------------+
+|  [ Theme Toggle ]          OUTER DRIFT ARENA                          |
+|                                                                       |
+|     ( Mochi )         ( Shadow )      <-- Unselected & eliminated     |
+|                          \                orbs keep drifting &        |
+|                        ,=^..^=,~~         chasing the Mouse cursor    |
+|                                                                       |
+|         +--------------- SANCTUARY ARENA STAGE ---------------+       |
+|         |  "Which name fits best?"     Round 1 · Match 2 of 4 |       |
+|         |                                                     |       |
+|         |      ( ( LUNA ) )       VS       ( ( OLIVER ) )     |       |
+|         |     [Click / Left]              [Click / Right]     |       |
+|         |                                                     |       |
+|         |  Survivors Queue:  ( Bella )  ( Leo )  ( Milo )     |       |
+|         |  -------------------------------------------------  |       |
+|         |  [ Undo ]   [ View Bracket ]        [ End Bracket ] |       |
+|         +-----------------------------------------------------+       |
++-----------------------------------------------------------------------+
 ```
 
-#### Data Model & State Mapping
-- **Zustand Store (`src/store/index.ts`)**: Holds `tournament` state (active contenders, `ratings`, `voteHistory`, `matchHistory`, `currentRound`, `currentMatch`, `mode`), `user` profile, and `ui` theme (`light` / `dark` / `system`).
-- **Tournament State Hook (`useTournamentState`)**: Orchestrates bracket progression, auto-advances bye rounds, computes real-time Elo adjustments via `tournamentEngine`, supports single-click `handleUndo`, and syncs snapshots to `localStorage`.
-- **Interactive View Transitions**:
-  - **Setup State**: Renders `DriftWall` showcase and `NameSelector` roster picker; clicking *Start Tournament* initializes seeds/teams and transitions to `TournamentArena`.
-  - **Active Match State**: Renders `TournamentHeader` + `BracketTree` pill bar + 2-column contender cards (`TournamentArena`) with keyboard and click voting handlers; clicking *Bracket Path* opens the `TournamentBracket` modal (`tree` or `cards` view with live search and zoom).
-  - **Completed State**: Transitions to `TournamentComplete` podium with champion spotlight, Elo leaderboard table, and *Play Again* reset handler.
+- **Continuous Physics Coordinate Engine**:
+  - Every orb remains a single persistent DOM node in `DriftWall` across Selection, Active Matchup, and Champion states—zero unmount/remount page swaps.
+  - During tournament mode, each orb's physics state dynamically resolves to one of four spatial roles:
+    1. **Outer Drift (`unselected` / `eliminated`)**: Floats freely in the upper/outer arena, bounces off walls and the expanded Sanctuary Stage boundary, and chases the animated mouse cursor.
+    2. **Sanctuary Survivor Queue (`queued`)**: Comfortably docked in the lower survivor row inside the Sanctuary forcefield.
+    3. **Active Duelist (`dueling-left` / `dueling-right`)**: Springs to the Left or Right Duel Pedestal inside the upper Sanctuary Stage at an enlarged hero scale (`1.35x`–`1.5x`) with an interactive duel halo and click/tap vote handler.
+    4. **Crowned Champion (`champion`)**: Springs to the central pedestal inside the Sanctuary Stage at `1.65x` scale with a celebratory crown badge and golden glow.
+
+## 4. Key Functional & Animation Flows
+- **Seamless Bracket Start & Match Progression**:
+  - Clicking **Start Bracket** locks the current selected orbs as the tournament roster and transitions the Sanctuary Dock into `tournament` mode.
+  - For each match (supporting both `1v1` Solo and `2v2` Duo modes), the active contender orb(s) smoothly spring from the survivor queue up to the Left and Right Duel Pedestals inside the Sanctuary Stage.
+- **Vote & Ejection Physics**:
+  - Clicking a dueling orb (or pressing `ArrowLeft` / `ArrowRight`) triggers a brief resolution beat (`~320ms`): the winner flashes with a victory ring and glides back to the survivor row, while the eliminated contender is removed from the survivor set, triggers a boundary ripple, and receives an upward impulse velocity (`vy < 0`) back into the outer drift space.
+- **Inline Controls & Overlays**:
+  - The bottom strip of the Sanctuary Stage houses live round progress (`Round X · Match Y`), **Undo Last Pick** (which pulls the last eliminated orb right back from the outer drift into the Sanctuary duel!), **Bracket / Rankings Drawer** modal toggle, and **Exit Bracket** to return to open selection.
+
+## 5. Verification Criteria
+- **Zero Page Unmounts**: Starting a bracket, voting through matches, undoing a pick, and crowning a champion all occur within the same continuous `DriftWall` canvas without unmounting orbs or resetting outer drifting orbs.
+- **Physics & Boundary Integrity**: Unselected and newly eliminated orbs bounce cleanly off the expanded Sanctuary Stage forcefield and continue reacting to the animated mouse cursor.
+- **Full Keyboard & Pointer Accessibility**: Voting works via direct click/tap on the dueling orbs inside the Sanctuary Stage as well as `Left Arrow` / `Right Arrow` keys, with `Undo` restoring both tournament state and orb Sanctuary membership.
