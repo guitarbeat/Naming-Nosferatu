@@ -1,0 +1,4 @@
+- Momentum: Grouping `MagicSearch`, `MagicToggle`, and `MagicToolbar` into a shared component directory.
+- Smash: Extract Magic controls from `src/components/MagicControls.tsx` to `src/components/ui/MagicControls.tsx`. Update `src/tournament/TournamentBracket.tsx` to use the new imports. Update `src/components/MagicControls.tsx` export.
+- Clean: Move `MagicSearch`, `MagicToggle`, `MagicToolbar` out of `src/components/MagicControls.tsx` and into `src/components/ui/MagicControls.tsx`. Keep `HomeView` in `src/components/MagicControls.tsx`.
+- Memory Update: Extracted Magic ui controls to clean up `MagicControls.tsx` file for front page. Next strike: `UiPrimitives.tsx` cleanup.
