@@ -24,6 +24,21 @@ export const MagicSearch = memo(function MagicSearch({
 		inputRef.current?.focus();
 	};
 
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (
+				e.key === "/" &&
+				document.activeElement?.tagName !== "INPUT" &&
+				document.activeElement?.tagName !== "TEXTAREA"
+			) {
+				e.preventDefault();
+				inputRef.current?.focus();
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
+
 	return (
 		<div className="relative group flex-1 sm:flex-none">
 			<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none transition-colors group-focus-within:text-primary z-10" />
@@ -34,8 +49,14 @@ export const MagicSearch = memo(function MagicSearch({
 				onChange={(e) => setSearchQuery(e.target.value)}
 				placeholder="Find cat in bracket..."
 				aria-label="Search bracket"
-				className="h-8 w-full sm:w-48 rounded-xl border border-border/60 bg-white/40 dark:bg-black/40 backdrop-blur-md pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary transition-all duration-200 focus:w-full sm:focus:w-56"
+				aria-keyshortcuts="/"
+				className="h-8 w-full sm:w-48 rounded-xl border border-border/60 bg-white/40 dark:bg-black/40 backdrop-blur-md pl-8 pr-7 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary transition-all duration-200 focus:w-full sm:focus:w-56"
 			/>
+			{!searchQuery && (
+				<kbd className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none rounded border border-border/50 bg-muted/30 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground select-none">
+					/
+				</kbd>
+			)}
 			{searchQuery && (
 				<button
 					type="button"
