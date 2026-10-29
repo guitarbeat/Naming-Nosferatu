@@ -1,0 +1,3 @@
+## 2024-06-25 - Implement Accessible Keyboard Shortcuts
+**Learning:** When implementing global keyboard shortcuts (like '/' for search) to improve UX, it's essential to not only add the functionality but also ensure it's fully accessible. This includes ignoring active typing inside `INPUT` or `TEXTAREA` elements, adding `aria-keyshortcuts` to the target element, and providing a visible hint like a `<kbd>` element within the input field. Doing so makes the feature discoverable and usable for everyone.
+**Action:** Always follow these best practices for keyboard shortcuts. Use the `aria-keyshortcuts` attribute to announce the shortcut to screen readers, ensure the shortcut logic checks for focus to prevent typing conflicts, and show a small visual hint in the UI.
