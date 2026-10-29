@@ -1,7 +1,7 @@
 import { Check, Flame, Layers, Trophy, X, ZoomIn, ZoomOut } from "lucide-react";
 import { memo, type SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { MagicToolbar } from "@/components/MagicControls";
 import { Button } from "@/components/UiPrimitives";
+import { MagicToolbar } from "@/components/ui/MagicControls";
 import { useDebounce } from "@/hooks/useCommonHooks";
 import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
 import {
