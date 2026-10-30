@@ -243,6 +243,14 @@ export const NameSelector = memo(function NameSelector({
 		[isTournamentActive, ts, namesById, selectedIds, storeSelectedNames, tournamentActions],
 	);
 
+	// ⚡ Bolt Performance Optimization: Extract inline DriftWall click handler into a stable reference to preserve DriftWall's React.memo optimization.
+	const handleItemClick = useCallback(
+		(item: DriftWallItem) => {
+			handleToggleName(item.id as IdType);
+		},
+		[handleToggleName],
+	);
+
 	const handleBatchSelectNames = useCallback(
 		(capturedItems: DriftWallItem[]) => {
 			if (isTournamentActive && !ts.isComplete) {
@@ -738,7 +746,7 @@ export const NameSelector = memo(function NameSelector({
 				<div className="absolute inset-0 w-full h-full overflow-hidden">
 					<DriftWall
 						items={driftWallItems}
-						onItemClick={(item) => handleToggleName(item.id as IdType)}
+						onItemClick={handleItemClick}
 						onItemsBatchSelect={handleBatchSelectNames}
 						dockFooter={dockFooterControls}
 						tournamentStage={tournamentStageConfig}
