@@ -1,0 +1,3 @@
+## 2024-10-31 - Add global keyboard search shortcut
+**Learning:** Users benefit from keyboard shortcuts for primary interactions like searching, but these must be carefully guarded to ignore keystrokes when standard input fields are already active to avoid breaking normal typing behavior. Also, global shortcuts should be discoverable via visual `<kbd>` hints and screen-reader accessible via `aria-keyshortcuts`.
+**Action:** Always implement active element checks (`document.activeElement?.tagName`) for global shortcuts and include both visual hints and `aria-keyshortcuts` attributes for complete accessibility.
