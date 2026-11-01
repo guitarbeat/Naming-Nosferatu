@@ -2,9 +2,9 @@ import { Clock, Flame, Gamepad2, Layers, LogOut, Trophy, Undo2, X } from "lucide
 import { memo, useMemo } from "react";
 import { NameOrb } from "@/components/GlassEffects";
 import { Button, Card } from "@/components/UiPrimitives";
+import { TournamentBracket } from "@/tournament/TournamentBracket";
+import { getHeatTextClasses, type HeatLevel } from "@/tournament/tournamentEngine";
 import type { MatchRecord, NameItem, Team, TournamentMode } from "@/types";
-import { TournamentBracket } from "./TournamentBracket";
-import { getHeatTextClasses, type HeatLevel } from "./tournamentEngine";
 
 /* ==========================================================================
    1. BRACKET PATH PILL BAR & TOURNAMENT HEADER
