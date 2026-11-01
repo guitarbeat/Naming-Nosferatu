@@ -3,6 +3,7 @@ import { Flame, Sparkles } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NameOrb } from "@/components/GlassEffects";
 import { Loading } from "@/components/UiPrimitives";
+import { TournamentComplete, TournamentHeader } from "@/components/ui/TournamentComplete";
 import { useTimedState } from "@/hooks/useCommonHooks";
 import { useTournamentState } from "@/hooks/useTournamentState";
 import {
@@ -13,7 +14,6 @@ import {
 } from "@/lib/utils";
 import type { NameItem, TournamentProps } from "@/types";
 import { TournamentBracketModal } from "./TournamentBracket";
-import { TournamentComplete, TournamentHeader } from "./TournamentComplete";
 import {
 	extractMatchData,
 	getContestantStreak,
