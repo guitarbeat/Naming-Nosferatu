@@ -1,0 +1,3 @@
+## 2024-05-24 - Keyboard Shortcut Visibility and Focus Protection
+**Learning:** When implementing global keyboard shortcuts (like `/` for search) to improve keyboard accessibility, it's crucial to ignore the shortcut if the user is already focused within an `INPUT` or `TEXTAREA` to prevent text input conflicts. Additionally, providing a visual `<kbd>` hint aids discoverability but requires adequate input padding to prevent text overlap.
+**Action:** When adding global keyboard shortcuts to inputs, ensure `document.activeElement?.tagName` checks are present, accompany the shortcut with an `aria-keyshortcuts` attribute, and conditionally render visual hints with correct input padding to preserve layout and UX integrity.
