@@ -1,0 +1,7 @@
+<thinking>
+- Momentum: Extract MagicControls to `src/components/ui/`.
+- Smash: Create individual files `src/components/ui/MagicSearch.tsx`, `src/components/ui/MagicToggle.tsx`, `src/components/ui/MagicToolbar.tsx`.
+- Clean: Remove `MagicSearch`, `MagicToggle`, and `MagicToolbar` from `src/components/MagicControls.tsx`, leaving only `HomeView`. Update imports in `src/tournament/TournamentBracket.tsx` directly to `@/components/ui/MagicToolbar`.
+- Hygiene: Verify file contents after creation and update. Run `biome check` to apply correct styling.
+- Memory Update: Log action to `.Jules/caveman.md`.
+</thinking>
