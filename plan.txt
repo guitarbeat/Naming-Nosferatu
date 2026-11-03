@@ -1,0 +1,1 @@
+This adds event delegation for keyboard interaction on `DriftWallTile` elements, enabling users navigating by keyboard to select items and vote by pressing "Enter" or "Space", which is currently impossible.

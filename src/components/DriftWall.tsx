@@ -1132,6 +1132,38 @@ export const DriftWall = memo(function DriftWall({
 		[items, onItemClick],
 	);
 
+	const handleKeyDownDelegated = useCallback(
+		(e: React.KeyboardEvent<HTMLDivElement>) => {
+			if (e.key !== "Enter" && e.key !== " ") {
+				return;
+			}
+			const tile = (e.target as HTMLElement | null)?.closest?.(
+				"[data-tile-id]",
+			) as HTMLElement | null;
+			if (!tile) {
+				return;
+			}
+			e.preventDefault();
+			const idx = Number(tile.dataset.originalIndex);
+			const item = items[idx];
+			if (!item) {
+				return;
+			}
+
+			// During an active tournament, clicking a dueling orb votes for that side directly
+			if (tournamentStageRef.current?.active) {
+				if (item.duelSide === "left" || item.duelSide === "right") {
+					tournamentStageRef.current.onVoteSide?.(item.duelSide);
+				}
+				return;
+			}
+
+			item.onClick?.();
+			onItemClick?.(item, idx);
+		},
+		[items, onItemClick],
+	);
+
 	const cssVars: CSSProperties = {
 		"--dw-tile-w": `${effSize}px`,
 		"--dw-tile-h": `${effSize}px`,
@@ -1153,6 +1185,7 @@ export const DriftWall = memo(function DriftWall({
 			} ${className}`}
 			style={cssVars}
 			onClick={handleClickDelegated}
+			onKeyDown={handleKeyDownDelegated}
 			onPointerDown={handlePointerDown}
 			onPointerMove={handlePointerMove}
 			onPointerUp={(e) => finalizePointerUp(e, false)}
