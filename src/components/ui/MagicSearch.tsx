@@ -1,5 +1,5 @@
 import { Search, X } from "lucide-react";
-import { memo, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 
 interface MagicSearchProps {
 	searchQuery: string;
@@ -11,6 +11,27 @@ export const MagicSearch = memo(function MagicSearch({
 	setSearchQuery,
 }: MagicSearchProps) {
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	// 🎨 Palette: "/" focuses the bracket search, unless the user is already typing somewhere.
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key !== "/" || e.defaultPrevented || e.isComposing) {
+				return;
+			}
+			if (e.ctrlKey || e.metaKey || e.altKey) {
+				return;
+			}
+			const active = document.activeElement as HTMLElement | null;
+			const tag = active?.tagName;
+			if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || active?.isContentEditable) {
+				return;
+			}
+			e.preventDefault();
+			inputRef.current?.focus();
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
 
 	const handleClear = () => {
 		setSearchQuery("");
@@ -27,8 +48,14 @@ export const MagicSearch = memo(function MagicSearch({
 				onChange={(e) => setSearchQuery(e.target.value)}
 				placeholder="Find cat in bracket..."
 				aria-label="Search bracket"
+				aria-keyshortcuts="/"
 				className="h-8 w-full sm:w-48 rounded-xl border border-border/60 bg-white/40 dark:bg-black/40 backdrop-blur-md pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary transition-all duration-200 focus:w-full sm:focus:w-56"
 			/>
+			{!searchQuery && (
+				<kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center rounded border border-border/60 bg-muted/50 px-1.5 font-mono text-[10px] font-medium text-muted-foreground pointer-events-none select-none">
+					/
+				</kbd>
+			)}
 			{searchQuery && (
 				<button
 					type="button"
