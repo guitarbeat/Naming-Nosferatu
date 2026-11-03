@@ -1,0 +1,3 @@
+## 2026-10-24 - Magic Search Global Shortcut A11y Focus
+**Learning:** When implementing global keyboard shortcuts (`/`) to focus search inputs on visually dense or complex frontend states (like Tournament Bracket views), ensuring `aria-keyshortcuts` is present and showing a `<kbd>` hint significantly improves discoverability. We must explicitly ignore `INPUT` and `TEXTAREA` active elements to avoid intercepting normal typing.
+**Action:** Always pair global focus shortcuts with visual `<kbd>` cues and ARIA attributes for screen reader awareness, while safely skipping if the user is already typing in an input.
