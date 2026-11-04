@@ -85,9 +85,15 @@ export const TournamentDock = memo(function TournamentDock({
 										: "cursor-not-allowed border-foreground/5 bg-foreground/2 text-foreground/25"
 								}`}
 								aria-label="Undo last vote"
+								aria-keyshortcuts="u"
 							>
 								<Undo2 className="size-3" />
-								<span className="hidden sm:inline">Undo</span>
+								<span className="hidden sm:inline-flex sm:items-center">
+									Undo
+									<kbd className="hidden sm:inline-flex ml-1 items-center justify-center rounded border border-foreground/10 bg-foreground/5 px-1 font-mono text-[9px] font-medium text-foreground/60 select-none">
+										U
+									</kbd>
+								</span>
 							</button>
 
 							<button
