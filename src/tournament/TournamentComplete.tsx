@@ -200,6 +200,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 									: "cursor-not-allowed border-border/30 bg-muted/20 text-muted-foreground opacity-50"
 							}`}
 							aria-label="Undo last vote"
+							title={canUndo ? "Undo last vote" : "Nothing to undo"}
 						>
 							<Undo2 className="size-3.5" />
 							<span className="hidden sm:inline">Undo</span>

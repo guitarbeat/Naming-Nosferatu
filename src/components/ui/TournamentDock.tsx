@@ -85,6 +85,7 @@ export const TournamentDock = memo(function TournamentDock({
 										: "cursor-not-allowed border-foreground/5 bg-foreground/2 text-foreground/25"
 								}`}
 								aria-label="Undo last vote"
+								title={ts.canUndo ? "Undo last vote" : "Nothing to undo"}
 							>
 								<Undo2 className="size-3" />
 								<span className="hidden sm:inline">Undo</span>
