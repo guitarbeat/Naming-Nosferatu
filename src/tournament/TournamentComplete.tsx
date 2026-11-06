@@ -199,6 +199,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 									? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/20"
 									: "cursor-not-allowed border-border/30 bg-muted/20 text-muted-foreground opacity-50"
 							}`}
+							title={canUndo ? "Undo last vote" : "Nothing to undo"}
 							aria-label="Undo last vote"
 						>
 							<Undo2 className="size-3.5" />
