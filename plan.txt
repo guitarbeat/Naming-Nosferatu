@@ -1,0 +1,38 @@
+1. Remove Unused Code in TournamentSetup.tsx
+   - Use `replace_with_git_merge_diff(filepath="src/tournament/TournamentSetup.tsx", merge_diff="...")` to delete `TournamentStatusWidget` from `src/tournament/TournamentSetup.tsx`.
+   - Verify removal using `run_in_bash_session` with `cat src/tournament/TournamentSetup.tsx | grep "TournamentStatusWidget"`.
+
+2. Extract Overlays to AppOverlays.tsx
+   - Use `write_file` to create `src/components/ui/AppOverlays.tsx` with the extracted components: `OfflineIndicator`, `AppBootScreen`, `GlobalErrorDisplay`, `GlobalLoadingOverlay`, `SkipToMainButton`, and `PwaInstallPrompt`.
+   - Ensure to use absolute paths (e.g., `@/components/UiPrimitives`) for imports.
+   - Verify file creation using `run_in_bash_session` with `cat src/components/ui/AppOverlays.tsx`.
+
+3. Update AppChrome.tsx
+   - Use `replace_with_git_merge_diff(filepath="src/components/AppChrome.tsx", merge_diff="...")` to remove the extracted overlay components and add their new imports.
+   - Verify changes using `run_in_bash_session` with `cat src/components/AppChrome.tsx | grep "OfflineIndicator"`.
+
+4. Update App.tsx
+   - Use `replace_with_git_merge_diff(filepath="src/App.tsx", merge_diff="...")` to update the import for `AppBootScreen`.
+   - Verify changes using `run_in_bash_session` with `cat src/App.tsx | grep "AppBootScreen"`.
+
+5. Update Markdown Journal
+   - Use `run_in_bash_session` to read `.Jules/caveman.md` using `cat .Jules/caveman.md`.
+   - Use `run_in_bash_session` to append the execution log to `.Jules/caveman.md`:
+     ```
+     <strict_log>
+     - Momentum: Evaluated bloated AppChrome layout and unused TournamentStatusWidget.
+     - Smash: Ripped out 6 app shell overlays into `src/components/ui/AppOverlays.tsx` and removed dead widget.
+     - Clean: Kept main AppChrome light.
+     - Memory Update: Codebase is leaner and components are logically separated.
+     </strict_log>
+     ```
+   - Verify the write using `run_in_bash_session` with `cat .Jules/caveman.md`.
+
+6. Run Static Analysis & Tests
+   - Use `run_in_bash_session` to run `pnpm lint && pnpm test && pnpm exec knip`.
+
+7. Pre-commit step
+   - Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
+
+8. Submit changes
+   - Use `submit` to commit the changes.
