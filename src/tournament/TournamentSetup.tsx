@@ -513,6 +513,12 @@ export const NameSelector = memo(function NameSelector({
 	]);
 
 	// Build the tournamentStage configuration for DriftWall's expanding Sanctuary Arena Stage
+	// ⚡ Bolt Performance Optimization: Memoize TournamentDock onClearSelection handler to prevent unnecessary re-renders
+	const handleClearSelection = useCallback(
+		() => tournamentActions.setSelection([]),
+		[tournamentActions],
+	);
+
 	const tournamentStageConfig = useMemo<DriftWallTournamentStage | null>(() => {
 		if (!isTournamentActive || ts.isComplete) {
 			return null;
@@ -604,7 +610,7 @@ export const NameSelector = memo(function NameSelector({
 			championInfo={championInfo}
 			selectedCount={selectedCount}
 			canStartCustom={canStartCustom}
-			onClearSelection={() => tournamentActions.setSelection([])}
+			onClearSelection={handleClearSelection}
 			onExitTournament={handleExitTournament}
 			onUndoMove={handleUndoMove}
 			onStartSelected={handleStartSelected}

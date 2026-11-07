@@ -1,3 +1,7 @@
 ## 2024-11-01 - Optimizing React list rendering
 **Learning:** Found an inline function for `onClick` passed to item structures mapped over within `useMemo`, causing excessive object allocations on every render change of `handleToggleName`. This breaks `React.memo` on the `DriftWallTile` component list.
 **Action:** When extracting child components mapped in lists that require event handlers, wrap the list's parent `onClick` callback using `useCallback`, rather than generating closure inline functions to `DriftWallItem` data arrays. Verify `useCallback` passes stable references directly as props to child components.
+
+## 2024-11-04 - Preventing Inline Function Allocations in Memoized Components
+**Learning:** We observed that passing inline arrow functions directly as props to memoized components like `TournamentDock` breaks `React.memo` optimizations, causing unnecessary deep re-renders. However, applying `useCallback` to inline functions passed to native DOM elements (like `<button>` or `<div>`) is an anti-pattern as React doesn't apply memoization logic to host elements, meaning the parent component will still re-render regardless of referential equality, and adding `useCallback` just adds overhead.
+**Action:** Always wrap functions passed to custom memoized components with `useCallback` to preserve referential equality and keep memoized trees performant. Avoid applying `useCallback` to native DOM elements unless the function itself is computationally heavy or triggers an expensive downstream operation.
