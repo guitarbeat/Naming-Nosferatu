@@ -84,6 +84,7 @@ export const TournamentDock = memo(function TournamentDock({
 										? "border-foreground/15 bg-foreground/6 text-foreground/80 hover:bg-foreground/12 hover:text-foreground active:scale-95"
 										: "cursor-not-allowed border-foreground/5 bg-foreground/2 text-foreground/25"
 								}`}
+								title={ts.canUndo ? "Undo last vote" : "Nothing to undo"}
 								aria-label="Undo last vote"
 							>
 								<Undo2 className="size-3" />
