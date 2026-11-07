@@ -56,7 +56,7 @@ export const TournamentDock = memo(function TournamentDock({
 								<button
 									type="button"
 									onClick={onClearSelection}
-									className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-foreground/15 bg-foreground/6 px-2.5 sm:px-3 text-xs font-medium text-foreground/80 transition-colors hover:bg-foreground/12 hover:text-foreground active:scale-95 whitespace-nowrap shrink-0"
+									className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-foreground/15 bg-foreground/6 px-2.5 sm:px-3 text-xs font-medium text-foreground/80 transition-colors hover:bg-foreground/12 hover:text-foreground active:scale-95 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 									aria-label="Clear selected names"
 								>
 									<X className="size-3" />
@@ -66,7 +66,7 @@ export const TournamentDock = memo(function TournamentDock({
 							<button
 								type="button"
 								onClick={onExitTournament}
-								className="inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full bg-primary px-3 sm:px-3.5 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:brightness-105 active:scale-95 whitespace-nowrap shrink-0"
+								className="inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full bg-primary px-3 sm:px-3.5 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:brightness-105 active:scale-95 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 								aria-label="Start a new bracket"
 							>
 								<RotateCcw className="size-3" />
@@ -79,7 +79,7 @@ export const TournamentDock = memo(function TournamentDock({
 								type="button"
 								onClick={onUndoMove}
 								disabled={!ts.canUndo}
-								className={`inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full border px-2.5 sm:px-3 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+								className={`inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full border px-2.5 sm:px-3 text-xs font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
 									ts.canUndo
 										? "border-foreground/15 bg-foreground/6 text-foreground/80 hover:bg-foreground/12 hover:text-foreground active:scale-95"
 										: "cursor-not-allowed border-foreground/5 bg-foreground/2 text-foreground/25"
@@ -100,7 +100,7 @@ export const TournamentDock = memo(function TournamentDock({
 							<button
 								type="button"
 								onClick={onExitTournament}
-								className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-destructive/25 bg-destructive/10 px-2.5 sm:px-3 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/20 active:scale-95 whitespace-nowrap shrink-0"
+								className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-destructive/25 bg-destructive/10 px-2.5 sm:px-3 text-xs font-semibold text-destructive transition-colors hover:bg-destructive/20 active:scale-95 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 								aria-label="Exit tournament"
 							>
 								<X className="size-3" />
@@ -157,7 +157,7 @@ export const TournamentDock = memo(function TournamentDock({
 					<button
 						type="button"
 						onClick={onClearSelection}
-						className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-foreground/15 bg-foreground/6 px-2.5 sm:px-3 text-xs font-medium text-foreground/80 transition-colors hover:bg-foreground/12 hover:text-foreground active:scale-95 whitespace-nowrap shrink-0"
+						className="inline-flex h-8 sm:h-9 items-center gap-1 rounded-full border border-foreground/15 bg-foreground/6 px-2.5 sm:px-3 text-xs font-medium text-foreground/80 transition-colors hover:bg-foreground/12 hover:text-foreground active:scale-95 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 						aria-label="Clear selected names"
 					>
 						<X className="size-3" />
@@ -169,7 +169,7 @@ export const TournamentDock = memo(function TournamentDock({
 					<button
 						type="button"
 						onClick={onStartSelected}
-						className="inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full bg-primary px-3 sm:px-4 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:brightness-105 active:scale-95 whitespace-nowrap shrink-0"
+						className="inline-flex h-8 sm:h-9 items-center gap-1.5 rounded-full bg-primary px-3 sm:px-4 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:brightness-105 active:scale-95 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 					>
 						<Play className="size-3 fill-current" />
 						<span>Start</span>
