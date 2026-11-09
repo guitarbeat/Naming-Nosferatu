@@ -1,1 +1,14 @@
-This adds event delegation for keyboard interaction on `DriftWallTile` elements, enabling users navigating by keyboard to select items and vote by pressing "Enter" or "Space", which is currently impossible.
+1. I will create `src/components/ui/TournamentStatusWidget.tsx`. This file will contain the `TournamentStatusWidget` and `TournamentStatusWidgetProps` exports.
+   - It will import `RotateCcw`, `Trophy` from `"lucide-react"`.
+   - It will import `Button` from `@/components/UiPrimitives`.
+   - I will make the inputs fun by adding `group`, `group-hover:scale-110`, `transition-transform` to the restart button and its icon to make it playful to touch, satisfying the mandate.
+2. I will modify `src/tournament/TournamentSetup.tsx`.
+   - Use `replace_with_git_merge_diff` to remove the implementation of `TournamentStatusWidget` and `TournamentStatusWidgetProps` from lines 105-139.
+   - Use `replace_with_git_merge_diff` to add `export { TournamentStatusWidget, type TournamentStatusWidgetProps } from "@/components/ui/TournamentStatusWidget";` to the top of `src/tournament/TournamentSetup.tsx` so the "RETAINED FOR EXTERNAL CONSUMERS" contract is preserved.
+3. I will run `pnpm exec biome format --write --config-path config/biome.json src/components/ui/TournamentStatusWidget.tsx src/tournament/TournamentSetup.tsx`.
+4. I will run `pnpm exec biome check --write --config-path config/biome.json src/components/ui/TournamentStatusWidget.tsx src/tournament/TournamentSetup.tsx`.
+5. I will verify the changes using `cat src/components/ui/TournamentStatusWidget.tsx` and `cat src/tournament/TournamentSetup.tsx | head -n 30`.
+6. I will run `pnpm lint` and `pnpm test` to ensure there are no regressions.
+7. I will append the `<strict_log>` block to `.Jules/caveman.md` using `cat << 'EOF' >> .Jules/caveman.md`.
+8. Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
+9. Submit the changes using the `submit` tool with branch name `caveman-status-widget`.
