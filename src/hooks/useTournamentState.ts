@@ -2,7 +2,13 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "r
 import { useToast } from "@/components/AppChrome";
 import { useLocalStorage } from "@/hooks/useCommonHooks";
 import { ratingsAPI } from "@/lib/api";
-import { createSortedKey, ELO_RATING, shuffleArray, TIMING } from "@/lib/utils";
+import {
+	areUnorderedArraysEqual,
+	createSortedKey,
+	ELO_RATING,
+	shuffleArray,
+	TIMING,
+} from "@/lib/utils";
 import useAppStore from "@/store";
 import {
 	calculateTournamentMetrics,
@@ -72,7 +78,10 @@ function sanitizePersistentState(raw: unknown, userName: string): PersistentTour
 type TournamentAction =
 	| {
 			type: "INIT";
-			payload: { ratings: Record<string, number>; persistentState: PersistentTournamentState };
+			payload: {
+				ratings: Record<string, number>;
+				persistentState: PersistentTournamentState;
+			};
 	  }
 	| {
 			type: "VOTE";
@@ -114,13 +123,24 @@ function tournamentReducer(
 			ratingsSnapshot: state.ratings,
 			winnerId,
 		});
-		const matchRecord = createMatchRecord({ currentMatch, winnerId, loserId, matchNumber, round });
+		const matchRecord = createMatchRecord({
+			currentMatch,
+			winnerId,
+			loserId,
+			matchNumber,
+			round,
+		});
 		return {
 			...state,
 			ratings: newRatings,
 			history: [
 				...state.history,
-				{ match: currentMatch, ratings: { ...state.ratings }, round, matchNumber },
+				{
+					match: currentMatch,
+					ratings: { ...state.ratings },
+					round,
+					matchNumber,
+				},
 			],
 			persistentState: {
 				...state.persistentState,
@@ -204,9 +224,7 @@ function buildInitialReducerState({
 	const participantIds =
 		tournamentMode === "2v2" ? teams.map((t) => t.id) : names.map((n) => String(n.id));
 	const nonByeIds = eff.bracketEntrants.filter((id) => !isBye(id));
-	const sameIds =
-		nonByeIds.length === participantIds.length &&
-		participantIds.every((id) => nonByeIds.includes(id));
+	const sameIds = areUnorderedArraysEqual(nonByeIds, participantIds);
 	const shouldReset = !hasValid || eff.bracketEntrants.length === 0 || !sameIds;
 
 	const initialRatings: Record<string, number> = {};
@@ -257,7 +275,9 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
 		tournamentId,
 		defaultPersistentState,
-		{ onError: () => toast.showWarning("Progress could not be saved locally.") },
+		{
+			onError: () => toast.showWarning("Progress could not be saved locally."),
+		},
 	);
 
 	const persistentState = useMemo(
@@ -271,9 +291,19 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 		buildInitialReducerState,
 	);
 
-	const latestInitInputsRef = useRef({ names, namesKey, tournamentMode, persistentState });
+	const latestInitInputsRef = useRef({
+		names,
+		namesKey,
+		tournamentMode,
+		persistentState,
+	});
 	useEffect(() => {
-		latestInitInputsRef.current = { names, namesKey, tournamentMode, persistentState };
+		latestInitInputsRef.current = {
+			names,
+			namesKey,
+			tournamentMode,
+			persistentState,
+		};
 	}, [names, namesKey, tournamentMode, persistentState]);
 
 	const initializedNamesKeyRef = useRef(namesKey);

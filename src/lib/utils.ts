@@ -471,3 +471,25 @@ export const ErrorManager = {
 		return { id };
 	},
 };
+
+export function areUnorderedArraysEqual(arr1: string[], arr2: string[]): boolean {
+	if (arr1 === arr2) {
+		return true;
+	}
+	if (!arr1 || !arr2 || arr1.length !== arr2.length) {
+		return false;
+	}
+	const count = Object.create(null) as Record<string, number>;
+	for (let i = 0; i < arr1.length; i++) {
+		const val = arr1[i];
+		count[val] = (count[val] || 0) + 1;
+	}
+	for (let i = 0; i < arr2.length; i++) {
+		const val = arr2[i];
+		if (!count[val]) {
+			return false;
+		}
+		count[val]--;
+	}
+	return true;
+}
