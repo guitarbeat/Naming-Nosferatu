@@ -10,7 +10,11 @@ import { Button, Loading } from "@/components/UiPrimitives";
 import { TournamentDock } from "@/components/ui/TournamentDock";
 import { useTimedState } from "@/hooks/useCommonHooks";
 import { useTournamentState } from "@/hooks/useTournamentState";
-import { namesQueryOptions, ratingsAPI, SUPABASE_UNAVAILABLE_MSG } from "@/lib/api";
+import {
+	namesQueryOptions,
+	ratingsAPI,
+	SUPABASE_UNAVAILABLE_MSG,
+} from "@/lib/api";
 import {
 	DEFAULT_SAMPLE_NAMES,
 	getLockedNames,
@@ -37,14 +41,17 @@ import {
 
 let sharedAudioCtx: AudioContext | null = null;
 
-function playSanctuaryTone(kind: "select" | "start" | "vote" | "undo" | "champion") {
+function playSanctuaryTone(
+	kind: "select" | "start" | "vote" | "undo" | "champion",
+) {
 	if (typeof window === "undefined") {
 		return;
 	}
 	try {
 		const AudioCtor =
 			window.AudioContext ||
-			(window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+			(window as unknown as { webkitAudioContext?: typeof AudioContext })
+				.webkitAudioContext;
 		if (!AudioCtor) {
 			return;
 		}
@@ -69,8 +76,14 @@ function playSanctuaryTone(kind: "select" | "start" | "vote" | "undo" | "champio
 			osc.type = type;
 			osc.frequency.setValueAtTime(freq, now + startOffset);
 			gain.gain.setValueAtTime(0.0001, now + startOffset);
-			gain.gain.exponentialRampToValueAtTime(gainPeak, now + startOffset + 0.018);
-			gain.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + duration);
+			gain.gain.exponentialRampToValueAtTime(
+				gainPeak,
+				now + startOffset + 0.018,
+			);
+			gain.gain.exponentialRampToValueAtTime(
+				0.0001,
+				now + startOffset + duration,
+			);
 			osc.connect(gain);
 			gain.connect(ctx.destination);
 			osc.start(now + startOffset);
@@ -110,7 +123,10 @@ export interface TournamentStatusWidgetProps {
 	onRestart: () => void;
 }
 
-export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStatusWidgetProps) {
+export function TournamentStatusWidget({
+	namesCount,
+	onRestart,
+}: TournamentStatusWidgetProps) {
 	return (
 		<div className="mx-auto mb-6 flex w-full max-w-4xl flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card/85 p-3.5 sm:p-4 shadow-sm backdrop-blur-md">
 			<div className="flex items-center gap-3 text-left w-full sm:w-auto">
@@ -118,7 +134,9 @@ export function TournamentStatusWidget({ namesCount, onRestart }: TournamentStat
 					<Trophy size={18} />
 				</div>
 				<div>
-					<h4 className="text-sm font-semibold text-foreground">Tournament in Progress</h4>
+					<h4 className="text-sm font-semibold text-foreground">
+						Tournament in Progress
+					</h4>
 					<p className="text-xs text-muted-foreground font-mono tabular-nums">
 						{namesCount} contenders seeded
 					</p>
@@ -152,7 +170,9 @@ export const NameSelector = memo(function NameSelector({
 	const isAdmin = useAppStore((state) => state.user.isAdmin);
 	const userName = useAppStore((state) => state.user.name);
 
-	const storeSelectedNames = useAppStore((state) => state.tournament.selectedNames);
+	const storeSelectedNames = useAppStore(
+		(state) => state.tournament.selectedNames,
+	);
 	const storeTournamentNames = useAppStore((state) => state.tournament.names);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
 
@@ -194,9 +214,9 @@ export const NameSelector = memo(function NameSelector({
 	const isTournamentActive = activeTournamentNames.length >= 2;
 
 	const ts = useTournamentState(activeTournamentNames, userName || undefined);
-	const { value: votingSide, setTimed: setVotingSide } = useTimedState<"left" | "right" | null>(
-		null,
-	);
+	const { value: votingSide, setTimed: setVotingSide } = useTimedState<
+		"left" | "right" | null
+	>(null);
 
 	const hasNotifiedCompleteRef = useRef(false);
 	useEffect(() => {
@@ -209,13 +229,21 @@ export const NameSelector = memo(function NameSelector({
 			playSanctuaryTone("champion");
 			onTournamentComplete?.(normalizeRatingsWithStats(ts.ratings));
 		}
-	}, [isTournamentActive, ts.isComplete, ts.totalMatches, ts.ratings, onTournamentComplete]);
+	}, [
+		isTournamentActive,
+		ts.isComplete,
+		ts.totalMatches,
+		ts.ratings,
+		onTournamentComplete,
+	]);
 
 	useEffect(() => {
 		if (lockedInNames.length === 0) {
 			return;
 		}
-		const missingLocked = lockedInNames.filter((n) => !selectedIds.has(String(n.id)));
+		const missingLocked = lockedInNames.filter(
+			(n) => !selectedIds.has(String(n.id)),
+		);
 		if (missingLocked.length > 0) {
 			tournamentActions.setSelection([...storeSelectedNames, ...missingLocked]);
 		}
@@ -241,7 +269,14 @@ export const NameSelector = memo(function NameSelector({
 				: [...storeSelectedNames, nameItem];
 			tournamentActions.setSelection(nextSelection);
 		},
-		[isTournamentActive, ts, namesById, selectedIds, storeSelectedNames, tournamentActions],
+		[
+			isTournamentActive,
+			ts,
+			namesById,
+			selectedIds,
+			storeSelectedNames,
+			tournamentActions,
+		],
 	);
 
 	// ⚡ Bolt Performance Optimization: Memoize DriftWall item click handler to prevent unnecessary re-renders of DriftWall component on every render
@@ -267,7 +302,11 @@ export const NameSelector = memo(function NameSelector({
 					continue;
 				}
 				const nameItem = namesById.get(String(item.id));
-				if (nameItem && !isNameLocked(nameItem) && !seen.has(String(nameItem.id))) {
+				if (
+					nameItem &&
+					!isNameLocked(nameItem) &&
+					!seen.has(String(nameItem.id))
+				) {
 					seen.add(String(nameItem.id));
 					additions.push(nameItem);
 				}
@@ -278,7 +317,14 @@ export const NameSelector = memo(function NameSelector({
 				tournamentActions.setSelection([...storeSelectedNames, ...additions]);
 			}
 		},
-		[isTournamentActive, ts, namesById, selectedIds, storeSelectedNames, tournamentActions],
+		[
+			isTournamentActive,
+			ts,
+			namesById,
+			selectedIds,
+			storeSelectedNames,
+			tournamentActions,
+		],
 	);
 
 	const handleStartSelected = useCallback(() => {
@@ -336,7 +382,11 @@ export const NameSelector = memo(function NameSelector({
 			} else if (e.key === "ArrowRight" && ts.currentMatch && !ts.isComplete) {
 				e.preventDefault();
 				onVoteSide("right");
-			} else if ((e.key === "u" || e.key === "U") && ts.canUndo && !ts.isComplete) {
+			} else if (
+				(e.key === "u" || e.key === "U") &&
+				ts.canUndo &&
+				!ts.isComplete
+			) {
 				e.preventDefault();
 				handleUndoMove();
 			}
@@ -384,7 +434,10 @@ export const NameSelector = memo(function NameSelector({
 
 	// Map active dueling orb IDs to their Left / Right Duel Pedestal
 	const activeDuelOrbMap = useMemo(() => {
-		const map = new Map<string, { side: "left" | "right"; partnerIndex: number }>();
+		const map = new Map<
+			string,
+			{ side: "left" | "right"; partnerIndex: number }
+		>();
 		if (!isTournamentActive || ts.isComplete || !ts.currentMatch) {
 			return map;
 		}
@@ -412,11 +465,15 @@ export const NameSelector = memo(function NameSelector({
 		const winningTeam = ts.teams.find((t) => t?.id === winnerId);
 		const winningNameItem = winningTeam
 			? undefined
-			: activeTournamentNames.find((n) => String(n.id) === winnerId || n.name === winnerId);
+			: activeTournamentNames.find(
+					(n) => String(n.id) === winnerId || n.name === winnerId,
+				);
 		const label = winningTeam
 			? winningTeam.memberNames.join(" & ")
 			: winningNameItem?.name || winnerId;
-		const memberIds = new Set<string>(winningTeam ? winningTeam.memberIds.map(String) : [winnerId]);
+		const memberIds = new Set<string>(
+			winningTeam ? winningTeam.memberIds.map(String) : [winnerId],
+		);
 		return { winnerId, label, memberIds };
 	}, [ts.matchHistory, ts.teams, activeTournamentNames]);
 
@@ -480,10 +537,13 @@ export const NameSelector = memo(function NameSelector({
 				};
 			}
 
-			const isSurvivor = tournamentRosterIds.has(idStr) && !eliminatedNameIds.has(idStr);
+			const isSurvivor =
+				tournamentRosterIds.has(idStr) && !eliminatedNameIds.has(idStr);
 			const duelInfo = activeDuelOrbMap.get(idStr);
 			const isQueued = isSurvivor && !duelInfo;
-			const isJustVotedWinner = Boolean(duelInfo && votingSide && duelInfo.side === votingSide);
+			const isJustVotedWinner = Boolean(
+				duelInfo && votingSide && duelInfo.side === votingSide,
+			);
 
 			return {
 				id: idStr,
@@ -585,8 +645,14 @@ export const NameSelector = memo(function NameSelector({
 					<h3 className="font-display text-xl font-bold text-foreground">
 						Could not load shortlist
 					</h3>
-					<p className="text-xs text-muted-foreground leading-relaxed">{error}</p>
-					<Button onClick={() => void namesQuery.refetch()} variant="outline" size="small">
+					<p className="text-xs text-muted-foreground leading-relaxed">
+						{error}
+					</p>
+					<Button
+						onClick={() => void namesQuery.refetch()}
+						variant="outline"
+						size="small"
+					>
 						Try Again
 					</Button>
 				</div>
@@ -653,8 +719,13 @@ export function TournamentSetup() {
 	const hasSavedRef = useRef(false);
 
 	const saveRatingsMutation = useMutation({
-		mutationFn: ({ userId, ratings }: { userId: string; ratings: Record<string, RatingData> }) =>
-			ratingsAPI.saveRatings(userId, ratings),
+		mutationFn: ({
+			userId,
+			ratings,
+		}: {
+			userId: string;
+			ratings: Record<string, RatingData>;
+		}) => ratingsAPI.saveRatings(userId, ratings),
 		onError: (error) => {
 			console.error("Tournament ratings save failed:", error);
 		},

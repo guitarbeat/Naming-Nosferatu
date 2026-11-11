@@ -1,9 +1,22 @@
 import { Check, Flame, Layers, Trophy, X, ZoomIn, ZoomOut } from "lucide-react";
-import { memo, type SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
+import {
+	memo,
+	type SyntheticEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import { Button } from "@/components/UiPrimitives";
 import { MagicToolbar } from "@/components/ui/MagicToolbar";
 import { useDebounce } from "@/hooks/useCommonHooks";
-import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	Team,
+	TournamentMode,
+} from "@/types";
 import {
 	areMatchNodePropsEqual,
 	deriveVisualBracketTree,
@@ -93,13 +106,17 @@ const ContenderRow = memo(function ContenderRow({
 				) : (
 					<span
 						className={`size-5 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold ${
-							isBye ? "bg-muted text-muted-foreground" : "bg-primary/20 text-primary"
+							isBye
+								? "bg-muted text-muted-foreground"
+								: "bg-primary/20 text-primary"
 						}`}
 					>
 						{isBye ? "-" : (contender.name[0] || "C").toUpperCase()}
 					</span>
 				)}
-				<span className="truncate flex-1 font-medium text-foreground">{contender.name}</span>
+				<span className="truncate flex-1 font-medium text-foreground">
+					{contender.name}
+				</span>
 				{streak >= STREAK_THRESHOLDS.warm && (
 					<span className="flex items-center gap-0.5 text-orange-400 text-[10px] font-bold shrink-0 font-mono tabular-nums">
 						<Flame className="size-3 fill-orange-400" />
@@ -124,7 +141,9 @@ const ContenderRow = memo(function ContenderRow({
 					Vote
 				</Button>
 			)}
-			{isWinner && !isLive && <Check className="size-3.5 text-primary shrink-0 font-bold" />}
+			{isWinner && !isLive && (
+				<Check className="size-3.5 text-primary shrink-0 font-bold" />
+			)}
 		</div>
 	);
 });
@@ -168,9 +187,12 @@ const MatchCard = memo(function MatchCard({
 					isLoser={match.loserId === match.contender1?.id}
 					isLive={isLive}
 					isHighlighted={
-						Boolean(highlightedContenderId) && match.contender1?.id === highlightedContenderId
+						Boolean(highlightedContenderId) &&
+						match.contender1?.id === highlightedContenderId
 					}
-					onSelect={() => match.contender1 && onSelectContender?.(match.contender1.id)}
+					onSelect={() =>
+						match.contender1 && onSelectContender?.(match.contender1.id)
+					}
 					onVote={() => onVoteForSide?.("left")}
 				/>
 				<ContenderRow
@@ -180,9 +202,12 @@ const MatchCard = memo(function MatchCard({
 					isLoser={match.loserId === match.contender2?.id}
 					isLive={isLive}
 					isHighlighted={
-						Boolean(highlightedContenderId) && match.contender2?.id === highlightedContenderId
+						Boolean(highlightedContenderId) &&
+						match.contender2?.id === highlightedContenderId
 					}
-					onSelect={() => match.contender2 && onSelectContender?.(match.contender2.id)}
+					onSelect={() =>
+						match.contender2 && onSelectContender?.(match.contender2.id)
+					}
 					onVote={() => onVoteForSide?.("right")}
 				/>
 			</div>
@@ -207,7 +232,9 @@ export const TournamentBracket = memo(function TournamentBracket({
 	const [viewMode, setViewMode] = useState<"tree" | "cards">("tree");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [zoom, setZoom] = useState(1);
-	const [highlightedContenderId, setHighlightedContenderId] = useState<string | null>(null);
+	const [highlightedContenderId, setHighlightedContenderId] = useState<
+		string | null
+	>(null);
 	const debouncedSearch = useDebounce(searchQuery, 200);
 
 	const bracketTree = useMemo(
@@ -243,7 +270,8 @@ export const TournamentBracket = memo(function TournamentBracket({
 		for (const round of bracketTree.rounds) {
 			for (const m of round.matches) {
 				const found =
-					(m.contender1?.name.toLowerCase().includes(term) && m.contender1.id) ||
+					(m.contender1?.name.toLowerCase().includes(term) &&
+						m.contender1.id) ||
 					(m.contender2?.name.toLowerCase().includes(term) && m.contender2.id);
 				if (found) {
 					setHighlightedContenderId(found);
@@ -329,7 +357,10 @@ export const TournamentBracket = memo(function TournamentBracket({
 					}
 				>
 					{bracketTree.rounds.map((round) => (
-						<div key={`round-${round.roundNumber}`} className="flex flex-col gap-4">
+						<div
+							key={`round-${round.roundNumber}`}
+							className="flex flex-col gap-4"
+						>
 							<div className="text-center font-display font-bold text-xs tracking-wider text-muted-foreground border-b border-border/20 pb-2">
 								{round.roundName}
 							</div>
@@ -340,7 +371,9 @@ export const TournamentBracket = memo(function TournamentBracket({
 										match={match}
 										highlightedContenderId={highlightedContenderId}
 										onSelectContender={(id) =>
-											setHighlightedContenderId((curr) => (curr === id ? null : id))
+											setHighlightedContenderId((curr) =>
+												curr === id ? null : id,
+											)
 										}
 										onVoteForSide={(side) => handleVoteForSide(match, side)}
 									/>
@@ -404,7 +437,12 @@ export function TournamentBracketModal({
 						<Layers className="size-5 text-primary" />
 						<span>Tournament Bracket</span>
 					</div>
-					<Button variant="ghost" size="icon" onClick={onClose} aria-label="Close modal">
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={onClose}
+						aria-label="Close modal"
+					>
 						<X className="size-5" />
 					</Button>
 				</div>

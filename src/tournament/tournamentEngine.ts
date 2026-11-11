@@ -1,11 +1,19 @@
 import { applyEloMatchUpdate, shuffleArray } from "@/lib/utils";
-import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	Team,
+	TournamentMode,
+} from "@/types";
 
 export function resolveTournamentMode(selectedCount: number): TournamentMode {
 	return selectedCount >= 4 && selectedCount % 4 === 0 ? "2v2" : "1v1";
 }
 
-export function generateRandomTeams(participants: Array<{ id: string; name: string }>): Team[] {
+export function generateRandomTeams(
+	participants: Array<{ id: string; name: string }>,
+): Team[] {
 	const shuffled = shuffleArray(participants);
 	const teams: Team[] = [];
 	for (let i = 0; i + 1 < shuffled.length; i += 2) {
@@ -23,7 +31,10 @@ export function generateRandomTeams(participants: Array<{ id: string; name: stri
 	return teams;
 }
 
-export function getBracketStageLabel(round: number, totalRounds: number): string {
+export function getBracketStageLabel(
+	round: number,
+	totalRounds: number,
+): string {
 	const safeRound = Math.max(1, round);
 	const remaining = Math.max(1, totalRounds) - safeRound;
 	if (remaining <= 0) {
@@ -109,8 +120,11 @@ export function normalizeParticipant(
 		if ("memberNames" in participant) {
 			return {
 				id: String(participant.id),
-				name: (participant.memberNames ?? []).join(" + ") || String(participant.id),
-				memberIds: participant.memberIds?.map(String) ?? [String(participant.id)],
+				name:
+					(participant.memberNames ?? []).join(" + ") || String(participant.id),
+				memberIds: participant.memberIds?.map(String) ?? [
+					String(participant.id),
+				],
 				memberNames: participant.memberNames ?? [],
 				isTeam: true,
 			};
@@ -134,7 +148,9 @@ export function normalizeParticipant(
 	};
 }
 
-function getFastParticipantId(participant: Match["left"] | Match["right"]): string {
+function getFastParticipantId(
+	participant: Match["left"] | Match["right"],
+): string {
 	return typeof participant === "object" && participant !== null
 		? String(participant.id)
 		: String(participant);
@@ -271,14 +287,19 @@ export function deriveBracketState(
 	}
 
 	const totalMatches = Math.max(0, totalEntrants - 1);
-	const totalRounds = Math.max(1, Math.ceil(Math.log2(Math.max(2, totalEntrants))));
+	const totalRounds = Math.max(
+		1,
+		Math.ceil(Math.log2(Math.max(2, totalEntrants))),
+	);
 	let round = 1;
 	let cursor = 0;
 	let currentRoundEntrants = padForRound(entrants, round);
 
 	while (currentRoundEntrants.length > 1) {
 		const winners: string[] = [];
-		const activeRoundSize = currentRoundEntrants.filter((id) => !isBye(id)).length;
+		const activeRoundSize = currentRoundEntrants.filter(
+			(id) => !isBye(id),
+		).length;
 
 		for (let i = 0; i < currentRoundEntrants.length; i += 2) {
 			const left = currentRoundEntrants[i];
@@ -299,7 +320,10 @@ export function deriveBracketState(
 			}
 
 			const record = matchHistory[cursor];
-			if (!record?.winner || (record.winner !== left && record.winner !== right)) {
+			if (
+				!record?.winner ||
+				(record.winner !== left && record.winner !== right)
+			) {
 				return {
 					isComplete: false,
 					totalMatches,
@@ -351,7 +375,9 @@ export function resolveCurrentMatch({
 	if (tournamentMode === "2v2") {
 		const leftTeam = teamsById.get(pendingMatchIds.leftId);
 		const rightTeam = teamsById.get(pendingMatchIds.rightId);
-		return leftTeam && rightTeam ? { mode: "2v2", left: leftTeam, right: rightTeam } : null;
+		return leftTeam && rightTeam
+			? { mode: "2v2", left: leftTeam, right: rightTeam }
+			: null;
 	}
 	return {
 		mode: "1v1",
@@ -366,13 +392,27 @@ export function resolveCurrentMatch({
 	};
 }
 
-export function calculateTournamentMetrics({ derived }: { derived: BracketDerivation }) {
-	const { totalMatches, completedMatches, round, totalRounds, stageLabel, roundSize, isComplete } =
-		derived;
+export function calculateTournamentMetrics({
+	derived,
+}: {
+	derived: BracketDerivation;
+}) {
+	const {
+		totalMatches,
+		completedMatches,
+		round,
+		totalRounds,
+		stageLabel,
+		roundSize,
+		isComplete,
+	} = derived;
 	const matchNumber = isComplete ? completedMatches : completedMatches + 1;
 	const progress =
 		totalMatches > 0
-			? Math.min(100, Math.max(0, Math.round((completedMatches / totalMatches) * 100)))
+			? Math.min(
+					100,
+					Math.max(0, Math.round((completedMatches / totalMatches) * 100)),
+				)
 			: 0;
 	const etaMinutes =
 		!totalMatches || completedMatches >= totalMatches
@@ -403,13 +443,21 @@ export function computeUpdatedRatings({
 	const leftParticipantIds =
 		currentMatch.mode === "2v2"
 			? currentMatch.left.memberIds
-			: [String(typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id)];
+			: [
+					String(
+						typeof currentMatch.left === "string"
+							? currentMatch.left
+							: currentMatch.left.id,
+					),
+				];
 	const rightParticipantIds =
 		currentMatch.mode === "2v2"
 			? currentMatch.right.memberIds
 			: [
 					String(
-						typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
+						typeof currentMatch.right === "string"
+							? currentMatch.right
+							: currentMatch.right.id,
 					),
 				];
 	const isLeftWinner =

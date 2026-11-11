@@ -29,12 +29,19 @@ export function resetStorageModuleCache(): void {
 	memoryFallbackStore.clear();
 }
 
-export function getStorageString(key: string, fallback: string | null = null): string | null {
+export function getStorageString(
+	key: string,
+	fallback: string | null = null,
+): string | null {
 	if (!isStorageAvailable()) {
 		return memoryFallbackStore.get(key) ?? fallback;
 	}
 	try {
-		return window.localStorage.getItem(key) ?? memoryFallbackStore.get(key) ?? fallback;
+		return (
+			window.localStorage.getItem(key) ??
+			memoryFallbackStore.get(key) ??
+			fallback
+		);
 	} catch (error) {
 		logger.error(`[storage] Failed to read key "${key}":`, error);
 		return memoryFallbackStore.get(key) ?? fallback;
@@ -67,7 +74,10 @@ export function removeStorageItem(key: string): void {
 	}
 }
 
-export function parseJsonValue<T>(value: string | null | undefined, fallback: T): T {
+export function parseJsonValue<T>(
+	value: string | null | undefined,
+	fallback: T,
+): T {
 	const trimmed = value?.trim();
 	if (!trimmed) {
 		return fallback;
@@ -122,7 +132,9 @@ export interface StoredUserSnapshot {
 	email?: string;
 }
 
-function normalizeStoredUserSnapshot(value: unknown): StoredUserSnapshot | null {
+function normalizeStoredUserSnapshot(
+	value: unknown,
+): StoredUserSnapshot | null {
 	if (!value || typeof value !== "object") {
 		return null;
 	}
@@ -154,7 +166,9 @@ export function readStoredUserSnapshot(): StoredUserSnapshot | null {
 	return null;
 }
 
-export function writeStoredUserSnapshot(snapshot: StoredUserSnapshot | null): void {
+export function writeStoredUserSnapshot(
+	snapshot: StoredUserSnapshot | null,
+): void {
 	if (!isStorageAvailable()) {
 		return;
 	}
@@ -189,7 +203,9 @@ export function clearStoredUserSnapshot(): void {
 
 export type StoredTournamentSnapshot = Omit<TournamentState, "isLoading">;
 
-function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnapshot | null {
+function normalizeStoredTournamentSnapshot(
+	value: unknown,
+): StoredTournamentSnapshot | null {
 	if (!value || typeof value !== "object") {
 		return null;
 	}
@@ -197,33 +213,57 @@ function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnap
 	const names = Array.isArray(c.names) ? (c.names as NameItem[]) : null;
 	const ratings: Record<string, RatingData> = {};
 	if (c.ratings && typeof c.ratings === "object") {
-		for (const [key, val] of Object.entries(c.ratings as Record<string, unknown>)) {
+		for (const [key, val] of Object.entries(
+			c.ratings as Record<string, unknown>,
+		)) {
 			if (typeof val === "number") {
 				ratings[key] = { rating: val, wins: 0, losses: 0 };
-			} else if (val && typeof val === "object" && typeof (val as RatingData).rating === "number") {
+			} else if (
+				val &&
+				typeof val === "object" &&
+				typeof (val as RatingData).rating === "number"
+			) {
 				ratings[key] = {
 					rating: (val as RatingData).rating,
-					wins: typeof (val as RatingData).wins === "number" ? (val as RatingData).wins : 0,
-					losses: typeof (val as RatingData).losses === "number" ? (val as RatingData).losses : 0,
+					wins:
+						typeof (val as RatingData).wins === "number"
+							? (val as RatingData).wins
+							: 0,
+					losses:
+						typeof (val as RatingData).losses === "number"
+							? (val as RatingData).losses
+							: 0,
 				};
 			}
 		}
 	}
-	const voteHistory = Array.isArray(c.voteHistory) ? (c.voteHistory as VoteRecord[]) : [];
-	const selectedNames = Array.isArray(c.selectedNames) ? (c.selectedNames as NameItem[]) : [];
+	const voteHistory = Array.isArray(c.voteHistory)
+		? (c.voteHistory as VoteRecord[])
+		: [];
+	const selectedNames = Array.isArray(c.selectedNames)
+		? (c.selectedNames as NameItem[])
+		: [];
 	const matchHistory = Array.isArray(c.matchHistory)
 		? (c.matchHistory as MatchRecord[])
 		: undefined;
-	const isComplete = Boolean(c.isComplete) && Boolean(matchHistory && matchHistory.length > 0);
-	const currentRound = typeof c.currentRound === "number" ? c.currentRound : undefined;
-	const currentMatch = typeof c.currentMatch === "number" ? c.currentMatch : undefined;
-	const totalMatches = typeof c.totalMatches === "number" ? c.totalMatches : undefined;
-	const mode = c.mode === "1v1" || c.mode === "2v2" ? (c.mode as TournamentMode) : undefined;
+	const isComplete =
+		Boolean(c.isComplete) && Boolean(matchHistory && matchHistory.length > 0);
+	const currentRound =
+		typeof c.currentRound === "number" ? c.currentRound : undefined;
+	const currentMatch =
+		typeof c.currentMatch === "number" ? c.currentMatch : undefined;
+	const totalMatches =
+		typeof c.totalMatches === "number" ? c.totalMatches : undefined;
+	const mode =
+		c.mode === "1v1" || c.mode === "2v2"
+			? (c.mode as TournamentMode)
+			: undefined;
 	const teams = Array.isArray(c.teams) ? (c.teams as Team[]) : undefined;
 	const bracketEntrants = Array.isArray(c.bracketEntrants)
 		? (c.bracketEntrants as string[])
 		: undefined;
-	const lastUpdated = typeof c.lastUpdated === "number" ? c.lastUpdated : Date.now();
+	const lastUpdated =
+		typeof c.lastUpdated === "number" ? c.lastUpdated : Date.now();
 
 	if (
 		!names &&
@@ -253,11 +293,15 @@ function normalizeStoredTournamentSnapshot(value: unknown): StoredTournamentSnap
 
 export function readStoredTournamentSnapshot(): StoredTournamentSnapshot | null {
 	return isStorageAvailable()
-		? normalizeStoredTournamentSnapshot(readStorageJson<unknown>(STORAGE_KEYS.TOURNAMENT, null))
+		? normalizeStoredTournamentSnapshot(
+				readStorageJson<unknown>(STORAGE_KEYS.TOURNAMENT, null),
+			)
 		: null;
 }
 
-export function writeStoredTournamentSnapshot(snapshot: StoredTournamentSnapshot | null): void {
+export function writeStoredTournamentSnapshot(
+	snapshot: StoredTournamentSnapshot | null,
+): void {
 	if (!isStorageAvailable()) {
 		return;
 	}
@@ -310,7 +354,8 @@ export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnap
 				.transaction(IDB_STORE_NAME, "readonly")
 				.objectStore(IDB_STORE_NAME)
 				.get(IDB_KEY);
-			req.onsuccess = () => resolve(req.result as StoredTournamentSnapshot | null);
+			req.onsuccess = () =>
+				resolve(req.result as StoredTournamentSnapshot | null);
 			req.onerror = () => resolve(null);
 		} catch {
 			resolve(null);
@@ -318,7 +363,9 @@ export async function getStoredTournamentFromIDB(): Promise<StoredTournamentSnap
 	});
 }
 
-export async function saveStoredTournamentToIDB(snapshot: StoredTournamentSnapshot): Promise<void> {
+export async function saveStoredTournamentToIDB(
+	snapshot: StoredTournamentSnapshot,
+): Promise<void> {
 	const db = await openIDB();
 	if (!db) {
 		return;

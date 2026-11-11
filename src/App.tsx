@@ -31,8 +31,14 @@ function AppShell() {
 							</Suspense>
 						}
 					/>
-					<Route path="/tournament" element={<Navigate to="/" replace={true} />} />
-					<Route path="/analysis" element={<Navigate to="/" replace={true} />} />
+					<Route
+						path="/tournament"
+						element={<Navigate to="/" replace={true} />}
+					/>
+					<Route
+						path="/analysis"
+						element={<Navigate to="/" replace={true} />}
+					/>
 					<Route path="/admin" element={<Navigate to="/" replace={true} />} />
 					<Route path="*" element={<Navigate to="/" replace={true} />} />
 				</Routes>

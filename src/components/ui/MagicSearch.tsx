@@ -23,7 +23,12 @@ export const MagicSearch = memo(function MagicSearch({
 			}
 			const active = document.activeElement as HTMLElement | null;
 			const tag = active?.tagName;
-			if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || active?.isContentEditable) {
+			if (
+				tag === "INPUT" ||
+				tag === "TEXTAREA" ||
+				tag === "SELECT" ||
+				active?.isContentEditable
+			) {
 				return;
 			}
 			e.preventDefault();

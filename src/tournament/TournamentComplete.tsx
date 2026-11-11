@@ -1,4 +1,13 @@
-import { Clock, Flame, Gamepad2, Layers, LogOut, Trophy, Undo2, X } from "lucide-react";
+import {
+	Clock,
+	Flame,
+	Gamepad2,
+	Layers,
+	LogOut,
+	Trophy,
+	Undo2,
+	X,
+} from "lucide-react";
 import { memo, useMemo } from "react";
 import { NameOrb } from "@/components/GlassEffects";
 import { Button, Card } from "@/components/UiPrimitives";
@@ -56,14 +65,23 @@ export function BracketTree({
 						? "border-secondary/60 bg-secondary/20 text-foreground"
 						: "border-border/20 bg-foreground/5 text-muted-foreground";
 				return (
-					<div key={`bracket-round-${stageRound}`} className="flex items-center gap-1">
-						<div className={`shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-bold ${tone}`}>
+					<div
+						key={`bracket-round-${stageRound}`}
+						className="flex items-center gap-1"
+					>
+						<div
+							className={`shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-bold ${tone}`}
+						>
 							{getRoundCaption(stageRound, totalRounds)}
 						</div>
 						{index < rounds.length - 1 && (
 							<div
 								className={`h-[1px] w-4 sm:w-6 ${
-									isDone ? "bg-secondary" : isActive ? "bg-primary/70" : "bg-border/20"
+									isDone
+										? "bg-secondary"
+										: isActive
+											? "bg-primary/70"
+											: "bg-border/20"
 								}`}
 							/>
 						)}
@@ -160,18 +178,26 @@ export const TournamentHeader = memo(function TournamentHeader({
 								<span aria-hidden="true">&middot;</span>
 								<span>{bracketStage}</span>
 								<span aria-hidden="true">&middot;</span>
-								<span>{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}</span>
+								<span>
+									{tournamentMode === "2v2" ? "2v2 Teams" : "1v1 Head-to-Head"}
+								</span>
 							</div>
 							<div className="flex items-baseline gap-2.5">
 								<h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
 									Match{" "}
-									<span className="font-mono tabular-nums text-primary">{currentMatchNumber}</span>{" "}
-									of <span className="font-mono tabular-nums">{totalMatches}</span>
+									<span className="font-mono tabular-nums text-primary">
+										{currentMatchNumber}
+									</span>{" "}
+									of{" "}
+									<span className="font-mono tabular-nums">{totalMatches}</span>
 								</h2>
 								{etaMinutes > 0 && (
 									<span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
 										<Clock className="size-3" />
-										<span className="font-mono tabular-nums">{etaMinutes}m</span> left
+										<span className="font-mono tabular-nums">
+											{etaMinutes}m
+										</span>{" "}
+										left
 									</span>
 								)}
 							</div>
@@ -233,7 +259,9 @@ export const TournamentHeader = memo(function TournamentHeader({
 					</div>
 					<div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 text-xs text-muted-foreground">
 						<div className="flex items-center gap-1.5">
-							<span className="font-medium text-foreground/80">{matchupTone}</span>
+							<span className="font-medium text-foreground/80">
+								{matchupTone}
+							</span>
 							<span aria-hidden="true">&middot;</span>
 							<span>{pressureCopy}</span>
 						</div>
@@ -292,12 +320,19 @@ export function TournamentComplete({
 	totalRounds,
 	tournamentMode = "1v1",
 }: TournamentCompleteProps) {
-	const winningRecord = matchHistory.length > 0 ? matchHistory[matchHistory.length - 1] : null;
+	const winningRecord =
+		matchHistory.length > 0 ? matchHistory[matchHistory.length - 1] : null;
 	const winnerId = winningRecord?.winner;
 
-	const winningTeam = winnerId ? teams.find((t) => t?.id === winnerId) : undefined;
+	const winningTeam = winnerId
+		? teams.find((t) => t?.id === winnerId)
+		: undefined;
 	const winningNameItem = winnerId
-		? names.find((n) => n && (String(n.id) === String(winnerId) || n.name === String(winnerId)))
+		? names.find(
+				(n) =>
+					n &&
+					(String(n.id) === String(winnerId) || n.name === String(winnerId)),
+			)
 		: undefined;
 
 	const winnerDisplayName = winningTeam
@@ -321,16 +356,19 @@ export function TournamentComplete({
 
 				{winnerDisplayName && (
 					<div className="mt-6 flex flex-col items-center gap-4 rounded-3xl border border-primary/30 bg-primary/10 px-8 py-6 shadow-md backdrop-blur-md">
-						<span className="text-xs font-bold tracking-wider text-primary">Crowned Champion</span>
+						<span className="text-xs font-bold tracking-wider text-primary">
+							Crowned Champion
+						</span>
 						{winningTeam && winningTeam.memberNames.length > 1 ? (
 							<div className="relative flex items-center justify-center -space-x-2 py-1">
 								{winningTeam.memberNames.map((memberName, idx) => {
 									const memberItem = names.find(
-										(n) => n && n.name.toLowerCase() === memberName.toLowerCase(),
+										(n) =>
+											n && n.name.toLowerCase() === memberName.toLowerCase(),
 									);
 									return (
 										<div
-											key={`${memberName}-${idx}`}
+											key={memberName}
 											className={idx === 0 ? "-rotate-3" : "rotate-3"}
 										>
 											<NameOrb
@@ -366,18 +404,23 @@ export function TournamentComplete({
 				)}
 
 				<p className="mt-4 max-w-xl text-balance text-sm leading-relaxed text-muted-foreground sm:text-base">
-					Review the final bracket path and Elo rankings below, or start a fresh tournament round.
+					Review the final bracket path and Elo rankings below, or start a fresh
+					tournament round.
 				</p>
 
 				<div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-4 sm:grid-cols-2">
 					<Card className="px-6 py-4 bg-card/80">
-						<p className="text-xs font-semibold text-muted-foreground">Total matches</p>
+						<p className="text-xs font-semibold text-muted-foreground">
+							Total matches
+						</p>
 						<p className="mt-2 font-mono tabular-nums text-3xl font-black leading-none text-foreground">
 							{totalMatches}
 						</p>
 					</Card>
 					<Card className="px-6 py-4 bg-card/80">
-						<p className="text-xs font-semibold text-muted-foreground">Participants</p>
+						<p className="text-xs font-semibold text-muted-foreground">
+							Participants
+						</p>
 						<p className="mt-2 font-mono tabular-nums text-3xl font-black leading-none text-foreground">
 							{participantCount}
 						</p>

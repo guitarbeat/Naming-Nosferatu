@@ -10,7 +10,13 @@ import {
 	handleImgError,
 } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "danger" | "ghost" | "outline" | "flat" | "glass";
+type ButtonVariant =
+	| "primary"
+	| "danger"
+	| "ghost"
+	| "outline"
+	| "flat"
+	| "glass";
 type ButtonSize = "small" | "medium" | "large" | "icon";
 
 const baseButtonClass =
@@ -21,7 +27,8 @@ const variantClasses: Record<ButtonVariant, string> = {
 		"bg-primary text-primary-foreground shadow-sm hover:brightness-105 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96] border-b-2 border-primary/25",
 	danger:
 		"bg-destructive text-destructive-foreground shadow-sm hover:brightness-105 motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96] border-b-2 border-destructive/30",
-	ghost: "text-foreground/80 hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
+	ghost:
+		"text-foreground/80 hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
 	outline:
 		"border border-border/80 bg-white/40 dark:bg-white/5 text-foreground shadow-xs hover:bg-accent/20 hover:border-accent hover:text-accent-foreground motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.96] backdrop-blur-sm",
 	flat: "text-foreground/80 hover:bg-accent/30 active:bg-accent/50",
@@ -36,7 +43,8 @@ const sizeClasses: Record<ButtonSize, string> = {
 	icon: "h-10 w-10 p-0 [&_svg]:size-4 min-h-[40px] min-w-[40px]",
 };
 
-export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+export interface ButtonProps
+	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	variant?: ButtonVariant;
 	size?: ButtonSize;
 	loading?: boolean;
@@ -63,7 +71,12 @@ export const Button = memo(function Button({
 		<button
 			type={type}
 			disabled={disabled || loading}
-			className={cn(baseButtonClass, variantClasses[variant], sizeClasses[finalSize], className)}
+			className={cn(
+				baseButtonClass,
+				variantClasses[variant],
+				sizeClasses[finalSize],
+				className,
+			)}
 			onClick={(e) => {
 				if (disabled || loading) {
 					e.preventDefault();
@@ -149,12 +162,21 @@ export function CatImage({
 	const [hasError, setHasError] = useState(false);
 	const [svgFallback, setSvgFallback] = useState(false);
 	const fallbackUrl = CAT_IMAGES[0] ?? FALLBACK_CAT_IMAGE;
-	const currentSrc = svgFallback ? FALLBACK_CAT_SVG : hasError || !src ? fallbackUrl : src;
+	const currentSrc = svgFallback
+		? FALLBACK_CAT_SVG
+		: hasError || !src
+			? fallbackUrl
+			: src;
 
 	return (
 		<div
 			className={containerClassName}
-			style={{ ...containerStyle, "--bg-image": `url(${currentSrc})` } as React.CSSProperties}
+			style={
+				{
+					...containerStyle,
+					"--bg-image": `url(${currentSrc})`,
+				} as React.CSSProperties
+			}
 		>
 			<img
 				src={currentSrc}
@@ -171,7 +193,9 @@ export function CatImage({
 					}
 					onError?.(e);
 				}}
-				{...(currentSrc.startsWith("/") ? {} : { crossOrigin: "anonymous" as const })}
+				{...(currentSrc.startsWith("/")
+					? {}
+					: { crossOrigin: "anonymous" as const })}
 			/>
 		</div>
 	);
@@ -205,13 +229,19 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 }) => (
 	<div className="mx-auto my-8 flex min-h-[40vh] w-full max-w-xl items-center justify-center px-4">
 		<div className="w-full rounded-2xl border border-destructive/30 bg-card/90 p-6 text-center shadow-xl backdrop-blur-md">
-			<h2 className="text-2xl font-bold text-foreground">Something went wrong</h2>
-			<p className="mt-2 text-sm text-muted-foreground">{context} could not finish loading.</p>
+			<h2 className="text-2xl font-bold text-foreground">
+				Something went wrong
+			</h2>
+			<p className="mt-2 text-sm text-muted-foreground">
+				{context} could not finish loading.
+			</p>
 			<p className="mt-4 rounded-xl bg-destructive/10 p-3 text-sm font-medium text-destructive">
 				{error?.message || "An unexpected error occurred."}
 			</p>
 			{errorId ? (
-				<p className="mt-2 font-mono text-xs text-muted-foreground">ID: {errorId}</p>
+				<p className="mt-2 font-mono text-xs text-muted-foreground">
+					ID: {errorId}
+				</p>
 			) : null}
 			<div className="mt-5 flex flex-wrap justify-center gap-3">
 				<Button onClick={resetError} size="small" variant="primary">
@@ -222,7 +252,10 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	</div>
 );
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+	ErrorBoundaryProps,
+	ErrorBoundaryState
+> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -242,7 +275,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 		onError?.(error, errorInfo);
 	}
 
-	resetError = () => this.setState({ hasError: false, error: null, errorId: null });
+	resetError = () =>
+		this.setState({ hasError: false, error: null, errorId: null });
 
 	override render() {
 		if (this.state.hasError) {
@@ -271,7 +305,8 @@ export const ErrorInline: React.FC<{
 	const msg =
 		typeof error === "string"
 			? error
-			: (error as { message?: string })?.message || "An unexpected error occurred";
+			: (error as { message?: string })?.message ||
+				"An unexpected error occurred";
 	return (
 		<div
 			className={cn(
@@ -317,14 +352,20 @@ export const Loading: React.FC<LoadingProps> = memo(
 						"animate-pulse rounded-2xl bg-foreground/5 border border-border/30",
 						className,
 					)}
-					style={{ width: "100%", height: typeof height === "number" ? `${height}px` : height }}
+					style={{
+						width: "100%",
+						height: typeof height === "number" ? `${height}px` : height,
+					}}
 				/>
 			);
 		}
 		if (variant === "cat-gif") {
 			return (
 				<div
-					className={cn("flex flex-col items-center justify-center gap-3 p-4", className)}
+					className={cn(
+						"flex flex-col items-center justify-center gap-3 p-4",
+						className,
+					)}
 					role="status"
 					aria-label="Loading"
 					aria-busy="true"
@@ -337,13 +378,20 @@ export const Loading: React.FC<LoadingProps> = memo(
 						className="h-24 w-auto select-none object-contain opacity-90 motion-safe:animate-pulse"
 						onError={handleImgError}
 					/>
-					{text && <p className="text-xs font-bold tracking-wide text-muted-foreground">{text}</p>}
+					{text && (
+						<p className="text-xs font-bold tracking-wide text-muted-foreground">
+							{text}
+						</p>
+					)}
 				</div>
 			);
 		}
 		return (
 			<div
-				className={cn("flex flex-col items-center justify-center gap-3 p-4", className)}
+				className={cn(
+					"flex flex-col items-center justify-center gap-3 p-4",
+					className,
+				)}
 				role="status"
 				aria-label="Loading"
 				aria-busy="true"
@@ -354,7 +402,9 @@ export const Loading: React.FC<LoadingProps> = memo(
 					aria-hidden={true}
 				/>
 				{text ? (
-					<p className="mt-1 text-sm font-medium text-muted-foreground">{text}</p>
+					<p className="mt-1 text-sm font-medium text-muted-foreground">
+						{text}
+					</p>
 				) : (
 					<span className="sr-only">Loading...</span>
 				)}

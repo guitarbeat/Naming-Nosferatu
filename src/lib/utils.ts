@@ -8,12 +8,15 @@ export const CAT_IMAGES: readonly string[] = Array.from(
 	(_, i) => `/assets/images/cats/cat_${String(i + 1).padStart(2, "0")}.webp`,
 );
 
-export const FALLBACK_CAT_IMAGE = "/assets/images/ui/cat_avatar_placeholder.png";
+export const FALLBACK_CAT_IMAGE =
+	"/assets/images/ui/cat_avatar_placeholder.png";
 
 export const FALLBACK_CAT_SVG =
 	"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%236366f1'><circle cx='50' cy='50' r='45'/><text x='50' y='65' font-size='40' text-anchor='middle' fill='white'>🐱</text></svg>";
 
-export const CRITICAL_SHELL_IMAGES: readonly string[] = [FALLBACK_CAT_IMAGE] as const;
+export const CRITICAL_SHELL_IMAGES: readonly string[] = [
+	FALLBACK_CAT_IMAGE,
+] as const;
 
 export const STORAGE_KEYS = {
 	USER: "nn_user",
@@ -109,7 +112,9 @@ export function calculatePairEloUpdate({
 	const kB = winsB + lossesB < threshold ? k * multiplier : k;
 
 	return {
-		newRatingA: Math.round(Math.min(maxR, Math.max(minR, leftRating + kA * (actualA - expectedA)))),
+		newRatingA: Math.round(
+			Math.min(maxR, Math.max(minR, leftRating + kA * (actualA - expectedA))),
+		),
 		newRatingB: Math.round(
 			Math.min(maxR, Math.max(minR, rightRating + kB * (actualB - expectedB))),
 		),
@@ -338,11 +343,15 @@ export function isNameLocked(name: NameItem | null | undefined): boolean {
 	return Boolean(name && (name.locked_in === true || name.lockedIn === true));
 }
 
-export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getVisibleNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	return Array.isArray(names) ? names.filter((n) => !isNameHidden(n)) : [];
 }
 
-export function getLockedNames(names: NameItem[] | null | undefined): NameItem[] {
+export function getLockedNames(
+	names: NameItem[] | null | undefined,
+): NameItem[] {
 	return Array.isArray(names) ? names.filter((n) => isNameLocked(n)) : [];
 }
 
@@ -398,7 +407,10 @@ export function hapticNavTap(): void {
 }
 
 export function hapticVoteTap(durationMs = 15): boolean {
-	if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+	if (
+		typeof navigator !== "undefined" &&
+		typeof navigator.vibrate === "function"
+	) {
 		try {
 			return navigator.vibrate(durationMs);
 		} catch {
@@ -437,7 +449,9 @@ export function setupGlobalImageErrorHandler(
 		}
 		target.dataset.fallbackApplied = "true";
 		target.classList.add("img-fallback-applied");
-		target.src = target.src.includes(localFallback) ? fallbackSrc : localFallback;
+		target.src = target.src.includes(localFallback)
+			? fallbackSrc
+			: localFallback;
 	};
 	window.addEventListener("error", handleImageError, true);
 	return () => window.removeEventListener("error", handleImageError, true);
@@ -445,7 +459,8 @@ export function setupGlobalImageErrorHandler(
 
 export const ErrorManager = {
 	setupGlobalErrorHandling() {
-		const handleRejection = (e: PromiseRejectionEvent) => ErrorManager.handleError(e.reason);
+		const handleRejection = (e: PromiseRejectionEvent) =>
+			ErrorManager.handleError(e.reason);
 		const handleError = (e: ErrorEvent) => ErrorManager.handleError(e.error);
 		window.addEventListener("unhandledrejection", handleRejection);
 		window.addEventListener("error", handleError);
