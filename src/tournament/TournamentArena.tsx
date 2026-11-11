@@ -109,7 +109,7 @@ const MatchSideCard = memo(function MatchSideCard({
 						<div className="relative flex items-center justify-center -space-x-3 sm:-space-x-2 py-1 group-hover:scale-[1.03] transition-transform duration-200">
 							{orbMembers.map((member, idx) => (
 								<div
-									key={`${member.id}-${idx}`}
+									key={member.id}
 									className={`relative transition-transform duration-200 ${
 										idx === 0
 											? "-rotate-3 group-hover:-translate-x-1"
@@ -151,7 +151,9 @@ const MatchSideCard = memo(function MatchSideCard({
 							{name}
 						</h3>
 						{pronunciation && !isTeam && (
-							<p className="text-xs text-muted-foreground/80 font-mono">/{pronunciation}/</p>
+							<p className="text-xs text-muted-foreground/80 font-mono">
+								/{pronunciation}/
+							</p>
 						)}
 						{isTeam && orbMembers.length > 1 ? (
 							<div className="flex flex-col gap-1 pt-1">
@@ -161,7 +163,9 @@ const MatchSideCard = memo(function MatchSideCard({
 											key={member.id}
 											className="text-xs text-muted-foreground line-clamp-1 leading-relaxed"
 										>
-											<span className="font-bold text-foreground/90">{member.name}:</span>{" "}
+											<span className="font-bold text-foreground/90">
+												{member.name}:
+											</span>{" "}
 											{member.description}
 										</p>
 									) : null,
@@ -207,7 +211,9 @@ function resolveSideOrbMembers(
 			};
 		});
 	}
-	const single = namesLookup.get(sideId.toLowerCase()) ?? namesLookup.get(sideName.toLowerCase());
+	const single =
+		namesLookup.get(sideId.toLowerCase()) ??
+		namesLookup.get(sideName.toLowerCase());
 	return [
 		{
 			id: single ? String(single.id) : sideId,
@@ -235,9 +241,9 @@ export const TournamentArena = memo(function TournamentArena({
 	}, [activeNames]);
 
 	const ts = useTournamentState(activeNames, userName);
-	const { value: selectedSide, setTimed: setSelectedSide } = useTimedState<"left" | "right" | null>(
-		null,
-	);
+	const { value: selectedSide, setTimed: setSelectedSide } = useTimedState<
+		"left" | "right" | null
+	>(null);
 
 	const hasNotifiedCompleteRef = useRef(false);
 
@@ -336,7 +342,9 @@ export const TournamentArena = memo(function TournamentArena({
 	const leftHeat = getHeatLevel(leftStreak);
 	const rightHeat = getHeatLevel(rightStreak);
 	const dominantStreak =
-		leftStreak >= rightStreak && leftStreak >= STREAK_THRESHOLDS.warm && leftHeat
+		leftStreak >= rightStreak &&
+		leftStreak >= STREAK_THRESHOLDS.warm &&
+		leftHeat
 			? { name: m.leftName, streak: leftStreak, heatLevel: leftHeat }
 			: rightStreak >= STREAK_THRESHOLDS.warm && rightHeat
 				? { name: m.rightName, streak: rightStreak, heatLevel: rightHeat }

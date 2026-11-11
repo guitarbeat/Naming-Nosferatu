@@ -1,4 +1,11 @@
-import { MousePointerClick, Play, RotateCcw, Trophy, Undo2, X } from "lucide-react";
+import {
+	MousePointerClick,
+	Play,
+	RotateCcw,
+	Trophy,
+	Undo2,
+	X,
+} from "lucide-react";
 import { memo } from "react";
 import type { useTournamentState } from "@/hooks/useTournamentState";
 
@@ -43,7 +50,8 @@ export const TournamentDock = memo(function TournamentDock({
 							</span>
 						) : (
 							<span className="font-mono text-xs font-medium text-foreground/75 tabular-nums">
-								Round {ts.round} &middot; Match {ts.matchNumber}/{ts.totalMatches}
+								Round {ts.round} &middot; Match {ts.matchNumber}/
+								{ts.totalMatches}
 							</span>
 						)}
 					</div>
@@ -173,7 +181,9 @@ export const TournamentDock = memo(function TournamentDock({
 					>
 						<Play className="size-3 fill-current" />
 						<span>Start</span>
-						<span className="font-mono tabular-nums opacity-90">&middot; {selectedCount}</span>
+						<span className="font-mono tabular-nums opacity-90">
+							&middot; {selectedCount}
+						</span>
 					</button>
 				)}
 			</div>

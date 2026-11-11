@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, CheckCircle, Info, X, XCircle } from "lucide-react";
+import type React from "react";
 import type { ReactNode } from "react";
-import React, {
+import {
 	createContext,
 	memo,
 	useCallback,
@@ -41,7 +42,11 @@ interface ToastItem {
 
 export interface ToastContextValue {
 	toasts: ToastItem[];
-	showToast: (message: string, type?: ToastType, options?: ToastOptions) => string;
+	showToast: (
+		message: string,
+		type?: ToastType,
+		options?: ToastOptions,
+	) => string;
 	hideToast: (id: string) => void;
 	clearToasts: () => void;
 	showSuccess: (message: string, options?: ToastOptions) => string;
@@ -55,9 +60,18 @@ const TYPE_STYLES: Record<ToastType, { bg: string; icon: React.ReactNode }> = {
 		bg: "bg-secondary text-secondary-foreground",
 		icon: <CheckCircle className="size-4" />,
 	},
-	error: { bg: "bg-destructive text-destructive-foreground", icon: <XCircle className="size-4" /> },
-	warning: { bg: "bg-amber-500/90 text-white", icon: <AlertTriangle className="size-4" /> },
-	info: { bg: "bg-primary text-primary-foreground", icon: <Info className="size-4" /> },
+	error: {
+		bg: "bg-destructive text-destructive-foreground",
+		icon: <XCircle className="size-4" />,
+	},
+	warning: {
+		bg: "bg-amber-500/90 text-white",
+		icon: <AlertTriangle className="size-4" />,
+	},
+	info: {
+		bg: "bg-primary text-primary-foreground",
+		icon: <Info className="size-4" />,
+	},
 };
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -136,7 +150,11 @@ export function Providers({ children }: { children: ReactNode }) {
 	}, []);
 
 	const showToast = useCallback(
-		(message: string, type: ToastType = "info", options: ToastOptions = {}): string => {
+		(
+			message: string,
+			type: ToastType = "info",
+			options: ToastOptions = {},
+		): string => {
 			const id = `toast-${++toastCounter.current}`;
 			const duration = options.duration ?? DEFAULT_TOAST_DURATION_MS;
 			const autoDismiss = options.autoDismiss ?? true;
@@ -251,13 +269,20 @@ export function AppBootScreen({
 				{...scaleFadeMotionPreset}
 				className="flex flex-col items-center space-y-5 px-4 text-center max-w-md"
 			>
-				<div className="relative flex h-14 w-14 items-center justify-center" aria-hidden="true">
+				<div
+					className="relative flex h-14 w-14 items-center justify-center"
+					aria-hidden="true"
+				>
 					<div className="absolute h-14 w-14 rounded-full border-4 border-primary/20" />
 					<div className="absolute h-14 w-14 rounded-full border-4 border-t-primary animate-spin" />
 				</div>
 				<div className="space-y-1.5">
-					<h2 className="text-xl font-bold tracking-tight text-foreground">{message}</h2>
-					<p className="text-sm text-muted-foreground">Loading contender roster...</p>
+					<h2 className="text-xl font-bold tracking-tight text-foreground">
+						{message}
+					</h2>
+					<p className="text-sm text-muted-foreground">
+						Loading contender roster...
+					</p>
 				</div>
 			</motion.div>
 		</div>
@@ -274,7 +299,10 @@ export const GlobalErrorDisplay = memo(function GlobalErrorDisplay() {
 
 	return (
 		<div className="mx-auto mb-4 w-full max-w-4xl px-4 pt-4">
-			<ErrorInline error={String(currentError)} onDismiss={() => errorActions.clearError()} />
+			<ErrorInline
+				error={String(currentError)}
+				onDismiss={() => errorActions.clearError()}
+			/>
 		</div>
 	);
 });
@@ -285,7 +313,12 @@ export const GlobalLoadingOverlay = memo(function GlobalLoadingOverlay() {
 		return null;
 	}
 	return (
-		<div className="global-loading-overlay" role="status" aria-live="polite" aria-busy="true">
+		<div
+			className="global-loading-overlay"
+			role="status"
+			aria-live="polite"
+			aria-busy="true"
+		>
 			<Loading variant="spinner" text="Initializing Tournament..." />
 		</div>
 	);
@@ -332,7 +365,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<ErrorBoundary context="Main Application Layout">
 			<div className="app relative min-h-screen w-full bg-background text-foreground overflow-x-hidden">
-				<Iridescence mouseReact={true} className="fixed inset-0 z-0 pointer-events-none" />
+				<Iridescence
+					mouseReact={true}
+					className="fixed inset-0 z-0 pointer-events-none"
+				/>
 				<PwaInstallPrompt />
 				<OfflineIndicator />
 				<SkipToMainButton />

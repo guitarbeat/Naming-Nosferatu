@@ -63,7 +63,9 @@ export function useLocalStorage<T>(
 			return initialRef.current;
 		}
 		const raw = getStorageString(key, null);
-		return raw === null ? initialRef.current : parseJsonValue(raw, initialRef.current);
+		return raw === null
+			? initialRef.current
+			: parseJsonValue(raw, initialRef.current);
 	}, [key]);
 
 	const [stored, setStored] = useState<T>(readValue);
@@ -77,11 +79,15 @@ export function useLocalStorage<T>(
 		(next: SetStateAction<T>) => {
 			try {
 				const resolved =
-					typeof next === "function" ? (next as (previous: T) => T)(valueRef.current) : next;
+					typeof next === "function"
+						? (next as (previous: T) => T)(valueRef.current)
+						: next;
 				setStored(resolved);
 				valueRef.current = resolved;
 				if (IS_BROWSER && !writeStorageJson(key, resolved)) {
-					onErrorRef.current?.(new Error(`localStorage write failed for key "${key}"`));
+					onErrorRef.current?.(
+						new Error(`localStorage write failed for key "${key}"`),
+					);
 				}
 			} catch (error) {
 				onErrorRef.current?.(error);
@@ -112,7 +118,10 @@ export function useLocalStorage<T>(
 				valueRef.current = initialRef.current;
 				return;
 			}
-			const parsed = parseJsonValue<T>(decryptValue(event.newValue), initialRef.current);
+			const parsed = parseJsonValue<T>(
+				decryptValue(event.newValue),
+				initialRef.current,
+			);
 			setStored(parsed);
 			valueRef.current = parsed;
 		};
@@ -156,7 +165,8 @@ export function useSectionScroll() {
 								id === "contenders"
 							? "pick"
 							: id;
-				const element = document.getElementById(targetId) || document.getElementById(id);
+				const element =
+					document.getElementById(targetId) || document.getElementById(id);
 				if (element) {
 					element.scrollIntoView?.({
 						behavior: prefersReducedMotion ? "auto" : "smooth",
@@ -194,7 +204,9 @@ export function useSectionScroll() {
 
 const globalPreloadedImageCache = new Set<string>();
 
-export function usePreloadImages(images: readonly string[] = CRITICAL_SHELL_IMAGES): void {
+export function usePreloadImages(
+	images: readonly string[] = CRITICAL_SHELL_IMAGES,
+): void {
 	useEffect(() => {
 		if (!IS_BROWSER || images.length === 0) {
 			return;

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useReducer,
+	useRef,
+	useState,
+} from "react";
 import { useToast } from "@/components/AppChrome";
 import { useLocalStorage } from "@/hooks/useCommonHooks";
 import { ratingsAPI } from "@/lib/api";
@@ -27,7 +34,9 @@ import type {
 	TournamentMode,
 } from "@/types";
 
-function createDefaultPersistentState(userName = "anonymous"): PersistentTournamentState {
+function createDefaultPersistentState(
+	userName = "anonymous",
+): PersistentTournamentState {
 	return {
 		matchHistory: [],
 		currentRound: 1,
@@ -45,7 +54,10 @@ function createDefaultPersistentState(userName = "anonymous"): PersistentTournam
 	};
 }
 
-function sanitizePersistentState(raw: unknown, userName: string): PersistentTournamentState {
+function sanitizePersistentState(
+	raw: unknown,
+	userName: string,
+): PersistentTournamentState {
 	const base = createDefaultPersistentState(userName);
 	if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
 		return base;
@@ -60,19 +72,30 @@ function sanitizePersistentState(raw: unknown, userName: string): PersistentTour
 		teams: Array.isArray(m.teams)
 			? (m.teams as Team[]).filter(
 					(t) =>
-						t && typeof t.id === "string" && Array.isArray(t.memberIds) && t.memberIds.length === 2,
+						t &&
+						typeof t.id === "string" &&
+						Array.isArray(t.memberIds) &&
+						t.memberIds.length === 2,
 				)
 			: [],
-		teamMatches: Array.isArray(m.teamMatches) ? (m.teamMatches as TeamMatch[]) : [],
-		teamMatchIndex: typeof m.teamMatchIndex === "number" ? Math.max(0, m.teamMatchIndex) : 0,
-		bracketEntrants: Array.isArray(m.bracketEntrants) ? m.bracketEntrants.map(String) : [],
+		teamMatches: Array.isArray(m.teamMatches)
+			? (m.teamMatches as TeamMatch[])
+			: [],
+		teamMatchIndex:
+			typeof m.teamMatchIndex === "number" ? Math.max(0, m.teamMatchIndex) : 0,
+		bracketEntrants: Array.isArray(m.bracketEntrants)
+			? m.bracketEntrants.map(String)
+			: [],
 	} as PersistentTournamentState;
 }
 
 type TournamentAction =
 	| {
 			type: "INIT";
-			payload: { ratings: Record<string, number>; persistentState: PersistentTournamentState };
+			payload: {
+				ratings: Record<string, number>;
+				persistentState: PersistentTournamentState;
+			};
 	  }
 	| {
 			type: "VOTE";
@@ -108,23 +131,44 @@ function tournamentReducer(
 		};
 	}
 	if (action.type === "VOTE") {
-		const { currentMatch, winnerId, loserId, matchNumber, round, voteTimestamp } = action.payload;
+		const {
+			currentMatch,
+			winnerId,
+			loserId,
+			matchNumber,
+			round,
+			voteTimestamp,
+		} = action.payload;
 		const newRatings = computeUpdatedRatings({
 			currentMatch,
 			ratingsSnapshot: state.ratings,
 			winnerId,
 		});
-		const matchRecord = createMatchRecord({ currentMatch, winnerId, loserId, matchNumber, round });
+		const matchRecord = createMatchRecord({
+			currentMatch,
+			winnerId,
+			loserId,
+			matchNumber,
+			round,
+		});
 		return {
 			...state,
 			ratings: newRatings,
 			history: [
 				...state.history,
-				{ match: currentMatch, ratings: { ...state.ratings }, round, matchNumber },
+				{
+					match: currentMatch,
+					ratings: { ...state.ratings },
+					round,
+					matchNumber,
+				},
 			],
 			persistentState: {
 				...state.persistentState,
-				matchHistory: [...(state.persistentState.matchHistory || []), matchRecord],
+				matchHistory: [
+					...(state.persistentState.matchHistory || []),
+					matchRecord,
+				],
 				currentMatch: matchNumber + 1,
 				currentRound: round,
 				ratings: newRatings,
@@ -179,7 +223,8 @@ function buildInitialReducerState({
 
 	const storeT = useAppStore.getState().tournament;
 	const eff: PersistentTournamentState =
-		persistentState.bracketEntrants && persistentState.bracketEntrants.length > 0
+		persistentState.bracketEntrants &&
+		persistentState.bracketEntrants.length > 0
 			? persistentState
 			: {
 					...persistentState,
@@ -188,21 +233,28 @@ function buildInitialReducerState({
 					currentMatch: storeT.currentMatch ?? persistentState.currentMatch,
 					totalMatches: storeT.totalMatches ?? persistentState.totalMatches,
 					teams: storeT.teams ?? persistentState.teams,
-					bracketEntrants: storeT.bracketEntrants ?? persistentState.bracketEntrants,
+					bracketEntrants:
+						storeT.bracketEntrants ?? persistentState.bracketEntrants,
 					mode: (storeT.mode ?? tournamentMode) as TournamentMode,
 				};
 
 	const hasValid =
-		(persistentState.namesKey === namesKey && persistentState.mode === tournamentMode) ||
-		(Boolean(eff.bracketEntrants?.length) && storeT.names?.length === names.length);
+		(persistentState.namesKey === namesKey &&
+			persistentState.mode === tournamentMode) ||
+		(Boolean(eff.bracketEntrants?.length) &&
+			storeT.names?.length === names.length);
 
 	let teams = eff.teams;
 	if (tournamentMode === "2v2" && teams.length < 2) {
-		teams = generateRandomTeams(names.map((n) => ({ id: String(n.id), name: n.name })));
+		teams = generateRandomTeams(
+			names.map((n) => ({ id: String(n.id), name: n.name })),
+		);
 	}
 
 	const participantIds =
-		tournamentMode === "2v2" ? teams.map((t) => t.id) : names.map((n) => String(n.id));
+		tournamentMode === "2v2"
+			? teams.map((t) => t.id)
+			: names.map((n) => String(n.id));
 	const nonByeIds = eff.bracketEntrants.filter((id) => !isBye(id));
 	const sameIds =
 		nonByeIds.length === participantIds.length &&
@@ -228,7 +280,9 @@ function buildInitialReducerState({
 			currentMatch: shouldReset ? 1 : eff.currentMatch,
 			totalMatches: Math.max(0, participantIds.length - 1),
 			teams,
-			bracketEntrants: shouldReset ? shuffleArray(participantIds) : eff.bracketEntrants,
+			bracketEntrants: shouldReset
+				? shuffleArray(participantIds)
+				: eff.bracketEntrants,
 			namesKey,
 			mode: tournamentMode,
 			ratings: activeRatings,
@@ -241,9 +295,15 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 	const toast = useToast();
 	const [isVoting, setIsVoting] = useState(false);
 	const userKey = userName || "anonymous";
-	const tournamentMode = useMemo(() => resolveTournamentMode(names.length), [names.length]);
+	const tournamentMode = useMemo(
+		() => resolveTournamentMode(names.length),
+		[names.length],
+	);
 	const tournamentActions = useAppStore((s) => s.tournamentActions);
-	const namesKey = useMemo(() => createSortedKey(names.map((n) => n?.id || "")), [names]);
+	const namesKey = useMemo(
+		() => createSortedKey(names.map((n) => n?.id || "")),
+		[names],
+	);
 
 	const tournamentId = useMemo(() => {
 		let hash = 0;
@@ -253,12 +313,19 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 		return `tournament-${userKey}-${Math.abs(hash).toString(36)}-${names.length}`;
 	}, [namesKey, userKey, names.length]);
 
-	const defaultPersistentState = useMemo(() => createDefaultPersistentState(userKey), [userKey]);
-	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentTournamentState>(
-		tournamentId,
-		defaultPersistentState,
-		{ onError: () => toast.showWarning("Progress could not be saved locally.") },
+	const defaultPersistentState = useMemo(
+		() => createDefaultPersistentState(userKey),
+		[userKey],
 	);
+	const [persistentStateRaw, setPersistentState] =
+		useLocalStorage<PersistentTournamentState>(
+			tournamentId,
+			defaultPersistentState,
+			{
+				onError: () =>
+					toast.showWarning("Progress could not be saved locally."),
+			},
+		);
 
 	const persistentState = useMemo(
 		() => sanitizePersistentState(persistentStateRaw, userKey),
@@ -271,9 +338,19 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 		buildInitialReducerState,
 	);
 
-	const latestInitInputsRef = useRef({ names, namesKey, tournamentMode, persistentState });
+	const latestInitInputsRef = useRef({
+		names,
+		namesKey,
+		tournamentMode,
+		persistentState,
+	});
 	useEffect(() => {
-		latestInitInputsRef.current = { names, namesKey, tournamentMode, persistentState };
+		latestInitInputsRef.current = {
+			names,
+			namesKey,
+			tournamentMode,
+			persistentState,
+		};
 	}, [names, namesKey, tournamentMode, persistentState]);
 
 	const initializedNamesKeyRef = useRef(namesKey);
@@ -295,7 +372,10 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 
 	const lastSyncedKeyRef = useRef(0);
 	useEffect(() => {
-		if (state.refreshKey === 0 || lastSyncedKeyRef.current === state.refreshKey) {
+		if (
+			state.refreshKey === 0 ||
+			lastSyncedKeyRef.current === state.refreshKey
+		) {
 			return;
 		}
 		lastSyncedKeyRef.current = state.refreshKey;
@@ -330,7 +410,10 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 	);
 	const bracketDerived = useMemo(
 		() =>
-			deriveBracketState(state.persistentState.bracketEntrants, state.persistentState.matchHistory),
+			deriveBracketState(
+				state.persistentState.bracketEntrants,
+				state.persistentState.matchHistory,
+			),
 		[state.persistentState.bracketEntrants, state.persistentState.matchHistory],
 	);
 
@@ -342,7 +425,13 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 			teamsById,
 			idToNameMap,
 		});
-	}, [state.refreshKey, idToNameMap, tournamentMode, bracketDerived.pendingMatchIds, teamsById]);
+	}, [
+		state.refreshKey,
+		idToNameMap,
+		tournamentMode,
+		bracketDerived.pendingMatchIds,
+		teamsById,
+	]);
 
 	const metrics = useMemo(
 		() => calculateTournamentMetrics({ derived: bracketDerived }),
@@ -359,7 +448,9 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 					? currentMatch.left.memberIds
 					: [
 							String(
-								typeof currentMatch.left === "string" ? currentMatch.left : currentMatch.left.id,
+								typeof currentMatch.left === "string"
+									? currentMatch.left
+									: currentMatch.left.id,
 							),
 						];
 			const rightIds =
@@ -367,7 +458,9 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 					? currentMatch.right.memberIds
 					: [
 							String(
-								typeof currentMatch.right === "string" ? currentMatch.right : currentMatch.right.id,
+								typeof currentMatch.right === "string"
+									? currentMatch.right
+									: currentMatch.right.id,
 							),
 						];
 			const isLeftWinner =
@@ -404,7 +497,13 @@ export function useTournamentState(names: NameItem[], userName?: string) {
 				},
 			});
 		},
-		[currentMatch, metrics.matchNumber, metrics.round, userKey, tournamentActions],
+		[
+			currentMatch,
+			metrics.matchNumber,
+			metrics.round,
+			userKey,
+			tournamentActions,
+		],
 	);
 
 	const voteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

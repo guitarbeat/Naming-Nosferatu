@@ -10,7 +10,8 @@
 	--app-section-padding-inline: 1.5rem;
 	--app-hero-preview-min-height: 400px;
 	--font-sans: "Quicksand", ui-sans-serif, system-ui, -apple-system, sans-serif;
-	--font-display: "Fredoka", ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-display:
+		"Fredoka", ui-sans-serif, system-ui, -apple-system, sans-serif;
 	--spacing: 0.25rem;
 	--radius: 24px;
 	--radius-sm: 12px;
@@ -53,7 +54,8 @@
 	--glass-bg: rgba(30, 24, 48, 0.56);
 	--glass-border: rgba(255, 255, 255, 0.13);
 	--glass-shadow:
-		0 12px 32px -4px rgba(0, 0, 0, 0.52), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.2);
+		0 12px 32px -4px rgba(0, 0, 0, 0.52),
+		inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.2);
 	--glass-dome-shadow:
 		0 10px 28px -4px rgba(0, 0, 0, 0.45),
 		0 0 0 1px rgba(255, 255, 255, 0.14),
@@ -186,8 +188,16 @@
 			oklch(var(--accent) / 0.14) 0%,
 			transparent 50%
 		),
-		radial-gradient(circle at 20% 25%, oklch(var(--secondary-accent) / 0.11) 0%, transparent 52%),
-		radial-gradient(circle at 80% 75%, oklch(var(--accent) / 0.1) 0%, transparent 52%);
+		radial-gradient(
+			circle at 20% 25%,
+			oklch(var(--secondary-accent) / 0.11) 0%,
+			transparent 52%
+		),
+		radial-gradient(
+			circle at 80% 75%,
+			oklch(var(--accent) / 0.1) 0%,
+			transparent 52%
+		);
 	filter: blur(48px);
 	transition: background 0.2s ease-out;
 }

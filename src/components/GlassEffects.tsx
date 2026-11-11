@@ -53,7 +53,10 @@ export const GlassSurface = memo(function GlassSurface({
 	};
 
 	return (
-		<div className={`glass-surface glass-surface--fallback ${className}`} style={containerStyle}>
+		<div
+			className={`glass-surface glass-surface--fallback ${className}`}
+			style={containerStyle}
+		>
 			<div className="glass-surface__refraction-lens" aria-hidden="true" />
 			<div className="glass-surface__caustic-ring" aria-hidden="true" />
 			<div className="glass-surface__specular-dome" aria-hidden="true" />
@@ -116,7 +119,11 @@ export const Iridescence = memo(function Iridescence({
 	}, [mouseReact]);
 
 	return (
-		<div ref={containerRef} className={`iridescence-container ${className}`} aria-hidden="true">
+		<div
+			ref={containerRef}
+			className={`iridescence-container ${className}`}
+			aria-hidden="true"
+		>
 			<div className="iridescence-mesh" />
 		</div>
 	);
@@ -242,10 +249,18 @@ export const DriftWallTile = memo(function DriftWallTile({
 		if (typeof rank === "number" && rank > 1) {
 			return {
 				label: rankLabel || `#${rank}`,
-				bg: rank <= 3 ? "oklch(var(--secondary-accent) / 0.28)" : "oklch(var(--surface) / 0.9)",
-				fg: rank <= 3 ? "oklch(var(--secondary-accent))" : "oklch(var(--fg) / 0.85)",
+				bg:
+					rank <= 3
+						? "oklch(var(--secondary-accent) / 0.28)"
+						: "oklch(var(--surface) / 0.9)",
+				fg:
+					rank <= 3
+						? "oklch(var(--secondary-accent))"
+						: "oklch(var(--fg) / 0.85)",
 				ringStroke:
-					rank <= 3 ? "oklch(var(--secondary-accent) / 0.75)" : "oklch(var(--border) / 0.65)",
+					rank <= 3
+						? "oklch(var(--secondary-accent) / 0.75)"
+						: "oklch(var(--border) / 0.65)",
 				ringWidth: rank <= 3 ? 4 : 2.5,
 				pillWidth: rank >= 10 ? 46 : 38,
 			};
@@ -301,7 +316,15 @@ export const DriftWallTile = memo(function DriftWallTile({
 			};
 		}
 		return null;
-	}, [isChampion, rank, rankLabel, isJustVotedWinner, duelSide, isQueuedSurvivor, isSelected]);
+	}, [
+		isChampion,
+		rank,
+		rankLabel,
+		isJustVotedWinner,
+		duelSide,
+		isQueuedSurvivor,
+		isSelected,
+	]);
 
 	const inner = (
 		<GlassSurface
@@ -361,7 +384,11 @@ export const DriftWallTile = memo(function DriftWallTile({
 										letterSpacing: `${descStyle.letterSpacing}px`,
 									}}
 								>
-									<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+									<textPath
+										href={`#${arcPathId}`}
+										startOffset="50%"
+										textAnchor="middle"
+									>
 										{desc}
 									</textPath>
 								</text>
@@ -407,7 +434,9 @@ export const DriftWallTile = memo(function DriftWallTile({
 					)}
 				</svg>
 			)}
-			{Boolean(image) && <span className="drift-wall__overlay" aria-hidden="true" />}
+			{Boolean(image) && (
+				<span className="drift-wall__overlay" aria-hidden="true" />
+			)}
 		</GlassSurface>
 	);
 
@@ -446,9 +475,9 @@ export const DriftWallTile = memo(function DriftWallTile({
 		);
 	}
 	return (
-		<div role="button" tabIndex={0} aria-label={fullLabel} {...commonProps}>
+		<button type="button" aria-label={fullLabel} {...commonProps}>
 			{inner}
-		</div>
+		</button>
 	);
 });
 
@@ -527,7 +556,11 @@ export const NameOrb = memo(function NameOrb({
 										letterSpacing: `${descStyle.letterSpacing}px`,
 									}}
 								>
-									<textPath href={`#${arcPathId}`} startOffset="50%" textAnchor="middle">
+									<textPath
+										href={`#${arcPathId}`}
+										startOffset="50%"
+										textAnchor="middle"
+									>
 										{desc}
 									</textPath>
 								</text>

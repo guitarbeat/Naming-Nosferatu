@@ -198,7 +198,10 @@ export const DriftWall = memo(function DriftWall({
 	const [reduced, setReduced] = useState(false);
 
 	useEffect(() => {
-		if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+		if (
+			typeof window !== "undefined" &&
+			typeof window.matchMedia === "function"
+		) {
 			const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
 			setReduced(mq.matches);
 			const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
@@ -219,7 +222,9 @@ export const DriftWall = memo(function DriftWall({
 			if (entry?.contentRect) {
 				const nextW = Math.round(entry.contentRect.width) || 1280;
 				const nextH = Math.round(entry.contentRect.height) || 760;
-				setDims((prev) => (prev.w === nextW && prev.h === nextH ? prev : { w: nextW, h: nextH }));
+				setDims((prev) =>
+					prev.w === nextW && prev.h === nextH ? prev : { w: nextW, h: nextH },
+				);
 			}
 		});
 		ro.observe(containerRef.current);
@@ -269,7 +274,10 @@ export const DriftWall = memo(function DriftWall({
 		const selectedCount = uniqueEntries.filter((e) => e.item.selected).length;
 		const bottomMargin = isMobile ? 12 : 20;
 		const footerHeight = dockFooter ? (isMobile ? 48 : 52) : 0;
-		const maxDockW = Math.max(280, Math.min(dims.w - (isMobile ? 16 : 48), 1120));
+		const maxDockW = Math.max(
+			280,
+			Math.min(dims.w - (isMobile ? 16 : 48), 1120),
+		);
 		const orbSlotPitch = effSize + (isMobile ? 10 : 16);
 		const maxPerRow = Math.max(2, Math.floor((maxDockW - 48) / orbSlotPitch));
 
@@ -279,7 +287,8 @@ export const DriftWall = memo(function DriftWall({
 				maxDockW,
 				Math.max(isMobile ? dims.w - 16 : 680, Math.round(dims.w * 0.8)),
 			);
-			const hasQueue = (tournamentStage.queuedCount ?? 0) > 0 && !tournamentStage.isComplete;
+			const hasQueue =
+				(tournamentStage.queuedCount ?? 0) > 0 && !tournamentStage.isComplete;
 			const desiredChamberH = tournamentStage.isComplete
 				? isMobile
 					? 296
@@ -338,7 +347,9 @@ export const DriftWall = memo(function DriftWall({
 
 		const rows = selectedCount > maxPerRow ? 2 : 1;
 		const colsInWidestRow =
-			rows > 1 ? Math.min(maxPerRow, Math.ceil(selectedCount / 2)) : selectedCount;
+			rows > 1
+				? Math.min(maxPerRow, Math.ceil(selectedCount / 2))
+				: selectedCount;
 		const minExpandedW = Math.min(maxDockW, isMobile ? dims.w - 20 : 620);
 		const hugWidth = colsInWidestRow * orbSlotPitch + (isMobile ? 44 : 76);
 		const width = Math.min(maxDockW, Math.max(minExpandedW, hugWidth));
@@ -371,7 +382,15 @@ export const DriftWall = memo(function DriftWall({
 			rows,
 			borderRadius: 32,
 		};
-	}, [uniqueEntries, dims.w, dims.h, effSize, isMobile, dockFooter, tournamentStage]);
+	}, [
+		uniqueEntries,
+		dims.w,
+		dims.h,
+		effSize,
+		isMobile,
+		dockFooter,
+		tournamentStage,
+	]);
 
 	// Track forcefield ripple trigger whenever an orb is captured, eliminated, or match progresses
 	const prevSelectedCountRef = useRef(sanctuaryRect.selectedCount);
@@ -389,7 +408,11 @@ export const DriftWall = memo(function DriftWall({
 			prevSelectedCountRef.current = sanctuaryRect.selectedCount;
 			prevMatchNumRef.current = matchNum;
 		}
-	}, [sanctuaryRect.selectedCount, tournamentStage?.matchNumber, tournamentStage?.active]);
+	}, [
+		sanctuaryRect.selectedCount,
+		tournamentStage?.matchNumber,
+		tournamentStage?.active,
+	]);
 
 	const bodiesRef = useRef<BodyState[]>([]);
 	const uniqueEntriesRef = useRef(uniqueEntries);
@@ -433,7 +456,9 @@ export const DriftWall = memo(function DriftWall({
 			if (existing) {
 				// If an orb just transitioned from selected -> unselected (e.g., eliminated in a duel!), launch it upward out of the Sanctuary forcefield
 				const justEliminated = existing.wasSelected && !isSel;
-				const launchedVy = justEliminated ? -Math.max(speed * 4.8, 280) : existing.vy;
+				const launchedVy = justEliminated
+					? -Math.max(speed * 4.8, 280)
+					: existing.vy;
 				const horizDir = existing.x < dims.w * 0.5 ? -1 : 1;
 				const launchedVx = justEliminated
 					? horizDir * Math.max(speed * 2.2, 95) + ((i % 3) - 1) * 35
@@ -452,10 +477,16 @@ export const DriftWall = memo(function DriftWall({
 			const row = Math.floor(i / cols);
 			const jitterX = (((i * 0.6180339887) % 1) - 0.5) * cellW * 0.45;
 			const jitterY = (((i * 0.3819660113) % 1) - 0.5) * cellH * 0.45;
-			const x = Math.min(maxX, Math.max(minX, minX + (col + 0.5) * cellW + jitterX));
+			const x = Math.min(
+				maxX,
+				Math.max(minX, minX + (col + 0.5) * cellW + jitterX),
+			);
 			const y = isSel
 				? sRect.top + sRect.chamberHeight * 0.55
-				: Math.min(upperMaxY, Math.max(minY, minY + (row + 0.5) * cellH + jitterY));
+				: Math.min(
+						upperMaxY,
+						Math.max(minY, minY + (row + 0.5) * cellH + jitterY),
+					);
 			const angle = i * 2.399963229728653;
 			const baseSpeed = speed * (0.65 + ((i * 0.31) % 0.7));
 			nextBodies.push({
@@ -526,7 +557,10 @@ export const DriftWall = memo(function DriftWall({
 			if (lastTsRef.current === null) {
 				lastTsRef.current = ts;
 			}
-			const dt = Math.min(0.035, Math.max(0.001, (ts - lastTsRef.current) / 1000));
+			const dt = Math.min(
+				0.035,
+				Math.max(0.001, (ts - lastTsRef.current) / 1000),
+			);
 			lastTsRef.current = ts;
 
 			const bodies = bodiesRef.current;
@@ -589,24 +623,41 @@ export const DriftWall = memo(function DriftWall({
 
 						if (item.isChampion) {
 							const cPos = Math.max(0, championIndices.indexOf(idx));
-							const spread = champTotal > 1 ? (cPos === 0 ? -1 : 1) * (effSize * 0.52) : 0;
+							const spread =
+								champTotal > 1 ? (cPos === 0 ? -1 : 1) * (effSize * 0.52) : 0;
 							targetX = dims.w * 0.5 + spread + Math.cos(b.phase) * 3.5;
-							targetY = sRect.top + (isMobile ? 84 : 96) + Math.sin(b.phase * 1.2) * 3.5;
-							targetScale = champTotal > 1 ? (isMobile ? 1.04 : 1.18) : isMobile ? 1.16 : 1.28;
+							targetY =
+								sRect.top +
+								(isMobile ? 84 : 96) +
+								Math.sin(b.phase * 1.2) * 3.5;
+							targetScale =
+								champTotal > 1
+									? isMobile
+										? 1.04
+										: 1.18
+									: isMobile
+										? 1.16
+										: 1.28;
 						} else if (item.duelSide === "left" || item.duelSide === "right") {
 							const isLeft = item.duelSide === "left";
 							const pedestalCenterX =
 								sRect.left +
-								sRect.width * (isLeft ? (isMobile ? 0.25 : 0.27) : isMobile ? 0.75 : 0.73);
+								sRect.width *
+									(isLeft ? (isMobile ? 0.25 : 0.27) : isMobile ? 0.75 : 0.73);
 							const isDuo = tStage.tournamentMode === "2v2";
 							const partnerIdx = item.duelPartnerIndex ?? 0;
 							const partnerOffset = isDuo
-								? (partnerIdx === 0 ? -1 : 1) * (effSize * (isMobile ? 0.36 : 0.44))
+								? (partnerIdx === 0 ? -1 : 1) *
+									(effSize * (isMobile ? 0.36 : 0.44))
 								: 0;
 							const voteLift = item.isJustVotedWinner ? -12 : 0;
 
 							targetX = pedestalCenterX + partnerOffset + Math.cos(b.phase) * 3;
-							targetY = sRect.top + (isMobile ? 90 : 102) + voteLift + Math.sin(b.phase * 1.2) * 3;
+							targetY =
+								sRect.top +
+								(isMobile ? 90 : 102) +
+								voteLift +
+								Math.sin(b.phase * 1.2) * 3;
 							targetScale = item.isJustVotedWinner
 								? isMobile
 									? 1.22
@@ -621,7 +672,10 @@ export const DriftWall = memo(function DriftWall({
 						} else {
 							// Queued survivor orb waiting in the lower Sanctuary queue row
 							const qPos = Math.max(0, queuedIndices.indexOf(idx));
-							const innerQueueW = Math.max(effSize, sRect.width - effSize - (isMobile ? 48 : 96));
+							const innerQueueW = Math.max(
+								effSize,
+								sRect.width - effSize - (isMobile ? 48 : 96),
+							);
 							const idealStep = Math.min(
 								effSize * 0.82 + (isMobile ? 6 : 12),
 								queuedTotal > 1 ? innerQueueW / (queuedTotal - 1) : 0,
@@ -658,10 +712,15 @@ export const DriftWall = memo(function DriftWall({
 						b.phase += dt * 1.4;
 
 						const rowCount = Math.max(1, sRect.rows);
-						const firstRowCount = rowCount > 1 ? Math.ceil(selTotal / 2) : selTotal;
+						const firstRowCount =
+							rowCount > 1 ? Math.ceil(selTotal / 2) : selTotal;
 						const rowIdx = rowCount > 1 && sPos >= firstRowCount ? 1 : 0;
 						const itemsInThisRow =
-							rowCount > 1 ? (rowIdx === 0 ? firstRowCount : selTotal - firstRowCount) : selTotal;
+							rowCount > 1
+								? rowIdx === 0
+									? firstRowCount
+									: selTotal - firstRowCount
+								: selTotal;
 						const colInRow = rowIdx === 1 ? sPos - firstRowCount : sPos;
 
 						const innerUsableW = Math.max(effSize, sRect.width - effSize - 36);
@@ -672,12 +731,18 @@ export const DriftWall = memo(function DriftWall({
 						const rowSpanW = idealStep * Math.max(0, itemsInThisRow - 1);
 						const startX = (dims.w - rowSpanW) * 0.5;
 
-						const targetX = startX + colInRow * idealStep + Math.cos(b.phase) * 3;
+						const targetX =
+							startX + colInRow * idealStep + Math.cos(b.phase) * 3;
 						const headerOffset = 26;
-						const usableChamberH = Math.max(effSize, sRect.chamberHeight - headerOffset);
+						const usableChamberH = Math.max(
+							effSize,
+							sRect.chamberHeight - headerOffset,
+						);
 						const rowCenterY =
 							rowCount > 1
-								? sRect.top + headerOffset + ((rowIdx + 0.5) * usableChamberH) / 2
+								? sRect.top +
+									headerOffset +
+									((rowIdx + 0.5) * usableChamberH) / 2
 								: sRect.top + headerOffset + usableChamberH * 0.5;
 						const targetY = rowCenterY + Math.sin(b.phase * 1.15) * 3;
 
@@ -705,7 +770,8 @@ export const DriftWall = memo(function DriftWall({
 					b.scale += (1 - b.scale) * Math.min(1, dt * 10);
 
 					// Check if this orb is currently inside the dock footprint (e.g. just eliminated or dock just expanded)
-					const insideHoriz = b.x > boxLeft - r * 0.3 && b.x < boxRight + r * 0.3;
+					const insideHoriz =
+						b.x > boxLeft - r * 0.3 && b.x < boxRight + r * 0.3;
 					const insideVert = b.y > boxTop - r * 0.4;
 					if (insideHoriz && insideVert) {
 						// Propel upward out of the Sanctuary Dock's top forcefield
@@ -729,7 +795,10 @@ export const DriftWall = memo(function DriftWall({
 
 						// Mouse attraction (only pulls when cursor is outside the Sanctuary Dock and not dragging a marquee box)
 						const ptrInsideDock =
-							ptr.x >= boxLeft && ptr.x <= boxRight && ptr.y >= boxTop && ptr.y <= sRect.bottom;
+							ptr.x >= boxLeft &&
+							ptr.x <= boxRight &&
+							ptr.y >= boxTop &&
+							ptr.y <= sRect.bottom;
 						if (ptr.active && !ptrInsideDock && !isMarqueeDragging) {
 							const dx = ptr.x - b.x;
 							const dy = ptr.y - b.y;
@@ -806,13 +875,22 @@ export const DriftWall = memo(function DriftWall({
 							const dRight = Math.abs(b.x - boxRight);
 							if (dTop <= dLeft && dTop <= dRight) {
 								b.y = boxTop - r - 1;
-								b.vy = -Math.max(Math.abs(b.vy) * bounceRestitution, speed * 1.3);
+								b.vy = -Math.max(
+									Math.abs(b.vy) * bounceRestitution,
+									speed * 1.3,
+								);
 							} else if (dLeft < dRight) {
 								b.x = boxLeft - r - 1;
-								b.vx = -Math.max(Math.abs(b.vx) * bounceRestitution, speed * 1.2);
+								b.vx = -Math.max(
+									Math.abs(b.vx) * bounceRestitution,
+									speed * 1.2,
+								);
 							} else {
 								b.x = boxRight + r + 1;
-								b.vx = Math.max(Math.abs(b.vx) * bounceRestitution, speed * 1.2);
+								b.vx = Math.max(
+									Math.abs(b.vx) * bounceRestitution,
+									speed * 1.2,
+								);
 							}
 						}
 					}
@@ -942,39 +1020,42 @@ export const DriftWall = memo(function DriftWall({
 		activeTileElRef.current = null;
 	}, []);
 
-	const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-		if (e.button !== 0) {
-			return;
-		}
-		const targetEl = e.target as HTMLElement | null;
-		if (targetEl?.closest?.("[data-dock-footer='true']")) {
-			return;
-		}
-		const rect = e.currentTarget.getBoundingClientRect();
-		const x = e.clientX - rect.left;
-		const y = e.clientY - rect.top;
+	const handlePointerDown = useCallback(
+		(e: React.PointerEvent<HTMLDivElement>) => {
+			if (e.button !== 0) {
+				return;
+			}
+			const targetEl = e.target as HTMLElement | null;
+			if (targetEl?.closest?.("[data-dock-footer='true']")) {
+				return;
+			}
+			const rect = e.currentTarget.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
 
-		pointerRef.current.x = x;
-		pointerRef.current.y = y;
-		pointerRef.current.active = true;
-		pointerRef.current.pressing = true;
+			pointerRef.current.x = x;
+			pointerRef.current.y = y;
+			pointerRef.current.active = true;
+			pointerRef.current.pressing = true;
 
-		// Disable desktop marquee box dragging while tournament stage is active
-		if (tournamentStageRef.current?.active) {
-			return;
-		}
+			// Disable desktop marquee box dragging while tournament stage is active
+			if (tournamentStageRef.current?.active) {
+				return;
+			}
 
-		dragRef.current = {
-			active: true,
-			isMarquee: false,
-			pointerId: e.pointerId,
-			startX: x,
-			startY: y,
-			currX: x,
-			currY: y,
-			suppressClickUntil: dragRef.current.suppressClickUntil,
-		};
-	}, []);
+			dragRef.current = {
+				active: true,
+				isMarquee: false,
+				pointerId: e.pointerId,
+				startX: x,
+				startY: y,
+				currX: x,
+				currY: y,
+				suppressClickUntil: dragRef.current.suppressClickUntil,
+			};
+		},
+		[],
+	);
 
 	const handlePointerMove = useCallback(
 		(e: React.PointerEvent<HTMLDivElement>) => {
@@ -982,7 +1063,9 @@ export const DriftWall = memo(function DriftWall({
 			const x = e.clientX - rect.left;
 			const y = e.clientY - rect.top;
 			const targetEl = e.target as HTMLElement | null;
-			const inFooter = Boolean(targetEl?.closest?.("[data-dock-footer='true']"));
+			const inFooter = Boolean(
+				targetEl?.closest?.("[data-dock-footer='true']"),
+			);
 
 			pointerRef.current.x = x;
 			pointerRef.current.y = y;
@@ -993,7 +1076,10 @@ export const DriftWall = memo(function DriftWall({
 			if (dragRef.current.active && !tournamentStageRef.current?.active) {
 				dragRef.current.currX = x;
 				dragRef.current.currY = y;
-				const dist = Math.hypot(x - dragRef.current.startX, y - dragRef.current.startY);
+				const dist = Math.hypot(
+					x - dragRef.current.startX,
+					y - dragRef.current.startY,
+				);
 
 				if (!dragRef.current.isMarquee && dist > 6) {
 					dragRef.current.isMarquee = true;
@@ -1175,10 +1261,12 @@ export const DriftWall = memo(function DriftWall({
 		...style,
 	} as CSSProperties;
 
-	const isExpanded = sanctuaryRect.selectedCount > 0 || Boolean(tournamentStage?.active);
+	const isExpanded =
+		sanctuaryRect.selectedCount > 0 || Boolean(tournamentStage?.active);
 
 	return (
-		<div
+		<section
+			aria-label="Floating space of contender orbs"
 			ref={containerRef}
 			className={`drift-wall ${isMobile ? "" : "drift-wall--custom-cursor"} ${
 				reduced ? "drift-wall--reduced" : ""
@@ -1208,8 +1296,6 @@ export const DriftWall = memo(function DriftWall({
 					finalizePointerUp(e, false);
 				}
 			}}
-			role="group"
-			aria-label="Floating space of contender orbs"
 		>
 			<div className="relative w-full h-full overflow-hidden">
 				{/* Unified Morphing Sanctuary Command Dock / Tournament Arena Stage */}
@@ -1306,7 +1392,8 @@ export const DriftWall = memo(function DriftWall({
 											</span>
 											{!tournamentStage.isComplete && (
 												<span className="font-mono font-semibold tabular-nums text-foreground/80">
-													Match {tournamentStage.matchNumber} of {tournamentStage.totalMatches}
+													Match {tournamentStage.matchNumber} of{" "}
+													{tournamentStage.totalMatches}
 												</span>
 											)}
 										</span>
@@ -1344,8 +1431,6 @@ export const DriftWall = memo(function DriftWall({
 										{/* Left Duelist Pedestal Action Pill */}
 										<div
 											data-dock-footer="true"
-											onClick={(e) => e.stopPropagation()}
-											onKeyDown={(e) => e.stopPropagation()}
 											role="presentation"
 											className="pointer-events-auto absolute -translate-x-1/2 flex flex-col items-center text-center z-30"
 											style={{
@@ -1383,8 +1468,6 @@ export const DriftWall = memo(function DriftWall({
 										{/* Right Duelist Pedestal Action Pill */}
 										<div
 											data-dock-footer="true"
-											onClick={(e) => e.stopPropagation()}
-											onKeyDown={(e) => e.stopPropagation()}
 											role="presentation"
 											className="pointer-events-auto absolute -translate-x-1/2 flex flex-col items-center text-center z-30"
 											style={{
@@ -1427,7 +1510,8 @@ export const DriftWall = memo(function DriftWall({
 											>
 												<div className="h-px flex-1 bg-foreground/10" />
 												<span className="text-[10px] font-semibold uppercase tracking-wider text-foreground/50">
-													Sanctuary Queue &middot; {tournamentStage.queuedCount} waiting
+													Sanctuary Queue &middot; {tournamentStage.queuedCount}{" "}
+													waiting
 												</span>
 												<div className="h-px flex-1 bg-foreground/10" />
 											</div>
@@ -1451,7 +1535,9 @@ export const DriftWall = memo(function DriftWall({
 								>
 									<div className="flex items-center justify-between px-5 pt-2.5 text-[11px] font-medium tracking-wide text-foreground/75">
 										<span className="flex items-center gap-2">
-											<span className="font-semibold text-primary">Selected Sanctuary</span>
+											<span className="font-semibold text-primary">
+												Selected Sanctuary
+											</span>
 											<span aria-hidden="true" className="text-foreground/35">
 												&middot;
 											</span>
@@ -1473,11 +1559,11 @@ export const DriftWall = memo(function DriftWall({
 					{dockFooter && (
 						<div
 							data-dock-footer="true"
-							onClick={(e) => e.stopPropagation()}
-							onKeyDown={(e) => e.stopPropagation()}
 							role="presentation"
 							className={`pointer-events-auto cursor-auto relative z-30 flex w-full shrink-0 items-center justify-between px-4 sm:px-6 ${
-								isExpanded ? "border-t border-foreground/10 bg-background/40" : ""
+								isExpanded
+									? "border-t border-foreground/10 bg-background/40"
+									: ""
 							}`}
 							style={{ height: `${sanctuaryRect.footerHeight}px` }}
 						>
@@ -1494,7 +1580,11 @@ export const DriftWall = memo(function DriftWall({
 							nodeRefs.current[i] = el;
 						}}
 						className={`absolute top-0 left-0 will-change-transform ${
-							item.isChampion || item.duelSide ? "z-30" : item.selected ? "z-25" : "z-10"
+							item.isChampion || item.duelSide
+								? "z-30"
+								: item.selected
+									? "z-25"
+									: "z-10"
 						}`}
 						style={{ width: `${effSize}px`, height: `${effSize}px` }}
 					>
@@ -1539,9 +1629,13 @@ export const DriftWall = memo(function DriftWall({
 					>
 						{marqueeBox.targetedCount > 0 && (
 							<div className="absolute -top-7 left-2 inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-0.5 text-[11px] font-bold text-secondary-foreground shadow-md whitespace-nowrap">
-								<span className="font-mono tabular-nums">+{marqueeBox.targetedCount}</span>
+								<span className="font-mono tabular-nums">
+									+{marqueeBox.targetedCount}
+								</span>
 								<span>
-									{marqueeBox.targetedCount === 1 ? "cat name in net" : "cat names in net"}
+									{marqueeBox.targetedCount === 1
+										? "cat name in net"
+										: "cat names in net"}
 								</span>
 							</div>
 						)}
@@ -1566,6 +1660,7 @@ export const DriftWall = memo(function DriftWall({
 									"drop-shadow(0 4px 12px rgba(0, 0, 0, 0.48)) drop-shadow(0 0 10px oklch(var(--accent) / 0.45))",
 							}}
 						>
+							<title>Mouse Fur</title>
 							<defs>
 								<linearGradient id="mouse-fur-grad" x1="1" y1="0" x2="0" y2="0">
 									<stop offset="0%" stopColor="#f8fafc" />
@@ -1598,16 +1693,47 @@ export const DriftWall = memo(function DriftWall({
 
 							{/* Rounded Mouse Ears */}
 							<g transform="translate(-8.5, -8.2) rotate(-18)">
-								<circle cx="0" cy="0" r="5.2" fill="#cbd5e1" stroke="#334155" strokeWidth="1.2" />
-								<circle cx="0.4" cy="0.2" r="3.1" fill="var(--primary)" opacity="0.85" />
+								<circle
+									cx="0"
+									cy="0"
+									r="5.2"
+									fill="#cbd5e1"
+									stroke="#334155"
+									strokeWidth="1.2"
+								/>
+								<circle
+									cx="0.4"
+									cy="0.2"
+									r="3.1"
+									fill="var(--primary)"
+									opacity="0.85"
+								/>
 							</g>
 							<g transform="translate(-8.5, 8.2) rotate(18)">
-								<circle cx="0" cy="0" r="5.2" fill="#cbd5e1" stroke="#334155" strokeWidth="1.2" />
-								<circle cx="0.4" cy="-0.2" r="3.1" fill="var(--primary)" opacity="0.85" />
+								<circle
+									cx="0"
+									cy="0"
+									r="5.2"
+									fill="#cbd5e1"
+									stroke="#334155"
+									strokeWidth="1.2"
+								/>
+								<circle
+									cx="0.4"
+									cy="-0.2"
+									r="3.1"
+									fill="var(--primary)"
+									opacity="0.85"
+								/>
 							</g>
 
 							{/* Whiskers */}
-							<g stroke="#e2e8f0" strokeWidth="1" strokeLinecap="round" opacity="0.9">
+							<g
+								stroke="#e2e8f0"
+								strokeWidth="1"
+								strokeLinecap="round"
+								opacity="0.9"
+							>
 								<line x1="-2.5" y1="-2.2" x2="4.5" y2="-8.5" />
 								<line x1="-3.5" y1="-3" x2="2.5" y2="-11.5" />
 								<line x1="-4.5" y1="-3.2" x2="-1" y2="-12" />
@@ -1635,6 +1761,6 @@ export const DriftWall = memo(function DriftWall({
 					</div>
 				)}
 			</div>
-		</div>
+		</section>
 	);
 });

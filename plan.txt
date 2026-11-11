@@ -1,1 +1,21 @@
-This adds event delegation for keyboard interaction on `DriftWallTile` elements, enabling users navigating by keyboard to select items and vote by pressing "Enter" or "Space", which is currently impossible.
+1. Replace `role="group"` with `role="radiogroup"` in `src/components/ui/MagicToggle.tsx` (using `replace_with_git_merge_diff`) to fix the `lint/a11y/useSemanticElements` Biome error.
+2. In `src/components/DriftWall.tsx` (using `replace_with_git_merge_diff`):
+   - Replace `role="group"` with `role="region"` for the main container (`lint/a11y/useSemanticElements`).
+   - Remove `onClick` and `onKeyDown` from the static `div` elements with `data-dock-footer="true"` or add appropriate roles (fixing `lint/a11y/noStaticElementInteractions`).
+   - Add `<title>Mouse Fur</title>` inside the `<svg>` to resolve the `lint/a11y/noSvgWithoutTitle` error.
+3. Replace `<div role="button"...>` with `<button...>` in `src/components/GlassEffects.tsx` (using `replace_with_git_merge_diff`) to fix `lint/a11y/useSemanticElements`.
+4. Update `key` props in `src/tournament/TournamentArena.tsx` to `key={member.id}` instead of `${member.id}-${idx}` (using `replace_with_git_merge_diff`).
+5. Update `key` props in `src/tournament/TournamentComplete.tsx` to `key={memberName}` instead of `${memberName}-${idx}` (using `replace_with_git_merge_diff`).
+6. Run `run_in_bash_session` to execute `pnpm exec biome check --write src/ && pnpm test` to auto-fix and verify all formatting and tests.
+7. Complete pre commit steps to ensure proper testing, verification, review, and reflection are done.
+8. Submit the pull request using the `submit` tool, formatted with:
+   Title: `Caveman UI Pruner: Micro-clean Biome Errors`
+   Description:
+   ```
+   <strict_log>
+   - Momentum: Biome check reported 12 errors. Need to fix them.
+   - Smash: Fixing role/interactive element errors in DriftWall and GlassEffects, MagicToggle role, and noArrayIndexKey in TournamentArena & TournamentComplete.
+   - Clean: Resolving a11y & key errors. Making UI robust.
+   - Memory Update: Codebase hygiene check completed.
+   </strict_log>
+   ```

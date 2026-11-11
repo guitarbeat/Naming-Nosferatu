@@ -1,4 +1,10 @@
-import type { Match, MatchRecord, NameItem, Team, TournamentMode } from "@/types";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	Team,
+	TournamentMode,
+} from "@/types";
 import {
 	createIdToNameMap,
 	createTeamsById,
@@ -239,7 +245,8 @@ export function deriveVisualBracketTree({
 		};
 	}
 
-	const totalRounds = passedTotalRounds ?? Math.max(1, Math.ceil(Math.log2(totalEntrants)));
+	const totalRounds =
+		passedTotalRounds ?? Math.max(1, Math.ceil(Math.log2(totalEntrants)));
 	const totalMatches = Math.max(0, totalEntrants - 1);
 	const seedMap = createSeedMap(bracketEntrants);
 
@@ -342,9 +349,18 @@ export function deriveVisualBracketTree({
 				loserId,
 				status,
 				isCurrentMatch,
-				placeholder1Text: contender1 ? undefined : r > 1 ? `Winner R${r - 1}·M${2 * m + 1}` : "TBD",
-				placeholder2Text: contender2 ? undefined : r > 1 ? `Winner R${r - 1}·M${2 * m + 2}` : "TBD",
-				targetMatchId: r < totalRounds ? `r${r + 1}-m${Math.floor(m / 2)}` : undefined,
+				placeholder1Text: contender1
+					? undefined
+					: r > 1
+						? `Winner R${r - 1}·M${2 * m + 1}`
+						: "TBD",
+				placeholder2Text: contender2
+					? undefined
+					: r > 1
+						? `Winner R${r - 1}·M${2 * m + 2}`
+						: "TBD",
+				targetMatchId:
+					r < totalRounds ? `r${r + 1}-m${Math.floor(m / 2)}` : undefined,
 				targetSlot: (m % 2) as 0 | 1,
 			};
 
@@ -359,7 +375,9 @@ export function deriveVisualBracketTree({
 			roundName: stageLabel,
 			matches: roundMatches,
 			isCurrentRound: roundMatches.some((m) => m.status === "active"),
-			isCompleted: roundMatches.every((m) => m.status === "completed" || m.status === "bye"),
+			isCompleted: roundMatches.every(
+				(m) => m.status === "completed" || m.status === "bye",
+			),
 		});
 
 		currentRoundEntrants = nextRoundEntrants;

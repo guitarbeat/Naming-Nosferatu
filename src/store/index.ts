@@ -76,7 +76,11 @@ interface SiteSettingsActions {
 interface ErrorActions {
 	setError: (error: unknown | null) => void;
 	clearError: () => void;
-	logError: (error: unknown, context: string, metadata?: Record<string, unknown>) => void;
+	logError: (
+		error: unknown,
+		context: string,
+		metadata?: Record<string, unknown>,
+	) => void;
 }
 
 interface AppState {
@@ -95,7 +99,11 @@ interface AppState {
 type AppSet = Parameters<StateCreator<AppState>>[0];
 const IS_BROWSER = typeof window !== "undefined";
 
-function patch<K extends keyof AppState>(set: AppSet, key: K, updates: Partial<AppState[K]>): void {
+function patch<K extends keyof AppState>(
+	set: AppSet,
+	key: K,
+	updates: Partial<AppState[K]>,
+): void {
 	set((state) => ({ ...state, [key]: { ...state[key], ...updates } }));
 }
 
@@ -106,7 +114,9 @@ function hydrateStoredTournament(
 	if (!stored) {
 		return base;
 	}
-	const matchHistory = Array.isArray(stored.matchHistory) ? stored.matchHistory : undefined;
+	const matchHistory = Array.isArray(stored.matchHistory)
+		? stored.matchHistory
+		: undefined;
 	const hasCompletedMatches = Boolean(matchHistory && matchHistory.length > 0);
 	return {
 		...base,
@@ -114,11 +124,16 @@ function hydrateStoredTournament(
 		ratings: stored.ratings ?? {},
 		isComplete: Boolean(stored.isComplete) && hasCompletedMatches,
 		voteHistory: Array.isArray(stored.voteHistory) ? stored.voteHistory : [],
-		selectedNames: Array.isArray(stored.selectedNames) ? stored.selectedNames : [],
+		selectedNames: Array.isArray(stored.selectedNames)
+			? stored.selectedNames
+			: [],
 		matchHistory,
-		currentRound: typeof stored.currentRound === "number" ? stored.currentRound : undefined,
-		currentMatch: typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
-		totalMatches: typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
+		currentRound:
+			typeof stored.currentRound === "number" ? stored.currentRound : undefined,
+		currentMatch:
+			typeof stored.currentMatch === "number" ? stored.currentMatch : undefined,
+		totalMatches:
+			typeof stored.totalMatches === "number" ? stored.totalMatches : undefined,
 		mode: stored.mode,
 		teams: stored.teams,
 		bracketEntrants: stored.bracketEntrants,
@@ -160,7 +175,11 @@ function persistTournamentState(t: TournamentState): void {
 	void saveStoredTournamentToIDB(snapshot);
 }
 
-function updateTournament(set: AppSet, get: () => AppState, updates: Partial<TournamentState>) {
+function updateTournament(
+	set: AppSet,
+	get: () => AppState,
+	updates: Partial<TournamentState>,
+) {
 	patch(set, "tournament", updates);
 	persistTournamentState({ ...get().tournament, ...updates });
 }
@@ -200,7 +219,12 @@ const useAppStore = create<AppState>()((set, get) => ({
 								: undefined;
 					return {
 						...name,
-						rating: ratingVal ?? name.rating ?? name.avgRating ?? name.avg_rating ?? 1500,
+						rating:
+							ratingVal ??
+							name.rating ??
+							name.avgRating ??
+							name.avg_rating ??
+							1500,
 					};
 				}) ?? null;
 			updateTournament(set, get, {
@@ -215,7 +239,8 @@ const useAppStore = create<AppState>()((set, get) => ({
 		},
 		setRatings: (ratingsOrFn) => {
 			const current = get().tournament.ratings;
-			const nextRatings = typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
+			const nextRatings =
+				typeof ratingsOrFn === "function" ? ratingsOrFn(current) : ratingsOrFn;
 			updateTournament(set, get, { ratings: { ...current, ...nextRatings } });
 		},
 		setComplete: (isComplete) => updateTournament(set, get, { isComplete }),
@@ -235,7 +260,8 @@ const useAppStore = create<AppState>()((set, get) => ({
 				bracketEntrants: [],
 				ratings: {},
 			}),
-		setSelection: (selectedNames) => updateTournament(set, get, { selectedNames }),
+		setSelection: (selectedNames) =>
+			updateTournament(set, get, { selectedNames }),
 		recordVote: (winnerId, loserId, winnerMemberIds, loserMemberIds) => {
 			const voteHistory = [
 				...get().tournament.voteHistory,
@@ -261,7 +287,11 @@ const useAppStore = create<AppState>()((set, get) => ({
 			const ratings = progressUpdates.ratings
 				? { ...current.ratings, ...progressUpdates.ratings }
 				: current.ratings;
-			updateTournament(set, get, { ...progressUpdates, ratings, lastUpdated: Date.now() });
+			updateTournament(set, get, {
+				...progressUpdates,
+				ratings,
+				lastUpdated: Date.now(),
+			});
 		},
 		clearVoteHistory: () => updateTournament(set, get, { voteHistory: [] }),
 		replaceTournamentState: (snapshot: TournamentState) => {
@@ -320,7 +350,12 @@ const useAppStore = create<AppState>()((set, get) => ({
 			set((state) => ({
 				...state,
 				user: { ...state.user, name: "", isLoggedIn: false, isAdmin: false },
-				tournament: { ...state.tournament, names: null, isComplete: false, voteHistory: [] },
+				tournament: {
+					...state.tournament,
+					names: null,
+					isComplete: false,
+					voteHistory: [],
+				},
 			}));
 		},
 		setAdminStatus: (isAdmin) => {
@@ -375,24 +410,39 @@ const useAppStore = create<AppState>()((set, get) => ({
 	},
 	siteSettings: { catChosenName: null, isLoaded: false },
 	siteSettingsActions: {
-		setCatChosenName: (data) => patch(set, "siteSettings", { catChosenName: data }),
+		setCatChosenName: (data) =>
+			patch(set, "siteSettings", { catChosenName: data }),
 		markSettingsLoaded: () => patch(set, "siteSettings", { isLoaded: true }),
 	},
 	errors: { current: null, history: [] },
 	errorActions: {
 		setError: (error) => {
 			const log: ErrorLog | null = error
-				? { error, context: "setError", metadata: {}, timestamp: new Date().toISOString() }
+				? {
+						error,
+						context: "setError",
+						metadata: {},
+						timestamp: new Date().toISOString(),
+					}
 				: null;
 			patch(set, "errors", {
 				current: error,
-				history: log ? [...get().errors.history, log].slice(-50) : get().errors.history,
+				history: log
+					? [...get().errors.history, log].slice(-50)
+					: get().errors.history,
 			});
 		},
 		clearError: () => patch(set, "errors", { current: null }),
 		logError: (error, context, metadata = {}) => {
-			const entry: ErrorLog = { error, context, metadata, timestamp: new Date().toISOString() };
-			patch(set, "errors", { history: [...get().errors.history, entry].slice(-50) });
+			const entry: ErrorLog = {
+				error,
+				context,
+				metadata,
+				timestamp: new Date().toISOString(),
+			};
+			patch(set, "errors", {
+				history: [...get().errors.history, entry].slice(-50),
+			});
 			ErrorManager.handleError(error, context);
 		},
 	},
@@ -400,8 +450,12 @@ const useAppStore = create<AppState>()((set, get) => ({
 
 export default useAppStore;
 
-export function useAppStoreInitialization(onUserContext?: (name: string) => void): void {
-	const initializeUser = useAppStore((s) => s.userActions.initializeFromStorage);
+export function useAppStoreInitialization(
+	onUserContext?: (name: string) => void,
+): void {
+	const initializeUser = useAppStore(
+		(s) => s.userActions.initializeFromStorage,
+	);
 	const initializeTheme = useAppStore((s) => s.uiActions.initializeTheme);
 	useEffect(() => {
 		initializeUser(onUserContext);
@@ -421,14 +475,19 @@ export function useAppStoreInitialization(onUserContext?: (name: string) => void
 					(!current.ratings || Object.keys(current.ratings).length === 0);
 				if (
 					isEmpty ||
-					(stored.lastUpdated && (!current.lastUpdated || stored.lastUpdated > current.lastUpdated))
+					(stored.lastUpdated &&
+						(!current.lastUpdated || stored.lastUpdated > current.lastUpdated))
 				) {
 					useAppStore
 						.getState()
-						.tournamentActions.replaceTournamentState(hydrateStoredTournament(current, stored));
+						.tournamentActions.replaceTournamentState(
+							hydrateStoredTournament(current, stored),
+						);
 				}
 			})
-			.catch((err) => ErrorManager.handleError(err, "hydrateTournamentFromIndexedDB"));
+			.catch((err) =>
+				ErrorManager.handleError(err, "hydrateTournamentFromIndexedDB"),
+			);
 	}, [initializeTheme, initializeUser, onUserContext]);
 }
 
@@ -436,7 +495,9 @@ export function useActiveTournamentStatus() {
 	return useAppStore(
 		useShallow((s) => ({
 			hasActiveTournament: Boolean(
-				s.tournament.names && s.tournament.names.length >= 2 && !s.tournament.isComplete,
+				s.tournament.names &&
+					s.tournament.names.length >= 2 &&
+					!s.tournament.isComplete,
 			),
 			namesCount: s.tournament.names?.length ?? 0,
 		})),
