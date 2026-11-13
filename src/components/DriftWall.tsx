@@ -1357,12 +1357,13 @@ export const DriftWall = memo(function DriftWall({
 												type="button"
 												disabled={tournamentStage.isVoting}
 												onClick={() => tournamentStage.onVoteSide?.("left")}
-												className={`group flex flex-col items-center gap-0.5 rounded-2xl border px-3 sm:px-4 py-1.5 backdrop-blur-md transition-all duration-150 ${
+												className={`group flex flex-col items-center gap-0.5 rounded-2xl border px-3 sm:px-4 py-1.5 backdrop-blur-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
 													tournamentStage.votingSide === "left"
 														? "border-secondary bg-secondary/25 scale-105 shadow-lg"
 														: "border-primary/35 bg-background/65 hover:border-primary hover:bg-primary/20 active:scale-95"
 												}`}
 												aria-label={`Vote Left for ${tournamentStage.leftLabel ?? "Left Contender"}`}
+												aria-keyshortcuts="ArrowLeft"
 											>
 												<div className="flex items-center gap-1.5">
 													<span className="font-display text-xs sm:text-sm font-extrabold text-foreground group-hover:text-primary transition-colors max-w-[130px] sm:max-w-[180px] truncate">
@@ -1374,8 +1375,11 @@ export const DriftWall = memo(function DriftWall({
 														</span>
 													)}
 												</div>
-												<span className="text-[10px] font-bold tracking-wider uppercase text-primary">
-													&larr; Vote Left
+												<span className="text-[10px] font-bold tracking-wider uppercase text-primary flex items-center justify-center">
+													<kbd className="hidden sm:inline-flex mr-1 items-center justify-center rounded border border-primary/20 bg-primary/10 px-1 font-mono text-[9px] font-medium text-primary/80 select-none">
+														&larr;
+													</kbd>
+													Vote Left
 												</span>
 											</button>
 										</div>
@@ -1396,12 +1400,13 @@ export const DriftWall = memo(function DriftWall({
 												type="button"
 												disabled={tournamentStage.isVoting}
 												onClick={() => tournamentStage.onVoteSide?.("right")}
-												className={`group flex flex-col items-center gap-0.5 rounded-2xl border px-3 sm:px-4 py-1.5 backdrop-blur-md transition-all duration-150 ${
+												className={`group flex flex-col items-center gap-0.5 rounded-2xl border px-3 sm:px-4 py-1.5 backdrop-blur-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary ${
 													tournamentStage.votingSide === "right"
 														? "border-secondary bg-secondary/25 scale-105 shadow-lg"
 														: "border-secondary/40 bg-background/65 hover:border-secondary hover:bg-secondary/20 active:scale-95"
 												}`}
 												aria-label={`Vote Right for ${tournamentStage.rightLabel ?? "Right Contender"}`}
+												aria-keyshortcuts="ArrowRight"
 											>
 												<div className="flex items-center gap-1.5">
 													<span className="font-display text-xs sm:text-sm font-extrabold text-foreground group-hover:text-secondary transition-colors max-w-[130px] sm:max-w-[180px] truncate">
@@ -1413,8 +1418,11 @@ export const DriftWall = memo(function DriftWall({
 														</span>
 													)}
 												</div>
-												<span className="text-[10px] font-bold tracking-wider uppercase text-secondary">
-													Vote Right &rarr;
+												<span className="text-[10px] font-bold tracking-wider uppercase text-secondary flex items-center justify-center">
+													Vote Right
+													<kbd className="hidden sm:inline-flex ml-1 items-center justify-center rounded border border-secondary/20 bg-secondary/10 px-1 font-mono text-[9px] font-medium text-secondary/80 select-none">
+														&rarr;
+													</kbd>
 												</span>
 											</button>
 										</div>
