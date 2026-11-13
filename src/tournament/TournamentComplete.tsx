@@ -201,9 +201,15 @@ export const TournamentHeader = memo(function TournamentHeader({
 							}`}
 							title={canUndo ? "Undo last vote" : "Nothing to undo"}
 							aria-label="Undo last vote"
+							aria-keyshortcuts="u"
 						>
 							<Undo2 className="size-3.5" />
-							<span className="hidden sm:inline">Undo</span>
+							<span className="hidden sm:inline-flex sm:items-center">
+								Undo
+								<kbd className="hidden sm:inline-flex ml-1 items-center justify-center rounded border border-primary/20 bg-primary/10 px-1 font-mono text-[9px] font-medium text-primary/70 select-none">
+									U
+								</kbd>
+							</span>
 						</button>
 						<button
 							type="button"
