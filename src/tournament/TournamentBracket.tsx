@@ -1,4 +1,4 @@
-import { Check, Flame, Layers, Trophy, X, ZoomIn, ZoomOut } from "lucide-react";
+import { Check, Flame, Layers, Trophy, X } from "lucide-react";
 import { memo, type SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/UiPrimitives";
 import { MagicToolbar } from "@/components/ui/MagicToolbar";
@@ -275,29 +275,10 @@ export const TournamentBracket = memo(function TournamentBracket({
 					setSearchQuery={setSearchQuery}
 					viewMode={viewMode}
 					setViewMode={setViewMode}
+					zoom={zoom}
+					setZoom={setZoom}
 				/>
 				<div className="flex items-center gap-2 justify-end">
-					<Button
-						variant="outline"
-						size="icon"
-						onClick={() => setZoom((z) => Math.max(0.6, z - 0.1))}
-						title="Zoom Out"
-						aria-label="Zoom Out"
-					>
-						<ZoomOut className="size-4" />
-					</Button>
-					<span className="text-xs font-mono tabular-nums text-muted-foreground w-12 text-center">
-						{Math.round(zoom * 100)}%
-					</span>
-					<Button
-						variant="outline"
-						size="icon"
-						onClick={() => setZoom((z) => Math.min(1.4, z + 0.1))}
-						title="Zoom In"
-						aria-label="Zoom In"
-					>
-						<ZoomIn className="size-4" />
-					</Button>
 					{onClose && (
 						<Button
 							variant="ghost"
